@@ -70,6 +70,8 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -150,6 +152,12 @@ VERIFIED_FLOOR = "tests pass"
 STALE_DISCOVERY_DAYS = 90
 STALE_WORKSTREAM_DAYS = 30
 DEFAULT_CLAIM_HOURS = 12
+
+# A default CEO read should close cheap local truth gaps without reviving the 276-worktree
+# >120s failure mode that made the original scan opt-in.  Four bounded status calls cost at
+# most 20s at the timeout ceiling; larger hosts retain the explicit force flag.
+STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT = 4
+UNCOMMITTED_STATUS_TIMEOUT_SECONDS = 5.0
 
 
 class Problem:
@@ -612,6 +620,29 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     last = (updated or "").strip().splitlines()
     first = [ln for ln in (added or "").strip().splitlines() if ln]
     return (first[-1] if first else None), (last[0] if last else None)
+
+
+_GIT_DATE_BATCH_SIZE = 4
+
+
+def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
+    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+
+    Keep git_dates semantics, input order and None results unchanged. Submit only
+    one small batch at a time, and join every thread before return or failure.
+    There is no persisted cache, new history policy or cross-call executor.
+    """
+    iterator = iter(paths)
+    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    if not batch:
+        return {}
+    result: dict[Path, tuple[str | None, str | None]] = {}
+    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
+                            thread_name_prefix="agentos-git-dates") as executor:
+        while batch:
+            result.update(zip(batch, executor.map(git_dates, batch)))
+            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    return result
 
 
 def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
@@ -1422,7 +1453,9 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
     return out
 
 
-def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
+def scan_worktrees(
+    degraded: Degraded, *, deep: bool = False, auto_small: bool = False
+) -> dict[str, Any]:
     """Live checkout occupancy, via ``scripts/audit_stranded_work.py``.
 
     REUSED, not reimplemented: that module already knows how to read
@@ -1430,11 +1463,12 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
     status, and it had zero callers.  Only its pure local-git helpers are used — its
     ``main()`` does a ``git fetch``, which is a network call and is never invoked here.
 
-    ``deep`` adds the per-worktree uncommitted-source scan and is OFF by default because
-    it costs one ``git status`` per checkout: measured 276 live worktrees on this host,
-    most carrying a multi-GB ``data/`` tree, which put a plain ``brief`` past 120s. A CEO
-    command nobody waits for is a CEO command nobody runs, so the expensive half is
-    opt-in and its absence is stated rather than silently skipped.
+    ``deep`` forces the per-worktree uncommitted-source scan.  ``auto_small`` lets the
+    nightly status compiler perform that scan automatically only when the live set is small
+    enough to stay bounded.  The CEO brief deliberately leaves ``auto_small`` false so this
+    truth repair cannot consume its frozen 30-second read budget.  Each status call also has
+    its own timeout; a failed observation degrades loudly rather than becoming indistinguishable
+    from a clean tree.
     """
     try:
         # The repo-root pin is at module scope (see `_ROOT`), so `scripts` resolves here.
@@ -1450,19 +1484,33 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
                      "worktree occupancy unknown")
         return {"count": 0, "branches": [], "uncommitted": []}
     uncommitted: list[dict[str, Any]] = []
-    if deep:
+    scan_uncommitted = deep or (auto_small and len(branches) <= STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT)
+    if scan_uncommitted:
         for branch in sorted(branches):
             try:
-                dirty = stranded.dirty_source_paths(branches[branch])
-            except Exception:
+                dirty = stranded.dirty_source_paths(
+                    branches[branch], timeout=UNCOMMITTED_STATUS_TIMEOUT_SECONDS
+                )
+            except Exception as exc:
+                degraded.add(
+                    f"uncommitted-work scan failed for {branch!r} "
+                    f"({exc.__class__.__name__}) — source status unknown"
+                )
                 continue
             if dirty:
                 uncommitted.append({"branch": branch, "source_files": len(dirty)})
     else:
-        degraded.add(
-            f"uncommitted-work scan skipped over {len(branches)} worktrees "
-            "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
-        )
+        if auto_small:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                f"(nightly auto limit {STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT}; "
+                "one bounded `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
+        else:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
     return {
         "count": len(branches),
         "branches": sorted(branches),
@@ -1572,11 +1620,12 @@ def build_records(
     merged_truncated = bool((builds or {}).get("merged_truncated"))
     live_branches = set(worktrees.get("branches") or [])
 
+    dates = git_dates_batch(store.paths[f"WS/{key}"] for key in sorted(ws))
     out: list[dict[str, Any]] = []
     for key in sorted(ws):
         rec = ws[key]
         path = store.paths[f"WS/{key}"]
-        created, updated = git_dates(path)
+        created, updated = dates[path]
         status = rec.get("status")
         waves = [w for w in (rec.get("waves") or []) if isinstance(w, dict)]
         rollup = {name: 0 for name in sorted(WAVE_STATUS)}
@@ -2166,7 +2215,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     builds = load_active_builds(degraded, Path(args.active_builds) if args.active_builds else None)
     p0_status = load_p0(degraded)
-    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted)
+    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted, auto_small=True)
 
     state = build_state(store, now=now, degraded=degraded, builds=builds,
                         p0_status=p0_status, worktrees=worktrees)
@@ -3723,10 +3772,24 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    handoff_paths = {stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)}
+    mine = {
+        stem: path for stem, path in handoff_paths.items()
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # The loader retains parsed records even when their association is invalid,
+    # and reports unparseable paths separately. Both are selection evidence.
+    for problem in store.problems:
+        if problem.rule == "unparseable" and problem.path.parent == store.root / "handoffs":
+            handoff_paths.setdefault(problem.path.stem, problem.path)
+    unassociated: set[str] = set()
+    for stem, path in handoff_paths.items():
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key and stem not in mine:
+            # Exact canonical filenames provide negative evidence only. They
+            # never rewrite a valid authored association to another workstream.
+            mine[stem] = path
+            unassociated.add(stem)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3734,10 +3797,17 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = source(f"HND/{stem}")
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
+                continue
+            if stem in unassociated:
+                drop("handoff", stem, hnd_path,
+                     "malformed or inconsistent latest handoff association — no stale fallback")
+                degraded.add(f"record excluded (malformed association): {_rel(hnd_path)} — {stem}")
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
@@ -4068,7 +4138,7 @@ def main(argv: list[str] | None = None) -> int:
     p_status.add_argument("--md-out", help="AGENT_OS_STATE.md path override")
     p_status.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_status.add_argument("--scan-uncommitted", action="store_true",
-                          help="also scan every worktree for uncommitted source work")
+                          help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_status.add_argument("--dry-run", action="store_true",
                           help="print the JSON, write nothing")
     p_status.set_defaults(func=cmd_status)
@@ -4081,7 +4151,7 @@ def main(argv: list[str] | None = None) -> int:
     p_brief.add_argument("--json", action="store_true", help="emit ceo_brief.v1")
     p_brief.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_brief.add_argument("--scan-uncommitted", action="store_true",
-                         help="also scan every worktree for uncommitted source work")
+                         help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_brief.add_argument("--no-remember", action="store_true",
                          help="do not record this invocation as the last check-in")
     p_brief.set_defaults(func=cmd_brief)

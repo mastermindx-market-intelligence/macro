@@ -49,9 +49,14 @@ Finding identity for the delta:
 
 BASE-TREE MATERIALIZATION. The base commit is checked out into a throwaway
 `git worktree add --detach` (works under this repo's `blob:none` partial clone —
-missing blobs fetch lazily over the network — and independently of whether the
-CALLING checkout is itself sparse; the new worktree gets its own full checkout).
-Never under `.claude/worktrees/` or any other fleet worktree-GC root — see
+missing blobs fetch lazily over the network). Since 2026-09-14 the throwaway
+tree MIRRORS the calling checkout's sparse cone (`materialize_base_tree`): a
+sparse session worktree gets a sparse base (~0.4 GiB instead of 3.8 GiB, the
+dominant disk burn on the shared dev Macs), a full checkout still gets a full
+base, and either way both censuses walk the same directory set. It is minted
+under `$CONTRACT_DELTA_TMP_ROOT`, else the host's external-volume policy root,
+else the system temp dir (`base_tree_temp_root`), and never under
+`.claude/worktrees/` or any other fleet worktree-GC root — see
 `scripts/prophet_pit_replay.py`'s `resolve_or_create_vintage_worktree` for the
 same rule applied to a similar throwaway-worktree need.
 
@@ -97,12 +102,25 @@ the two dominant costs instead of paying for them back to back. Semantics and
 output are unchanged; only wall time moves. `.github/workflows/ci.yml` also
 raised `contract-delta`'s `timeout-minutes` 25 -> 45 as a second, independent
 margin (the job is off the critical path — packs run ~30 min regardless).
+
+SPARSE TRACKED-PATH ORACLE (2026-09-16). The hosted checkout intentionally
+omits generated-heavy `site/` and `data/`, but a test can still add a literal
+read of a tracked non-Python leaf there. PR #7228 did exactly that with
+`site/theme.css`; physical-only existence checks erased the dependency and this
+gate reported `0 introduced`, allowing current main to inherit an absolute
+closure red. Both the head census and detached-base worker now bind the tested
+commit to `ci.tracked_paths.v1` before deriving scope. The oracle supplies only
+Git-tree existence; source bytes are never fabricated, and an omitted Python
+file whose content is required still fails closed.
 """
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
+import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -116,6 +134,11 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.run_ci_pack import curated_exclusive_closure_findings  # noqa: E402
 from scripts.audit_unrun_tests import gated_unrun_suites  # noqa: E402
+from scripts.ci_scope_dependencies import (  # noqa: E402
+    TrackedPathInventoryError,
+    planner_tracked_path_inventory,
+    write_tracked_path_inventory,
+)
 
 
 class ContractDeltaError(RuntimeError):
@@ -126,6 +149,35 @@ class ContractDeltaError(RuntimeError):
 # finding computation — head in-process, base via a subprocess worker
 # ─────────────────────────────────────────────────────────────────────────────
 
+@contextmanager
+def _tracked_tree_inventory(repo_root: Path):
+    """Expose omitted tracked leaves to one immutable-tree scope census.
+
+    `contract-delta` deliberately excludes generated-heavy `site/` and `data/`
+    directories from its hosted checkout. Static dependency analysis still has
+    to know that a literal non-Python leaf exists there: otherwise a new
+    `Path("site/theme.css").read_text()` edge disappears before the differential
+    can report it. The inventory is an existence oracle only; any omitted Python
+    source whose bytes are needed still fails closed through
+    `ScopeMaterializationError`.
+    """
+    tested_tree_sha = _git("rev-parse", "HEAD", cwd=repo_root).strip()
+    with tempfile.TemporaryDirectory(prefix="contract-delta-inventory-") as tmp:
+        inventory = Path(tmp) / "tracked-paths.v1"
+        try:
+            write_tracked_path_inventory(
+                inventory, tested_tree_sha, root=repo_root
+            )
+            with planner_tracked_path_inventory(
+                inventory, tested_tree_sha, root=repo_root
+            ):
+                yield tested_tree_sha
+        except TrackedPathInventoryError as exc:
+            raise ContractDeltaError(
+                f"exact-tree inventory refused for {repo_root}: {exc}"
+            ) from exc
+
+
 def _head_findings() -> dict[str, Any]:
     """Findings for THIS process's own tree, via the canonical shared functions.
 
@@ -134,11 +186,12 @@ def _head_findings() -> dict[str, Any]:
     `scripts/audit_unrun_tests.py`'s own gate use for their absolute verdicts.
     """
     manifest = ROOT / MANIFEST_REL
-    closure = curated_exclusive_closure_findings(manifest)
-    return {
-        "closure": {job_id: sorted(paths) for job_id, paths in closure.items()},
-        "suites": sorted(gated_unrun_suites()),
-    }
+    with _tracked_tree_inventory(ROOT):
+        closure = curated_exclusive_closure_findings(manifest)
+        return {
+            "closure": {job_id: sorted(paths) for job_id, paths in closure.items()},
+            "suites": sorted(gated_unrun_suites()),
+        }
 
 
 # Deliberately references the pre-existing (pre-this-PR) primitive names in its
@@ -146,8 +199,12 @@ def _head_findings() -> dict[str, Any]:
 # why this cannot instead just import scripts.check_contract_delta itself (this
 # file does not exist on a base tree that predates this gate).
 _WORKER_SOURCE = r'''
+from contextlib import contextmanager
+import importlib
 import json
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, ".")
@@ -159,6 +216,46 @@ def _fail(message: str) -> None:
     sys.exit(1)
 
 
+@contextmanager
+def _tracked_tree_inventory():
+    """Bind exact tracked-path existence when this base supports the v1 oracle."""
+    try:
+        deps = importlib.import_module("scripts.ci_scope_dependencies")
+    except ModuleNotFoundError as exc:
+        if exc.name != "scripts.ci_scope_dependencies":
+            raise
+        # Bootstrap compatibility only: a deliberately old base can predate the
+        # inventory module. Any nested missing import still fails the worker.
+        yield
+        return
+    planner_tracked_path_inventory = getattr(
+        deps, "planner_tracked_path_inventory", None
+    )
+    write_tracked_path_inventory = getattr(
+        deps, "write_tracked_path_inventory", None
+    )
+    if planner_tracked_path_inventory is None or write_tracked_path_inventory is None:
+        # A base between the dependency module's birth and the v1 inventory API.
+        yield
+        return
+
+    tested_tree_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    ).stdout.strip()
+    root = Path.cwd()
+    with tempfile.TemporaryDirectory(prefix="contract-delta-inventory-") as tmp:
+        inventory = Path(tmp) / "tracked-paths.v1"
+        write_tracked_path_inventory(inventory, tested_tree_sha, root=root)
+        with planner_tracked_path_inventory(
+            inventory, tested_tree_sha, root=root
+        ):
+            yield
+
+
 try:
     from scripts.run_ci_pack import curated_exclusive_closure_findings as _closure_fn
     from scripts.audit_unrun_tests import gated_unrun_suites as _suites_fn
@@ -168,8 +265,11 @@ except ImportError:
 
 if _closure_fn is not None and _suites_fn is not None:
     try:
-        closure = {jid: sorted(paths) for jid, paths in _closure_fn(MANIFEST).items()}
-        suites = sorted(_suites_fn())
+        with _tracked_tree_inventory():
+            closure = {
+                jid: sorted(paths) for jid, paths in _closure_fn(MANIFEST).items()
+            }
+            suites = sorted(_suites_fn())
     except Exception as exc:  # noqa: BLE001 — surfaced as a script-level refusal
         _fail(f"{type(exc).__name__}: {exc}")
     print(json.dumps({"closure": closure, "suites": suites}))
@@ -189,26 +289,27 @@ except Exception as exc:  # noqa: BLE001
     _fail(f"cannot import CI-contract primitives: {type(exc).__name__}: {exc}")
 
 try:
-    jobs = [replace(j, exclusive=False) for j in load_legacy_jobs(MANIFEST)]
-    inferred, _note = infer_job_scopes(jobs)
-    would_infer = {j.job_id: j for j in inferred}
-    declared = {j.job_id: j for j in load_legacy_jobs(MANIFEST) if j.exclusive}
-    closure = {}
-    for job_id, job in sorted(declared.items()):
-        own_closure = [p for p in would_infer[job_id].paths if "*" not in p]
-        if not own_closure:
-            _fail(f"{job_id} derives no closure — curation cannot be checked")
-        uncovered = sorted(p for p in own_closure if not _matches_any(job.paths, p))
-        if uncovered:
-            closure[job_id] = uncovered
+    with _tracked_tree_inventory():
+        jobs = [replace(j, exclusive=False) for j in load_legacy_jobs(MANIFEST)]
+        inferred, _note = infer_job_scopes(jobs)
+        would_infer = {j.job_id: j for j in inferred}
+        declared = {j.job_id: j for j in load_legacy_jobs(MANIFEST) if j.exclusive}
+        closure = {}
+        for job_id, job in sorted(declared.items()):
+            own_closure = [p for p in would_infer[job_id].paths if "*" not in p]
+            if not own_closure:
+                _fail(f"{job_id} derives no closure — curation cannot be checked")
+            uncovered = sorted(p for p in own_closure if not _matches_any(job.paths, p))
+            if uncovered:
+                closure[job_id] = uncovered
 
-    rows = census()
-    unrun = sorted(r["test"] for r in rows)
-    baseline = _load_baseline()
-    normalized, malformed = _validate_waivers(_load_waivers())
-    if malformed:
-        _fail("malformed waivers: " + "; ".join(malformed))
-    suites = sorted(r for r in unrun if r not in baseline and r not in normalized)
+        rows = census()
+        unrun = sorted(r["test"] for r in rows)
+        baseline = _load_baseline()
+        normalized, malformed = _validate_waivers(_load_waivers())
+        if malformed:
+            _fail("malformed waivers: " + "; ".join(malformed))
+        suites = sorted(r for r in unrun if r not in baseline and r not in normalized)
 except SystemExit:
     raise
 except Exception as exc:  # noqa: BLE001
@@ -301,24 +402,98 @@ def _git(*args: str, cwd: Path) -> str:
     return completed.stdout
 
 
+TEMP_ROOT_ENV = "CONTRACT_DELTA_TMP_ROOT"
+STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+
+
+def base_tree_temp_root() -> Path | None:
+    """Where the throwaway base worktree is minted; None means `tempfile`'s default.
+
+    Precedence: `$CONTRACT_DELTA_TMP_ROOT` (an existing directory) > the host's
+    external-volume policy (`~/.config/mastermind/worktree-storage.json`, whose
+    `root` is used only while its `mount_point` is actually mounted) > None.
+    Fail-open by design: this is a throwaway tree, not a session worktree, so an
+    absent volume must never block the gate — it just costs internal disk.
+    """
+    override = os.environ.get(TEMP_ROOT_ENV)
+    if override:
+        candidate = Path(override)
+        return candidate if candidate.is_dir() else None
+    try:
+        policy = json.loads(STORAGE_POLICY.read_text())
+        mount, root = Path(policy["mount_point"]), Path(policy["root"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    if not (mount.is_dir() and os.path.ismount(mount) and root.is_dir()):
+        return None
+    candidate = root / "tmp" / "contract-delta"
+    try:
+        candidate.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        return None
+    return candidate
+
+
+def caller_sparse_cone(repo_root: Path) -> list[str] | None:
+    """The calling checkout's cone-mode sparse include set, or None when it is a
+    full checkout (or uses non-cone patterns, which we do not try to mirror)."""
+    try:
+        enabled = _git("config", "--get", "core.sparseCheckout", cwd=repo_root).strip()
+        cone = _git("config", "--get", "core.sparseCheckoutCone", cwd=repo_root).strip()
+    except ContractDeltaError:
+        return None
+    if enabled != "true" or cone != "true":
+        return None
+    listed = _git("sparse-checkout", "list", cwd=repo_root).split()
+    return listed or None
+
+
 def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
     """A throwaway detached worktree at `base_ref`, plus its cleanup callable.
 
     Never under any fleet worktree-GC root (`.claude/worktrees/` and siblings) —
     `tempfile.mkdtemp()` is outside every one of them, matching
     `scripts/prophet_pit_replay.py`'s `resolve_or_create_vintage_worktree`.
+
+    MIRRORS THE CALLER'S SPARSE CONE (2026-09-14). A session worktree on this
+    fleet is sparse (config/sparse_worktree.json: data/, site/, mockups/,
+    verify_shots/ omitted — 87% of a 3.8 GiB tree), yet the base tree used to be
+    a FULL checkout every time: 3-6 GB written per gate run, ~20 GB/h across the
+    Studio's concurrent sessions, and every SIGKILLed run left the half-built
+    tree behind (wave-2 freed 184 GB of them; it was gone again in ~9 h). The base
+    tree now takes exactly the caller's `git sparse-checkout list` cone, so both
+    censuses see the SAME set of directories — which is also the only way the
+    delta is well-defined: a full base against a sparse head reports every suite
+    under an omitted directory as "fixed on head" and hides it. A full caller (CI
+    runners, the operator root) still gets a full base tree, unchanged.
+    Placement follows `base_tree_temp_root()` (external volume when the host has
+    one); the `contract-delta-base-` prefix is what the fleet sweeper keys on.
     """
     base_sha = _git("rev-parse", f"{base_ref}^{{commit}}", cwd=repo_root).strip()
-    tmpdir = Path(tempfile.mkdtemp(prefix="contract-delta-base-"))
+    cone = caller_sparse_cone(repo_root)
+    tmpdir = Path(tempfile.mkdtemp(prefix="contract-delta-base-", dir=base_tree_temp_root()))
     tmpdir.rmdir()  # `git worktree add` refuses a pre-existing non-empty target
-    _git("worktree", "add", "--detach", str(tmpdir), base_sha, cwd=repo_root)
 
     def cleanup() -> None:
         try:
             _git("worktree", "remove", "--force", str(tmpdir), cwd=repo_root)
         except ContractDeltaError:
             shutil.rmtree(tmpdir, ignore_errors=True)
+            try:
+                _git("worktree", "prune", cwd=repo_root)
+            except ContractDeltaError:
+                pass
 
+    if cone is None:
+        _git("worktree", "add", "--detach", str(tmpdir), base_sha, cwd=repo_root)
+        return tmpdir, base_sha, cleanup
+    try:
+        _git("worktree", "add", "--detach", "--no-checkout", str(tmpdir), base_sha, cwd=repo_root)
+        _git("sparse-checkout", "set", "--cone", "--", *cone, cwd=tmpdir)
+        _git("read-tree", "-mu", "HEAD", cwd=tmpdir)
+    except BaseException:
+        cleanup()
+        raise
     return tmpdir, base_sha, cleanup
 
 
@@ -434,12 +609,21 @@ def run(base_ref: str, *, repo_root: Path = ROOT) -> int:
     return 1 if has_introduced_findings(delta) else 0
 
 
+def _raise_on_sigterm(signum: int, frame: Any) -> None:
+    raise SystemExit(128 + signum)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", required=True,
                     help="ref or SHA to diff against (e.g. origin/main, or a PR's base SHA)")
     args = ap.parse_args(argv)
+    # A cancelled CI job (timeout-minutes, workflow cancel) delivers SIGTERM; the
+    # default disposition kills the interpreter without unwinding, so `run()`'s
+    # `finally: cleanup()` never ran and the base worktree stayed on disk. Turn
+    # it into a normal exception so the throwaway tree is removed on the way out.
+    signal.signal(signal.SIGTERM, _raise_on_sigterm)
     try:
         return run(args.base)
     except ContractDeltaError as exc:

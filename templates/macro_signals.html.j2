@@ -1394,13 +1394,13 @@
       {% if _tx.get('headwind_for') %}
       <div class="muted sm" style="margin-bottom:4px">{{ t('A stronger dollar is pressing on:','美元走强正压制：') }}</div>
       {% for h in _tx.headwind_for %}
-      <span class="chip chip-neg">{{ t(h, h) }}</span>
+      <span class="chip chip-neg">{{ td(h) }}</span>
       {% endfor %}
       {% endif %}
       {% if _tx.get('tailwind_for') %}
       <div class="muted sm" style="margin:6px 0 4px">{{ t('Helping:','助力：') }}</div>
       {% for h in _tx.tailwind_for %}
-      <span class="chip chip-pos">{{ t(h, h) }}</span>
+      <span class="chip chip-pos">{{ td(h) }}</span>
       {% endfor %}
       {% endif %}
       {% if _tx.get('corr') %}

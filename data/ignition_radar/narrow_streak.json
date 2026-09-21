@@ -15,9 +15,9 @@
     "score": 0.9938
   },
   "XLC": {
-    "streak": 3,
-    "last_date": "2026-07-29",
-    "score": 0.9905
+    "streak": 7,
+    "last_date": "2026-09-16",
+    "score": 0.9473
   },
   "non_ai_software": {
     "streak": 6,
@@ -30,9 +30,9 @@
     "score": 0.9727
   },
   "XLK": {
-    "streak": 3,
-    "last_date": "2026-08-28",
-    "score": 0.9452
+    "streak": 4,
+    "last_date": "2026-09-17",
+    "score": 0.8962
   },
   "memory_storage": {
     "streak": 2,
@@ -55,9 +55,9 @@
     "score": 0.68
   },
   "SMH": {
-    "streak": 2,
-    "last_date": "2026-08-31",
-    "score": 0.9943
+    "streak": 4,
+    "last_date": "2026-09-18",
+    "score": 0.974
   },
   "non_ai_tech": {
     "streak": 1,
@@ -65,8 +65,8 @@
     "score": 1.0
   },
   "XLU": {
-    "streak": 1,
-    "last_date": "2026-09-04",
-    "score": 0.9303
+    "streak": 2,
+    "last_date": "2026-09-08",
+    "score": 0.9906
   }
 }

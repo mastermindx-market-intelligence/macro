@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Enforce the public-repository trusted-CI runner-routing boundary.
 
-The planner, stable pack anchors, semantic gate, forks, fences, and merge controller
-remain hosted. Exact same-repository PR execution may call the protected-main trusted
-executor; candidate-authored jobs may not address the runner group or supply executor
-identity. Existing production self-hosted lanes are left untouched.
+The planner, stable pack anchors, semantic gate, ordinary PR packs, forks, fences,
+and merge controller default to GitHub-hosted Linux/x64. Exact same-repository PR
+execution may call the protected-main trusted executor only through the explicit
+CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runner
+group or supply executor identity. Existing production self-hosted lanes are left
+untouched.
 
 It also owns the label-DECLARATION boundary (rules R11/R12, added 2026-08-17): every
 literal ``runs-on`` label in every workflow must be declared in
@@ -82,11 +84,13 @@ SAME_REPO_PR = (
 FORK_PR = (
     "github.event.pull_request.head.repo.full_name != github.repository"
 )
+PC_ROUTE = "vars.CI_EXECUTION_ROUTE == 'pc'"
+HOSTED_ROUTE = "vars.CI_EXECUTION_ROUTE != 'pc'"
 TRUSTED_CALL_JOB = {
     "name": "trusted-ci",
     "needs": "ci-plan",
     "if": (
-        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR
+        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR + " && " + PC_ROUTE
     ),
     "uses": TRUSTED_EXECUTOR_CALL,
     "permissions": {"contents": "read", "pull-requests": "read"},
@@ -567,7 +571,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
     if registry.get("repository_visibility") != "public":
         findings.append(Finding("R0", "repository visibility boundary must remain public"))
     expected_scenarios = {
-        "same_repo_ordinary_pr": "pc-ci-via-main-executor",
+        "same_repo_ordinary_pr": "github-hosted",
         "fork_pr": "github-hosted",
         "trusted_dispatch_canary": "pc-ci-canary",
         "trusted_executor_dispatch": "pc-ci",
@@ -716,6 +720,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trust_gate = trusted_jobs.get("trust-gate") or {}
         plan_job = trusted_jobs.get("plan") or {}
         trusted_job = trusted_jobs.get(trusted_job_id) or {}
+        hosted_compat_job = trusted_jobs.get("legacy-hosted-pack") or {}
         trigger_config = trusted_document.get(
             "on", trusted_document.get(True, {})
         )
@@ -761,6 +766,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "BASE_REF": "${{ github.base_ref }}",
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+            "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -778,6 +784,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "pr_number": "${{ steps.admit.outputs.pr_number }}",
             "mode": "${{ steps.admit.outputs.mode }}",
             "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+            "execution_route": "${{ steps.admit.outputs.execution_route }}",
         }
         plan_text = str(plan_job)
         selector = next(
@@ -794,8 +801,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 "${{ needs.trust-gate.outputs.control_sha }}",
                 "${{ needs.trust-gate.outputs.pr_number }}",
                 "${{ needs.trust-gate.outputs.semantic_workflow }}",
+                "${{ needs.trust-gate.outputs.execution_route }}",
                 "${{ github.event_name }}",
             )
+        ) and plan_job.get("outputs", {}).get("execution_route") == (
+            "${{ needs.trust-gate.outputs.execution_route }}"
         ) and selector.get("env") == {
             "EXECUTION_MODE": "${{ needs.trust-gate.outputs.mode }}",
             "FULL_MATRIX": "${{ steps.plan.outputs.matrix }}",
@@ -822,8 +832,76 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or trusted_job.get("runs-on")
             != {"group": "macro-home-canary", "labels": "ci-linux"}
             or (trusted_job.get("strategy") or {}).get("max-parallel") != 3
+            or trusted_job.get("if") != "needs.plan.outputs.execution_route == 'pc'"
         ):
-            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, or three-slot bound"))
+            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, three-slot bound, or explicit PC route"))
+
+        hosted_compat_steps = hosted_compat_job.get("steps") or []
+        hosted_compat_execute = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name")
+                == "execute the frozen logical pack and retain its semantic result"
+            ),
+            {},
+        )
+        hosted_compat_upload = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name") == "publish the legacy caller semantic fragment"
+            ),
+            {},
+        )
+        hosted_compat_text = str(hosted_compat_execute.get("run", ""))
+        hosted_compat_is_exact = (
+            isinstance(hosted_compat_job, dict)
+            and hosted_compat_job.get("needs") == "plan"
+            and hosted_compat_job.get("if")
+            == "needs.plan.outputs.execution_route == 'hosted'"
+            and hosted_compat_job.get("runs-on") == HOSTED
+            and (hosted_compat_job.get("strategy") or {}).get("fail-fast") is False
+            and "max-parallel" not in (hosted_compat_job.get("strategy") or {})
+            and (hosted_compat_job.get("strategy") or {}).get("matrix")
+            == "${{ fromJSON(needs.plan.outputs.matrix) }}"
+            and hosted_compat_execute.get("env", {}).get(
+                "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+            )
+            == "${{ github.workspace }}"
+            and all(
+                token in hosted_compat_text
+                for token in (
+                    '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"',
+                    '--plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json"',
+                    '--expect-plan-sha "${{ needs.plan.outputs.plan_sha }}"',
+                    '--expect-tested-tree-sha "${{ needs.plan.outputs.tested_sha }}"',
+                    '--expect-subject-head-sha "${{ needs.plan.outputs.head_sha }}"',
+                    '--expect-base-sha "${{ needs.plan.outputs.base_sha }}"',
+                    "--base-replay-budget-seconds 900",
+                    "set +e",
+                    "pack_rc=$?",
+                    'test -s "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json"',
+                )
+            )
+            and "exit $pack_rc" not in hosted_compat_text
+            and hosted_compat_upload.get("uses") == "actions/upload-artifact@v4"
+            and (hosted_compat_upload.get("with") or {}).get("name")
+            == "trusted-ci-fragment-${{ matrix.pack }}"
+            and (hosted_compat_upload.get("with") or {}).get("path")
+            == "${{ runner.temp }}/ci-semantic-fragments/trusted-fragment.json"
+            and (hosted_compat_upload.get("with") or {}).get("if-no-files-found")
+            == "error"
+        )
+        if not hosted_compat_is_exact:
+            findings.append(
+                Finding(
+                    "R13",
+                    "legacy same-repo callers must use the protected hosted compatibility pack and preserve the trusted fragment contract",
+                )
+            )
         ci_document = documents.get(".github/workflows/ci.yml") or {}
         ci_jobs = ci_document.get("jobs") or {}
         trusted_call = ci_jobs.get("trusted-ci")
@@ -863,7 +941,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "validate and run legacy CI pack",
             "fail-safe full suite when no authoritative plan was produced",
         }
-        heavyweight_fork_only = True
+        heavyweight_hosted_default = True
         for step in pack_steps:
             if not isinstance(step, dict):
                 continue
@@ -876,10 +954,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 }
                 or step.get("name") in protected_pack_steps
             )
-            if is_heavy and FORK_PR not in str(step.get("if", "")):
-                heavyweight_fork_only = False
+            guard = str(step.get("if", ""))
+            if is_heavy and not (FORK_PR in guard and HOSTED_ROUTE in guard):
+                heavyweight_hosted_default = False
         relay_is_exact = (
-            relay_step.get("if") == SAME_REPO_PR
+            relay_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and relay_step.get("uses")
             == "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
             and relay_step.get("with") == {
@@ -889,7 +968,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         )
         parity_text = str(parity_step.get("run", ""))
         parity_is_exact = (
-            parity_step.get("if") == SAME_REPO_PR
+            parity_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and parity_step.get("env") == {
                 "HOSTED_PLAN_SHA": "${{ needs.ci-plan.outputs.plan_sha }}",
                 "TRUSTED_PLAN_SHA": "${{ needs.trusted-ci.outputs.plan_sha }}",
@@ -917,7 +996,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == (
                 "always() && needs.ci-plan.result == 'success' && "
                 "needs.ci-plan.outputs.has_work == 'true' && "
-                f"({FORK_PR} || needs.trusted-ci.result == 'success')"
+                f"({FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
             )
             and (ci_pack.get("strategy") or {}).get("matrix")
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"
@@ -927,12 +1006,12 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             findings.append(Finding("R13", "P3B-B ci.yml lost its exact protected-main no-input executor call"))
         if not (
             ci_pack_contract_is_exact
-            and heavyweight_fork_only
+            and heavyweight_hosted_default
             and relay_is_exact
             and parity_is_exact
             and upload_is_exact
         ):
-            findings.append(Finding("R13", "P3B-B hosted anchor, fork isolation, or semantic relay drifted"))
+            findings.append(Finding("R13", "hosted-first pack execution, explicit PC fallback, or semantic relay drifted"))
 
     runner_group_name = str(runtime_group.get("name", ""))
     runner_group_consumers = {
@@ -1110,7 +1189,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(f"FAIL: {len(findings)} runner-policy finding(s)")
         return 1
-    print("OK: P3B-B routes only same-repository PR execution through the protected-main PC executor.")
+    print("OK: ordinary PR CI defaults to GitHub-hosted Linux/x64; protected-main PC execution is explicit fallback only.")
     return 0
 
 

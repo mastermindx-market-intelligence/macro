@@ -38,6 +38,8 @@ PAGE = builder.SUITE_PAGES[0]
 BUILT_AT = "2026-09-04T12:00:00Z"
 
 _TEMPLATE_NAMES = (
+    "macro_monetary.html.j2",
+    "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",
     "macro_business_activity.html.j2",
@@ -51,6 +53,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -90,8 +93,27 @@ def _build(tmp_path: Path, data_root: Path) -> str:
     root = _isolated_root(tmp_path)
     pages = builder.render(root, data_root=data_root, out_dir=tmp_path / "site",
                            page_built_at=BUILT_AT)
-    assert len(pages) == len(builder.SUITE_PAGES)
+    # The fourteen workspace pages plus the one suite hub.
+    assert len(pages) == len(builder.SUITE_PAGES) + 1
+    assert pages[-1].name == builder.HUB_PAGE.output
     return pages[0].read_text(encoding="utf-8")
+
+
+@pytest.fixture(scope="module")
+def built_pages(tmp_path_factory) -> dict[str, str]:
+    """Every suite page, rendered from the CURRENT templates.
+
+    Deliberately not the committed site/*.html. Reading the shipped artifact
+    would make these assertions depend on whether the render lane has run since
+    the last template change -- and it would drag site/macro_*.html into this
+    job's import closure, which `scope: exclusive` would then have to declare.
+    Staleness of the committed copies is already owned by
+    scripts/check_template_site_sync.py and the render lane.
+    """
+    out = tmp_path_factory.mktemp("macro_suite_all") / "site"
+    root = _isolated_root(tmp_path_factory.mktemp("macro_suite_all_root"))
+    pages = builder.render(root, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
+    return {page.name: page.read_text(encoding="utf-8") for page in pages}
 
 
 @pytest.fixture(scope="module")
@@ -225,6 +247,9 @@ def test_what_changed_matches_the_artifact_comparability(live_html: str) -> None
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] in live_html
         assert labels.COMPARABILITY["NO_PRIOR"]["zh"] in live_html
         assert "invent a baseline that does not exist" in live_html
+    elif comparability == "NO_EARLIER_PUBLICATION":
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["en"] in live_html
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["zh"] in live_html
     else:
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] not in live_html
 
@@ -256,7 +281,8 @@ def test_no_closed_vocabulary_token_is_rendered_raw_as_prose(live_html: str) -> 
         set(labels.known("freshness")) | set(labels.known("null_reason"))
         | set(labels.known("presence")) | set(labels.known("evidence_class"))
         | {"higher_tighter", "higher_stronger", "USD_bn", "composite_prior_only",
-           "roc_over_owner_window", "NO_PRIOR", "context_only"}
+           "roc_over_owner_window", "NO_PRIOR", "NO_EARLIER_PUBLICATION",
+           "context_only"}
     ) if re.search(rf"(?<![\w/.]){re.escape(token)}(?![\w/.])", prose)]
     assert leaked == [], leaked
 
@@ -277,6 +303,151 @@ def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
         "en": "Some future state", "zh": "Some future state"}
     assert "freshness:SOME_FUTURE_STATE" in labels.unknown_tokens()
     labels.reset_unknown_tokens()
+
+
+_ENGINE_CONTRADICTION_KINDS = (
+    "quantity_vs_quality",
+    "hollow_expansion",
+    "depth_breadth_divergence",
+    "nowcast_vs_hard_data",
+    "narrow_breadth_despite_level",
+    "sticky_led_but_headline_disinflationary",
+    "low_hires_low_fires",
+    "claims_income_divergence",
+    "trade_balance_identity_disagreement",
+    "spending_on_credit_vs_confidence_divergence",
+    "nominal_real_breakeven_decomposition_disagreement",
+    "issuer_event_contradiction",
+    "issuance_demand_stress_vs_bond_desk_calm",
+    "home_price_vs_rent_divergence",
+    "hawk_ease_split",
+    "global_state_vs_fed_desk",
+    "dots_vs_market_path",
+    "broad_stress_vs_risk_appetite",
+)
+
+_KIND_LITERAL = re.compile(r'(?:kind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
+_CJK_ADJOINING_SPACE = re.compile(r"(?:[\u3400-\u9fff] )|(?: [\u3400-\u9fff])")
+
+
+def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
+    labels.reset_unknown_tokens()
+    for kind in _ENGINE_CONTRADICTION_KINDS:
+        pair = labels.label("contradiction_kind", kind)
+        assert pair is not None
+        assert pair["en"] and pair["zh"]
+        fallback = labels.deslug(kind)
+        assert pair["en"] != fallback and pair["zh"] != fallback, kind
+        assert _CJK_ADJOINING_SPACE.search(pair["zh"]) is None, pair["zh"]
+    assert labels.unknown_tokens() == ()
+
+    engine_kinds: set[str] = set()
+    engine_dir = ROOT / "engine" / "market_os" / "macro_workspaces"
+    for path in engine_dir.glob("*.py"):
+        for match in _KIND_LITERAL.finditer(path.read_text(encoding="utf-8")):
+            engine_kinds.add(match.group(1))
+    unlabelled = engine_kinds - set(labels.known("alert_kind")) - set(
+        _ENGINE_CONTRADICTION_KINDS)
+    assert unlabelled == set(), unlabelled
+
+
+def test_the_three_healed_contradiction_labels_agree_with_their_producers() -> None:
+    """Producer -> display: a contradiction label must not contradict the engine
+    sentence printed beside it, and must not claim more than that sentence
+    computes.
+
+    ``lib/macro_suite_view.py:134`` resolves the CONTRADICTION_KIND label and
+    ``:136`` carries the producer's own EN/ZH sentence, so the two land in one
+    block and a label its own sentence refutes is caught where the reader meets
+    it. Nothing else in this file joins the two: the coverage test above asserts
+    only that a label EXISTS, and the producer-side suites never read this label
+    table -- which is how two frozen pairs came to state the opposite of the
+    engine, and a third came to name a split between rhetoric and financial
+    conditions that its producer never computes.
+
+    So call the detectors that EMIT these kinds, take the kind they emit (an
+    engine rename fails here rather than quietly relabelling nothing), install
+    the emitted contradiction on a copy of the shipped snapshot and read the
+    label off the real view. Reverting any of the three pairs fails this test.
+    """
+    # Local import: this is the only test that needs the producers, and the
+    # claim under test is precisely the join between them and the label table.
+    from engine.market_os.macro_workspaces import (
+        consumer_payments, financial_conditions, monetary_policy)
+
+    def _label_a_reader_meets(emitted: Mapping[str, Any]) -> dict[str, str]:
+        snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+        snapshot["availability"]["contradiction"] = {
+            "present": True,
+            "kind": emitted["kind"],
+            "en": emitted["en"],
+            "zh": emitted["zh"],
+            "components": list(emitted.get("components") or []),
+        }
+        view = _view_of(snapshot)["context"]["contradiction"]
+        assert view is not None
+        assert view["kind_raw"] == emitted["kind"]
+        return view["kind"]
+
+    # -- pair 1: consumer_payments, all three legs beyond their flat bands ----
+    emitted = consumer_payments._detect_contradiction(
+        sentiment_yoy=2.0, revolving_yoy=4.0, saving_rate_change_3m=-0.5)
+    assert len(emitted) == 1, emitted
+    credit = emitted[0]
+    assert credit["kind"] == "spending_on_credit_vs_confidence_divergence"
+    # The producer's own sentence says confidence is RISING, not falling.
+    assert credit["en"].startswith("Consumer sentiment is rising year-over-year"), credit["en"]
+    assert "消费者信心同比上升" in credit["zh"], credit["zh"]
+    credit_label = _label_a_reader_meets(credit)
+    assert "Confidence rising" in credit_label["en"], credit_label["en"]
+    assert "confidence falls" not in credit_label["en"], credit_label["en"]
+    assert "falling" not in credit_label["en"], credit_label["en"]
+    assert "信心上升" in credit_label["zh"], credit_label["zh"]
+    assert "信心却在下降" not in credit_label["zh"], credit_label["zh"]
+
+    # -- pair 2: financial_conditions, calm official stress vs a risk-off tape -
+    stress = financial_conditions._detect_contradiction(
+        {"state": "calm"}, {"state": "risk-off (elevated)"})
+    assert stress["present"] is True, stress
+    assert stress["kind"] == "broad_stress_vs_risk_appetite"
+    # The producer's own sentence says stress reads CALM and appetite risk-OFF.
+    assert "reads calm" in stress["en"], stress["en"]
+    assert "risk-off" in stress["en"], stress["en"]
+    assert "平静" in stress["zh"] and "风险规避" in stress["zh"], stress["zh"]
+    stress_label = _label_a_reader_meets(stress)
+    assert "calm" in stress_label["en"], stress_label["en"]
+    assert "risk-off" in stress_label["en"], stress_label["en"]
+    assert "Broad stress" not in stress_label["en"], stress_label["en"]
+    assert "平静" in stress_label["zh"], stress_label["zh"]
+    assert "避险" in stress_label["zh"], stress_label["zh"]
+    assert "整体承压" not in stress_label["zh"], stress_label["zh"]
+
+    # -- pair 3: monetary_policy, both pressure legs active and balanced -----
+    # The producer emits this kind only for net_state "two_sided" with both
+    # scores > 0 (``monetary_policy.py:456``); an empty divergence list keeps
+    # D1_dots_vs_market out, so exactly one contradiction can be emitted.
+    split_emitted = monetary_policy._detect_contradictions(
+        [], {"net_state": "two_sided", "hawk_score": 2.0, "ease_score": 1.8})
+    assert len(split_emitted) == 1, split_emitted
+    split = split_emitted[0]
+    assert split["kind"] == "hawk_ease_split"
+    # The producer's own sentence claims a BALANCE of two pressure legs, and it
+    # computes hawk_score / ease_score only -- no conditions index -- so the
+    # label may not name a talk-versus-conditions split.
+    assert "balanced" in split["en"], split["en"]
+    assert "unbalanced" not in split["en"], split["en"]
+    assert "制衡" in split["zh"] and "未制衡" not in split["zh"], split["zh"]
+    split_label = _label_a_reader_meets(split)
+    # "balanced" is a substring of "unbalanced" and of "imbalanced", so the
+    # positive claim alone would survive an inverted rewrite of this pair.
+    assert "balanced" in split_label["en"], split_label["en"]
+    assert "unbalanced" not in split_label["en"], split_label["en"]
+    assert "imbalanced" not in split_label["en"], split_label["en"]
+    assert "talk" not in split_label["en"], split_label["en"]
+    assert "conditions" not in split_label["en"], split_label["en"]
+    assert "制衡" in split_label["zh"], split_label["zh"]
+    assert "未制衡" not in split_label["zh"], split_label["zh"]
+    assert "言辞" not in split_label["zh"], split_label["zh"]
 
 
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
@@ -434,15 +605,6 @@ def _snapshot_at(state_id: Any, x: Any, y: Any) -> dict[str, Any]:
     return snapshot
 
 
-def _is_plain_finite_number(value: Any) -> bool:
-    """Deliberately re-stated here rather than imported from the view.
-
-    A test that borrows the implementation's own definition of "a number" agrees
-    with it by construction, including when it is wrong.
-    """
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
-
-
 # Independently chosen: the coordinates and the expected point are written out
 # by hand from the stated law (A = low-x/high-y, B = high/high, C = low/low,
 # D = high/low; SVG y grows downward, so cy = 100 - y). Nothing here is obtained
@@ -507,16 +669,23 @@ def test_the_current_artifact_agrees_with_itself() -> None:
         assert current == [], "an unclassified reading must not light up a quadrant"
 
     x, y = headline["quadrant"].get("x"), headline["quadrant"].get("y")
-    if _is_plain_finite_number(x) and _is_plain_finite_number(y):
+    if _is_finite_number(x) and _is_finite_number(y):
         assert quadrant_map["plotted"] is True
         assert quadrant_map["point"]["cx"] == pytest.approx(x)
         assert quadrant_map["point"]["cy"] == pytest.approx(100 - y)
-    elif x is None or y is None:
+    else:
         assert quadrant_map["plotted"] is False
         assert quadrant_map["point"] is None
-    # A NaN, infinite or boolean axis reading is deliberately NOT asserted here.
-    # Rejecting those requires the view-side finite-number guard, which is a
-    # product change owned by the held F01 R1 candidate, not by this repair.
+        assert quadrant_map["absence"] is not None
+
+
+def _is_finite_number(value: Any) -> bool:
+    """Deliberately re-stated here rather than imported from the view.
+
+    A test that borrows the implementation's own definition of "a number" agrees
+    with it by construction, including when it is wrong.
+    """
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
 @pytest.mark.parametrize("state_id", [None, "", "Z", "AB", 0])
@@ -526,15 +695,15 @@ def test_an_unclassified_reading_never_invents_a_current_quadrant(state_id: Any)
     assert [c["letter"] for c in view["quadrant_map"]["cells"] if c["current"]] == []
 
 
-@pytest.mark.parametrize("value", [None, "20", "", [], {}])
+@pytest.mark.parametrize("value", [None, "20", "", True, False, float("nan"),
+                                   float("inf"), float("-inf"), [], {}])
 def test_a_non_numeric_axis_value_plots_no_point(value: Any) -> None:
     """missing != zero, on the axis itself.
 
-    Restricted to the non-numeric shapes the current view already classifies as
-    unavailable. `True`, `NaN` and the infinities are excluded on purpose: bool
-    is a subclass of int and json.loads parses a bare NaN, so today they still
-    plot. Closing that hole is a view-side change carried by the held F01 R1
-    candidate; this repair must not import it.
+    ``true`` and ``NaN`` are the two that slipped through the obvious numeric
+    check: bool is a subclass of int, and json.loads parses a bare NaN. The first
+    plotted at cx=1.0, the second emitted cx="nan" -- a point that silently
+    vanishes while the page still reports a plotted state.
     """
     for x, y in ((value, 80.0), (20.0, value)):
         view = _view_of(_snapshot_at("A", x, y))
@@ -649,3 +818,150 @@ def test_the_drawer_starts_closed_and_inert(live_html: str) -> None:
         assert token in js
     assert "https://" not in js, "the suite runtime must make no cross-origin read"
     assert "fetch(" not in js, "the page is server-rendered from a validated artifact"
+
+
+# --------------------------------------------------------------------------
+# absent is not zero, and absent is not no-change
+#
+# Every assertion below poisons ONE boundary and leaves the rest alone. The
+# defect these replace was not that the code was complicated: it was that three
+# separate renderers each decided from a FORMATTED string, where an em dash is
+# truthy and a real "0" is not.
+# --------------------------------------------------------------------------
+
+_NULL_PAGES = ("business_activity", "consumer_payments", "trade_flows")
+
+
+def _changes_view(prior: Any, current: Any, delta: Any,
+                  comparability: str = "COMPARABLE") -> dict[str, Any]:
+    snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    snapshot["changes"]["comparability"] = comparability
+    snapshot["changes"]["deltas"] = [{
+        "metric_id": "net_liquidity_4w", "prior_value": prior,
+        "current_value": current, "delta": delta, "null_reason": None,
+    }]
+    return _view_of(snapshot)["changes"]["deltas"][0]
+
+
+def test_a_real_zero_is_a_measurement_and_keeps_its_flat_class() -> None:
+    row = _changes_view(1.0, 1.0, 0.0)
+    assert row["comparable"] is True
+    assert row["delta_present"] is True
+    assert row["sign"] == "flat"
+    assert row["delta"] == "0", "a measured no-change must still print its zero"
+    assert row["absence"] is None
+
+
+def test_equal_values_are_no_change_not_an_absence() -> None:
+    row = _changes_view(763602.0, 763602.0, 0.0)
+    assert (row["sign"], row["comparable"]) == ("flat", True)
+
+
+@pytest.mark.parametrize("poison", [
+    {"prior": None}, {"current": None},
+    {"prior": "1.0"}, {"delta": float("nan")}, {"delta": True},
+])
+def test_one_absent_cell_makes_the_row_incomparable_and_never_flat(poison: dict) -> None:
+    values = {"prior": 1.0, "current": 2.0, "delta": 1.0} | poison
+    row = _changes_view(values["prior"], values["current"], values["delta"])
+    assert row["comparable"] is False
+    assert row["sign"] != "flat", "absent must never wear the no-change styling"
+    assert row["absence"] is not None, "an absent cell owes a typed reason"
+    for key in ("prior", "current", "delta"):
+        if not row[f"{key}_present"]:
+            assert row[key] is None, f"{key} must be absent, not the string 'None'"
+
+
+def test_a_method_incomparable_table_is_gated_even_though_its_rows_are_numeric() -> None:
+    """Comparability is a table-level verdict, not a per-cell one.
+
+    Every row here carries three real numbers. The table must still refuse to
+    show them as a comparison, because the method changed underneath -- a delta
+    across a method change is a fabricated baseline, not a measurement.
+    """
+    snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    snapshot["changes"]["comparability"] = "METHOD_CHANGED"
+    changes = _view_of(snapshot)["changes"]
+    assert changes["comparable"] is False
+    assert changes["absence"] is not None
+    assert all(row["comparable"] for row in changes["deltas"]), \
+        "the rows are individually fine; it is the COMPARISON that is refused"
+
+
+@pytest.mark.parametrize("page", _NULL_PAGES)
+def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[str, str]) -> None:
+    """The exact three manifestations Sol named."""
+    html = built_pages[f"macro_{page}.html"]
+    assert ">None<" not in html
+    assert "-None\"" not in html
+    assert re.search(r'class="mq-delta mq-delta-(?:up|down|flat)"[^>]*>\s*<span class="mq-absent',
+                     html) is None, "an absent cell is wearing a success class"
+
+
+def _boundary_view(distance: Any) -> dict[str, Any]:
+    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
+    snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    # The shipped artifact currently carries a contradiction, which outranks
+    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    availability = snapshot.setdefault("availability", {})
+    availability["contradiction"] = {"present": False}
+    snapshot["headline"]["nearest_boundary"] = {
+        "axis": snapshot["axes"]["items"][0]["axis_id"],
+        "distance": distance, "null_reason": None}
+    return _view_of(snapshot)["next_action"]
+
+
+def test_a_boundary_distance_of_exactly_zero_is_the_most_watchable_case() -> None:
+    """Sitting ON the line is not "no boundary" — but 0 is falsey."""
+    assert _boundary_view(0.0)["token"] == "WATCH_BOUNDARY"
+
+
+def test_a_missing_boundary_distance_does_not_become_a_watch() -> None:
+    """An em dash is truthy; the absence of a distance is not a reason to watch."""
+    assert _boundary_view(None)["token"] != "WATCH_BOUNDARY"
+
+
+def test_every_next_action_carries_a_real_route_to_an_owned_region(built_pages: dict[str, str]) -> None:
+    html = built_pages["macro_liquidity_regime.html"]
+    match = re.search(r'<a class="mq-next-route" href="(#[a-z0-9-]+)"', html)
+    assert match, "the action must offer a real link, not a decorative CTA"
+    target = match.group(1)[1:]
+    assert f'id="{target}"' in html, "the route must land on an id this page actually has"
+    # Never into a panel the tab script hides, and never into the evidence drawer,
+    # which ships `hidden inert`: both look correct in markup and fail in a browser.
+    assert target not in ("mq-panel-drivers", "mq-panel-history", "mq-evidence-drawer")
+
+
+def test_the_action_precedes_the_full_table_and_ribbon_in_dom_order(built_pages: dict[str, str]) -> None:
+    html = built_pages["macro_liquidity_regime.html"]
+    order = [m.group(1) for m in re.finditer(
+        r'class="(mq-glance|mq-next mq-tone-[a-z]+|mq-study|mq-changed|mq-ribbon)"', html)]
+    order = [o.split()[0] for o in order]
+    assert order[:3] == ["mq-glance", "mq-next", "mq-study"], order[:5]
+    assert order.index("mq-changed") > order.index("mq-next")
+    assert order.index("mq-ribbon") > order.index("mq-next")
+
+
+def test_absent_coverage_renders_a_typed_absence_not_an_unlabelled_dash() -> None:
+    snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    snapshot["availability"]["coverage_ratio"] = None
+    context = _view_of(snapshot)["context"]
+    assert context["coverage_present"] is False
+    assert context["coverage_absence"] is not None
+    assert context["coverage_absence"]["label"]["en"], "the dash owes the reader a word"
+
+
+@pytest.mark.parametrize("page", sorted(p.output for p in builder.SUITE_PAGES))
+def test_no_built_page_ever_emits_a_none_class_or_value(page: str, built_pages: dict[str, str]) -> None:
+    """One invariant covering all four `mq-delta-` emission sites at once.
+
+    Three of them are guarded by a `*_present` flag and the fourth sits inside a
+    presence check, so `mq-delta-None` cannot be reached today. This asserts the
+    OUTPUT rather than the guards, so it still fails if a later change moves a
+    selection rule and quietly reintroduces the class -- which is exactly how the
+    driver tables got there in the first place.
+    """
+    html = built_pages[page]
+    assert "mq-delta-None" not in html
+    assert ">None<" not in html
+    assert 'class="mq-delta mq-delta-"' not in html, "an empty sign class is the same bug"

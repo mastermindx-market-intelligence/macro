@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/state_of_themes.html.j2
+manifest: mockups/evidence/a-f04-w4-1/manifest.json

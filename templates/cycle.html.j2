@@ -85,7 +85,7 @@
 <script src="mm_charts.js"></script>
 <script src="cycle_i18n.js"></script>
 <script src="cycle_app.js"></script>
-<script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('cyc-asof').textContent=(window.CYCLE_ENGINE||window.CYCLE_META||{}).as_of||(window.CYCLE_META||{}).asOf||'';}catch(e){}});</script>
+<script>document.addEventListener('DOMContentLoaded',function(){try{var E=window.CYCLE_ENGINE||{},M=window.CYCLE_META||{},el=document.getElementById('cyc-asof');if(!el)return;var tape=E.tape_as_of;if(!tape){var best='';Object.keys(E.cycles||{}).forEach(function(id){((E.cycles[id]&&E.cycles[id].bands)||[]).forEach(function(b){if(b&&b.series_last&&String(b.series_last)>best)best=String(b.series_last);});});tape=best;}el.textContent=tape||E.as_of||M.asOf||'';}catch(e){}});</script>
 {# The W4.5 regime-prior reconciliation used to render its own stacked banners here.
    That stack (contradiction + prior status + curated-prose age) now folds into the
    single line cycle_app.js renderStalenessBanner() writes to #cyc-stale-banner, with

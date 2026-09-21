@@ -266,6 +266,22 @@ a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
 .nx-rel-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
 .nx-rel{ padding:13px 14px; border-radius:12px; background:var(--nx-card); border:1px solid var(--nx-hair); }
 .nx-rel-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:8px; }
+/* F05-1 consequence panel — full-width single column (not the releases nx-cols
+   grid). Dark: 1px top highlight + inset ring. Light: white plane + ambient
+   elevation. Tokens only; no new colour family. */
+#nxConsequence{ margin-top:26px; }
+#nxConsequence .nx-rel-grid{ grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+#nxConsequence .nx-rel{ box-shadow: var(--card-shadow), inset 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent); }
+html[data-theme="light"] #nxConsequence .nx-rel{ background: var(--panel); box-shadow: var(--card-shadow), 0 8px 24px color-mix(in srgb, var(--text) 6%, transparent); }
+html[data-theme="light"] #nxConsequence .nx-rel:hover{ box-shadow: var(--popover-shadow); }
+/* Typed empty state — the shipping product on the current corpus. Dark:
+   command-center plane + inset ring, no glow. Light: research-workspace
+   white plane, hairline, one ambient shadow. Tokens only. */
+#nxConsequence .nx-empty{ text-align:left; padding:14px 16px; border-radius:var(--r-card,12px); background:transparent; box-shadow: var(--card-shadow), inset 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent); }
+#nxConsequence .nx-empty::before{ content:""; display:block; width:28px; height:2px; background:var(--line); margin:0 0 10px; }
+#nxConsequence .nx-empty-lead{ margin:0; font-size:13px; color:var(--muted); line-height:1.45; }
+#nxConsequence .nx-empty-next{ margin:6px 0 0; font-size:12px; color:var(--muted); line-height:1.45; }
+html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); border:1px solid var(--line); box-shadow: var(--card-shadow), 0 8px 24px color-mix(in srgb, var(--text) 6%, transparent); }
 .nx-rel-name{ font-size:13px; font-weight:700; }
 .nx-rel-read{ font-size:11px; font-weight:700; }
 .nx-rel-read.up{ color:var(--ink-up, var(--up)); } .nx-rel-read.down{ color:var(--ink-down, var(--down)); }
@@ -802,6 +818,78 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.66l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>@mastermindx001</a>
     </div>
   </div>
+</section>
+
+{# F05/MO-PAID-017 consequence glance — News Feed entry point, not Market-Feed.
+   Single-column wrapper (not nx-cols). Reuses existing .nx-rel cards.
+   Dark/light treatments live in the page stylesheet above. #}
+{% set CI = chronicle_impact if chronicle_impact is mapping else none %}
+<section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
+    <h2 class="nx-sec-hd">{{ t('Event consequences','事件影响') }}</h2>
+    {% if CI and CI.window_label_en %}
+    <p class="nx-sub">{{ t(CI.window_label_en, CI.window_label_zh or CI.window_label_en) }}</p>
+    {% endif %}
+    {% if CI and CI.rows and CI.stance_en %}
+    <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
+    {% endif %}
+    {% if CI and CI.rows %}
+    {#- NM-4: this panel names exposures only — it does not size. -#}
+    <p class="nx-sub">{{ t('Named exposures only — no sizing, not a forecast.', '仅列出相关标的——不做幅度推算，非预测。') }}</p>
+    {% endif %}
+    {% if CI and CI.rows %}
+    <div class="nx-rel-grid">
+      {% for row in CI.rows[:8] %}
+      <div class="nx-rel">
+        <div class="nx-rel-top">
+          {#- Glance titles are plain-word EN/ZH from the impact projector; raw
+              spine titles (T1_HIT / Prophet close / Q3 Stagflation) stay off
+              this surface (front-end clarity law). -#}
+          <span class="nx-rel-name">{{ t((row.title_en or 'Chronicle event')|e, (row.title_zh or '大事记事件')|e) }}</span>
+        </div>
+        {% if row.event_time_en or row.direct_tickers %}
+        <div class="nx-meta">
+          {% if row.event_time_en %}
+            <span class="num">{{ t(row.event_time_en, row.event_time_zh or row.event_time_en) }}</span>{% if row.direct_tickers %}<span class="sep">·</span>{% endif %}
+          {% endif %}
+          {% if row.direct_tickers %}
+            <span>{{ t('Named','点名') }}</span>
+            {% for tk in row.direct_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
+          {% endif %}
+        </div>
+        {% endif %}
+        {% if row.note_en %}
+        <div class="nx-meta">
+          <span>{{ t(row.note_en, row.note_zh or row.note_en) }}</span>
+        </div>
+        {% endif %}
+        {% if row.second_order_tickers %}
+        <div class="nx-meta">
+          <span>{{ t('Also watching','同时关注') }}</span>
+          {% for tk in row.second_order_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
+        </div>
+        {% elif row.second_order_truncated %}
+        <div class="nx-meta">
+          <span>{{ t('Also-watching list not available yet', '同时关注列表暂不可用') }}</span>
+          <span class="sep">·</span>
+          <span>{{ t('too many weak matches were dropped', '弱关联过多已全部剔除') }}
+            <span class="num">({{ row.second_order_dropped_count or 0 }})</span></span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% elif CI and CI.empty_kind == 'no_named_exposure' %}
+    <div class="nx-empty">
+      <p class="nx-empty-lead">{{ t(CI.reason_en, CI.reason_zh or CI.reason_en) }}</p>
+      <p class="nx-empty-next">{{ t('Cards appear when an event maps to a named exposure.', '当事件对应到明确标的时，卡片会在此显示。') }}</p>
+    </div>
+    {% else %}
+    <div class="nx-empty">
+      {{ t('Not available yet', '暂不可用') }}
+      {% if CI and CI.reason_en %} — {{ t(CI.reason_en, CI.reason_zh or CI.reason_en) }}{% else %}
+      — {{ t('No chronicle events in this window yet.', '此窗口尚无大事记事件。') }}{% endif %}
+    </div>
+    {% endif %}
 </section>
 
 {% if FEED %}

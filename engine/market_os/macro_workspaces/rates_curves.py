@@ -213,6 +213,13 @@ import datetime as _dt
 from hashlib import sha256
 from typing import Any, Mapping, Sequence
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "rates_curves.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.rates_curves"
@@ -257,6 +264,20 @@ _NOMINAL_NODES = (
     ("us20y_level", SERIES_US20Y, COL_US20Y, "20-year"),
     ("us30y_level", SERIES_US30Y, COL_US30Y, "30-year"),
 )
+_NOMINAL_SERIES_LABELS = {
+    COL_US3M: ("3-month Treasury yield", "3月期美债收益率"),
+    COL_US6M: ("6-month Treasury yield", "6月期美债收益率"),
+    COL_US1Y: ("1-year Treasury yield", "1年期美债收益率"),
+    COL_US2Y: ("2-year Treasury yield", "2年期美债收益率"),
+    COL_US3Y: ("3-year Treasury yield", "3年期美债收益率"),
+    COL_US5Y: ("5-year Treasury yield", "5年期美债收益率"),
+    COL_US7Y: ("7-year Treasury yield", "7年期美债收益率"),
+    COL_US10Y: ("10-year Treasury yield", "10年期美债收益率"),
+    COL_US20Y: ("20-year Treasury yield", "20年期美债收益率"),
+    COL_US30Y: ("30-year Treasury yield", "30年期美债收益率"),
+}
+# Enough history for prior-close (T-1) and prior-month (>=30 calendar days).
+_CURVE_HERO_HISTORY_DAYS = 45
 _REAL_NODES = (
     ("us5y_real_level", SERIES_US5Y_REAL, COL_US5Y_REAL, "5-year"),
     ("us10y_real_level", SERIES_US10Y_REAL, COL_US10Y_REAL, "10-year"),
@@ -692,8 +713,10 @@ def compose(curve_frames: Mapping[str, Any] | None, *, built_at: str,
             dates.append(latest[0])
     effective_date = _iso(max(dates)) if dates else None
 
-    headline = _headline(effective_date, prior_snapshot)
-    changes = _changes(metrics_by_id, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, effective_date)
+    headline = _headline(effective_date, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
+    changes = _changes(metrics_by_id, prior_snapshot, effective_date)
 
     snapshot = {
         "schema": {"contract": "mastermind.macro_workspace_snapshot.v1", "version": "1.0.0"},
@@ -736,11 +759,7 @@ def compose(curve_frames: Mapping[str, Any] | None, *, built_at: str,
         "headline": headline,
         "axes": {"items": []},
         "metrics": {"items": metrics},
-        "series": {
-            "items": [],
-            "status": "ABSENT",
-            "null_reason": "INSUFFICIENT_HISTORY",
-        },
+        "series": _cmt_series_block(rows, fresh),
         "drivers": _drivers(metrics_by_id),
         "changes": changes,
         "implications": {"items": _implications(metrics_by_id, contradictions,
@@ -759,7 +778,7 @@ def compose(curve_frames: Mapping[str, Any] | None, *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -895,6 +914,49 @@ def _required_availability(rows: dict, fresh: dict) -> tuple[list[dict], list[di
     required_rows = [c for c in built if c["required"]]
     optional_rows = [c for c in built if not c["required"]]
     return required_rows, optional_rows
+
+
+# --------------------------------------------------------------------------- #
+# nominal CMT series block (additive; A-F01-W4-1 curve-shape hero)
+# --------------------------------------------------------------------------- #
+def _cmt_series_block(rows: dict, fresh: dict) -> dict:
+    """Ten nominal CMT histories as closed seriesEntry objects.
+
+    Prior-close / prior-month arithmetic is computed in the view from these
+    points — no schema-version bump, no new top-level key.
+    """
+    items: list[dict] = []
+    present = 0
+    for _mid, sid, col, _label in _NOMINAL_NODES:
+        cleaned = rows[sid]
+        latest = _latest(cleaned)
+        if latest is None:
+            points: list[dict] = []
+        else:
+            cutoff = latest[0] - _dt.timedelta(days=_CURVE_HERO_HISTORY_DAYS)
+            points = [{"t": _iso(d), "v": _round(v, 4)} for d, v in cleaned if d >= cutoff]
+        if points:
+            present += 1
+        en, zh = _NOMINAL_SERIES_LABELS[col]
+        items.append({
+            "series_id": col,
+            "label": _bil(en, zh),
+            "unit": "percent",
+            "basis": "constant_maturity_investment_basis",
+            "points": points,
+            "source_ref": f"FRED:{sid}",
+            "freshness": fresh[sid],
+            "revision_behavior": (
+                "recomputed each owner cadence from prior-only owner reads; "
+                "a method-version change breaks comparability and is reported "
+                "as such, never as a numeric delta"
+            ),
+        })
+    if present == 0:
+        return {"items": [], "status": "ABSENT", "null_reason": "INSUFFICIENT_HISTORY"}
+    if present < len(_NOMINAL_NODES):
+        return {"items": items, "status": "PARTIAL", "null_reason": None}
+    return {"items": items, "status": "PRESENT", "null_reason": None}
 
 
 # --------------------------------------------------------------------------- #
@@ -1536,11 +1598,15 @@ def _sources(rows: dict, fresh: dict) -> list[dict]:
 # --------------------------------------------------------------------------- #
 # changes / corrections
 # --------------------------------------------------------------------------- #
-def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None) -> dict:
+def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None,
+             current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")

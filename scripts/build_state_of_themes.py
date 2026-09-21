@@ -296,28 +296,31 @@ def _asym_leg_entry(leg_id: str, band: str | None) -> tuple[str, str, str]:
 # Stage sort order for column sort (higher = more actionable)
 _STAGE_SORT = {
     "WATCH": 1,
-    "BROADENING": 3,
-    "RE-RATING": 4,
+    "CORRECTING": 2,
+    "RE-RATING": 3,
+    "BROADENING": 4,
     "PRECIPICE": 5,
     "ACCELERATING": 6,
-    "CORRECTING": 2,
+    "GLUT-RISK": 0,
 }
 
 _STAGE_EN = {
     "WATCH": "Watch",
+    "PRECIPICE": "Early thesis",
     "BROADENING": "Broadening",
     "RE-RATING": "Re-rating",
-    "PRECIPICE": "Precipice",
     "ACCELERATING": "Accelerating",
+    "GLUT-RISK": "Glut risk",
     "CORRECTING": "Correcting",
 }
 
 _STAGE_ZH = {
     "WATCH": "观察中",
+    "PRECIPICE": "早期论点",
     "BROADENING": "扩张中",
     "RE-RATING": "重估值",
-    "PRECIPICE": "临界点",
     "ACCELERATING": "加速中",
+    "GLUT-RISK": "过剩风险",
     "CORRECTING": "回调中",
 }
 
@@ -349,6 +352,18 @@ _LANE_ORDER = ["working", "early", "caution", "review", "quiet"]
 # no re-derivation) so a theme's lane on the Portfolio brief and on this page can
 # never disagree. Lane values are exactly the 5-lane vocabulary in _LANE_ORDER.
 THEME_LANES_SCHEMA = "theme_lanes.v1"
+THEME_INTELLIGENCE_CONSUMER_SCHEMA = "theme_intelligence.consumer.v1"
+
+_CONSUMER_AUTHORITY = {
+    "is_context_only": True,
+    "display_only": True,
+    "not_a_signal": True,
+    "may_rank": False,
+    "may_gate": False,
+    "may_size": False,
+    "may_escalate": False,
+    "may_trade": False,
+}
 
 _LANE_META: dict[str, dict[str, str]] = {
     "working": {
@@ -411,7 +426,7 @@ _LANE_META: dict[str, dict[str, str]] = {
 # Lifecycle order for the stage ribbon (early → hot → turning). Independent of
 # _STAGE_SORT (which ranks actionability); this ribbon reads as a life-story.
 _LIFECYCLE_ORDER = [
-    "WATCH", "BROADENING", "RE-RATING", "ACCELERATING", "PRECIPICE", "CORRECTING",
+    "WATCH", "PRECIPICE", "BROADENING", "RE-RATING", "ACCELERATING", "GLUT-RISK", "CORRECTING",
 ]
 
 
@@ -429,10 +444,12 @@ def _classify_lane(
         return "review"
     crw = legs.get("crowding_hazard") if isinstance(legs, dict) else None
     crw_band = crw.get("band") if isinstance(crw, dict) else None
-    if stage_key in ("CORRECTING", "PRECIPICE") or crw_band == "high" \
+    if stage_key in ("CORRECTING", "RE-RATING", "GLUT-RISK") or crw_band == "high" \
             or div_quadrant == "crowded-and-fading":
         return "caution"
-    if stage_key in ("BROADENING", "RE-RATING", "ACCELERATING"):
+    if stage_key == "PRECIPICE":
+        return "early"
+    if stage_key in ("BROADENING", "ACCELERATING"):
         return "working"
     if div_quadrant == "hidden-opportunity":
         return "early"
@@ -729,6 +746,10 @@ def compose(root: Path) -> dict[str, Any]:
     options_witness = _load_json(bkd / "options_witness.json")
     clinical_pipeline = _load_json(bkd / "clinical_pipeline.json")
     trade_flows = _load_json(bkd / "trade_flows.json")
+    foresight_cascade = _load_json(bkd / "foresight_cascade.json")
+    _foresight_observation_asof = (foresight_cascade or {}).get("asof")
+    if not isinstance(_foresight_observation_asof, str) or not _foresight_observation_asof.strip():
+        _foresight_observation_asof = None
 
     # ── Build options-witness index by theme_id ──
     ow_by_id: dict[str, dict] = {}
@@ -876,6 +897,7 @@ def compose(root: Path) -> dict[str, Any]:
         any_fired = fals_summary.get("any_fired", False)
         n_fired = fals_summary.get("n_fired", 0)
         n_armed = fals_summary.get("n_armed", 0)
+        n_data_missing = fals_summary.get("n_data_missing", 0)
         n_total = n_fired + n_armed + fals_summary.get("n_qualitative", 0) + fals_summary.get("n_data_missing", 0)
         if n_total > 0:
             falsifier_label = f"{n_fired}/{n_total} fired"
@@ -1235,8 +1257,14 @@ def compose(root: Path) -> dict[str, Any]:
             "stage_label_en": stage_label_en,
             "stage_label_zh": stage_label_zh,
             "stage_sort": stage_sort,
+            "foresight_observation_asof": (
+                _foresight_observation_asof
+                if foresight.get("source") == "site/basketdata/foresight_cascade.json"
+                else None
+            ),
             "legs_ordered": legs_ordered,
             "falsifier_any_fired": any_fired,
+            "falsifier_n_data_missing": n_data_missing,
             "falsifier_label": falsifier_label,
             "falsifier_label_en": falsifier_label_en,
             "falsifier_label_zh": falsifier_label_zh,
@@ -1253,6 +1281,9 @@ def compose(root: Path) -> dict[str, Any]:
             "mechanism_zh": mechanism_zh,
             "pathway_nodes": pathway_nodes,
             "evidence_refs": evidence_refs,
+            # Reserved additive joins populated only by the incumbent C/D owners.
+            "leadership_context": st_th.get("leadership_context"),
+            "entry_context": st_th.get("entry_context"),
             # New drawer sections
             "asym_legs_section": asym_legs_section,
             "ow_section": ow_section,
@@ -1335,6 +1366,11 @@ def compose(root: Path) -> dict[str, Any]:
             tail_zh = f"；<b>{n_caut}</b> 个显得拥挤——不要追高"
         hero_zh = f"{n_themes} 个市场主题中，{lead_zh}{tail_zh}。"
 
+    # NOT overwritten with the page's `as_of`: research_priority.asof is the newest
+    # evidence date the loader actually read (seat ruling R1). The page snapshot clock
+    # and the evidence horizon are different facts and the section states the second.
+    rp_payload = load_research_priority(root)
+
     return {
         "as_of": as_of,
         "n_themes": n_themes,
@@ -1360,6 +1396,7 @@ def compose(root: Path) -> dict[str, Any]:
         # Trade-flows page-level note (shown once when all-null accrual state)
         "trade_flows_page_note_en": trade_flows_page_note_en,
         "trade_flows_page_note_zh": trade_flows_page_note_zh,
+        "research_priority": rp_payload,
     }
 
 
@@ -1425,6 +1462,418 @@ def load_primary_basket_ids(root: Path) -> dict[str, str]:
         return {}
 
 
+class StoreUnreadable(RuntimeError):
+    """The theme-graph store could not be OPENED — §2.4 'unavailable', not 'empty'.
+
+    ``store.read_nodes`` / ``store.read_edges`` return an empty frame for a missing
+    file AND for a corrupt one (``engine/theme_graph/store.py::_read`` swallows both),
+    so a caller that reads only their return value cannot tell an unreadable record
+    from a record that is genuinely empty. The distinction is the whole of §2.4, so
+    this loader checks the parquet files itself and raises this instead.
+    """
+
+
+def _assert_theme_store_readable(store: Any) -> None:
+    """Raise StoreUnreadable when a required store file is missing or unparseable.
+
+    The probe demands nodes and edges only. ``node_lifecycle.parquet`` stays in
+    the loop (a corrupt sidecar is still unreadable) but is exempt from the
+    missing-file raise: the store treats that sidecar as optional.
+
+    Column-projected so the probe reads the parquet footer plus one column, not the
+    whole table; a truncated or non-parquet file raises here exactly as it would in
+    ``_read``, where the exception is swallowed.
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    for path, column in (
+        (store.nodes_path(), "node_id"),
+        (store.edges_path(), "edge_id"),
+        (store.node_lifecycle_path(), "node_id"),
+    ):
+        if not path.exists():
+            if path.name == "node_lifecycle.parquet":
+                continue
+            raise StoreUnreadable(f"{path.name} does not exist")
+        try:
+            pd.read_parquet(path, columns=[column])
+        except Exception as exc:  # noqa: BLE001
+            raise StoreUnreadable(f"{path.name} is unreadable ({exc})") from exc
+
+
+def _display_name(value: object) -> str:
+    """Normalise a theme name for the reading-order list.
+
+    None, float NaN, non-strings and whitespace-only values are blank. A node
+    blank in both languages is dropped by the loader, not rendered as 'nan'
+    or an empty span.
+    """
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, float) and value != value:
+        return ""
+    return ""
+
+
+def load_research_priority(root: Path) -> dict[str, Any]:
+    """Read the theme-graph current-belief view and return the §2.4 payload.
+
+    Tolerant in exactly the house shape: any failure -> state 'unavailable',
+    a logged warning, and a page that renders. Never raises.
+    Imports are FUNCTION SCOPE on purpose (same reason as `from lib.pages import
+    write_page` at main(): engine.theme_graph.store pulls in lib.config -> yaml
+    and pandas, and a module-scope import would red the lean pytest batch that
+    runs tests/test_state_of_themes.py without them).
+
+    `asof` is measured from the evidence rows this call actually read (seat ruling
+    R1), never from the site snapshot clock: the builder introduces no second clock
+    and reports no date the list beneath it cannot show.
+    """
+    rp = None
+    try:
+        from engine import research_priority_ordering as rp  # noqa: PLC0415
+        from engine.theme_graph import store  # noqa: PLC0415
+
+        # §2.4: an unopened store is 'unavailable'; only a store we DID open and
+        # found bare is 'empty'. read_nodes/read_edges cannot tell them apart.
+        _assert_theme_store_readable(store)
+
+        nodes = store.read_nodes(current=True)
+        edges = store.read_edges(latest_belief=True)
+
+        theme_nodes: dict[str, tuple[str, str]] = {}
+        dropped_unnamed = 0
+        if nodes is not None and len(nodes):
+            node_view = nodes[["node_id", "kind", "name_en", "name_zh", "status"]]
+            for rec in node_view.itertuples(index=False):
+                if str(rec.kind) != "theme":
+                    continue
+                # read_nodes(current=True) overlays lifecycle onto `status` but removes
+                # no row; store.py says an active-only caller must filter itself.
+                status = "" if rec.status is None else str(rec.status).strip().lower()
+                if status in store.RETIRED_LIKE_STATUSES:
+                    continue
+                nid = "" if rec.node_id is None else str(rec.node_id)
+                if not nid:
+                    continue
+                name_en = _display_name(rec.name_en)
+                name_zh = _display_name(rec.name_zh)
+                if not name_en and not name_zh:
+                    dropped_unnamed += 1
+                    continue
+                theme_nodes[nid] = (name_en, name_zh)
+
+        dates_by_node: dict[str, list[str]] = {nid: [] for nid in theme_nodes}
+        touched: set[str] = set()
+        if edges is not None and len(edges):
+            edge_view = edges[["src", "dst", "evidence_time"]]
+            for rec in edge_view.itertuples(index=False):
+                src = "" if rec.src is None else str(rec.src)
+                dst = "" if rec.dst is None else str(rec.dst)
+                raw = "" if rec.evidence_time is None else str(rec.evidence_time)
+                # dict.fromkeys de-duplicates a self-loop (src == dst) while keeping
+                # order: §2.1 clause 2 counts EDGE ROWS, one per row.
+                for nid in dict.fromkeys((src, dst)):
+                    if nid in theme_nodes:
+                        touched.add(nid)
+                        dates_by_node[nid].append(raw)
+
+        themes = [
+            rp.ThemeEvidence(
+                node_id=nid,
+                name_en=theme_nodes[nid][0],
+                name_zh=theme_nodes[nid][1],
+                recorded_dates=tuple(dates_by_node[nid]),
+            )
+            for nid in touched
+        ]
+        ordered = rp.order_items(themes)
+        state_name = "empty" if not ordered else "ok"
+        log.info(
+            "research_priority: dropped %d theme node(s) with no name in either language",
+            dropped_unnamed,
+        )
+        # asof=None: to_payload derives the horizon from the items; compose
+        # must not compute a second clock here.
+        return rp.to_payload(
+            ordered, asof=None, state=state_name
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("research_priority load failed (%s); page will show unavailable", exc)
+        return _research_priority_unavailable(rp)
+
+
+def _research_priority_unavailable(rp: Any) -> dict[str, Any]:
+    """The §2.4 'unavailable' payload, built even when the module import is what failed.
+
+    The hand-built branch below MIRRORS `to_payload`'s key set exactly, `n_dated`
+    and `n_undated` included (seat ruling R7a): the artifact
+    `site/basketdata/research_priority.json` must carry one schema, not two
+    depending on which failure produced it.
+    `test_import_failure_fallback_matches_the_to_payload_key_set` pins them together.
+    """
+    if rp is not None:
+        return rp.to_payload((), asof=None, state="unavailable")
+    return {
+        "schema": "mastermind.research_priority_ordering.v1",
+        "ordering_rule_id": "evidence_recency_then_daily_count_then_name",
+        "authority_ceiling": "research_priority_only",
+        "ledger_row": "MO-DELTA-006",
+        "asof": None,
+        "state": "unavailable",
+        "max_items": 12,
+        "n_total": 0,
+        "n_dated": 0,
+        "n_undated": 0,
+        "items": [],
+    }
+
+
+def write_research_priority(ctx: dict[str, Any], root: Path) -> Path | None:
+    """Serialize ctx['research_priority'] next to theme_lanes.json. Never raises."""
+    try:
+        payload = ctx.get("research_priority") or {}
+        out = root / "site" / "basketdata" / "research_priority.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+            encoding="utf-8",
+        )
+        log.info("wrote %s", out)
+        return out
+    except Exception as exc:  # noqa: BLE001
+        log.warning("research_priority side-write failed (%s); skipped", exc)
+        return None
+
+
+def _consumer_dimension(state: str, reason_code: str | None = None, **values: Any) -> dict:
+    out: dict[str, Any] = {"state": state}
+    if reason_code:
+        out["reason_code"] = reason_code
+    out.update(values)
+    return out
+
+
+_OWNER_DIMENSION_KEYS = {
+    "state", "reason_code", "label", "value", "band", "reason_codes",
+    "source_records", "clocks", "watermarks", "bar_status", "correction_lineage",
+}
+_EVIDENCE_RECORD_KEYS = {
+    "ref", "artifact", "source_family", "evidence_family", "source_record_id",
+    "observation_id", "parent_identity", "observation_session", "input_hash",
+    "source_input_hash", "observed_at", "available_at",
+}
+_CORRECTION_LINEAGE_KEYS = {"first_observed", "first_displayed", "supersedes"}
+
+
+def _sanitize_source_records(raw: Any) -> list[dict[str, Any]]:
+    """Keep provenance identity only; source records cannot smuggle authority."""
+    if not isinstance(raw, list):
+        return []
+    clean_records: list[dict[str, Any]] = []
+    for record in raw:
+        if isinstance(record, str) and record.strip():
+            clean_records.append({"ref": record.strip()})
+            continue
+        if not isinstance(record, dict):
+            continue
+        clean = {
+            key: value for key, value in record.items()
+            if key in _EVIDENCE_RECORD_KEYS
+        }
+        if clean:
+            clean_records.append(clean)
+    return clean_records
+
+
+def _sanitize_correction_lineage(raw: Any) -> dict[str, Any] | None:
+    """Preserve owner clocks without inventing or rewriting first-seen history."""
+    if not isinstance(raw, dict):
+        return None
+    clean = {
+        key: value for key, value in raw.items()
+        if key in _CORRECTION_LINEAGE_KEYS
+    }
+    return clean or None
+
+
+def _owner_dimension(raw: Any) -> dict[str, Any]:
+    """Whitelist descriptive owner fields; silently strip authority requests."""
+    if not isinstance(raw, dict):
+        return _consumer_dimension("UNAVAILABLE", "OWNER_FIELD_NOT_JOINED")
+    clean: dict[str, Any] = {}
+    for key, value in raw.items():
+        if key not in _OWNER_DIMENSION_KEYS:
+            continue
+        if key == "source_records":
+            clean[key] = _sanitize_source_records(value)
+        elif key == "correction_lineage":
+            lineage = _sanitize_correction_lineage(value)
+            if lineage is not None:
+                clean[key] = lineage
+        else:
+            clean[key] = value
+    clean.setdefault("state", "UNCONFIRMED")
+    return clean
+
+
+def _consumer_evidence_identity(
+    *dimensions: dict[str, Any],
+) -> tuple[dict[str, Any], list[str]]:
+    """Preserve shared owner observation identity; never infer independence.
+
+    A repeated projection of one source observation must retain one identical
+    family/session/input identity. Records without the minimum owner identity
+    stay unavailable and cannot contribute an independent confirmation family.
+    """
+    unique: dict[str, dict[str, Any]] = {}
+    families: set[str] = set()
+    for dimension in dimensions:
+        if not isinstance(dimension, dict):
+            continue
+        for record in dimension.get("source_records", []) or []:
+            if not isinstance(record, dict):
+                continue
+            family = record.get("source_family") or record.get("evidence_family")
+            parent = record.get("parent_identity")
+            session = record.get("observation_session")
+            input_hash = record.get("input_hash") or record.get("source_input_hash")
+            if not all((family, parent, session, input_hash)):
+                continue
+            identity = {
+                "source_family": family,
+                "parent_identity": parent,
+                "observation_session": session,
+                "input_hash": input_hash,
+            }
+            for key in ("observation_id", "source_record_id"):
+                if record.get(key) is not None:
+                    identity[key] = record.get(key)
+            identity_key = json.dumps(
+                identity, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            )
+            unique[identity_key] = identity
+            families.add(str(family))
+    records = [unique[key] for key in sorted(unique)]
+    if not records:
+        return {
+            "available": False,
+            "reason_code": "OWNER_IDENTITY_NOT_JOINED",
+            "records": [],
+        }, []
+    return {
+        "available": True,
+        "reason_code": None,
+        "records": records,
+    }, sorted(families)
+
+
+def _consumer_contract_row(
+    theme: dict[str, Any],
+    *,
+    basket_id: str | None,
+    snapshot_asof: str | None,
+    page_stale_legs: int,
+) -> dict[str, Any]:
+    """Build the additive B–E join contract without originating new signals."""
+    crowding_band = None
+    for leg in theme.get("asym_legs_section", []) or []:
+        if isinstance(leg, dict) and leg.get("id") == "crowding_hazard":
+            crowding_band = leg.get("band")
+            break
+
+    any_fired = bool(theme.get("falsifier_any_fired"))
+    n_data_missing = int(theme.get("falsifier_n_data_missing") or 0)
+    if any_fired:
+        thesis_dimension = _consumer_dimension(
+            "INVALIDATED", "MACHINE_FALSIFIER_FIRED",
+            stage=theme.get("stage_key"),
+        )
+    elif n_data_missing:
+        thesis_dimension = _consumer_dimension(
+            "UNCONFIRMED", "FALSIFIER_INPUT_MISSING",
+            stage=theme.get("stage_key"),
+        )
+    else:
+        thesis_dimension = _consumer_dimension(
+            "NOT_DETECTED", "NO_MACHINE_INVALIDATION_DETECTED",
+            stage=theme.get("stage_key"),
+        )
+
+    if crowding_band in (None, "", "null"):
+        crowding_dimension = _consumer_dimension(
+            "UNKNOWN", "CROWDING_READ_ABSENT", band=None,
+        )
+    elif crowding_band == "high":
+        crowding_dimension = _consumer_dimension(
+            "DETECTED", "CROWDING_HAZARD_HIGH", band=crowding_band,
+        )
+    else:
+        crowding_dimension = _consumer_dimension(
+            "NOT_DETECTED", "HIGH_CROWDING_NOT_DETECTED", band=crowding_band,
+        )
+
+    leadership_dimension = _owner_dimension(theme.get("leadership_context"))
+    entry_dimension = _owner_dimension(theme.get("entry_context"))
+    evidence_identity, independent_evidence_families = _consumer_evidence_identity(
+        leadership_dimension, entry_dimension,
+    )
+
+    return {
+        "schema": THEME_INTELLIGENCE_CONSUMER_SCHEMA,
+        "identity": {
+            "theme_id": theme.get("theme_id"),
+            "relationship_kind": "primary_basket" if basket_id else None,
+            "basket_id": basket_id,
+            "market": None,
+            "horizon": None,
+        },
+        "dimensions": {
+            "leadership": leadership_dimension,
+            "thesis": thesis_dimension,
+            "crowding": crowding_dimension,
+            "entry": entry_dimension,
+            "health": _consumer_dimension(
+                "STALE" if page_stale_legs else "UNCONFIRMED",
+                "PAGE_HAS_STALE_LEGS" if page_stale_legs
+                else "PER_THEME_HEALTH_NOT_JOINED",
+                page_stale_legs=page_stale_legs,
+            ),
+        },
+        "specialist_context": {
+            "lane": theme.get("lane"),
+            "stage": theme.get("stage_key"),
+            "divergence": theme.get("div_label_en"),
+            "reason_codes": [
+                f"LANE_{str(theme.get('lane') or 'unknown').upper()}",
+                f"STAGE_{str(theme.get('stage_key') or 'unknown').upper()}",
+            ],
+        },
+        "source_records": list(theme.get("evidence_refs", []) or []),
+        "evidence_identity": evidence_identity,
+        "independent_evidence_families": independent_evidence_families,
+        "clocks": {
+            "observation": theme.get("foresight_observation_asof"),
+            "availability": None,
+            "computation": snapshot_asof,
+            "publication": None,
+        },
+        "watermarks": {
+            "snapshot": snapshot_asof,
+            "inputs": {
+                "foresight": theme.get("foresight_observation_asof"),
+            },
+        },
+        "bar_status": {"closed": None, "provisional": None},
+        "correction_lineage": {
+            "supersedes": None,
+            "first_observed": None,
+            "first_displayed": None,
+        },
+        "authority": dict(_CONSUMER_AUTHORITY),
+    }
+
+
 def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
     """Write the theme_lanes.v1 side-artifact from an already-composed ctx.
 
@@ -1454,6 +1903,7 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
         lanes: dict[str, str] = {}
         basket_lanes: dict[str, str] = {}
         theme_baskets: dict[str, str | None] = {}
+        theme_context: dict[str, dict[str, Any]] = {}
         for th in ctx.get("themes", []) or []:
             tid = th.get("theme_id")
             lane = th.get("lane")
@@ -1462,6 +1912,12 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
             tid = str(tid)
             bid = primary.get(tid)
             theme_baskets[tid] = bid  # None → honest "no basket counterpart"
+            theme_context[tid] = _consumer_contract_row(
+                th,
+                basket_id=bid,
+                snapshot_asof=ctx.get("as_of"),
+                page_stale_legs=int(ctx.get("n_stale_legs") or 0),
+            )
             if lane in _LANE_ORDER:
                 lanes[tid] = lane
                 if bid:
@@ -1472,6 +1928,8 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
             "lanes": lanes,
             "basket_lanes": basket_lanes,
             "theme_baskets": theme_baskets,
+            "consumer_contract_schema": THEME_INTELLIGENCE_CONSUMER_SCHEMA,
+            "theme_context": theme_context,
         }
         out = root / "site" / "basketdata" / "theme_lanes.json"
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -1519,6 +1977,7 @@ def main(argv: list[str] | None = None) -> int:
         write_page(out_path, html, encoding="utf-8")
         log.info("wrote %s", out_path)
         write_theme_lanes(ctx, root)  # never raises; page already written
+        write_research_priority(ctx, root)  # never raises; page already written
         return 0
     except Exception as exc:  # noqa: BLE001
         log.error("render failed: %s", exc, exc_info=True)

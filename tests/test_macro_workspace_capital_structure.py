@@ -233,6 +233,15 @@ def test_baseline_owner_coverage_state_and_horizon_state_surface_in_reasons() ->
 # --------------------------------------------------------------------------- #
 # COMPUTATION_REFUSED headline / empty axes / empty drivers
 # --------------------------------------------------------------------------- #
+def test_effective_date_is_input_asof_date_not_a_build_timestamp() -> None:
+    snap = _compose()
+    stamp = snap["headline"]["effective_date"]
+    assert stamp == "2026-08-01"
+    assert "T" not in stamp
+    assert len(stamp) == 10
+    assert stamp == capital_structure._publication_as_of(_base_projection())
+
+
 def test_headline_is_computation_refused_by_design() -> None:
     snap = _compose()
     h = snap["headline"]
@@ -537,7 +546,7 @@ def _prior(method=capital_structure.METHOD_VERSION, issuer_count=2300,
            gen="capital_structure-US-deadbeefdeadbeef") -> dict:
     prior = _compose()
     prior["headline"]["method_version"] = method
-    prior["headline"]["effective_date"] = "2026-08-28T00:00:00Z"
+    prior["headline"]["effective_date"] = "2026-07-01"
     prior["generation"]["generation_id"] = gen
     for m in prior["metrics"]["items"]:
         if m["metric_id"] == "cs_issuer_count":
@@ -593,7 +602,10 @@ def test_corrections_none_when_reference_period_advances() -> None:
     p = _base_projection()
     prior_snap = contract.finalize(capital_structure.compose(p, built_at=BUILT_AT))
     p2 = copy.deepcopy(p)
-    p2["as_of"] = "2026-09-05T06:14:34.409360Z"  # new observation, not a revision
+    for rec in p2["records"]:
+        latest = rec.get("latest_observed_event")
+        if isinstance(latest, dict):
+            latest["filing_date"] = "2026-09-01"
     p2["coverage"]["issuer_count"] = 9999
     snap2 = capital_structure.compose(p2, built_at=BUILT_AT, prior_snapshot=prior_snap)
     assert snap2["corrections"]["correction_state"] == "none"

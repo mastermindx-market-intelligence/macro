@@ -308,6 +308,37 @@ def test_stocks_mode_renders_without_exception():
     assert len(html) > 50_000
 
 
+# --------------------------------------------------------------------------- #
+# UD-B1 hero include: macro mode mounts the hero (mode == 'macro'); the
+# hero MUST NOT appear in stocks mode. Pre-fix the include was gated
+# `mode != 'stocks'`, which technically worked but did not express the
+# intent — mode == 'macro' is the documented contract.
+# --------------------------------------------------------------------------- #
+
+def test_macro_mode_includes_unified_dashboard_hero():
+    """mode == 'macro' MUST include the UD-B1 hero partial above legacy isles."""
+    html = _render("macro")
+    assert 'id="ud-hero"' in html, "macro mode must include #ud-hero"
+    # Hero precedes the legacy #regime-radar panel (per the include site).
+    hero_idx = html.find('id="ud-hero"')
+    radar_idx = html.find('id="regime-radar"')
+    assert hero_idx != -1 and radar_idx != -1, (
+        f"hero (#ud-hero) and regime-radar (#regime-radar) both must render in macro mode"
+    )
+    assert hero_idx < radar_idx, (
+        "UD-B1 hero must appear BEFORE the legacy #regime-radar panel"
+    )
+
+
+def test_stocks_mode_excludes_unified_dashboard_hero():
+    """mode == 'stocks' MUST NOT include the UD-B1 hero (it is macro-only)."""
+    html = _render("stocks")
+    assert 'id="ud-hero"' not in html, (
+        "stocks mode must NOT include the UD-B1 hero — it is macro-only per "
+        "research/UNIFIED_DASHBOARD_DISPOSITION.md and the include condition"
+    )
+
+
 def test_us_track_record_filter_bar_stays_in_document_flow():
     """The dense US ledger filters must scroll away instead of covering rows."""
     vm = _base_vm()
@@ -348,15 +379,16 @@ def test_stocks_mode_renders_standout_card_body():
 
 def test_stocks_mode_keeps_existing_action_board_and_prophet_scorecards():
     """The declutter pass must preserve the two established decision surfaces.
-    They stay in the default document flow; only lower-priority research boards
-    are hidden from the landing scan."""
+    S2's surviving L1 panels stay in flow; only leftover research boards
+    that are not in the frozen 7-panel list stay hidden."""
     html = _render("stocks")
     assert 'id="action-board"' in html
     assert 'class="panel span12 notable" id="us-standouts"' in html
     assert 'id="stocks-command"' not in html
     assert 'id="all-prophet-signals"' not in html
-    assert "body.page-stocks #equity-scoreboard," in html
-    assert "body.page-stocks #holdings{display:none!important}" in html
+    assert "body.page-stocks #cross-asset-macro{display:none!important}" in html
+    assert "body.page-stocks #holdings{display:none!important}" not in html
+    assert "body.page-stocks #equity-scoreboard," not in html
 
 
 def test_stocks_mode_dossier_block_intentionally_absent():

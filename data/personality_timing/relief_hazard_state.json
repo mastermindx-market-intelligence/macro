@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-05",
+  "as_of": "2026-09-19",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,20 +38,20 @@
   },
   "family": "pss_rh1_relief_hazard_prospective",
   "gate_open": false,
-  "generated_utc": "2026-09-05T17:47:02.120130+00:00",
+  "generated_utc": "2026-09-19T19:50:27.507661+00:00",
   "ledger": {
     "advanced_today": 0,
     "appended_today": 0,
     "earliest_action": "2026-07-29",
-    "events": 39,
-    "latest_action": "2026-09-04",
-    "level_control": 24,
+    "events": 70,
+    "latest_action": "2026-09-18",
+    "level_control": 41,
     "matured": 0,
-    "primary_events": 38,
+    "primary_events": 56,
     "rejected_pre_cutoff_today": 0,
-    "relief_hazard": 14,
-    "ungraded": 39,
-    "weak_level_diagnostic": 1
+    "relief_hazard": 15,
+    "ungraded": 70,
+    "weak_level_diagnostic": 14
   },
   "manifest_sha256": "0b07345178592032570aeb57c1c54c1cb24b6463a5836431bc7daf5d44b0cc6b",
   "membership_sha256": "f00c9d70e0c554213d6aa9a82fecc1492bcedc49c04ce36d4a14647f85713baf",

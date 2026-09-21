@@ -1,0 +1,79 @@
+{
+  "kind": "adopted_commit_live_input_proof",
+  "base_commit": "c3f67ba9b6200ebd54bf89b3aa4104f0dcd6fb0e",
+  "source_sha256": {
+    "engine/macro_news.py": "4e0b960d0f3e88be5a9e2b963f5cbaa352b1474d8251d072e7406c9d9912b78b",
+    "engine/policy_watch_current.py": "c8b954611cfbf94f43ad4cdbbe4660b601929256245a6842243403a9cbf7a96e",
+    "templates/_policy_watch_current.html.j2": "7d1b9874105875dc6ea77a57c3a9aa49ee43d67290f3475ca93f0ad92fc14e23",
+    "templates/policy_watch.html.j2": "2efb5ae9dbd6c2f3a24c09b7d2a9b69da3a7a96e8a1f2736aa57a4593a462338",
+    "tests/test_policy_watch_ui.py": "db95057cb04c513e602ecf749c71d4db9aeaf811a32bd8dd2a70008e9911e239",
+    "scripts/build_policy_watch.py": "e8822ad3744cfededa823f11cb8c14788a43dff5e691415910b142db9abadb3d",
+    "tests/test_macro_news.py": "54ba66c5e7e7879df9e9e477ef0badb56bf2db81cab4dba62d35e497c568205e"
+  },
+  "production_write": false,
+  "steps": [
+    {
+      "copied_input": "config.yml",
+      "sha256": "b4a5290aaf08f5422d79ab6409f1405bb2e7b3e725a9724681db19177d7fef9d"
+    },
+    {
+      "copied_input": "config/policy_lifecycle_seed.json",
+      "sha256": "ff5fce730119a852193a47eb3be673afd95efee8997996ecc2326cdaa24e55b7"
+    },
+    {
+      "copied_input": "data/policy/intel.json",
+      "sha256": "ce25f29f3e05ae5ec674e3612a0817bb31f174d8b5244f2c32b07281367ce7cb"
+    },
+    {
+      "copied_input": "site/policy_intent.json",
+      "sha256": "0dd5cb022f6bb8a5976486d6c4b1251d9674617ea55ae40ad425219ea4706030"
+    },
+    {
+      "official_feed_fetch": {
+        "article_count": 23,
+        "degraded_reason": null,
+        "urls": [
+          "https://www.federalreserve.gov/feeds/press_monetary.xml",
+          "https://www.federalreserve.gov/feeds/press_all.xml",
+          "https://www.federalreserve.gov/feeds/speeches.xml",
+          "https://www.federalreserve.gov/feeds/h15.xml",
+          "https://www.federalreserve.gov/feeds/h8.xml",
+          "https://www.federalreserve.gov/feeds/g19.xml"
+        ]
+      }
+    },
+    {
+      "statement": "2026-06-17",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "sha": "9b6a0c34da0a624264bc43e90e449028eef3c466041cb203d9175fbf41090781",
+      "fetched_at": "2026-09-10T13:45:37Z",
+      "paragraph_count": 4,
+      "isolated_ledger_recorded": true
+    },
+    {
+      "statement": "2026-07-29",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "sha": "9c83532679a711fbcdcf06781eb0d79522e6a33302433b209fa5cb83f7f1608a",
+      "fetched_at": "2026-09-10T13:45:38Z",
+      "paragraph_count": 5,
+      "isolated_ledger_recorded": true
+    }
+  ],
+  "current": {
+    "headlines_state": "ok",
+    "headline_count": 4,
+    "statement_state": "recorded",
+    "comparison_state": "available",
+    "next_meeting": {
+      "date": "2026-09-16",
+      "days_to": 6,
+      "event_en": "FOMC decision",
+      "event_zh": "FOMC决议"
+    }
+  },
+  "builder_exit": 0,
+  "externalized_pages": 1,
+  "html_sha256": "fb4ba8aeed3d33c0fbfa581db50866e17f2c6daf60e67fd16d4aab2f70ee1740",
+  "original_source_unchanged": true,
+  "completed_at": "2026-09-10T13:45:40.565216+00:00"
+}

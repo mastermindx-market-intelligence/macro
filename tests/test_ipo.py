@@ -329,6 +329,7 @@ def test_lockup_summary_counts():
     s = il.summary(il.lockup_rows(_lockcal(), None))
     assert s["approaching"] >= 1 and s["just_expired"] >= 1
     assert s["next_ticker"] in ("APPR", "FRESH")   # soonest upcoming expiry
+    assert s["next_company"] in ("Approaching Co", "Fresh Co")
 
 
 def test_ipo_lockup_scored_flag_false():
@@ -711,3 +712,480 @@ def test_ipo_zero_survives_as_real_value_not_null(monkeypatch, tmp_path):
         r'<span class="k">[^<]*<span class="l-en">Range</span>.*?<span class="v">(.*?)</span>',
         card_html, re.DOTALL)
     assert rng and rng.group(1) == "$0–5"
+
+
+# --------------------------------------------------------------------------- #
+# BLOCKER 2 (B-F09-2 review repair round 2) — the "what would change this
+# read" copy must never print the inputs-are-MISSING sentence
+# (bi.CW_CHANGE_NONE) for a fully evaluable open/neutral/shut segment whose
+# `change` just happens to be None (no single-input flip moves the segment
+# majority). Each evaluable state gets its own plain, non-"missing data"
+# sentence (bi.CW_CHANGE_STABLE); only a genuinely not_evaluable segment gets
+# the missing-inputs copy.
+# --------------------------------------------------------------------------- #
+def _seg(state, *, change=None, inputs=None):
+    return {
+        "key": "hy", "state": state, "n_inputs": 3, "n_expected": 3,
+        "low_confidence": False,
+        "inputs": inputs if inputs is not None else [
+            {"key": "spread_range", "value": 10.0, "unit": "pct_rank", "state": "open", "as_of": "2026-09-01"},
+            {"key": "spread_drift", "value": -20.0, "unit": "bp_21", "state": "open", "as_of": "2026-09-01"},
+            {"key": "rates_vol", "value": 20.0, "unit": "pct_rank", "state": "open", "as_of": "2026-09-01"},
+        ],
+        "rail": {"pos_pct": 10.0, "easy_pct": 33.0},
+        "change": change,
+    }
+
+
+def test_credit_window_vm_not_evaluable_with_no_change_gets_missing_copy():
+    raw = {"segments": [_seg("not_evaluable", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_open_with_no_change_gets_open_stable_copy_not_missing():
+    # e.g. three inputs all deep in "open" — no single flip reaches the
+    # two-of-three majority needed to move the segment, but the read is
+    # fully evaluable: it must NOT print the "inputs missing" sentence.
+    raw = {"segments": [_seg("open", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["open"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_neutral_with_no_change_gets_neutral_stable_copy_not_missing():
+    raw = {"segments": [_seg("neutral", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["neutral"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_shut_with_no_change_gets_shut_stable_copy_not_missing():
+    raw = {"segments": [_seg("shut", change=None)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["shut"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+def test_credit_window_vm_real_change_candidate_uses_cw_change_mapping():
+    change = {"input": "spread_range", "to_state": "shut", "threshold": 66.0,
+              "current": 60.0, "direction": "up", "segment_to": "shut"}
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("spread_range", "shut")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_STABLE["neutral"]
+
+
+# --------------------------------------------------------------------------- #
+# BLOCKER + MAJOR (review repair round 3) — an open-side `change` candidate
+# (engine.credit_window._next_threshold now emits one for a neutral input,
+# see tests/test_credit_window.py's live-HY-shape test) must render a real,
+# plain-word sentence through CW_CHANGE, never fall back to CW_CHANGE_NONE
+# (the "inputs are missing" copy) — that fallback re-entering for an
+# evaluable read is exactly the MAJOR the round-3 review found the instant
+# the BLOCKER's engine fix landed without a matching lexicon entry.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_open_side_change_renders_real_sentence_not_missing_copy():
+    change = {"input": "spread_drift", "to_state": "open", "threshold": -15.0,
+              "current": 10.0, "direction": "down", "segment_to": "open"}
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("spread_drift", "open")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    assert seg["change_en"] and seg["change_zh"]          # real sentence, both languages
+    assert "flip this to open" in seg["change_en"].lower()
+
+
+def test_cw_change_lexicon_covers_every_pair_next_threshold_can_emit():
+    # Exhaustive coverage (round 3): CW_CHANGE must have an entry for every
+    # (input, to_state) pair engine.credit_window._next_threshold can ever
+    # emit, across every reachable state — otherwise the render silently
+    # falls back to CW_CHANGE_NONE the moment a new to_state becomes
+    # reachable. This is precisely how the MAJOR re-entered through the
+    # fallback the instant the BLOCKER's open-side candidates were added.
+    import engine.credit_window as cw
+
+    emitted_pairs = set()
+    for key in ("spread_range", "spread_drift", "rates_vol"):
+        for state in ("open", "neutral", "shut"):
+            for _threshold, to_state, _direction in cw._next_threshold(key, state):
+                emitted_pairs.add((key, to_state))
+    missing = emitted_pairs - set(bi.CW_CHANGE.keys())
+    assert missing == set()
+    # and the three open-side entries this round added are actually present —
+    # a passing "missing == set()" alone wouldn't catch a lexicon that never
+    # grew (both sides could be trivially empty in some future refactor).
+    assert {("spread_range", "open"), ("spread_drift", "open"), ("rates_vol", "open")} <= set(bi.CW_CHANGE.keys())
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-1 (review repair round 4) — ("rates_vol", "neutral") is reachable from
+# BOTH directions (an "open" rates_vol input crossing UP into the middle band,
+# or a "shut" rates_vol input crossing DOWN into it), but CW_CHANGE is keyed on
+# (input, to_state) only — no direction — so the one sentence stored there
+# must be true regardless of which direction produced the candidate. The
+# pre-fix sentence ("Rates volatility easing would flip this to half open.")
+# was only true for the down-direction case; rendered against the exact live
+# up-direction shape the round-4 review measured (HY today: spread_range=open,
+# spread_drift=neutral, rates_vol=open(20.0) -> nearest crossing is rates_vol
+# RISING to 40, direction "up") it told users volatility easing would flip the
+# read — backwards. This test pins the render for that up-direction candidate.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_rates_vol_up_direction_change_is_not_worded_as_easing():
+    change = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+              "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    raw = {"segments": [_seg("open", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE[("rates_vol", "neutral")]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+    # the pre-fix sentence claimed "easing" — factually inverted for the
+    # up-direction (rising-volatility) crossing this render actually names.
+    assert "easing" not in seg["change_en"].lower()
+    assert "回落" not in seg["change_zh"]
+
+
+def test_credit_window_vm_rates_vol_neutral_entry_is_direction_agnostic():
+    # The lexicon has no direction axis, so the SAME entry renders for both
+    # the up-direction (open -> neutral) and down-direction (shut -> neutral)
+    # candidates. Pin that both actually resolve to one shared, non-empty,
+    # bilingual sentence rather than silently falling back to CW_CHANGE_NONE.
+    up = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+          "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    down = {"input": "rates_vol", "to_state": "neutral", "threshold": 75.0,
+            "current": 78.0, "direction": "down", "segment_to": "neutral"}
+    vm_up = bi._credit_window_vm(
+        {"segments": [_seg("open", change=up)], "as_of": "2026-09-01",
+         "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}})
+    vm_down = bi._credit_window_vm(
+        {"segments": [_seg("shut", change=down)], "as_of": "2026-09-01",
+         "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}})
+    seg_up = vm_up["segments"][0]
+    seg_down = vm_down["segments"][0]
+    assert (seg_up["change_en"], seg_up["change_zh"]) == (seg_down["change_en"], seg_down["change_zh"])
+    assert (seg_up["change_en"], seg_up["change_zh"]) == bi.CW_CHANGE[("rates_vol", "neutral")]
+    assert seg_up["change_en"] and seg_up["change_zh"]
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-5 (review repair round 5) — a full render test, asserted against the
+# LITERAL expected sentence (not just equality with bi.CW_CHANGE[...], which
+# would pass even if the lexicon entry itself silently drifted): rates_vol
+# reaching "neutral" from the UP direction (rising volatility crossing down
+# into the middle band from "open") must render the one shared,
+# direction-agnostic EN/ZH sentence — never a direction-specific "easing"
+# framing that is only true for the down-direction crossing.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_rates_vol_up_to_neutral_renders_literal_direction_agnostic_sentence():
+    change = {"input": "rates_vol", "to_state": "neutral", "threshold": 40.0,
+              "current": 20.0, "direction": "up", "segment_to": "neutral"}
+    raw = {"segments": [_seg("open", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert seg["change_en"] == (
+        "Rates volatility moving back toward the middle of the past year's "
+        "range would flip this to half open.")
+    assert seg["change_zh"] == "利率波动回到近一年区间的中段，读数会翻为半开。"
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-1 (review repair round 5) — structural invariant: a PRESENT change
+# candidate (the engine found a real (input, to_state) flip) whose pair has
+# no CW_CHANGE lexicon entry must fall back to this state's honest "stable"
+# sentence (CW_CHANGE_STABLE), never the "inputs are missing" copy
+# (CW_CHANGE_NONE) — that fallback is reserved for a genuinely
+# not_evaluable segment. Pre-fix, an unmapped-but-present candidate silently
+# told users data was missing when it was not; the exhaustive coverage test
+# above (test_cw_change_lexicon_covers_every_pair_next_threshold_can_emit)
+# only pins today's REACHABLE pairs, so it cannot catch this — a future
+# engine change that emits one more pair before the lexicon is updated would
+# hit this exact fallback path again.
+# --------------------------------------------------------------------------- #
+def test_credit_window_vm_present_but_unmapped_change_candidate_falls_back_to_stable_not_missing():
+    change = {"input": "spread_range", "to_state": "unknown", "threshold": 50.0,
+              "current": 45.0, "direction": "up", "segment_to": "neutral"}
+    assert ("spread_range", "unknown") not in bi.CW_CHANGE  # precondition: genuinely unmapped
+    raw = {"segments": [_seg("neutral", change=change)], "as_of": "2026-09-01",
+           "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"}}
+    vm = bi._credit_window_vm(raw)
+    seg = vm["segments"][0]
+    assert (seg["change_en"], seg["change_zh"]) == bi.CW_CHANGE_STABLE["neutral"]
+    assert (seg["change_en"], seg["change_zh"]) != bi.CW_CHANGE_NONE
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-2 (review repair round 4) — `.cw-band` marks a FIXED zone of the rail
+# (0 to seg.rail.easy_pct, the tight/easy end of the 1y range) — the same
+# zone regardless of which state (open/neutral/shut) the card is currently
+# in — but it was painted from `--tcc` (the card's own state colour), so a
+# shut (red) lane rendered its easy zone red and an open (green) lane
+# rendered it green: a state-invariant region carrying state colour. Pinned
+# to a fixed `--green` token in both the dark (default) and light-theme
+# `.cw-band` rules; `.cw-mark` (today's actual position — legitimately
+# state-coloured) and `.cw-change` (the state-scoped copy strip) are
+# unaffected and keep using `--tcc`.
+# --------------------------------------------------------------------------- #
+def test_cw_band_uses_fixed_green_token_not_the_state_colour():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    dark_rule = re.search(r"\.cw-band\{[^}]*\}", src)
+    light_rule = re.search(r'html\[data-theme="light"\]\s*\.cw-band\{[^}]*\}', src)
+    assert dark_rule and light_rule
+    assert "var(--tcc)" not in dark_rule.group(0)
+    assert "var(--tcc)" not in light_rule.group(0)
+    assert "var(--green)" in dark_rule.group(0)
+    assert "var(--green)" in light_rule.group(0)
+    # .cw-mark (today's actual reading) legitimately still tracks the card's
+    # current stance colour — this fix must not have swept that one too.
+    mark_rule = re.search(r"\.cw-mark\{[^}]*\}", src)
+    assert mark_rule and "var(--tcc)" in mark_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-6 (review repair round 5) — the light-theme `.cw-band` tint was so
+# faint at 8% it was not legible as a band at 1440 (recaptured light
+# evidence at round 4 showed a hairline edge with no visible fill). Raised
+# into the 16-20% range while keeping the hairline `border-right` edge that
+# already marks the band's boundary.
+# --------------------------------------------------------------------------- #
+def test_light_cw_band_tint_is_raised_into_legible_range():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    light_rule = re.search(r'html\[data-theme="light"\]\s*\.cw-band\{[^}]*\}', src)
+    assert light_rule
+    m = re.search(r"var\(--green\)\s+(\d+)%,transparent\)", light_rule.group(0))
+    assert m, "expected a color-mix(in srgb,var(--green) N%,transparent) fill"
+    pct = int(m.group(1))
+    assert 16 <= pct <= 20
+    # the hairline boundary edge must survive the tint raise, not be removed.
+    assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 (B-F09-2 audit) — Tier-1 spread fractions in bi.CW_READ["spread_range"]
+# must mirror engine.credit_window.RANGE_OPEN_PCT (33) and RANGE_SHUT_PCT (66),
+# and rates_vol fractions must mirror MOVE_OPEN_PCT (40) and MOVE_SHUT_PCT (75).
+# The pre-fix wording said "four in five days" against thresholds of 33/66, which
+# is factually inverted for the open/shut cells; this pins both the constants
+# to their canonical fractions and the copy to those fractions so the two cannot
+# silently drift apart again.
+# --------------------------------------------------------------------------- #
+def test_cw_read_percentile_fractions_match_engine_thresholds():
+    import engine.credit_window as cw
+
+    # canonical mapping from the engine's thresholds to their "N in M" fractions:
+    #   RANGE 33/66  -> "two in three"   (~67% / ~66% of trailing days)
+    #   MOVE  40     -> "three in five"  (60% = 3/5)
+    #   MOVE  75     -> "three in four"  (75% = 3/4)
+    # ZH fraction form is "<denominator>分之<numerator>": 三分之二 / 五分之三 / 四分之三.
+    expected = {
+        ("spread_range", "open"):  ("two",   "three", "三", "二"),
+        ("spread_range", "shut"):  ("two",   "three", "三", "二"),
+        ("rates_vol",    "open"):  ("three", "five",  "五", "三"),
+        ("rates_vol",    "shut"):  ("three", "four",  "四", "三"),
+    }
+
+    # the four canonical fractions must still hold against the current constants —
+    # a constant drift (e.g. RANGE_OPEN_PCT moving to 45) must NOT pass silently.
+    assert abs((100.0 - cw.RANGE_OPEN_PCT) - (2 / 3) * 100) < 5  # ~67
+    assert abs(cw.RANGE_SHUT_PCT - (2 / 3) * 100) < 5            # ~66
+    assert abs((100.0 - cw.MOVE_OPEN_PCT) - (3 / 5) * 100) < 5   # 60
+    assert abs(cw.MOVE_SHUT_PCT - (3 / 4) * 100) < 5             # 75
+
+    for (key, state), (n_en, m_en, zh_den, zh_num) in expected.items():
+        en, zh = bi.CW_READ[(key, state)]
+        assert f"{n_en} in {m_en} days" in en, (
+            f"CW_READ[({key!r}, {state!r})] EN must contain {n_en!r} in {m_en!r} "
+            f"days of the past year (per {key} thresholds); got {en!r}"
+        )
+        assert f"{zh_den}分之{zh_num}" in zh, (
+            f"CW_READ[({key!r}, {state!r})] ZH must contain {zh_den!r}分之"
+            f"{zh_num!r} (per {key} thresholds); got {zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 (B-F09-2 audit) — the engine's `not_evaluable` state key (and any other
+# multi-word snake_case state key) must never reach user copy in its
+# title-cased form. Repo convention is the plain display name "No read" /
+# "暂无读数" (templates/transmission.html.j2:522, templates/foresight.html.j2:25,
+# templates/_risk_envelope_band.html.j2:171).
+# Single-word state keys ("open", "neutral", "shut") have a title-cased
+# rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
+# display label — those are NOT a leak, so this test only pins the multi-word
+# snake_case case the audit actually flagged.
+# The earlier round compared EN against `key.replace("_"," ").title()` =
+# "Not Evaluable" but the pre-fix value was sentence-cased "Not evaluable"
+# (the title-cased assertion was therefore happy on the old head). Pin the
+# exact fixed values explicitly so a regression to ANY form of the engine
+# token — title-cased, sentence-cased, or any other rendering — fails.
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_keys_do_not_leak_engine_token():
+    # 1. the EXACT fixed display values for the audit-flagged key — fails on the
+    #    pre-fix sentence-cased "Not evaluable / 无法评估" (H2's actual leak).
+    expected_state = {
+        "not_evaluable": ("No read", "暂无读数"),
+    }
+    for key, (en_want, zh_want) in expected_state.items():
+        assert key in bi.CW_STATE, (
+            f"CW_STATE must carry the engine key {key!r}; engine state "
+            f"otherwise can't be localised."
+        )
+        en_got, zh_got = bi.CW_STATE[key]
+        assert en_got == en_want, (
+            f"CW_STATE[{key!r}].EN must be {en_want!r} (repo plain-word "
+            f"convention); got {en_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+        assert zh_got == zh_want, (
+            f"CW_STATE[{key!r}].ZH must be {zh_want!r} (repo plain-word "
+            f"convention); got {zh_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+
+    # 2. no title-cased form of any multi-word snake_case engine state key
+    #    anywhere in CW_STATE / CW_CLAUSE (defensive — a future key the audit
+    #    didn't flag must still trip this).
+    for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
+        for key, (en, _zh) in lexicon.items():
+            if "_" not in key:
+                continue
+            title_form = key.replace("_", " ").title()
+            assert en != title_form, (
+                f"{name}[{key!r}] EN is the title-cased engine key: {en!r} — "
+                f"must not equal {title_form!r}; use a plain display name "
+                f"('No read' for `not_evaluable`, etc.) so the engine token "
+                f"never reaches user copy."
+            )
+
+    # 3. the template carries no leak of the engine token in user copy —
+    #    case-insensitive for EN (catches "Not evaluable", "NOT EVALUABLE",
+    #    "not-evaluable") but NOT the snake_case key name itself (a regex
+    #    with `_` matches the snake_case key in source comments), exact for
+    #    ZH (the pre-fix leak was the literal "无法评估").
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    assert re.search(r"not[ -]evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' / 'not-evaluable' — the engine token belongs in "
+        "CW_STATE only, never in user copy; use 'No read' / '暂无读数' instead "
+        "(see repo convention)."
+    )
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# h_7128 — exercise the full production Jinja render with both credit states.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("has_data", [False, True], ids=["missing-data", "with-data"])
+def test_cw_force_hook_fallback_nodes_and_css_are_emitted(monkeypatch, tmp_path, has_data):
+    """The builder emits real fallback nodes and opposite normal rails in both states.
+
+    _render_ipo_html calls bi.build(), including its FileSystemLoader, autoescape=True,
+    i18n globals and complete fixture context. DOM selectors cannot be satisfied by
+    class names in CSS or comments. Capture fallbacks intentionally exist in BOTH
+    states; only the normal, server-selected null/data rail changes with the input.
+    """
+    from bs4 import BeautifulSoup
+
+    seg = _seg("open" if has_data else "not_evaluable")
+    if not has_data:
+        seg.update(rail=None, inputs=[], n_inputs=0, low_confidence=True)
+    raw = {
+        "segments": [seg], "as_of": "2026-09-01",
+        "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"},
+    }
+    monkeypatch.setattr(bi.cwn, "window_state", lambda: raw)
+    rendered = _render_ipo_html(monkeypatch, tmp_path)
+    doc = BeautifulSoup(rendered, "html.parser")
+    cards = doc.select(".tcard.cw")
+    assert len(cards) == 1
+    card = cards[0]
+
+    fallback_rails = card.select(".cw-rail.is-null.cw-rail-fb")
+    fallback_scales = card.select(".cw-scale.cw-scale-fb")
+    assert len(fallback_rails) == 1, "Rendered capture fallback rail is missing"
+    assert len(fallback_scales) == 1, "Rendered capture fallback scale is missing"
+    assert fallback_rails[0]["aria-hidden"] == "true"
+    assert fallback_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+    assert fallback_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    # The normal branch is opposite with/without data. The hidden capture-only
+    # fallback above stays available in either case, as required by the ruling.
+    null_rails = card.select(".cw-rail.is-null:not(.cw-rail-fb)")
+    null_scales = card.select(".cw-scale:not(.cw-scale-data):not(.cw-scale-fb)")
+    assert len(null_rails) == (0 if has_data else 1)
+    assert len(null_scales) == (0 if has_data else 1)
+    assert len(card.select(".cw-rail-data")) == (1 if has_data else 0)
+    assert len(card.select(".cw-scale-data")) == (1 if has_data else 0)
+    if has_data:
+        assert "left:10.0%" in card.select_one(".cw-mark")["style"]
+        assert "width:33.0%" in card.select_one(".cw-band")["style"]
+    else:
+        assert null_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+        assert null_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    expected_state = ("Open", "开着") if has_data else ("No read", "暂无读数")
+    assert card.select_one(".tc-state .l-en").get_text() == expected_state[0]
+    assert card.select_one(".tc-state .l-zh").get_text() == expected_state[1]
+    assert not doc.body.has_attr("data-credit"), "Normal renders must not force capture state"
+
+    css = "".join(style.get_text() for style in doc.select("style"))
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    css = re.sub(r"\s+", " ", css)
+    assert '.cw-rail-fb,.cw-scale-fb{display:none}' in css
+    # Exact descendant selectors — whitespace is load-bearing; a compound
+    # [data-credit="null"].cw-rail-fb (no space) would be wrong.
+    assert '[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}' in css
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in css
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in css
+    assert not re.search(r'\[data-credit="null"\][^{}]*\.tc-state', css)
+
+
+def test_cw_force_hook_comment_names_body_not_html():
+    """The hook comment must name <body> as the element the capture script sets
+    [data-credit="null"] on — not <html> (which the pre-fix comment stated).
+    Both the CSS /* */ comment (~185-189) and the Jinja {# #} comment (~459-462)
+    must be checked; a regression in either would not be caught by scanning one."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    import re
+    css_comments = re.findall(r'/\*.*?\*/', src, re.DOTALL)
+    jinja_comments = re.findall(r'\{#.*?#\}', src, re.DOTALL)
+
+    hook_comments = [
+        b for b in css_comments
+        if 'data-credit' in b and 'force-state hook' in b
+    ] + [
+        b for b in jinja_comments
+        if 'data-credit' in b and 'Capture-only' in b
+    ]
+    assert hook_comments, "Force-state hook comment not found in CSS /* */ or Jinja {# #}"
+
+    for hook_comment in hook_comments:
+        assert "<body>" in hook_comment, (
+            "Hook comment must name <body> as the element [data-credit='null'] is set on "
+            "(capture_page_evidence.py sets it on <body>, not <html>)"
+        )
+        assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
+            "Hook comment must not say [data-credit='null'] is set on <html> — "
+            "capture_page_evidence.py sets it on <body>"
+        )

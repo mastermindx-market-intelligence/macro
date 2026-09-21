@@ -1,49 +1,37 @@
 {
-  "ts": "2026-09-06T04:54:24+00:00",
-  "main_sha": "e0d97381c40a7f148d5336cbc3c93dc07dacacfe",
+  "ts": "2026-09-21T05:19:28+00:00",
+  "main_sha": "cb923b815530efa818bb1e54dc225fb31a578efe",
   "red_required": [
     {
-      "name": "publish",
+      "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33990126622/job/101370771141"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35562885908/job/106218973916"
     },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33989993137/job/101370404830"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35562885908/job/106218973827"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33989993137/job/101370404818"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33989993137/job/101370404786"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35562885908/job/106218973696"
     },
     {
       "name": "template-site-sync",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33989993137/job/101370404766"
-    },
-    {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/33989993137/job/101370404595"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35562885908/job/106218973552"
     }
   ],
   "green": false,
-  "consecutive_failures": 104,
+  "consecutive_failures": 164,
   "sensed_shas": [
-    "e0d97381c40a7f148d5336cbc3c93dc07dacacfe",
-    "1397014ef7815a61197c29d2b0715ca11e2f6443"
+    "cb923b815530efa818bb1e54dc225fb31a578efe",
+    "12fd7dc4af08c412ffc18129f6ce6851739b21d2"
   ],
   "heartbeat_degraded": false
 }

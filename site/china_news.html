@@ -33,10 +33,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="assets/css/32655cfe.css?v=32655cfe">
+<link rel="stylesheet" href="theme.css?v=62b49cc0">
+<link rel="stylesheet" href="assets/css/00738b9b.css?v=00738b9b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
+<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 
 
 
@@ -63,7 +63,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=c299c324">
+    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -279,7 +280,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f7bdf7cc" defer></script>
+  <script src="live.js?v=3cb38601" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -313,17 +314,17 @@
       
       
       <p class="cn-lead">
-        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans supportive. <b>9</b> rated high-impact, led by <b>equity market</b>.</span>
-        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏积极。其中 <b>9</b> 条高影响，主导<b>股票市场</b>。</span>
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>11</b> rated high-impact, led by <b>industry & manufacturing</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>11</b> 条高影响，主导<b>工业与制造业</b>。</span>
       </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
       <div class="cn-glance">
         
         
-        <span class="cn-gchip st-supportive"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></b></span>
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
         
-        <span class="cn-gchip hot"><span class="dot"></span><b>9</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
-        <span class="cn-gchip led th-policy"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip hot"><span class="dot"></span><b>11</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-fiscal"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></b></span>
         <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
         <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
       </div>
@@ -335,21 +336,21 @@
   <section class="cn-rail3">
 
     <!-- policy tone -->
-    <article class="ov-card ov-tone st-supportive" style="--ac:#3bb277">
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
       <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
       
       
       <div class="tg-top">
-        <div class="tg-state"><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></div>
-        <div class="tg-z">+0.8</div>
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">+0.4</div>
       </div>
       
       
       <div class="tg-track"><span class="mid"></span>
-        <span class="tg-fill" style="left:50%;width:15.0%"></span>
+        <span class="tg-fill" style="left:50%;width:8.6%"></span>
       </div>
       <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
-      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 85<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-05</p>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 99<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-19</p>
       
     </article>
 
@@ -361,43 +362,43 @@
         
         
         
-        <div class="mx-row th-policy">
-          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
           <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">7</span>
-        </div>
-        
-        
-        <div class="mx-row th-markets">
-          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-          <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">7</span>
+          <span class="mx-n">6</span>
         </div>
         
         
         <div class="mx-row th-monetary">
-          <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-          <span class="mx-bar"><i style="width:43%"></i></span>
-          <span class="mx-n">3</span>
-        </div>
-        
-        
-        <div class="mx-row th-tech">
-          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-          <span class="mx-bar"><i style="width:43%"></i></span>
-          <span class="mx-n">3</span>
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:83%"></i></span>
+          <span class="mx-n">5</span>
         </div>
         
         
         <div class="mx-row th-growth">
           <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-          <span class="mx-bar"><i style="width:29%"></i></span>
+          <span class="mx-bar"><i style="width:83%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:67%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
           <span class="mx-n">2</span>
         </div>
         
       
       
-      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 19 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 3 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2</p>
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 22 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 1</p>
       
     </article>
 
@@ -411,8 +412,8 @@
           <span class="nx-days">3</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
         
       </div>
-      <p class="nx-name"><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></p>
-      <p class="nx-date"><span class="l-en">Sep 7</span><span class="l-zh">9月7日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      <p class="nx-name"><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></p>
+      <p class="nx-date"><span class="l-en">Sep 21</span><span class="l-zh">9月21日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
       
     </article>
   </section>
@@ -425,7 +426,7 @@
         <div class="cn-filters" id="filters">
           <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
           <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
-          <button class="fbtn" data-theme="monetary"><span class="l-en">PBoC</span><span class="l-zh">央行</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
         </div>
         <span class="cn-count" id="count"></span>
       </div>
@@ -433,470 +434,462 @@
       <div class="tp-feed" id="feed">
         
         
-        <a class="tp-item th-policy lead" href="https://wallstreetcn.com/livenews/3160881" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="8月深圳新建商品房成交3467套 shenzhen new commercial housing sales reach 3,467 units in august 8月深圳新建商品房成交3467套 深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。 according to the latest data from the shenzhen real estate intermediary association, new commercial housing transactions in shenzhen totaled 3,467 units in august, down 23.0% month-on-month but up 4.8% year-on-year. second-hand residential properties recorded 5,108 transactions, down 2.3% month-on-month and up 7.6% year-on-year. from january to august, cumulative second-hand housing transactions in shenzhen reached approximately 48,400 units, up 4.7% year-on-year. 深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。 华尔街见闻 property property 房地产 512200.ss">
-          <time class="tp-when" data-t="2026-09-05T09:30:22+00:00" datetime="2026-09-05T09:30:22+00:00">09-05<br>09:30</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T09:30:22+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Shenzhen New Commercial Housing Sales Reach 3,467 Units in August</span><span class="l-zh">8月深圳新建商品房成交3467套</span></h2>
-            <p class="tp-sum"><span class="l-en">According to the latest data from the Shenzhen Real Estate Intermediary Association, new commercial housing transactions in Shenzhen totaled 3,467 units in August, down 23.0% month-on-month but up 4.8% year-on-year. Second-hand residential properties recorded 5,108 transactions, down 2.3% month-on-month and up 7.6% year-on-year. From January to August, cumulative second-hand housing transactions in Shenzhen reached approximately 48,400 units, up 4.7% year-on-year.</span><span class="l-zh">深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160870" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲 asia-pacific media high-level forum held in shenzhen; li shulei attends opening ceremony and delivers keynote speech 亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲 亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（apec）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻） the asia-pacific media high-level forum opened in shenzhen, guangdong on september 5. li shulei, member of the political bureau of the cpc central committee and head of the publicity department, attended the opening ceremony and delivered a keynote speech. huang kunming, member of the political bureau of the cpc central committee and party secretary of guangdong province, attended and delivered remarks. participants noted that president xi jinping's major proposal on building an asia-pacific community provides important guidance for jointly fostering an open asia-pacific economy and promoting common prosperity. this year is the 'china year' for apec, and china will host the 33rd apec economic leaders' meeting. it is believed that with support from all parties, the meeting will yield fruitful results and elevate asia-pacific cooperation to new heights. (cctv news) 亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（apec）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻） 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-05T07:00:18+00:00" datetime="2026-09-05T07:00:18+00:00">09-05<br>07:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T07:00:18+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Asia-Pacific Media High-Level Forum Held in Shenzhen; Li Shulei Attends Opening Ceremony and Delivers Keynote Speech</span><span class="l-zh">亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲</span></h2>
-            <p class="tp-sum"><span class="l-en">The Asia-Pacific Media High-Level Forum opened in Shenzhen, Guangdong on September 5. Li Shulei, member of the Political Bureau of the CPC Central Committee and head of the Publicity Department, attended the opening ceremony and delivered a keynote speech. Huang Kunming, member of the Political Bureau of the CPC Central Committee and Party Secretary of Guangdong Province, attended and delivered remarks. Participants noted that President Xi Jinping's major proposal on building an Asia-Pacific community provides important guidance for jointly fostering an open Asia-Pacific economy and promoting common prosperity. This year is the 'China Year' for APEC, and China will host the 33rd APEC Economic Leaders' Meeting. It is believed that with support from all parties, the meeting will yield fruitful results and elevate Asia-Pacific cooperation to new heights. (CCTV News)</span><span class="l-zh">亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（APEC）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160847" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="丁薛祥会见俄罗斯总统普京并与俄方共同主持中俄双边机制性会议 ding xuexiang meets russian president putin and co-chairs bilateral mechanism meetings with russia 丁薛祥会见俄罗斯总统普京并与俄方共同主持中俄双边机制性会议 当地时间9月2日至4日，中共中央政治局常委、国务院副总理丁薛祥在符拉迪沃斯托克会见俄罗斯总统普京，同俄罗斯第一副总理曼图罗夫共同主持中俄投资合作委员会第十三次会议，同俄罗斯副总理诺瓦克共同主持中俄能源合作委员会第二十三次会议，并出席第八届中俄能源商务论坛开幕式。（新华社） from september 2 to 4 local time, ding xuexiang, member of the standing committee of the political bureau of the cpc central committee and vice premier of the state council, met with russian president vladimir putin in vladivostok, co-chaired the 13th meeting of the china-russia investment cooperation committee with russian first deputy prime minister manturov, co-chaired the 23rd meeting of the china-russia energy cooperation committee with russian deputy prime minister novak, and attended the opening ceremony of the 8th china-russia energy business forum. (xinhua) 当地时间9月2日至4日，中共中央政治局常委、国务院副总理丁薛祥在符拉迪沃斯托克会见俄罗斯总统普京，同俄罗斯第一副总理曼图罗夫共同主持中俄投资合作委员会第十三次会议，同俄罗斯副总理诺瓦克共同主持中俄能源合作委员会第二十三次会议，并出席第八届中俄能源商务论坛开幕式。（新华社） 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-05T02:58:00+00:00" datetime="2026-09-05T02:58:00+00:00">09-05<br>02:58</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T02:58:00+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Ding Xuexiang Meets Russian President Putin and Co-Chairs Bilateral Mechanism Meetings with Russia</span><span class="l-zh">丁薛祥会见俄罗斯总统普京并与俄方共同主持中俄双边机制性会议</span></h2>
-            <p class="tp-sum"><span class="l-en">From September 2 to 4 local time, Ding Xuexiang, member of the Standing Committee of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, met with Russian President Vladimir Putin in Vladivostok, co-chaired the 13th meeting of the China-Russia Investment Cooperation Committee with Russian First Deputy Prime Minister Manturov, co-chaired the 23rd meeting of the China-Russia Energy Cooperation Committee with Russian Deputy Prime Minister Novak, and attended the opening ceremony of the 8th China-Russia Energy Business Forum. (Xinhua)</span><span class="l-zh">当地时间9月2日至4日，中共中央政治局常委、国务院副总理丁薛祥在符拉迪沃斯托克会见俄罗斯总统普京，同俄罗斯第一副总理曼图罗夫共同主持中俄投资合作委员会第十三次会议，同俄罗斯副总理诺瓦克共同主持中俄能源合作委员会第二十三次会议，并出席第八届中俄能源商务论坛开幕式。（新华社）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-09-04/doc-iniqsvkk0753865.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="high"
-           data-search="深夜重磅！证监会敲打百万亿资管“流量通道”，蚂蚁、天天们好日子到头了？ late-night bombshell! csrc cracks down on trillion-yuan asset management 'traffic channels'; end of the good times for ant and tiantian? 深夜重磅！证监会敲打百万亿资管“流量通道”，蚂蚁、天天们好日子到头了？    新浪财经股票 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-04" datetime="2026-09-04">09-04</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Late-Night Bombshell! CSRC Cracks Down on Trillion-Yuan Asset Management 'Traffic Channels'; End of the Good Times for Ant and Tiantian?</span><span class="l-zh">深夜重磅！证监会敲打百万亿资管“流量通道”，蚂蚁、天天们好日子到头了？</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/wm/2026-09-04/doc-iniqskun4042639.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="high"
-           data-search="600076，被证监会立案 600076, placed under investigation by csrc 600076，被证监会立案    新浪财经股票 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-04" datetime="2026-09-04">09-04</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">600076, Placed Under Investigation by CSRC</span><span class="l-zh">600076，被证监会立案</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://www.stcn.com/article/detail/4173461.html" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="证监会：着力打造“三个过硬”监管铁军 csrc: striving to build a 'three competencies' regulatory iron force 证监会：着力打造“三个过硬”监管铁军    证券时报 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">证券时报</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CSRC: Striving to Build a 'Three Competencies' Regulatory Iron Force</span><span class="l-zh">证监会：着力打造“三个过硬”监管铁军</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103350738.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="悬念又来了！非农再度扭转加息预期，特朗普彻底坐不住了 市场焦点转向下周的cpi报告。 suspense returns! nonfarm payrolls again reverse rate hike expectations, trump fully loses patience; market focus shifts to next week's cpi report 悬念又来了！非农再度扭转加息预期，特朗普彻底坐不住了 市场焦点转向下周的cpi报告。    第一财经 consumer consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Suspense Returns! Nonfarm Payrolls Again Reverse Rate Hike Expectations, Trump Fully Loses Patience; Market Focus Shifts to Next Week's CPI Report</span><span class="l-zh">悬念又来了！非农再度扭转加息预期，特朗普彻底坐不住了 市场焦点转向下周的CPI报告。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3160858" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="又一脑机接口企业启动ipo辅导 another brain-computer interface firm launches ipo tutoring 又一脑机接口企业启动ipo辅导 继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板ipo辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网ipo辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板ipo进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报） following brainco's star market filing acceptance by the shanghai stock exchange in june this year, another shanghai brain-computer interface company has initiated star market ipo guidance three months later. shuli innovation (shanghai) intelligent technology co., ltd. confirmed that it formally launched star market listing guidance on september 4. the csrc ipo guidance disclosure system shows shuli innovation filed guidance registration with the shanghai securities regulatory bureau on september 4, 2026, formally commencing its star market ipo process, with huatai united securities serving as the guidance institution. (shanghai securities news) 继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板ipo辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网ipo辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板ipo进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss 512880.ss">
-          <time class="tp-when" data-t="2026-09-05T04:08:12+00:00" datetime="2026-09-05T04:08:12+00:00">09-05<br>04:08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T04:08:12+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Another Brain-Computer Interface Firm Launches IPO Tutoring</span><span class="l-zh">又一脑机接口企业启动IPO辅导</span></h2>
-            <p class="tp-sum"><span class="l-en">Following BrainCo's STAR Market filing acceptance by the Shanghai Stock Exchange in June this year, another Shanghai brain-computer interface company has initiated STAR Market IPO guidance three months later. Shuli Innovation (Shanghai) Intelligent Technology Co., Ltd. confirmed that it formally launched STAR Market listing guidance on September 4. The CSRC IPO guidance disclosure system shows Shuli Innovation filed guidance registration with the Shanghai Securities Regulatory Bureau on September 4, 2026, formally commencing its STAR Market IPO process, with Huatai United Securities serving as the guidance institution. (Shanghai Securities News)</span><span class="l-zh">继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板IPO辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网IPO辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板IPO进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-growth" href="https://www.scmp.com/news/china/military/article/3366266/extra-funds-push-taiwans-defence-spending-past-nt1-trillion-first-time?utm_source=rss_feed" target="_blank" rel="noopener"
-           data-theme="growth" data-importance="high"
-           data-search="extra funds push taiwan’s defence spending past nt$1 trillion for the first time  追加资金使台湾防务支出首次突破新台币1万亿元 taiwan’s cabinet approved a supplementary defence budget of nt$145.7 billion (us$4.6 billion) on thursday, pushing the island’s total defence-related spending for this year above nt$1 trillion for the first time.
-the additional funding is expected to raise this year’s overall defence spending from 3.32 per cent of gross domestic product (gdp) to about 3.83 per cent, the highest level in decades.
-the supplementary budget, which still requires legislative approval, is aimed at plugging gaps left...  台湾行政院周四批准了一项1457亿新台币（约46亿美元）的追加国防预算，使该岛今年的国防相关支出总额首次突破1万亿新台币。
-预计这笔额外资金将使今年的整体国防支出从占国内生产总值（gdp）的3.32%提高到约3.83% scmp - china growth growth 增长 ">
-          <time class="tp-when" data-t="2026-09-03T14:00:08+00:00" datetime="2026-09-03T14:00:08+00:00">09-03<br>14:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-03T14:00:08+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="cn-src">SCMP - China</span>
-              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Extra funds push Taiwan’s defence spending past NT$1 trillion for the first time</span><span class="l-zh">追加资金使台湾防务支出首次突破新台币1万亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">Taiwan’s cabinet approved a supplementary defence budget of NT$145.7 billion (US$4.6 billion) on Thursday, pushing the island’s total defence-related spending for this year above NT$1 trillion for the first time.
-The additional funding is expected to raise this year’s overall defence spending from 3.32 per cent of gross domestic product (GDP) to about 3.83 per cent, the highest level in decades.
-The supplementary budget, which still requires legislative approval, is aimed at plugging gaps left...</span><span class="l-zh">台湾行政院周四批准了一项1457亿新台币（约46亿美元）的追加国防预算，使该岛今年的国防相关支出总额首次突破1万亿新台币。
-预计这笔额外资金将使今年的整体国防支出从占国内生产总值（GDP）的3.32%提高到约3.83%</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3366330/bargain-sale-collapsed-deal-reflect-hong-kongs-struggling-retail-property-market?utm_source=rss_feed" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="bargain sale, collapsed deal reflect hong kong’s struggling retail property market  减价促销、交易告吹反映香港零售物业市场陷入困境 a foreclosure sale in hong kong’s lan kwai fong area and a cancelled shop transaction in north point reflect the impact of weak consumer spending on hong kong’s retail property market, which will remain under pressure through the end of the year, according to analysts.
-the lan kwai fong property, home of well-known bar insomnia until it closed in 2024, recently changed hands for 60 per cent less than its value in a 2015 sale. meanwhile, the deal for the large street shop on king’s road in north...  分析师指出，香港兰桂坊地区的一宗止赎拍卖及北角一笔已取消的商铺交易，反映了消费者支出疲软对香港零售地产市场的影响，该市场在年底前将持续面临压力。兰桂坊物业曾是知名酒吧insomnia的所在地，该酒吧于2024年关闭，近期该物业... scmp - business property consumer property 房地产 consumer 消费 512200.ss">
-          <time class="tp-when" data-t="2026-09-04T10:00:11+00:00" datetime="2026-09-04T10:00:11+00:00">09-04<br>10:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04T10:00:11+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">SCMP - Business</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Bargain sale, collapsed deal reflect Hong Kong’s struggling retail property market</span><span class="l-zh">减价促销、交易告吹反映香港零售物业市场陷入困境</span></h2>
-            <p class="tp-sum"><span class="l-en">A foreclosure sale in Hong Kong’s Lan Kwai Fong area and a cancelled shop transaction in North Point reflect the impact of weak consumer spending on Hong Kong’s retail property market, which will remain under pressure through the end of the year, according to analysts.
-The Lan Kwai Fong property, home of well-known bar Insomnia until it closed in 2024, recently changed hands for 60 per cent less than its value in a 2015 sale. Meanwhile, the deal for the large street shop on King’s Road in North...</span><span class="l-zh">分析师指出，香港兰桂坊地区的一宗止赎拍卖及北角一笔已取消的商铺交易，反映了消费者支出疲软对香港零售地产市场的影响，该市场在年底前将持续面临压力。兰桂坊物业曾是知名酒吧Insomnia的所在地，该酒吧于2024年关闭，近期该物业...</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-growth" href="https://www.scmp.com/business/article/3366205/hordes-head-shenzhen-hong-kong-bars-restaurants-sign-more-floor-space?utm_source=rss_feed" target="_blank" rel="noopener"
-           data-theme="growth" data-importance="medium"
-           data-search="as hordes head to shenzhen, hong kong bars, restaurants sign up for more floor space  随着大批人群涌向深圳，香港酒吧和餐厅纷纷租用更多楼面空间 hong kong’s food and beverage (f&b) operators, both new and existing players, signed leases for 155,000 sq ft of new floor space in the second quarter of this year, a record high for the sector and more than double the amount registered in the first quarter, according to property consultancy cbre.
-in the first half of the year, they snapped up 230,000 sq ft of new space, cbre data showed.
-however, analysts said the city’s selective and narrow-based retailing recovery was forcing brands and...  据房地产咨询公司世邦魏理仕（cbre）数据，香港餐饮业（f&b）运营商（包括新老业者）在今年第二季度签署了15.5万平方英尺的新增楼面租约，创下该行业纪录，是第一季度的两倍多。上半年，他们共租下23万平方英尺。 scmp - business property consumer property 房地产 consumer 消费 512200.ss">
-          <time class="tp-when" data-t="2026-09-03T10:00:12+00:00" datetime="2026-09-03T10:00:12+00:00">09-03<br>10:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-03T10:00:12+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="cn-src">SCMP - Business</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">As hordes head to Shenzhen, Hong Kong bars, restaurants sign up for more floor space</span><span class="l-zh">随着大批人群涌向深圳，香港酒吧和餐厅纷纷租用更多楼面空间</span></h2>
-            <p class="tp-sum"><span class="l-en">Hong Kong’s food and beverage (F&B) operators, both new and existing players, signed leases for 155,000 sq ft of new floor space in the second quarter of this year, a record high for the sector and more than double the amount registered in the first quarter, according to property consultancy CBRE.
-In the first half of the year, they snapped up 230,000 sq ft of new space, CBRE data showed.
-However, analysts said the city’s selective and narrow-based retailing recovery was forcing brands and...</span><span class="l-zh">据房地产咨询公司世邦魏理仕（CBRE）数据，香港餐饮业（F&B）运营商（包括新老业者）在今年第二季度签署了15.5万平方英尺的新增楼面租约，创下该行业纪录，是第一季度的两倍多。上半年，他们共租下23万平方英尺。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://www.cnstock.com/commonDetail/786249" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="证监会规范证券基金机构与互联网平台转接合作 csrc regulates cooperation between securities and fund institutions and internet platforms 证监会规范证券基金机构与互联网平台转接合作    上海证券报 markets equity market 股票市场 kweb 512880.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">上海证券报</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CSRC regulates cooperation between securities and fund institutions and internet platforms</span><span class="l-zh">证监会规范证券基金机构与互联网平台转接合作</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">KWEB</span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-credit" href="https://news.futunn.com/flash/20717311/japan-to-strengthen-scrutiny-of-bank-lending-to-overseas-non" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="medium"
-           data-search="日本将加强对银行向海外非银行贷款机构贷款的审查 japan to tighten scrutiny of bank lending to overseas non-bank financial institutions 日本将加强对银行向海外非银行贷款机构贷款的审查 据《日经新闻》报道，日本金融厅将审查日本金融机构是否充分评估了向海外非银行贷款机构和房地产公司放贷相关的信用风险。这一想法将被纳入该机构正在制定的年度战略重点计划草案中，该计划将于明年6月最终定稿。日本大型银行的海外非银行贷款业务正在扩大，所谓非银行金融中介机构正在全球范围内扩张，并越来越多地从日本银行获得融资。在房地产领域，主要大都市地区的房价持续飙升，促使地区银行和其他金融机构增加相关贷款。金融厅认为，有必要进一步审视这些信用风险。此外，金融厅还将重点审查数据中心等设施的投资和贷款政策、项目审查以及风险管理。 according to the nikkei, japan's financial services agency will review whether japanese financial institutions are adequately assessing credit risks related to lending to overseas non-bank lenders and real estate companies. this idea will be incorporated into the draft of the agency's annual strategic priority plan, which is set to be finalized in june next year. overseas non-bank lending operations of major japanese banks are expanding, with so-called non-bank financial intermediaries growing globally and increasingly obtaining financing from japanese banks. in the real estate sector, housing prices in major metropolitan areas continue to surge, prompting regional banks and other financial institutions to increase related lending. the fsa believes there is a need to further scrutinize these credit risks. additionally, the fsa will focus on reviewing investment and lending policies, project screening, and risk management for facilities such as data centers. 据《日经新闻》报道，日本金融厅将审查日本金融机构是否充分评估了向海外非银行贷款机构和房地产公司放贷相关的信用风险。这一想法将被纳入该机构正在制定的年度战略重点计划草案中，该计划将于明年6月最终定稿。日本大型银行的海外非银行贷款业务正在扩大，所谓非银行金融中介机构正在全球范围内扩张，并越来越多地从日本银行获得融资。在房地产领域，主要大都市地区的房价持续飙升，促使地区银行和其他金融机构增加相关贷款。金融厅认为，有必要进一步审视这些信用风险。此外，金融厅还将重点审查数据中心等设施的投资和贷款政策、项目审查以及风险管理。 富途牛牛 credit_impulse property credit & financing 信贷与社融 property 房地产 512800.ss 512200.ss">
-          <time class="tp-when" data-t="2026-09-05T17:37:41+00:00" datetime="2026-09-05T17:37:41+00:00">09-05<br>17:37</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T17:37:41+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-medium"><b>49</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Japan to tighten scrutiny of bank lending to overseas non-bank financial institutions</span><span class="l-zh">日本将加强对银行向海外非银行贷款机构贷款的审查</span></h2>
-            <p class="tp-sum"><span class="l-en">According to the Nikkei, Japan's Financial Services Agency will review whether Japanese financial institutions are adequately assessing credit risks related to lending to overseas non-bank lenders and real estate companies. This idea will be incorporated into the draft of the agency's annual strategic priority plan, which is set to be finalized in June next year. Overseas non-bank lending operations of major Japanese banks are expanding, with so-called non-bank financial intermediaries growing globally and increasingly obtaining financing from Japanese banks. In the real estate sector, housing prices in major metropolitan areas continue to surge, prompting regional banks and other financial institutions to increase related lending. The FSA believes there is a need to further scrutinize these credit risks. Additionally, the FSA will focus on reviewing investment and lending policies, project screening, and risk management for facilities such as data centers.</span><span class="l-zh">据《日经新闻》报道，日本金融厅将审查日本金融机构是否充分评估了向海外非银行贷款机构和房地产公司放贷相关的信用风险。这一想法将被纳入该机构正在制定的年度战略重点计划草案中，该计划将于明年6月最终定稿。日本大型银行的海外非银行贷款业务正在扩大，所谓非银行金融中介机构正在全球范围内扩张，并越来越多地从日本银行获得融资。在房地产领域，主要大都市地区的房价持续飙升，促使地区银行和其他金融机构增加相关贷款。金融厅认为，有必要进一步审视这些信用风险。此外，金融厅还将重点审查数据中心等设施的投资和贷款政策、项目审查以及风险管理。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3160851" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="华为何庭波更新韬定律论文 huawei's he tingbo updates tao ding paper 华为何庭波更新韬定律论文 堆叠更多晶体管，芯片反而更冷——这一看似反直觉的结论，成为华为半导体负责人何庭波最新论文试图回答的核心问题。9月4日，何庭波在中科院科技论文预发布平台chinaxiv发布论文《huawei’s τ chip was supposed to melt?》（《华为的τ芯片本该过热烧毁？》），通过麒麟2026的实测数据，回应业界对3d堆叠芯片“高密度带来高功耗、高发热”的质疑。 stacking more transistors while the chip runs cooler—this seemingly counterintuitive conclusion is the core question addressed in the latest paper by he tingbo, head of huawei's semiconductor division. on september 4, he tingbo published a paper titled 'huawei's τ chip was supposed to melt?' on chinaxiv, the chinese academy of sciences' preprint platform, using measured data from the kirin 2026 to respond to industry skepticism about 3d-stacked chips' 'high density bringing high power consumption and high heat.' 堆叠更多晶体管，芯片反而更冷——这一看似反直觉的结论，成为华为半导体负责人何庭波最新论文试图回答的核心问题。9月4日，何庭波在中科院科技论文预发布平台chinaxiv发布论文《huawei’s τ chip was supposed to melt?》（《华为的τ芯片本该过热烧毁？》），通过麒麟2026的实测数据，回应业界对3d堆叠芯片“高密度带来高功耗、高发热”的质疑。 华尔街见闻 tech_policy tech policy 科技政策 512760.ss">
-          <time class="tp-when" data-t="2026-09-05T03:36:14+00:00" datetime="2026-09-05T03:36:14+00:00">09-05<br>03:36</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T03:36:14+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Huawei's He Tingbo Updates Tao Ding Paper</span><span class="l-zh">华为何庭波更新韬定律论文</span></h2>
-            <p class="tp-sum"><span class="l-en">Stacking more transistors while the chip runs cooler—this seemingly counterintuitive conclusion is the core question addressed in the latest paper by He Tingbo, head of Huawei's semiconductor division. On September 4, He Tingbo published a paper titled 'Huawei's τ Chip Was Supposed to Melt?' on ChinaXiv, the Chinese Academy of Sciences' preprint platform, using measured data from the Kirin 2026 to respond to industry skepticism about 3D-stacked chips' 'high density bringing high power consumption and high heat.'</span><span class="l-zh">堆叠更多晶体管，芯片反而更冷——这一看似反直觉的结论，成为华为半导体负责人何庭波最新论文试图回答的核心问题。9月4日，何庭波在中科院科技论文预发布平台ChinaXiv发布论文《Huawei’s τ Chip Was Supposed to Melt?》（《华为的τ芯片本该过热烧毁？》），通过麒麟2026的实测数据，回应业界对3D堆叠芯片“高密度带来高功耗、高发热”的质疑。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512760.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3160843" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="medium"
-           data-search="国开行簿记发行50亿元绿色金融债券 cdb book-runs issuance of 5 billion yuan green financial bonds 国开行簿记发行50亿元绿色金融债券 国家开发银行日前在上海清算所成功簿记发行50亿元3年期绿色金融债券，发行利率1.27%。据介绍，这是国开行首次采用线上簿记建档方式发行绿色金融债券，有效提升了发行效率和透明度。本次发行是国开行优化债券发行定价机制、缩小一二级市场价差的新尝试，也是以市场化方式赋能绿色低碳融资的新探索。本次发行的债券所募集资金将主要用于基础设施绿色升级、节能降碳产业、能源绿色低碳转型、生态保护修复和利用等重点领域。（新华社） the china development bank (cdb) recently completed bookbuilding issuance of 5 billion yuan in 3-year green financial bonds at the shanghai clearing house, with an issuance rate of 1.27%. this marks cdb's first green financial bond issuance using online bookbuilding and filing, effectively improving issuance efficiency and transparency. the issuance represents a new attempt by cdb to optimize bond issuance pricing mechanisms and narrow primary-secondary market spreads, as well as a new exploration of empowering green and low-carbon financing through market-based methods. proceeds from the bonds will mainly fund key areas including green infrastructure upgrades, energy conservation and carbon reduction industries, green and low-carbon energy transition, and ecological protection and restoration. (xinhua) 国家开发银行日前在上海清算所成功簿记发行50亿元3年期绿色金融债券，发行利率1.27%。据介绍，这是国开行首次采用线上簿记建档方式发行绿色金融债券，有效提升了发行效率和透明度。本次发行是国开行优化债券发行定价机制、缩小一二级市场价差的新尝试，也是以市场化方式赋能绿色低碳融资的新探索。本次发行的债券所募集资金将主要用于基础设施绿色升级、节能降碳产业、能源绿色低碳转型、生态保护修复和利用等重点领域。（新华社） 华尔街见闻 monetary pboc 央行 512800.ss">
-          <time class="tp-when" data-t="2026-09-05T02:41:24+00:00" datetime="2026-09-05T02:41:24+00:00">09-05<br>02:41</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T02:41:24+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CDB Book-Runs Issuance of 5 Billion Yuan Green Financial Bonds</span><span class="l-zh">国开行簿记发行50亿元绿色金融债券</span></h2>
-            <p class="tp-sum"><span class="l-en">The China Development Bank (CDB) recently completed bookbuilding issuance of 5 billion yuan in 3-year green financial bonds at the Shanghai Clearing House, with an issuance rate of 1.27%. This marks CDB's first green financial bond issuance using online bookbuilding and filing, effectively improving issuance efficiency and transparency. The issuance represents a new attempt by CDB to optimize bond issuance pricing mechanisms and narrow primary-secondary market spreads, as well as a new exploration of empowering green and low-carbon financing through market-based methods. Proceeds from the bonds will mainly fund key areas including green infrastructure upgrades, energy conservation and carbon reduction industries, green and low-carbon energy transition, and ecological protection and restoration. (Xinhua)</span><span class="l-zh">国家开发银行日前在上海清算所成功簿记发行50亿元3年期绿色金融债券，发行利率1.27%。据介绍，这是国开行首次采用线上簿记建档方式发行绿色金融债券，有效提升了发行效率和透明度。本次发行是国开行优化债券发行定价机制、缩小一二级市场价差的新尝试，也是以市场化方式赋能绿色低碳融资的新探索。本次发行的债券所募集资金将主要用于基础设施绿色升级、节能降碳产业、能源绿色低碳转型、生态保护修复和利用等重点领域。（新华社）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span><span class="cn-tk">512800.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026090410024788363/index.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="medium"
-           data-search="pboc officials answer pressâ questions on the opinions on reforming and improving real estate credit management to accelerate the establishment of a new development model for the real estateâ sector  央行官员就《关于改革和完善房地产信贷管理以加快构建房地产发展新模式的意见》回答记者提问    pboc pboc_liquidity credit_impulse property pboc & liquidity 央行与流动性 credit & financing 信贷与社融 property 房地产 512200.ss">
-          <time class="tp-when" data-t="2026-08-28" datetime="2026-08-28">08-28</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-08-28"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">PBoC</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">PBOC Officials Answer PressÂ Questions on the Opinions on Reforming and Improving Real Estate Credit Management to Accelerate the Establishment of a New Development Model for the Real EstateÂ Sector</span><span class="l-zh">央行官员就《关于改革和完善房地产信贷管理以加快构建房地产发展新模式的意见》回答记者提问</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://news.10jqka.com.cn/20260905/c679628540.shtml" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="科技部部长阴和俊访问墨西哥并出席中国—墨西哥政府间常设委员会科技分委会第九次会议 minister of science and technology yin hejun visits mexico and attends the ninth meeting of the china-mexico intergovernmental standing committee's science and technology subcommittee 科技部部长阴和俊访问墨西哥并出席中国—墨西哥政府间常设委员会科技分委会第九次会议 2026年9月2日—4日，应墨西哥科学、人文、技术和创新部部长鲁伊斯邀请，科技部部长阴和俊率团访问墨西哥，并在墨西哥城共同主持召开中墨政府间常设委员会科技分委会第九次会议。会上，双方回顾了科技分委会第八次会议以来取得的成效，交流了两国科技发展战略和政策，探讨了下一步中墨科技创新合作的优先领域方向并达成共识。会后，双方签署《中华人民共和国科学技术部与墨西哥合众国科学、人文、技术和创新部关于科技创新合作的谅解备忘录》及科技分委会会议纪要。（科技部） from september 2-4, 2026, at the invitation of mexican secretary of science, humanities, technology and innovation ruiz, minister of science and technology yin hejun led a delegation to visit mexico and co-chaired the 9th meeting of the science and technology sub-commission of the china-mexico permanent intergovernmental commission in mexico city. during the meeting, both sides reviewed the achievements since the 8th meeting, exchanged views on their national science and technology development strategies and policies, and discussed and reached consensus on priority areas for future china-mexico sci-tech innovation cooperation. after the meeting, both sides signed the memorandum of understanding on sci-tech innovation cooperation between the ministry of science and technology of the people's republic of china and the secretariat of science, humanities, technology and innovation of the united mexican states, along with the minutes of the sub-commission meeting. (ministry of science and technology) 2026年9月2日—4日，应墨西哥科学、人文、技术和创新部部长鲁伊斯邀请，科技部部长阴和俊率团访问墨西哥，并在墨西哥城共同主持召开中墨政府间常设委员会科技分委会第九次会议。会上，双方回顾了科技分委会第八次会议以来取得的成效，交流了两国科技发展战略和政策，探讨了下一步中墨科技创新合作的优先领域方向并达成共识。会后，双方签署《中华人民共和国科学技术部与墨西哥合众国科学、人文、技术和创新部关于科技创新合作的谅解备忘录》及科技分委会会议纪要。（科技部） 同花顺 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-05T14:31:37+00:00" datetime="2026-09-05T14:31:37+00:00">09-05<br>14:31</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T14:31:37+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Minister of Science and Technology Yin Hejun visits Mexico and attends the ninth meeting of the China-Mexico intergovernmental standing committee's science and technology subcommittee</span><span class="l-zh">科技部部长阴和俊访问墨西哥并出席中国—墨西哥政府间常设委员会科技分委会第九次会议</span></h2>
-            <p class="tp-sum"><span class="l-en">From September 2-4, 2026, at the invitation of Mexican Secretary of Science, Humanities, Technology and Innovation Ruiz, Minister of Science and Technology Yin Hejun led a delegation to visit Mexico and co-chaired the 9th meeting of the Science and Technology Sub-commission of the China-Mexico Permanent Intergovernmental Commission in Mexico City. During the meeting, both sides reviewed the achievements since the 8th meeting, exchanged views on their national science and technology development strategies and policies, and discussed and reached consensus on priority areas for future China-Mexico sci-tech innovation cooperation. After the meeting, both sides signed the Memorandum of Understanding on Sci-tech Innovation Cooperation between the Ministry of Science and Technology of the People's Republic of China and the Secretariat of Science, Humanities, Technology and Innovation of the United Mexican States, along with the minutes of the sub-commission meeting. (Ministry of Science and Technology)</span><span class="l-zh">2026年9月2日—4日，应墨西哥科学、人文、技术和创新部部长鲁伊斯邀请，科技部部长阴和俊率团访问墨西哥，并在墨西哥城共同主持召开中墨政府间常设委员会科技分委会第九次会议。会上，双方回顾了科技分委会第八次会议以来取得的成效，交流了两国科技发展战略和政策，探讨了下一步中墨科技创新合作的优先领域方向并达成共识。会后，双方签署《中华人民共和国科学技术部与墨西哥合众国科学、人文、技术和创新部关于科技创新合作的谅解备忘录》及科技分委会会议纪要。（科技部）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202608/t20260810_1965017.html" target="_blank" rel="noopener"
+        <a class="tp-item th-inflation lead" href="https://news.futunn.com/flash/20760113/tax-revenue-collected-by-tax-authorities-in-the-first-eight" target="_blank" rel="noopener"
            data-theme="inflation" data-importance="high"
-           data-search="industrial producer price indexes in july 2026  2026年7月工业生产者出厂价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
-          <time class="tp-when" data-t="2026-08-10" datetime="2026-08-10">08-10</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-08-10"></span></div>
+           data-search="前8个月税务部门征收税收收入同比增长5.9% in the first eight months, tax revenue collected by tax authorities rose 5.9% year-on-year. 前8个月税务部门征收税收收入同比增长5.9% 国家税务总局发布的最新税收数据显示，今年前8个月，全国税务部门征收税收收入同比增长5.9%。数据显示，今年前8个月，与税收收入高度相关的工业生产者出厂价格指数（ppi）累计上涨2%，拉动以现价计算的税收收入较快增长。同时，今年资本市场总体较为活跃，前8个月a股日均股票成交额2.7万亿元，较去年同期增长72.8%，带动相关税种、行业税收较快增长，其中证券交易印花税增长82%，限售股转让所得个人所得税增长59.7%；证券业税收收入同比增长65.6%，保险业、其他金融业税收收入分别增长14.6%和18.5%，其他行业税收收入也受相关企业投资股票市场收益增加带动  国家税务总局发布的最新税收数据显示，今年前8个月，全国税务部门征收税收收入同比增长5.9%。数据显示，今年前8个月，与税收收入高度相关的工业生产者出厂价格指数（ppi）累计上涨2%，拉动以现价计算的税收收入较快增长。同时，今年资本市场总体较为活跃，前8个月a股日均股票成交额2.7万亿元，较去年同期增长72.8%，带动相关税种、行业税收较快增长，其中证券交易印花税增长82%，限售股转让所得个人所得税增长59.7%；证券业税收收入同比增长65.6%，保险业、其他金融业税收收入分别增长14.6%和18.5%，其他行业税收收入也受相关企业投资股票市场收益增加带动 富途牛牛 industrial fiscal_trade markets industry & manufacturing 工业与制造业 fiscal & trade 财政与贸易 equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-20T04:26:11+00:00" datetime="2026-09-20T04:26:11+00:00">09-20<br>04:26</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T04:26:11+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">NBS</span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">In the first eight months, tax revenue collected by tax authorities rose 5.9% year-on-year.</span><span class="l-zh">前8个月税务部门征收税收收入同比增长5.9%</span></h2>
+            <p class="tp-sum"><span class="l-en">国家税务总局发布的最新税收数据显示，今年前8个月，全国税务部门征收税收收入同比增长5.9%。数据显示，今年前8个月，与税收收入高度相关的工业生产者出厂价格指数（PPI）累计上涨2%，拉动以现价计算的税收收入较快增长。同时，今年资本市场总体较为活跃，前8个月A股日均股票成交额2.7万亿元，较去年同期增长72.8%，带动相关税种、行业税收较快增长，其中证券交易印花税增长82%，限售股转让所得个人所得税增长59.7%；证券业税收收入同比增长65.6%，保险业、其他金融业税收收入分别增长14.6%和18.5%，其他行业税收收入也受相关企业投资股票市场收益增加带动</span><span class="l-zh">国家税务总局发布的最新税收数据显示，今年前8个月，全国税务部门征收税收收入同比增长5.9%。数据显示，今年前8个月，与税收收入高度相关的工业生产者出厂价格指数（PPI）累计上涨2%，拉动以现价计算的税收收入较快增长。同时，今年资本市场总体较为活跃，前8个月A股日均股票成交额2.7万亿元，较去年同期增长72.8%，带动相关税种、行业税收较快增长，其中证券交易印花税增长82%，限售股转让所得个人所得税增长59.7%；证券业税收收入同比增长65.6%，保险业、其他金融业税收收入分别增长14.6%和18.5%，其他行业税收收入也受相关企业投资股票市场收益增加带动</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/20760093/experts-lpr-quotes-remained-unchanged-in-september-2026-with-potential" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="专家：2026年9月lpr报价保持不变，后期有望下调 expert: the september 2026 lpr quote remains unchanged, with room for a cut later. 专家：2026年9月lpr报价保持不变，后期有望下调 东方金诚研究表示，9月两个期限品种的lpr报价保持不变，基本符合市场预期。年初以来lpr报价保持稳定，背后是上半年gdp增速达到4.7%，落在全年4.5%至5.0%的经济增速目标范围之内，以高技术制造业为代表的新质生产力领域加速发展。这意味着尽管二季度以来国内投资、消费势头转弱，经济增长动能有所下行，但宏观政策保持较强定力，货币政策继续处于观察期。这是9月lpr报价未作调整的根本原因。我们判断，后期央行有可能实施政策性降息，将带动lpr报价跟进下调。7月30日中央政治局会议强调，接下来要“充分发挥各项存量政策效能，及时谋划出台务实管用的增量政策，加大逆周  东方金诚研究表示，9月两个期限品种的lpr报价保持不变，基本符合市场预期。年初以来lpr报价保持稳定，背后是上半年gdp增速达到4.7%，落在全年4.5%至5.0%的经济增速目标范围之内，以高技术制造业为代表的新质生产力领域加速发展。这意味着尽管二季度以来国内投资、消费势头转弱，经济增长动能有所下行，但宏观政策保持较强定力，货币政策继续处于观察期。这是9月lpr报价未作调整的根本原因。我们判断，后期央行有可能实施政策性降息，将带动lpr报价跟进下调。7月30日中央政治局会议强调，接下来要“充分发挥各项存量政策效能，及时谋划出台务实管用的增量政策，加大逆周 富途牛牛 pboc_liquidity consumer industrial pboc & liquidity 央行与流动性 consumer 消费 industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-20T03:28:44+00:00" datetime="2026-09-20T03:28:44+00:00">09-20<br>03:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T03:28:44+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Expert: The September 2026 LPR quote remains unchanged, with room for a cut later.</span><span class="l-zh">专家：2026年9月LPR报价保持不变，后期有望下调</span></h2>
+            <p class="tp-sum"><span class="l-en">东方金诚研究表示，9月两个期限品种的LPR报价保持不变，基本符合市场预期。年初以来LPR报价保持稳定，背后是上半年GDP增速达到4.7%，落在全年4.5%至5.0%的经济增速目标范围之内，以高技术制造业为代表的新质生产力领域加速发展。这意味着尽管二季度以来国内投资、消费势头转弱，经济增长动能有所下行，但宏观政策保持较强定力，货币政策继续处于观察期。这是9月LPR报价未作调整的根本原因。我们判断，后期央行有可能实施政策性降息，将带动LPR报价跟进下调。7月30日中央政治局会议强调，接下来要“充分发挥各项存量政策效能，及时谋划出台务实管用的增量政策，加大逆周</span><span class="l-zh">东方金诚研究表示，9月两个期限品种的LPR报价保持不变，基本符合市场预期。年初以来LPR报价保持稳定，背后是上半年GDP增速达到4.7%，落在全年4.5%至5.0%的经济增速目标范围之内，以高技术制造业为代表的新质生产力领域加速发展。这意味着尽管二季度以来国内投资、消费势头转弱，经济增长动能有所下行，但宏观政策保持较强定力，货币政策继续处于观察期。这是9月LPR报价未作调整的根本原因。我们判断，后期央行有可能实施政策性降息，将带动LPR报价跟进下调。7月30日中央政治局会议强调，接下来要“充分发挥各项存量政策效能，及时谋划出台务实管用的增量政策，加大逆周</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3167746" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="9月lpr报价出炉：5年期和1年期利率均维持不变 september lpr quotes released: both the 5-year and 1-year rates remain unchanged. 9月lpr报价出炉：5年期和1年期利率均维持不变 央行公告，9月1年期贷款市场报价利率（lpr）为3.0%，5年期以上lpr为3.5%。  央行公告，9月1年期贷款市场报价利率（lpr）为3.0%，5年期以上lpr为3.5%。 华尔街见闻 pboc_liquidity credit_impulse pboc & liquidity 央行与流动性 credit & financing 信贷与社融 512800.ss">
+          <time class="tp-when" data-t="2026-09-20T01:00:30+00:00" datetime="2026-09-20T01:00:30+00:00">09-20<br>01:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T01:00:30+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">September LPR quotes released: both the 5-year and 1-year rates remain unchanged.</span><span class="l-zh">9月LPR报价出炉：5年期和1年期利率均维持不变</span></h2>
+            <p class="tp-sum"><span class="l-en">央行公告，9月1年期贷款市场报价利率（LPR）为3.0%，5年期以上LPR为3.5%。</span><span class="l-zh">央行公告，9月1年期贷款市场报价利率（LPR）为3.0%，5年期以上LPR为3.5%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103371330.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="lpr连续16个月不变，业内称短期降息必要性不高 国内经济基本面、银行经营压力、海外货币政策收紧等多重因素共同作用下的审慎选择。 lpr unchanged for 16 consecutive months; industry says the need for near-term rate cuts is not high—a prudent choice under the combined effect of multiple factors including domestic economic fundamentals, pressure on bank operations, and tightening overseas monetary policy. lpr连续16个月不变，业内称短期降息必要性不高 国内经济基本面、银行经营压力、海外货币政策收紧等多重因素共同作用下的审慎选择。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">LPR unchanged for 16 consecutive months; industry says the need for near-term rate cuts is not high—a prudent choice under the combined effect of multiple factors including domestic economic fundamentals, pressure on bank operations, and tightening overseas monetary policy.</span><span class="l-zh">LPR连续16个月不变，业内称短期降息必要性不高 国内经济基本面、银行经营压力、海外货币政策收紧等多重因素共同作用下的审慎选择。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.10jqka.com.cn/20260920/c680094736.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="前八个月全国网上商品和服务零售额增长4.6% in the first eight months, national online retail sales of goods and services grew 4.6%. 前八个月全国网上商品和服务零售额增长4.6% 记者从商务部了解到，今年前八个月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质。数字消费融合线上线下。今年前八个月，全国网上商品和服务零售额增长4.6%，据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月，手机、户外服装网零额分别增长6.8%和6.9%。产业电商推动数智化转型。电商发挥技术、数据优势，提高农业、制造业和服务业数智化升级质效。“数商兴农”深入推进，据商务大数据监测，1-8月农产品网上零售额增长12.5%。（央视新闻）  记者从商务部了解到，今年前八个月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质。数字消费融合线上线下。今年前八个月，全国网上商品和服务零售额增长4.6%，据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月，手机、户外服装网零额分别增长6.8%和6.9%。产业电商推动数智化转型。电商发挥技术、数据优势，提高农业、制造业和服务业数智化升级质效。“数商兴农”深入推进，据商务大数据监测，1-8月农产品网上零售额增长12.5%。（央视新闻） 同花顺 consumer industrial consumer 消费 industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-20T10:10:09+00:00" datetime="2026-09-20T10:10:09+00:00">09-20<br>10:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T10:10:09+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>72</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">In the first eight months, national online retail sales of goods and services grew 4.6%.</span><span class="l-zh">前八个月全国网上商品和服务零售额增长4.6%</span></h2>
+            <p class="tp-sum"><span class="l-en">记者从商务部了解到，今年前八个月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质。数字消费融合线上线下。今年前八个月，全国网上商品和服务零售额增长4.6%，据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月，手机、户外服装网零额分别增长6.8%和6.9%。产业电商推动数智化转型。电商发挥技术、数据优势，提高农业、制造业和服务业数智化升级质效。“数商兴农”深入推进，据商务大数据监测，1-8月农产品网上零售额增长12.5%。（央视新闻）</span><span class="l-zh">记者从商务部了解到，今年前八个月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质。数字消费融合线上线下。今年前八个月，全国网上商品和服务零售额增长4.6%，据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月，手机、户外服装网零额分别增长6.8%和6.9%。产业电商推动数智化转型。电商发挥技术、数据优势，提高农业、制造业和服务业数智化升级质效。“数商兴农”深入推进，据商务大数据监测，1-8月农产品网上零售额增长12.5%。（央视新闻）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://flash.jin10.com/detail/20260920192308942800" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会准予三单公募reits产品注册 the csrc approved the registration of three public reits products. 证监会准予三单公募reits产品注册 金十数据9月20日讯，证监会准予三单公募reits产品注册，分别是招商资管招商蛇口封闭式商业不动产证券投资基金、华夏华润电力燃煤发电封闭式基础设施证券投资基金和长城华能燃煤发电封闭式基础设施证券投资基金，其中后两者为市场首批燃煤发电公募reits。  金十数据9月20日讯，证监会准予三单公募reits产品注册，分别是招商资管招商蛇口封闭式商业不动产证券投资基金、华夏华润电力燃煤发电封闭式基础设施证券投资基金和长城华能燃煤发电封闭式基础设施证券投资基金，其中后两者为市场首批燃煤发电公募reits。 金十数据 markets commodities equity market 股票市场 commodities 大宗商品 512880.ss">
+          <time class="tp-when" data-t="2026-09-20T19:23:08+08:00" datetime="2026-09-20T19:23:08+08:00">09-20<br>19:23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T19:23:08+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">金十数据</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in July 2026</span><span class="l-zh">2026年7月工业生产者出厂价格指数</span></h2>
-            
+            <h2 class="tp-title"><span class="l-en">The CSRC approved the registration of three public REITs products.</span><span class="l-zh">证监会准予三单公募REITs产品注册</span></h2>
+            <p class="tp-sum"><span class="l-en">金十数据9月20日讯，证监会准予三单公募REITs产品注册，分别是招商资管招商蛇口封闭式商业不动产证券投资基金、华夏华润电力燃煤发电封闭式基础设施证券投资基金和长城华能燃煤发电封闭式基础设施证券投资基金，其中后两者为市场首批燃煤发电公募REITs。</span><span class="l-zh">金十数据9月20日讯，证监会准予三单公募REITs产品注册，分别是招商资管招商蛇口封闭式商业不动产证券投资基金、华夏华润电力燃煤发电封闭式基础设施证券投资基金和长城华能燃煤发电封闭式基础设施证券投资基金，其中后两者为市场首批燃煤发电公募REITs。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3167785" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="香港财政司司长陈茂波：会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场 hong kong financial secretary paul chan: we will further expand the dim sum bond market and develop rmb-denominated gold and commodity markets. 香港财政司司长陈茂波：会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场 9月20日，香港特区政府财政司司长陈茂波发表网志称，国家“十五五”规划提出加快建设金融强国，香港的角色清晰而独特，包括提供一个与国际规则全面接轨、且安全可靠的离岸平台。香港离岸人民币贷款去年创下9350亿元人民币的历史新高，人民币业务资金安排额度已扩展至5000亿元；我们会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场，助力国家提升在相关领域的国际定价话语权。发挥好香港所长，服务国家所需；国家的高质量发展，是香港最大的发展机遇和底气。  9月20日，香港特区政府财政司司长陈茂波发表网志称，国家“十五五”规划提出加快建设金融强国，香港的角色清晰而独特，包括提供一个与国际规则全面接轨、且安全可靠的离岸平台。香港离岸人民币贷款去年创下9350亿元人民币的历史新高，人民币业务资金安排额度已扩展至5000亿元；我们会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场，助力国家提升在相关领域的国际定价话语权。发挥好香港所长，服务国家所需；国家的高质量发展，是香港最大的发展机遇和底气。 华尔街见闻 credit_impulse fiscal_trade yuan credit & financing 信贷与社融 fiscal & trade 财政与贸易 yuan & fx 人民币与汇率 cny cnh 512800.ss">
+          <time class="tp-when" data-t="2026-09-20T06:57:16+00:00" datetime="2026-09-20T06:57:16+00:00">09-20<br>06:57</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T06:57:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong Financial Secretary Paul Chan: We will further expand the dim sum bond market and develop RMB-denominated gold and commodity markets.</span><span class="l-zh">香港财政司司长陈茂波：会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场</span></h2>
+            <p class="tp-sum"><span class="l-en">9月20日，香港特区政府财政司司长陈茂波发表网志称，国家“十五五”规划提出加快建设金融强国，香港的角色清晰而独特，包括提供一个与国际规则全面接轨、且安全可靠的离岸平台。香港离岸人民币贷款去年创下9350亿元人民币的历史新高，人民币业务资金安排额度已扩展至5000亿元；我们会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场，助力国家提升在相关领域的国际定价话语权。发挥好香港所长，服务国家所需；国家的高质量发展，是香港最大的发展机遇和底气。</span><span class="l-zh">9月20日，香港特区政府财政司司长陈茂波发表网志称，国家“十五五”规划提出加快建设金融强国，香港的角色清晰而独特，包括提供一个与国际规则全面接轨、且安全可靠的离岸平台。香港离岸人民币贷款去年创下9350亿元人民币的历史新高，人民币业务资金安排额度已扩展至5000亿元；我们会进一步扩大点心债市场、发展人民币计价的黄金及大宗商品市场，助力国家提升在相关领域的国际定价话语权。发挥好香港所长，服务国家所需；国家的高质量发展，是香港最大的发展机遇和底气。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CNH</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3167748" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40% pboc: today it conducted 32 billion yuan of 7-day reverse repo operations at an interest rate of 1.40%. 中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40% 中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40%。  中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40%。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-20T01:22:13+00:00" datetime="2026-09-20T01:22:13+00:00">09-20<br>01:22</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T01:22:13+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Today it conducted 32 billion yuan of 7-day reverse repo operations at an interest rate of 1.40%.</span><span class="l-zh">中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40%</span></h2>
+            <p class="tp-sum"><span class="l-en">中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40%。</span><span class="l-zh">中国央行：今日开展320亿元7天逆回购操作，操作利率为1.40%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.10jqka.com.cn/20260920/c680095037.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="李鸿忠在辽宁调研时强调 深入学习贯彻习近平法治思想 以良法促进发展保障善治 li hongzhong stressed during an inspection tour in liaoning: thoroughly study and implement xi jinping thought on the rule of law, and use good laws to promote development and safeguard good governance. 李鸿忠在辽宁调研时强调 深入学习贯彻习近平法治思想 以良法促进发展保障善治 中共中央政治局委员、全国人大常委会副委员长李鸿忠9月17日至20日在辽宁调研。他强调，要坚持以习近平新时代中国特色社会主义思想为指导，深入学习贯彻习近平法治思想，更加注重法治与改革、发展、稳定相协同，更加注重保障和促进社会公平正义，聚焦“十五五”时期目标任务发挥人大职能作用，以良法促进发展、保障善治。 李鸿忠到沈阳、鞍山、大连等地，调研装备制造业产业升级、智能制造企业发展、科技创新及成果转化工作，了解海洋渔业开发、海岛生态保护情况，考察城乡民生保障和基层治理成效。他指出，发展要高质量，立法也要高质量，要坚持以高质量立法保障和服务改革发展，加强重点领域、新  中共中央政治局委员、全国人大常委会副委员长李鸿忠9月17日至20日在辽宁调研。他强调，要坚持以习近平新时代中国特色社会主义思想为指导，深入学习贯彻习近平法治思想，更加注重法治与改革、发展、稳定相协同，更加注重保障和促进社会公平正义，聚焦“十五五”时期目标任务发挥人大职能作用，以良法促进发展、保障善治。 李鸿忠到沈阳、鞍山、大连等地，调研装备制造业产业升级、智能制造企业发展、科技创新及成果转化工作，了解海洋渔业开发、海岛生态保护情况，考察城乡民生保障和基层治理成效。他指出，发展要高质量，立法也要高质量，要坚持以高质量立法保障和服务改革发展，加强重点领域、新 同花顺 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-20T10:29:21+00:00" datetime="2026-09-20T10:29:21+00:00">09-20<br>10:29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T10:29:21+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Li Hongzhong stressed during an inspection tour in Liaoning: thoroughly study and implement Xi Jinping Thought on the Rule of Law, and use good laws to promote development and safeguard good governance.</span><span class="l-zh">李鸿忠在辽宁调研时强调 深入学习贯彻习近平法治思想 以良法促进发展保障善治</span></h2>
+            <p class="tp-sum"><span class="l-en">中共中央政治局委员、全国人大常委会副委员长李鸿忠9月17日至20日在辽宁调研。他强调，要坚持以习近平新时代中国特色社会主义思想为指导，深入学习贯彻习近平法治思想，更加注重法治与改革、发展、稳定相协同，更加注重保障和促进社会公平正义，聚焦“十五五”时期目标任务发挥人大职能作用，以良法促进发展、保障善治。 李鸿忠到沈阳、鞍山、大连等地，调研装备制造业产业升级、智能制造企业发展、科技创新及成果转化工作，了解海洋渔业开发、海岛生态保护情况，考察城乡民生保障和基层治理成效。他指出，发展要高质量，立法也要高质量，要坚持以高质量立法保障和服务改革发展，加强重点领域、新</span><span class="l-zh">中共中央政治局委员、全国人大常委会副委员长李鸿忠9月17日至20日在辽宁调研。他强调，要坚持以习近平新时代中国特色社会主义思想为指导，深入学习贯彻习近平法治思想，更加注重法治与改革、发展、稳定相协同，更加注重保障和促进社会公平正义，聚焦“十五五”时期目标任务发挥人大职能作用，以良法促进发展、保障善治。 李鸿忠到沈阳、鞍山、大连等地，调研装备制造业产业升级、智能制造企业发展、科技创新及成果转化工作，了解海洋渔业开发、海岛生态保护情况，考察城乡民生保障和基层治理成效。他指出，发展要高质量，立法也要高质量，要坚持以高质量立法保障和服务改革发展，加强重点领域、新</span></p>
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://www.yicai.com/news/103351495.html" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="2026年的暑期，小城慢游受到青睐 2026 年暑期国内文旅市场整体稳健向好，呈现出亲子研学主流化、县域慢游潮流化、“赛事文娱 + 旅游”体验式消费爆发以及消费券精准拉动等多重亮点。 in summer 2026, slow-paced small-city travel gains favor; the domestic cultural and tourism market shows steady improvement overall, featuring highlights such as mainstream parent-child study tours, trendy county-level slow travel, an explosion in experience-based consumption from 'events and entertainment plus tourism,' and precise stimulus from consumption vouchers. 2026年的暑期，小城慢游受到青睐 2026 年暑期国内文旅市场整体稳健向好，呈现出亲子研学主流化、县域慢游潮流化、“赛事文娱 + 旅游”体验式消费爆发以及消费券精准拉动等多重亮点。    第一财经 consumer consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+        <a class="tp-item th-policy" href="https://news.futunn.com/flash/20760123/venezuela-and-totalenergies-sign-memorandum-of-understanding" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="委内瑞拉与道达尔能源签署谅解备忘录 venezuela and totalenergies signed a memorandum of understanding. 委内瑞拉与道达尔能源签署谅解备忘录 委内瑞拉与道达尔能源周六签署了一份谅解备忘录，为这家法国公司重返委内瑞拉的运营铺平了道路。据政府声明，委内瑞拉代理总统罗德里格斯在加拉加斯主持了仪式，委内瑞拉国家石油公司总裁埃克托尔·奥夫雷贡与道达尔能源美洲区高级副总裁弗朗西斯科·哈维尔·列洛签署了能源合作协议。声明称，道达尔能源子公司totalenergies e&p new ventures将参与能源项目。道达尔能源及其合作伙伴挪威国家石油公司（equinor）在2021年外国公司撤离潮中退出了petrocedeno石油项目。当时，首席执行官帕特里克·普亚内表示，此举与委内瑞拉的政治局势无关，而是符  委内瑞拉与道达尔能源周六签署了一份谅解备忘录，为这家法国公司重返委内瑞拉的运营铺平了道路。据政府声明，委内瑞拉代理总统罗德里格斯在加拉加斯主持了仪式，委内瑞拉国家石油公司总裁埃克托尔·奥夫雷贡与道达尔能源美洲区高级副总裁弗朗西斯科·哈维尔·列洛签署了能源合作协议。声明称，道达尔能源子公司totalenergies e&p new ventures将参与能源项目。道达尔能源及其合作伙伴挪威国家石油公司（equinor）在2021年外国公司撤离潮中退出了petrocedeno石油项目。当时，首席执行官帕特里克·普亚内表示，此举与委内瑞拉的政治局势无关，而是符 富途牛牛 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-09-20T04:50:37+00:00" datetime="2026-09-20T04:50:37+00:00">09-20<br>04:50</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T04:50:37+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">In summer 2026, slow-paced small-city travel gains favor; the domestic cultural and tourism market shows steady improvement overall, featuring highlights such as mainstream parent-child study tours, trendy county-level slow travel, an explosion in experience-based consumption from 'events and entertainment plus tourism,' and precise stimulus from consumption vouchers.</span><span class="l-zh">2026年的暑期，小城慢游受到青睐 2026 年暑期国内文旅市场整体稳健向好，呈现出亲子研学主流化、县域慢游潮流化、“赛事文娱 + 旅游”体验式消费爆发以及消费券精准拉动等多重亮点。</span></h2>
-            
+            <h2 class="tp-title"><span class="l-en">Venezuela and TotalEnergies signed a memorandum of understanding.</span><span class="l-zh">委内瑞拉与道达尔能源签署谅解备忘录</span></h2>
+            <p class="tp-sum"><span class="l-en">委内瑞拉与道达尔能源周六签署了一份谅解备忘录，为这家法国公司重返委内瑞拉的运营铺平了道路。据政府声明，委内瑞拉代理总统罗德里格斯在加拉加斯主持了仪式，委内瑞拉国家石油公司总裁埃克托尔·奥夫雷贡与道达尔能源美洲区高级副总裁弗朗西斯科·哈维尔·列洛签署了能源合作协议。声明称，道达尔能源子公司TotalEnergies E&P New Ventures将参与能源项目。道达尔能源及其合作伙伴挪威国家石油公司（Equinor）在2021年外国公司撤离潮中退出了Petrocedeno石油项目。当时，首席执行官帕特里克·普亚内表示，此举与委内瑞拉的政治局势无关，而是符</span><span class="l-zh">委内瑞拉与道达尔能源周六签署了一份谅解备忘录，为这家法国公司重返委内瑞拉的运营铺平了道路。据政府声明，委内瑞拉代理总统罗德里格斯在加拉加斯主持了仪式，委内瑞拉国家石油公司总裁埃克托尔·奥夫雷贡与道达尔能源美洲区高级副总裁弗朗西斯科·哈维尔·列洛签署了能源合作协议。声明称，道达尔能源子公司TotalEnergies E&P New Ventures将参与能源项目。道达尔能源及其合作伙伴挪威国家石油公司（Equinor）在2021年外国公司撤离潮中退出了Petrocedeno石油项目。当时，首席执行官帕特里克·普亚内表示，此举与委内瑞拉的政治局势无关，而是符</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://news.futunn.com/flash/20760070/vice-minister-liao-min-meets-with-kiptoo-principal-secretary-of" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="廖岷会见肯尼亚财政部常务副部长基普托 liao min met with kiptoo, deputy principal secretary of kenya's ministry of finance. 廖岷会见肯尼亚财政部常务副部长基普托 2026年9月18日，廖岷副部长在北京会见肯尼亚财政部常务副部长基普托，双方就中肯关系、财金和投融资合作等问题交换意见。国家开发银行副行长王克冰、进出口银行副行长王康，肯尼亚交通部副部长穆罕默德·达噶尔、道路部副部长约瑟夫·姆布古瓦、水利部副部长朱利斯·科瑞尔、肯尼亚驻华大使威利·贝特等参加会见。（财政部）  2026年9月18日，廖岷副部长在北京会见肯尼亚财政部常务副部长基普托，双方就中肯关系、财金和投融资合作等问题交换意见。国家开发银行副行长王克冰、进出口银行副行长王康，肯尼亚交通部副部长穆罕默德·达噶尔、道路部副部长约瑟夫·姆布古瓦、水利部副部长朱利斯·科瑞尔、肯尼亚驻华大使威利·贝特等参加会见。（财政部） 富途牛牛 fiscal_trade fiscal & trade 财政与贸易 512800.ss">
+          <time class="tp-when" data-t="2026-09-20T02:54:25+00:00" datetime="2026-09-20T02:54:25+00:00">09-20<br>02:54</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T02:54:25+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Liao Min met with Kiptoo, Deputy Principal Secretary of Kenya's Ministry of Finance.</span><span class="l-zh">廖岷会见肯尼亚财政部常务副部长基普托</span></h2>
+            <p class="tp-sum"><span class="l-en">2026年9月18日，廖岷副部长在北京会见肯尼亚财政部常务副部长基普托，双方就中肯关系、财金和投融资合作等问题交换意见。国家开发银行副行长王克冰、进出口银行副行长王康，肯尼亚交通部副部长穆罕默德·达噶尔、道路部副部长约瑟夫·姆布古瓦、水利部副部长朱利斯·科瑞尔、肯尼亚驻华大使威利·贝特等参加会见。（财政部）</span><span class="l-zh">2026年9月18日，廖岷副部长在北京会见肯尼亚财政部常务副部长基普托，双方就中肯关系、财金和投融资合作等问题交换意见。国家开发银行副行长王克冰、进出口银行副行长王康，肯尼亚交通部副部长穆罕默德·达噶尔、道路部副部长约瑟夫·姆布古瓦、水利部副部长朱利斯·科瑞尔、肯尼亚驻华大使威利·贝特等参加会见。（财政部）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3167795" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="工信部召开中小企业圆桌会，强调健全主动发现机制，做好对企服务 miit held a roundtable with small and medium-sized enterprises, emphasizing improving proactive discovery mechanisms and providing good services to enterprises. 工信部召开中小企业圆桌会，强调健全主动发现机制，做好对企服务 9月20日，工业和信息化部党组书记、部长李乐成主持召开第十六次中小企业圆桌会议，围绕健全优质中小企业主动发现机制、提升精准服务水平听取意见建议。李乐成指出，工业和信息化部将加快构建促进专精特新中小企业发展壮大机制，完善优质企业梯度培育体系，一体化推进优质中小企业“选种、育苗、培优”，加强对初创潜力企业识别，把那些埋头搞技术、专心做产品的优质企业主动发现出来，推动培育服务从“坐等申报”为“主动上门”。要持续完善法律政策、优企培育、助企服务体系，推动中小企业高质量发展，不断增强先进制造业发展的动力活力。  9月20日，工业和信息化部党组书记、部长李乐成主持召开第十六次中小企业圆桌会议，围绕健全优质中小企业主动发现机制、提升精准服务水平听取意见建议。李乐成指出，工业和信息化部将加快构建促进专精特新中小企业发展壮大机制，完善优质企业梯度培育体系，一体化推进优质中小企业“选种、育苗、培优”，加强对初创潜力企业识别，把那些埋头搞技术、专心做产品的优质企业主动发现出来，推动培育服务从“坐等申报”为“主动上门”。要持续完善法律政策、优企培育、助企服务体系，推动中小企业高质量发展，不断增强先进制造业发展的动力活力。 华尔街见闻 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-20T10:18:35+00:00" datetime="2026-09-20T10:18:35+00:00">09-20<br>10:18</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T10:18:35+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">MIIT held a roundtable with small and medium-sized enterprises, emphasizing improving proactive discovery mechanisms and providing good services to enterprises.</span><span class="l-zh">工信部召开中小企业圆桌会，强调健全主动发现机制，做好对企服务</span></h2>
+            <p class="tp-sum"><span class="l-en">9月20日，工业和信息化部党组书记、部长李乐成主持召开第十六次中小企业圆桌会议，围绕健全优质中小企业主动发现机制、提升精准服务水平听取意见建议。李乐成指出，工业和信息化部将加快构建促进专精特新中小企业发展壮大机制，完善优质企业梯度培育体系，一体化推进优质中小企业“选种、育苗、培优”，加强对初创潜力企业识别，把那些埋头搞技术、专心做产品的优质企业主动发现出来，推动培育服务从“坐等申报”为“主动上门”。要持续完善法律政策、优企培育、助企服务体系，推动中小企业高质量发展，不断增强先进制造业发展的动力活力。</span><span class="l-zh">9月20日，工业和信息化部党组书记、部长李乐成主持召开第十六次中小企业圆桌会议，围绕健全优质中小企业主动发现机制、提升精准服务水平听取意见建议。李乐成指出，工业和信息化部将加快构建促进专精特新中小企业发展壮大机制，完善优质企业梯度培育体系，一体化推进优质中小企业“选种、育苗、培优”，加强对初创潜力企业识别，把那些埋头搞技术、专心做产品的优质企业主动发现出来，推动培育服务从“坐等申报”为“主动上门”。要持续完善法律政策、优企培育、助企服务体系，推动中小企业高质量发展，不断增强先进制造业发展的动力活力。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.futunn.com/flash/20760255/an-official-from-the-department-of-e-commerce-under-the" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="商务部电子商务司负责人介绍2026年1-8月我国电子商务发展情况 a responsible person from the ministry of commerce's department of e-commerce introduced china's e-commerce development in january-august 2026. 商务部电子商务司负责人介绍2026年1-8月我国电子商务发展情况 2026年1-8月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质，数智化赋能助力产业转型升级，“丝路电商”伙伴国持续扩围，深化国际经贸合作。据国家统计局数据，1-8月全国网上商品和服务零售额增长4.6%，其中商品和服务零售额分别增长4.3%和5.1%。据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月手机、户外服装网零额分别增长6.8%和6.9%。即时零售、在线服务深度融合消费场景，据国家统计局数据，1-8月即时零售交易额增速超两位数，商务大数据监测重点电商平台1-8月旅游和生活服务  2026年1-8月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质，数智化赋能助力产业转型升级，“丝路电商”伙伴国持续扩围，深化国际经贸合作。据国家统计局数据，1-8月全国网上商品和服务零售额增长4.6%，其中商品和服务零售额分别增长4.3%和5.1%。据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月手机、户外服装网零额分别增长6.8%和6.9%。即时零售、在线服务深度融合消费场景，据国家统计局数据，1-8月即时零售交易额增速超两位数，商务大数据监测重点电商平台1-8月旅游和生活服务 富途牛牛 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-09-20T08:55:41+00:00" datetime="2026-09-20T08:55:41+00:00">09-20<br>08:55</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T08:55:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A responsible person from the Ministry of Commerce's Department of E-Commerce introduced China's e-commerce development in January-August 2026.</span><span class="l-zh">商务部电子商务司负责人介绍2026年1-8月我国电子商务发展情况</span></h2>
+            <p class="tp-sum"><span class="l-en">2026年1-8月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质，数智化赋能助力产业转型升级，“丝路电商”伙伴国持续扩围，深化国际经贸合作。据国家统计局数据，1-8月全国网上商品和服务零售额增长4.6%，其中商品和服务零售额分别增长4.3%和5.1%。据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月手机、户外服装网零额分别增长6.8%和6.9%。即时零售、在线服务深度融合消费场景，据国家统计局数据，1-8月即时零售交易额增速超两位数，商务大数据监测重点电商平台1-8月旅游和生活服务</span><span class="l-zh">2026年1-8月，我国电子商务向好向新发展，融合线上线下推动消费扩容提质，数智化赋能助力产业转型升级，“丝路电商”伙伴国持续扩围，深化国际经贸合作。据国家统计局数据，1-8月全国网上商品和服务零售额增长4.6%，其中商品和服务零售额分别增长4.3%和5.1%。据商务部测算，拉动社会消费商品和服务零售额增长1.3个百分点。数字、健康产品增长较快，据商务大数据监测，1-8月手机、户外服装网零额分别增长6.8%和6.9%。即时零售、在线服务深度融合消费场景，据国家统计局数据，1-8月即时零售交易额增速超两位数，商务大数据监测重点电商平台1-8月旅游和生活服务</span></p>
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/quanshang/qsyj/2026-09-04/doc-iniqskus1174252.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="任职不到八个月，世纪证券营业部总经理为何“失范”？ why did the general manager of century securities' sales branch 'violate norms' within less than eight months of tenure? 任职不到八个月，世纪证券营业部总经理为何“失范”？    新浪财经股票 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-04" datetime="2026-09-04">09-04</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04"></span></div>
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3167780" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="工信部：大力发展开源基座模型和垂类模型，夯实新一代智能制造软硬件基础 miit: vigorously develop open-source foundation models and vertical models, and consolidate the software and hardware foundation for a new generation of intelligent manufacturing. 工信部：大力发展开源基座模型和垂类模型，夯实新一代智能制造软硬件基础 9月20日，2026世界制造业大会在安徽合肥开幕。工业和信息化部副部长辛国斌在开幕式致辞中表示，工业和信息化部将以新一代智能制造为主攻方向，不断提升制造业创新力、竞争力、综合实力，塑造中国制造新优势。  9月20日，2026世界制造业大会在安徽合肥开幕。工业和信息化部副部长辛国斌在开幕式致辞中表示，工业和信息化部将以新一代智能制造为主攻方向，不断提升制造业创新力、竞争力、综合实力，塑造中国制造新优势。 华尔街见闻 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-20T05:41:47+00:00" datetime="2026-09-20T05:41:47+00:00">09-20<br>05:41</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T05:41:47+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Why did the general manager of Century Securities' sales branch 'violate norms' within less than eight months of tenure?</span><span class="l-zh">任职不到八个月，世纪证券营业部总经理为何“失范”？</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/quanshang/qsyj/2026-09-04/doc-iniqskuq0819917.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="投行连年亏钱，为什么华兴证券敢把总经理交给赵凯？ with investment banking losing money year after year, why does huaxing securities dare to hand the general manager role to zhao kai? 投行连年亏钱，为什么华兴证券敢把总经理交给赵凯？    新浪财经股票 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-04" datetime="2026-09-04">09-04</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">With investment banking losing money year after year, why does Huaxing Securities dare to hand the general manager role to Zhao Kai?</span><span class="l-zh">投行连年亏钱，为什么华兴证券敢把总经理交给赵凯？</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/tob/2026-09-04/doc-iniqryew1334235.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="9月4日沪深两市涨停分析：龙版传媒5连板 september 4 a-share limit-up analysis: longban media hits 5 consecutive limit-ups 9月4日沪深两市涨停分析：龙版传媒5连板    新浪财经股票 markets equity market 股票市场 ashr">
-          <time class="tp-when" data-t="2026-09-04" datetime="2026-09-04">09-04</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-04"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">September 4 A-share limit-up analysis: Longban Media hits 5 consecutive limit-ups</span><span class="l-zh">9月4日沪深两市涨停分析：龙版传媒5连板</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">ASHR</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160894" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="国家数据局局长刘烈宏赴内蒙古自治区调研数据要素市场化配置改革工作推进情况 liu liehong, director of the national data administration, conducts research in inner mongolia on progress in market-oriented reform of data element allocation 国家数据局局长刘烈宏赴内蒙古自治区调研数据要素市场化配置改革工作推进情况 国家数据局消息，2026年9月1日至2日，国家数据局党组书记、局长刘烈宏一行赴内蒙古自治区调研，前往中国联通呼和浩特云数据中心、中国移动呼和浩特数据中心、华为云、优刻得、和林格尔集群多云算力资源监测与调度平台、中金数据乌兰察布零碳算力基地，以及内蒙古数据要素产业园、乳业国家技术创新中心、乌兰察布职业学院数字智能产业学院等，深入了解当地数据要素市场化配置改革工作推进情况。 according to the national data administration, from september 1-2, 2026, liu liehong, secretary of the party leadership group and director of the national data administration, led a delegation to conduct research in inner mongolia autonomous region, visiting china unicom hohhot cloud data center, china mobile hohhot data center, huawei cloud, ucloud, the helingeer cluster multi-cloud computing resource monitoring and dispatching platform, china finance data ulanqab zero-carbon computing base, as well as the inner mongolia data element industrial park, the national technological innovation center for dairy industry, and the digital intelligent industry college of ulanqab vocational college, to gain an in-depth understanding of the local progress in advancing reforms for market-based allocation of data elements. 国家数据局消息，2026年9月1日至2日，国家数据局党组书记、局长刘烈宏一行赴内蒙古自治区调研，前往中国联通呼和浩特云数据中心、中国移动呼和浩特数据中心、华为云、优刻得、和林格尔集群多云算力资源监测与调度平台、中金数据乌兰察布零碳算力基地，以及内蒙古数据要素产业园、乳业国家技术创新中心、乌兰察布职业学院数字智能产业学院等，深入了解当地数据要素市场化配置改革工作推进情况。 华尔街见闻 tech_policy tech policy 科技政策 ">
-          <time class="tp-when" data-t="2026-09-05T11:47:59+00:00" datetime="2026-09-05T11:47:59+00:00">09-05<br>11:47</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T11:47:59+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
               <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Liu Liehong, director of the National Data Administration, conducts research in Inner Mongolia on progress in market-oriented reform of data element allocation</span><span class="l-zh">国家数据局局长刘烈宏赴内蒙古自治区调研数据要素市场化配置改革工作推进情况</span></h2>
-            <p class="tp-sum"><span class="l-en">According to the National Data Administration, from September 1-2, 2026, Liu Liehong, Secretary of the Party Leadership Group and Director of the National Data Administration, led a delegation to conduct research in Inner Mongolia Autonomous Region, visiting China Unicom Hohhot Cloud Data Center, China Mobile Hohhot Data Center, Huawei Cloud, UCloud, the Helingeer Cluster Multi-Cloud Computing Resource Monitoring and Dispatching Platform, China Finance Data Ulanqab Zero-Carbon Computing Base, as well as the Inner Mongolia Data Element Industrial Park, the National Technological Innovation Center for Dairy Industry, and the Digital Intelligent Industry College of Ulanqab Vocational College, to gain an in-depth understanding of the local progress in advancing reforms for market-based allocation of data elements.</span><span class="l-zh">国家数据局消息，2026年9月1日至2日，国家数据局党组书记、局长刘烈宏一行赴内蒙古自治区调研，前往中国联通呼和浩特云数据中心、中国移动呼和浩特数据中心、华为云、优刻得、和林格尔集群多云算力资源监测与调度平台、中金数据乌兰察布零碳算力基地，以及内蒙古数据要素产业园、乳业国家技术创新中心、乌兰察布职业学院数字智能产业学院等，深入了解当地数据要素市场化配置改革工作推进情况。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+            <h2 class="tp-title"><span class="l-en">MIIT: Vigorously develop open-source foundation models and vertical models, and consolidate the software and hardware foundation for a new generation of intelligent manufacturing.</span><span class="l-zh">工信部：大力发展开源基座模型和垂类模型，夯实新一代智能制造软硬件基础</span></h2>
+            <p class="tp-sum"><span class="l-en">9月20日，2026世界制造业大会在安徽合肥开幕。工业和信息化部副部长辛国斌在开幕式致辞中表示，工业和信息化部将以新一代智能制造为主攻方向，不断提升制造业创新力、竞争力、综合实力，塑造中国制造新优势。</span><span class="l-zh">9月20日，2026世界制造业大会在安徽合肥开幕。工业和信息化部副部长辛国斌在开幕式致辞中表示，工业和信息化部将以新一代智能制造为主攻方向，不断提升制造业创新力、竞争力、综合实力，塑造中国制造新优势。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160883" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="国家发改委安排2000万元支持江西暴雨洪涝灾后应急恢复 national development and reform commission allocates 20 million yuan to support emergency recovery after rainstorm and flooding disasters in jiangxi 国家发改委安排2000万元支持江西暴雨洪涝灾后应急恢复 国家发展改革委紧急安排中央预算内投资2000万元，支持江西省做好暴雨洪涝灾害灾后应急恢复，重点用于灾区受损道路、水利等基础设施和学校、医院等公共服务设施灾后应急恢复建设，推动尽快恢复正常生产生活秩序。 the national development and reform commission has urgently allocated 20 million yuan of central budget investment to support jiangxi province in post-disaster emergency recovery from rainstorm and flood disasters, focusing on emergency restoration of damaged infrastructure such as roads and water conservancy projects, as well as public service facilities like schools and hospitals in disaster-affected areas, to promote the rapid restoration of normal production and living order. 国家发展改革委紧急安排中央预算内投资2000万元，支持江西省做好暴雨洪涝灾害灾后应急恢复，重点用于灾区受损道路、水利等基础设施和学校、医院等公共服务设施灾后应急恢复建设，推动尽快恢复正常生产生活秩序。 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-05T09:49:18+00:00" datetime="2026-09-05T09:49:18+00:00">09-05<br>09:49</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T09:49:18+00:00"></span></div>
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4191967.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="lpr连续16个月“按兵不动”，解读来了 lpr has stayed put for 16 consecutive months; here comes the interpretation. lpr连续16个月“按兵不动”，解读来了    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">National Development and Reform Commission allocates 20 million yuan to support emergency recovery after rainstorm and flooding disasters in Jiangxi</span><span class="l-zh">国家发改委安排2000万元支持江西暴雨洪涝灾后应急恢复</span></h2>
-            <p class="tp-sum"><span class="l-en">The National Development and Reform Commission has urgently allocated 20 million yuan of central budget investment to support Jiangxi Province in post-disaster emergency recovery from rainstorm and flood disasters, focusing on emergency restoration of damaged infrastructure such as roads and water conservancy projects, as well as public service facilities like schools and hospitals in disaster-affected areas, to promote the rapid restoration of normal production and living order.</span><span class="l-zh">国家发展改革委紧急安排中央预算内投资2000万元，支持江西省做好暴雨洪涝灾害灾后应急恢复，重点用于灾区受损道路、水利等基础设施和学校、医院等公共服务设施灾后应急恢复建设，推动尽快恢复正常生产生活秩序。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+            <h2 class="tp-title"><span class="l-en">LPR has stayed put for 16 consecutive months; here comes the interpretation.</span><span class="l-zh">LPR连续16个月“按兵不动”，解读来了</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://finance.eastmoney.com/a/202609203879356443.html" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="周末要闻汇总：国常会部署深入实施积极应对人口老龄化国家战略 weekend news roundup: the state council executive meeting deployed deeper implementation of the national strategy for actively responding to population aging. 周末要闻汇总：国常会部署深入实施积极应对人口老龄化国家战略 【周末要闻汇总】1、国常会部署深入实施积极应对人口老龄化国家战略；2、商务部新闻发言人就中美经贸磋商有关问题答记者问；3、美对进口俄石油天然气第三国加征关税，商务部回应。  【周末要闻汇总】1、国常会部署深入实施积极应对人口老龄化国家战略；2、商务部新闻发言人就中美经贸磋商有关问题答记者问；3、美对进口俄石油天然气第三国加征关税，商务部回应。 eastmoney fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-20 15:20:26" datetime="2026-09-20 15:20:26">09-20<br>15:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20 15:20:26"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>63</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Weekend news roundup: The State Council executive meeting deployed deeper implementation of the national strategy for actively responding to population aging.</span><span class="l-zh">周末要闻汇总：国常会部署深入实施积极应对人口老龄化国家战略</span></h2>
+            <p class="tp-sum"><span class="l-en">【周末要闻汇总】1、国常会部署深入实施积极应对人口老龄化国家战略；2、商务部新闻发言人就中美经贸磋商有关问题答记者问；3、美对进口俄石油天然气第三国加征关税，商务部回应。</span><span class="l-zh">【周末要闻汇总】1、国常会部署深入实施积极应对人口老龄化国家战略；2、商务部新闻发言人就中美经贸磋商有关问题答记者问；3、美对进口俄石油天然气第三国加征关税，商务部回应。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3167789" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="盛和资源：控股股东不存在拟对外转让公司控股权的情形 shenghe resources: controlling shareholder has no plans to transfer control of the company 盛和资源：控股股东不存在拟对外转让公司控股权的情形 盛和资源公告，近日，公司关注到境外媒体出现关于某稀土企业集团拟收购公司控股权进而间接持有公司境外资产权益的不实言论，并被国内部分媒体转载。为避免相关信息对广大投资者造成误导，现就相关传闻事项予以澄清。 经公司书面征询控股股东中国地质科学院矿产综合利用研究所，综合利用所回函明确表示不存在拟对外转让公司控股权的情形。  盛和资源公告，近日，公司关注到境外媒体出现关于某稀土企业集团拟收购公司控股权进而间接持有公司境外资产权益的不实言论，并被国内部分媒体转载。为避免相关信息对广大投资者造成误导，现就相关传闻事项予以澄清。 经公司书面征询控股股东中国地质科学院矿产综合利用研究所，综合利用所回函明确表示不存在拟对外转让公司控股权的情形。 华尔街见闻 commodities commodities 大宗商品 512400.ss">
+          <time class="tp-when" data-t="2026-09-20T07:58:34+00:00" datetime="2026-09-20T07:58:34+00:00">09-20<br>07:58</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T07:58:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Shenghe Resources: Controlling shareholder has no plans to transfer control of the company</span><span class="l-zh">盛和资源：控股股东不存在拟对外转让公司控股权的情形</span></h2>
+            <p class="tp-sum"><span class="l-en">盛和资源公告，近日，公司关注到境外媒体出现关于某稀土企业集团拟收购公司控股权进而间接持有公司境外资产权益的不实言论，并被国内部分媒体转载。为避免相关信息对广大投资者造成误导，现就相关传闻事项予以澄清。 经公司书面征询控股股东中国地质科学院矿产综合利用研究所，综合利用所回函明确表示不存在拟对外转让公司控股权的情形。</span><span class="l-zh">盛和资源公告，近日，公司关注到境外媒体出现关于某稀土企业集团拟收购公司控股权进而间接持有公司境外资产权益的不实言论，并被国内部分媒体转载。为避免相关信息对广大投资者造成误导，现就相关传闻事项予以澄清。 经公司书面征询控股股东中国地质科学院矿产综合利用研究所，综合利用所回函明确表示不存在拟对外转让公司控股权的情形。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">512400.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://news.10jqka.com.cn/20260920/c680095978.shtml" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="2025年全国科普工作经费筹集额超243亿元 national science popularization funding raised over rmb 24.3 billion in 2025 2025年全国科普工作经费筹集额超243亿元 记者9月20日从科技部获悉，2025年度全国科普统计数据近日正式发布，2025年全国科普工作经费筹集额243.98亿元，比2024年增长9.80%。科普经费投入稳健增长，公共财政投入发挥引领作用。统计数据显示，我国科普人员队伍规模不断壮大，专职人员数量持续增长。科普基础设施布局持续优化，场馆建设和服务水平不断提升。全媒体科学传播矩阵不断壮大，传播影响力持续扩大。形式多样的科普活动广泛开展，惠及人群更广泛。（新华社）  记者9月20日从科技部获悉，2025年度全国科普统计数据近日正式发布，2025年全国科普工作经费筹集额243.98亿元，比2024年增长9.80%。科普经费投入稳健增长，公共财政投入发挥引领作用。统计数据显示，我国科普人员队伍规模不断壮大，专职人员数量持续增长。科普基础设施布局持续优化，场馆建设和服务水平不断提升。全媒体科学传播矩阵不断壮大，传播影响力持续扩大。形式多样的科普活动广泛开展，惠及人群更广泛。（新华社） 同花顺 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-20T11:40:51+00:00" datetime="2026-09-20T11:40:51+00:00">09-20<br>11:40</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T11:40:51+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">National science popularization funding raised over RMB 24.3 billion in 2025</span><span class="l-zh">2025年全国科普工作经费筹集额超243亿元</span></h2>
+            <p class="tp-sum"><span class="l-en">记者9月20日从科技部获悉，2025年度全国科普统计数据近日正式发布，2025年全国科普工作经费筹集额243.98亿元，比2024年增长9.80%。科普经费投入稳健增长，公共财政投入发挥引领作用。统计数据显示，我国科普人员队伍规模不断壮大，专职人员数量持续增长。科普基础设施布局持续优化，场馆建设和服务水平不断提升。全媒体科学传播矩阵不断壮大，传播影响力持续扩大。形式多样的科普活动广泛开展，惠及人群更广泛。（新华社）</span><span class="l-zh">记者9月20日从科技部获悉，2025年度全国科普统计数据近日正式发布，2025年全国科普工作经费筹集额243.98亿元，比2024年增长9.80%。科普经费投入稳健增长，公共财政投入发挥引领作用。统计数据显示，我国科普人员队伍规模不断壮大，专职人员数量持续增长。科普基础设施布局持续优化，场馆建设和服务水平不断提升。全媒体科学传播矩阵不断壮大，传播影响力持续扩大。形式多样的科普活动广泛开展，惠及人群更广泛。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://news.futunn.com/flash/20760245/li-chenggang-has-been-appointed-as-the-international-trade-negotiation" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="李成钢任中华人民共和国国际贸易谈判代表（正部长级） li chenggang appointed china's international trade representative (ministerial level) 李成钢任中华人民共和国国际贸易谈判代表（正部长级） 据人力资源和社会保障部消息，9月20日，国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。免去徐青森的教育部副部长职务；免去胡卫列的司法部副部长职务；免去牛一兵的国家互联网信息办公室副主任职务；免去廖志伟的长江水利委员会主任职务。 according to the ministry of human resources and social security, on september 20, the state council appointed and removed state functionaries. yu xiaohui was appointed vice minister of industry and information technology; pan wenbo was appointed vice minister of agriculture and rural affairs; li chenggang was appointed international trade representative of the people's republic of china (at the full ministerial level); ling ji was concurrently appointed deputy international trade representative of the people's republic of china; cai dong was appointed vice administrator of the national financial regulatory administration; zhang yongjun was appointed deputy director of the cyberspace administration of china; zhang xiaotang was appointed deputy director of the state tobacco monopoly administration; liu zhen was appointed deputy director of the national administration of traditional chinese medicine. xu qingsen was removed from the post of vice minister of education; hu weili was removed from the post of vice minister of justice; niu yibing was removed from the post of deputy director of the cyberspace administration of china; liao zhiwei was removed from the post of director of the yangtze river water resources commission. 据人力资源和社会保障部消息，9月20日，国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。免去徐青森的教育部副部长职务；免去胡卫列的司法部副部长职务；免去牛一兵的国家互联网信息办公室副主任职务；免去廖志伟的长江水利委员会主任职务。 富途牛牛 industrial commodities industry & manufacturing 工业与制造业 commodities 大宗商品 kweb">
+          <time class="tp-when" data-t="2026-09-20T08:25:24+00:00" datetime="2026-09-20T08:25:24+00:00">09-20<br>08:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T08:25:24+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>52</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Li Chenggang appointed China's International Trade Representative (ministerial level)</span><span class="l-zh">李成钢任中华人民共和国国际贸易谈判代表（正部长级）</span></h2>
+            <p class="tp-sum"><span class="l-en">According to the Ministry of Human Resources and Social Security, on September 20, the State Council appointed and removed state functionaries. Yu Xiaohui was appointed Vice Minister of Industry and Information Technology; Pan Wenbo was appointed Vice Minister of Agriculture and Rural Affairs; Li Chenggang was appointed International Trade Representative of the People's Republic of China (at the full ministerial level); Ling Ji was concurrently appointed Deputy International Trade Representative of the People's Republic of China; Cai Dong was appointed Vice Administrator of the National Financial Regulatory Administration; Zhang Yongjun was appointed Deputy Director of the Cyberspace Administration of China; Zhang Xiaotang was appointed Deputy Director of the State Tobacco Monopoly Administration; Liu Zhen was appointed Deputy Director of the National Administration of Traditional Chinese Medicine. Xu Qingsen was removed from the post of Vice Minister of Education; Hu Weili was removed from the post of Vice Minister of Justice; Niu Yibing was removed from the post of Deputy Director of the Cyberspace Administration of China; Liao Zhiwei was removed from the post of Director of the Yangtze River Water Resources Commission.</span><span class="l-zh">据人力资源和社会保障部消息，9月20日，国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。免去徐青森的教育部副部长职务；免去胡卫列的司法部副部长职务；免去牛一兵的国家互联网信息办公室副主任职务；免去廖志伟的长江水利委员会主任职务。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">KWEB</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3167791" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="国务院任免国家工作人员：李成钢任中华人民共和国国际贸易谈判代表 state council announces appointments and removals of state functionaries: li chenggang appointed china's international trade representative 国务院任免国家工作人员：李成钢任中华人民共和国国际贸易谈判代表 国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。 the state council appointed and removed state functionaries. yu xiaohui was appointed vice minister of industry and information technology; pan wenbo was appointed vice minister of agriculture and rural affairs; li chenggang was appointed international trade representative of the people's republic of china (at the full ministerial level); ling ji was concurrently appointed deputy international trade representative of the people's republic of china; cai dong was appointed vice administrator of the national financial regulatory administration; zhang yongjun was appointed deputy director of the cyberspace administration of china; zhang xiaotang was appointed deputy director of the state tobacco monopoly administration; liu zhen was appointed deputy director of the national administration of traditional chinese medicine. 国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。 华尔街见闻 industrial commodities industry & manufacturing 工业与制造业 commodities 大宗商品 kweb">
+          <time class="tp-when" data-t="2026-09-20T08:20:59+00:00" datetime="2026-09-20T08:20:59+00:00">09-20<br>08:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T08:20:59+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>52</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">State Council announces appointments and removals of state functionaries: Li Chenggang appointed China's International Trade Representative</span><span class="l-zh">国务院任免国家工作人员：李成钢任中华人民共和国国际贸易谈判代表</span></h2>
+            <p class="tp-sum"><span class="l-en">The State Council appointed and removed state functionaries. Yu Xiaohui was appointed Vice Minister of Industry and Information Technology; Pan Wenbo was appointed Vice Minister of Agriculture and Rural Affairs; Li Chenggang was appointed International Trade Representative of the People's Republic of China (at the full ministerial level); Ling Ji was concurrently appointed Deputy International Trade Representative of the People's Republic of China; Cai Dong was appointed Vice Administrator of the National Financial Regulatory Administration; Zhang Yongjun was appointed Deputy Director of the Cyberspace Administration of China; Zhang Xiaotang was appointed Deputy Director of the State Tobacco Monopoly Administration; Liu Zhen was appointed Deputy Director of the National Administration of Traditional Chinese Medicine.</span><span class="l-zh">国务院任免国家工作人员。任命余晓晖为工业和信息化部副部长；任命潘文博为农业农村部副部长；任命李成钢为中华人民共和国国际贸易谈判代表（正部长级）；凌激兼任中华人民共和国国际贸易谈判副代表；任命蔡东为国家金融监督管理总局副局长；任命张拥军为国家互联网信息办公室副主任；任命张孝堂为国家烟草专卖局副局长；任命刘震为国家中医药管理局副局长。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">KWEB</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3167767" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="国家药监局：鼓励外资将原研药品和高端医疗装备引进境内生产 nmpa: encouraging foreign investment to bring original drugs and high-end medical equipment into domestic production 国家药监局：鼓励外资将原研药品和高端医疗装备引进境内生产 9月20日，国家药监局副局长杨胜在国新办发布会上表示，将支持医药产业规模化、集约化、高端化发展。鼓励医药企业建设智能工厂、绿色工厂，将继续支持京津冀、长三角、粤港澳大湾区、成渝双城经济圈等区域医药产业发展，着力培养3-5个具有国际竞争力的生物医药产业创新聚集地。将支持医药领域扩大对外开放合作，鼓励外资将原研药品和高端医疗装备引进境内生产，也鼓励中国企业走出去发展，让中国的药品器械造福全世界。 on september 20, yang sheng, vice administrator of the national medical products administration, said at a state council information office press conference that support will be given to the pharmaceutical industry's development toward scale, concentration and high-end orientation. pharmaceutical companies will be encouraged to build smart factories and green factories, continued support will be given to pharmaceutical industry development in regions such as the beijing-tianjin-hebei region, the yangtze river delta, the guangdong-hong kong-macao greater bay area and the chengdu-chongqing economic circle, and efforts will focus on cultivating 3-5 biopharmaceutical innovation clusters with international competitiveness. support will be given to expanding opening-up and cooperation in the pharmaceutical sector, foreign investment will be encouraged to bring original research drugs and high-end medical equipment into china for production, and chinese companies will also be encouraged to go global so that chinese drugs and medical devices can benefit the world. 9月20日，国家药监局副局长杨胜在国新办发布会上表示，将支持医药产业规模化、集约化、高端化发展。鼓励医药企业建设智能工厂、绿色工厂，将继续支持京津冀、长三角、粤港澳大湾区、成渝双城经济圈等区域医药产业发展，着力培养3-5个具有国际竞争力的生物医药产业创新聚集地。将支持医药领域扩大对外开放合作，鼓励外资将原研药品和高端医疗装备引进境内生产，也鼓励中国企业走出去发展，让中国的药品器械造福全世界。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-09-20T03:02:22+00:00" datetime="2026-09-20T03:02:22+00:00">09-20<br>03:02</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T03:02:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">NMPA: Encouraging foreign investment to bring original drugs and high-end medical equipment into domestic production</span><span class="l-zh">国家药监局：鼓励外资将原研药品和高端医疗装备引进境内生产</span></h2>
+            <p class="tp-sum"><span class="l-en">On September 20, Yang Sheng, Vice Administrator of the National Medical Products Administration, said at a State Council Information Office press conference that support will be given to the pharmaceutical industry's development toward scale, concentration and high-end orientation. Pharmaceutical companies will be encouraged to build smart factories and green factories, continued support will be given to pharmaceutical industry development in regions such as the Beijing-Tianjin-Hebei region, the Yangtze River Delta, the Guangdong-Hong Kong-Macao Greater Bay Area and the Chengdu-Chongqing economic circle, and efforts will focus on cultivating 3-5 biopharmaceutical innovation clusters with international competitiveness. Support will be given to expanding opening-up and cooperation in the pharmaceutical sector, foreign investment will be encouraged to bring original research drugs and high-end medical equipment into China for production, and Chinese companies will also be encouraged to go global so that Chinese drugs and medical devices can benefit the world.</span><span class="l-zh">9月20日，国家药监局副局长杨胜在国新办发布会上表示，将支持医药产业规模化、集约化、高端化发展。鼓励医药企业建设智能工厂、绿色工厂，将继续支持京津冀、长三角、粤港澳大湾区、成渝双城经济圈等区域医药产业发展，着力培养3-5个具有国际竞争力的生物医药产业创新聚集地。将支持医药领域扩大对外开放合作，鼓励外资将原研药品和高端医疗装备引进境内生产，也鼓励中国企业走出去发展，让中国的药品器械造福全世界。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3167756" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="市场监管总局：“十五五”时期着力整治侵害消费者权益突出问题 samr: focusing on tackling prominent issues infringing on consumer rights during the 15th five-year plan period 市场监管总局：“十五五”时期着力整治侵害消费者权益突出问题 从国务院新闻办公室举行的开局起步“十五五”系列主题新闻发布会上了解到，市场监管总局相关负责人表示，将继续优化消费者权益保护体系，着力整治侵害消费者权益突出问题，持续规范网络销售、直播带货等经营活动。进一步畅通消费维权渠道，推进消费纠纷多元化解、源头化解，实现在线消费纠纷解决机制覆盖主要网络交易平台，让群众维权少跑腿、少折腾。持续优化消费环境，加强消费领域信用体系建设，努力让老百姓买得放心、用得安心。（央视新闻） at the state council information office press conference in the series on starting the 15th five-year plan, a relevant official of the state administration for market regulation said that it will continue to improve the consumer rights protection system, focus on addressing prominent problems that infringe on consumer rights, and keep regulating business activities such as online sales and livestream e-commerce. it will further open up channels for consumer rights protection, promote diversified and source-based resolution of consumer disputes, achieve coverage of online consumer dispute resolution mechanisms across major online trading platforms, and make rights protection less burdensome and less troublesome for the public. it will continue to improve the consumption environment, strengthen the credit system in the consumption sector, and strive to let ordinary people buy with confidence and use with peace of mind. (cctv news) 从国务院新闻办公室举行的开局起步“十五五”系列主题新闻发布会上了解到，市场监管总局相关负责人表示，将继续优化消费者权益保护体系，着力整治侵害消费者权益突出问题，持续规范网络销售、直播带货等经营活动。进一步畅通消费维权渠道，推进消费纠纷多元化解、源头化解，实现在线消费纠纷解决机制覆盖主要网络交易平台，让群众维权少跑腿、少折腾。持续优化消费环境，加强消费领域信用体系建设，努力让老百姓买得放心、用得安心。（央视新闻） 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-09-20T02:20:01+00:00" datetime="2026-09-20T02:20:01+00:00">09-20<br>02:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T02:20:01+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">SAMR: Focusing on tackling prominent issues infringing on consumer rights during the 15th Five-Year Plan period</span><span class="l-zh">市场监管总局：“十五五”时期着力整治侵害消费者权益突出问题</span></h2>
+            <p class="tp-sum"><span class="l-en">At the State Council Information Office press conference in the series on starting the 15th Five-Year Plan, a relevant official of the State Administration for Market Regulation said that it will continue to improve the consumer rights protection system, focus on addressing prominent problems that infringe on consumer rights, and keep regulating business activities such as online sales and livestream e-commerce. It will further open up channels for consumer rights protection, promote diversified and source-based resolution of consumer disputes, achieve coverage of online consumer dispute resolution mechanisms across major online trading platforms, and make rights protection less burdensome and less troublesome for the public. It will continue to improve the consumption environment, strengthen the credit system in the consumption sector, and strive to let ordinary people buy with confidence and use with peace of mind. (CCTV News)</span><span class="l-zh">从国务院新闻办公室举行的开局起步“十五五”系列主题新闻发布会上了解到，市场监管总局相关负责人表示，将继续优化消费者权益保护体系，着力整治侵害消费者权益突出问题，持续规范网络销售、直播带货等经营活动。进一步畅通消费维权渠道，推进消费纠纷多元化解、源头化解，实现在线消费纠纷解决机制覆盖主要网络交易平台，让群众维权少跑腿、少折腾。持续优化消费环境，加强消费领域信用体系建设，努力让老百姓买得放心、用得安心。（央视新闻）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3167718" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="德国就25亿欧元燃油纾困方案及价格上限计划达成一致 germany reaches agreement on a 2.5 billion euro fuel relief package and price cap plan 德国就25亿欧元燃油纾困方案及价格上限计划达成一致 德国联邦政府与各州政府已就一项25亿欧元（29亿美元）的纾困方案达成一致，其中包括自10月起实施为期三个月的燃油税减免，以及临时加油价格上限计划，以缓解驾车者和企业面临的压力。 汽油和柴油的能源税将每升削减14欧分，加上增值税部分，总减税幅度约为17欧分。 财政部将动用今年未使用的预算资金，并通过”混合融资措施”弥补剩余部分，25亿欧元成本的一半由德国各州承担。 germany's federal government and the state governments have agreed on a 2.5 billion euro ($2.9 billion) relief package, including a three-month fuel tax cut starting in october and a temporary fuel price cap plan, to ease the pressure on drivers and businesses. the energy tax on gasoline and diesel will be cut by 14 euro cents per liter, and together with the vat portion, the total tax reduction will be about 17 cents. the finance ministry will use unused budget funds this year and cover the remainder through "mixed financing measures," with half of the 2.5 billion euro cost borne by germany's states. 德国联邦政府与各州政府已就一项25亿欧元（29亿美元）的纾困方案达成一致，其中包括自10月起实施为期三个月的燃油税减免，以及临时加油价格上限计划，以缓解驾车者和企业面临的压力。 汽油和柴油的能源税将每升削减14欧分，加上增值税部分，总减税幅度约为17欧分。 财政部将动用今年未使用的预算资金，并通过”混合融资措施”弥补剩余部分，25亿欧元成本的一半由德国各州承担。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-19T13:10:36+00:00" datetime="2026-09-19T13:10:36+00:00">09-19<br>13:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-19T13:10:36+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Germany reaches agreement on a 2.5 billion euro fuel relief package and price cap plan</span><span class="l-zh">德国就25亿欧元燃油纾困方案及价格上限计划达成一致</span></h2>
+            <p class="tp-sum"><span class="l-en">Germany's federal government and the state governments have agreed on a 2.5 billion euro ($2.9 billion) relief package, including a three-month fuel tax cut starting in October and a temporary fuel price cap plan, to ease the pressure on drivers and businesses. The energy tax on gasoline and diesel will be cut by 14 euro cents per liter, and together with the VAT portion, the total tax reduction will be about 17 cents. The Finance Ministry will use unused budget funds this year and cover the remainder through "mixed financing measures," with half of the 2.5 billion euro cost borne by Germany's states.</span><span class="l-zh">德国联邦政府与各州政府已就一项25亿欧元（29亿美元）的纾困方案达成一致，其中包括自10月起实施为期三个月的燃油税减免，以及临时加油价格上限计划，以缓解驾车者和企业面临的压力。 汽油和柴油的能源税将每升削减14欧分，加上增值税部分，总减税幅度约为17欧分。 财政部将动用今年未使用的预算资金，并通过”混合融资措施”弥补剩余部分，25亿欧元成本的一半由德国各州承担。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/markets/article/3367987/housing-prices-surge-near-new-huanggang-port-buyers-eye-dual-city-lifestyle?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="housing prices surge near new huanggang port as buyers eye ‘dual-city’ lifestyle  黄冈新口岸附近房价飙升，购房者瞄准“双城”生活方式 prices for properties near the new huanggang port are already soaring months ahead of the border crossing being put into operation, with many buyers attracted by the idea of a “dual-city lifestyle”, according to property agents.
+the new border facility, which is set to open before the end of the year, is expected to make crossing between shenzhen and hong kong far quicker and more convenient, with plans for 24-hour operations, a “co-location arrangement” and a “joint inspection” clearance model...  据房产中介称，新皇岗口岸投入运营前数月，附近房产价格已经飙升，许多买家被“双城生活”理念吸引。
+预计年底前启用的新边境设施，将使深圳与香港之间的往来更加便捷。 scmp - business property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-09-20T08:00:07+00:00" datetime="2026-09-20T08:00:07+00:00">09-20<br>08:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-20T08:00:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Housing prices surge near new Huanggang Port as buyers eye ‘dual-city’ lifestyle</span><span class="l-zh">黄冈新口岸附近房价飙升，购房者瞄准“双城”生活方式</span></h2>
+            <p class="tp-sum"><span class="l-en">Prices for properties near the new Huanggang Port are already soaring months ahead of the border crossing being put into operation, with many buyers attracted by the idea of a “dual-city lifestyle”, according to property agents.
+The new border facility, which is set to open before the end of the year, is expected to make crossing between Shenzhen and Hong Kong far quicker and more convenient, with plans for 24-hour operations, a “co-location arrangement” and a “joint inspection” clearance model...</span><span class="l-zh">据房产中介称，新皇岗口岸投入运营前数月，附近房产价格已经飙升，许多买家被“双城生活”理念吸引。
+预计年底前启用的新边境设施，将使深圳与香港之间的往来更加便捷。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
           </div>
         </a>
         
@@ -915,55 +908,23 @@ However, analysts said the city’s selective and narrow-based retailing recover
           <div class="cal-when soon">
             <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
-          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
         </div>
         
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
-          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
         </div>
         
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">13</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
-          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
         </div>
         
       </section>
@@ -974,25 +935,25 @@ However, analysts said the city’s selective and narrow-based retailing recover
         <div class="exp-pills">
           
           
-          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×5</span></span>
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×4</span></span>
           
           
-          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×5</span></span>
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×3</span></span>
           
           
-          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×2</span></span>
+          <span class="exp-pill"><span class="tk">KWEB</span><span class="nm"><span class="l-en">China internet</span><span class="l-zh">中概互联</span></span><span class="ct">×2</span></span>
           
           
-          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">KWEB</span><span class="nm"><span class="l-en">China internet</span><span class="l-zh">中概互联</span></span></span>
+          <span class="exp-pill"><span class="tk">CNH</span><span class="nm"><span class="l-en">offshore yuan</span><span class="l-zh">离岸人民币</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">512760.SS</span><span class="nm"><span class="l-en">chips</span><span class="l-zh">半导体</span></span></span>
+          <span class="exp-pill"><span class="tk">512400.SS</span><span class="nm"><span class="l-en">metals</span><span class="l-zh">有色</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
           
         </div>
       </section>
@@ -1088,6 +1049,6 @@ However, analysts said the city’s selective and narrow-based retailing recover
 })();
 </script>
 
-<script src="theme.js?v=53939d13" defer></script>
+<script src="theme.js?v=a5808ca0" defer></script>
 </body>
 </html>

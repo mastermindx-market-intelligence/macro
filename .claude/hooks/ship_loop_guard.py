@@ -3803,6 +3803,204 @@ def _transcript_final_message(payload: dict[str, Any]) -> str:
     return ""
 
 
+# --------------------------------------------------------------------------------------
+# Execution continuation law (2026-09-17). Pure functions, no I/O, no inference.
+#
+# Every gate below judges the SHIP CHAIN of a session that already produced a commit.
+# None of them can see the failure family that ends missions BEFORE that chain is ever
+# reached: a session that stops while authorized work remains. Observed repeatedly —
+# one blocked review or tool lane treated as the end of the whole mission; a
+# checkpoint, status note or continuation record mistaken for the outcome it only
+# describes; a
+# principal seat spending itself re-polling a queue a durable watcher already owns; a
+# delegation surface being unavailable read as "execution is impossible" when lawful
+# direct bounded execution remained; accepted work redone with no material
+# invalidator; and an upstream acknowledgement reported as though it were START,
+# RUNNING, MERGED or ACCEPTANCE.
+#
+# The guard cannot observe lanes, custody, delegation scope or carriers, and it must
+# not try: inferring them would make this hook a control plane, which repository law
+# forbids. What it CAN do is exactly two things, and this section is limited to them.
+#
+# 1. REFUSE one self-declared state. `MORE_WORK_EXISTS` is, by the session's own
+#    admission, not a finished mission. The session writes that token itself, so the
+#    refusal has no false positives by construction, and `_block`'s any-code ladder
+#    (10 consecutive / 15 total) keeps it from ever trapping a session.
+# 2. CORRECT the advice every other block carries. The old body said the same
+#    sentence on block 1 and on block 25 — "Continue the task and complete
+#    commit -> ... -> live verification" — which is exactly what taught sessions to
+#    answer a wait with one more poll. `.claude/hooks/gh_quota_guard.py` shape 7
+#    documents that mechanism and measured ~25 consecutive Stop cycles of it in one
+#    session that already had a watcher armed. A repeat of the same code is a
+#    no-delta cycle and now reads as one.
+#
+# Everything the hook cannot observe stays law rather than code, on the surfaces that
+# already carry fleet law: CLAUDE.md and AGENTS.md § "Execution continuation law",
+# `.cursor/rules/execution-continuation.mdc`, and
+# `DEC:EXECUTION-CONTINUATION-INVARIANTS`.
+# --------------------------------------------------------------------------------------
+
+# The closed set of states a substantial session may classify itself into before it
+# ends. Closed on purpose: an open vocabulary is how "checkpoint written", "records
+# note posted" and "context rotated" each came to be reported as though they were the
+# outcome those artifacts only describe.
+SESSION_END_STATES = (
+    "PROVEN_OUTCOME",
+    "EXACT_HUMAN_GATE",
+    "EFFECT_UNKNOWN",
+    "ALL_SCOPED_LANES_BLOCKED",
+    "DURABLE_EXECUTION_RUNNING",
+    "MORE_WORK_EXISTS",
+)
+# The one member that is never a lawful stop. It is in the vocabulary precisely so a
+# session can name the state honestly mid-task; naming it as the END state is the
+# contradiction this guard refuses.
+NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS"})
+MORE_WORK_EXISTS = "more_work_exists"
+
+# A DECLARATION, never a mention. The marker is required so that a session quoting
+# the law ("MORE_WORK_EXISTS is not a valid stopping state") in its own final message
+# cannot block itself. Same shape as the `SHIP LOOP BLOCKED:` report the escape ladder
+# already reads, and for the same reason: an explicit token is auditable, a prose
+# match is not.
+_SESSION_END_DECLARATION = re.compile(
+    r"(?im)^[\s>*_`#-]*SESSION[ _-]?END(?:[ _-]?STATE)?\s*[:=]\s*[\s*_`]*(?P<state>[A-Z_]{4,})"
+)
+
+# The delivery rungs, weakest to strongest. Each is a DISTINCT fact and none implies
+# the next: a queued job has not started, a returned packet has not passed CI, a
+# merged pull request is not production proof, and production proof is not acceptance
+# by the authority that commissioned the work.
+DELIVERY_LADDER = (
+    "ACK",
+    "QUEUED",
+    "START",
+    "RUNNING",
+    "DELIVERED",
+    "CI",
+    "MERGED",
+    "PRODUCTION_PROOF",
+    "ACCEPTANCE",
+)
+# Tokens whose ALL-CAPS appearance in a final message is a delivery CLAIM rather than
+# ordinary prose. "CI" and "ACK" are deliberately absent: both occur constantly in
+# ordinary sentences about check runs and acknowledgements, and this mapping only ever
+# appends an advisory line to a block that was already going to be filed — a wrong
+# advisory line is cheap, but it is not free, so the ambiguous tokens stay out.
+_DELIVERY_CLAIM_TOKENS = {
+    "QUEUED": "QUEUED",
+    "RUNNING": "RUNNING",
+    "DELIVERED": "DELIVERED",
+    "MERGED": "MERGED",
+    "PRODUCTION_PROOF": "PRODUCTION_PROOF",
+    "SHIPPED": "PRODUCTION_PROOF",
+    "ACCEPTANCE": "ACCEPTANCE",
+    "ACCEPTED": "ACCEPTANCE",
+}
+_DELIVERY_CLAIM_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(" + "|".join(sorted(_DELIVERY_CLAIM_TOKENS, key=len, reverse=True)) + r")(?![A-Za-z0-9_])"
+)
+# The strongest rung each block code PROVES. A code absent from this map proves
+# nothing about delivery (the probe itself failed), so it never produces a conflation
+# line — silence is the fail-open direction for advice.
+_PROVEN_STAGE_BY_BLOCKER = {
+    "uncommitted": "RUNNING",
+    "unsafe_branch": "RUNNING",
+    "unpushed": "RUNNING",
+    MORE_WORK_EXISTS: "RUNNING",
+    "unmerged": "CI",
+    CI_FAILED_UNMERGED: "CI",
+    "ci_failed": "MERGED",
+    "render_pending": "MERGED",
+    "render_failed": "MERGED",
+    "live_stale": "MERGED",
+    "live_unreachable": "MERGED",
+}
+# Blocks whose resolution is owned by machinery OUTSIDE this session — a check run, a
+# render lane, the merge sweeper, GitHub's own rate window. Re-reading them cannot
+# change them, which is the whole content of the shape 7 incident.
+WAITING_BLOCKERS = frozenset(
+    {"unmerged", "ci_failed", CI_FAILED_UNMERGED, "render_pending", "live_stale", "github_rate_limited"}
+)
+
+
+def declared_session_end_state(text: str) -> str:
+    """Return the session-end state a final message DECLARES, or "".
+
+    A message carrying several declarations is a confused one, so the resolution is
+    fail-closed toward continuing work: if any declaration is non-terminal, that is
+    the operative one. Otherwise the last declaration wins, which is what lets a
+    session revise its own classification within one message.
+    """
+    found = [
+        match.group("state").upper()
+        for match in _SESSION_END_DECLARATION.finditer(text or "")
+        if match.group("state").upper() in SESSION_END_STATES
+    ]
+    if not found:
+        return ""
+    for state in found:
+        if state in NON_TERMINAL_SESSION_END_STATES:
+            return state
+    return found[-1]
+
+
+def strongest_delivery_claim(text: str) -> str:
+    """Return the highest delivery rung a final message asserts, or ""."""
+    best = ""
+    for token in _DELIVERY_CLAIM_PATTERN.findall(text or ""):
+        rung = _DELIVERY_CLAIM_TOKENS[token]
+        if not best or DELIVERY_LADDER.index(rung) > DELIVERY_LADDER.index(best):
+            best = rung
+    return best
+
+
+def delivery_claim_conflation(code: str, claimed: str) -> str:
+    """Name the gap when a final message claims a rung the evidence does not reach."""
+    proven = _PROVEN_STAGE_BY_BLOCKER.get(code, "")
+    if not proven or not claimed or claimed not in DELIVERY_LADDER:
+        return ""
+    if DELIVERY_LADDER.index(claimed) <= DELIVERY_LADDER.index(proven):
+        return ""
+    return (
+        f"Your report claims `{claimed}`; this session's evidence reaches only "
+        f"`{proven}`. The rungs "
+        + " -> ".join(DELIVERY_LADDER)
+        + " are distinct facts and none implies the next: report the proven rung."
+    )
+
+
+def continuation_directive(code: str, repeat: int, claimed: str = "") -> str:
+    """Compose the lawful next move for one block, from facts the guard already holds.
+
+    `repeat` is the CONSECUTIVE count of this same code, straight off `_block`'s own
+    ledger, and `claimed` is the strongest delivery rung the final message asserts.
+    Nothing here probes anything: every clause is derived from a fact already measured
+    by the caller, which is what keeps this a message correction rather than a second
+    control plane.
+    """
+    parts = [
+        "Freeze the blocked lane only. Independent authorized lanes continue, and a "
+        "blocker in one lane is never a finished mission."
+    ]
+    if code in WAITING_BLOCKERS:
+        parts.append(
+            "This block is a WAIT owned outside this session. Re-reading it cannot "
+            "change it and does not answer this block; a one-line hold note does. "
+            "Spend the interval on an independent lane, never on the queue."
+        )
+    if repeat >= 2:
+        parts.append(
+            f"No-delta cycle {repeat} on `{code}`: the previous attempt changed "
+            "nothing observable, so a third identical attempt is banned. Change "
+            "tactic, change lane, or change owner."
+        )
+    conflation = delivery_claim_conflation(code, claimed)
+    if conflation:
+        parts.append(conflation)
+    return " ".join(parts)
+
+
 def _block(
     path: Path,
     state: dict[str, Any],
@@ -3918,7 +4116,14 @@ def _block(
     body = (
         f"SHIP LOOP {code}: {reason}\n"
         "Continue the task and complete commit → push → PR → CI → squash-merge → "
-        "render/deploy → live verification."
+        "render/deploy → live verification.\n"
+        # The old body ended here, saying the same sentence on block 1 and block 25.
+        # That is the sentence shape 7 of `gh_quota_guard.py` measured turning into
+        # ~25 consecutive Stop cycles of single CI polls: an unchanging instruction
+        # invites an unchanging response. The directive is composed from this
+        # guard's OWN ledger (the consecutive count) and the final message it has
+        # already read, so it costs nothing and it changes when the state does.
+        + continuation_directive(code, count, strongest_delivery_claim(final))
     )
     if escape_hint:
         body += (
@@ -3952,7 +4157,25 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "waiting, and real-live verification. Work only in a fresh "
                     ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
                     "commit, or open PR. This session's starting dirty files were recorded "
-                    "and are excluded from enforcement."
+                    "and are excluded from enforcement.\n"
+                    "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
+                    "only - check independent authorized lanes and continue. If no "
+                    "worker started and lawful principal tools and custody remain, "
+                    "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
+                    "execution may continue; a delegation surface being unavailable "
+                    "is not a reason to stop. A wait on external machinery is handed "
+                    "to a durable watcher or owner while you do parallel work - never "
+                    "spend principal capacity polling. Two equivalent no-delta cycles "
+                    "means change tactic, lane, or owner. Accepted work is "
+                    "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
+                    "reconciled on the same carrier, never by blind retry or "
+                    "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
+                    "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
+                    "implies the next. Before a substantial session ends, state one "
+                    "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
+                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED, "
+                    "DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS - and "
+                    "MORE_WORK_EXISTS is never a valid stopping state."
                 ),
             }
         }
@@ -4077,6 +4300,43 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # Hooks can be installed during an already-running session. Fail open once so
     # that pre-hook work is not misclassified; every later session is enforced.
     if state is None:
+        return
+
+    # A session's OWN declared end state is the single continuation fact this guard
+    # can read without inferring lanes, custody or carriers. `MORE_WORK_EXISTS` is,
+    # by the session's own admission, unfinished authorized work, so it is refused
+    # before any tree or GitHub evidence is gathered - it is the one block that must
+    # also cover the no-commit path below, where a session that never touched the
+    # tree stops after a checkpoint, a status note, or a failed delegation attempt.
+    #
+    # Deliberately NOT falling back to `_transcript_final_message`: that reads up to
+    # a 4 MB transcript tail, and a clean Stop pays for nothing else today. An absent
+    # `last_assistant_message` therefore fails OPEN here. The declaration is an
+    # explicit, auditable act by the session; no false positive is reachable, and
+    # `_block`'s any-code ladder (10 consecutive / 15 total) keeps it from trapping.
+    #
+    # Ordering note for the hold adapter: this block sets `last_blocker` to
+    # `more_work_exists`, and `ship_loop_hold_wrapper._hold_probe` only considers an
+    # ordinary `claude/*` hold candidate while `last_blocker` is `unmerged`. So a
+    # lawfully held session that ALSO declares unfinished work gets this block instead
+    # of `HOLD-FOR-SOL WAITING` - which is the correct message, because by its own
+    # account the work is not done. It is self-healing rather than sticky: the next
+    # Stop without the declaration falls through to the ordinary chain, `last_blocker`
+    # becomes `unmerged` again, and the hold interception resumes. A `sol/*` authority
+    # branch is unaffected either way; the wrapper probes it before any delegation.
+    declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
+    if declared in NON_TERMINAL_SESSION_END_STATES:
+        _block(
+            path,
+            state,
+            payload,
+            MORE_WORK_EXISTS,
+            f"This session classified its own end state as {declared}: authorized "
+            "work remains in scope. That is not a stopping state. Either finish the "
+            "remaining work, or reclassify honestly as PROVEN_OUTCOME, "
+            "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED or "
+            "DURABLE_EXECUTION_RUNNING.",
+        )
         return
 
     baseline = state.get("baseline") or {}

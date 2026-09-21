@@ -254,6 +254,13 @@ import datetime as _dt
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "consumer_payments.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 AXIS_DEFINITION_VERSION = "1.0.0"
@@ -895,9 +902,11 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
     ))
     metrics_by_id = {m["metric_id"]: m["value"] for m in metrics}
 
+    publication_prior = resolve_publication_prior(prior_snapshot, effective_date)
     headline = _headline(x_value, x_status, x_null, y_value, y_status, y_null,
-                          effective_date, prior_snapshot)
-    changes = _changes(metrics_by_id, prior_snapshot)
+                          effective_date, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
+    changes = _changes(metrics_by_id, prior_snapshot, effective_date)
 
     reasons: list[str] = []
     if worst != "CURRENT":
@@ -992,7 +1001,7 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -1761,11 +1770,15 @@ def _sources(retail, sentiment, credit_total, credit_revolving, credit_nonrevolv
 # --------------------------------------------------------------------------- #
 # changes / corrections
 # --------------------------------------------------------------------------- #
-def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None) -> dict:
+def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None,
+             current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")

@@ -410,3 +410,342 @@ def test_deescalation_deescalated_empty_on_missing_drivers():
     """Old artifacts / missing trajectory degrade to an empty chip list, never a crash."""
     assert rr._deescalation(None, None, None, None)["deescalated"] == []
     assert rr._deescalation(None, None, {"phase": "peaking"}, None)["deescalated"] == []
+
+
+# Replay maturity: synthetic regression fixtures, never market/research evidence.
+def _maturity_replay_fixture(prices, horizon=21, lo=None):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range("2026-01-01", periods=len(prices))
+    spy = pd.Series(prices, index=idx, dtype=float)
+    subs = pd.DataFrame({"synthetic": 0.}, index=idx)
+    with patch.object(bt, "_spy", return_value=spy), \
+         patch.object(rr, "leading_signals", return_value=pd.DataFrame(index=idx)), \
+         patch.object(rr, "subscore_series", return_value=subs), \
+         patch.object(bt, "state_series", return_value=pd.Series("elevated", index=idx)):
+        return bt.state_accuracy({}, H=horizon, lo=lo)
+
+
+def test_replay_maturity_counts_only_complete_outcome_windows():
+    for n, h in [(30, 21), (30, 5), (3, 1)]:
+        result = _maturity_replay_fixture([100.] * n, h)
+        assert result["n_days"] == n - h
+        assert result["n_alert"] == n - h
+        assert result["n_unscored"] == h
+
+
+def test_replay_maturity_does_not_score_an_incomplete_positive_tail():
+    result = _maturity_replay_fixture([100.] * 29 + [90.])
+    assert result["n_days"] == 9 and result["n_alert"] == 9
+    assert result["precision"] == .111 and result["recall"] == 1.
+    assert result["f1"] == .2
+
+
+def test_replay_maturity_empty_evidence_is_not_zero_performance():
+    for prices, lo in [([100.] * 20, None), ([100.] * 30, "2027-01-01")]:
+        result = _maturity_replay_fixture(prices, lo=lo)
+        assert result["n_days"] == result["n_alert"] == 0
+        for metric in ("precision", "recall", "f1", "fire_rate"):
+            assert result[metric] is None
+
+
+def test_replay_maturity_rejects_invalid_horizons():
+    import pytest
+    for horizon in (0, -1, True, 1.5):
+        with pytest.raises(ValueError):
+            _maturity_replay_fixture([100.] * 30, horizon)
+
+
+def _maturity_comparison_fixture(scores):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    with patch.object(bt, "state_accuracy", side_effect=[{"f1": s} for s in scores]), \
+         patch.object(bt, "detect_events", return_value=[]), \
+         patch.object(bt, "gate_report", return_value={}):
+        return bt.compare_calib({"legs": {}}, base={"legs": {}})
+
+
+def test_replay_maturity_missing_comparison_never_passes_retune_gate():
+    for scores in [(None, None, .5, .5), (.2, None, .5, .5), (.2, .2, None, .5)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["improves"] is False and result["comparison_ready"] is False
+
+
+def test_replay_maturity_preserves_complete_comparison_rule():
+    for scores, expected in [((.2, .3, .4, .5), True),
+                             ((.2, .3, .2, .3), False),
+                             ((.2, .3, .1, .5), False),
+                             ((0., 0., .1, .1), True)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["comparison_ready"] is True
+        assert result["improves"] is expected
+
+
+def test_replay_maturity_invalid_scores_cannot_authorize_retuning():
+    for invalid in (float("inf"), float("nan"), True, -.1, 1.1, "0.8"):
+        result = _maturity_comparison_fixture((.2, .2, invalid, .5))
+        assert result["comparison_ready"] is False
+        assert result["improves"] is False
+
+
+# Comparability v2: faults in the evaluation population, not model-skill claims.
+def _comparability_fixture(prices, dates=None, H=1, dd=.05):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=len(prices))
+    dates = idx if dates is None else idx[dates]
+    spy = pd.Series(prices, index=idx, dtype=float)
+    subs = pd.DataFrame({'synthetic': 0.}, index=dates)
+    with patch.object(bt, '_spy', return_value=spy), \
+         patch.object(rr, 'leading_signals', return_value=subs), \
+         patch.object(rr, 'subscore_series', return_value=subs), \
+         patch.object(bt, 'state_series', return_value=pd.Series('elevated', index=dates)):
+        return bt.state_accuracy({}, H=H, dd=dd)
+
+
+def test_replay_comparability_uses_price_observations_not_forecast_spacing():
+    out = _comparability_fixture([100., 90., 100., 100., 100.], dates=[0, 2, 4])
+    assert out['n_days'] == 2 and out['precision'] == .5
+    assert out['evaluation']['n_events'] == 1
+    assert out['evaluation']['confusion'] == {'tp': 1, 'fp': 1, 'fn': 0, 'tn': 0}
+
+
+def test_replay_comparability_invalid_price_window_is_not_no_selloff():
+    for bad in (float('nan'), float('inf'), 0., -1.):
+        out = _comparability_fixture([100., bad, 90., 100.], H=2)
+        assert out['n_days'] == 0 and out['n_unscored'] == 4
+        assert out['f1'] is None
+
+
+
+
+
+
+
+
+
+
+
+
+def test_replay_comparability_invalid_target_is_rejected():
+    import pytest
+    for dd in (True, 0., -.05, 1., float('nan'), float('inf')):
+        with pytest.raises(ValueError):
+            _comparability_fixture([100.] * 6, dd=dd)
+
+
+
+
+def test_replay_comparability_digest_binds_outcomes_not_predictions():
+    one = _comparability_fixture([100., 90., 100., 100.])
+    two = _comparability_fixture([100., 100., 90., 100.])
+    assert one['n_days'] == two['n_days'] == 3
+    assert one['evaluation']['outcomes_sha256'] != two['evaluation']['outcomes_sha256']
+    assert len(one['evaluation']['outcomes_sha256']) == 64
+
+
+def test_replay_comparability_raw_reader_preserves_missing_observations():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=3)
+    frame = pd.DataFrame({'close': [100., float('nan'), 90.]}, index=idx)
+    with patch.object(bt.store, 'read', return_value=frame):
+        raw = bt._spy(drop_missing=False)
+        assert len(raw) == 3 and pd.isna(raw.iloc[1])
+        assert len(bt._spy()) == 2  # Legacy event/per-leg reader unchanged.
+
+
+def test_replay_comparability_invalid_observation_index_is_refused():
+    import pytest
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=3)
+    for bad in (idx[[0, 0, 2]], idx[[2, 1, 0]]):
+        subs = pd.DataFrame({'synthetic': 0.}, index=bad)
+        with patch.object(bt, '_spy', return_value=pd.Series(100., index=idx)), \
+             patch.object(rr, 'leading_signals', return_value=subs), \
+             patch.object(rr, 'subscore_series', return_value=subs):
+            with pytest.raises(ValueError, match='unique ordered'):
+                bt.state_accuracy({}, H=1)
+
+
+
+def test_gate_latency_pre_gate_state_matches_production_when_gate_open():
+    from unittest.mock import patch
+    from engine import risk_radar as rr
+    from engine import risk_radar_backtest as bt
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    subs = pd.DataFrame({
+        "credit": [20., 60., 70., 80., 90.],
+        "rates": [20., 20., 70., 20., 20.],
+        "vol": [20., 20., 20., 70., 20.],
+    }, index=idx)
+    calib = {
+        "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
+        "scares": {"credit": {"tier": "A"}, "rates": {"tier": "A"}, "vol": {"tier": "B"}},
+    }
+    with patch.object(rr, "context_gate_series", return_value=pd.Series(True, index=idx)):
+        production = bt.state_series(subs, calib)
+    assert gl.pre_gate_state_series(subs, calib).equals(production)
+
+
+
+def test_gate_latency_gate_components_preserve_unknown_breadth():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=220)
+    spy = pd.DataFrame({"close": range(100, 320)}, index=idx)
+    def fake_read(group, name):
+        if (group, name) == ("yahoo", "SPY"):
+            return spy
+        if (group, name) == ("breadth", "breadth"):
+            return None
+        raise AssertionError((group, name))
+    with patch.object(gl.store, "read", side_effect=fake_read):
+        gate = gl.gate_components(idx)
+    assert gate["gate_open"].isna().all()
+    assert gate["breadth_weak"].isna().all()
+
+
+def test_gate_latency_native_labels_refuse_missing_price_windows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    spy = pd.Series([100., float("nan"), 94., 100., 100.], index=idx)
+    out = gl.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[2] in out.index and not bool(out.loc[idx[2], "event"])
+
+
+
+def test_gate_latency_daily_tradeoff_counts_suppression():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=4)
+    raw_state = pd.Series(["elevated", "elevated", "elevated", "calm"], index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, False, False, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([True, False, True, True], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, True, False, True], index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06, -.06, -.01, -.01],
+        "event": [True, True, False, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["confusion"] == {"tp": 2, "fp": 1, "fn": 0, "tn": 1}
+    assert out["gated"]["confusion"] == {"tp": 1, "fp": 0, "fn": 1, "tn": 2}
+    assert out["FP_removed"] == 1 and out["TP_lost"] == 1
+    assert out["FP_removed_per_TP_lost"] == 1.0
+
+
+
+def test_gate_latency_event_timing_after_t0_before_breach():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    prices = pd.Series(100., index=idx)
+    prices.iloc[28:] = 94.
+    raw_state = pd.Series("calm", index=idx)
+    raw_state.iloc[20:31] = "elevated"
+    gate_open = pd.Series(False, index=idx, dtype="boolean")
+    gate_open.iloc[26:31] = True
+    gate = pd.DataFrame({
+        "gate_open": gate_open,
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    with patch.object(gl, "detect_events", return_value=[anchor]):
+        out = gl.event_latency_result(prices, idx, raw_state, gate)
+    row = out["rows"][0]
+    assert row["timing"] == "after_t0_before_breach"
+    assert row["raw_offset"] == -5
+    assert row["gated_offset"] == 1
+    assert row["latency"] == 6
+    assert out["timing_counts_among_raw_pre_t0"]["after_t0_before_breach"] == 1
+
+
+def test_gate_latency_suppression_attributes_binding_leg():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw = pd.Series(["elevated"] * 3, index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([False, False, False], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([False, True, False], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, False, False], index=idx, dtype="boolean"),
+    }, index=idx)
+    out = gl.suppression_attribution(raw, gate)
+    assert out["price_only"] == out["breadth_only"] == out["both_closed"] == 1
+
+
+
+def test_gate_latency_daily_tradeoff_excludes_unknown_state_rows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw_state = pd.Series([None, "elevated", "calm"], index=idx, dtype=object)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, True, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.10, -.10, -.01],
+        "event": [True, True, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["n"] == out["gated"]["n"] == 2
+    assert out["raw"]["confusion"] == {"tp": 1, "fp": 0, "fn": 0, "tn": 1}
+
+def test_episode_warning_path_uses_exact_frozen_anchor():
+    import pytest
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2020-02-17", periods=5))
+    assert atlas._fixed_anchor(idx, "2020-02-19") == pd.Timestamp("2020-02-19")
+    with pytest.raises(ValueError, match="fixed episode anchor"):
+        atlas._fixed_anchor(idx, "2020-02-22")
+
+
+def test_episode_warning_path_persistence_is_about_near_peak_state():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=8))
+    states = pd.Series(
+        ["calm", "watch", "caution", "caution", "elevated", "caution", "calm", "calm"],
+        index=idx,
+    )
+    known = pd.Series(True, index=idx)
+    out = atlas._warning_persistence(states, known, idx, idx[5], -5)
+    assert out["sessions_known"] == 6
+    assert out["warning_sessions"] == 4
+    assert out["loud_sessions"] == 1
+    assert out["warning_fraction"] == round(4 / 6, 4)
+    assert out["consecutive_warning_to_t0"] == 4
+
+
+
+def test_episode_warning_path_preserves_unknown_gate():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    assert atlas._gate_label(pd.NA) == "unknown"
+    assert atlas._gate_label(True) == "open"
+    assert atlas._gate_label(False) == "closed"
+
+
+def test_episode_warning_path_forward_outcomes_use_canonical_grader():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=30))
+    spy = pd.Series([100., 99., 94., 96., 97.] + [100.] * 25, index=idx)
+    out = atlas._forward_outcomes(idx[0], spy, "caution")
+    assert out is not None
+    assert out["base_px"] == 100.
+    assert out["fwd_dd"]["h5"] == -.06
+    assert out["hit"]["h5"]["dd5"] is True
+    assert "graded_at" not in out

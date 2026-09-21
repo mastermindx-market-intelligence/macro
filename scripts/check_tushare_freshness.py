@@ -1,32 +1,28 @@
-"""Tripwire for the gated Tushare plane going quietly cold.
+"""China freshness contracts: one binding core check + advisory Tushare checks.
 
-WHY THIS EXISTS. collectors/tushare_client.py returns ``None`` — never raises —
-for every failure mode it has: no token, endpoint error, access denied, credits
-short, empty response. Its callers then omit the leg rather than write a zero
-(correct: a fabricated 0 flow would be worse than a gap). asia-close's collect
-step is `graceful degradation — never fails on one source`. The union of those
-three correct decisions is that the whole Tushare plane can die and every signal
-we have stays green: the workflow succeeds, the page rebuilds on schedule, and it
-prints a three-week-old `as of` date in exactly the same confident type as a
-live one.
+Two planes share this module because both are calendar-anchored China freshness
+questions, but their authority differs:
 
-That is not hypothetical. data/tushare/flow_hist.parquet and moneyflow.parquet
-both froze at 2026-07-24 and were still being rendered on flow_velocity.html on
-2026-08-06 — thirteen days — while china_lhb, collected by the SAME adapter list
-in the SAME run, stayed current. Nobody was told.
+* ``check_china_search_core`` is BINDING for ``scripts.collect --group asia``.
+  ``data/china_search/closes.parquet`` feeds the China basket library and
+  Mastermind AI regional grounding, so a store behind the latest COMPLETED
+  mainland session must stop publication before mixed-vintage artifacts ship.
+* ``run`` is the older ADVISORY Tushare-flow tripwire. The token-gated flow
+  stores are useful context but not a required publication plane, so a cold feed
+  emits a warning and the lane continues.
 
-ANCHORED TO THE WALL CLOCK, deliberately. The obvious version of this check
-compares the store against its own newest row, or against a sibling store — and
-both read "fresh" during a total outage, because a frozen feed is perfectly
-self-consistent. So the comparison is against the exchange calendar's expected
-last session, which keeps advancing whether or not the collector ever runs again.
+WHY THE ADVISORY EXISTS. ``collectors/tushare_client.py`` returns ``None`` — never
+raises — for no token, endpoint error, access denied, exhausted credits, or an
+empty response. Its callers omit the leg rather than fabricate a zero, and the
+multi-source collector normally degrades per source. Those individually-correct
+decisions let ``flow_hist.parquet`` and ``moneyflow.parquet`` freeze at
+2026-07-24 while pages kept rendering them through 2026-08-06.
 
-CALENDAR CAVEAT. There is no mainland A-share calendar in lib/; HKEX is the
-closest proxy and shares most holidays. It diverges on mainland-only closures —
-Golden Week (Oct 1-7) most notably — where HKEX trades and Shanghai does not, so
-this can warn benignly for a few days each October. That is priced in on purpose:
-this emits a ::warning, never a failure, and a benign October warning is a much
-cheaper error than silently serving stale flow data for a fortnight.
+Both checks are anchored to an exchange clock rather than to the store itself: a
+frozen store is perfectly self-consistent. The required broad close plane uses
+``lib.cn_calendar`` exactly. The legacy Tushare flow check retains its historical
+HKEX proxy and three-session advisory budget; HKEX differs from mainland Golden
+Week, but an occasional warning is cheaper than another silent multiweek freeze.
 """
 from __future__ import annotations
 
@@ -38,7 +34,7 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from lib import config, hk_calendar  # noqa: E402
+from lib import cn_calendar, config, hk_calendar  # noqa: E402
 
 # The token-gated stores, and the collector that fills each — named so the
 # annotation tells the operator which leg to look at, not just "something is old".
@@ -69,9 +65,29 @@ def _latest_date(rel: str) -> str | None:
         return None
     for col in ("date", "trade_date", "asof", "as_of", "dt"):
         if col in df.columns:
-            s = pd.to_datetime(df[col].astype(str), errors="coerce").max()
-            return None if s is None or s is pd.NaT else str(s)[:10]
-    return None
+            stamp = pd.to_datetime(df[col].astype(str), errors="coerce").max()
+            if stamp is None or pd.isna(stamp):
+                return None
+            if getattr(stamp, "tzinfo", None) is not None:
+                stamp = stamp.tz_localize(None)
+            return stamp.date().isoformat()
+
+    # Wide price panels (including china_search/closes.parquet) carry sessions
+    # on the index rather than in a date column. A numeric RangeIndex is not a
+    # session axis; pandas would otherwise coerce it to meaningless 1970 epochs.
+    if isinstance(df.index, pd.RangeIndex):
+        return None
+    # Drop the timezone LABEL without
+    # converting the instant: an Asia/Shanghai midnight is still that local
+    # session date, not the prior UTC date.
+    idx = pd.to_datetime(df.index, errors="coerce")
+    idx = idx[~pd.isna(idx)]
+    if len(idx) == 0:
+        return None
+    stamp = idx.max()
+    if getattr(stamp, "tzinfo", None) is not None:
+        stamp = stamp.tz_localize(None)
+    return stamp.date().isoformat()
 
 
 def sessions_between(newest: str, expected: date) -> int:
@@ -94,6 +110,74 @@ def evaluate(newest: str | None, expected: date) -> tuple[str, int]:
         return "absent", -1
     behind = sessions_between(newest, expected)
     return ("stale" if behind > MAX_SESSIONS_BEHIND else "fresh"), behind
+
+
+CHINA_SEARCH_STORE = "china_search/closes.parquet"
+
+
+def check_china_search_core(now: datetime | None = None) -> int:
+    """Binding health check for the broad A-share close plane.
+
+    Unlike the token-gated Tushare flow stores below, this store is a required
+    input to the China basket library and Mastermind AI's regional grounding.
+    ``scripts.collect --group asia`` calls this only after every adapter and
+    post-collect task has had its turn, then returns this non-zero result before
+    the workflow can commit or build mixed-vintage China artifacts.
+
+    Returns 0 when current (or explicitly ahead of the completed-session clock)
+    and 3 when absent, unreadable, or missing one or more completed sessions.
+    """
+    if now is not None:
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=timezone.utc)
+        else:
+            now = now.astimezone(timezone.utc)
+    expected = cn_calendar.expected_last_session(now)
+    newest = _latest_date(CHINA_SEARCH_STORE)
+    if newest is None:
+        print(
+            "::error title=China core price store absent::"
+            f"{CHINA_SEARCH_STORE} has no readable session; expected mainland "
+            f"session {expected}. The china_universe close plane is required "
+            "before downstream China builders may publish.",
+            flush=True,
+        )
+        return 3
+    try:
+        latest = datetime.strptime(newest, "%Y-%m-%d").date()
+    except ValueError:
+        print(
+            "::error title=China core price store unreadable::"
+            f"{CHINA_SEARCH_STORE} latest date {newest!r} is not ISO-8601; "
+            f"expected mainland session {expected}.",
+            flush=True,
+        )
+        return 3
+    if latest > expected:
+        print(
+            "::warning title=China core price store ahead of exchange clock::"
+            f"store={latest}; latest completed mainland session={expected}. "
+            "Proceeding because a newer store cannot represent missing completed sessions; "
+            "inspect the producer clock if this persists.",
+            flush=True,
+        )
+        return 0
+    behind = cn_calendar.sessions_between(latest, expected)
+    if behind > 0:
+        print(
+            "::error title=China core price store stale::"
+            f"store={latest}; expected mainland session {expected}; "
+            f"{behind} session{'s' if behind != 1 else ''} behind; "
+            "filled by china_universe. Refusing mixed-vintage China publication.",
+            flush=True,
+        )
+        return 3
+    print(
+        f"china_search core freshness OK: {CHINA_SEARCH_STORE} at {latest} "
+        f"(expected mainland session {expected})",
+        flush=True,
+    )
+    return 0
 
 
 def run(now: datetime | None = None) -> int:

@@ -16,7 +16,7 @@ runtime_runner_group:
     - mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@refs/heads/main
 
 scenario_routes:
-  same_repo_ordinary_pr: pc-ci-via-main-executor
+  same_repo_ordinary_pr: github-hosted
   fork_pr: github-hosted
   trusted_dispatch_canary: pc-ci-canary
   trusted_executor_dispatch: pc-ci
@@ -207,9 +207,11 @@ label_registry:
     status: live
     carried_by: [pc-ci-1, pc-ci-2, pc-ci-3]
     note: >
-      P2-accepted three-slot PC CI pool. P3B-B routes exact same-repository PR
-      execution through the protected-main trusted executor; fork/untrusted PR
-      execution, planning, anchors and the semantic gate remain GitHub-hosted.
+      P2-accepted three-slot PC CI pool. Ordinary same-repository PR execution
+      defaults to GitHub-hosted Linux/x64; this pool remains the explicit
+      CI_EXECUTION_ROUTE=pc fallback/benchmark path through the protected-main
+      trusted executor. Fork/untrusted PR execution, planning, anchors and the
+      semantic gate remain GitHub-hosted.
   ci-linux-canary:
     status: live
     carried_by: [pc-ci-1]

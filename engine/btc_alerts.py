@@ -428,14 +428,14 @@ def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
     out: list[dict] = []
     META = {
         "d2": ("impulse_warn_down", "high", "Down-impulse pressure: vol-of-vol jolt",
-               "DVOL intraday-range spike (z≥2) — the options market is repricing risk.",
-               "下行脉冲压力：波动率跳升", "DVOL 日内振幅骤升（z≥2）— 期权市场正在重新定价风险。"),
+               "DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk.",
+               "下行脉冲压力：波动率跳升", "DVOL 日内振幅骤升（相对自身历史异常偏大）— 期权市场正在重新定价风险。"),
         "d3": ("impulse_warn_down", "high", "Down-impulse pressure: SOPR profit-take spike",
-               "Aggregate SOPR profit-taking spike (z≥2) while price is up — top-exhaustion tell.",
-               "下行脉冲压力：SOPR 获利了结骤升", "价格上涨之际总体 SOPR 获利了结骤升（z≥2）— 顶部衰竭信号。"),
+               "Aggregate SOPR profit-taking spike (unusually large versus its own history) while price is up — top-exhaustion tell.",
+               "下行脉冲压力：SOPR 获利了结骤升", "价格上涨之际总体 SOPR 获利了结骤升（相对自身历史异常偏大）— 顶部衰竭信号。"),
         "u1": ("impulse_warn_up", "medium", "Capitulation wash-out — bounce setup",
-               "Aggregate SOPR capitulation (z≤−1.5) after a deep drop — reactive bounce setup.",
-               "投降式洗盘 — 反弹布局", "深跌之后总体 SOPR 投降（z≤−1.5）— 反应式反弹布局。"),
+               "Aggregate SOPR capitulation (unusually deep versus its own history) after a deep drop — reactive bounce setup.",
+               "投降式洗盘 — 反弹布局", "深跌之后总体 SOPR 投降（相对自身历史异常偏深）— 反应式反弹布局。"),
     }
     for leg in ("d2", "d3", "u1"):
         if leg not in fires.columns:

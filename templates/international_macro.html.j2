@@ -71,10 +71,15 @@ nav.site-nav{position:relative;z-index:20}
 .imd-scope{color:var(--muted);font-size:12px;margin:10px 0 0;max-width:720px}
 .imd-asof{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:11px;color:var(--muted)}
 .imd-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--imd-border);background:color-mix(in srgb,var(--text) 4%,transparent);font-size:10px;font-weight:750}
-.imd-chip.fresh,.imd-chip.constructive,.imd-chip.clear{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 35%,var(--imd-border));background:color-mix(in srgb,var(--up) 9%,transparent)}
+.imd-chip.constructive,.imd-chip.clear{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 35%,var(--imd-border));background:color-mix(in srgb,var(--up) 9%,transparent)}
 .imd-chip.stale,.imd-chip.today,.imd-chip.balanced,.imd-chip.caution{color:var(--ink-warn, var(--warn));border-color:color-mix(in srgb,var(--warn) 38%,var(--imd-border));background:color-mix(in srgb,var(--warn) 9%,transparent)}
-.imd-chip.missing,.imd-chip.defensive,.imd-chip.risk{color:var(--ink-down, var(--down));border-color:color-mix(in srgb,var(--down) 36%,var(--imd-border));background:color-mix(in srgb,var(--down) 8%,transparent)}
+.imd-chip.defensive,.imd-chip.risk{color:var(--ink-down, var(--down));border-color:color-mix(in srgb,var(--down) 36%,var(--imd-border));background:color-mix(in srgb,var(--down) 8%,transparent)}
 .imd-chip.released{color:var(--muted)}
+/* Data-health states (fresh / stale / missing) say how CURRENT a datum is, never which way a market
+   moved, so they sit on the language-invariant status plane (--ok/--warn/--act) and never on --up/--down:
+   the "Confirmed <date>" chip must read the same in EN and ZH (theme.css swaps --up/--down under zh). */
+.imd-chip.fresh{color:var(--ink-ok, var(--ok));border-color:color-mix(in srgb,var(--ok) 35%,var(--imd-border));background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.imd-chip.missing{color:var(--ink-act, var(--act));border-color:color-mix(in srgb,var(--act) 36%,var(--imd-border));background:color-mix(in srgb,var(--act) 8%,transparent)}
 .imd-score-wrap{display:grid;grid-template-columns:164px minmax(0,1fr);gap:20px;align-items:center;margin-top:24px}
 .imd-gauge{
   width:154px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
@@ -371,6 +376,18 @@ body.imd-lock{overflow:hidden}
       {% else %}<div class="imd-card na">{{ t('No verified dates available.','暂无已核实日期。') }}</div>{% endfor %}
     </div>
   </section>
+
+  {% if europe_news %}
+  <section class="imd-section" id="europe-news">
+    <div class="imd-section-head"><h2>{{ t('Europe official press','欧洲官方新闻') }}</h2><p>{{ t('Public official and central bank press wires, CC BY 4.0 / OGL v3.','公共官方与央行新闻稿，CC BY 4.0 / OGL v3。') }}</p></div>
+    <div class="imd-card" style="padding:0;overflow:hidden">
+      <table class="imd-table" style="min-width:0">
+        <thead><tr><th>{{ t('Date','日期') }}</th><th>{{ t('Source','来源') }}</th><th>{{ t('Headline','标题') }}</th><th>{{ t('Jurisdiction','司法管辖区') }}</th></tr></thead>
+        <tbody>{% for item in europe_news_items %}<tr><td style="white-space:nowrap">{{ item.seendate[:10] }}</td><td style="white-space:nowrap"><span class="l-en">{{ item.source }}</span><span class="l-zh">{{ item.source_zh }}</span></td><td>{% if item.url %}<a href="{{ item.url }}" target="_blank" rel="noopener">{{ t(item.title,item.title) }}</a>{% else %}{{ t(item.title,item.title) }}{% endif %}</td><td style="white-space:nowrap"><span class="l-en">{{ item.jurisdiction_en }}</span><span class="l-zh">{{ item.jurisdiction_zh }}</span></td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
 
   <section class="imd-section">
     <div class="imd-section-head"><h2>{{ t('Source health & data contract','数据健康与数据契约') }}</h2><p>{{ t('Official where practical; every fallback and gap remains visible.','尽可能采用官方源；每项备用源与缺口均保持可见。') }}</p></div>

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PI-BULL-20260730",
-  "asof": "2026-09-05",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 54.2,
-  "raw_confidence": 54.0,
-  "delta_vs_base": -5.8,
-  "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "asof": "2026-09-19",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 43.9,
+  "raw_confidence": 46.0,
+  "delta_vs_base": -16.1,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 23.5,
-    "pace": 22.6,
-    "retention": 50.0,
-    "overlay": 61.0
+    "progress": 30.4,
+    "pace": 23.3,
+    "retention": 93.3,
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.364,
-    "dist_to_t1_r": 1.136,
-    "dist_to_t2_r": 2.636,
-    "horizon_pct_used": 80.0,
-    "p1": 0.2425,
-    "p2": 0.1212,
+    "dist_to_stop_r": 1.512,
+    "dist_to_t1_r": 0.988,
+    "dist_to_t2_r": 2.488,
+    "horizon_pct_used": 111.1,
+    "p1": 0.3416,
+    "p2": 0.1708,
     "p3": null,
-    "move_r": 0.364,
+    "move_r": 0.512,
     "mfe_r": 0.549,
     "mae_r": -0.001
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 36,
-  "tau": 0.8
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

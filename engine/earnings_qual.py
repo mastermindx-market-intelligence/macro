@@ -1899,6 +1899,65 @@ def _atomic_write_json(path: Path, obj: Any) -> None:
                 pass
 
 
+def _as_float(value: Any) -> float | None:
+    """Coerce a numeric cell to float; None/NaN/unparseable → None."""
+    if value is None:
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    if f != f or f in (float("inf"), float("-inf")):
+        return None
+    return f
+
+
+def publish_ec_tone(value: Any, *, native: str) -> float | None:
+    """Published EC Tone for Stage Analysis JSON feeds: 0–100.
+
+    Native stores stay untouched (parquet / Prophet still read desk ~−10..30
+    or signed −1..1). ``native`` names the incoming scale:
+
+    * ``signed1`` — live scores.parquet ``sentiment`` in [−1, 1]
+    * ``desk30`` — EquityDesk / projected ``earnings_call_sent`` in ~−10..30
+      (12 is the documented neutral midpoint; the calibration clips at ±1)
+
+    ``desk30`` inverts the documented calibration
+    ``sentiment = clip((sent − 12) / 18, −1, 1)`` so the same call prints the
+    same 0–100 number on the Screener and the Earnings table.
+    """
+    v = _as_float(value)
+    if v is None:
+        return None
+    if native == "signed1":
+        s = max(-1.0, min(1.0, v))
+    elif native == "desk30":
+        s = max(-1.0, min(1.0, (v - 12.0) / 18.0))
+    else:
+        raise ValueError(f"unknown EC tone native scale: {native!r}")
+    return round((s + 1.0) / 2.0 * 100.0, 1)
+
+
+def publish_ec_result(value: Any, *, native: str) -> float | None:
+    """Published EC Result for Stage Analysis JSON feeds: 0–10.
+
+    * ``ten`` — live scores.parquet ``performance`` already on 0–10
+    * ``signed12`` — EquityDesk / projected ``earnings_call_perf`` in [−12, 12]
+
+    ``signed12`` inverts ``performance = clip((perf + 12) / 2.4, 0, 10)``.
+    """
+    v = _as_float(value)
+    if v is None:
+        return None
+    if native == "ten":
+        r = v
+    elif native == "signed12":
+        r = (v + 12.0) / 2.4
+    else:
+        raise ValueError(f"unknown EC result native scale: {native!r}")
+    return round(max(0.0, min(10.0, r)), 1)
+
+
 def _json_safe(obj: Any) -> Any:
     """Coerce numpy / NaN scalars to plain JSON-safe Python (recursive)."""
     if isinstance(obj, dict):
@@ -2884,6 +2943,10 @@ def earnings_table(
     positive/negative highlights, slide file_path.  Latest `cap` calls by date
     (the full history stays in the backfill / R2 for the detail lane).
 
+    ``ec_sent`` / ``ec_perf`` are the published Stage Analysis display scale
+    (tone 0–100, result 0–10) — same vocabulary as screener.json. Native
+    parquet columns stay on the desk 0–30 / −12..12 store.
+
     Emits earnings_table.json.  Fail-open + display-tier.
     """
     import pandas as pd  # noqa: PLC0415
@@ -2907,8 +2970,8 @@ def earnings_table(
                 "call_date": r["call_dt"].date().isoformat(),
                 "quarter": r.get("fiscal_period") or r.get("calendar_quarter"),
                 "fiscal_period_valid": not bool(r.get("invalid_fiscal_period")),
-                "ec_sent": _json_safe(r.get("earnings_call_sent")),
-                "ec_perf": _json_safe(r.get("earnings_call_perf")),
+                "ec_sent": publish_ec_tone(r.get("earnings_call_sent"), native="desk30"),
+                "ec_perf": publish_ec_result(r.get("earnings_call_perf"), native="signed12"),
                 "ec_combined": _json_safe(r.get("earnings_call_combined")),
                 "level1_tags": _scrub_tag_list(_parse_tag_list(r.get("level1_tags"))),
                 "level2_tags": _scrub_tag_list(_parse_tag_list(r.get("level2_tags"))),

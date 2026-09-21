@@ -1,0 +1,142 @@
+{% if debt_maturity and debt_maturity.status != 'not_applicable' %}
+<section class="mod rv" id="debt-maturity" data-panel="debt_maturity.v1">
+  <div class="mod-hd">
+    <h2>{{ t('Debt coming due', '到期债务') }}</h2>
+    <span class="hint">{% if debt_maturity.period %}{{ debt_maturity.period.label }} {{ debt_maturity.period.form }}{% else %}{{ t('SEC filings', 'SEC 文件') }}{% endif %}</span>
+  </div>
+
+  {% if debt_maturity.status == 'reported' or debt_maturity.status == 'no_maturity_facts' %}
+    {% if debt_maturity.status == 'reported' %}
+      {% if debt_maturity.near_share_pct is not none %}
+      <p class="dmw-lede">{{ t('About ' ~ debt_maturity.near_share_pct ~ '% of the principal it has reported — ' ~ debt_maturity.buckets[0].display ~ ' — comes due in the next 12 months.',
+                              '在已披露的到期本金中，约 ' ~ debt_maturity.near_share_pct ~ '%（' ~ debt_maturity.buckets[0].display ~ '）将在未来12个月内到期。') }}</p>
+      {% else %}
+      <p class="dmw-lede">{{ t('The next 12 months are not reported in this filing. The years below are what it did report.',
+                              '本次文件未披露未来12个月的到期金额；下方为其确实披露的年度。') }}</p>
+      {% endif %}
+    {% else %}
+    <p class="dmw-lede">{{ t('Its filings are available, but they do not break debt down by the year it comes due — every bucket below is unreported.',
+                            '已获取该公司的 SEC 文件，但文件中未按到期年度拆分债务 —— 以下各区间均未披露。') }}</p>
+    {% endif %}
+    <div class="dmw{% if debt_maturity.status != 'reported' %} dmw-no-rail{% endif %}">
+      <div class="dmw-rows">
+        {% for b in debt_maturity.buckets %}
+        <div class="dmr{% if not b.reported %} na{% endif %}" style="--i:{{ loop.index0 }};">
+          <span class="dmr-lb">{{ t(b.label_en, b.label_zh) }}</span>
+          <span class="dmr-tr{% if b.reported and b.usd == 0 %} dmr-zero{% endif %}">{% if b.reported %}<i class="dmr-bar" style="--w:{{ b.share_pct }}%;"></i>{% endif %}</span>
+          <span class="dmr-val">{% if b.reported %}{{ b.display }}{% else %}{{ t('not reported', '未披露') }}{% endif %}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% if debt_maturity.status == 'reported' %}
+      <aside class="dmw-rail">
+        <div class="dmw-tl">{{ t('Reported principal due', '已披露到期本金') }}</div>
+        <div class="dmw-total">{{ debt_maturity.total_display }}</div>
+        <p class="dmw-note">{{ t('What the company itself reported it must repay. Not the market value of its bonds, and not the face value any fund holds.',
+                                 '这是公司自身披露的应偿还本金，既非其债券的市场价值，也不是任何基金持有的面值。') }}</p>
+        <p class="dmw-src">{{ t('Source: SEC filings', '来源：SEC 文件') }} · {{ debt_maturity.period.form }} {{ debt_maturity.period.end }}{% if debt_maturity.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      </aside>
+      {% endif %}
+    </div>
+    {% if debt_maturity.status == 'no_maturity_facts' %}
+    <p class="dmw-nullwhy">{{ t('Not every company reports a year-by-year schedule. Nothing is being estimated in its place.', '并非所有公司都会披露逐年到期安排；此处不作任何估算替代。') }}</p>
+    {% endif %}
+    {% if debt_maturity.status == 'reported' %}
+    <details class="dmw-detail">
+      <summary>{{ t('How this is read', '数据来源说明') }}</summary>
+      <p>{{ t('Figures are XBRL facts from one filing — no two years are mixed. Filing', '数据取自同一份文件中的 XBRL 事实，不跨文件拼接。文件') }}
+         <code>{{ debt_maturity.period.accn }}</code>, {{ t('period ending', '报告期截至') }} {{ debt_maturity.period.end }}, {{ t('unit', '单位') }} {{ debt_maturity.unit }}.
+         {{ debt_maturity.buckets_reported }}/{{ debt_maturity.buckets_total }} {{ t('buckets reported.', '个区间有披露。') }}</p>
+      <ul>{% for b in debt_maturity.buckets %}<li><code>{{ b.tag }}</code>{% if not b.reported %} — {{ b.drop_reason }}{% endif %}</li>{% endfor %}</ul>
+    </details>
+    {% endif %}
+
+  {% elif debt_maturity.status == 'no_filings' %}
+    <p class="dmw-null">{{ t('No SEC filings available for this listing.', '该证券暂无可用的 SEC 文件。') }}</p>
+    <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC. None were found for this one, so there is nothing to show yet.',
+                               '本面板仅读取发行人向 SEC 提交的文件。此处暂未找到相关文件，因此暂无可展示的内容。') }}</p>
+
+  {% elif debt_maturity.status == 'not_loaded' %}
+    <p class="dmw-null">{{ t('Debt schedule not loaded yet.', '到期债务尚未加载。') }}</p>
+    <p class="dmw-nullwhy">{{ t('This panel is still catching up to the SEC filings for this listing. Check back soon — nothing is being estimated in its place.',
+                               '本面板仍在同步该证券的 SEC 文件，请稍后再查看；此处不作任何估算替代。') }}</p>
+
+  {% elif debt_maturity.status == 'unresolved' %}
+    {# Round-2 review MAJOR-1: an identity gap is not fetch lag -- this branch
+       must never promise a catch-up that has no fetch behind it. #}
+    <p class="dmw-null">{{ t('We do not have an SEC filing record for this listing.', '我们目前没有该证券的 SEC 备案记录。') }}</p>
+    <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC, and this listing has not been matched to one.',
+                               '本面板仅读取发行人向 SEC 提交的文件，该证券尚未匹配到对应的备案主体。') }}</p>
+
+  {% elif debt_maturity.status == 'identity_mismatch' %}
+    <p class="dmw-null">{{ t('We could not confirm which company filed for this listing, so the debt schedule is not shown.',
+                            '我们无法确认是哪家公司为该证券提交了文件，因此未显示到期债务信息。') }}</p>
+    <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
+                               '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
+  {% endif -%}
+
+  {% if cash_runway and cash_runway.status != 'not_applicable' -%}
+  <div class="dmw-runway" data-panel="cash_runway.v1">
+    {% if cash_runway.status == 'reported' %}
+      {% set _end = cash_runway.period.end %}
+      {% set _form = cash_runway.period.form %}
+      {% set _year_en = 'In the year ending ' ~ _end ~ ' (' ~ _form ~ ')' %}
+      {% set _year_zh = '截至 ' ~ _end ~ ' 的财年（' ~ _form ~ '）' %}
+      {% if cash_runway.runway_display == 'self_funding' %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' it brought in more cash than it spent, including equipment — no burn to measure.',
+                              _year_zh ~ '其现金流入多于支出（包括设备支出），暂无可衡量的消耗。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% elif cash_runway.runway_display == 'more_than_10_years' %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.annual_burn_display ~ ' more than it brought in after buying equipment — at that pace the cash lasts more than 10 years.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '购买设备后的支出超过现金流入 ' ~ cash_runway.annual_burn_display ~ '，按此速度现金可支撑超过10年。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% elif cash_runway.runway_display == 'months' %}
+      {% set _n = '%.1f'|format(cash_runway.runway_months) if cash_runway.runway_months < 12 else '%d'|format(cash_runway.runway_months|round|int) %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.monthly_burn_display ~ ' more per month than it brought in after buying equipment — at that pace the cash lasts about ' ~ _n ~ ' months.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '每月购买设备后的支出超过现金流入约 ' ~ cash_runway.monthly_burn_display ~ '，按此速度现金可支撑约 ' ~ _n ~ ' 个月。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% endif %}
+
+    {% elif cash_runway.status == 'no_cash_facts' %}
+      <p class="dmw-null">{{ t('Its filings are available, but they do not include all three facts needed to measure cash burn — cash on hand, operating cash flow, and equipment spend.',
+                              '已获取其 SEC 文件，但文件中未包含衡量现金消耗所需的全部三项数据——现金、经营活动现金流及设备支出。') }}</p>
+      <p class="dmw-nullwhy">{{ t('Not every company reports all three of these facts. Nothing is being estimated in their place.',
+                                 '并非所有公司都会披露这三项数据；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'no_filings' %}
+      <p class="dmw-null">{{ t('No SEC filings available for this listing.', '该证券暂无可用的 SEC 文件。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC. None were found for this one, so there is nothing to show yet.',
+                                 '本面板仅读取发行人向 SEC 提交的文件。此处暂未找到相关文件，因此暂无可展示的内容。') }}</p>
+
+    {% elif cash_runway.status == 'not_loaded' %}
+      <p class="dmw-null">{{ t('Cash runway not loaded yet.', '现金跑道尚未加载。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel is still catching up to the SEC filings for this listing. Check back soon — nothing is being estimated in its place.',
+                                 '本面板仍在同步该证券的 SEC 文件，请稍后再查看；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'unresolved' %}
+      <p class="dmw-null">{{ t('We do not have an SEC filing record for this listing.', '我们目前没有该证券的 SEC 备案记录。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC, and this listing has not been matched to one.',
+                                 '本面板仅读取发行人向 SEC 提交的文件，该证券尚未匹配到对应的备案主体。') }}</p>
+
+    {% elif cash_runway.status == 'identity_mismatch' %}
+      <p class="dmw-null">{{ t('We could not confirm which company filed for this listing, so the cash runway is not shown.',
+                              '我们无法确认是哪家公司为该证券提交了文件，因此未显示现金跑道信息。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
+                                 '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
+    {% endif %}
+  </div><!-- .dmw-runway -->
+  {% endif -%}
+
+  <div class="mod-ft">{{ t('Research context only — reported figures from SEC filings, not a rating, a signal or investment advice.',
+                           '仅供研究参考 — 数据摘自 SEC 文件披露口径，不构成评级、信号或投资建议。') }}</div>
+</section>
+{% endif -%}

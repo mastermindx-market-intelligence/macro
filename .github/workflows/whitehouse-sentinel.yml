@@ -83,6 +83,10 @@ jobs:
           # TRACKED data/qledger/claims.jsonl — it must ship with the alert, and any
           # unstaged tracked change would abort the rebase below.
           git add data/ai_costs/usage.d data/whitehouse data/qledger site/wh_banner.json site/whitehouse.html site/whdata 2>/dev/null || true
+          # UK policy desk (engine.uk_policy_brain) shares this sentinel. Separate
+          # lines: `git add a b` exits 128 when either pathspec matches nothing.
+          git add --ignore-removal data/uk_policy 2>/dev/null || true
+          git add --ignore-removal site/uk_policy.json 2>/dev/null || true
           # ...and the content-hashed assets the page now links: externalize_css rewrites
           # whitehouse.html to <link> site/assets/css/<hash>.css, so staging the page
           # without the asset ships a 404 stylesheet. --ignore-removal never stages a
