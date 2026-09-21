@@ -1,6 +1,6 @@
 # macro.html W9 r4 — evidence matrix
 
-S1 rig: fixture-rendered `templates/dashboard.html.j2` (`mode=macro`) with real `body.page-macro mx4-grid` classes. Playwright seeds `window.__skyDeck`, applies theme/lang via `setTheme`/`setLang`, refuses a cell on attribute mismatch, hides decorative layers, and records a per-crop overlay column from a post-shot computed-style probe. Screenshots are content-addressed (`cells/<sha16>.png`) plus human aliases. Capture: `python3 -m scripts.capture_macro_w9_evidence` **at a clean committed HEAD** (`bf443d24f4c84d68bfef88be9a64ffee0ac3ddbc`, 2026-09-21 recapture after the radar-integrate merge).
+S1 rig: fixture-rendered `templates/dashboard.html.j2` (`mode=macro`) with real `body.page-macro mx4-grid` classes. Playwright seeds `window.__skyDeck`, applies theme/lang via `setTheme`/`setLang`, refuses a cell on attribute mismatch, hides decorative layers, and records a per-crop overlay column from a post-shot computed-style probe. Screenshots are content-addressed (`cells/<sha16>.png`) plus human aliases. Capture: `python3 -m scripts.capture_macro_w9_evidence` **at a clean committed HEAD** (`4330cee2d7e3031c3e7876d5a4d158789f82d043`, 2026-09-21 recapture of the merged dashboard).
 
 ## Axis coverage (per subject family — not a uniform 8-cell REST)
 
@@ -39,6 +39,7 @@ Mechanisms that intentionally differ: dark keeps restrained field glow on score 
 - Nav ticker in the null shot is a planted `#nb-tape` chip used to prove the no-op.
 - **Stocks week-ahead band** (`test_stocks_band_tristate_source_pin_unreachable_code`): source-string pin on unreachable code inside the macro-only wrapper. **Source-verified, never render-verified.**
 - **Capital-policy copy lives in `#dlg-risk`** (`details.gde-disc` / `.gde-policy`), not a page-level band. The gde-policy crops open that dialog; fullpage no longer shows a standalone "THREE READS, KEPT SEPARATE" / "CAPITAL POLICY" panel (radar-integrate merge).
+- **This capture is the merged dashboard.** Regime radar is the primary surface. The page does not include the unified-dashboard hero, and the AI-breadth glance is not on this page. These crops replace the earlier capture at `bf443d24f4c84d68bfef88be9a64ffee0ac3ddbc`.
 
 DO-NOT-TOUCH surfaces (`#release-radar`, `#sx-risk-v2`, `details#health`) were not edited this round.
 
@@ -87,4 +88,4 @@ DO-NOT-TOUCH surfaces (`#release-radar`, `#sx-risk-v2`, `details#health`) were n
 
 m1 recapture (both themes, content-height card): `events-none-dark-en-desktop.png`, `events-none-light-en-desktop.png` (ZH twins and `events-none-dark-en-mobile.png` also recaptured).
 
-Manifest: `mockups/evidence/macro-w9/manifest.json` (`mastermind.p0_evidence.v2`, outcome=`captured`, 74/74, `target.resolved_sha_or_none` = `bf443d24f4c84d68bfef88be9a64ffee0ac3ddbc`). Receipt: `EVIDENCE.yml`.
+Manifest: `mockups/evidence/macro-w9/manifest.json` (`mastermind.p0_evidence.v2`, outcome=`captured`, 74/74, `target.resolved_sha_or_none` = `4330cee2d7e3031c3e7876d5a4d158789f82d043`). Receipt: `EVIDENCE.yml`.
