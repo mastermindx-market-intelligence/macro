@@ -188,3 +188,14 @@ def test_heal_from_reports_unhealable(tmp_path):
     )
     assert res.returncode == 1
     assert "STILL INCOHERENT" in res.stdout
+
+
+def test_board_score_parser_accepts_runtime_metadata_after_id():
+    html = """<section class="ms-verdict">
+      <p class="v-thesis"><span class="l-en">Risk-on — the tape is constructive.</span></p>
+      <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down.</span></p>
+      <span class="v-score" id="ms-score" data-measured-score="61">61</span>
+      <p class="v-word" id="ms-word"><span class="l-en">Risk-on</span></p>
+      <span id="ms-tick" style="left:61%"></span>
+    </section>"""
+    assert guard.check_text("site/macro.html", html) == []

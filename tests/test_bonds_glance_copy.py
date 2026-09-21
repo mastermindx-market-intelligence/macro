@@ -97,10 +97,13 @@ def test_committed_bonds_stylesheet_is_fingerprinted() -> None:
 
     html = SITE.read_text(encoding="utf-8")
     refs = re.findall(r"assets/css/([0-9a-f]{8})\.css\?v=\1", html)
-    assert "f5ed7f7d" in refs
-    css = ROOT / "site" / "assets" / "css" / "f5ed7f7d.css"
+    # Main's 2026-09-21 markets re-render moved the bonds sheet
+    # f5ed7f7d.css -> ebe31e14.css (comment "LIVE / as-of" -> "Snapshot / as-of").
+    # sha256(ebe31e14.css)[:8] == ebe31e14; chip assertions unchanged.
+    assert "ebe31e14" in refs
+    css = ROOT / "site" / "assets" / "css" / "ebe31e14.css"
     assert css.is_file()
-    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == "f5ed7f7d"
+    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == "ebe31e14"
     text = css.read_text(encoding="utf-8")
     assert ".dtp-chip--snapshot" in text
     assert ".dtp-chip--live" not in text

@@ -1685,9 +1685,10 @@ html[data-lang="zh"] .nav-market-heading { letter-spacing: .02em; }
 
   .site-nav.has-nav-toggle .nav-ctrls .terminal-link,
   .topbar.has-nav-toggle .nav-ctrls .terminal-link {
-    min-height: 34px;
+    min-height: 40px;
     padding: 7px 11px;
     font-size: 11.5px;
+    touch-action: manipulation;
   }
 
   .fan-grid { grid-template-columns: 1fr; }
@@ -2367,7 +2368,7 @@ html:not([data-theme="light"]) .nav-dd-menu.mega-menu .menu-count {
   z-index: 110;
   width: 128px;
   max-width: none;
-  height: 38px;
+  height: 40px;
   flex: none;
   overflow: visible;
   transition: width .2s cubic-bezier(.2, .82, .2, 1);
@@ -2610,7 +2611,12 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
   .site-nav.has-nav-toggle .nav-search.ticker-search,
   .topbar.has-nav-toggle .nav-search.ticker-search {
     width: 100%;
-    height: 38px;
+    height: 40px;
+  }
+  .site-nav.has-nav-toggle .nav-ctrls .terminal-link,
+  .topbar.has-nav-toggle .nav-ctrls .terminal-link {
+    min-height: 40px;
+    touch-action: manipulation;
   }
   .ticker-search .search-trigger { justify-content: flex-start; padding-left: 16px; }
   .ticker-search .idle-ticker { min-width: 0; }
@@ -2987,6 +2993,7 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
 :where(
   .nav-drill-trigger,
   .nav-drill-back,
+  .nav-ctrls .terminal-link,
   .ticker-search .search-trigger,
   .ticker-search .search-esc,
   .fan-card,
@@ -2999,6 +3006,7 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
 :where(
   .nav-drill-trigger,
   .nav-drill-back,
+  .nav-ctrls .terminal-link,
   .ticker-search .search-trigger,
   .ticker-search .search-esc,
   .fan-card,

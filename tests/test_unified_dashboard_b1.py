@@ -515,12 +515,22 @@ def test_design_system_ratchet_passes_on_added_code():
 # --------------------------------------------------------------------------- #
 
 def test_hero_template_has_no_inline_style_block():
-    """All hero CSS lives in templates/theme.css; the template is markup-only."""
+    """UD-B2 scoped exception: the hero may carry ONE <style> block for
+    spine-caveat / driver-fold rules that must not touch theme.css
+    (THEME-CLOSURE). Every value in that block is a var() token — no hex,
+    rgba, or color-mix. All other hero CSS still lives in theme.css."""
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
-    assert "<style" not in src.lower(), (
-        "hero template must not carry an inline <style> block — "
-        "all hero CSS lives in templates/theme.css per the design ratchet"
+    blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", src, flags=re.I | re.S)
+    assert len(blocks) == 1, (
+        f"hero may carry at most one scoped <style> block, found {len(blocks)}"
     )
+    block = blocks[0]
+    assert "mx-spine-caveat" in block or "ud-driver" in block
+    assert "color-mix" not in block
+    assert not re.search(r"#[0-9a-fA-F]{3,8}\b", block)
+    assert "rgba(" not in block
+    assert "rgb(" not in block
+
 
 
 # --------------------------------------------------------------------------- #
