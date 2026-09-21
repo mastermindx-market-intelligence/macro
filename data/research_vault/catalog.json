@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T04:17:46.138891+00:00",
-  "count": 2544,
+  "generated_at": "2026-09-21T04:31:48.311552+00:00",
+  "count": 2545,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -150,6 +150,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-li60n2fwtcz-17790a",
+      "title": "On Our Minds September 2026 FOMC Postmortem The First Hike",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:01:45Z",
+      "summary_points": [
+        "FOMC Rate Hike Path: Fed raised rates 25bp to 3.75%-4%, signaling two additional 25bp hikes in Dec/March, with persistent inflation driving further tightening.",
+        "SEP Inflation & Growth Revisions: Core PCE inflation revised up to 3.4% for 2026, GDP growth revised up to 2.4%, indicating elevated inflation amid stronger growth expectations.",
+        "Dot Plot Hawkish Shift: Median dot signals 50bp hikes for 2026 (vs 25bp in June SEP), with 12/19 members aligned, reflecting heightened tightening expectations.",
+        "Neutral Rate & Policy Divergence: 8 members expect neutral rate >3.2% (vs prior 3.2%), and 2027 dot distribution shows 4 members projecting ≥25bp cuts vs 8 expecting further hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
