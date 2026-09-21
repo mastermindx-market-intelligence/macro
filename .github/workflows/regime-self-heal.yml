@@ -2,7 +2,10 @@ name: regime-self-heal
 
 on:
   schedule:
+    # Morning recovery catches a prior close missed overnight.
     - cron: "5 14 * * 1-5"
+    # 21:15 UTC is after the regular US close in both EST and EDT.
+    - cron: "15 21 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -15,8 +18,8 @@ concurrency:
 jobs:
   reconcile:
     # intraday-fastpath used to carry this canonical repair every 30 minutes.
-    # After VPS cutover retain one local reconciliation pass without making the
-    # VPS a second writer for regime/market-state/reflex ledgers.
+    # After VPS cutover retain one local reconciliation writer with morning and
+    # post-close passes; the VPS remains a reader of these canonical ledgers.
     if: ${{ github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY == 'true' }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 12
