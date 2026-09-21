@@ -1,138 +1,133 @@
 ---
 key: PROPHET-CPU-LEADERSHIP-CONVERGENCE
 claim: >-
-  The existing September 18 US candidate_pool contains all 66 eligible candidates, including
-  AMD outside the main list due to sector_cap_overflow with a null final score, but the
-  current dashboard has no consumer for that pool. The supplied CPU diagnostic's four
-  artifact/source blob hashes match both its audit revision and this implementation base.
-  The bounded candidate-visibility implementation reconnects the existing producer to a
-  protected, searchable display without changing ranking or entry authority.
+  The pinned September 18 US candidate pool includes AMD outside the main list because
+  of sector_cap_overflow, with no final score. Its new candidate visibility consumer
+  preserves all 66 eligible names and compares their saved curated records. The real
+  pinned board/archive browser proof shows zero matching saved records. This is a dated
+  data-path finding, not an investment-performance or deployed-product claim.
 falsifier: >-
   Run research/prophet/cpu_leadership/prove_visibility.py against
-  macro@4bf1b3aee532114b0c67e06c532b6e4ed7884549 and show a different pool, excluded AMD
-  receipt, changed source-board bytes, leakage of protected tail identities into the preview,
-  or failure to reject a mixed-generation tail. A later deployment must be checked separately.
+  macro@4bf1b3aee532114b0c67e06c532b6e4ed7884549 and demonstrate different membership,
+  source-board mutation, nonpreview identity leakage, incorrect saved-record states or
+  accepted mixed-generation hydration. Deployment requires separate real-path proof.
 so_what: >-
-  Candidate discovery visibility, scoring cohort, entry permission and portfolio concentration
-  are different decisions. Repair the disconnected display now; preserve null off-cohort
-  scores and existing gates. Complete the date-correct archive and versioned cohort comparison
-  before promoting any CPU/memory leadership signal into ranking or trade authority.
+  Separate candidate visibility, discovery ranking, executable entries and portfolio limits.
+  Repair producer-bound archival durability and generation identity before comparing
+  full-pool scoring. Never hard-code CPU leadership or manufacture missing observations.
 kind: architecture
 confidence: verified
 verified_at: 2026-09-21
 verified_by: >-
-  research/prophet/cpu_leadership/CONVERGENCE_AND_DELIVERY_2026-09-21.md;
-  research/prophet/cpu_leadership/evidence/source_convergence.json, receipt.json,
-  focused-tests.txt and baseline-test-findings.json; python3 research/prophet/cpu_leadership/prove_visibility.py.
+  PR #7572; research/prophet/cpu_leadership/CONVERGENCE_AND_DELIVERY_2026-09-21.md;
+  research/prophet/cpu_leadership/evidence/archive-integrity/receipt.json;
+  mockups/evidence/prophet-candidate-visibility-20260921/EVIDENCE.yml and manifest.json;
+  research/prophet/cpu_leadership/prove_visibility.py.
 scope: [macro]
 ---
-# Current cumulative continuation — US/China Prophet leadership
+# Cumulative continuation — US/China Prophet leadership recovery
 
-Mission: make emerging concentrated CPU/memory/semiconductor leadership discoverable early,
-with truthful economic exposure, complete candidate/refusal evidence and separately validated
-executable entries. Mission is not complete; this candidate is BUILT_NOT_PROVEN.
+MISSION_COMPLETE: false. Capability state: BUILT_NOT_PROVEN.
 
-## Present authority and transport
+## Authority and custody
 
-Chris explicitly directed this session to continue as main CEO for this project without Slack,
-and supplied diagnostic.md/evidence.json from the parallel read-only first pass. This supersedes
-the preceding session's Slack-connection gate for continuing the Prophet mission. It does NOT
-prove any other started writer has stopped, transfer an OS runtime lease, or merge the unrelated
-C1/C2/C4 OS assignment into this workstream. No new workstream/program was invented.
+Chris directs this session as main CEO of this recovery without Slack. This supersedes the
+former Slack gate, not another STARTed writer, runtime lease or controlled activation. The
+unrelated C1/C2/C4 OS assignment is not merged into this program.
 
-Procedure: protected Mastermind@3e66e43258f34db240d5bff76f54148c7af84ee4, skillpack 1.0.1.
-Implementation base: macro@4bf1b3aee532114b0c67e06c532b6e4ed7884549.
-Carrier: sol/us-prophet-candidate-visibility-20260921.
-Existing China carrier: macro #7567 / sol/cn-act-now-coherence-20260921 at
- d0561c3c3bbad86c3d8c2e89a77ca85135fefafb. That head now has successful hosted
-fence-pack/self-mod-fence/ci-gate, but no independent acceptance or deployment is claimed.
+Current procedure: protected Mastermind@0f4aeae4d25f3770474a7ac70e0ce12af6e2d075,
+Skillpack 1.0.1/bootstrap 1. Required skills were freshly fetched atomically and remain
+byte-identical to the prior loaded compatible version.
 
-## Last material capability and proof
+Carrier: macro #7572 / sol/us-prophet-candidate-visibility-20260921. Product pickup base:
+4bf1b3aee532114b0c67e06c532b6e4ed7884549. Last runtime semantic head:
+7665039b6eae9deb5fecb574ce958565de60ef74. This continuation changes proof/script/records
+only; engine, builder, templates, ranking, archive writer and workflows are unchanged.
+Current main observed: 1dc11fb3eb326393c803bc2eff408db89bb91bc1. Direct proof is a
+lower-overhead principal review unit, not a new worker commission or model-route claim.
 
-The candidate connects the unchanged full-pool producer to an allowlisted projection,
-existing server-side premium split/payload, and the actual US dashboard. Users can search
-all loaded candidates and see why a name is outside the main list. AMD remains eligible,
-sector-cap-displaced and NOT SCORED, without any inferred entry permission.
+## Verified capability
 
-Real board proof: 66 names, 52 on main list, 14 outside, preview 3 + protected remainder 63.
-Original order and board bytes preserved. Keyboard expansion, search, outside-only filtering,
-no-match state and repeated hydration are tested. Exact source digest joins preview/tail;
-wrong-generation and partial responses are refused. Desktop/mobile, light/dark, EN/ZH
-component screenshots pass overflow checks. Authorization callback is simulated: no real
-production login, deployed-page proof or investment-performance validation is claimed.
+The existing lossless pool feeds an allowlisted view, existing preview/premium split and
+hydration path, and the real US dashboard consumer. It changes no plan, order, score,
+admission, sector limit or sizing. Real input: 66 eligible, 52 on main list, 14 outside,
+three preview rows +63 protected rows. AMD is T1 / sector_cap_overflow / unscored.
 
-The initial broad local run's ten inherited UI-contract failures are now reconciled against
-the actual current page. Final release-contract run: 183 passed, zero failed, seven skipped.
-The skips are only pre-existing shipped-artifact probes for baked files absent here; they
-are not deployment proof. Real plan fixtures and whole-page paid-row leak controls remain.
-Three RED same-session correction regressions now pass, and a production-assignment ->
-preview/protected-payload test verifies the corrected digest and protected company row.
-Local passes do not replace full hosted CI, independent acceptance or production proof.
+The archive reader compares same-date, same-definition, curated-tier saved pool fields.
+Scan-only, absent, changed and duplicate rows cannot fabricate a match. Matching fields
+NEVER prove exact generation, rejected-universe completeness, replay validity or alpha.
+Public history disclosure is aggregate-only; per-name detail follows the existing row gate.
 
-## Accepted/rejected conclusions and preserved custody
+Candidate and archive-only corrections on the same date refresh both halves through one
+source digest. Mixed-generation/partial responses refuse; repeated delivery is idempotent.
 
-Accepted: exact attached source findings; real US pre-cap omission; different archival/board
-populations and clocks; China four-row intelligence fallback; representative CPU narratives
-are not complete economic-exposure evidence. Rejected: CPU must always rank first; unknown
-interest equals zero; eligibility equals a trade; a name's pre-cap screen order is its final
-Prophet rank; current snapshots can be backdated into missing archival rows.
+Prior exact-runtime owner suites: 205 passed / zero failed / seven skips. Skips require
+baked shipped-page/payload files absent in the isolated checkout; they are not production
+passes. Earlier ten inherited failures were repaired against actual plan/candidate
+separation, census shelves, fresh-grid merge and relocated Theme Tape. Do not restore
+retired controls or remove real plan fixtures to satisfy old assertions.
 
-New CN narrowing: the four unavailable identities are absent from the pinned search-close
-columns and deep per-name tree read by the interest helper; the board can additionally read
-a breadth cache not committed at that pin. Runtime-series reconciliation remains necessary.
+## Current proof and release delta
 
-Preserve #7526 thesis/shared-CI, #7455 leadership, #7508 entry-context, #7453 acceptance,
-#7180 completed-session/source-bound, and #7264/#7237 unrelated dashboard source boundaries.
-No sibling implementation was copied or re-homed. No new worker or watcher was started.
+Hosted run 35569064939 / job 106237482797 identified missing committed EVIDENCE.yml,
+separate from its Git-fetch infrastructure error. The local canonical visual-evidence gate
+now passes with the existing capture_page_evidence producer and its required receipt.
 
-## Exact next action and stop boundary
+The existing real browser proof now reads the pinned archive via a temporary fixture and
+canonical reader. AMD reports archive_state=missing; the expanded screen shows 0/66 saved
+records matching. Eight fresh expanded views cover light/dark, EN/ZH and desktop/mobile,
+search, filtering, no-match, order, no overflow and hydration. The authorized payload callback
+is SIMULATED, not actual authentication. Native anonymous capture separately records eight
+REST plus eight real focus cells. REST shows collapsed preview; expanded/ contains the
+opened/searchable component for design review. A missing local icon CSS import was found
+and supplied from its existing source before final recapture; no capture/guard/auth/service
+source changed. See mockups/evidence/prophet-candidate-visibility-20260921/README.md.
 
-Obtain independent review and hosted evidence for this source-bound visibility candidate;
-resolve inherited legacy test-contract expectations under their actual owners; then publish
-through the real product release and prove authenticated whole-page behavior. In parallel,
-use the incumbent #7180 source/clock work to reconcile one US board/archive generation before
-running a versioned full-eligible-cohort score comparison. Existing Chinese input owners must
-repair actual price-series coverage without zero imputation or mixed-scale sorting.
+An optional combined script-edit command was platform-blocked. Those extra edits were not
+replayed; same-file readback showed no effect. The already-successful small archive-input
+edits and existing proof runner executed successfully. No effect remains ambiguous.
 
-DO_NOT_REDO: China #7567 accepted local display behavior; the supplied read-only audit;
-existing pool producer/partition/ledger; existing auth/premium fetch; original source pins;
-prior failed experiments and timing safeguards. No live rank, quota, entry, size or plan
-origination change is part of this visibility slice. No effect is currently ambiguous.
+MastermindX1 is now FORMALLY requested through GitHub on #7567 and #7572; API readback
+confirms both reviewRequests. Earlier mentions alone did not do that. No pickup, reviewer
+START, approval, merge, deployment, native worker or autonomous wake is claimed.
 
-MISSION_COMPLETE: false. Intended continuation is the current source carrier under this
-Chairman assignment; a fresh chat would still need exact-head/source reconciliation. There
-is no autonomous wake or background CEO execution claim.
+## Critical dependencies — preserve original carriers
 
-Final focused validation: 37 passed, 128 deselected. Full baseline/candidate failure sets match exactly (10 signatures); none was hidden. Agent OS validation: 1,160 records, 0 errors, 286 warnings. Python compile and diff hygiene passed. Actual macro-mode dashboard render omits this stocks-only pool. Evidence refreshed after the fresh-board and exact-tail binding repairs.
+#7180 / f83c3603f74591db8920b25c7a5b4b9d9b80b7bf owns source/clock and curated-publication
+reconciliation. Original daily 35409650053 / engine 105832792637 reported local September 18
+stamping, then cancelled before final output commit. Its successful earlier plan checkpoint
+excludes the candidate archive. Scan publishing succeeded separately; the later successful
+run skipped engine. Pinned archive: September 18 =1535 scan /0 curated; September 17 =2932
+curated +1539 scan. The original run reported 76 eligible versus audited board 66: no
+same-date substitution or replay. No candidate archive artifact exists in that run inventory.
+Evidence delivered as 5755136324 and 5756399069, not consumed or executed by inference.
 
-Additional verified frontier: the Sep18 archive is scan-only (1535 scan, 0 curated), versus Sep17's 2932 curated +1539 scan. Original daily run 35409650053 / engine job 105832792637 reported local Sep18 stamping but later cancelled with the general engine-output commit pending; the successful earlier plan checkpoint excludes the curated candidate archive. The later successful run skipped the engine. This is a publication/durability hypothesis with concrete source support, not proof that all local bytes survived or that the 76-name run reproduces the audited 66-name board. No candidate archive artifact exists in the original run inventory. Next source-owner action is producer-bound archival checkpoint/generation reconciliation through #7180; no retry or backfill occurred. See the two archive evidence JSON files.
+#6992 / a51bae222eedd4c53f4101998f3a3c4bc103f554 already repairs the four China missing-input
+joins. Current-base tree 57b7d4f665b4c733a249898913e3039fc683c088 passed 169 tests. Evidence
+return 5755311774 is delivery, not pickup. Official writer-gate receipt
+ e8b34a893489bb442cdee12897776dad73f7a8a9f89da50d63ce5cc7892e3204 reports procedural custody
+(RULES_ABSENT), not release authority. Original continuity, raw-price witness, #6866 safety
+and controlled global-ordering activation remain. Do not rebuild or silently activate it.
 
-## Latest verified continuation unit
+#7567 / d0561c3c3bbad86c3d8c2e89a77ca85135fefafb is the China duplicate-card/entry-copy
+repair; hosted CI/fences were green, independent acceptance and deployment remain owed.
 
-Same #7572 carrier, no new worker/watcher/assignment. Code now refreshes the page and protected candidate payload when the same source session changes its candidate membership, reason, or availability; an identical view does not force a rerender. No rank formula, entry gate, cap, sizing, origination or historical archive changed. Evidence: research/prophet/cpu_leadership/evidence/release-continuation.json.
+Preserve #7526 thesis/shared CI, #7455 leadership, #7508 entry-context, #7453 acceptance,
+and #7264/#7237 unrelated dashboard semantics. No sibling source was copied or rehomed.
 
-Do not redo the China input repair: incumbent #6992 at a51bae222eedd4c53f4101998f3a3c4bc103f554 already owns it. Current-base isolated tree 57b7d4f665b4c733a249898913e3039fc683c088 independently passed 169 tests; The receipt was published on #6992 as comment 5755311774; no incumbent pickup or execution is inferred. Protected writer-gate receipt e8b34a893489bb442cdee12897776dad73f7a8a9f89da50d63ce5cc7892e3204 is TECHNICAL_WRITER_GATE_UNAVAILABLE / RULES_ABSENT, evidence only; procedural custody and full continuity/activation gates remain. No original writer or source was rehomed.
+## Exact next action and do-not-redo
 
-MISSION_COMPLETE: false. The refreshed display/release-test unit is ready for exact-head CI and independent acceptance. Next unit crosses the original #7180 curated-archive publication or #6992 source-custody/controlled-activation boundary; preserve those carriers, recover only the needed fresh owner state, and never infer replay/activation permission from these tests. Existing #7567 China display repair remains separate and not deployed. No automatic Web continuation is claimed.
+Consume exact-new-head hosted CI and genuine independent review; then use the existing
+release path and prove deployed authenticated whole-page behavior. In parallel advance
+#7180 only within its original source/effect binding, and #6992 only within controlled
+activation. The ranking comparison needs complete source-bound evidence first.
 
-Current record validation: `python3 scripts/agentos.py validate --quiet` checked 1,160 records with zero errors and 286 warnings. Python compilation and `git diff --check` passed. These are source/record checks, not production acceptance.
+Do not redo the lossless view, supplied audit, archive reader, China input implementation,
+existing pool/ledger/auth owners, or accepted timing/failure controls. Reject CPU-always-first,
+unknown-to-zero, eligibility-as-entry, pre-cap-order-as-final-rank, historical backdating,
+plan-manifest widening across producers and cancelled-operation replay. No current source
+or runtime effect is unknown.
 
-
-## Current archive-evidence consumer unit — 2026-09-21
-
-Same carrier #7572; original head before this unit 0c19885e3cb739f923e096087fbf19bee090ca67. Procedure pin remains 3e66e43258f34db240d5bff76f54148c7af84ee4. Current main observed 08a4d1ba05876935d64339abd2784a6a7c827c87. Its build_site movement adds unrelated HK/CN macro-state inputs, not this candidate-view path. Bounded open-PR source census finds only this PR on engine/us_candidate_lanes.py; no archive writer is taken over.
-
-Material source delta: existing candidate-history owner reader now feeds a same-date, same-board-definition, curated-tier receipt comparison using the existing store_columns mapping. The view reports matching/missing/conflicting saved fields and places per-name diagnostics inside its already-gated rows. The aggregate history disclosure carries no withheld ticker names. Matching fields NEVER assert exact generation identity; archived price features, full rejected-universe completeness, replay or alpha are not established by this check. Source/candidate bytes, admission, ranking, sizing and all canonical archive writes remain unchanged. A later history correction changes the existing view digest and triggers the same-session rerender. This is an evidence-consumer capability, NOT the pending #7180 durable-write repair.
-
-RED proof: 18 archive API tests failed because the capability did not exist. Initial GREEN: all 18 passed. Broader focused source/view/payload/refresh tests: 39 passed. Hosted design ratchet's two new radius-literal violations are corrected with the existing r-card/r-ctl tokens; local forward ratchet reports zero blocking findings. The separate original Git-fetch infrastructure observation is not waived.
-
-The combined new browser-proof update/run command was blocked by the tool platform before execution. Same-carrier file readback (`git diff --name-only HEAD -- research/prophet/cpu_leadership/prove_visibility.py`) confirms no proof-script delta. It was not retried through another tool or carrier. The browser lane is held for this new unit; prior component screenshots must not be promoted to exact-new-head browser proof. Independent deterministic tests remain usable. No hosted/production proof is claimed.
-
-#7180 and #6992 retain their existing source/effect/activation gates. MastermindX1 is verified as a repository administrator and an existing reviewer identity; review requested is not execution or acceptance. No new native worker, watcher, runtime job or automatic wake is claimed. Full local source tests and durable publication of this unit remain next before any new source unit. MISSION_COMPLETE: false.
-
-
-Final local result for the archive-evidence consumer unit: 205 passed / 7 shipped-artifact checks skipped / zero failures across the four existing owner suites. Design forward ratchet: zero blockers. Exact source digests and RED/GREEN evidence are in `research/prophet/cpu_leadership/evidence/archive-integrity/receipt.json`. No new real-archive/browser proof was obtained; the blocked proof request was not retried and the proof script remains unchanged. A fresh non-author review request for stable China head d0561c3c3bbad86c3d8c2e89a77ca85135fefafb is durably delivered on #7567 as comment 5756273366; no reviewer START/approval is claimed.
-
-The completed source unit is the evidence-consumer and display integrity path, not archived-data recovery or the parent leadership model. Current-head hosted checks, genuine approval, new browser and eventual deployed proof remain owed. Continue #7180 only under its existing source/effect binding and #6992 only under controlled activation. Do not recreate this candidate view, archive reader or ranker. MISSION_COMPLETE: false.
-
-Agent OS schema/references validation completed: 1,160 records, zero errors, 286 warnings. Candidate archive writer, canonical ranking/admission modules, workflows and runtime source are byte-identical to the start of this unit.
+Intended resume: current main CEO on the exact #7572 carrier after fresh source/custody
+reconciliation. GitHub/Agent OS are durable; chat is not. No background CEO execution or
+automatic wake is promised. The parent leadership/recommendation mission remains incomplete.

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
@@ -23,8 +24,19 @@ def main() -> None:
     source = subprocess.check_output(["git", "-C", str(ROOT), "show", args.source_ref + ":site/factordata/us_standouts.json"])
     board = json.loads(source)
     original = json.dumps(board, sort_keys=True)
-    view = project_candidate_visibility(board)
+    # Exact historical bytes in an isolated input fixture, never a canonical backfill.
+    from engine.us_candidate_lanes import load_candidate_archive_status
+    archive_path = f"data/us_prophet_rank/candidates/{board['as_of'][:7]}.parquet"
+    archive_bytes = subprocess.check_output([
+        "git", "-C", str(ROOT), "show", args.source_ref + ":" + archive_path])
+    with tempfile.TemporaryDirectory(prefix="prophet-archive-proof-") as scratch:
+        archive_file = Path(scratch) / archive_path
+        archive_file.parent.mkdir(parents=True)
+        archive_file.write_bytes(archive_bytes)
+        archive_status = load_candidate_archive_status(board, root=Path(scratch))
+    view = project_candidate_visibility(board, archive=archive_status)
     assert view["status"] == "ready", view
+    assert archive_status["exact_generation_verified"] is False
     vm = {"us_candidate_visibility": view}
     override, gate, locked = bs._split_us_panels(vm, 3, gated=True)
     env = _env()
@@ -43,6 +55,9 @@ def main() -> None:
     css = (ROOT / "templates/theme.css").read_text()
     doc = '<!doctype html><html lang="en" data-lang="en" data-theme="light"><head><meta charset="utf-8"><style>' + css + '</style></head><body><main style="margin:20px;max-width:1150px">' + shell + '</main></body></html>'
     (args.out / "preview.html").write_text(doc)
+    # theme.css imports this existing asset; keep the local capture network-complete.
+    (args.out / "product-nav-icons.css").write_bytes(
+        (ROOT / "templates/product-nav-icons.css").read_bytes())
     receipt = {"source_ref": args.source_ref, "source_sha256": hashlib.sha256(source).hexdigest(),
         "source_path": "site/factordata/us_standouts.json", "board_as_of": board["as_of"],
         "proof_scope": "real artifact -> production projection/split/payload -> browser component; auth response simulated; NOT deployed",
