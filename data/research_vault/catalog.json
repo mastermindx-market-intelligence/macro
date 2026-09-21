@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T14:32:44.358380+00:00",
-  "count": 2574,
+  "generated_at": "2026-09-21T14:47:47.194445+00:00",
+  "count": 2575,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -148,6 +148,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kr6l96dhpwg-6d41ac",
+      "title": "GS Abbas GS US Daily Download 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:53Z",
+      "summary_points": [
+        "HF Energy & Retail Flows: HF net sold global Energy fastest in 4 months (equal short/long sales); retail buying persists despite low HF net/gross and bottom sentiment.",
+        "Macro Rate & MSFT NDR: Fed’s inflation-focused message reinforces flattening yields; ECB hawkish on energy, BoE QT plans; MSFT Buy rated with MAIA/MAI improvements.",
+        "Solar Sector Outlook: ENPH (Buy) for higher margins/new launches; RUN (Buy) with rate valuation headwind; SEDG (Sell) cautious; YETI targets $1bn platform/Project Upcycle.",
+        "Market Dynamics: AI rotation triggered by Anthropic’s “Dario Doomsday” call → worst AI vs AI-at-risk day since 2020; 10yr yields backed up to 5% (rate weakness)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
