@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T15:32:57.430411+00:00",
-  "count": 2577,
+  "generated_at": "2026-09-21T16:02:59.694673+00:00",
+  "count": 2579,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,25 @@
   ],
   "items": [
     {
+      "id": "marketdesk-genoeiwk8qt-09599b",
+      "title": "GS Callahan US TMT weekly + charts 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:35Z",
+      "summary_points": [
+        "Semis P/E at multi-year lows amid oil correlation: SOX P/E near 18.2998 correlates with inverted oil prices (rising oil = falling SOX P/E), indicating macro-driven valuation pressure, not AI-specific issues.",
+        "Macro risk dominates sector dynamics: Oil price trends directly influence Semis/AI valuations, signaling vulnerability to broader economic conditions over AI narrative-driven risks.",
+        "Valuation compression in key names: AMAT’s PE/SPX ratio (1.2559) below 1.4126 threshold confirms valuation compression amid market de-rating, with technical bounce off 200-dma supporting near-term resilience."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-pwjqbzqafk4-8855ee",
       "title": "Turkiye TCMB Reserves US$9bn Lower",
       "institution": "Goldman Sachs",
@@ -110,6 +129,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kufg2vdek5f-1a7522",
+      "title": "India Monthly Activity Chartbook Investment activity remains resilient in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:49Z",
+      "summary_points": [
+        "Investment Resilience: Electricity consumption at 12.8% yoy (two-year high), bank credit growth at 19.1% yoy (two-year high), industrial indicators (auto/steel/cement) robust in Aug-26.",
+        "Geopolitical & Weather Risks: Middle East conflict escalation, Brent crude >$100/bbl, El Niño-linked rainfall below average in key rice/wheat states threatening crop yields.",
+        "Urban Consumption Moderation: Urban demand indicators (light vehicles, aviation, petrol) show YoY declines in Aug-26; composite score at 88.9 (3m avg), signaling slowing activity.",
+        "Agricultural Supply Threats: Rainfall below long-term average in rice states (Exhibit 7), wheat reservoir levels at three-year lows (Exhibit 9), risking food security and inflation.",
+        "FX Reserves Surge: RBI FX reserves increased $45bn (Aug-Sept), reflecting robust dollar inflows and policy support for currency stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
