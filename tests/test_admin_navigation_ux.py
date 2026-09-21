@@ -18,8 +18,9 @@ def test_admin_navigation_has_search_and_keyboard_access():
     assert 'placeholder="Find an admin page…"' in APP
     assert 'data-nav-group' in APP
     assert 'data-nav-label=' in APP
-    assert 'tabindex="0" role="button"' in APP
-    assert 'e.key === "Enter" || e.key === " "' in APP
+    # Native buttons provide Enter/Space activation without emulating controls on divs.
+    assert '<button type="button" class="nav-item"' in APP
+    assert 'el.setAttribute("aria-current", "page")' in APP
     assert 'No matching pages' in APP
 
 
@@ -74,3 +75,123 @@ def test_site_access_keeps_provider_details_out_of_primary_copy():
     assert '<div class="section">Blocked countries ' in APP
     assert 'Names via browser Intl.DisplayNames' not in APP
     assert 'Off = fail-open.' not in APP
+
+
+def _node_assert(code: str) -> None:
+    """Execute the shipped helper bodies, rather than a reimplemented model."""
+    import shutil
+    import subprocess
+    import pytest
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is required for the admin browser-helper contract")
+    prelude = """
+const assert = require('node:assert/strict');
+const APP = require('node:fs').readFileSync(0, 'utf8');
+function block(start, end) {
+  const a = APP.indexOf(start); const b = APP.indexOf(end, a);
+  assert(a >= 0 && b > a, `Missing source boundary: ${start}`);
+  return APP.slice(a, b);
+}
+"""
+    result = subprocess.run(
+        [node, "-e", prelude + "\n(async () => {\n" + code + "\n})().catch(e => { console.error(e); process.exitCode = 1; });"],
+        input=APP, text=True, capture_output=True, timeout=20, cwd=ROOT,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_workspace_keeps_every_route_once_but_only_13_primary_pages():
+    _node_assert("""
+const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
+const ids = groups.flatMap(group => group.items.map(item => item[0]));
+const expected = 'overview health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
+assert.equal(ids.length, 54);
+assert.equal(new Set(ids).size, 54);
+assert.deepEqual([...ids].sort(), expected.sort());
+assert.equal(groups.filter(group => group.primary).flatMap(group => group.items).length, 13);
+""")
+
+
+def test_overview_distinguishes_unknown_and_failed_checks():
+    _node_assert("""
+const model = new Function(block('function adminOverviewModel(', 'function adminOverviewMetric(') + '; return adminOverviewModel;')();
+assert.equal(model({}).healthKnown, false);
+assert.equal(model({health: {healthy: true, age_hours: null}}).healthKnown, false);
+assert.equal(model({health: {healthy: true, age_hours: 1}}).healthKnown, true);
+const failed = model({health: {healthy: true, age_hours: 1}, services: {available: true, healthy: false}});
+assert.equal(failed.notices.length, 1);
+assert.equal(failed.notices[0].page, 'system');
+assert.equal(failed.notices[0].tone, 'bad');
+assert.equal(model({health: {healthy: false, age_hours: 1}}).notices[0].page, 'health');
+""")
+
+
+def test_overview_demotes_research_without_removing_it_and_does_not_dispatch():
+    overview = APP.split('RENDER.overview = async () => {', 1)[1].split('/* ---- RESEARCH TOOLS', 1)[0]
+    assert overview.index('<details class="admin-secondary">') < overview.index('${renderKeyAlerts(')
+    assert '${renderProgramWatch(s.program_watch)}' in overview
+    assert 'wireKeyAlertCopies(s.key_alerts)' in overview
+    assert 'wireProgramWatch(s.program_watch)' in overview
+    assert 'dispatch(' not in overview
+    assert 'tracking enabled' not in overview
+    assert '>Live<' not in overview
+    assert 'estimate, not billed spend' in overview
+    assert 'this is not a complete system health check' in overview
+
+
+def test_page_render_failure_is_recoverable_and_late_errors_do_not_replace_new_pages():
+    _node_assert("""
+const failures = [];
+const run = new Function('adminPageFailure', 'route', 'let ADMIN_RENDER_EPOCH = 0;' + block('function runAdminRender(', 'function go(') + '; return runAdminRender;')((id) => failures.push(id), () => {});
+await run('broken', () => { throw new Error('read unavailable'); });
+assert.deepEqual(failures, ['broken']);
+failures.length = 0;
+let rejectOld;
+const old = run('old', () => new Promise((resolve, reject) => { rejectOld = reject; }));
+await Promise.resolve();
+await run('current', () => {});
+rejectOld(new Error('old request failed'));
+await old;
+assert.deepEqual(failures, []);
+""")
+
+
+def test_reads_have_a_body_deadline_but_writes_are_not_retried_or_aborted():
+    _node_assert("""
+const helper = block('const ADMIN_READ_TIMEOUT_MS = ', 'async function api(');
+const timers = []; const cleared = []; const calls = [];
+const make = (fetcher, parser) => new Function('fetch', 'readJson', 'AbortController', 'setTimeout', 'clearTimeout', helper + ';return readAdminResponse;')(
+  fetcher, parser, AbortController,
+  (fn, delay) => { timers.push({fn, delay}); return timers.length; },
+  id => cleared.push(id)
+);
+const read = make(async (path, opts) => { calls.push({path, opts}); return {body: {ok:true}}; }, async response => response.body);
+assert.deepEqual((await read('/read')).value, {ok:true});
+assert.equal(timers[0].delay, 30000);
+assert(calls[0].opts.signal instanceof AbortSignal);
+assert.deepEqual(cleared, [1]);
+await read('/write', {method:'POST', body:'{}'});
+assert.equal(timers.length, 1);
+assert.equal(calls.length, 2);
+assert.equal(calls[1].opts.signal, undefined);
+let signal; let bodyStarted;
+const started = new Promise(resolve => { bodyStarted = resolve; });
+const hung = make(async (path, opts) => { signal = opts.signal; return {}; }, () => new Promise((resolve, reject) => {
+  signal.addEventListener('abort', () => reject(new Error('aborted')), {once:true}); bodyStarted();
+}));
+const pending = hung('/hung-body'); await started;
+timers.at(-1).fn();
+await assert.rejects(pending, /too long to respond/);
+assert.equal(cleared.length, 2);
+""")
+
+
+def test_startup_cannot_treat_a_failed_session_probe_as_authenticated():
+    init = APP.split('(async function init() {', 1)[1]
+    assert 'SESSION = await api("/api/session")' in init
+    assert 'typeof SESSION.auth_enabled !== "boolean"' in init
+    assert 'typeof SESSION.authenticated !== "boolean"' in init
+    assert 'Unable to verify your session.' in init
+    assert 'catch(() => ({ auth_enabled: false, authenticated: true }))' not in init
+    assert 'SUMMARY = next; // keep the last good snapshot' in APP

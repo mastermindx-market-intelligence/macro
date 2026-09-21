@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T09:17:12.102048+00:00",
-  "count": 2559,
+  "generated_at": "2026-09-21T11:02:18.609794+00:00",
+  "count": 2564,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-xvkblxzkzo7-a030e6",
+      "title": "Here is our FX Blueprint",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T09:18:02Z",
+      "summary_points": [
+        "Dollar & Geopolitical Tensions: Middle East peace developments critical for USD/EM long positions; EUR/USD constrained by resilient Eurozone growth and USD tail risks (Fed hikes/energy cap).",
+        "Stretched USD/EM Positioning: USD/EM longs favored due to compressed real rates against USD and stretched market positioning, creating tactical opportunity.",
+        "Selective FX Trades: Key trades: sell EUR/JPY, buy AUD/USD, USD/PLN/ILS, USD/CNH/TWD; USD/EM longs prioritized over crosses."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-b1wjvjbevqq-0c2f07",
       "title": "JPM International Market Intelligence | Morning Briefing",
@@ -350,6 +369,59 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-stm2kmza5hv-dec9fc",
+      "title": "The 720 Samsung Elec, SMIC, Shengyi Tech, Wiwynn, Japan Banks, Sumitomo Electric, Food & Life, India IT Services, China Matt...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:11Z",
+      "summary_points": [
+        "Samsung Electronics: Tight memory supply-demand and HBM demand drive 2027 growth; capacity constraints offset near-term margin headwinds despite buy rating with W490,000 TP - SMIC: China’s AI demand fuels 2H26 revenue growth (12% HoH, 27% YoY); tight capacity prevents ASP decline supporting buy with HK$153 TP - Wiwynn: US cloud providers drive AI server demand surge; 2026-2028E net income +3-7% and revenues +5-8% with NT$44bn capex by 2026 - Japan Banks: BOJ 25bp hike to 1.25% and subsequent rate hikes support earnings upside; banks with high deposit betas benefit from predictable rate hikes - China Growth & FX: Q3/Q4 2026 GDP at 4.4% yoy (full-year 4.5%); property downturn prolonged by weak labor market; RMB appreciation expected; 2027 growth target downgraded to 4.5% - Vale: Iron ore prices ($90-95/t) render ~120mtpa global supply uneconomical; long-term contracts (70-75% freight at $18-20/t) underpin resilience against weak prices"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ngamcw0xo3y-80c10c",
+      "title": "Bernstein Americas Oil The drone attacks on Russian refineries are stunning",
+      "institution": "Bernstein",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:19:53Z",
+      "summary_points": [
+        "Ukrainian drone strikes on Russian refineries: ~90% of Russia’s refining capacity (2 mln bpd) offline, representing ~80% of 2026 capacity, driving sustained global supply tightness and elevated crack spreads.",
+        "Russia’s refined product export ban: Export ban until Jan 2027 (Reuters) tightening global supply, directly benefiting refiners/integrated oil companies (ExxonMobil, Chevron) through 2027.",
+        "Crack spreads near record highs: Persistently widening despite moderate oil prices, reflecting acute supply constraints from Russian refining disruptions.",
+        "Multiple refinery fire risks: Satellite evidence (NASA FIRMS) confirms fire risks at Omsk (430k bpd), Volgograd (300k bpd), Yaroslavl (280k bpd), and others, threatening supply chain stability.",
+        "Geographic clustering vulnerability: Western Russia’s concentrated refinery infrastructure heightens geopolitical risk exposure and supply chain fragility amid sanctions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 41,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ujjixbqlnkj-b68158",
+      "title": "GS Garrett weekend prep 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:15Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-kvmrapjzy2n-b92194",
       "title": "GS Pasquariello markets macro 21 Sep 2026",
       "institution": "S&T",
@@ -361,6 +433,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-005k2njodqo-6def24",
+      "title": "GS Coppersmith US EQUITIES tougher internals 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:05Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
