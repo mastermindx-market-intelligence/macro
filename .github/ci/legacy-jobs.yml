@@ -11549,12 +11549,16 @@ jobs:
           tests/test_china_heatmap_gate.py
           tests/test_china_heatmap_observations.py
           -q
-      - name: coherent China heatmap browser refresh contracts
-        run: >-
-          node --test
-          tests/test_china_heatmap_observations_ui.cjs
-          tests/test_china_heatmap_refresh.cjs
-          tests/test_china_heatmap_observation_refresh.cjs
+      - name: coherent China heatmap browser refresh contracts (source + shipped mirror)
+        run: |
+          node --test \
+            tests/test_china_heatmap_observations_ui.cjs \
+            tests/test_china_heatmap_refresh.cjs \
+            tests/test_china_heatmap_observation_refresh.cjs
+          HEATMAP_SOURCE=site/heatmap.js REFRESH_SOURCE=site/heatmap.js node --test \
+            tests/test_china_heatmap_observations_ui.cjs \
+            tests/test_china_heatmap_refresh.cjs \
+            tests/test_china_heatmap_observation_refresh.cjs
 
   unrun-picks-boards:
     # pick lab runners + US/CN board surfaces — shipped picks, their outcome

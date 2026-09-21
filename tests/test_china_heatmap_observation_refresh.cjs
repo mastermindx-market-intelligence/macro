@@ -3,7 +3,7 @@ const {test}=require('node:test');const assert=require('node:assert/strict');con
 const {harness,clone,payload}=require('./china_heatmap_refresh_harness.cjs');
 const base=()=>JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/china_heatmap_refresh/base_snapshot.json'),'utf8'));
 const correction=()=>JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/china_heatmap_refresh/corrected_snapshot.json'),'utf8'));
-const renderer=fs.readFileSync(path.join(__dirname,'../templates/heatmap.js'),'utf8');
+const renderer=fs.readFileSync(process.env.HEATMAP_SOURCE || path.join(__dirname,'../templates/heatmap.js'),'utf8');
 const begin=renderer.indexOf('// BEGIN CN_OBSERVATION_TRUTH'),end=renderer.indexOf('// END CN_OBSERVATION_TRUTH',begin);
 if(begin<0||end<=begin)throw new Error('Apply observation-truth slice before this test');
 const helpers=renderer.slice(begin,end);
