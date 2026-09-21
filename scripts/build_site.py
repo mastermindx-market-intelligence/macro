@@ -6983,6 +6983,15 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import write_global_regime_fragment
+    write_global_regime_fragment(
+        site, env.get_template("_unified_dashboard_hero.html.j2").render(
+            **vm, ud_international=True),
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
