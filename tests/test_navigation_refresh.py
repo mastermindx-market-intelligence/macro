@@ -627,3 +627,31 @@ def test_settings_rows_reflow_before_labels_collide_on_narrow_mobile() -> None:
         ) in source
         assert ".settings-row:not(.settings-acct) .lang-toggle{width:100%;box-sizing:border-box}" in source
         assert ".settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;min-width:0}" in source
+
+
+def test_settings_focus_restore_cannot_reopen_after_close_or_escape() -> None:
+    """Programmatic focus restoration must not be mistaken for a fresh open request."""
+    for source in (THEME_JS, SITE_THEME_JS):
+        settings = source.split("  function initSettings() {", 1)[1].split(
+            "  /* ---- highlight the current page in the nav", 1
+        )[0]
+        assert "var _gearPointerDown = false, _gearFocusRestore = false;" in settings
+        assert "function restoreGearFocus()" in settings
+        assert "_gearFocusRestore = true;" in settings
+        assert "try { gear.focus(); } catch (e) {}" in settings
+        assert "setTimeout(function () { _gearFocusRestore = false; }, 0);" in settings
+        assert (
+            "if (e.target === gear && _gearFocusRestore) { _gearFocusRestore = false; return; }"
+            in settings
+        )
+        assert (
+            "pop.querySelector('.settings-close').addEventListener('click', function () "
+            "{ close(); restoreGearFocus(); });"
+        ) in settings
+        escape = settings.split(
+            "document.addEventListener('keydown', function (e) {\n"
+            "      if (!isOpen() || e.key !== 'Escape') return;",
+            1,
+        )[1].split("    });", 1)[0]
+        assert "close(); restoreGearFocus();" in escape
+        assert "close(); gear.focus();" not in settings

@@ -4358,7 +4358,15 @@
     // Pointer focus fires before click. Suppress the focus-open path for that
     // gesture so the click remains the single toggle; keyboard/programmatic
     // focus still opens the accessible pane immediately.
-    var _gearPointerDown = false;
+    var _gearPointerDown = false, _gearFocusRestore = false;
+    function restoreGearFocus() {
+      // Focus restoration is part of closing, not a fresh request to open.
+      // Some browsers report relatedTarget=null on programmatic focus; without
+      // this one-shot guard the focusin handler can immediately reopen the pane.
+      _gearFocusRestore = true;
+      try { gear.focus(); } catch (e) {}
+      setTimeout(function () { _gearFocusRestore = false; }, 0);
+    }
     gear.addEventListener('pointerdown', function () {
       _gearPointerDown = true;
       setTimeout(function () { _gearPointerDown = false; }, 0);
@@ -4367,7 +4375,7 @@
       _gearPointerDown = false;
       isOpen() ? close() : open();
     });
-    pop.querySelector('.settings-close').addEventListener('click', function () { close(); gear.focus(); });
+    pop.querySelector('.settings-close').addEventListener('click', function () { close(); restoreGearFocus(); });
     // expand → open the full settings dashboard (Account when signed in, else Preferences)
     var expandBtn = pop.querySelector('.settings-expand');
     if (expandBtn) expandBtn.addEventListener('click', function () {
@@ -4379,7 +4387,7 @@
       if (!isOpen() || e.key !== 'Escape') return;
       // account management now lives in the full settings dashboard (its own Esc
       // handler owns closing it); here Escape simply closes the popover.
-      close(); gear.focus();
+      close(); restoreGearFocus();
     });
     // Desktop also opens the panel on hover (pure CSS above). If a stray click set
     // .open, make sure leaving the gear + panel always closes it so it never stays
@@ -4396,6 +4404,7 @@
       // programmatic focus opens here; internal close-button focus restoration
       // does not reopen the pane.
       if (isOpen() || wrap.contains(e.relatedTarget)) return;
+      if (e.target === gear && _gearFocusRestore) { _gearFocusRestore = false; return; }
       if (e.target === gear && _gearPointerDown) return;
       open();
     });
