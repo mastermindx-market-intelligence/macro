@@ -522,8 +522,18 @@ _RATES_DETAIL_PROFILE_TERMS = re.compile(
     r"|(?:收益率曲线|收益率曲線|期限溢价|期限溢價|实际利率|實際利率)",
 )
 _MIXED_MACRO_RATES_TERMS = re.compile(
-    r"(?i)\b(yields?|treasur\w+|bonds?|fed|fomc|rates|"
-    r"rate\s+(?:sell[ -]?off|shock|hike|cut|repric\w*|surge|spike))\b"
+    r"(?i)\b("
+    r"treasur\w+|fomc|"
+    r"(?:interest|policy|nominal)\s+rates?|"
+    r"rates?\s+(?:sell[ -]?off|shock|hike|cut|repric\w*|surge|spike|"
+    r"rise|rose|rising|fall|fell|falling|drop|dropped|higher|lower)|"
+    r"(?:treasury|bond|real)\s+yields?|"
+    r"yields?\s+(?:surge|spike|rise|rose|rising|fall|fell|falling|higher|lower)|"
+    r"(?:treasury|government|long[- ]?term)\s+bonds?|"
+    r"bonds?\s+(?:sell[ -]?off|sold\s+off|rally|rallied|fall|fell|rise|rose|down|up)|"
+    r"(?:the\s+)?fed(?:eral\s+reserve)?\s+(?:cut|hike|policy|meeting|minutes|decision|"
+    r"rate|rates|chair|governor|balance\s+sheet)"
+    r")\b"
     r"|(?:利率|收益率|美债|美債|降息|加息)",
 )
 

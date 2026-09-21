@@ -208,3 +208,15 @@ def test_portfolio_plus_options_keeps_portfolio_and_options_in_visible_plan():
     assert "get_portfolio_brief" in tools
     assert "read_options_entry_state" in tools
     assert len(tools) <= 3
+
+
+def test_growth_rates_phrase_does_not_force_macro_curve_plan():
+    line = gw._seed_tool_plan("Why did NVDA move as revenue growth rates slowed?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert tools == ["get_market_events", "get_symbol_context", "get_quote"]
+
+
+def test_fed_by_phrase_does_not_force_macro_curve_plan():
+    line = gw._seed_tool_plan("Why did NVDA move after demand was fed by AI spending?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert tools == ["get_market_events", "get_symbol_context", "get_quote"]
