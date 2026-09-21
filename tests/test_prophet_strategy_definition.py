@@ -138,11 +138,14 @@ def _b4_projection(
     state="ACTIVE",
     terminal_reason=None,
     generated_at="2026-09-18T19:30:00Z",
+    emergence=None,
 ):
+    emergence_by_episode = None if emergence is None else {_b4_cid(): emergence}
     return project_candidate_states(
         _B4Snap(_B4_GEN, _B4Gen((_b4_episode(state, terminal_reason),))),
         market_session="2026-09-18",
         generated_at=generated_at,
+        emergence_by_episode=emergence_by_episode,
     )
 
 
@@ -687,3 +690,50 @@ def test_b4_runtime_adapter_binds_quote_clock_to_live_state_freshness_owner():
                 entry_rows_by_symbol=entry, metric_inputs=metrics,
             ),
         )
+
+
+def _b4_turn_watch_emergence(*, source_ref="pee:" + "b" * 64, source_token="B1_OBSERVED"):
+    return {
+        "state": "TRIGGERED",
+        "reason": None,
+        "source_system": "turn_watch",
+        "source_token": source_token,
+        "source_ref": source_ref,
+    }
+
+
+def test_b4_runtime_adapter_binds_event_active_only_from_current_b1_relation_receipt():
+    relation = "pee:" + "b" * 64
+    facts = compose_runtime_owner_facts(
+        _b4_projection(emergence=_b4_turn_watch_emergence(source_ref=relation)),
+        episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(),
+    )
+    assert facts["deterministic_gates"]["event_status"] == "ACTIVE"
+    assert relation in facts["source_receipts"]
+
+    unresolved = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
+    )
+    assert unresolved["deterministic_gates"]["event_status"] == "UNKNOWN"
+    assert relation not in unresolved["source_receipts"]
+
+
+def test_b4_runtime_adapter_refuses_malformed_b1_relation_receipt_and_does_not_generalize_sources():
+    with pytest.raises(RuntimeOwnerFactError, match="no exact B1 relation receipt"):
+        compose_runtime_owner_facts(
+            _b4_projection(
+                emergence=_b4_turn_watch_emergence(source_ref="pee:not-a-receipt")
+            ),
+            episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(),
+        )
+
+    other = _b4_turn_watch_emergence()
+    other["source_system"] = "entry_radar"
+    facts = compose_runtime_owner_facts(
+        _b4_projection(emergence=other),
+        episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(),
+    )
+    assert facts["deterministic_gates"]["event_status"] == "UNKNOWN"

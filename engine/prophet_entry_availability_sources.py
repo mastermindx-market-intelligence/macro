@@ -177,6 +177,40 @@ def _bind_owner_confluence(
     return "PASS", f"signal-gate-pair:{pair_id}"
 
 
+def _bind_event_status_from_candidate(
+    row: Mapping[str, object],
+) -> tuple[str, str | None]:
+    """Bind ACTIVE only from a current B1 relation already proven by B3.
+
+    B3's TURN WATCH emergence source is built from the atomic B1 event ledger and
+    excludes any relation withdrawn by ``RETRACTED.correction_of``.  Therefore a
+    TRIGGERED row whose source is an exact content-addressed B1 relation can prove
+    that *that relation* is active at the B3 projection cut.  Missing/unestimable
+    emergence remains UNKNOWN; this adapter never infers ACTIVE from episode
+    lifecycle alone and never manufactures RETRACTED from absence.
+    """
+    emergence = row.get("emergence_state")
+    if not isinstance(emergence, Mapping):
+        raise RuntimeOwnerFactError("candidate emergence_state must be an object")
+    if emergence.get("state") != "TRIGGERED":
+        return "UNKNOWN", None
+    if emergence.get("source_system") != "turn_watch":
+        return "UNKNOWN", None
+    if emergence.get("source_token") not in {"B1_OPENED", "B1_OBSERVED"}:
+        return "UNKNOWN", None
+    source_ref = emergence.get("source_ref")
+    if (
+        not isinstance(source_ref, str)
+        or not source_ref.startswith("pee:")
+        or len(source_ref) != 68
+        or any(ch not in "0123456789abcdef" for ch in source_ref[4:])
+    ):
+        raise RuntimeOwnerFactError(
+            "triggered TURN WATCH emergence has no exact B1 relation receipt"
+        )
+    return "ACTIVE", source_ref
+
+
 def _live_state_for_symbol(live_state_artifact: Mapping[str, object], symbol: str, market_session: str) -> Mapping[str, object]:
     if not isinstance(live_state_artifact, Mapping):
         raise RuntimeOwnerFactError("live_state_artifact must be an object")
@@ -275,6 +309,8 @@ def compose_runtime_owner_facts(
         decision_clock=decision_clock,
     )
     gates["owner_confluence"] = owner_confluence
+    event_status, event_status_receipt = _bind_event_status_from_candidate(row)
+    gates["event_status"] = event_status
     if owner_gate_facts not in (None, {}):
         raise RuntimeOwnerFactError(
             "owner_gate_facts cannot inject gate verdicts without native owner evidence"
@@ -308,6 +344,8 @@ def compose_runtime_owner_facts(
     ]
     if confluence_receipt is not None:
         receipts.append(confluence_receipt)
+    if event_status_receipt is not None:
+        receipts.append(event_status_receipt)
 
     return {
         "decision_at": decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
