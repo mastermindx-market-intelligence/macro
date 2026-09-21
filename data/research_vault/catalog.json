@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T20:03:43.136977+00:00",
-  "count": 2590,
+  "generated_at": "2026-09-21T20:18:52.918823+00:00",
+  "count": 2591,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -331,6 +331,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t7tlo5rhaek-93b770",
+      "title": "The Credit Line Banks and AI A Credit Positive Outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:30Z",
+      "summary_points": [
+        "Fed Confirms AI Lending Surge: Jan 2026 Fed survey shows heightened lending to AI firms (USD bank supply elevated, tech share at 20%), confirming credit-positive fundamentals from AI capex cycle and internal efficiency gains.",
+        "US Banks Dominate AI Financing & Earnings Focus: US banks discuss AI capex 9x more frequently than non-financials (9 mentions/call vs. 4 in Europe), driving 50-55% of IB growth and 40% of 1H2026 Equities revenue via capital-light models.",
+        "Cyber Risk Supersedes Business Disruption: ECB mandates shift banks’ top AI concern to cyber risks (vs. earlier business model disruption), making it primary disruption risk per Exhibit 11."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
