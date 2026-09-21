@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SHOO-BULL-20260730",
-  "asof": "2026-09-15",
+  "asof": "2026-09-19",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.0,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 68.6,
+    "validity": 66.8,
     "progress": 0.0,
-    "pace": 28.7,
+    "pace": 23.3,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.756,
+    "dist_to_stop_r": 0.741,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -0.1624,
-    "p2": -0.0812,
+    "horizon_pct_used": 111.1,
+    "p1": -0.1724,
+    "p2": -0.0862,
     "p3": null,
-    "move_r": -0.244,
+    "move_r": -0.259,
     "mfe_r": 0.195,
-    "mae_r": -0.294
+    "mae_r": -0.366
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.9899996948242205,
-  "_mae": -4.519998626708983,
+  "_mae": -5.620000915527342,
   "_max_p1": 0.12985883582298458,
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

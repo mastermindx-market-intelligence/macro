@@ -49,6 +49,18 @@ python3 scripts/check_start_runtime.py --heal-from HEAD
 bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
 bash scripts/ci/options_signal_nightly.sh exclude-broad
 bash scripts/ci/options_signal_nightly.sh require-clean-broad-start
+# China gold premium final render audit: the builder-band check proves the raw
+# source→VM→page seam; this second pass proves the EXACT post-normalization tree
+# that the broad stage below will commit. It rewrites the same existing
+# data/quality receipt (no second proof plane). A mismatch is made loud but remains
+# lane-local so one Gold panel cannot suppress every nightly page.
+set +e
+python -m scripts.audit_china_gold_premium --strict-render
+cgp_audit_rc=$?
+set -e
+if [ "$cgp_audit_rc" -ne 0 ]; then
+  echo "::error title=China gold premium final render audit::normalized Gold panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
+fi
 git add data/ site/ reports/
 # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
 # matches nothing, and this step runs under `-eo pipefail` — a missing
