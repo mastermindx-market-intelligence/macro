@@ -1,0 +1,1068 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 22945
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h1.",
+      "text": "Alert Command Center",
+      "r": {
+        "x": 39,
+        "y": 153,
+        "w": 252,
+        "h": 37
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "THE STORIES BEHIND THE ALERTS ?",
+      "r": {
+        "x": 37,
+        "y": 645,
+        "w": 316,
+        "h": 19
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "BACKDROP — THE CONTEXT EVERY ALERT IS READ AGAINST",
+      "r": {
+        "x": 37,
+        "y": 1382,
+        "w": 316,
+        "h": 37
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 36,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "input#q.",
+      "text": "Filter alerts",
+      "r": {
+        "x": 66,
+        "y": 1843,
+        "w": 280,
+        "h": 18
+      }
+    },
+    {
+      "tag": "button.fbtn.quick",
+      "text": "new today",
+      "r": {
+        "x": 32,
+        "y": 1875,
+        "w": 106,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.quick",
+      "text": "re-fired",
+      "r": {
+        "x": 145,
+        "y": 1875,
+        "w": 90,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button#reset.freset",
+      "text": "reset",
+      "r": {
+        "x": 328,
+        "y": 1910,
+        "w": 30,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.fbtn.on",
+      "text": "all",
+      "r": {
+        "x": 97,
+        "y": 1937,
+        "w": 38,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "act now 3",
+      "r": {
+        "x": 142,
+        "y": 1937,
+        "w": 104,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "critical 2",
+      "r": {
+        "x": 253,
+        "y": 1937,
+        "w": 78,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "major 1",
+      "r": {
+        "x": 32,
+        "y": 1971,
+        "w": 70,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.on",
+      "text": "all",
+      "r": {
+        "x": 219,
+        "y": 1971,
+        "w": 38,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.cl-stress",
+      "text": "stress 1",
+      "r": {
+        "x": 264,
+        "y": 1971,
+        "w": 94,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "regime 3",
+      "r": {
+        "x": 32,
+        "y": 2005,
+        "w": 99,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "liquidity 0",
+      "r": {
+        "x": 138,
+        "y": 2005,
+        "w": 106,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "rotation 30",
+      "r": {
+        "x": 32,
+        "y": 2039,
+        "w": 112,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "single-name 20",
+      "r": {
+        "x": 151,
+        "y": 2039,
+        "w": 138,
+        "h": 27
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 224,
+        "y": 2294,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 2390,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 224,
+        "y": 2598,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 2762,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 200,
+        "y": 3009,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 3121,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 215,
+        "y": 3344,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 3439,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 3661,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 3756,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 215,
+        "y": 3997,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 4092,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 222,
+        "y": 4333,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 4428,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 222,
+        "y": 4689,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 4784,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 215,
+        "y": 5025,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 5120,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 215,
+        "y": 5361,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 5456,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 215,
+        "y": 5645,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 5740,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 222,
+        "y": 5949,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 6044,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 6323,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 6418,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 6697,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 6792,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 7072,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 7167,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 7446,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 7541,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 7820,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 7915,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 8195,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 8290,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 8518,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 8613,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 8842,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 8937,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 9180,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 9275,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 9466,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 9578,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 173,
+        "y": 9787,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.lnk",
+      "text": "Signal Lab →",
+      "r": {
+        "x": 125,
+        "y": 9882,
+        "w": 70,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.lnk.sm",
+      "text": "open →",
+      "r": {
+        "x": 234,
+        "y": 10052,
+        "w": 44,
+        "h": 19
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.story.cl-regime",
+      "text": "🧭 Regime shift 3 the market's underlying weather is changing 🧭 Regime radar moved — the market “weather” may",
+      "r": {
+        "x": 37,
+        "y": 672,
+        "w": 316,
+        "h": 141
+      }
+    },
+    {
+      "tag": "button.story.cl-other",
+      "text": "• Other 6 🚨 Market risk-state went ELEVATED — drawdown risk is building 1 act ↻ 2 re-fired USDCAD USDBRL",
+      "r": {
+        "x": 37,
+        "y": 823,
+        "w": 316,
+        "h": 118
+      }
+    },
+    {
+      "tag": "button.story.cl-rotation",
+      "text": "🔄 Sector & theme rotation 30 leadership is handing off between themes 🌀 Rotating in — Farm-Direct (Consumer ",
+      "r": {
+        "x": 37,
+        "y": 951,
+        "w": 316,
+        "h": 122
+      }
+    },
+    {
+      "tag": "button.story.cl-single_name",
+      "text": "🎯 Single-name flags 20 unusual activity converging on individual tickers 🔗 2-channel convergence on EXE ↻ 16",
+      "r": {
+        "x": 37,
+        "y": 1082,
+        "w": 316,
+        "h": 122
+      }
+    },
+    {
+      "tag": "button.story.cl-stress",
+      "text": "🛑 Risk-off stress 1 credit, recession & rates plumbing under strain Oil price shock stabilizing ↻ 1 re-fired ",
+      "r": {
+        "x": 37,
+        "y": 1214,
+        "w": 316,
+        "h": 122
+      }
+    },
+    {
+      "tag": "button.fbtn.quick",
+      "text": "new today",
+      "r": {
+        "x": 32,
+        "y": 1875,
+        "w": 106,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.quick",
+      "text": "re-fired",
+      "r": {
+        "x": 145,
+        "y": 1875,
+        "w": 90,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button#reset.freset",
+      "text": "reset",
+      "r": {
+        "x": 328,
+        "y": 1910,
+        "w": 30,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.fbtn.on",
+      "text": "all",
+      "r": {
+        "x": 97,
+        "y": 1937,
+        "w": 38,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "act now 3",
+      "r": {
+        "x": 142,
+        "y": 1937,
+        "w": 104,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "critical 2",
+      "r": {
+        "x": 253,
+        "y": 1937,
+        "w": 78,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "major 1",
+      "r": {
+        "x": 32,
+        "y": 1971,
+        "w": 70,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.on",
+      "text": "all",
+      "r": {
+        "x": 219,
+        "y": 1971,
+        "w": 38,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn.cl-stress",
+      "text": "stress 1",
+      "r": {
+        "x": 264,
+        "y": 1971,
+        "w": 94,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "regime 3",
+      "r": {
+        "x": 32,
+        "y": 2005,
+        "w": 99,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "liquidity 0",
+      "r": {
+        "x": 138,
+        "y": 2005,
+        "w": 106,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "rotation 30",
+      "r": {
+        "x": 32,
+        "y": 2039,
+        "w": 112,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.fbtn",
+      "text": "single-name 20",
+      "r": {
+        "x": 151,
+        "y": 2039,
+        "w": 138,
+        "h": 27
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "How this board ranks — and why it refuses to fake a hit-rate",
+      "r": {
+        "x": 37,
+        "y": 22710,
+        "w": 316,
+        "h": 47
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "macro.html#regime-radar",
+    "signal_lab.html",
+    "vector.html#impulse",
+    "macro.html#dlg-risk",
+    "commodities.html#timeline",
+    "vector.html#allocation",
+    "alt_data.html#convergence",
+    "subsector_rotation.html#rotation-app",
+    "macro_context.html#board",
+    "forex.html#timeline",
+    "sector_central.html#theme-ai_infra",
+    "sector_central.html#theme-managed_care",
+    "sector_central.html#theme-quantum_computing",
+    "sector_central.html#theme-energy_complex",
+    "sector_central.html#theme-gold_miners",
+    "sector_central.html#theme-silver_miners",
+    "sector_central.html#theme-big_pharma",
+    "sector_central.html#theme-us_sector_health",
+    "sector_central.html#theme-us_sector_comm"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "assets/css/13b0afce.css?v=13b0afce",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "theme.js?v=48082a1e"
+  ],
+  "route": "alerts.html",
+  "url": "https://www.mastermind-x.com/alerts.html",
+  "status": 200,
+  "title": "Alert Command Center — what the tape is saying, ranked & triaged",
+  "time": "2026-09-21T04:46:39.490089+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [],
+  "html_sha256": "c17dd2cecab994aa9874960c6f1c18925fb906a38d6b258a4d4ad6bdb88e6fc0"
+}

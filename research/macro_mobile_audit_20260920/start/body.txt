@@ -1,0 +1,129 @@
+60051
+Terminal
+Welcome
+MASTERMINDX
+
+One disciplined view across every major market.
+
+LATEST MARKET SNAPSHOT
+🇭🇰
++0.57%
+🇺🇸
++0.17%
+🇨🇦
+-0.19%
+🇯🇵
++1.38%
+🇰🇷
++1.89%
+🇬🇧
+-1.45%
+🇪🇺
+-1.37%
+🇨🇳
++0.55%
+🇹🇼
++1.11%
+🇺🇸
+US
+🇨🇦
+CA
+🇨🇳
+CN
+🇭🇰
+HK
+🇯🇵
+JP
+🇰🇷
+KR
+🇹🇼
+TW
+🇬🇧
+GB
+🇪🇺
+EZ
+Explore
+Markets
+Explore
+MARKETS
+🇺🇸
+United States
+Stagflation
+📊
+Macro
+→
+📈
+Stocks · 59
+→
+🇨🇳
+China
+Growth-scare
+📊
+Macro
+→
+📈
+Stocks · 22
+→
+🇭🇰
+Hong Kong
+Growth-scare
+📊
+Macro
+→
+📈
+Stocks · 24
+→
+🇨🇦
+Canada · TSX
+Reflation
+📊
+Macro
+→
+📈
+Stocks
+→
+WHAT CHANGED
+5 of 12 signals
+Bitcoin Vector
+Allocation changed to 100% BTC
+today
+Backtest: 61.2% CAGR vs 60.7% buy-and-hold; max drawdown -41.2% vs -83.8%.
+Conviction: Strategy output — beat buy-and-hold in backtest.
+Optimal strategy moved 50% → 100% BTC (momentum × risk grid). Open →
+Bitcoin Vector
+Allocation changed to 50% BTC
+1d
+Macro Vector
+🧲 Options “gravity” flipped — bigger swings more likely
+2d
+Macro Vector
+🫧 Calm surface, fragile internals — complacency watch
+2d
+Macro Vector
+📉 Breadth divergence — fewer names carrying the index
+2d
+Show 7 more →
+View full timeline →
+M
+MASTERMINDX
+Global Macro Intelligence
+DASHBOARDS
+US Macro
+China
+Hong Kong
+Canada
+VECTORS
+Crypto Cockpit
+Bitcoin
+Bonds
+Commodities
+Forex
+INTELLIGENCE
+Cycle Intel
+Sector Central
+Reports
+Neural Web
+
+© 2026 MastermindX Inc
+
+Rigorously tested data · powered by AI · not investment advice

@@ -1,0 +1,250 @@
+600519.SS
+Terminal
+Options
+One workspace for the settled close — brief, scanner, per-name, leaders.
+LATEST COMPLETED SESSION
+2026-09-17
+Thursday · closed 16:00 ET
+Positions counted
+2026-09-17
+Names covered
+372 / 408
+Data quality
+Stale
+Source-session receipt
+WHOLE MARKET
+Mixed — normalizing
+VIX 15.4
+S&P DEALERS
+Absorbing
+2 days in this state
+TODAY'S TAPE
+Average
+$21.8B traded
+SAME-DAY BETS
+11% of premium
+expiring the same day
+Four readings, shown side by side and never averaged into one score.
+covered 372/408 names
+Daily Brief
+Flow
+12
+Scanner
+408
+Ticker
+SPY
+Leaders
+2
+The latest completed session is 2026-09-17. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.
+Options Intelligence Brief
+ranked priorities, event and crowding reads, and one quiet control
+Research priority · not a probability or trade signal
+?
+Settled 2026-08-19
+Positions counted 2026-08-20
+Newer session 2026-08-20 awaiting position counts
+Today's brief isn't ready yet.
+
+WHAT TO DO
+Data behind
+Not enough fresh data to give a stance.
+
+As of Wed 19 Aug close
+20 trading days behind
+Updated 22 Aug, 19:10 UTC
+
+This board is unavailable for this close.
+
+This is a data gap, not a quiet market — this board is unavailable for this close.
+
+What we checked
+Hypotheses to research, ranked by evidence — none is a trade on its own.
+2026-08-19
+What changed
+?
+▬
+Tape held steady
+▲
+Dealers now absorb moves
+Watch — don't chase
+Nothing here is a trade on its own — these are the day's deltas, not signals.
+2026-08-13
+WHERE THE INDEXES CLOSED
+The four that set the tone
+where price sits against the levels dealers hedge around
+?
+SPX
+7,622.73
+Jumpy — moves get amplified
+Closed 0.1% below the flip. Swings run larger than usual.
+FLOOR
+7,500
+FLIP
+7,627.10
+CEILING
+8,100
+Protect gains
+±0.77%
+SPY
+759.13
+Jumpy — moves get amplified
+Closed 0.8% below the flip. Swings run larger than usual.
+FLOOR
+745
+FLIP
+764.82
+CEILING
+800
+Protect gains
+±0.79%
+QQQ
+716.83
+Jumpy — moves get amplified
+Closed 0.3% below the flip. Swings run larger than usual.
+FLOOR
+690
+FLIP
+719.37
+CEILING
+720
+Protect gains
+±1.07%
+IWM
+283.05
+Jumpy — moves get amplified
+Closed 5.7% below the flip. Swings run larger than usual.
+FLOOR
+280
+FLIP
+299.07
+CEILING
+300
+Protect gains
+±1.09%
+Levels are measured from this close and hold until tomorrow's data run. A move through one intraday does not count until it closes there.
+2026-09-17
+WHERE THE MONEY WENT
+Premium by sector
+how concentrated today's options money was
+?
+Technology
+$11.2B
+buying ~
+Index ETFs
+$3.9B
+buying ~
+Consumer Disc.
+$1.6B
+buying ~
+Communication
+$818M
+mixed
+Health Care
+$424M
+selling ~
+Industrials
+$424M
+buying ~
+Financials
+$347M
+mixed
+Energy
+$115M
+mixed
+Staples
+$92M
+mixed
+Utilities
+$51M
+mixed
+Materials
+$12M
+mixed
+Real Estate
+$500K
+mixed
+Watch — don't chase
+Two sectors took 79% of today's premium. This is a picture of where money went, not a forecast of where it goes next.
+tone: not reliable alone
+2026-08-13
+Biggest single bets
+net premium, direction approximate
+?
+SNDK
++$824M
+call-leaning
+0% same-day
+MU
++$639M
+call-leaning
+0% same-day
+SPY
++$404M
+call-leaning
+64% same-day
+NVDA
++$264M
+call-leaning
+0% same-day
+TSLA
++$250M
+call-leaning
+0% same-day
+QQQ
++$175M
+call-leaning
+65% same-day
+RTX
++$159M
+call-leaning
+0% same-day
+MSTR
+−$152M
+put-leaning
+0% same-day
+LLY
+−$120M
+put-leaning
+0% same-day
+NBIS
+−$114M
+put-leaning
+0% same-day
+Watch — don't chase
+Big premium marks attention, not conviction. A single large trade can be one desk hedging.
+2026-08-13
+FOR TOMORROW
+Names worth a look before the open
+a research list, not a buy list
+Money keeps showing up
+Heavy options buying on most of the last ten days.
+AEIS
+AEM
+AEP
+AFRM
+AG
+AGI
+Turned back up after a washout
+Money flipped positive right after a run of selling.
+ALAB
+APLD
+ARM
+CORZ
+EQX
+HUT
+Sitting near a flip level
+Within 1% of the price where hedging changes character.
+ULTA
+AMAT
+TXN
+HWM
+TJX
+ROST
+Get ready
+Tap a name to open its workbench. These are starting points for your own work.
+2026-08-12
+This page is the settled close
+Levels here hold until tomorrow's data run. For walls that move during the session, live tape and replay, the Terminal is the live surface.Same subscription, two clocks — the Terminal is the live desk (tape, replay, alerts); this workspace is the settled record.
+closed 16:00 ET · next open in 8h 43m
+Open the Terminal
+↗

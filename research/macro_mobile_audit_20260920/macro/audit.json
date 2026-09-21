@@ -1,0 +1,663 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 5615
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ],
+    [
+      "data-access-tier",
+      "anon"
+    ],
+    [
+      "data-release-live-freshness",
+      "fresh"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h1#ud-hero-h.ud-verdict",
+      "text": "Risk-on , narrowing",
+      "r": {
+        "x": 41,
+        "y": 183,
+        "w": 308,
+        "h": 78
+      }
+    },
+    {
+      "tag": "h3.l-en",
+      "text": "Where this shows up",
+      "r": {
+        "x": 41,
+        "y": 750,
+        "w": 308,
+        "h": 20
+      }
+    },
+    {
+      "tag": "h3.l-en",
+      "text": "What changed since last look",
+      "r": {
+        "x": 41,
+        "y": 1530,
+        "w": 308,
+        "h": 20
+      }
+    },
+    {
+      "tag": "h3.l-en",
+      "text": "Why — the three things moving this read",
+      "r": {
+        "x": 41,
+        "y": 1704,
+        "w": 308,
+        "h": 20
+      }
+    },
+    {
+      "tag": "h3.l-en",
+      "text": "What we’re watching next",
+      "r": {
+        "x": 41,
+        "y": 1876,
+        "w": 308,
+        "h": 20
+      }
+    },
+    {
+      "tag": "h3.l-en",
+      "text": "Go deeper",
+      "r": {
+        "x": 41,
+        "y": 2071,
+        "w": 308,
+        "h": 20
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "NVDA",
+      "r": {
+        "x": 16,
+        "y": 88,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 44,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 45,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "Macro weather",
+      "r": {
+        "x": 41,
+        "y": 2097,
+        "w": 115,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "Sector rotation",
+      "r": {
+        "x": 164,
+        "y": 2097,
+        "w": 114,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "Signal Lab",
+      "r": {
+        "x": 41,
+        "y": 2137,
+        "w": 87,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "Macro signals",
+      "r": {
+        "x": 136,
+        "y": 2137,
+        "w": 109,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "News feed",
+      "r": {
+        "x": 253,
+        "y": 2137,
+        "w": 89,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.ud-depth",
+      "text": "Macro & Monetary hub",
+      "r": {
+        "x": 41,
+        "y": 2178,
+        "w": 161,
+        "h": 32
+      }
+    },
+    {
+      "tag": "div.mx5-regime-pill",
+      "text": "Stagflation · Shifting — not all-clear ⓘ",
+      "r": {
+        "x": 31,
+        "y": 2316,
+        "w": 247,
+        "h": 24
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "Macro Weather",
+      "r": {
+        "x": 79,
+        "y": 5296,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "AI Brief",
+      "r": {
+        "x": 192,
+        "y": 5296,
+        "w": 64,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "Sector Intelligence",
+      "r": {
+        "x": 39,
+        "y": 5333,
+        "w": 125,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "Neural Web",
+      "r": {
+        "x": 170,
+        "y": 5333,
+        "w": 87,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "Signal Lab",
+      "r": {
+        "x": 264,
+        "y": 5333,
+        "w": 80,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.mx5-deep-chip",
+      "text": "China Intel",
+      "r": {
+        "x": 39,
+        "y": 5370,
+        "w": 82,
+        "h": 29
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Data health ? all sources OK · 0 sources ▾",
+      "r": {
+        "x": 41,
+        "y": 5448,
+        "w": 308,
+        "h": 19
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 151,
+        "y": 5450,
+        "w": 15,
+        "h": 15
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "NVDA",
+      "r": {
+        "x": 16,
+        "y": 88,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 45,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "summary.ud-watch-summary",
+      "text": "Read being updated 3 conditions › If it lands against the read, it would shift the regime call.",
+      "r": {
+        "x": 41,
+        "y": 1942,
+        "w": 308,
+        "h": 92
+      }
+    },
+    {
+      "tag": "button#mx5BtnFactors.mx5-sc-btn",
+      "text": "4 of 6 supportive · 2 warning",
+      "r": {
+        "x": 31,
+        "y": 2556,
+        "w": 211,
+        "h": 44
+      }
+    },
+    {
+      "tag": "button#mx5BtnRisk.mx5-sc-btn.mx5-sc-btn-warn",
+      "text": "Risk building · 56",
+      "r": {
+        "x": 31,
+        "y": 2608,
+        "w": 136,
+        "h": 44
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "What To Do Now Follow the trend. Add on strength. Risk-on · 61/100 Watch Breadth & participation (0/100). Trim",
+      "r": {
+        "x": 18,
+        "y": 3490,
+        "w": 354,
+        "h": 257
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 325,
+        "y": 3497,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face.mx-live-event-face",
+      "text": "Live event status CHECKING Initial jobless claims · verifying official source No top-tier prints in the window",
+      "r": {
+        "x": 18,
+        "y": 3762,
+        "w": 354,
+        "h": 170
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 325,
+        "y": 3769,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "div.mx5-card",
+      "text": "Fed Path Official FOMC statement detected · extracting decision Forward path data — accruing from nightly log.",
+      "r": {
+        "x": 18,
+        "y": 3947,
+        "w": 354,
+        "h": 168
+      }
+    },
+    {
+      "tag": "div.mx5-card",
+      "text": "Market Sentiment PANIC EUPHORIA Neutral Composite at 50 · neutral zone Open sentiment detail →",
+      "r": {
+        "x": 18,
+        "y": 4129,
+        "w": 354,
+        "h": 351
+      }
+    },
+    {
+      "tag": "div.mx5-card",
+      "text": "Sector Temperature Sector data — accruing from nightly log.",
+      "r": {
+        "x": 18,
+        "y": 4494,
+        "w": 354,
+        "h": 104
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "ES S&P FUT 7,744.25 +0.41% NQ NASDAQ FUT 30,082.75 +0.55% YM DOW FUT 52,266.00 +0.36% RTY RUSSELL FUT 2,891.60",
+      "r": {
+        "x": 18,
+        "y": 3076,
+        "w": 354,
+        "h": 398
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 325,
+        "y": 3083,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "AI Brief Cross-asset synthesis A read-through of existing signals — not a signal source.",
+      "r": {
+        "x": 18,
+        "y": 4613,
+        "w": 170,
+        "h": 238
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 141,
+        "y": 4620,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "Alerts Centre Market intelligence feed",
+      "r": {
+        "x": 202,
+        "y": 4613,
+        "w": 170,
+        "h": 238
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 325,
+        "y": 4620,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "button.mmb-exp",
+      "text": "Ask the Brain",
+      "r": {
+        "x": 325,
+        "y": 4872,
+        "w": 40,
+        "h": 40
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Data health ? all sources OK · 0 sources ▾",
+      "r": {
+        "x": 41,
+        "y": 5448,
+        "w": 308,
+        "h": 19
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 151,
+        "y": 5450,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "div#mmb-launch.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "signal_lab.html",
+    "macro_signals.html",
+    "macro_monetary.html",
+    "aibrief.html",
+    "committee.html",
+    "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+    "sector_heatmap.html",
+    "sector_central.html#si-movement",
+    "history.html"
+  ],
+  "assets": [
+    "theme.css",
+    "tier_preview.css",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "supabase.js",
+    "navigation-refresh.css",
+    "logo_config.js",
+    "stock-logos.js",
+    "live_config.js",
+    "live.js",
+    "theme.js",
+    "tier_preview.js",
+    "chart_i18n.js",
+    "timemachine.js",
+    "tablesort.js",
+    "charts.js",
+    "risk_state_live.js",
+    "risk_envelope_live.js",
+    "release_publications_live.js",
+    "https://www.mastermind-x.com/mm_brain.js?v=cc2fa93e"
+  ],
+  "route": "macro.html",
+  "url": "https://www.mastermind-x.com/macro.html",
+  "status": 200,
+  "title": "Macro Regime Dashboard — 2026-09-18 | MastermindX",
+  "time": "2026-09-21T04:46:19.520704+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/risk_envelope_live.js",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/macrodata/release_forecast.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789965980568",
+      "status": 401
+    }
+  ],
+  "html_sha256": "03d2650aa8e475c1b37073a7e2329ca3e6ed5a3afc2ae131b095718d8b5d8d51"
+}

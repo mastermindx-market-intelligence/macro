@@ -1,0 +1,7833 @@
+[
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 5615
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ],
+      [
+        "data-access-tier",
+        "anon"
+      ],
+      [
+        "data-release-live-freshness",
+        "fresh"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h1#ud-hero-h.ud-verdict",
+        "text": "Risk-on , narrowing",
+        "r": {
+          "x": 41,
+          "y": 183,
+          "w": 308,
+          "h": 78
+        }
+      },
+      {
+        "tag": "h3.l-en",
+        "text": "Where this shows up",
+        "r": {
+          "x": 41,
+          "y": 750,
+          "w": 308,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h3.l-en",
+        "text": "What changed since last look",
+        "r": {
+          "x": 41,
+          "y": 1530,
+          "w": 308,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h3.l-en",
+        "text": "Why — the three things moving this read",
+        "r": {
+          "x": 41,
+          "y": 1704,
+          "w": 308,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h3.l-en",
+        "text": "What we’re watching next",
+        "r": {
+          "x": 41,
+          "y": 1876,
+          "w": 308,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h3.l-en",
+        "text": "Go deeper",
+        "r": {
+          "x": 41,
+          "y": 2071,
+          "w": 308,
+          "h": 20
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "NVDA",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 44,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "Macro weather",
+        "r": {
+          "x": 41,
+          "y": 2097,
+          "w": 115,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "Sector rotation",
+        "r": {
+          "x": 164,
+          "y": 2097,
+          "w": 114,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "Signal Lab",
+        "r": {
+          "x": 41,
+          "y": 2137,
+          "w": 87,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "Macro signals",
+        "r": {
+          "x": 136,
+          "y": 2137,
+          "w": 109,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "News feed",
+        "r": {
+          "x": 253,
+          "y": 2137,
+          "w": 89,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.ud-depth",
+        "text": "Macro & Monetary hub",
+        "r": {
+          "x": 41,
+          "y": 2178,
+          "w": 161,
+          "h": 32
+        }
+      },
+      {
+        "tag": "div.mx5-regime-pill",
+        "text": "Stagflation · Shifting — not all-clear ⓘ",
+        "r": {
+          "x": 31,
+          "y": 2316,
+          "w": 247,
+          "h": 24
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "Macro Weather",
+        "r": {
+          "x": 79,
+          "y": 5296,
+          "w": 107,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "AI Brief",
+        "r": {
+          "x": 192,
+          "y": 5296,
+          "w": 64,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "Sector Intelligence",
+        "r": {
+          "x": 39,
+          "y": 5333,
+          "w": 125,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "Neural Web",
+        "r": {
+          "x": 170,
+          "y": 5333,
+          "w": 87,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "Signal Lab",
+        "r": {
+          "x": 264,
+          "y": 5333,
+          "w": 80,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.mx5-deep-chip",
+        "text": "China Intel",
+        "r": {
+          "x": 39,
+          "y": 5370,
+          "w": 82,
+          "h": 29
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Data health ? all sources OK · 0 sources ▾",
+        "r": {
+          "x": 41,
+          "y": 5448,
+          "w": 308,
+          "h": 19
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 151,
+          "y": 5450,
+          "w": 15,
+          "h": 15
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "NVDA",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "summary.ud-watch-summary",
+        "text": "Read being updated 3 conditions › If it lands against the read, it would shift the regime call.",
+        "r": {
+          "x": 41,
+          "y": 1942,
+          "w": 308,
+          "h": 92
+        }
+      },
+      {
+        "tag": "button#mx5BtnFactors.mx5-sc-btn",
+        "text": "4 of 6 supportive · 2 warning",
+        "r": {
+          "x": 31,
+          "y": 2556,
+          "w": 211,
+          "h": 44
+        }
+      },
+      {
+        "tag": "button#mx5BtnRisk.mx5-sc-btn.mx5-sc-btn-warn",
+        "text": "Risk building · 56",
+        "r": {
+          "x": 31,
+          "y": 2608,
+          "w": 136,
+          "h": 44
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "What To Do Now Follow the trend. Add on strength. Risk-on · 61/100 Watch Breadth & participation (0/100). Trim",
+        "r": {
+          "x": 18,
+          "y": 3490,
+          "w": 354,
+          "h": 257
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 325,
+          "y": 3497,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face.mx-live-event-face",
+        "text": "Live event status CHECKING Initial jobless claims · verifying official source No top-tier prints in the window",
+        "r": {
+          "x": 18,
+          "y": 3762,
+          "w": 354,
+          "h": 170
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 325,
+          "y": 3769,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "div.mx5-card",
+        "text": "Fed Path Official FOMC statement detected · extracting decision Forward path data — accruing from nightly log.",
+        "r": {
+          "x": 18,
+          "y": 3947,
+          "w": 354,
+          "h": 168
+        }
+      },
+      {
+        "tag": "div.mx5-card",
+        "text": "Market Sentiment PANIC EUPHORIA Neutral Composite at 50 · neutral zone Open sentiment detail →",
+        "r": {
+          "x": 18,
+          "y": 4129,
+          "w": 354,
+          "h": 351
+        }
+      },
+      {
+        "tag": "div.mx5-card",
+        "text": "Sector Temperature Sector data — accruing from nightly log.",
+        "r": {
+          "x": 18,
+          "y": 4494,
+          "w": 354,
+          "h": 104
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "ES S&P FUT 7,744.25 +0.41% NQ NASDAQ FUT 30,082.75 +0.55% YM DOW FUT 52,266.00 +0.36% RTY RUSSELL FUT 2,891.60",
+        "r": {
+          "x": 18,
+          "y": 3076,
+          "w": 354,
+          "h": 398
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 325,
+          "y": 3083,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "AI Brief Cross-asset synthesis A read-through of existing signals — not a signal source.",
+        "r": {
+          "x": 18,
+          "y": 4613,
+          "w": 170,
+          "h": 238
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 141,
+          "y": 4620,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "Alerts Centre Market intelligence feed",
+        "r": {
+          "x": 202,
+          "y": 4613,
+          "w": 170,
+          "h": 238
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 325,
+          "y": 4620,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "button.mmb-exp",
+        "text": "Ask the Brain",
+        "r": {
+          "x": 325,
+          "y": 4872,
+          "w": 40,
+          "h": 40
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Data health ? all sources OK · 0 sources ▾",
+        "r": {
+          "x": 41,
+          "y": 5448,
+          "w": 308,
+          "h": 19
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 151,
+          "y": 5450,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "div#mmb-launch.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "signal_lab.html",
+      "macro_signals.html",
+      "macro_monetary.html",
+      "aibrief.html",
+      "committee.html",
+      "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "sector_heatmap.html",
+      "sector_central.html#si-movement",
+      "history.html"
+    ],
+    "assets": [
+      "theme.css",
+      "tier_preview.css",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "supabase.js",
+      "navigation-refresh.css",
+      "logo_config.js",
+      "stock-logos.js",
+      "live_config.js",
+      "live.js",
+      "theme.js",
+      "tier_preview.js",
+      "chart_i18n.js",
+      "timemachine.js",
+      "tablesort.js",
+      "charts.js",
+      "risk_state_live.js",
+      "risk_envelope_live.js",
+      "release_publications_live.js",
+      "https://www.mastermind-x.com/mm_brain.js?v=cc2fa93e"
+    ],
+    "route": "macro.html",
+    "url": "https://www.mastermind-x.com/macro.html",
+    "status": 200,
+    "title": "Macro Regime Dashboard — 2026-09-18 | MastermindX",
+    "time": "2026-09-21T04:46:19.520704+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/risk_envelope_live.js",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/macrodata/release_forecast.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789965980568",
+        "status": 401
+      }
+    ],
+    "html_sha256": "03d2650aa8e475c1b37073a7e2329ca3e6ed5a3afc2ae131b095718d8b5d8d51"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 2442
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h2.",
+        "text": "MARKETS",
+        "r": {
+          "x": 22,
+          "y": 851,
+          "w": 61,
+          "h": 13
+        }
+      },
+      {
+        "tag": "h3.card-h",
+        "text": "United States",
+        "r": {
+          "x": 78,
+          "y": 901,
+          "w": 96,
+          "h": 17
+        }
+      },
+      {
+        "tag": "h3.card-h",
+        "text": "China",
+        "r": {
+          "x": 78,
+          "y": 1033,
+          "w": 41,
+          "h": 17
+        }
+      },
+      {
+        "tag": "h3.card-h",
+        "text": "Hong Kong",
+        "r": {
+          "x": 78,
+          "y": 1165,
+          "w": 77,
+          "h": 17
+        }
+      },
+      {
+        "tag": "h3.card-h",
+        "text": "Canada · TSX",
+        "r": {
+          "x": 78,
+          "y": 1297,
+          "w": 94,
+          "h": 17
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "WHAT CHANGED",
+        "r": {
+          "x": 22,
+          "y": 1415,
+          "w": 104,
+          "h": 13
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 41,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "6005",
+        "r": {
+          "x": 16,
+          "y": 84,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 40,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 41,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇭🇰 +0.57%",
+        "r": {
+          "x": 4,
+          "y": 428,
+          "w": 93,
+          "h": 24
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇹🇼 +1.11%",
+        "r": {
+          "x": 34,
+          "y": 446,
+          "w": 98,
+          "h": 25
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇺🇸 +0.17%",
+        "r": {
+          "x": 213,
+          "y": 507,
+          "w": 109,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇨🇦 -0.19%",
+        "r": {
+          "x": 202,
+          "y": 455,
+          "w": 103,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇯🇵 +1.38%",
+        "r": {
+          "x": 33,
+          "y": 481,
+          "w": 105,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇰🇷 +1.89%",
+        "r": {
+          "x": 33,
+          "y": 409,
+          "w": 105,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇬🇧 -1.45%",
+        "r": {
+          "x": 214,
+          "y": 383,
+          "w": 107,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇪🇺 -1.37%",
+        "r": {
+          "x": 213,
+          "y": 365,
+          "w": 103,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇨🇳 +0.55%",
+        "r": {
+          "x": 36,
+          "y": 374,
+          "w": 99,
+          "h": 25
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇺🇸 US",
+        "r": {
+          "x": 20,
+          "y": 339,
+          "w": 66,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇨🇦 CA",
+        "r": {
+          "x": 20,
+          "y": 365,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q4",
+        "text": "🇨🇳 CN",
+        "r": {
+          "x": 20,
+          "y": 391,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q4",
+        "text": "🇭🇰 HK",
+        "r": {
+          "x": 20,
+          "y": 417,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇯🇵 JP",
+        "r": {
+          "x": 20,
+          "y": 443,
+          "w": 64,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇰🇷 KR",
+        "r": {
+          "x": 20,
+          "y": 469,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇹🇼 TW",
+        "r": {
+          "x": 20,
+          "y": 495,
+          "w": 68,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇬🇧 GB",
+        "r": {
+          "x": 20,
+          "y": 521,
+          "w": 68,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇪🇺 EZ",
+        "r": {
+          "x": 20,
+          "y": 547,
+          "w": 65,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.hub-seg-btn.on",
+        "text": "Markets",
+        "r": {
+          "x": 29,
+          "y": 801,
+          "w": 166,
+          "h": 32
+        }
+      },
+      {
+        "tag": "button.hub-seg-btn",
+        "text": "Explore",
+        "r": {
+          "x": 195,
+          "y": 801,
+          "w": 166,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Open →",
+        "r": {
+          "x": 202,
+          "y": 1631,
+          "w": 48,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.ha-toggle",
+        "text": "Show 7 more →",
+        "r": {
+          "x": 39,
+          "y": 1969,
+          "w": 312,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.al-more",
+        "text": "View full timeline →",
+        "r": {
+          "x": 39,
+          "y": 2003,
+          "w": 312,
+          "h": 32
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "US Macro",
+        "r": {
+          "x": 20,
+          "y": 2179,
+          "w": 84,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "China",
+        "r": {
+          "x": 20,
+          "y": 2198,
+          "w": 84,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Hong Kong",
+        "r": {
+          "x": 20,
+          "y": 2217,
+          "w": 84,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Canada",
+        "r": {
+          "x": 20,
+          "y": 2236,
+          "w": 84,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Crypto Cockpit",
+        "r": {
+          "x": 136,
+          "y": 2179,
+          "w": 85,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Bitcoin",
+        "r": {
+          "x": 136,
+          "y": 2198,
+          "w": 85,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Bonds",
+        "r": {
+          "x": 136,
+          "y": 2217,
+          "w": 85,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Commodities",
+        "r": {
+          "x": 136,
+          "y": 2236,
+          "w": 85,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Forex",
+        "r": {
+          "x": 136,
+          "y": 2255,
+          "w": 85,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Cycle Intel",
+        "r": {
+          "x": 254,
+          "y": 2179,
+          "w": 87,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Sector Central",
+        "r": {
+          "x": 254,
+          "y": 2198,
+          "w": 87,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Reports",
+        "r": {
+          "x": 254,
+          "y": 2217,
+          "w": 87,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Neural Web",
+        "r": {
+          "x": 254,
+          "y": 2236,
+          "w": 87,
+          "h": 19
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 41,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "6005",
+        "r": {
+          "x": 16,
+          "y": 84,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 41,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇭🇰 +0.57%",
+        "r": {
+          "x": 4,
+          "y": 428,
+          "w": 93,
+          "h": 24
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇹🇼 +1.11%",
+        "r": {
+          "x": 34,
+          "y": 446,
+          "w": 98,
+          "h": 25
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇺🇸 +0.17%",
+        "r": {
+          "x": 213,
+          "y": 507,
+          "w": 109,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇨🇦 -0.19%",
+        "r": {
+          "x": 202,
+          "y": 455,
+          "w": 103,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇯🇵 +1.38%",
+        "r": {
+          "x": 33,
+          "y": 481,
+          "w": 105,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇰🇷 +1.89%",
+        "r": {
+          "x": 33,
+          "y": 409,
+          "w": 105,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇬🇧 -1.45%",
+        "r": {
+          "x": 214,
+          "y": 383,
+          "w": 107,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇪🇺 -1.37%",
+        "r": {
+          "x": 213,
+          "y": 365,
+          "w": 103,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.body",
+        "text": "🇨🇳 +0.55%",
+        "r": {
+          "x": 36,
+          "y": 374,
+          "w": 99,
+          "h": 25
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇺🇸 US",
+        "r": {
+          "x": 20,
+          "y": 339,
+          "w": 66,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇨🇦 CA",
+        "r": {
+          "x": 20,
+          "y": 365,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q4",
+        "text": "🇨🇳 CN",
+        "r": {
+          "x": 20,
+          "y": 391,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q4",
+        "text": "🇭🇰 HK",
+        "r": {
+          "x": 20,
+          "y": 417,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇯🇵 JP",
+        "r": {
+          "x": 20,
+          "y": 443,
+          "w": 64,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇰🇷 KR",
+        "r": {
+          "x": 20,
+          "y": 469,
+          "w": 67,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q2",
+        "text": "🇹🇼 TW",
+        "r": {
+          "x": 20,
+          "y": 495,
+          "w": 68,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇬🇧 GB",
+        "r": {
+          "x": 20,
+          "y": 521,
+          "w": 68,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-leg.q3",
+        "text": "🇪🇺 EZ",
+        "r": {
+          "x": 20,
+          "y": 547,
+          "w": 65,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.gd-scroll",
+        "text": "Explore",
+        "r": {
+          "x": 125,
+          "y": 718,
+          "w": 140,
+          "h": 46
+        }
+      },
+      {
+        "tag": "button.hub-seg-btn.on",
+        "text": "Markets",
+        "r": {
+          "x": 29,
+          "y": 801,
+          "w": 166,
+          "h": 32
+        }
+      },
+      {
+        "tag": "button.hub-seg-btn",
+        "text": "Explore",
+        "r": {
+          "x": 195,
+          "y": 801,
+          "w": 166,
+          "h": 32
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Bitcoin Vector Allocation changed to 100% BTC today",
+        "r": {
+          "x": 39,
+          "y": 1452,
+          "w": 312,
+          "h": 60
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Bitcoin Vector Allocation changed to 50% BTC 1d",
+        "r": {
+          "x": 39,
+          "y": 1662,
+          "w": 312,
+          "h": 60
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Macro Vector 🧲 Options “gravity” flipped — bigger swings more likely 2d",
+        "r": {
+          "x": 39,
+          "y": 1723,
+          "w": 312,
+          "h": 81
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Macro Vector 🫧 Calm surface, fragile internals — complacency watch 2d",
+        "r": {
+          "x": 39,
+          "y": 1805,
+          "w": 312,
+          "h": 81
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Macro Vector 📉 Breadth divergence — fewer names carrying the index 2d",
+        "r": {
+          "x": 39,
+          "y": 1887,
+          "w": 312,
+          "h": 81
+        }
+      },
+      {
+        "tag": "button.ha-toggle",
+        "text": "Show 7 more →",
+        "r": {
+          "x": 39,
+          "y": 1969,
+          "w": 312,
+          "h": 34
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "ipo.html",
+      "vector.html#allocation",
+      "macro_context.html#board",
+      "macro.html#dlg-risk",
+      "vector.html#leverage",
+      "vector.html#timeline",
+      "committee.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "assets/css/c5fc2df4.css?v=c5fc2df4",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "vendor/d3-array.min.js?v=80aa70d0",
+      "vendor/d3-geo.min.js?v=23e574f1",
+      "vendor/topojson-client.min.js?v=25cd02ae",
+      "globe-deck.js?v=9cc9db9d",
+      "sky.js?v=b7c9ced5",
+      "theme.js?v=48082a1e",
+      "hub-welcome.js?v=636b8f8b",
+      "wh_banner.js?v=4a53a176"
+    ],
+    "route": "start.html",
+    "url": "https://www.mastermind-x.com/start.html",
+    "status": 200,
+    "title": "MastermindX — Global Macro Regime & Market Cycle Intelligence",
+    "time": "2026-09-21T04:46:24.488148+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/wh_banner.js?v=4a53a176",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "1bee9132e700ea1fc2b306712e976856c0d385aaf8a07c1779df4e4313f9188a"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 6450
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ],
+      [
+        "data-access-tier",
+        "anon"
+      ],
+      [
+        "data-release-live-freshness",
+        "fresh"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h1.",
+        "text": "US Stocks",
+        "r": {
+          "x": 33,
+          "y": 150,
+          "w": 98,
+          "h": 24
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "WHAT TO ACT ON NOW 38 GROUPED ? THEME HEAT & REASONS → SECTOR INTELLIGENCE",
+        "r": {
+          "x": 37,
+          "y": 433,
+          "w": 316,
+          "h": 68
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "PROPHET STOCK SIGNALS",
+        "r": {
+          "x": 37,
+          "y": 1599,
+          "w": 216,
+          "h": 23
+        }
+      },
+      {
+        "tag": "h2.mx-sec-h2",
+        "text": "CANDIDATES",
+        "r": {
+          "x": 37,
+          "y": 1794,
+          "w": 98,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "MARKET BREADTH — S&P 1500 ?",
+        "r": {
+          "x": 37,
+          "y": 4451,
+          "w": 316,
+          "h": 23
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "SECTOR BUY/SELL SETUPS — SHORT-TERM TIMING ?",
+        "r": {
+          "x": 37,
+          "y": 5011,
+          "w": 316,
+          "h": 45
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+        "r": {
+          "x": 37,
+          "y": 5678,
+          "w": 316,
+          "h": 45
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "REAL FUND MOVES — STRONGEST CONVICTION ? SEE ALL 40 ACCUMULATING → ACCUMULATION WATCH → SECTOR INTELLIGENCE",
+        "r": {
+          "x": 37,
+          "y": 6045,
+          "w": 316,
+          "h": 115
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 36,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Market posture →",
+        "r": {
+          "x": 33,
+          "y": 263,
+          "w": 105,
+          "h": 18
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Pick Lab →",
+        "r": {
+          "x": 150,
+          "y": 263,
+          "w": 84,
+          "h": 18
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Alerts →",
+        "r": {
+          "x": 247,
+          "y": 263,
+          "w": 50,
+          "h": 18
+        }
+      },
+      {
+        "tag": "a.scx-more",
+        "text": "Risk radar →",
+        "r": {
+          "x": 287,
+          "y": 358,
+          "w": 70,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 322,
+          "y": 439,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "THEME HEAT & REASONS → SECTOR INTELLIGENCE",
+        "r": {
+          "x": 37,
+          "y": 462,
+          "w": 231,
+          "h": 36
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Magnificent Seven ≈ 71",
+        "r": {
+          "x": 38,
+          "y": 572,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme.mx-tier-blurred",
+        "text": "Crypto & Digital Assets ≈ 69",
+        "r": {
+          "x": 38,
+          "y": 610,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme.mx-tier-blurred",
+        "text": "AI Software & Platforms ≈ 67",
+        "r": {
+          "x": 38,
+          "y": 647,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "sign in to see the full lane",
+        "r": {
+          "x": 132,
+          "y": 691,
+          "w": 145,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "AI Semiconductors ≈ ↻ 66",
+        "r": {
+          "x": 38,
+          "y": 931,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme.mx-tier-blurred",
+        "text": "Non-AI Tech & Hardware ≈ ↻ 56",
+        "r": {
+          "x": 38,
+          "y": 968,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Cybersecurity 25% ≈ 73",
+        "r": {
+          "x": 38,
+          "y": 1208,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "US Energy Complex ≈ 62",
+        "r": {
+          "x": 38,
+          "y": 1245,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Memory, HBM & Storage 25% ≈ 59",
+        "r": {
+          "x": 38,
+          "y": 1281,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "button.mx-tier-signin",
+        "text": "Already a member? Sign in",
+        "r": {
+          "x": 56,
+          "y": 1510,
+          "w": 278,
+          "h": 16
+        }
+      },
+      {
+        "tag": "a.mx-sec-link",
+        "text": "Open the screener",
+        "r": {
+          "x": 247,
+          "y": 1826,
+          "w": 106,
+          "h": 17
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "3",
+        "r": {
+          "x": 47,
+          "y": 2223,
+          "w": 39,
+          "h": 20
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "4",
+        "r": {
+          "x": 258,
+          "y": 2200,
+          "w": 40,
+          "h": 20
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "1",
+        "r": {
+          "x": 96,
+          "y": 2466,
+          "w": 38,
+          "h": 20
+        }
+      },
+      {
+        "tag": "a.us-tw-btn",
+        "text": "See plans",
+        "r": {
+          "x": 140,
+          "y": 2858,
+          "w": 111,
+          "h": 40
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Already a member? Sign in",
+        "r": {
+          "x": 122,
+          "y": 2933,
+          "w": 145,
+          "h": 14
+        }
+      },
+      {
+        "tag": "summary.pvr-sum",
+        "text": "Passed on tonight 21 of 52",
+        "r": {
+          "x": 37,
+          "y": 3173,
+          "w": 316,
+          "h": 27
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "sign in to see the full list",
+        "r": {
+          "x": 161,
+          "y": 3447,
+          "w": 138,
+          "h": 13
+        }
+      },
+      {
+        "tag": "button#trd-btn.trd-btn",
+        "text": "Track record·49% win · -0.1% a trade",
+        "r": {
+          "x": 37,
+          "y": 3550,
+          "w": 174,
+          "h": 36
+        }
+      },
+      {
+        "tag": "span.trd-basis-chip",
+        "text": "measurement updated",
+        "r": {
+          "x": 218,
+          "y": 3550,
+          "w": 135,
+          "h": 36
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 188,
+          "y": 3700,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.ts-more",
+        "text": "Top Picks →",
+        "r": {
+          "x": 286,
+          "y": 3723,
+          "w": 67,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "FORM",
+        "r": {
+          "x": 45,
+          "y": 3776,
+          "w": 35,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "AMD",
+        "r": {
+          "x": 45,
+          "y": 3821,
+          "w": 28,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "DOCN",
+        "r": {
+          "x": 45,
+          "y": 3867,
+          "w": 35,
+          "h": 13
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 210,
+          "y": 3947,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "TEAM",
+        "r": {
+          "x": 45,
+          "y": 4022,
+          "w": 34,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "PBF",
+        "r": {
+          "x": 45,
+          "y": 4076,
+          "w": 23,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.ts-tk-a",
+        "text": "RNG",
+        "r": {
+          "x": 45,
+          "y": 4121,
+          "w": 26,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "sign in to see the full list",
+        "r": {
+          "x": 166,
+          "y": 4185,
+          "w": 138,
+          "h": 13
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 300,
+          "y": 4457,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.",
+        "text": "Full board — tiers, internals, history →",
+        "r": {
+          "x": 147,
+          "y": 4942,
+          "w": 206,
+          "h": 17
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 189,
+          "y": 5153,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 238,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 321,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 407,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 468,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 554,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 605,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "XLV",
+        "r": {
+          "x": 45,
+          "y": 5225,
+          "w": 25,
+          "h": 16
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "XLK",
+        "r": {
+          "x": 45,
+          "y": 5325,
+          "w": 26,
+          "h": 16
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "XLE",
+        "r": {
+          "x": 45,
+          "y": 5425,
+          "w": 25,
+          "h": 16
+        }
+      },
+      {
+        "tag": "button.lst-more.act-more",
+        "text": "Show more ▾",
+        "r": {
+          "x": 37,
+          "y": 5502,
+          "w": 316,
+          "h": 32
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 152,
+          "y": 6073,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.muted",
+        "text": "SEE ALL 40 ACCUMULATING →",
+        "r": {
+          "x": 37,
+          "y": 6094,
+          "w": 201,
+          "h": 18
+        }
+      },
+      {
+        "tag": "a.muted",
+        "text": "ACCUMULATION WATCH → SECTOR INTELLIGENCE",
+        "r": {
+          "x": 37,
+          "y": 6124,
+          "w": 316,
+          "h": 36
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "EVO SS",
+        "r": {
+          "x": 96,
+          "y": 6204,
+          "w": 48,
+          "h": 16
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "SPCX",
+        "r": {
+          "x": 96,
+          "y": 6232,
+          "w": 36,
+          "h": 16
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "ALWN GA",
+        "r": {
+          "x": 96,
+          "y": 6261,
+          "w": 61,
+          "h": 16
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 322,
+          "y": 439,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.mx-tier-primary",
+        "text": "Create free account",
+        "r": {
+          "x": 56,
+          "y": 1462,
+          "w": 278,
+          "h": 41
+        }
+      },
+      {
+        "tag": "button.mx-tier-signin",
+        "text": "Already a member? Sign in",
+        "r": {
+          "x": 56,
+          "y": 1510,
+          "w": 278,
+          "h": 16
+        }
+      },
+      {
+        "tag": "button#us-src-btn-cand.",
+        "text": "Candidates",
+        "r": {
+          "x": 51,
+          "y": 1633,
+          "w": 89,
+          "h": 40
+        }
+      },
+      {
+        "tag": "button#us-src-btn-plan.",
+        "text": "Plans",
+        "r": {
+          "x": 143,
+          "y": 1633,
+          "w": 53,
+          "h": 40
+        }
+      },
+      {
+        "tag": "button#us-st-btn-grid.",
+        "text": "⊞ Grid",
+        "r": {
+          "x": 51,
+          "y": 1689,
+          "w": 58,
+          "h": 40
+        }
+      },
+      {
+        "tag": "button#us-st-btn-table.",
+        "text": "Table",
+        "r": {
+          "x": 112,
+          "y": 1689,
+          "w": 72,
+          "h": 40
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "3",
+        "r": {
+          "x": 47,
+          "y": 2223,
+          "w": 39,
+          "h": 20
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "4",
+        "r": {
+          "x": 258,
+          "y": 2200,
+          "w": 40,
+          "h": 20
+        }
+      },
+      {
+        "tag": "button.pv-cau-btn",
+        "text": "1",
+        "r": {
+          "x": 96,
+          "y": 2466,
+          "w": 38,
+          "h": 20
+        }
+      },
+      {
+        "tag": "summary.pvr-sum",
+        "text": "Passed on tonight 21 of 52",
+        "r": {
+          "x": 37,
+          "y": 3173,
+          "w": 316,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button#trd-btn.trd-btn",
+        "text": "Track record·49% win · -0.1% a trade",
+        "r": {
+          "x": 37,
+          "y": 3550,
+          "w": 174,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#wcd-btn.trd-btn",
+        "text": "What changed today ·30",
+        "r": {
+          "x": 37,
+          "y": 3594,
+          "w": 249,
+          "h": 48
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 188,
+          "y": 3700,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 210,
+          "y": 3947,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.mx-tier-primary",
+        "text": "See more Prophet picks",
+        "r": {
+          "x": 56,
+          "y": 4338,
+          "w": 278,
+          "h": 41
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 300,
+          "y": 4457,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "div.sbx-bar-card",
+        "text": "491 ADVANCING DECLINING 1,008 Participation looks thin — Few names hold their trend — rallies here are fragile",
+        "r": {
+          "x": 37,
+          "y": 4542,
+          "w": 316,
+          "h": 146
+        }
+      },
+      {
+        "tag": "div.sbx-tile",
+        "text": "ABOVE 50-DAY 26% below half — thin tape",
+        "r": {
+          "x": 37,
+          "y": 4704,
+          "w": 152,
+          "h": 113
+        }
+      },
+      {
+        "tag": "div.sbx-tile",
+        "text": "ABOVE 200-DAY 50% long-term trend damaged",
+        "r": {
+          "x": 201,
+          "y": 4704,
+          "w": 152,
+          "h": 113
+        }
+      },
+      {
+        "tag": "div.sbx-tile",
+        "text": "NET NEW HIGHS -62 more stocks breaking down than out",
+        "r": {
+          "x": 37,
+          "y": 4828,
+          "w": 152,
+          "h": 102
+        }
+      },
+      {
+        "tag": "div.sbx-tile",
+        "text": "MOMENTUM Fading net-advance trend · nightly",
+        "r": {
+          "x": 201,
+          "y": 4828,
+          "w": 152,
+          "h": 102
+        }
+      },
+      {
+        "tag": "button.",
+        "text": "Full board — tiers, internals, history →",
+        "r": {
+          "x": 147,
+          "y": 4942,
+          "w": 206,
+          "h": 17
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 189,
+          "y": 5153,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 238,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 321,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 407,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 468,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 554,
+          "y": 5163,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.help.help-upgraded",
+        "text": "?",
+        "r": {
+          "x": 605,
+          "y": 5173,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.lst-more.act-more",
+        "text": "Show more ▾",
+        "r": {
+          "x": 37,
+          "y": 5502,
+          "w": 316,
+          "h": 32
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 152,
+          "y": 6073,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "us_stocks_lab.html",
+      "macro.html#dlg-risk",
+      "sector_central.html#si-heat-section",
+      "basket/mag7.html",
+      "basket/crypto.html",
+      "basket/ai_software.html",
+      "plans.html",
+      "basket/us_sector_energy.html",
+      "basket/ai_semiconductors.html",
+      "basket/non_ai_tech.html",
+      "basket/cybersecurity.html",
+      "basket/energy_complex.html",
+      "basket/memory_storage.html",
+      "sector_central.html#actnow-section",
+      "stock.html#EGBN",
+      "stock.html#COIN",
+      "stock.html#REXR",
+      "stock.html#GPCR",
+      "stock.html#BWA",
+      "stock.html#FTI",
+      "discovery.html",
+      "stock.html#JILL",
+      "stock.html#PLUS",
+      "stock.html#PLMR",
+      "us_track_record.html",
+      "stock.html#FORM",
+      "stock.html#AMD",
+      "stock.html#DOCN",
+      "stock.html#FIX",
+      "stock.html#COHU",
+      "stock.html#MXL",
+      "stock.html#VTRS",
+      "stock.html#HAFC",
+      "stock.html#AMKR",
+      "stock.html#STRL",
+      "stock.html#TEAM",
+      "stock.html#PBF",
+      "stock.html#RNG",
+      "basket/us_sector_health.html",
+      "basket/us_sector_tech.html",
+      "basket/us_sector_financials.html",
+      "basket/us_sector_comm.html",
+      "basket/us_sector_staples.html",
+      "basket/us_sector_materials.html",
+      "basket/us_sector_realestate.html",
+      "basket/us_sector_discretionary.html",
+      "basket/us_sector_industrials.html",
+      "basket/us_sector_utilities.html",
+      "sector_central.html#accumulation-section",
+      "stock.html#EVO SS",
+      "stock.html#SPCX",
+      "stock.html#ALWN GA",
+      "stock.html#CDE",
+      "stock.html#ETN",
+      "stock.html#GEV",
+      "stock.html#MRNA",
+      "stock.html#ENR GR"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "tier_preview.css?v=d390f599",
+      "dashboard-icons.css?v=be32e541",
+      "dashboard-icons.js?v=ee1d5163",
+      "assets/css/bdd40640.css?v=bdd40640",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "assets/css/20d98c47.css?v=20d98c47",
+      "assets/css/983df2de.css?v=983df2de",
+      "assets/css/65aef5e4.css?v=65aef5e4",
+      "assets/css/307c6f26.css?v=307c6f26",
+      "assets/css/4546f775.css?v=4546f775",
+      "assets/css/b1234b62.css?v=b1234b62",
+      "assets/css/0c244078.css?v=0c244078",
+      "assets/css/6b41b25d.css?v=6b41b25d",
+      "assets/css/97280b63.css?v=97280b63",
+      "assets/css/73403668.css?v=73403668",
+      "assets/css/4d0ba968.css?v=4d0ba968",
+      "theme.js?v=48082a1e",
+      "tier_preview.js?v=d80100db",
+      "chart_i18n.js?v=23272c48",
+      "timemachine.js?v=92798ed7",
+      "tablesort.js?v=484d9333",
+      "charts.js?v=5372d2a2",
+      "risk_state_live.js?v=4b630b78",
+      "release_publications_live.js?v=d9a19340",
+      "stocktable.js?v=56f6f933"
+    ],
+    "route": "us_stocks.html",
+    "url": "https://www.mastermind-x.com/us_stocks.html",
+    "status": 200,
+    "title": "US Stock Dashboard — 2026-09-18 | MastermindX",
+    "time": "2026-09-21T04:46:29.728907+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/basketdata/baskets.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/basket_pulse.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/prophet_live.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/premiumdata/us_stocks.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789965990616",
+        "status": 401
+      }
+    ],
+    "html_sha256": "808e6c6e93c16d9106893d497bd1907204996abf75107e684f1a46acb08e6801"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 2448
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h2.",
+        "text": "What to act on now 39 grouped ? Theme heat & reasons → Sector Intelligence",
+        "r": {
+          "x": 37,
+          "y": 914,
+          "w": 316,
+          "h": 44
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 36,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.rvx-chip",
+        "text": "Open the playbook →",
+        "r": {
+          "x": 45,
+          "y": 788,
+          "w": 121,
+          "h": 23
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 191,
+          "y": 929,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Theme heat & reasons → Sector Intelligence",
+        "r": {
+          "x": 222,
+          "y": 922,
+          "w": 131,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Magnificent Seven ≈ 71",
+        "r": {
+          "x": 38,
+          "y": 1025,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "AI Software & Platforms ≈ 70",
+        "r": {
+          "x": 38,
+          "y": 1063,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Crypto & Digital Assets ≈ 67",
+        "r": {
+          "x": 38,
+          "y": 1101,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "sign in to see the full lane",
+        "r": {
+          "x": 131,
+          "y": 1146,
+          "w": 145,
+          "h": 13
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "AI Semiconductors ≈ ↻ 66",
+        "r": {
+          "x": 38,
+          "y": 1387,
+          "w": 314,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Non-AI Tech & Hardware ≈ ↻ 56",
+        "r": {
+          "x": 38,
+          "y": 1426,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem",
+        "text": "Technology",
+        "r": {
+          "x": 38,
+          "y": 1544,
+          "w": 314,
+          "h": 30
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "Cybersecurity ★25% ≈ 73",
+        "r": {
+          "x": 38,
+          "y": 1656,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "US Energy Complex ★25% ≈ 62",
+        "r": {
+          "x": 38,
+          "y": 1693,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.actitem.ai-theme",
+        "text": "AI Agents & Applications ≈ 60",
+        "r": {
+          "x": 38,
+          "y": 1730,
+          "w": 314,
+          "h": 37
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Drill to stocks →",
+        "r": {
+          "x": 18,
+          "y": 2195,
+          "w": 323,
+          "h": 36
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "span.help",
+        "text": "?",
+        "r": {
+          "x": 191,
+          "y": 929,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "allocation.html",
+      "sector_central.html#si-heat-section",
+      "basket/mag7.html",
+      "basket/ai_software.html",
+      "basket/crypto.html",
+      "plans.html",
+      "basket/us_sector_energy.html",
+      "basket/ai_semiconductors.html",
+      "basket/non_ai_tech.html",
+      "basket/us_sector_tech.html",
+      "basket/cybersecurity.html",
+      "basket/energy_complex.html",
+      "basket/ai_agents.html",
+      "sector_central.html#actnow-section",
+      "basket/critical_minerals.html",
+      "basket/uranium_miners.html",
+      "stock.html#PLD",
+      "stock.html#MO",
+      "stock.html#VICI",
+      "stock.html#CCI",
+      "stock.html#KO",
+      "stock.html#DLR",
+      "stock.html#PSA",
+      "stock.html#OMC",
+      "subsector_rotation.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "dashboard-icons.css?v=be32e541",
+      "cycle.css?v=4",
+      "sector_cycles.css?v=6a6791aa",
+      "assets/css/9be9b760.css?v=9be9b760",
+      "assets/css/a1ddfd2f.css?v=a1ddfd2f",
+      "assets/css/add725b2.css?v=add725b2",
+      "macro-desk.css?v=23dc8daa",
+      "assets/css/5df43e9f.css?v=5df43e9f",
+      "assets/css/29d62e93.css?v=29d62e93",
+      "assets/css/a039f61e.css?v=a039f61e",
+      "assets/css/6865a3c5.css?v=6865a3c5",
+      "assets/css/fbd430cb.css?v=fbd430cb",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "assets/css/307c6f26.css?v=307c6f26",
+      "assets/css/4546f775.css?v=4546f775",
+      "assets/css/1bf96191.css?v=1bf96191",
+      "assets/css/31cdd40d.css?v=31cdd40d",
+      "assets/css/03cd4a9c.css?v=03cd4a9c",
+      "forming_narratives.js?v=df6bf5cc",
+      "lightweight-charts.js?v=46fc6953",
+      "sector_central_data.js?v=82ba3899",
+      "si_workspace.js?v=9d4d6860",
+      "theme.js?v=48082a1e",
+      "wh_banner.js?v=4a53a176"
+    ],
+    "route": "sector_central.html",
+    "url": "https://www.mastermind-x.com/sector_central.html",
+    "status": 200,
+    "title": "US Sector Intelligence — sectors, themes & rotation — Mastermind",
+    "time": "2026-09-21T04:46:34.793718+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [
+      "renderFormingNarratives is not defined"
+    ],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/sector_central_data.js?v=82ba3899",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/desk_watch.js?v=503d0e53",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/sector_cycles_narr_data.js?v=67466cf0",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/sector_cycles_dna_data.js?v=46b0879d",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/subsectors.js?v=d2799449",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/time_machine.js?v=0c71b0e3",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/rotation_events.js?v=bcf4f955",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/mm_charts.js?v=244eb769",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/sector_cycles.js?v=963925f1",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/subsector_rotation.js?v=afb00808",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/sector_cycles_data.js?v=26bf4a53",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/sector_cycles_series_data.js?v=db016f8f",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/shock_state.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/policy_lever.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/basket_pulse.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/forming_narratives.js?v=df6bf5cc",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/wh_banner.js?v=4a53a176",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/si_workspace.js?v=9d4d6860",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/marketdata/index_leadership.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/basketdata/baskets.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/premiumdata/sector_central.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "0775fd286acf7c1b29f9d75b4088fe7dc986bb2d72143b0d97f43078f9f409f9"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 22945
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h1.",
+        "text": "Alert Command Center",
+        "r": {
+          "x": 39,
+          "y": 153,
+          "w": 252,
+          "h": 37
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "THE STORIES BEHIND THE ALERTS ?",
+        "r": {
+          "x": 37,
+          "y": 645,
+          "w": 316,
+          "h": 19
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "BACKDROP — THE CONTEXT EVERY ALERT IS READ AGAINST",
+        "r": {
+          "x": 37,
+          "y": 1382,
+          "w": 316,
+          "h": 37
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 36,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "input#q.",
+        "text": "Filter alerts",
+        "r": {
+          "x": 66,
+          "y": 1843,
+          "w": 280,
+          "h": 18
+        }
+      },
+      {
+        "tag": "button.fbtn.quick",
+        "text": "new today",
+        "r": {
+          "x": 32,
+          "y": 1875,
+          "w": 106,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.quick",
+        "text": "re-fired",
+        "r": {
+          "x": 145,
+          "y": 1875,
+          "w": 90,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button#reset.freset",
+        "text": "reset",
+        "r": {
+          "x": 328,
+          "y": 1910,
+          "w": 30,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.fbtn.on",
+        "text": "all",
+        "r": {
+          "x": 97,
+          "y": 1937,
+          "w": 38,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "act now 3",
+        "r": {
+          "x": 142,
+          "y": 1937,
+          "w": 104,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "critical 2",
+        "r": {
+          "x": 253,
+          "y": 1937,
+          "w": 78,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "major 1",
+        "r": {
+          "x": 32,
+          "y": 1971,
+          "w": 70,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.on",
+        "text": "all",
+        "r": {
+          "x": 219,
+          "y": 1971,
+          "w": 38,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.cl-stress",
+        "text": "stress 1",
+        "r": {
+          "x": 264,
+          "y": 1971,
+          "w": 94,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "regime 3",
+        "r": {
+          "x": 32,
+          "y": 2005,
+          "w": 99,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "liquidity 0",
+        "r": {
+          "x": 138,
+          "y": 2005,
+          "w": 106,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "rotation 30",
+        "r": {
+          "x": 32,
+          "y": 2039,
+          "w": 112,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "single-name 20",
+        "r": {
+          "x": 151,
+          "y": 2039,
+          "w": 138,
+          "h": 27
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 224,
+          "y": 2294,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 2390,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 224,
+          "y": 2598,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 2762,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 200,
+          "y": 3009,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 3121,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 215,
+          "y": 3344,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 3439,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 3661,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 3756,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 215,
+          "y": 3997,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 4092,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 222,
+          "y": 4333,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 4428,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 222,
+          "y": 4689,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 4784,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 215,
+          "y": 5025,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 5120,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 215,
+          "y": 5361,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 5456,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 215,
+          "y": 5645,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 5740,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 222,
+          "y": 5949,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 6044,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 6323,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 6418,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 6697,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 6792,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 7072,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 7167,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 7446,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 7541,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 7820,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 7915,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 8195,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 8290,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 8518,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 8613,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 8842,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 8937,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 9180,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 9275,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 9466,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 9578,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 173,
+          "y": 9787,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.lnk",
+        "text": "Signal Lab →",
+        "r": {
+          "x": 125,
+          "y": 9882,
+          "w": 70,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.lnk.sm",
+        "text": "open →",
+        "r": {
+          "x": 234,
+          "y": 10052,
+          "w": 44,
+          "h": 19
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.story.cl-regime",
+        "text": "🧭 Regime shift 3 the market's underlying weather is changing 🧭 Regime radar moved — the market “weather” may",
+        "r": {
+          "x": 37,
+          "y": 672,
+          "w": 316,
+          "h": 141
+        }
+      },
+      {
+        "tag": "button.story.cl-other",
+        "text": "• Other 6 🚨 Market risk-state went ELEVATED — drawdown risk is building 1 act ↻ 2 re-fired USDCAD USDBRL",
+        "r": {
+          "x": 37,
+          "y": 823,
+          "w": 316,
+          "h": 118
+        }
+      },
+      {
+        "tag": "button.story.cl-rotation",
+        "text": "🔄 Sector & theme rotation 30 leadership is handing off between themes 🌀 Rotating in — Farm-Direct (Consumer ",
+        "r": {
+          "x": 37,
+          "y": 951,
+          "w": 316,
+          "h": 122
+        }
+      },
+      {
+        "tag": "button.story.cl-single_name",
+        "text": "🎯 Single-name flags 20 unusual activity converging on individual tickers 🔗 2-channel convergence on EXE ↻ 16",
+        "r": {
+          "x": 37,
+          "y": 1082,
+          "w": 316,
+          "h": 122
+        }
+      },
+      {
+        "tag": "button.story.cl-stress",
+        "text": "🛑 Risk-off stress 1 credit, recession & rates plumbing under strain Oil price shock stabilizing ↻ 1 re-fired ",
+        "r": {
+          "x": 37,
+          "y": 1214,
+          "w": 316,
+          "h": 122
+        }
+      },
+      {
+        "tag": "button.fbtn.quick",
+        "text": "new today",
+        "r": {
+          "x": 32,
+          "y": 1875,
+          "w": 106,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.quick",
+        "text": "re-fired",
+        "r": {
+          "x": 145,
+          "y": 1875,
+          "w": 90,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button#reset.freset",
+        "text": "reset",
+        "r": {
+          "x": 328,
+          "y": 1910,
+          "w": 30,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.fbtn.on",
+        "text": "all",
+        "r": {
+          "x": 97,
+          "y": 1937,
+          "w": 38,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "act now 3",
+        "r": {
+          "x": 142,
+          "y": 1937,
+          "w": 104,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "critical 2",
+        "r": {
+          "x": 253,
+          "y": 1937,
+          "w": 78,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "major 1",
+        "r": {
+          "x": 32,
+          "y": 1971,
+          "w": 70,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.on",
+        "text": "all",
+        "r": {
+          "x": 219,
+          "y": 1971,
+          "w": 38,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn.cl-stress",
+        "text": "stress 1",
+        "r": {
+          "x": 264,
+          "y": 1971,
+          "w": 94,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "regime 3",
+        "r": {
+          "x": 32,
+          "y": 2005,
+          "w": 99,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "liquidity 0",
+        "r": {
+          "x": 138,
+          "y": 2005,
+          "w": 106,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "rotation 30",
+        "r": {
+          "x": 32,
+          "y": 2039,
+          "w": 112,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.fbtn",
+        "text": "single-name 20",
+        "r": {
+          "x": 151,
+          "y": 2039,
+          "w": 138,
+          "h": 27
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "How this board ranks — and why it refuses to fake a hit-rate",
+        "r": {
+          "x": 37,
+          "y": 22710,
+          "w": 316,
+          "h": 47
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "macro.html#regime-radar",
+      "signal_lab.html",
+      "vector.html#impulse",
+      "macro.html#dlg-risk",
+      "commodities.html#timeline",
+      "vector.html#allocation",
+      "alt_data.html#convergence",
+      "subsector_rotation.html#rotation-app",
+      "macro_context.html#board",
+      "forex.html#timeline",
+      "sector_central.html#theme-ai_infra",
+      "sector_central.html#theme-managed_care",
+      "sector_central.html#theme-quantum_computing",
+      "sector_central.html#theme-energy_complex",
+      "sector_central.html#theme-gold_miners",
+      "sector_central.html#theme-silver_miners",
+      "sector_central.html#theme-big_pharma",
+      "sector_central.html#theme-us_sector_health",
+      "sector_central.html#theme-us_sector_comm"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "assets/css/13b0afce.css?v=13b0afce",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "theme.js?v=48082a1e"
+    ],
+    "route": "alerts.html",
+    "url": "https://www.mastermind-x.com/alerts.html",
+    "status": 200,
+    "title": "Alert Command Center — what the tape is saying, ranked & triaged",
+    "time": "2026-09-21T04:46:39.490089+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [],
+    "html_sha256": "c17dd2cecab994aa9874960c6f1c18925fb906a38d6b258a4d4ad6bdb88e6fc0"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 5225
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h1.oew-title",
+        "text": "Options One workspace for the settled close — brief, scanner, per-name, leaders.",
+        "r": {
+          "x": 12,
+          "y": 158,
+          "w": 366,
+          "h": 55
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "Options Intelligence Brief",
+        "r": {
+          "x": 29,
+          "y": 942,
+          "w": 171,
+          "h": 21
+        }
+      },
+      {
+        "tag": "h3.oew-aib-lede-head",
+        "text": "Today's brief isn't ready yet.",
+        "r": {
+          "x": 28,
+          "y": 1122,
+          "w": 337,
+          "h": 20
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "What changed",
+        "r": {
+          "x": 29,
+          "y": 1489,
+          "w": 98,
+          "h": 21
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "WHERE THE INDEXES CLOSED",
+        "r": {
+          "x": 12,
+          "y": 1760,
+          "w": 208,
+          "h": 18
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "The four that set the tone",
+        "r": {
+          "x": 29,
+          "y": 1803,
+          "w": 171,
+          "h": 21
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "WHERE THE MONEY WENT",
+        "r": {
+          "x": 12,
+          "y": 2881,
+          "w": 183,
+          "h": 18
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "Premium by sector",
+        "r": {
+          "x": 29,
+          "y": 2924,
+          "w": 127,
+          "h": 21
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "Biggest single bets",
+        "r": {
+          "x": 29,
+          "y": 3825,
+          "w": 129,
+          "h": 21
+        }
+      },
+      {
+        "tag": "h2.",
+        "text": "FOR TOMORROW",
+        "r": {
+          "x": 12,
+          "y": 4399,
+          "w": 116,
+          "h": 18
+        }
+      },
+      {
+        "tag": "h2.oew-ph-title",
+        "text": "Names worth a look before the open",
+        "r": {
+          "x": 29,
+          "y": 4442,
+          "w": 243,
+          "h": 21
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.S",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 36,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Source-session receipt",
+        "r": {
+          "x": 29,
+          "y": 418,
+          "w": 332,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1021,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "What we checked",
+        "r": {
+          "x": 29,
+          "y": 1348,
+          "w": 332,
+          "h": 17
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1494,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1865,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 2959,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 3860,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEIS",
+        "r": {
+          "x": 42,
+          "y": 4580,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEM",
+        "r": {
+          "x": 94,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEP",
+        "r": {
+          "x": 140,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AFRM",
+        "r": {
+          "x": 185,
+          "y": 4580,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AG",
+        "r": {
+          "x": 237,
+          "y": 4580,
+          "w": 34,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AGI",
+        "r": {
+          "x": 276,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ALAB",
+        "r": {
+          "x": 42,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "APLD",
+        "r": {
+          "x": 94,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ARM",
+        "r": {
+          "x": 146,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "CORZ",
+        "r": {
+          "x": 192,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "EQX",
+        "r": {
+          "x": 244,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "HUT",
+        "r": {
+          "x": 290,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ULTA",
+        "r": {
+          "x": 42,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AMAT",
+        "r": {
+          "x": 94,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "TXN",
+        "r": {
+          "x": 146,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "HWM",
+        "r": {
+          "x": 192,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "TJX",
+        "r": {
+          "x": 237,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ROST",
+        "r": {
+          "x": 283,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "a#oew-brief-cta.oew-cta",
+        "text": "Open the Terminal ↗",
+        "r": {
+          "x": 29,
+          "y": 5136,
+          "w": 332,
+          "h": 40
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.S",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Source-session receipt",
+        "r": {
+          "x": 29,
+          "y": 418,
+          "w": 332,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button#tab-brief.oew-tab",
+        "text": "Daily Brief",
+        "r": {
+          "x": 12,
+          "y": 766,
+          "w": 98,
+          "h": 43
+        }
+      },
+      {
+        "tag": "button#tab-flow.oew-tab",
+        "text": "Flow 12",
+        "r": {
+          "x": 112,
+          "y": 766,
+          "w": 80,
+          "h": 43
+        }
+      },
+      {
+        "tag": "button#tab-scanner.oew-tab",
+        "text": "Scanner 408",
+        "r": {
+          "x": 194,
+          "y": 766,
+          "w": 109,
+          "h": 43
+        }
+      },
+      {
+        "tag": "button#tab-ticker.oew-tab",
+        "text": "Ticker SPY",
+        "r": {
+          "x": 305,
+          "y": 766,
+          "w": 96,
+          "h": 43
+        }
+      },
+      {
+        "tag": "button#tab-leaders.oew-tab",
+        "text": "Leaders 2",
+        "r": {
+          "x": 404,
+          "y": 766,
+          "w": 95,
+          "h": 43
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1021,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "What we checked",
+        "r": {
+          "x": 29,
+          "y": 1348,
+          "w": 332,
+          "h": 17
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1494,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 1865,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 2959,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "span.oew-help",
+        "text": "?",
+        "r": {
+          "x": 346,
+          "y": 3860,
+          "w": 15,
+          "h": 15
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEIS",
+        "r": {
+          "x": 42,
+          "y": 4580,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEM",
+        "r": {
+          "x": 94,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AEP",
+        "r": {
+          "x": 140,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AFRM",
+        "r": {
+          "x": 185,
+          "y": 4580,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AG",
+        "r": {
+          "x": 237,
+          "y": 4580,
+          "w": 34,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AGI",
+        "r": {
+          "x": 276,
+          "y": 4580,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ALAB",
+        "r": {
+          "x": 42,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "APLD",
+        "r": {
+          "x": 94,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ARM",
+        "r": {
+          "x": 146,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "CORZ",
+        "r": {
+          "x": 192,
+          "y": 4685,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "EQX",
+        "r": {
+          "x": 244,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "HUT",
+        "r": {
+          "x": 290,
+          "y": 4685,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ULTA",
+        "r": {
+          "x": 42,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "AMAT",
+        "r": {
+          "x": 94,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "TXN",
+        "r": {
+          "x": 146,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "HWM",
+        "r": {
+          "x": 192,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "TJX",
+        "r": {
+          "x": 237,
+          "y": 4791,
+          "w": 40,
+          "h": 22
+        }
+      },
+      {
+        "tag": "button.oew-tkchip",
+        "text": "ROST",
+        "r": {
+          "x": 283,
+          "y": 4791,
+          "w": 47,
+          "h": 22
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "https://app.mastermind-x.com/terminal"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "illus.css?v=cbe6a0b4",
+      "assets/css/187e4b05.css?v=187e4b05",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "assets/js/83daf05f.js?v=83daf05f",
+      "illus.js?v=8e0a3779",
+      "theme.js?v=48082a1e",
+      "wh_banner.js?v=4a53a176"
+    ],
+    "route": "options.html",
+    "url": "https://www.mastermind-x.com/options.html",
+    "status": 200,
+    "title": "Options — one workspace · 期权工作台",
+    "time": "2026-09-21T04:46:44.321533+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/wh_banner.js?v=4a53a176",
+        "status": 401
+      }
+    ],
+    "html_sha256": "78598c922552caaf953f24e9c0642a8cea8d40729923b4a25ec522cdbde4131f"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 4056
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 44,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.cnx-hbtn",
+        "text": "⌁ 0 of 6 signals aligned ▾",
+        "r": {
+          "x": 45,
+          "y": 432,
+          "w": 160,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.cnx-hbtn",
+        "text": "⚠ Pullback risk · 94 ▾",
+        "r": {
+          "x": 45,
+          "y": 466,
+          "w": 150,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "A-Share Stocks",
+        "r": {
+          "x": 18,
+          "y": 3775,
+          "w": 120,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Market Heatmap",
+        "r": {
+          "x": 148,
+          "y": 3775,
+          "w": 126,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "China Intel",
+        "r": {
+          "x": 18,
+          "y": 3819,
+          "w": 92,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Allocation",
+        "r": {
+          "x": 120,
+          "y": 3819,
+          "w": 88,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Regime History",
+        "r": {
+          "x": 218,
+          "y": 3819,
+          "w": 118,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "AI Brief",
+        "r": {
+          "x": 18,
+          "y": 3863,
+          "w": 73,
+          "h": 34
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.cnx-hbtn",
+        "text": "⌁ 0 of 6 signals aligned ▾",
+        "r": {
+          "x": 45,
+          "y": 432,
+          "w": 160,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.cnx-hbtn",
+        "text": "⚠ Pullback risk · 94 ▾",
+        "r": {
+          "x": 45,
+          "y": 466,
+          "w": 150,
+          "h": 29
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "SSE SHANGHAI 3,933.37 +0.55% CSI 300 LARGE CAP 4,526.30 +0.42% CHINEXT GROWTH 3,403.97 +0.93% HSI HANG SENG 24",
+        "r": {
+          "x": 18,
+          "y": 830,
+          "w": 354,
+          "h": 273
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "WHAT TO DO ◐ NEUTRAL + Growth-scare is the market's measured best contrarian bottom (~70% hit) — accumulate qu",
+        "r": {
+          "x": 18,
+          "y": 1119,
+          "w": 354,
+          "h": 312
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "UPCOMING EVENTS NEXT 14 DAYS 2 high-impact print ahead LPR fix (loan pri… 2026-09-21 HIGH NBS PMI (mfg + non-m",
+        "r": {
+          "x": 18,
+          "y": 1459,
+          "w": 354,
+          "h": 201
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "PULLBACK RISK HIGH 94 /100 Breadth breakdown (all-boats) ≥5% dip odds 50% Deep-drawdown gauge Elevated Protect",
+        "r": {
+          "x": 18,
+          "y": 1688,
+          "w": 354,
+          "h": 224
+        }
+      },
+      {
+        "tag": "div.cnx-card.fg-greed",
+        "text": "MARKET SENTIMENT PANIC EUPHORIA Mania Composite at 90 · a heads-up, not a scored signal",
+        "r": {
+          "x": 18,
+          "y": 1940,
+          "w": 354,
+          "h": 289
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "SECTOR TEMPERATURE HOT Banks TURNING UP — BUY ZONE Defense & Military Real Estate Automobiles SECTOR HEAT",
+        "r": {
+          "x": 18,
+          "y": 2256,
+          "w": 354,
+          "h": 201
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "POLICY MONITOR PBoC stance easing Reserve ratio 9.0% Credit impulse -10.7% Official tone steady / neutral Easy",
+        "r": {
+          "x": 18,
+          "y": 2485,
+          "w": 354,
+          "h": 237
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "CONNECT FLOWS +¥12亿 Southbound buying Streak 18/20 days Top buys 百度集团-W · 腾讯控股 · 中芯国际 Mainland money supportin",
+        "r": {
+          "x": 18,
+          "y": 2750,
+          "w": 354,
+          "h": 222
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "MACRO NEWS 📰 前8个月税务部门征收税收收入同比增长5.9% Inflation · 富途牛牛 🏦 专家：2026年9月LPR报价保持不变，后期有望下调 Monetary policy · 富途牛牛 24 ",
+        "r": {
+          "x": 18,
+          "y": 3000,
+          "w": 354,
+          "h": 212
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "PROPERTY Contraction still contracting 70-city prices -34 net cities Still the economy's main drag.",
+        "r": {
+          "x": 18,
+          "y": 3240,
+          "w": 354,
+          "h": 180
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "AI BRIEF China regime: Growth-Scare Policy: On hold China: Growth scare remains, while recent improvement is b",
+        "r": {
+          "x": 18,
+          "y": 3448,
+          "w": 354,
+          "h": 171
+        }
+      },
+      {
+        "tag": "div.cnx-card",
+        "text": "ALERTS CENTRE No alerts fired today.",
+        "r": {
+          "x": 18,
+          "y": 3646,
+          "w": 354,
+          "h": 101
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "china_allocation.html",
+      "china_history.html",
+      "aibrief.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "illus.css?v=cbe6a0b4",
+      "assets/css/ea6c10eb.css?v=ea6c10eb",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "assets/css/f7e9b02b.css?v=f7e9b02b",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "theme.js?v=48082a1e",
+      "china_risk_state_live.js?v=73275593",
+      "illus.js?v=8e0a3779",
+      "chart_i18n.js?v=23272c48",
+      "mtf.js?v=b62aea2f",
+      "tablesort.js?v=484d9333"
+    ],
+    "route": "china.html",
+    "url": "https://www.mastermind-x.com/china.html",
+    "status": 200,
+    "title": "China A-Share Regime — 2026-09-18",
+    "time": "2026-09-21T04:46:48.715969+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/china_risk_state_live.js?v=73275593",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "e519d157d45e084fd1b961e4c7b1fafd55dcef40448b2540b3a894867c6b5f9e"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 5377
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 44,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.hkx-hbtn",
+        "text": "↱ 1 of 9 signals positive ▾",
+        "r": {
+          "x": 45,
+          "y": 529,
+          "w": 178,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.hkx-hbtn",
+        "text": "⚠ Drop risk · US rate shock ▾",
+        "r": {
+          "x": 45,
+          "y": 564,
+          "w": 204,
+          "h": 27
+        }
+      },
+      {
+        "tag": "a.hkx-tkr-btn",
+        "text": "Nayuki Holdings",
+        "r": {
+          "x": 39,
+          "y": 2242,
+          "w": 120,
+          "h": 26
+        }
+      },
+      {
+        "tag": "a.hkx-tkr-btn",
+        "text": "Alibaba Health",
+        "r": {
+          "x": 39,
+          "y": 2289,
+          "w": 110,
+          "h": 26
+        }
+      },
+      {
+        "tag": "a.hkx-tkr-btn",
+        "text": "Kingsoft",
+        "r": {
+          "x": 39,
+          "y": 2331,
+          "w": 73,
+          "h": 26
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "HK Stocks",
+        "r": {
+          "x": 18,
+          "y": 5214,
+          "w": 90,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Market Heatmap",
+        "r": {
+          "x": 118,
+          "y": 5214,
+          "w": 126,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "China Dashboard",
+        "r": {
+          "x": 18,
+          "y": 5258,
+          "w": 129,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "AI Brief",
+        "r": {
+          "x": 157,
+          "y": 5258,
+          "w": 73,
+          "h": 34
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 45,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 88,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 45,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.hkx-hbtn",
+        "text": "↱ 1 of 9 signals positive ▾",
+        "r": {
+          "x": 45,
+          "y": 529,
+          "w": 178,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.hkx-hbtn",
+        "text": "⚠ Drop risk · US rate shock ▾",
+        "r": {
+          "x": 45,
+          "y": 564,
+          "w": 204,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.sxg-face.mx5-card-face",
+        "text": "INDEXES HSI HANG SENG INDEX 24,891.58 +0.57% HSCE H-SHARES 8,283.76 +0.71% HSCC HK TECH 4,022.10 -0.73% 000001",
+        "r": {
+          "x": 18,
+          "y": 696,
+          "w": 354,
+          "h": 455
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "GROWTH 4,406 +94.8 Up",
+        "r": {
+          "x": 18,
+          "y": 1165,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "PEG 7.8444 +0.0000 Flat",
+        "r": {
+          "x": 200,
+          "y": 1165,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "USDCNH 6.653 -0.011 Up",
+        "r": {
+          "x": 18,
+          "y": 1284,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "USD/OZ 4,425 +25.2 Up",
+        "r": {
+          "x": 200,
+          "y": 1284,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "DXY 100.22 +0.00 Flat",
+        "r": {
+          "x": 18,
+          "y": 1404,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card.hkx-cat",
+        "text": "YIELD 2.03% +0.01 Up",
+        "r": {
+          "x": 200,
+          "y": 1404,
+          "w": 172,
+          "h": 96
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "What To Do Mixed — Watch 🔴 Macro regimeGrowth-scare 🔴 Growth axisfalling 🟡 Global riskneutral 🔴 Dual liqui",
+        "r": {
+          "x": 18,
+          "y": 1530,
+          "w": 354,
+          "h": 267
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Coming Up NEXT 2 WEEKS 4 events ahead LPR fix (loan prime rate) Sep 21 BIG HK CPI (composite) Sep 22 BIG NBS P",
+        "r": {
+          "x": 18,
+          "y": 1825,
+          "w": 354,
+          "h": 327
+        }
+      },
+      {
+        "tag": "div#hkx-sentiment.hkx-card.fg-greed",
+        "text": "Mood & Fear Fear normal — watch, don't chase PANIC EUPHORIA Calm HK fear gauge 18.94 · 37th of its range TWO Y",
+        "r": {
+          "x": 18,
+          "y": 2462,
+          "w": 354,
+          "h": 476
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Which Sectors Are Hot Narrow — stay selective HOT — ALREADY RUN, DON’T CHASE Financials & Banks Energy Insuran",
+        "r": {
+          "x": 18,
+          "y": 2966,
+          "w": 354,
+          "h": 417
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Currency & Interest Rates Peg near weak edge — HKMA may defend HK dollar 7.8459 — near its weak edge strong 7.",
+        "r": {
+          "x": 18,
+          "y": 3411,
+          "w": 354,
+          "h": 292
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Mainland Buying & Value ~¥1.2bn Mainland money bought HK today How often lately bought on 18 of last 20 days A",
+        "r": {
+          "x": 18,
+          "y": 3730,
+          "w": 354,
+          "h": 234
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Overnight & Leverage US overnight read 1.5% implied open up Leverage bets Balanced An early read on tomorrow's",
+        "r": {
+          "x": 18,
+          "y": 3992,
+          "w": 354,
+          "h": 228
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "News & Company Filings This week: 1 buybacks 34 placements 35 results RESULTS 2479.HK earnings update RESULTS ",
+        "r": {
+          "x": 18,
+          "y": 4248,
+          "w": 354,
+          "h": 227
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "HK Home Prices Slow signal — context for local confidence recovering off the lows · prices firming a little La",
+        "r": {
+          "x": 18,
+          "y": 4503,
+          "w": 354,
+          "h": 220
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "AI Summary China regime: Growth-Scare Policy: On hold China: Growth scare remains, while recent improvement is",
+        "r": {
+          "x": 18,
+          "y": 4752,
+          "w": 354,
+          "h": 187
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Alerts ✅ No alerts today.",
+        "r": {
+          "x": 18,
+          "y": 4967,
+          "w": 354,
+          "h": 102
+        }
+      },
+      {
+        "tag": "div.hkx-card",
+        "text": "Data Health OK tap for details ↓",
+        "r": {
+          "x": 18,
+          "y": 5097,
+          "w": 354,
+          "h": 90
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "hk_lookup.html#2150.HK",
+      "hk_lookup.html#0241.HK",
+      "hk_lookup.html#3888.HK",
+      "aibrief.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "illus.css?v=cbe6a0b4",
+      "assets/css/78eb0b75.css?v=78eb0b75",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "theme.js?v=48082a1e",
+      "mtf.js?v=b62aea2f",
+      "charts.js?v=5372d2a2",
+      "tablesort.js?v=484d9333",
+      "illus.js?v=8e0a3779"
+    ],
+    "route": "hk.html",
+    "url": "https://www.mastermind-x.com/hk.html",
+    "status": 200,
+    "title": "Hong Kong Regime — 2026-09-18",
+    "time": "2026-09-21T04:46:53.287186+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "f8c3e590e28b612b21358c87d78bb70e5fbecadc14ed9df55fa08e986550d882"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 5823
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 43,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 86,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 42,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 43,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+        "text": "0 of 6 signals aligned ▾",
+        "r": {
+          "x": 43,
+          "y": 471,
+          "w": 182,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+        "text": "Pullback risk · 81 ▾",
+        "r": {
+          "x": 43,
+          "y": 505,
+          "w": 162,
+          "h": 26
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "MG",
+        "r": {
+          "x": 52,
+          "y": 4405,
+          "w": 19,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "ATZ",
+        "r": {
+          "x": 52,
+          "y": 4428,
+          "w": 23,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "DOL",
+        "r": {
+          "x": 52,
+          "y": 4451,
+          "w": 25,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "JWEL",
+        "r": {
+          "x": 52,
+          "y": 4517,
+          "w": 33,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "SAP",
+        "r": {
+          "x": 52,
+          "y": 4540,
+          "w": 24,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "MRU",
+        "r": {
+          "x": 52,
+          "y": 4563,
+          "w": 27,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "TVE",
+        "r": {
+          "x": 52,
+          "y": 4630,
+          "w": 23,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "SDE",
+        "r": {
+          "x": 52,
+          "y": 4652,
+          "w": 24,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "AAV",
+        "r": {
+          "x": 52,
+          "y": 4675,
+          "w": 25,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "GWO",
+        "r": {
+          "x": 52,
+          "y": 4742,
+          "w": 29,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "TD",
+        "r": {
+          "x": 52,
+          "y": 4765,
+          "w": 16,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "BN",
+        "r": {
+          "x": 52,
+          "y": 4787,
+          "w": 17,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "BDT",
+        "r": {
+          "x": 52,
+          "y": 4854,
+          "w": 24,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "MTL",
+        "r": {
+          "x": 52,
+          "y": 4877,
+          "w": 25,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "STN",
+        "r": {
+          "x": 52,
+          "y": 4900,
+          "w": 24,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "BB",
+        "r": {
+          "x": 52,
+          "y": 4966,
+          "w": 16,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "CLS",
+        "r": {
+          "x": 52,
+          "y": 4989,
+          "w": 23,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "CSU",
+        "r": {
+          "x": 52,
+          "y": 5012,
+          "w": 25,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "CG",
+        "r": {
+          "x": 52,
+          "y": 5079,
+          "w": 17,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "MAU",
+        "r": {
+          "x": 52,
+          "y": 5101,
+          "w": 28,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "LIF",
+        "r": {
+          "x": 52,
+          "y": 5124,
+          "w": 17,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "PMZ-UN",
+        "r": {
+          "x": 52,
+          "y": 5191,
+          "w": 49,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "REI-UN",
+        "r": {
+          "x": 52,
+          "y": 5214,
+          "w": 42,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.cax-sotkr",
+        "text": "CIGI",
+        "r": {
+          "x": 52,
+          "y": 5236,
+          "w": 25,
+          "h": 17
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "TSX Stocks →",
+        "r": {
+          "x": 18,
+          "y": 5434,
+          "w": 111,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Regime History →",
+        "r": {
+          "x": 139,
+          "y": 5434,
+          "w": 132,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Heatmap →",
+        "r": {
+          "x": 18,
+          "y": 5478,
+          "w": 97,
+          "h": 34
+        }
+      },
+      {
+        "tag": "a.",
+        "text": "Markets ↗",
+        "r": {
+          "x": 125,
+          "y": 5478,
+          "w": 90,
+          "h": 34
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 43,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 86,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 43,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+        "text": "0 of 6 signals aligned ▾",
+        "r": {
+          "x": 43,
+          "y": 471,
+          "w": 182,
+          "h": 26
+        }
+      },
+      {
+        "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+        "text": "Pullback risk · 81 ▾",
+        "r": {
+          "x": 43,
+          "y": 505,
+          "w": 162,
+          "h": 26
+        }
+      },
+      {
+        "tag": "div.sxg-face.mx5-card-face",
+        "text": "TSX S&P/TSX COMPOSITE 35,806.65 -0.19% TSXV TSX VENTURE · JUNIORS 923.07 +0.38% WTI CRUDE OIL $94.07 -2.09% GO",
+        "r": {
+          "x": 18,
+          "y": 599,
+          "w": 354,
+          "h": 532
+        }
+      },
+      {
+        "tag": "div.mx5-card",
+        "text": "MARKET PARTICIPATION THIN BROAD Mixed participation 46% of TSX names above their 50-day line How it's measured",
+        "r": {
+          "x": 18,
+          "y": 1145,
+          "w": 354,
+          "h": 313
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "What To Do Buy now Information Technology Avoid Consumer Discretionary · Banks · Base Metals · Financials ·…",
+        "r": {
+          "x": 18,
+          "y": 1474,
+          "w": 354,
+          "h": 187
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Regime Watch Quad Reflation Growth +0.20 Inflation +0.77 Confidence 44% WHY THIS CALL ✓ Jobless rate ✓ Global ",
+        "r": {
+          "x": 18,
+          "y": 1675,
+          "w": 354,
+          "h": 410
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Pullback Risk CAUTION 81 /100 Breadth breakdown ≥5% dip odds 19% Trim chasing; favour good entries over extend",
+        "r": {
+          "x": 18,
+          "y": 2099,
+          "w": 354,
+          "h": 193
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Participation Above 50d 46.0% Above 200d 54.9% Adv / Dec 96 / 114 Net new highs -2 ABOVE THE 50-DAY LINE, 2 YE",
+        "r": {
+          "x": 18,
+          "y": 2306,
+          "w": 354,
+          "h": 422
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Sector Temperature TURNING UP Information Technology AVOID Consumer Discretionary Banks SECTOR HEAT · GREEN = ",
+        "r": {
+          "x": 18,
+          "y": 2741,
+          "w": 354,
+          "h": 262
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Commodities & FX Overlay state Neutral Terms of trade mixed WTI crude oil well above normal Gold below normal ",
+        "r": {
+          "x": 18,
+          "y": 3017,
+          "w": 354,
+          "h": 398
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Rates & BoC BoC rate 2.25% Long vs short bonds normal shape Canada vs US 10-year Canada pays less BoC stance n",
+        "r": {
+          "x": 18,
+          "y": 3430,
+          "w": 354,
+          "h": 422
+        }
+      },
+      {
+        "tag": "div.cax-card",
+        "text": "Housing Real price index 140.4 ~1y change -6.8% Off peak -29.3% 2016-04-01 2026-01-01 140.4 Prices well below ",
+        "r": {
+          "x": 18,
+          "y": 3865,
+          "w": 354,
+          "h": 364
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "canada_stock.html#MG.TO",
+      "canada_stock.html#ATZ.TO",
+      "canada_stock.html#DOL.TO",
+      "canada_stock.html#JWEL.TO",
+      "canada_stock.html#SAP.TO",
+      "canada_stock.html#MRU.TO",
+      "canada_stock.html#TVE.TO",
+      "canada_stock.html#SDE.TO",
+      "canada_stock.html#AAV.TO",
+      "canada_stock.html#GWO.TO",
+      "canada_stock.html#TD.TO",
+      "canada_stock.html#BN.TO",
+      "canada_stock.html#BDT.TO",
+      "canada_stock.html#MTL.TO",
+      "canada_stock.html#STN.TO",
+      "canada_stock.html#BB.TO",
+      "canada_stock.html#CLS.TO",
+      "canada_stock.html#CSU.TO",
+      "canada_stock.html#CG.TO",
+      "canada_stock.html#MAU.TO",
+      "canada_stock.html#LIF.TO",
+      "canada_stock.html#PMZ-UN.TO",
+      "canada_stock.html#REI-UN.TO",
+      "canada_stock.html#CIGI.TO",
+      "sectors/XGD.TO.html",
+      "sectors/XMA.TO.html",
+      "sectors/XEG.TO.html",
+      "sectors/XIT.TO.html",
+      "sectors/XCG.TO.html",
+      "sectors/ZEB.TO.html",
+      "sectors/XBM.TO.html",
+      "sectors/XFN.TO.html",
+      "sectors/XCD.TO.html",
+      "sectors/XST.TO.html",
+      "sectors/XUT.TO.html",
+      "sectors/XRE.TO.html",
+      "canada_history.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "illus.css?v=cbe6a0b4",
+      "assets/css/c7786f07.css?v=c7786f07",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "mtf.js?v=b62aea2f",
+      "theme.js?v=48082a1e",
+      "illus.js?v=8e0a3779",
+      "chart_i18n.js?v=23272c48",
+      "charts.js?v=5372d2a2",
+      "tablesort.js?v=484d9333"
+    ],
+    "route": "canada.html",
+    "url": "https://www.mastermind-x.com/canada.html",
+    "status": 200,
+    "title": "Canada — S&P/TSX Regime — 2026-09-18",
+    "time": "2026-09-21T04:46:57.742239+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/live/overlay.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "ba77dde25da515909b5a19a55b9b56abd97b111380a1b1d1ef416745d7cfaf7d"
+  },
+  {
+    "viewport": {
+      "w": 390,
+      "h": 844,
+      "scrollW": 390,
+      "scrollH": 7976
+    },
+    "attrs": [
+      [
+        "lang",
+        "en"
+      ],
+      [
+        "data-theme",
+        "dark"
+      ],
+      [
+        "class",
+        "soft-contrast"
+      ]
+    ],
+    "headings": [
+      {
+        "tag": "h1.nx-title",
+        "text": "What matters now",
+        "r": {
+          "x": 35,
+          "y": 170,
+          "w": 320,
+          "h": 33
+        }
+      },
+      {
+        "tag": "h2.nxi-title",
+        "text": "Intelligence Desk",
+        "r": {
+          "x": 52,
+          "y": 1198,
+          "w": 286,
+          "h": 22
+        }
+      },
+      {
+        "tag": "h2.nxw-title",
+        "text": "What just crossed",
+        "r": {
+          "x": 52,
+          "y": 1884,
+          "w": 286,
+          "h": 24
+        }
+      },
+      {
+        "tag": "h2.nx-sec-hd",
+        "text": "Event consequences",
+        "r": {
+          "x": 35,
+          "y": 2278,
+          "w": 320,
+          "h": 24
+        }
+      },
+      {
+        "tag": "h2.nx-sec-hd",
+        "text": "Latest economic releases 10",
+        "r": {
+          "x": 35,
+          "y": 5394,
+          "w": 320,
+          "h": 24
+        }
+      }
+    ],
+    "overflow": [],
+    "smallControls": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "a.ai-brief-link.terminal-link",
+        "text": "Terminal",
+        "r": {
+          "x": 233,
+          "y": 36,
+          "w": 99,
+          "h": 36
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.seg-btn.on",
+        "text": "All",
+        "r": {
+          "x": 35,
+          "y": 1046,
+          "w": 39,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Markets",
+        "r": {
+          "x": 76,
+          "y": 1046,
+          "w": 74,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Macro",
+        "r": {
+          "x": 153,
+          "y": 1046,
+          "w": 62,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Fed",
+        "r": {
+          "x": 217,
+          "y": 1046,
+          "w": 46,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Companies",
+        "r": {
+          "x": 264,
+          "y": 1046,
+          "w": 94,
+          "h": 27
+        }
+      },
+      {
+        "tag": "input#nxSearch.",
+        "text": "Search news",
+        "r": {
+          "x": 35,
+          "y": 1107,
+          "w": 320,
+          "h": 31
+        }
+      },
+      {
+        "tag": "button.nxi-filter.on",
+        "text": "All stories",
+        "r": {
+          "x": 52,
+          "y": 1537,
+          "w": 80,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "High impact",
+        "r": {
+          "x": 140,
+          "y": 1537,
+          "w": 92,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "Confirmed",
+        "r": {
+          "x": 240,
+          "y": 1537,
+          "w": 84,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "Draft ready",
+        "r": {
+          "x": 52,
+          "y": 1572,
+          "w": 88,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.cta",
+        "text": "Sign in",
+        "r": {
+          "x": 56,
+          "y": 2098,
+          "w": 71,
+          "h": 31
+        }
+      },
+      {
+        "tag": "a.nxw-x",
+        "text": "@mastermindx001",
+        "r": {
+          "x": 89,
+          "y": 2210,
+          "w": 138,
+          "h": 30
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "NFLX",
+        "r": {
+          "x": 288,
+          "y": 2636,
+          "w": 37,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "MSFT",
+        "r": {
+          "x": 254,
+          "y": 2760,
+          "w": 37,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "TSLA",
+        "r": {
+          "x": 302,
+          "y": 3866,
+          "w": 37,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "SPY",
+        "r": {
+          "x": 219,
+          "y": 3990,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "QQQ",
+        "r": {
+          "x": 257,
+          "y": 3990,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "QQQ",
+        "r": {
+          "x": 35,
+          "y": 4656,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "GOOGL",
+        "r": {
+          "x": 73,
+          "y": 4656,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "S",
+        "r": {
+          "x": 247,
+          "y": 4780,
+          "w": 18,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "XHB",
+        "r": {
+          "x": 35,
+          "y": 4908,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "QQQ",
+        "r": {
+          "x": 35,
+          "y": 5057,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "USO",
+        "r": {
+          "x": 280,
+          "y": 5181,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "XLE",
+        "r": {
+          "x": 318,
+          "y": 5181,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "button#nxMore.gbtn.nx-more",
+        "text": "Show more (+21)",
+        "r": {
+          "x": 125,
+          "y": 5339,
+          "w": 140,
+          "h": 29
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "QQQ",
+        "r": {
+          "x": 50,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "SPY",
+        "r": {
+          "x": 86,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "GOOGL",
+        "r": {
+          "x": 122,
+          "y": 7418,
+          "w": 44,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "XHB",
+        "r": {
+          "x": 171,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "USO",
+        "r": {
+          "x": 207,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "XLE",
+        "r": {
+          "x": 242,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "WMT",
+        "r": {
+          "x": 278,
+          "y": 7418,
+          "w": 31,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.nx-tk",
+        "text": "COST",
+        "r": {
+          "x": 50,
+          "y": 7442,
+          "w": 37,
+          "h": 19
+        }
+      },
+      {
+        "tag": "a.rf-x",
+        "text": "Follow @mastermindx001",
+        "r": {
+          "x": 18,
+          "y": 7889,
+          "w": 178,
+          "h": 28
+        }
+      }
+    ],
+    "buttons": [
+      {
+        "tag": "button.nav-toggle",
+        "text": "Toggle navigation menu",
+        "r": {
+          "x": 16,
+          "y": 37,
+          "w": 42,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.search-trigger",
+        "text": "600519.SS",
+        "r": {
+          "x": 16,
+          "y": 80,
+          "w": 358,
+          "h": 38
+        }
+      },
+      {
+        "tag": "button#settings-open.nav-settings-btn",
+        "text": "Settings",
+        "r": {
+          "x": 340,
+          "y": 37,
+          "w": 34,
+          "h": 34
+        }
+      },
+      {
+        "tag": "button.seg-btn.on",
+        "text": "All",
+        "r": {
+          "x": 35,
+          "y": 1046,
+          "w": 39,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Markets",
+        "r": {
+          "x": 76,
+          "y": 1046,
+          "w": 74,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Macro",
+        "r": {
+          "x": 153,
+          "y": 1046,
+          "w": 62,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Fed",
+        "r": {
+          "x": 217,
+          "y": 1046,
+          "w": 46,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.seg-btn",
+        "text": "Companies",
+        "r": {
+          "x": 264,
+          "y": 1046,
+          "w": 94,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter.on",
+        "text": "All stories",
+        "r": {
+          "x": 52,
+          "y": 1537,
+          "w": 80,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "High impact",
+        "r": {
+          "x": 140,
+          "y": 1537,
+          "w": 92,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "Confirmed",
+        "r": {
+          "x": 240,
+          "y": 1537,
+          "w": 84,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.nxi-filter",
+        "text": "Draft ready",
+        "r": {
+          "x": 52,
+          "y": 1572,
+          "w": 88,
+          "h": 27
+        }
+      },
+      {
+        "tag": "button.cta",
+        "text": "Sign in",
+        "r": {
+          "x": 56,
+          "y": 2098,
+          "w": 71,
+          "h": 31
+        }
+      },
+      {
+        "tag": "button#nxMore.gbtn.nx-more",
+        "text": "Show more (+21)",
+        "r": {
+          "x": 125,
+          "y": 5339,
+          "w": 140,
+          "h": 29
+        }
+      },
+      {
+        "tag": "summary.",
+        "text": "Newsroom diagnostics (108 filtered · 21 classes)",
+        "r": {
+          "x": 36,
+          "y": 7528,
+          "w": 318,
+          "h": 62
+        }
+      },
+      {
+        "tag": "div#mmb-boot.",
+        "text": "Ask Mastermind",
+        "r": {
+          "x": 318,
+          "y": 772,
+          "w": 56,
+          "h": 56
+        }
+      }
+    ],
+    "links": [
+      "start.html",
+      "macro.html",
+      "us_stocks.html",
+      "intraday_flow.html",
+      "sector_central.html",
+      "sector_central.html#confluence",
+      "strategies.html",
+      "alerts.html",
+      "news.html",
+      "options.html",
+      "darkpool.html",
+      "market_structure.html",
+      "china.html",
+      "china_stocks.html",
+      "china_heatmap.html",
+      "china_intel.html",
+      "sector_central_china.html",
+      "narrative_radar.html",
+      "flow_velocity.html",
+      "china_policy_watch.html",
+      "china_mechanics.html",
+      "china_special_situations.html",
+      "china_news.html",
+      "china_strategies.html",
+      "china_altdata.html",
+      "hk.html",
+      "hk_stocks.html",
+      "hk_heatmap.html",
+      "baskets_hk.html",
+      "allocation_hk.html",
+      "canada.html",
+      "canada_stocks.html",
+      "canada_heatmap.html",
+      "baskets_canada.html",
+      "allocation_canada.html",
+      "commodities.html",
+      "intl.html",
+      "intl_stocks.html",
+      "markets.html",
+      "country_cycles.html",
+      "baskets_intl.html",
+      "japan.html",
+      "south_korea.html",
+      "euro_area.html",
+      "united_kingdom.html",
+      "india.html",
+      "javascript:void(0)",
+      "crypto.html",
+      "vector.html",
+      "vector.html#strategy-track-record",
+      "commodity_strategies.html",
+      "spr.html",
+      "forex.html",
+      "bonds.html",
+      "commodities.html#gold",
+      "commodities.html#oil",
+      "commodities.html#copper",
+      "stock.html?ticker=BTC-USD",
+      "intelligence_hub.html",
+      "watchlist.html",
+      "https://bot.mastermind-x.com",
+      "reports.html",
+      "research_vault.html",
+      "stocks/earnings/index.html",
+      "fundamental_forensics.html",
+      "neural_web.html",
+      "market_memory.html",
+      "reference.html",
+      "foresight.html",
+      "state_of_themes.html",
+      "radar.html",
+      "stock_seasonality.html",
+      "confluence_screener.html",
+      "smart_money.html",
+      "etfs.html",
+      "cycle.html",
+      "macro_context.html",
+      "policy_watch.html",
+      "government_revenue.html",
+      "alt_data.html",
+      "special_situations.html",
+      "biocatalyst.html",
+      "capital_structure.html",
+      "sector_cycles.html",
+      "sector_cycles_china.html",
+      "https://app.mastermind-x.com",
+      "https://www.bloomberg.com/news/articles/2026-09-18/bofa-warns-of-warsh-s-fed-raising-rates-above-5-in-2022-redux",
+      "https://www.bloomberg.com/news/videos/2026-09-18/on-holdings-new-partner-netflix-analyst-downgrade-video",
+      "https://www.cnbc.com/2026/09/18/microsoft-ai-ceo-openais-latest-ai-revelation-a-serious-situation.html",
+      "https://www.bloomberg.com/news/articles/2026-09-18/deutsche-bank-s-dws-to-shut-us-property-fund-hit-by-redemptions",
+      "https://x.com/mastermindx001",
+      "stock.html#NFLX",
+      "stock.html#MSFT",
+      "https://www.cnbc.com/2026/09/18/stubhub-shares-tick-higher-for-third-day-in-a-row-after-citi-upgrade.html",
+      "https://www.bloomberg.com/news/videos/2026-09-18/new-svb-review-finds-fed-missed-repeated-warnings-video",
+      "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNdVhMeF8xaElKaXVlUmExRzVBU244d3pfR3k5V25FdlZJel9nOElkbTlXb1lILXhremYwQV9kTTZ2SGZBdjlMVWR2QU9JM3o4Q0E5OHpjSGlidkFUdG5vdkhkajZ0Q2hKUl9yZ2xfaXBMQU5vbHBjVHRhbk83ZVB0T2pRYlZzYUI3R2dCQkozekRHT0V4UFBRZUJYa3Nqa2c5R1Z0eUhCNXltdw?oc=5",
+      "https://www.cnbc.com/2026/09/18/fed-silicon-valley-bank.html",
+      "https://news.google.com/rss/articles/CBMitAFBVV95cUxPZ2p6dkpCd0xfbVRBMnhySFRVbm5OSElMZXRXc0NpaGhoRmw2MzNfSUstaC1RVFFnUU1DNUM0MEpHTmxhbHJxOC1Ec2lMWU0xMFVaSVdsZGdVSi1JaWpDX093SHhBdlBkdFdGZnFpd05yYW9LRXk2NkdOMnRWSzJ2dkhuTFpDN01LM1JvNjhyamFZM2dLRFRzM24xSUZwRGVBakhwM3N3em1ycFBuWVg2UVB2OTQ?oc=5",
+      "https://www.cnbc.com/2026/09/18/treasury-yields-fed-rates-volatile-week.html",
+      "https://news.google.com/rss/articles/CBMivwFBVV95cUxOYW1YaE5VZXdZbXVmcVlIMVBDRVFZNC1BRjlmSmplVHdSbXJuX0c0eTJPTkVVeWZZME1kODNrVkV4Wi1ZVmRDd1lTV1h1WDJoYmFKVzhtZDRrRmpub0hPV3RuZDduM29Bb2o3QkhnRmJBZ0tydnNrZGFTLVppWFlBNk9TdHc1QnNRd2h4X3c0U2hyWnNXa2dJdkVTU0FsZ0doNjVFb0NOZHNaT05KaFc3SVpWRGptcUZXTVE2Nlcxdw?oc=5",
+      "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPcVJSOWZtYmJPZXkzZmtfazJwd0xSQ19KTXVYX095aFdSWXk2MnlueWRtR0NrZzdudF9objBxd1BUYjA1QkRwZHFWYUF4WjBfVXluYVJGSFRRM01veW56dVphanpjaDUzTHpSTE1ISDRnMTc4Y05VOF9SX0pZMC1LOHlESVNrOF9YbFlJQnZ0M19TcWt1a0ppVXh6LXRIOWljdEs1STg3ZlZDTWRWSzZjczkxRk1lbFYyaGN2MXdCQnMxa3M2enZGSFcydVFmNjI0amQtZQ?oc=5",
+      "https://www.marketwatch.com/story/teslas-upcoming-product-frenzy-could-leave-investors-disappointed-18619fb3?mod=mw_rss_topstories",
+      "stock.html#TSLA",
+      "https://www.cnbc.com/2026/09/19/higher-interest-rates-and-ai-safety-fears-put-the-stock-market-to-the-test-last-week.html",
+      "stock.html#SPY",
+      "stock.html#QQQ",
+      "https://www.marketwatch.com/story/travis-kelce-and-others-lost-millions-in-a-ponzi-scheme-heres-what-a-basic-index-fund-would-have-earned-them-instead-c1ee3bd6?mod=mw_rss_topstories",
+      "https://news.google.com/rss/articles/CBMikAFBVV95cUxPaWtqc2R0WjNQRTlZU1hza3dfc29sRlByN0hYU1pvWjNCZzJQcEl2MEFOdXRqMVBDYVplZTAzd215MC0yRVdOSjg4S09mTjgxdUVFaXNzbXJfdktydVZMUWIyLVhZR3h6amtMMFQ0MlJRamlCQ3N0WEtOemk1azk4Smh1WFpMX19xOUdZMURlX0Q?oc=5",
+      "https://www.marketwatch.com/story/a-sideways-market-and-rising-earnings-are-presenting-opportunities-not-seen-since-chatgpt-first-launched-0c37f89d?mod=mw_rss_topstories",
+      "https://www.marketwatch.com/story/why-mortgage-bonds-are-set-to-deteriorate-and-possibly-hit-the-whole-market-according-to-this-wall-street-expert-0dd7f05d?mod=mw_rss_topstories",
+      "https://seekingalpha.com/news/4644563-google-gemini-ai-model-hacked-three-companies?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "stock.html#GOOGL",
+      "https://news.google.com/rss/articles/CBMiggFBVV95cUxQZ3Ffak1lbExncW9QQ0g0LWdRV1R0N1ZQY0RxMURhbENpU0tkNTNpbUJCUjNqWUVaMFhtZHdmdUpzTTdhN2JFUjdyVzQ3QXJtQmI4X1JZdWUtcnlDbTZMQm9tT19MR0V4VmNGM0hselY5cUZVRFBTMDdNWGVfRDJ4UFJR?oc=5",
+      "stock.html#S",
+      "https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "stock.html#XHB",
+      "https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "https://www.cnbc.com/2026/09/19/riyadh-airport-smoke-saudi-arabia.html",
+      "stock.html#USO",
+      "stock.html#XLE",
+      "https://seekingalpha.com/news/4644490-insider-trades-crowdstrike-uber-snowflake-among-notable-names?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "https://www.npr.org/2026/09/17/nx-s1-5971226/the-federal-reserve-raises-interest-rates-by-a-quarter-percentage-point",
+      "https://www.cnbc.com/2026/09/18/ai-trade-rebound-sparks-flurry-of-unusually-bullish-options-activity.html",
+      "https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy",
+      "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "https://finance.yahoo.com/healthcare/articles/abbvies-migraine-franchise-scored-big-192000630.html",
+      "https://finance.yahoo.com/markets/stocks/articles/fifth-third-fitb-comerica-merger-190743312.html",
+      "https://www.npr.org/2026/09/16/nx-s1-5971127/what-the-fed-rate-hike-means-for-pocketbooks-and-politics",
+      "https://www.marketwatch.com/story/like-costco-walmart-to-sell-medicare-advantage-plans-b31977d2?mod=mw_rss_topstories",
+      "stock.html#WMT",
+      "stock.html#COST",
+      "https://www.marketwatch.com/story/its-not-a-winner-take-all-stock-market-this-hedge-fund-manager-favors-three-underdogs-a366ab6f?mod=mw_rss_topstories",
+      "https://www.cnbc.com/2026/09/16/jb-hunt-stock-jbht-earnings.html",
+      "https://www.economist.com/finance-and-economics/2026/09/15/what-africas-biggest-ipo-can-do-for-its-stock-markets",
+      "https://www.npr.org/2026/09/17/nx-s1-5971197/economist-explains-the-feds-decision-to-raise-interest-rates",
+      "https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024",
+      "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260911a.htm",
+      "stock.html#XLF",
+      "https://www.economist.com/finance-and-economics/2026/09/16/soaring-bond-yields-gaping-deficits-and-towering-debts-what-could-go-wrong",
+      "https://www.economist.com/finance-and-economics/2026/09/17/the-gdp-per-person-slowdown-threatens-global-living-standards",
+      "https://www.bea.gov/about/budget-and-performance",
+      "https://www.marketwatch.com/story/its-almost-impossible-to-sell-a-condo-these-days-i-feel-trapped-1f96ce37?mod=mw_rss_topstories",
+      "https://www.marketwatch.com/story/90-of-retirees-are-making-this-miscalculation-with-their-savings-feb9db79?mod=mw_rss_topstories",
+      "https://www.economist.com/finance-and-economics/2026/09/17/the-trickle-down-economics-of-the-ai-boom",
+      "https://www.census.gov/services/index.html"
+    ],
+    "assets": [
+      "theme.css?v=665c4b34",
+      "assets/css/f987df53.css?v=f987df53",
+      "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+      "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+      "https://cloud.umami.is/script.js",
+      "navigation-refresh.css?v=fed6efba",
+      "logo_config.js?v=b37d33d3",
+      "stock-logos.js?v=cc29be53",
+      "live_config.js?v=52943e92",
+      "live.js?v=3cb38601",
+      "theme.js?v=48082a1e"
+    ],
+    "route": "news.html",
+    "url": "https://www.mastermind-x.com/news.html",
+    "status": 200,
+    "title": "Markets News — What matters now · Mastermind",
+    "time": "2026-09-21T04:47:02.065482+00:00",
+    "browser": "153.0.8010.50",
+    "errors": [],
+    "failed": [
+      {
+        "url": "https://www.mastermind-x.com/live/wires.json",
+        "status": 401
+      },
+      {
+        "url": "https://www.mastermind-x.com/live/intelligence.json",
+        "status": 401
+      }
+    ],
+    "html_sha256": "a79aa4bce432dda834ff74a46cdf6bdfc3976a06a84db45f86e85722721abb1e"
+  }
+]

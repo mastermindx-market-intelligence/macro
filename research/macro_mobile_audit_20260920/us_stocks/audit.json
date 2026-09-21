@@ -1,0 +1,1281 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 6450
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ],
+    [
+      "data-access-tier",
+      "anon"
+    ],
+    [
+      "data-release-live-freshness",
+      "fresh"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h1.",
+      "text": "US Stocks",
+      "r": {
+        "x": 33,
+        "y": 150,
+        "w": 98,
+        "h": 24
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "WHAT TO ACT ON NOW 38 GROUPED ? THEME HEAT & REASONS → SECTOR INTELLIGENCE",
+      "r": {
+        "x": 37,
+        "y": 433,
+        "w": 316,
+        "h": 68
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "PROPHET STOCK SIGNALS",
+      "r": {
+        "x": 37,
+        "y": 1599,
+        "w": 216,
+        "h": 23
+      }
+    },
+    {
+      "tag": "h2.mx-sec-h2",
+      "text": "CANDIDATES",
+      "r": {
+        "x": 37,
+        "y": 1794,
+        "w": 98,
+        "h": 20
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "MARKET BREADTH — S&P 1500 ?",
+      "r": {
+        "x": 37,
+        "y": 4451,
+        "w": 316,
+        "h": 23
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "SECTOR BUY/SELL SETUPS — SHORT-TERM TIMING ?",
+      "r": {
+        "x": 37,
+        "y": 5011,
+        "w": 316,
+        "h": 45
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+      "r": {
+        "x": 37,
+        "y": 5678,
+        "w": 316,
+        "h": 45
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "REAL FUND MOVES — STRONGEST CONVICTION ? SEE ALL 40 ACCUMULATING → ACCUMULATION WATCH → SECTOR INTELLIGENCE",
+      "r": {
+        "x": 37,
+        "y": 6045,
+        "w": 316,
+        "h": 115
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 36,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Market posture →",
+      "r": {
+        "x": 33,
+        "y": 263,
+        "w": 105,
+        "h": 18
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Pick Lab →",
+      "r": {
+        "x": 150,
+        "y": 263,
+        "w": 84,
+        "h": 18
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Alerts →",
+      "r": {
+        "x": 247,
+        "y": 263,
+        "w": 50,
+        "h": 18
+      }
+    },
+    {
+      "tag": "a.scx-more",
+      "text": "Risk radar →",
+      "r": {
+        "x": 287,
+        "y": 358,
+        "w": 70,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 322,
+        "y": 439,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "THEME HEAT & REASONS → SECTOR INTELLIGENCE",
+      "r": {
+        "x": 37,
+        "y": 462,
+        "w": 231,
+        "h": 36
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Magnificent Seven ≈ 71",
+      "r": {
+        "x": 38,
+        "y": 572,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme.mx-tier-blurred",
+      "text": "Crypto & Digital Assets ≈ 69",
+      "r": {
+        "x": 38,
+        "y": 610,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme.mx-tier-blurred",
+      "text": "AI Software & Platforms ≈ 67",
+      "r": {
+        "x": 38,
+        "y": 647,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "sign in to see the full lane",
+      "r": {
+        "x": 132,
+        "y": 691,
+        "w": 145,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "AI Semiconductors ≈ ↻ 66",
+      "r": {
+        "x": 38,
+        "y": 931,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme.mx-tier-blurred",
+      "text": "Non-AI Tech & Hardware ≈ ↻ 56",
+      "r": {
+        "x": 38,
+        "y": 968,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Cybersecurity 25% ≈ 73",
+      "r": {
+        "x": 38,
+        "y": 1208,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "US Energy Complex ≈ 62",
+      "r": {
+        "x": 38,
+        "y": 1245,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Memory, HBM & Storage 25% ≈ 59",
+      "r": {
+        "x": 38,
+        "y": 1281,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "button.mx-tier-signin",
+      "text": "Already a member? Sign in",
+      "r": {
+        "x": 56,
+        "y": 1510,
+        "w": 278,
+        "h": 16
+      }
+    },
+    {
+      "tag": "a.mx-sec-link",
+      "text": "Open the screener",
+      "r": {
+        "x": 247,
+        "y": 1826,
+        "w": 106,
+        "h": 17
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "3",
+      "r": {
+        "x": 47,
+        "y": 2223,
+        "w": 39,
+        "h": 20
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "4",
+      "r": {
+        "x": 258,
+        "y": 2200,
+        "w": 40,
+        "h": 20
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "1",
+      "r": {
+        "x": 96,
+        "y": 2466,
+        "w": 38,
+        "h": 20
+      }
+    },
+    {
+      "tag": "a.us-tw-btn",
+      "text": "See plans",
+      "r": {
+        "x": 140,
+        "y": 2858,
+        "w": 111,
+        "h": 40
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Already a member? Sign in",
+      "r": {
+        "x": 122,
+        "y": 2933,
+        "w": 145,
+        "h": 14
+      }
+    },
+    {
+      "tag": "summary.pvr-sum",
+      "text": "Passed on tonight 21 of 52",
+      "r": {
+        "x": 37,
+        "y": 3173,
+        "w": 316,
+        "h": 27
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "sign in to see the full list",
+      "r": {
+        "x": 161,
+        "y": 3447,
+        "w": 138,
+        "h": 13
+      }
+    },
+    {
+      "tag": "button#trd-btn.trd-btn",
+      "text": "Track record·49% win · -0.1% a trade",
+      "r": {
+        "x": 37,
+        "y": 3550,
+        "w": 174,
+        "h": 36
+      }
+    },
+    {
+      "tag": "span.trd-basis-chip",
+      "text": "measurement updated",
+      "r": {
+        "x": 218,
+        "y": 3550,
+        "w": 135,
+        "h": 36
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 188,
+        "y": 3700,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.ts-more",
+      "text": "Top Picks →",
+      "r": {
+        "x": 286,
+        "y": 3723,
+        "w": 67,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "FORM",
+      "r": {
+        "x": 45,
+        "y": 3776,
+        "w": 35,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "AMD",
+      "r": {
+        "x": 45,
+        "y": 3821,
+        "w": 28,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "DOCN",
+      "r": {
+        "x": 45,
+        "y": 3867,
+        "w": 35,
+        "h": 13
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 210,
+        "y": 3947,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "TEAM",
+      "r": {
+        "x": 45,
+        "y": 4022,
+        "w": 34,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "PBF",
+      "r": {
+        "x": 45,
+        "y": 4076,
+        "w": 23,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.ts-tk-a",
+      "text": "RNG",
+      "r": {
+        "x": 45,
+        "y": 4121,
+        "w": 26,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "sign in to see the full list",
+      "r": {
+        "x": 166,
+        "y": 4185,
+        "w": 138,
+        "h": 13
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 300,
+        "y": 4457,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.",
+      "text": "Full board — tiers, internals, history →",
+      "r": {
+        "x": 147,
+        "y": 4942,
+        "w": 206,
+        "h": 17
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 189,
+        "y": 5153,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 238,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 321,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 407,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 468,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 554,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 605,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "XLV",
+      "r": {
+        "x": 45,
+        "y": 5225,
+        "w": 25,
+        "h": 16
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "XLK",
+      "r": {
+        "x": 45,
+        "y": 5325,
+        "w": 26,
+        "h": 16
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "XLE",
+      "r": {
+        "x": 45,
+        "y": 5425,
+        "w": 25,
+        "h": 16
+      }
+    },
+    {
+      "tag": "button.lst-more.act-more",
+      "text": "Show more ▾",
+      "r": {
+        "x": 37,
+        "y": 5502,
+        "w": 316,
+        "h": 32
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 152,
+        "y": 6073,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.muted",
+      "text": "SEE ALL 40 ACCUMULATING →",
+      "r": {
+        "x": 37,
+        "y": 6094,
+        "w": 201,
+        "h": 18
+      }
+    },
+    {
+      "tag": "a.muted",
+      "text": "ACCUMULATION WATCH → SECTOR INTELLIGENCE",
+      "r": {
+        "x": 37,
+        "y": 6124,
+        "w": 316,
+        "h": 36
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "EVO SS",
+      "r": {
+        "x": 96,
+        "y": 6204,
+        "w": 48,
+        "h": 16
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "SPCX",
+      "r": {
+        "x": 96,
+        "y": 6232,
+        "w": 36,
+        "h": 16
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "ALWN GA",
+      "r": {
+        "x": 96,
+        "y": 6261,
+        "w": 61,
+        "h": 16
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 322,
+        "y": 439,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.mx-tier-primary",
+      "text": "Create free account",
+      "r": {
+        "x": 56,
+        "y": 1462,
+        "w": 278,
+        "h": 41
+      }
+    },
+    {
+      "tag": "button.mx-tier-signin",
+      "text": "Already a member? Sign in",
+      "r": {
+        "x": 56,
+        "y": 1510,
+        "w": 278,
+        "h": 16
+      }
+    },
+    {
+      "tag": "button#us-src-btn-cand.",
+      "text": "Candidates",
+      "r": {
+        "x": 51,
+        "y": 1633,
+        "w": 89,
+        "h": 40
+      }
+    },
+    {
+      "tag": "button#us-src-btn-plan.",
+      "text": "Plans",
+      "r": {
+        "x": 143,
+        "y": 1633,
+        "w": 53,
+        "h": 40
+      }
+    },
+    {
+      "tag": "button#us-st-btn-grid.",
+      "text": "⊞ Grid",
+      "r": {
+        "x": 51,
+        "y": 1689,
+        "w": 58,
+        "h": 40
+      }
+    },
+    {
+      "tag": "button#us-st-btn-table.",
+      "text": "Table",
+      "r": {
+        "x": 112,
+        "y": 1689,
+        "w": 72,
+        "h": 40
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "3",
+      "r": {
+        "x": 47,
+        "y": 2223,
+        "w": 39,
+        "h": 20
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "4",
+      "r": {
+        "x": 258,
+        "y": 2200,
+        "w": 40,
+        "h": 20
+      }
+    },
+    {
+      "tag": "button.pv-cau-btn",
+      "text": "1",
+      "r": {
+        "x": 96,
+        "y": 2466,
+        "w": 38,
+        "h": 20
+      }
+    },
+    {
+      "tag": "summary.pvr-sum",
+      "text": "Passed on tonight 21 of 52",
+      "r": {
+        "x": 37,
+        "y": 3173,
+        "w": 316,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button#trd-btn.trd-btn",
+      "text": "Track record·49% win · -0.1% a trade",
+      "r": {
+        "x": 37,
+        "y": 3550,
+        "w": 174,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#wcd-btn.trd-btn",
+      "text": "What changed today ·30",
+      "r": {
+        "x": 37,
+        "y": 3594,
+        "w": 249,
+        "h": 48
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 188,
+        "y": 3700,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 210,
+        "y": 3947,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.mx-tier-primary",
+      "text": "See more Prophet picks",
+      "r": {
+        "x": 56,
+        "y": 4338,
+        "w": 278,
+        "h": 41
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 300,
+        "y": 4457,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "div.sbx-bar-card",
+      "text": "491 ADVANCING DECLINING 1,008 Participation looks thin — Few names hold their trend — rallies here are fragile",
+      "r": {
+        "x": 37,
+        "y": 4542,
+        "w": 316,
+        "h": 146
+      }
+    },
+    {
+      "tag": "div.sbx-tile",
+      "text": "ABOVE 50-DAY 26% below half — thin tape",
+      "r": {
+        "x": 37,
+        "y": 4704,
+        "w": 152,
+        "h": 113
+      }
+    },
+    {
+      "tag": "div.sbx-tile",
+      "text": "ABOVE 200-DAY 50% long-term trend damaged",
+      "r": {
+        "x": 201,
+        "y": 4704,
+        "w": 152,
+        "h": 113
+      }
+    },
+    {
+      "tag": "div.sbx-tile",
+      "text": "NET NEW HIGHS -62 more stocks breaking down than out",
+      "r": {
+        "x": 37,
+        "y": 4828,
+        "w": 152,
+        "h": 102
+      }
+    },
+    {
+      "tag": "div.sbx-tile",
+      "text": "MOMENTUM Fading net-advance trend · nightly",
+      "r": {
+        "x": 201,
+        "y": 4828,
+        "w": 152,
+        "h": 102
+      }
+    },
+    {
+      "tag": "button.",
+      "text": "Full board — tiers, internals, history →",
+      "r": {
+        "x": 147,
+        "y": 4942,
+        "w": 206,
+        "h": 17
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 189,
+        "y": 5153,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 238,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 321,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 407,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 468,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 554,
+        "y": 5163,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "span.help.help-upgraded",
+      "text": "?",
+      "r": {
+        "x": 605,
+        "y": 5173,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.lst-more.act-more",
+      "text": "Show more ▾",
+      "r": {
+        "x": 37,
+        "y": 5502,
+        "w": 316,
+        "h": 32
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 152,
+        "y": 6073,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "us_stocks_lab.html",
+    "macro.html#dlg-risk",
+    "sector_central.html#si-heat-section",
+    "basket/mag7.html",
+    "basket/crypto.html",
+    "basket/ai_software.html",
+    "plans.html",
+    "basket/us_sector_energy.html",
+    "basket/ai_semiconductors.html",
+    "basket/non_ai_tech.html",
+    "basket/cybersecurity.html",
+    "basket/energy_complex.html",
+    "basket/memory_storage.html",
+    "sector_central.html#actnow-section",
+    "stock.html#EGBN",
+    "stock.html#COIN",
+    "stock.html#REXR",
+    "stock.html#GPCR",
+    "stock.html#BWA",
+    "stock.html#FTI",
+    "discovery.html",
+    "stock.html#JILL",
+    "stock.html#PLUS",
+    "stock.html#PLMR",
+    "us_track_record.html",
+    "stock.html#FORM",
+    "stock.html#AMD",
+    "stock.html#DOCN",
+    "stock.html#FIX",
+    "stock.html#COHU",
+    "stock.html#MXL",
+    "stock.html#VTRS",
+    "stock.html#HAFC",
+    "stock.html#AMKR",
+    "stock.html#STRL",
+    "stock.html#TEAM",
+    "stock.html#PBF",
+    "stock.html#RNG",
+    "basket/us_sector_health.html",
+    "basket/us_sector_tech.html",
+    "basket/us_sector_financials.html",
+    "basket/us_sector_comm.html",
+    "basket/us_sector_staples.html",
+    "basket/us_sector_materials.html",
+    "basket/us_sector_realestate.html",
+    "basket/us_sector_discretionary.html",
+    "basket/us_sector_industrials.html",
+    "basket/us_sector_utilities.html",
+    "sector_central.html#accumulation-section",
+    "stock.html#EVO SS",
+    "stock.html#SPCX",
+    "stock.html#ALWN GA",
+    "stock.html#CDE",
+    "stock.html#ETN",
+    "stock.html#GEV",
+    "stock.html#MRNA",
+    "stock.html#ENR GR"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "tier_preview.css?v=d390f599",
+    "dashboard-icons.css?v=be32e541",
+    "dashboard-icons.js?v=ee1d5163",
+    "assets/css/bdd40640.css?v=bdd40640",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "assets/css/20d98c47.css?v=20d98c47",
+    "assets/css/983df2de.css?v=983df2de",
+    "assets/css/65aef5e4.css?v=65aef5e4",
+    "assets/css/307c6f26.css?v=307c6f26",
+    "assets/css/4546f775.css?v=4546f775",
+    "assets/css/b1234b62.css?v=b1234b62",
+    "assets/css/0c244078.css?v=0c244078",
+    "assets/css/6b41b25d.css?v=6b41b25d",
+    "assets/css/97280b63.css?v=97280b63",
+    "assets/css/73403668.css?v=73403668",
+    "assets/css/4d0ba968.css?v=4d0ba968",
+    "theme.js?v=48082a1e",
+    "tier_preview.js?v=d80100db",
+    "chart_i18n.js?v=23272c48",
+    "timemachine.js?v=92798ed7",
+    "tablesort.js?v=484d9333",
+    "charts.js?v=5372d2a2",
+    "risk_state_live.js?v=4b630b78",
+    "release_publications_live.js?v=d9a19340",
+    "stocktable.js?v=56f6f933"
+  ],
+  "route": "us_stocks.html",
+  "url": "https://www.mastermind-x.com/us_stocks.html",
+  "status": 200,
+  "title": "US Stock Dashboard — 2026-09-18 | MastermindX",
+  "time": "2026-09-21T04:46:29.728907+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/basketdata/baskets.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/basket_pulse.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/prophet_live.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/premiumdata/us_stocks.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/risk_state.json?t=1789965990616",
+      "status": 401
+    }
+  ],
+  "html_sha256": "808e6c6e93c16d9106893d497bd1907204996abf75107e684f1a46acb08e6801"
+}

@@ -1,0 +1,1088 @@
+600519.SS
+Terminal
+Alert Command Center
+THE TAPE RIGHT NOW · LAST 30D
+RISK-OFF
+pressure 50/100
+
+The tape is leaning risk-off — 3 act-tier calls, 1 risk-off stress alert, a diversified tape, recession risk low. ?
+
+CONSTRUCTIVE
+MIXED
+RISK-OFF
+3
+ACT NOW?
+1
+WORTH WATCHING
+44
+RE-FIRED?
+60
+LIVE ALERTS
+▬
+last 7d
+277
+fires
+·
+normal
+than usual
+(
+0.93×
+)
+?
+THE STORIES BEHIND THE ALERTS ?
+🧭
+Regime shift
+3
+the market's underlying weather is changing
+🧭 Regime radar moved — the market “weather” may be shifting
+ 2 act
+2 critical
+↻ 2 re-fired
+•
+Other
+6
+🚨 Market risk-state went ELEVATED — drawdown risk is building
+ 1 act
+↻ 2 re-fired
+USDCAD
+USDBRL
+🔄
+Sector & theme rotation
+30
+leadership is handing off between themes
+🌀 Rotating in — Farm-Direct (Consumer Goods)
+↻ 23 re-fired
+🎯
+Single-name flags
+20
+unusual activity converging on individual tickers
+🔗 2-channel convergence on EXE
+↻ 16 re-fired
+EXE
+AAPL
+USAR
+UNP
+LEU
+🛑
+Risk-off stress
+1
+credit, recession & rates plumbing under strain
+Oil price shock stabilizing
+↻ 1 re-fired
+oil
+BACKDROP — THE CONTEXT EVERY ALERT IS READ AGAINST
+MARKET REGIME
+?
+Stagflation
+cycle: late · shifting
+CROSS-ASSET TAPE
+?
+DIVERSIFIED
+moving together: Commodities, US, Crypto, Dollar
+RISK BACKDROP
+recession: low
+drawdown: low · financial conditions: easy?
+NEXT CATALYST
+?
+GDP · Sep 30
+in 11d · 08:30 ET
+new today
+re-fired
+60 of 60 shown · reset
+PRIORITY
+all
+act now
+3
+critical
+2
+major
+1
+STORY
+all
+stress
+1
+regime
+3
+liquidity
+0
+rotation
+30
+single-name
+20
+76
+PRIORITY?
+📊 Macro Vector
+Critical
+↻ re-fired 2× across 1d
+2026-09-09 · 10d ago
+· re-fired 2× across 1d?
+🧭 Regime radar moved — the market “weather” may be shifting
+The regime's footing went from a new regime to shifting (4 warning flags active)
+→
+high-conviction
+open →
+CONFIRMER
+— High — a regime shift re-prices everything downstream.
+?
+Signal Lab →
+76
+PRIORITY?
+₿ Bitcoin Vector
+Critical
+2026-09-03 · 16d ago
+Down-impulse pressure: vol-of-vol jolt
+DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.
+→
+high-conviction
+open →
+CALIBRATED
+— Forward de-risk window from a verified LEADING precursor cross (impulse radar). Holdout-validated, leak-free; act early — the edge decays in ~2-4 days. BLIND to slow/options-calm flushes (e.g. it did NOT lead the 2026-06-24 cascade).
+?
+Signal Lab →
+64
+PRIORITY?
+📊 Macro Vector
+Major
+2026-09-11 · 8d ago
+🚨 Market risk-state went ELEVATED — drawdown risk is building
+Equity risk-state crossed into ELEVATED (63/100) — positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders
+→
+reduce risk
+open →
+not backtested
+— High — the equity-internal early-warning the credit gauge misses. De-risk response is sizing, not selection.
+?
+Signal Lab →
+48
+PRIORITY?
+🛢 Commodity Vector
+Minor
+↻ re-fired 2× across 1d
+2026-09-18 · 1d ago
+· re-fired 2× across 1d?
+Oil price shock stabilizing
+Oil 95.47 $/bbl — the acute move is settling.
+→
+watch
+oil
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+₿ Bitcoin Vector
+Minor
+↻ re-fired 7× across 28d
+2026-09-18 · 1d ago
+· re-fired 7× across 28d?
+Allocation changed to 43% BTC
+Optimal strategy moved 41% → 43% BTC (momentum × risk grid).
+→
+watch
+open →
+CALIBRATED
+— Strategy output — beat buy-and-hold in backtest.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 26d
+2026-09-18 · 1d ago
+· re-fired 2× across 26d?
+🔗 2-channel convergence on EXE
+EXE lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+EXE
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 4× across 19d
+2026-09-18 · 1d ago
+· re-fired 4× across 19d?
+🔗 4-channel convergence on AAPL
+AAPL lit up by 4 independent alt-data channels: 13F adds, Influence-graph link, AI model adoption, Patent cluster.
+→
+watch
+AAPL
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 3× across 13d
+2026-09-18 · 1d ago
+· re-fired 3× across 13d?
+🔗 2-channel convergence on USAR
+USAR lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+USAR
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 7d
+2026-09-18 · 1d ago
+· re-fired 2× across 7d?
+🔗 3-channel convergence on UNP
+UNP lit up by 3 independent alt-data channels: 13F adds, Analyst upgrades, Special situation.
+→
+watch
+UNP
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 6d
+2026-09-18 · 1d ago
+· re-fired 2× across 6d?
+🔗 2-channel convergence on LEU
+LEU lit up by 2 independent alt-data channels: Insider sentiment, Material 8-K cluster.
+→
+watch
+LEU
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+🆕 new
+2026-09-18 · 1d ago
+🔗 2-channel convergence on MMC
+MMC lit up by 2 independent alt-data channels: Gov contracts accelerating, Bullish news flow.
+→
+watch
+MMC
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+🆕 new
+2026-09-18 · 1d ago
+🔗 2-channel convergence on VMRK
+VMRK lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+VMRK
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 28d
+2026-09-18 · 1d ago
+· re-fired 2× across 28d?
+🌀 Rotating in — Farm-Direct (Consumer Goods)
+Farm-Direct just turned improving & accelerating (1W +1.7%, 1M -4.3%, 3M -3.8%; accel +2.0). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 18d
+2026-09-18 · 1d ago
+· re-fired 2× across 18d?
+🌀 Rotating in — ZeroTrust (Cybersecurity)
+ZeroTrust just turned leading & accelerating (1W +7.1%, 1M +8.6%, 3M +31.2%; accel +4.7). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 18d
+2026-09-18 · 1d ago
+· re-fired 3× across 18d?
+🌀 Rotating in — Security (Software)
+Security just turned leading & accelerating (1W +6.9%, 1M +4.4%, 3M +26.7%; accel +4.8). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 10d
+2026-09-18 · 1d ago
+· re-fired 2× across 10d?
+🌀 Rotating in — Memory (Semiconductors)
+Memory just turned improving & accelerating (1W +0.7%, 1M +0.9%, 3M -27.4%; accel +2.8). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 3d
+2026-09-18 · 1d ago
+· re-fired 2× across 3d?
+🌀 Rotating in — Edge (Cloud Computing)
+Edge just turned leading & accelerating (1W +3.8%, 1M +1.1%, 3M +19.6%; accel +2.3). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 1d
+2026-09-18 · 1d ago
+· re-fired 2× across 1d?
+🌀 Rotating in — Endpoint (Cybersecurity)
+Endpoint just turned leading & accelerating (1W +7.1%, 1M +5.4%, 3M +27.4%; accel +5.0). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+🆕 new
+2026-09-18 · 1d ago
+🌀 Rotating in — App Security (Cybersecurity)
+App Security just turned leading & accelerating (1W +10.6%, 1M +5.1%, 3M +39.7%; accel +7.6). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+🆕 new
+2026-09-18 · 1d ago
+🌀 Rotating in — Cloud (Cybersecurity)
+Cloud just turned leading & accelerating (1W +8.3%, 1M +2.4%, 3M +30.1%; accel +6.0). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Macro Vector
+Minor
+↻ re-fired 8× across 28d
+2026-09-17 · 2d ago
+· re-fired 8× across 28d?
+🧲 Options “gravity” flipped — bigger swings more likely
+GEX: net GEX changed sign (net +5bn, spot vs flip +0.2%)
+→
+watch
+open →
+CONFIRMER
+— Medium — changes the volatility backdrop, not the direction.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Macro Vector
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🫧 Calm surface, fragile internals — complacency watch
+Complacency watch: calm tape starting to mask weakening internals
+→
+watch
+open →
+not backtested
+— Medium — a calm-over-weak CONTEXT (the conjunction matters, not low VIX alone). Size down, don't chase.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Macro Vector
+Minor
+🆕 new
+2026-09-17 · 2d ago
+📉 Breadth divergence — fewer names carrying the index
+Breadth divergence: index near its 1y high while %>200dma is weak (16% pctile) — fewer names carrying the tape
+→
+watch
+open →
+not backtested
+— Medium — fewer names carrying the index; a thinning-tape caution, not a timer.
+?
+Signal Lab →
+48
+PRIORITY?
+💱 Forex
+Minor
+🆕 new
+2026-09-17 · 2d ago
+USD/CAD risk turned Elevated
+Risk Index rose through its threshold to 27. USD/CAD 1.3988.
+→
+watch
+USDCAD
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+💱 Forex
+Minor
+↻ re-fired 2× across 23d
+2026-09-17 · 2d ago
+· re-fired 2× across 23d?
+USD/BRL risk turned Elevated
+Risk Index rose through its threshold to 28. USD/BRL 5.1509.
+→
+watch
+USDBRL
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+↻ re-fired 4× across 27d
+2026-09-17 · 2d ago
+· re-fired 4× across 27d?
+↑ AI Infrastructure: Avoid → Hold
+Theme recommendation for AI Infrastructure changed from Avoid to Hold (score 57, neutral).
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+↻ re-fired 4× across 23d
+2026-09-17 · 2d ago
+· re-fired 4× across 23d?
+🔻 Managed Care & Insurers is deteriorating
+Managed Care & Insurers broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+↻ re-fired 3× across 20d
+2026-09-17 · 2d ago
+· re-fired 3× across 20d?
+↑ Quantum Computing: Avoid → Hold
+Theme recommendation for Quantum Computing changed from Avoid to Hold (score 52, neutral).
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+↻ re-fired 2× across 17d
+2026-09-17 · 2d ago
+· re-fired 2× across 17d?
+↑ US Energy Complex: Trim → Hold
+Theme recommendation for US Energy Complex changed from Trim to Hold (score 62, dominant).
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔻 Gold Miners is deteriorating
+Gold Miners broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔻 Silver Miners is deteriorating
+Silver Miners broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔻 Big Pharma is deteriorating
+Big Pharma broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔻 Health Care (Equal-Weight) is deteriorating
+Health Care (Equal-Weight) broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🧺 Theme Rotation
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔻 Communication Services (Equal-Weight) is deteriorating
+Communication Services (Equal-Weight) broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 5× across 28d
+2026-09-17 · 2d ago
+· re-fired 5× across 28d?
+🔗 4-channel convergence on AMD
+AMD lit up by 4 independent alt-data channels: Analyst upgrades, CNBC pick, Retail buzz, Stocktwits bullish.
+→
+watch
+AMD
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 5× across 28d
+2026-09-17 · 2d ago
+· re-fired 5× across 28d?
+🔗 2-channel convergence on DDOG
+DDOG lit up by 2 independent alt-data channels: Analyst upgrades, Developer adoption.
+→
+watch
+DDOG
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 3× across 26d
+2026-09-17 · 2d ago
+· re-fired 3× across 26d?
+🔗 3-channel convergence on GILD (Trump-linked)
+GILD lit up by 3 independent alt-data channels: Phase-3 trial start, Special situation, Donald Trump trade. Includes a Donald Trump trade.
+→
+watch
+GILD
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 23d
+2026-09-17 · 2d ago
+· re-fired 2× across 23d?
+🔗 2-channel convergence on GPC (Trump-linked)
+GPC lit up by 2 independent alt-data channels: Special situation, Donald Trump trade. Includes a Donald Trump trade.
+→
+watch
+GPC
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 3× across 23d
+2026-09-17 · 2d ago
+· re-fired 3× across 23d?
+🔗 4-channel convergence on GOOGL
+GOOGL lit up by 4 independent alt-data channels: Influence-graph link, App-store demand, Developer adoption, AI model adoption.
+→
+watch
+GOOGL
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 6× across 23d
+2026-09-17 · 2d ago
+· re-fired 6× across 23d?
+🔗 2-channel convergence on COIN
+COIN lit up by 2 independent alt-data channels: Influence-graph link, Stocktwits bullish.
+→
+watch
+COIN
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 19d
+2026-09-17 · 2d ago
+· re-fired 2× across 19d?
+🔗 2-channel convergence on KRMN
+KRMN lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+KRMN
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 4× across 16d
+2026-09-17 · 2d ago
+· re-fired 4× across 16d?
+🔗 2-channel convergence on MARA
+MARA lit up by 2 independent alt-data channels: Special situation, Stocktwits bullish.
+→
+watch
+MARA
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 3× across 16d
+2026-09-17 · 2d ago
+· re-fired 3× across 16d?
+🔗 2-channel convergence on PSNL
+PSNL lit up by 2 independent alt-data channels: Gov contracts, Special situation.
+→
+watch
+PSNL
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 12d
+2026-09-17 · 2d ago
+· re-fired 2× across 12d?
+🔗 2-channel convergence on SYY
+SYY lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+SYY
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+↻ re-fired 2× across 5d
+2026-09-17 · 2d ago
+· re-fired 2× across 5d?
+🔗 2-channel convergence on AWK
+AWK lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+AWK
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔗 2-channel convergence on AES
+AES lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.
+→
+watch
+AES
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+📊 Alternative Data
+Minor
+🆕 new
+2026-09-17 · 2d ago
+🔗 2-channel convergence on KVYO
+KVYO lit up by 2 independent alt-data channels: Bullish news flow, Unusual options flow.
+→
+watch
+KVYO
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 28d
+2026-09-17 · 2d ago
+?
+· re-fired 3× across 28d?
+🌀 Rotating in — Blockchain (FinTech)
+Blockchain just turned leading & accelerating (1W +1.7%, 1M +16.8%, 3M -3.7%; accel +1.9). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 4× across 28d
+2026-09-17 · 2d ago
+?
+· re-fired 4× across 28d?
+🌀 Rotating in — Mining (Crypto & Blockchain)
+Mining just turned leading & accelerating (1W +1.6%, 1M +12.8%, 3M -23.6%; accel +3.4). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 27d
+2026-09-17 · 2d ago
+?
+· re-fired 3× across 27d?
+🌀 Rotating in — Charging (Electric Vehicles)
+Charging just turned leading & accelerating (1W +1.5%, 1M +11.1%, 3M -4.1%; accel +1.8). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 27d
+2026-09-17 · 2d ago
+?
+· re-fired 3× across 27d?
+🌀 Rotating in — Platforms (Education Technology)
+Platforms just turned improving & accelerating (1W +10.5%, 1M -5.3%, 3M -4.8%; accel +10.8). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 27d
+2026-09-17 · 2d ago
+?
+· re-fired 3× across 27d?
+🌀 Rotating in — Infrastructure (Education Technology)
+Infrastructure just turned improving & accelerating (1W +6.8%, 1M -5.4%, 3M +2.2%; accel +6.7). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 27d
+2026-09-17 · 2d ago
+· re-fired 3× across 27d?
+🌀 Rotating in — H-SaaS (Cloud Computing)
+H-SaaS just turned leading & accelerating (1W +4.8%, 1M +6.7%, 3M +33.6%; accel +2.2). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 24d
+2026-09-17 · 2d ago
+· re-fired 2× across 24d?
+🌀 Rotating in — Grocery (E-commerce)
+Grocery just turned improving & accelerating (1W +0.6%, 1M -3.5%, 3M -3.3%; accel +0.9). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 3× across 24d
+2026-09-17 · 2d ago
+· re-fired 3× across 24d?
+🌀 Rotating in — Meal Delivery (Healthy Food & Nutrition)
+Meal Delivery just turned improving & accelerating (1W +0.7%, 1M -4.6%, 3M -3.0%; accel +0.9). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 4× across 24d
+2026-09-17 · 2d ago
+· re-fired 4× across 24d?
+🌀 Rotating in — Video (Digital Entertainment)
+Video just turned leading & accelerating (1W +2.2%, 1M +0.6%, 3M +3.0%; accel +2.0). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 4× across 20d
+2026-09-17 · 2d ago
+?
+· re-fired 4× across 20d?
+🌀 Rotating in — Printing (Hardware)
+Printing just turned leading & accelerating (1W +6.6%, 1M +8.1%, 3M +15.1%; accel +5.5). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 2× across 20d
+2026-09-17 · 2d ago
+?
+· re-fired 2× across 20d?
+🌀 Rotating in — Software (Quantum Computing)
+Software just turned improving & accelerating (1W +4.5%, 1M -1.8%, 3M -5.4%; accel +4.9). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 4× across 20d
+2026-09-17 · 2d ago
+?
+· re-fired 4× across 20d?
+🌀 Rotating in — Hardware (Quantum Computing)
+Hardware just turned improving & accelerating (1W +5.3%, 1M -5.0%, 3M -15.9%; accel +6.5). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+48
+PRIORITY?
+🌀 Subsector Rotation
+Minor
+↻ re-fired 4× across 20d
+2026-09-17 · 2d ago
+?
+· re-fired 4× across 20d?
+🌀 Rotating in — Multi Cloud (Cloud Computing)
+Multi Cloud just turned leading & accelerating (1W +8.2%, 1M +6.8%, 3M +17.5%; accel +6.9). An early rotate-in candidate — context, not a buy list.
+→
+watch
+open →
+not backtested
+— Conviction is documented, not separately backtested as a timing signal.
+?
+Signal Lab →
+How this board ranks — and why it refuses to fake a hit-rate
+
+Sources: macro / bonds / forex / vector / commodity / themes / rotation / single-name · window 30d · as-of 2026-09-18 · board day 2026-09-19 (America/New_York)? · rendered 2026-09-19 19:50 UTC

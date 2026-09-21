@@ -1,0 +1,516 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 2448
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h2.",
+      "text": "What to act on now 39 grouped ? Theme heat & reasons → Sector Intelligence",
+      "r": {
+        "x": 37,
+        "y": 914,
+        "w": 316,
+        "h": 44
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 36,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.rvx-chip",
+      "text": "Open the playbook →",
+      "r": {
+        "x": 45,
+        "y": 788,
+        "w": 121,
+        "h": 23
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 191,
+        "y": 929,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Theme heat & reasons → Sector Intelligence",
+      "r": {
+        "x": 222,
+        "y": 922,
+        "w": 131,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Magnificent Seven ≈ 71",
+      "r": {
+        "x": 38,
+        "y": 1025,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "AI Software & Platforms ≈ 70",
+      "r": {
+        "x": 38,
+        "y": 1063,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Crypto & Digital Assets ≈ 67",
+      "r": {
+        "x": 38,
+        "y": 1101,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "sign in to see the full lane",
+      "r": {
+        "x": 131,
+        "y": 1146,
+        "w": 145,
+        "h": 13
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "AI Semiconductors ≈ ↻ 66",
+      "r": {
+        "x": 38,
+        "y": 1387,
+        "w": 314,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Non-AI Tech & Hardware ≈ ↻ 56",
+      "r": {
+        "x": 38,
+        "y": 1426,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem",
+      "text": "Technology",
+      "r": {
+        "x": 38,
+        "y": 1544,
+        "w": 314,
+        "h": 30
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "Cybersecurity ★25% ≈ 73",
+      "r": {
+        "x": 38,
+        "y": 1656,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "US Energy Complex ★25% ≈ 62",
+      "r": {
+        "x": 38,
+        "y": 1693,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.actitem.ai-theme",
+      "text": "AI Agents & Applications ≈ 60",
+      "r": {
+        "x": 38,
+        "y": 1730,
+        "w": 314,
+        "h": 37
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Drill to stocks →",
+      "r": {
+        "x": 18,
+        "y": 2195,
+        "w": 323,
+        "h": 36
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "span.help",
+      "text": "?",
+      "r": {
+        "x": 191,
+        "y": 929,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "allocation.html",
+    "sector_central.html#si-heat-section",
+    "basket/mag7.html",
+    "basket/ai_software.html",
+    "basket/crypto.html",
+    "plans.html",
+    "basket/us_sector_energy.html",
+    "basket/ai_semiconductors.html",
+    "basket/non_ai_tech.html",
+    "basket/us_sector_tech.html",
+    "basket/cybersecurity.html",
+    "basket/energy_complex.html",
+    "basket/ai_agents.html",
+    "sector_central.html#actnow-section",
+    "basket/critical_minerals.html",
+    "basket/uranium_miners.html",
+    "stock.html#PLD",
+    "stock.html#MO",
+    "stock.html#VICI",
+    "stock.html#CCI",
+    "stock.html#KO",
+    "stock.html#DLR",
+    "stock.html#PSA",
+    "stock.html#OMC",
+    "subsector_rotation.html"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "dashboard-icons.css?v=be32e541",
+    "cycle.css?v=4",
+    "sector_cycles.css?v=6a6791aa",
+    "assets/css/9be9b760.css?v=9be9b760",
+    "assets/css/a1ddfd2f.css?v=a1ddfd2f",
+    "assets/css/add725b2.css?v=add725b2",
+    "macro-desk.css?v=23dc8daa",
+    "assets/css/5df43e9f.css?v=5df43e9f",
+    "assets/css/29d62e93.css?v=29d62e93",
+    "assets/css/a039f61e.css?v=a039f61e",
+    "assets/css/6865a3c5.css?v=6865a3c5",
+    "assets/css/fbd430cb.css?v=fbd430cb",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "assets/css/307c6f26.css?v=307c6f26",
+    "assets/css/4546f775.css?v=4546f775",
+    "assets/css/1bf96191.css?v=1bf96191",
+    "assets/css/31cdd40d.css?v=31cdd40d",
+    "assets/css/03cd4a9c.css?v=03cd4a9c",
+    "forming_narratives.js?v=df6bf5cc",
+    "lightweight-charts.js?v=46fc6953",
+    "sector_central_data.js?v=82ba3899",
+    "si_workspace.js?v=9d4d6860",
+    "theme.js?v=48082a1e",
+    "wh_banner.js?v=4a53a176"
+  ],
+  "route": "sector_central.html",
+  "url": "https://www.mastermind-x.com/sector_central.html",
+  "status": 200,
+  "title": "US Sector Intelligence — sectors, themes & rotation — Mastermind",
+  "time": "2026-09-21T04:46:34.793718+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [
+    "renderFormingNarratives is not defined"
+  ],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/sector_central_data.js?v=82ba3899",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/desk_watch.js?v=503d0e53",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/sector_cycles_narr_data.js?v=67466cf0",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/sector_cycles_dna_data.js?v=46b0879d",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/subsectors.js?v=d2799449",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/time_machine.js?v=0c71b0e3",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/rotation_events.js?v=bcf4f955",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/mm_charts.js?v=244eb769",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/sector_cycles.js?v=963925f1",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/subsector_rotation.js?v=afb00808",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/sector_cycles_data.js?v=26bf4a53",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/sector_cycles_series_data.js?v=db016f8f",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/shock_state.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/policy_lever.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/basket_pulse.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/forming_narratives.js?v=df6bf5cc",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/wh_banner.js?v=4a53a176",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/si_workspace.js?v=9d4d6860",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/marketdata/index_leadership.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/basketdata/baskets.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/premiumdata/sector_central.json",
+      "status": 401
+    }
+  ],
+  "html_sha256": "0775fd286acf7c1b29f9d75b4088fe7dc986bb2d72143b0d97f43078f9f409f9"
+}

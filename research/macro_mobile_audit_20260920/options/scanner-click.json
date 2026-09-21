@@ -1,0 +1,49 @@
+{
+  "url": "https://www.mastermind-x.com/options.html#scanner",
+  "scrollY": 0,
+  "docW": 390,
+  "docH": 977,
+  "text": "600519.SS\nTerminal\nOptions\nOne workspace for the settled close \u2014 brief, scanner, per-name, leaders.\nLATEST COMPLETED SESSION\n2026-09-17\nThursday \u00b7 closed 16:00 ET\nPositions counted\n2026-09-17\nNames covered\n372 / 408\nData quality\nStale\nSource-session receipt\nWHOLE MARKET\nMixed \u2014 normalizing\nVIX 15.4\nS&P DEALERS\nAbsorbing\n2 days in this state\nTODAY'S TAPE\nAverage\n$21.8B traded\nSAME-DAY BETS\n11% of premium\nexpiring the same day\nFour readings, shown side by side and never averaged into one score.\ncovered 372/408 names\nDaily Brief\nFlow\n12\nScanner\n408\nTicker\nSPY\nLeaders\n2\n\nThat data did not load. Reload the page to try again \u2014 nothing above depends on it.",
+  "small": [
+    {
+      "tag": "BUTTON",
+      "id": "tab-brief",
+      "c": "oew-tab",
+      "text": "Daily Brief",
+      "w": 97.875,
+      "h": 42.5
+    },
+    {
+      "tag": "BUTTON",
+      "id": "tab-flow",
+      "c": "oew-tab",
+      "text": "Flow\n12",
+      "w": 80.15625,
+      "h": 42.5
+    },
+    {
+      "tag": "BUTTON",
+      "id": "tab-scanner",
+      "c": "oew-tab",
+      "text": "Scanner\n408",
+      "w": 109.40625,
+      "h": 42.5
+    },
+    {
+      "tag": "BUTTON",
+      "id": "tab-ticker",
+      "c": "oew-tab",
+      "text": "Ticker\nSPY",
+      "w": 96.40625,
+      "h": 42.5
+    },
+    {
+      "tag": "BUTTON",
+      "id": "tab-leaders",
+      "c": "oew-tab",
+      "text": "Leaders\n2",
+      "w": 95.171875,
+      "h": 42.5
+    }
+  ]
+}

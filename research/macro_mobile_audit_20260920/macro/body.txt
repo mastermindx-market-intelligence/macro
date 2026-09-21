@@ -1,0 +1,204 @@
+NVD
+Terminal
+Global markets · Regime read
+Live
+2026-09-18
+Risk-on
+,
+narrowing
+
+Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.
+
+→ Mixed if risk appetite breaks down.
+
+Watch — don’t chase
+One fired condition today.
+Read the dial with care: the dial is the measured blend; one input may rebuild tomorrow — check the as-of stamp.
+61
+/100
+REGIME SCORE
+Risk-off
+Mixed
+Risk-on
+Where this shows up
+One scale, five markets — where each sits, and which way it moved.
+US stocks
+Risk-off
+Neutral
+Risk-on
+—
+Watch — don’t chase
+Hong Kong
+—
+Risk-off
+Neutral
+Risk-on
+—
+Read being updated
+China A-shares
+—
+Risk-off
+Neutral
+Risk-on
+—
+Read being updated
+Government bonds
+—
+Risk-off
+Neutral
+Risk-on
+—
+Read being updated
+Commodities
+—
+Risk-off
+Neutral
+Risk-on
+—
+Read being updated
+
+Positions are this week’s read on a shared scale — not price performance.
+
+What changed since last look
+Each row is one fired condition from the alert log.
+Quiet tape — nothing fired since last look.
+No qualifying alerts today · re-drawn nightly.
+Why — the three things moving this read
+1 of 3
+Mixed
+
+Read being updated — tape read re-draws nightly.
+
+Read being updated
+
+Read being updated — three reads below, never a fused score.
+
+Read being updated
+
+Read being updated — sentiment context, display only.
+
+What we’re watching next
+Three conditions, each phrased as if → what it would change.
+Read being updated
+3 conditions
+›
+If it lands against the read, it would shift the regime call.
+
+Windows, not certainties — re-drawn nightly.
+
+Go deeper
+Macro weather
+Sector rotation
+Signal Lab
+Macro signals
+News feed
+Macro & Monetary hub
+Re-drawn nightly. Windows and stances are our read of the evidence, not advice.
+Stagflation  ·  Shifting — not all-clear
+ⓘ
+0
+50
+100
+61
+Risk-on
+GREEN — Trend-following supported
+Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.
+→ Mixed if risk appetite breaks down.
+4 of 6 supportive · 2 warning
+Risk building · 56
+VOLATILITY WEATHER
+Volatility level
+calm
+5-day volatility change
+breeze
+Near-term vs far-term outlook
+breeze
+How much traders expect next
+breeze
+Overnight price swings
+breeze
+How much stocks move together
+breeze
+3-month implied correlation
+breeze
+Stock-by-stock swings
+breeze
+What To Do Now
+Follow the trend. Add on strength.
+Risk-on · 61/100
+Watch Breadth & participation (0/100).
+Trim chasing; favour good entries over extended leaders.
+Live event status
+CHECKING
+Initial jobless claims · verifying official source
+No top-tier prints in the window.
+Fed Path
+Official FOMC statement detected · extracting decision
+Forward path data — accruing from nightly log.
+Market Sentiment
+PANIC
+EUPHORIA
+Neutral
+Composite at 50 · neutral zone
+Open sentiment detail
+→
+Sector Temperature
+Sector data — accruing from nightly log.
+ES
+S&P FUT
+7,744.25
++0.41%
+NQ
+NASDAQ FUT
+30,082.75
++0.55%
+YM
+DOW FUT
+52,266.00
++0.36%
+RTY
+RUSSELL FUT
+2,891.60
++0.35%
+10Y
+10Y YIELD
+5.00%
++5 bps
+DXY
+DOLLAR DXY
+100.32
++0.10%
+SECTOR HEATMAP
+AI Brief
+Cross-asset synthesis
+A read-through of existing signals — not a signal source.
+Alerts Centre
+Market intelligence feed
+WHERE NEXT
+WEEK AHEAD
+Macro Weather
+The bigger backdrop and what's driving it
+Open
+→
+SECTOR DESK
+Sector Central
+What's heating up and what's rolling over
+Open
+→
+RISK BUILDING
+Risk 56
+See exactly what would make it worse
+Open risk radar
+→
+MORE
+Macro Weather
+AI Brief
+Sector Intelligence
+Neural Web
+Signal Lab
+China Intel
+Data health
+?
+all sources OK · 0 sources
+▾
+© 2026 Mastermind Inc

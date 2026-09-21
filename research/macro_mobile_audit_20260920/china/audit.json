@@ -1,0 +1,457 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 4056
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 88,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 44,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 45,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.cnx-hbtn",
+      "text": "⌁ 0 of 6 signals aligned ▾",
+      "r": {
+        "x": 45,
+        "y": 432,
+        "w": 160,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.cnx-hbtn",
+      "text": "⚠ Pullback risk · 94 ▾",
+      "r": {
+        "x": 45,
+        "y": 466,
+        "w": 150,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "A-Share Stocks",
+      "r": {
+        "x": 18,
+        "y": 3775,
+        "w": 120,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Market Heatmap",
+      "r": {
+        "x": 148,
+        "y": 3775,
+        "w": 126,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "China Intel",
+      "r": {
+        "x": 18,
+        "y": 3819,
+        "w": 92,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Allocation",
+      "r": {
+        "x": 120,
+        "y": 3819,
+        "w": 88,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Regime History",
+      "r": {
+        "x": 218,
+        "y": 3819,
+        "w": 118,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "AI Brief",
+      "r": {
+        "x": 18,
+        "y": 3863,
+        "w": 73,
+        "h": 34
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 88,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 45,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.cnx-hbtn",
+      "text": "⌁ 0 of 6 signals aligned ▾",
+      "r": {
+        "x": 45,
+        "y": 432,
+        "w": 160,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.cnx-hbtn",
+      "text": "⚠ Pullback risk · 94 ▾",
+      "r": {
+        "x": 45,
+        "y": 466,
+        "w": 150,
+        "h": 29
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "SSE SHANGHAI 3,933.37 +0.55% CSI 300 LARGE CAP 4,526.30 +0.42% CHINEXT GROWTH 3,403.97 +0.93% HSI HANG SENG 24",
+      "r": {
+        "x": 18,
+        "y": 830,
+        "w": 354,
+        "h": 273
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "WHAT TO DO ◐ NEUTRAL + Growth-scare is the market's measured best contrarian bottom (~70% hit) — accumulate qu",
+      "r": {
+        "x": 18,
+        "y": 1119,
+        "w": 354,
+        "h": 312
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "UPCOMING EVENTS NEXT 14 DAYS 2 high-impact print ahead LPR fix (loan pri… 2026-09-21 HIGH NBS PMI (mfg + non-m",
+      "r": {
+        "x": 18,
+        "y": 1459,
+        "w": 354,
+        "h": 201
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "PULLBACK RISK HIGH 94 /100 Breadth breakdown (all-boats) ≥5% dip odds 50% Deep-drawdown gauge Elevated Protect",
+      "r": {
+        "x": 18,
+        "y": 1688,
+        "w": 354,
+        "h": 224
+      }
+    },
+    {
+      "tag": "div.cnx-card.fg-greed",
+      "text": "MARKET SENTIMENT PANIC EUPHORIA Mania Composite at 90 · a heads-up, not a scored signal",
+      "r": {
+        "x": 18,
+        "y": 1940,
+        "w": 354,
+        "h": 289
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "SECTOR TEMPERATURE HOT Banks TURNING UP — BUY ZONE Defense & Military Real Estate Automobiles SECTOR HEAT",
+      "r": {
+        "x": 18,
+        "y": 2256,
+        "w": 354,
+        "h": 201
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "POLICY MONITOR PBoC stance easing Reserve ratio 9.0% Credit impulse -10.7% Official tone steady / neutral Easy",
+      "r": {
+        "x": 18,
+        "y": 2485,
+        "w": 354,
+        "h": 237
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "CONNECT FLOWS +¥12亿 Southbound buying Streak 18/20 days Top buys 百度集团-W · 腾讯控股 · 中芯国际 Mainland money supportin",
+      "r": {
+        "x": 18,
+        "y": 2750,
+        "w": 354,
+        "h": 222
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "MACRO NEWS 📰 前8个月税务部门征收税收收入同比增长5.9% Inflation · 富途牛牛 🏦 专家：2026年9月LPR报价保持不变，后期有望下调 Monetary policy · 富途牛牛 24 ",
+      "r": {
+        "x": 18,
+        "y": 3000,
+        "w": 354,
+        "h": 212
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "PROPERTY Contraction still contracting 70-city prices -34 net cities Still the economy's main drag.",
+      "r": {
+        "x": 18,
+        "y": 3240,
+        "w": 354,
+        "h": 180
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "AI BRIEF China regime: Growth-Scare Policy: On hold China: Growth scare remains, while recent improvement is b",
+      "r": {
+        "x": 18,
+        "y": 3448,
+        "w": 354,
+        "h": 171
+      }
+    },
+    {
+      "tag": "div.cnx-card",
+      "text": "ALERTS CENTRE No alerts fired today.",
+      "r": {
+        "x": 18,
+        "y": 3646,
+        "w": 354,
+        "h": 101
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "china_allocation.html",
+    "china_history.html",
+    "aibrief.html"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "illus.css?v=cbe6a0b4",
+    "assets/css/ea6c10eb.css?v=ea6c10eb",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "assets/css/f7e9b02b.css?v=f7e9b02b",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "theme.js?v=48082a1e",
+    "china_risk_state_live.js?v=73275593",
+    "illus.js?v=8e0a3779",
+    "chart_i18n.js?v=23272c48",
+    "mtf.js?v=b62aea2f",
+    "tablesort.js?v=484d9333"
+  ],
+  "route": "china.html",
+  "url": "https://www.mastermind-x.com/china.html",
+  "status": 200,
+  "title": "China A-Share Regime — 2026-09-18",
+  "time": "2026-09-21T04:46:48.715969+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/china_risk_state_live.js?v=73275593",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    }
+  ],
+  "html_sha256": "e519d157d45e084fd1b961e4c7b1fafd55dcef40448b2540b3a894867c6b5f9e"
+}

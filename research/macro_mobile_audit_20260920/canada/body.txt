@@ -1,0 +1,257 @@
+600519.SS
+Terminal
+Reflation
+· mid
+data through 2026-09-18
+0
+50
+100
+50
+Mixed ▶
+YELLOW — TRADE WITH CAUTION
+
+Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.
+
+→ Green if breadth & participation firms up (now 2/100). → Red if trend & technicals breaks down (now 74/100).
+0 of 6 signals aligned
+▾
+Pullback risk
+·
+81
+▾
+CANADA DASHBOARD
+2026-09-18
+TSX
+S&P/TSX COMPOSITE
+35,806.65
+-0.19%
+TSXV
+TSX VENTURE · JUNIORS
+923.07
++0.38%
+WTI
+CRUDE OIL
+$94.07
+-2.09%
+GOLD
+BULLION
+$4,399.10
+-0.58%
+COPPER
+BASE METAL
+$6.73
++0.60%
+USD/CAD
+LOONIE
+1.4006
+CAD soft +1.5%
+SPY
+S&P 500
+Neutral
+US backdrop
+MARKET PARTICIPATION
+THIN
+BROAD
+Mixed participation
+46% of TSX names above their 50-day line
+How it's measured
+→
+What To Do
+Buy now
+Information Technology
+Avoid
+Consumer Discretionary · Banks · Base Metals · Financials ·…
+Regime Watch
+Quad
+Reflation
+Growth
++0.20
+Inflation
++0.77
+Confidence
+44%
+WHY THIS CALL
+✓
+Jobless rate
+✓
+Global demand
+✓
+Inflation rate
+✓
+The bond market's inflation bet
+✕
+How many stocks are rising
+✕
+TSX vs the US market
+2 of 6 readings disagree — size positions smaller than usual.
+Pullback Risk
+CAUTION
+81 /100
+Breadth breakdown
+≥5% dip odds
+19%
+Trim chasing; favour good entries over extended leaders.
+Participation
+Above 50d
+46.0%
+Above 200d
+54.9%
+Adv / Dec
+96 / 114
+Net new highs
+-2
+ABOVE THE 50-DAY LINE, 2 YEARS
+2024-09-18
+2026-09-18
+33
+%
+Thin — rallies are fragile.
+Sector Temperature
+TURNING UP
+Information Technology
+AVOID
+Consumer Discretionary
+Banks
+SECTOR HEAT · GREEN = LEADING · RED = LAGGING
+▲ Heating
+Cooling ▼
+More falling than rising — stay cautious.
+Commodities & FX
+Overlay state
+Neutral
+Terms of trade
+mixed
+WTI crude oil
+well above normal
+Gold
+below normal
+Copper / Gold
+above normal
+USD / CAD
+above normal
+WTI CRUDE, 2 YEARS
+2024-09-18
+2026-09-18
+100.30
+Rates & BoC
+BoC rate
+2.25%
+Long vs short bonds
+normal shape
+Canada vs US 10-year
+Canada pays less
+BoC stance
+neutral
+CANADA VS US 10-YEAR, 5 YEARS
+2021-09-20
+2026-09-17
+-1.11
+pp
+BoC on hold — watch data for the next move.
+Housing
+Real price index
+140.4
+~1y change
+-6.8%
+Off peak
+-29.3%
+2016-04-01
+2026-01-01
+140.4
+Prices well below peak — mortgage stress risk. Protect.
+Standouts inside each sector
+Names beating — and trailing — their own sector, with the market's move stripped out. Use it to pick within a sector you already like.
+CONSUMER DISCRETIONARY 8 NAMES
+▲
+MG
+Magna International
+▲
+ATZ
+Aritzia Subordinate Voting
+▼
+DOL
+Dollarama
+CONSUMER STAPLES 10 NAMES
+▲
+JWEL
+Jamieson Wellness
+▲
+SAP
+Saputo
+▼
+MRU
+Metro
+ENERGY 36 NAMES
+▲
+TVE
+Tamarack Valley Energy
+▲
+SDE
+Spartan Delta
+▼
+AAV
+Advantage Energy
+FINANCIALS 23 NAMES
+▲
+GWO
+Great West Lifeco Inc
+▲
+TD
+Toronto Dominion
+▼
+BN
+Brookfield Class A
+INDUSTRIALS 30 NAMES
+▲
+BDT
+Bird Construction
+▲
+MTL
+Mullen Group
+▼
+STN
+Stantec
+INFORMATION TECHNOLOGY 9 NAMES
+▲
+BB
+Blackberry
+▲
+CLS
+Celestica
+▼
+CSU
+Constellation Software
+MATERIALS 59 NAMES
+▲
+CG
+Centerra Gold
+▲
+MAU
+Montage Gold
+▼
+LIF
+Labrador Iron Ore Royalty
+REAL ESTATE 17 NAMES
+▲
+PMZ-UN
+Primaris Real Estate Investment Un
+▲
+REI-UN
+Riocan Real Estate Investment Trus
+▼
+CIGI
+Colliers International Group Subor
+Context for where to look — not a buy list. These compare a name only against its own sector, so a leader in a falling sector can still fall.
+Sector-neutral residual momentum over 12 months, skipping the most recent month; 215 names as of 2026-09-18. Display-only.
+TSX Stocks →
+Regime History →
+Heatmap →
+Markets ↗
+Data
+Prices / sectors · ok (2026-09-19)
+Macro (BoC / StatsCan / FRED) · ok (2026-09-18)
+Breadth · ok (2026-09-18)
+
+Generated 2026-09-19 21:45 UTC
+
+© 2026 Mastermind Inc

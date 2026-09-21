@@ -1,0 +1,312 @@
+[
+  {
+    "w": 390,
+    "h": 844,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 390,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "nav-toggle",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 330,
+        "y": 18,
+        "w": 42,
+        "h": 34
+      }
+    ],
+    "state": "nav",
+    "width": 390
+  },
+  {
+    "w": 390,
+    "h": 844,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 390,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "settings-pop",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      },
+      {
+        "tag": "DIV",
+        "id": "settings-pop",
+        "c": "settings-pop open",
+        "text": "Settings\nPREFERENCES\nAppearance\nLight\nAuto\nDark\nLanguage\nEN\n中文\nACCOUNT\n\nSign in to sync your watchli",
+        "x": 34,
+        "y": 88,
+        "w": 340,
+        "h": 328
+      },
+      {
+        "tag": "BUTTON",
+        "id": "settings-expand",
+        "c": "settings-expand",
+        "text": "Open full settings",
+        "x": 302,
+        "y": 102,
+        "w": 24,
+        "h": 24
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "settings-close",
+        "text": "Close settings",
+        "x": 334,
+        "y": 102,
+        "w": 24,
+        "h": 24
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-light",
+        "c": "set-seg-btn",
+        "text": "Light",
+        "x": 200,
+        "y": 173,
+        "w": 48,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-auto",
+        "c": "set-seg-btn",
+        "text": "Auto",
+        "x": 249,
+        "y": 173,
+        "w": 46,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-dark",
+        "c": "set-seg-btn active",
+        "text": "Dark",
+        "x": 298,
+        "y": 173,
+        "w": 46,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-signin",
+        "c": "sa-btn ghost",
+        "text": "Sign in",
+        "x": 60,
+        "y": 352,
+        "w": 140,
+        "h": 38
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-signup",
+        "c": "sa-btn solid",
+        "text": "Create account",
+        "x": 208,
+        "y": 352,
+        "w": 140,
+        "h": 38
+      }
+    ],
+    "state": "settings",
+    "width": 390
+  },
+  {
+    "w": 390,
+    "h": 844,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 390,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "ticker-input",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    ],
+    "state": "search",
+    "width": 390
+  },
+  {
+    "w": 320,
+    "h": 568,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 320,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "nav-toggle",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 260,
+        "y": 18,
+        "w": 42,
+        "h": 34
+      }
+    ],
+    "state": "nav",
+    "width": 320
+  },
+  {
+    "w": 320,
+    "h": 568,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 320,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "settings-pop",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      },
+      {
+        "tag": "DIV",
+        "id": "settings-pop",
+        "c": "settings-pop open",
+        "text": "Settings\nPREFERENCES\nAppearance\nLight\nAuto\nDark\nLanguage\nEN\n中文\nACCOUNT\n\nSign in to sync your watchli",
+        "x": 4,
+        "y": 88,
+        "w": 300,
+        "h": 328
+      },
+      {
+        "tag": "BUTTON",
+        "id": "settings-expand",
+        "c": "settings-expand",
+        "text": "Open full settings",
+        "x": 232,
+        "y": 102,
+        "w": 24,
+        "h": 24
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "settings-close",
+        "text": "Close settings",
+        "x": 264,
+        "y": 102,
+        "w": 24,
+        "h": 24
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-light",
+        "c": "set-seg-btn",
+        "text": "Light",
+        "x": 130,
+        "y": 173,
+        "w": 48,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-auto",
+        "c": "set-seg-btn",
+        "text": "Auto",
+        "x": 179,
+        "y": 173,
+        "w": 46,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-theme-dark",
+        "c": "set-seg-btn active",
+        "text": "Dark",
+        "x": 228,
+        "y": 173,
+        "w": 46,
+        "h": 20
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-signin",
+        "c": "sa-btn ghost",
+        "text": "Sign in",
+        "x": 30,
+        "y": 352,
+        "w": 120,
+        "h": 38
+      },
+      {
+        "tag": "BUTTON",
+        "id": "set-signup",
+        "c": "sa-btn solid",
+        "text": "Create account",
+        "x": 158,
+        "y": 352,
+        "w": 120,
+        "h": 38
+      }
+    ],
+    "state": "settings",
+    "width": 320
+  },
+  {
+    "w": 320,
+    "h": 568,
+    "scrollX": 0,
+    "scrollY": 0,
+    "docW": 320,
+    "theme": "dark",
+    "lang": "en",
+    "focus": "ticker-input",
+    "bodyOverflow": "visible",
+    "visible": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "c": "nav-toggle",
+        "text": "Toggle navigation menu",
+        "x": 16,
+        "y": 45,
+        "w": 42,
+        "h": 34
+      }
+    ],
+    "state": "search",
+    "width": 320
+  }
+]

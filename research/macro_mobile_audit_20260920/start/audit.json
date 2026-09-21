@@ -1,0 +1,932 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 2442
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h2.",
+      "text": "MARKETS",
+      "r": {
+        "x": 22,
+        "y": 851,
+        "w": 61,
+        "h": 13
+      }
+    },
+    {
+      "tag": "h3.card-h",
+      "text": "United States",
+      "r": {
+        "x": 78,
+        "y": 901,
+        "w": 96,
+        "h": 17
+      }
+    },
+    {
+      "tag": "h3.card-h",
+      "text": "China",
+      "r": {
+        "x": 78,
+        "y": 1033,
+        "w": 41,
+        "h": 17
+      }
+    },
+    {
+      "tag": "h3.card-h",
+      "text": "Hong Kong",
+      "r": {
+        "x": 78,
+        "y": 1165,
+        "w": 77,
+        "h": 17
+      }
+    },
+    {
+      "tag": "h3.card-h",
+      "text": "Canada · TSX",
+      "r": {
+        "x": 78,
+        "y": 1297,
+        "w": 94,
+        "h": 17
+      }
+    },
+    {
+      "tag": "h2.",
+      "text": "WHAT CHANGED",
+      "r": {
+        "x": 22,
+        "y": 1415,
+        "w": 104,
+        "h": 13
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 41,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "6005",
+      "r": {
+        "x": 16,
+        "y": 84,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 40,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 41,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇭🇰 +0.57%",
+      "r": {
+        "x": 4,
+        "y": 428,
+        "w": 93,
+        "h": 24
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇹🇼 +1.11%",
+      "r": {
+        "x": 34,
+        "y": 446,
+        "w": 98,
+        "h": 25
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇺🇸 +0.17%",
+      "r": {
+        "x": 213,
+        "y": 507,
+        "w": 109,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇨🇦 -0.19%",
+      "r": {
+        "x": 202,
+        "y": 455,
+        "w": 103,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇯🇵 +1.38%",
+      "r": {
+        "x": 33,
+        "y": 481,
+        "w": 105,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇰🇷 +1.89%",
+      "r": {
+        "x": 33,
+        "y": 409,
+        "w": 105,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇬🇧 -1.45%",
+      "r": {
+        "x": 214,
+        "y": 383,
+        "w": 107,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇪🇺 -1.37%",
+      "r": {
+        "x": 213,
+        "y": 365,
+        "w": 103,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇨🇳 +0.55%",
+      "r": {
+        "x": 36,
+        "y": 374,
+        "w": 99,
+        "h": 25
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇺🇸 US",
+      "r": {
+        "x": 20,
+        "y": 339,
+        "w": 66,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇨🇦 CA",
+      "r": {
+        "x": 20,
+        "y": 365,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q4",
+      "text": "🇨🇳 CN",
+      "r": {
+        "x": 20,
+        "y": 391,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q4",
+      "text": "🇭🇰 HK",
+      "r": {
+        "x": 20,
+        "y": 417,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇯🇵 JP",
+      "r": {
+        "x": 20,
+        "y": 443,
+        "w": 64,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇰🇷 KR",
+      "r": {
+        "x": 20,
+        "y": 469,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇹🇼 TW",
+      "r": {
+        "x": 20,
+        "y": 495,
+        "w": 68,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇬🇧 GB",
+      "r": {
+        "x": 20,
+        "y": 521,
+        "w": 68,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇪🇺 EZ",
+      "r": {
+        "x": 20,
+        "y": 547,
+        "w": 65,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.hub-seg-btn.on",
+      "text": "Markets",
+      "r": {
+        "x": 29,
+        "y": 801,
+        "w": 166,
+        "h": 32
+      }
+    },
+    {
+      "tag": "button.hub-seg-btn",
+      "text": "Explore",
+      "r": {
+        "x": 195,
+        "y": 801,
+        "w": 166,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Open →",
+      "r": {
+        "x": 202,
+        "y": 1631,
+        "w": 48,
+        "h": 15
+      }
+    },
+    {
+      "tag": "button.ha-toggle",
+      "text": "Show 7 more →",
+      "r": {
+        "x": 39,
+        "y": 1969,
+        "w": 312,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.al-more",
+      "text": "View full timeline →",
+      "r": {
+        "x": 39,
+        "y": 2003,
+        "w": 312,
+        "h": 32
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "US Macro",
+      "r": {
+        "x": 20,
+        "y": 2179,
+        "w": 84,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "China",
+      "r": {
+        "x": 20,
+        "y": 2198,
+        "w": 84,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Hong Kong",
+      "r": {
+        "x": 20,
+        "y": 2217,
+        "w": 84,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Canada",
+      "r": {
+        "x": 20,
+        "y": 2236,
+        "w": 84,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Crypto Cockpit",
+      "r": {
+        "x": 136,
+        "y": 2179,
+        "w": 85,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Bitcoin",
+      "r": {
+        "x": 136,
+        "y": 2198,
+        "w": 85,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Bonds",
+      "r": {
+        "x": 136,
+        "y": 2217,
+        "w": 85,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Commodities",
+      "r": {
+        "x": 136,
+        "y": 2236,
+        "w": 85,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Forex",
+      "r": {
+        "x": 136,
+        "y": 2255,
+        "w": 85,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Cycle Intel",
+      "r": {
+        "x": 254,
+        "y": 2179,
+        "w": 87,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Sector Central",
+      "r": {
+        "x": 254,
+        "y": 2198,
+        "w": 87,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Reports",
+      "r": {
+        "x": 254,
+        "y": 2217,
+        "w": 87,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Neural Web",
+      "r": {
+        "x": 254,
+        "y": 2236,
+        "w": 87,
+        "h": 19
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 41,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "6005",
+      "r": {
+        "x": 16,
+        "y": 84,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 41,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇭🇰 +0.57%",
+      "r": {
+        "x": 4,
+        "y": 428,
+        "w": 93,
+        "h": 24
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇹🇼 +1.11%",
+      "r": {
+        "x": 34,
+        "y": 446,
+        "w": 98,
+        "h": 25
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇺🇸 +0.17%",
+      "r": {
+        "x": 213,
+        "y": 507,
+        "w": 109,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇨🇦 -0.19%",
+      "r": {
+        "x": 202,
+        "y": 455,
+        "w": 103,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇯🇵 +1.38%",
+      "r": {
+        "x": 33,
+        "y": 481,
+        "w": 105,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇰🇷 +1.89%",
+      "r": {
+        "x": 33,
+        "y": 409,
+        "w": 105,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇬🇧 -1.45%",
+      "r": {
+        "x": 214,
+        "y": 383,
+        "w": 107,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇪🇺 -1.37%",
+      "r": {
+        "x": 213,
+        "y": 365,
+        "w": 103,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.body",
+      "text": "🇨🇳 +0.55%",
+      "r": {
+        "x": 36,
+        "y": 374,
+        "w": 99,
+        "h": 25
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇺🇸 US",
+      "r": {
+        "x": 20,
+        "y": 339,
+        "w": 66,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇨🇦 CA",
+      "r": {
+        "x": 20,
+        "y": 365,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q4",
+      "text": "🇨🇳 CN",
+      "r": {
+        "x": 20,
+        "y": 391,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q4",
+      "text": "🇭🇰 HK",
+      "r": {
+        "x": 20,
+        "y": 417,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇯🇵 JP",
+      "r": {
+        "x": 20,
+        "y": 443,
+        "w": 64,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇰🇷 KR",
+      "r": {
+        "x": 20,
+        "y": 469,
+        "w": 67,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q2",
+      "text": "🇹🇼 TW",
+      "r": {
+        "x": 20,
+        "y": 495,
+        "w": 68,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇬🇧 GB",
+      "r": {
+        "x": 20,
+        "y": 521,
+        "w": 68,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-leg.q3",
+      "text": "🇪🇺 EZ",
+      "r": {
+        "x": 20,
+        "y": 547,
+        "w": 65,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.gd-scroll",
+      "text": "Explore",
+      "r": {
+        "x": 125,
+        "y": 718,
+        "w": 140,
+        "h": 46
+      }
+    },
+    {
+      "tag": "button.hub-seg-btn.on",
+      "text": "Markets",
+      "r": {
+        "x": 29,
+        "y": 801,
+        "w": 166,
+        "h": 32
+      }
+    },
+    {
+      "tag": "button.hub-seg-btn",
+      "text": "Explore",
+      "r": {
+        "x": 195,
+        "y": 801,
+        "w": 166,
+        "h": 32
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Bitcoin Vector Allocation changed to 100% BTC today",
+      "r": {
+        "x": 39,
+        "y": 1452,
+        "w": 312,
+        "h": 60
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Bitcoin Vector Allocation changed to 50% BTC 1d",
+      "r": {
+        "x": 39,
+        "y": 1662,
+        "w": 312,
+        "h": 60
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Macro Vector 🧲 Options “gravity” flipped — bigger swings more likely 2d",
+      "r": {
+        "x": 39,
+        "y": 1723,
+        "w": 312,
+        "h": 81
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Macro Vector 🫧 Calm surface, fragile internals — complacency watch 2d",
+      "r": {
+        "x": 39,
+        "y": 1805,
+        "w": 312,
+        "h": 81
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Macro Vector 📉 Breadth divergence — fewer names carrying the index 2d",
+      "r": {
+        "x": 39,
+        "y": 1887,
+        "w": 312,
+        "h": 81
+      }
+    },
+    {
+      "tag": "button.ha-toggle",
+      "text": "Show 7 more →",
+      "r": {
+        "x": 39,
+        "y": 1969,
+        "w": 312,
+        "h": 34
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "ipo.html",
+    "vector.html#allocation",
+    "macro_context.html#board",
+    "macro.html#dlg-risk",
+    "vector.html#leverage",
+    "vector.html#timeline",
+    "committee.html"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "assets/css/c5fc2df4.css?v=c5fc2df4",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "vendor/d3-array.min.js?v=80aa70d0",
+    "vendor/d3-geo.min.js?v=23e574f1",
+    "vendor/topojson-client.min.js?v=25cd02ae",
+    "globe-deck.js?v=9cc9db9d",
+    "sky.js?v=b7c9ced5",
+    "theme.js?v=48082a1e",
+    "hub-welcome.js?v=636b8f8b",
+    "wh_banner.js?v=4a53a176"
+  ],
+  "route": "start.html",
+  "url": "https://www.mastermind-x.com/start.html",
+  "status": 200,
+  "title": "MastermindX — Global Macro Regime & Market Cycle Intelligence",
+  "time": "2026-09-21T04:46:24.488148+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/wh_banner.js?v=4a53a176",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    }
+  ],
+  "html_sha256": "1bee9132e700ea1fc2b306712e976856c0d385aaf8a07c1779df4e4313f9188a"
+}

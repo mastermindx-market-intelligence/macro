@@ -1,0 +1,686 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 5823
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 43,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 86,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 42,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 43,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+      "text": "0 of 6 signals aligned ▾",
+      "r": {
+        "x": 43,
+        "y": 471,
+        "w": 182,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+      "text": "Pullback risk · 81 ▾",
+      "r": {
+        "x": 43,
+        "y": 505,
+        "w": 162,
+        "h": 26
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "MG",
+      "r": {
+        "x": 52,
+        "y": 4405,
+        "w": 19,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "ATZ",
+      "r": {
+        "x": 52,
+        "y": 4428,
+        "w": 23,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "DOL",
+      "r": {
+        "x": 52,
+        "y": 4451,
+        "w": 25,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "JWEL",
+      "r": {
+        "x": 52,
+        "y": 4517,
+        "w": 33,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "SAP",
+      "r": {
+        "x": 52,
+        "y": 4540,
+        "w": 24,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "MRU",
+      "r": {
+        "x": 52,
+        "y": 4563,
+        "w": 27,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "TVE",
+      "r": {
+        "x": 52,
+        "y": 4630,
+        "w": 23,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "SDE",
+      "r": {
+        "x": 52,
+        "y": 4652,
+        "w": 24,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "AAV",
+      "r": {
+        "x": 52,
+        "y": 4675,
+        "w": 25,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "GWO",
+      "r": {
+        "x": 52,
+        "y": 4742,
+        "w": 29,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "TD",
+      "r": {
+        "x": 52,
+        "y": 4765,
+        "w": 16,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "BN",
+      "r": {
+        "x": 52,
+        "y": 4787,
+        "w": 17,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "BDT",
+      "r": {
+        "x": 52,
+        "y": 4854,
+        "w": 24,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "MTL",
+      "r": {
+        "x": 52,
+        "y": 4877,
+        "w": 25,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "STN",
+      "r": {
+        "x": 52,
+        "y": 4900,
+        "w": 24,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "BB",
+      "r": {
+        "x": 52,
+        "y": 4966,
+        "w": 16,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "CLS",
+      "r": {
+        "x": 52,
+        "y": 4989,
+        "w": 23,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "CSU",
+      "r": {
+        "x": 52,
+        "y": 5012,
+        "w": 25,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "CG",
+      "r": {
+        "x": 52,
+        "y": 5079,
+        "w": 17,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "MAU",
+      "r": {
+        "x": 52,
+        "y": 5101,
+        "w": 28,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "LIF",
+      "r": {
+        "x": 52,
+        "y": 5124,
+        "w": 17,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "PMZ-UN",
+      "r": {
+        "x": 52,
+        "y": 5191,
+        "w": 49,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "REI-UN",
+      "r": {
+        "x": 52,
+        "y": 5214,
+        "w": 42,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.cax-sotkr",
+      "text": "CIGI",
+      "r": {
+        "x": 52,
+        "y": 5236,
+        "w": 25,
+        "h": 17
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "TSX Stocks →",
+      "r": {
+        "x": 18,
+        "y": 5434,
+        "w": 111,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Regime History →",
+      "r": {
+        "x": 139,
+        "y": 5434,
+        "w": 132,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Heatmap →",
+      "r": {
+        "x": 18,
+        "y": 5478,
+        "w": 97,
+        "h": 34
+      }
+    },
+    {
+      "tag": "a.",
+      "text": "Markets ↗",
+      "r": {
+        "x": 125,
+        "y": 5478,
+        "w": 90,
+        "h": 34
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 43,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 86,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 43,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+      "text": "0 of 6 signals aligned ▾",
+      "r": {
+        "x": 43,
+        "y": 471,
+        "w": 182,
+        "h": 26
+      }
+    },
+    {
+      "tag": "button.cax-hbtn.gbtn.gbtn-pill",
+      "text": "Pullback risk · 81 ▾",
+      "r": {
+        "x": 43,
+        "y": 505,
+        "w": 162,
+        "h": 26
+      }
+    },
+    {
+      "tag": "div.sxg-face.mx5-card-face",
+      "text": "TSX S&P/TSX COMPOSITE 35,806.65 -0.19% TSXV TSX VENTURE · JUNIORS 923.07 +0.38% WTI CRUDE OIL $94.07 -2.09% GO",
+      "r": {
+        "x": 18,
+        "y": 599,
+        "w": 354,
+        "h": 532
+      }
+    },
+    {
+      "tag": "div.mx5-card",
+      "text": "MARKET PARTICIPATION THIN BROAD Mixed participation 46% of TSX names above their 50-day line How it's measured",
+      "r": {
+        "x": 18,
+        "y": 1145,
+        "w": 354,
+        "h": 313
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "What To Do Buy now Information Technology Avoid Consumer Discretionary · Banks · Base Metals · Financials ·…",
+      "r": {
+        "x": 18,
+        "y": 1474,
+        "w": 354,
+        "h": 187
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Regime Watch Quad Reflation Growth +0.20 Inflation +0.77 Confidence 44% WHY THIS CALL ✓ Jobless rate ✓ Global ",
+      "r": {
+        "x": 18,
+        "y": 1675,
+        "w": 354,
+        "h": 410
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Pullback Risk CAUTION 81 /100 Breadth breakdown ≥5% dip odds 19% Trim chasing; favour good entries over extend",
+      "r": {
+        "x": 18,
+        "y": 2099,
+        "w": 354,
+        "h": 193
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Participation Above 50d 46.0% Above 200d 54.9% Adv / Dec 96 / 114 Net new highs -2 ABOVE THE 50-DAY LINE, 2 YE",
+      "r": {
+        "x": 18,
+        "y": 2306,
+        "w": 354,
+        "h": 422
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Sector Temperature TURNING UP Information Technology AVOID Consumer Discretionary Banks SECTOR HEAT · GREEN = ",
+      "r": {
+        "x": 18,
+        "y": 2741,
+        "w": 354,
+        "h": 262
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Commodities & FX Overlay state Neutral Terms of trade mixed WTI crude oil well above normal Gold below normal ",
+      "r": {
+        "x": 18,
+        "y": 3017,
+        "w": 354,
+        "h": 398
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Rates & BoC BoC rate 2.25% Long vs short bonds normal shape Canada vs US 10-year Canada pays less BoC stance n",
+      "r": {
+        "x": 18,
+        "y": 3430,
+        "w": 354,
+        "h": 422
+      }
+    },
+    {
+      "tag": "div.cax-card",
+      "text": "Housing Real price index 140.4 ~1y change -6.8% Off peak -29.3% 2016-04-01 2026-01-01 140.4 Prices well below ",
+      "r": {
+        "x": 18,
+        "y": 3865,
+        "w": 354,
+        "h": 364
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "canada_stock.html#MG.TO",
+    "canada_stock.html#ATZ.TO",
+    "canada_stock.html#DOL.TO",
+    "canada_stock.html#JWEL.TO",
+    "canada_stock.html#SAP.TO",
+    "canada_stock.html#MRU.TO",
+    "canada_stock.html#TVE.TO",
+    "canada_stock.html#SDE.TO",
+    "canada_stock.html#AAV.TO",
+    "canada_stock.html#GWO.TO",
+    "canada_stock.html#TD.TO",
+    "canada_stock.html#BN.TO",
+    "canada_stock.html#BDT.TO",
+    "canada_stock.html#MTL.TO",
+    "canada_stock.html#STN.TO",
+    "canada_stock.html#BB.TO",
+    "canada_stock.html#CLS.TO",
+    "canada_stock.html#CSU.TO",
+    "canada_stock.html#CG.TO",
+    "canada_stock.html#MAU.TO",
+    "canada_stock.html#LIF.TO",
+    "canada_stock.html#PMZ-UN.TO",
+    "canada_stock.html#REI-UN.TO",
+    "canada_stock.html#CIGI.TO",
+    "sectors/XGD.TO.html",
+    "sectors/XMA.TO.html",
+    "sectors/XEG.TO.html",
+    "sectors/XIT.TO.html",
+    "sectors/XCG.TO.html",
+    "sectors/ZEB.TO.html",
+    "sectors/XBM.TO.html",
+    "sectors/XFN.TO.html",
+    "sectors/XCD.TO.html",
+    "sectors/XST.TO.html",
+    "sectors/XUT.TO.html",
+    "sectors/XRE.TO.html",
+    "canada_history.html"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "illus.css?v=cbe6a0b4",
+    "assets/css/c7786f07.css?v=c7786f07",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "mtf.js?v=b62aea2f",
+    "theme.js?v=48082a1e",
+    "illus.js?v=8e0a3779",
+    "chart_i18n.js?v=23272c48",
+    "charts.js?v=5372d2a2",
+    "tablesort.js?v=484d9333"
+  ],
+  "route": "canada.html",
+  "url": "https://www.mastermind-x.com/canada.html",
+  "status": 200,
+  "title": "Canada — S&P/TSX Regime — 2026-09-18",
+  "time": "2026-09-21T04:46:57.742239+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/live/overlay.json",
+      "status": 401
+    }
+  ],
+  "html_sha256": "ba77dde25da515909b5a19a55b9b56abd97b111380a1b1d1ef416745d7cfaf7d"
+}

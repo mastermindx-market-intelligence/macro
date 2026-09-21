@@ -1,0 +1,797 @@
+{
+  "viewport": {
+    "w": 390,
+    "h": 844,
+    "scrollW": 390,
+    "scrollH": 7976
+  },
+  "attrs": [
+    [
+      "lang",
+      "en"
+    ],
+    [
+      "data-theme",
+      "dark"
+    ],
+    [
+      "class",
+      "soft-contrast"
+    ]
+  ],
+  "headings": [
+    {
+      "tag": "h1.nx-title",
+      "text": "What matters now",
+      "r": {
+        "x": 35,
+        "y": 170,
+        "w": 320,
+        "h": 33
+      }
+    },
+    {
+      "tag": "h2.nxi-title",
+      "text": "Intelligence Desk",
+      "r": {
+        "x": 52,
+        "y": 1198,
+        "w": 286,
+        "h": 22
+      }
+    },
+    {
+      "tag": "h2.nxw-title",
+      "text": "What just crossed",
+      "r": {
+        "x": 52,
+        "y": 1884,
+        "w": 286,
+        "h": 24
+      }
+    },
+    {
+      "tag": "h2.nx-sec-hd",
+      "text": "Event consequences",
+      "r": {
+        "x": 35,
+        "y": 2278,
+        "w": 320,
+        "h": 24
+      }
+    },
+    {
+      "tag": "h2.nx-sec-hd",
+      "text": "Latest economic releases 10",
+      "r": {
+        "x": 35,
+        "y": 5394,
+        "w": 320,
+        "h": 24
+      }
+    }
+  ],
+  "overflow": [],
+  "smallControls": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "a.ai-brief-link.terminal-link",
+      "text": "Terminal",
+      "r": {
+        "x": 233,
+        "y": 36,
+        "w": 99,
+        "h": 36
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.seg-btn.on",
+      "text": "All",
+      "r": {
+        "x": 35,
+        "y": 1046,
+        "w": 39,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Markets",
+      "r": {
+        "x": 76,
+        "y": 1046,
+        "w": 74,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Macro",
+      "r": {
+        "x": 153,
+        "y": 1046,
+        "w": 62,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Fed",
+      "r": {
+        "x": 217,
+        "y": 1046,
+        "w": 46,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Companies",
+      "r": {
+        "x": 264,
+        "y": 1046,
+        "w": 94,
+        "h": 27
+      }
+    },
+    {
+      "tag": "input#nxSearch.",
+      "text": "Search news",
+      "r": {
+        "x": 35,
+        "y": 1107,
+        "w": 320,
+        "h": 31
+      }
+    },
+    {
+      "tag": "button.nxi-filter.on",
+      "text": "All stories",
+      "r": {
+        "x": 52,
+        "y": 1537,
+        "w": 80,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "High impact",
+      "r": {
+        "x": 140,
+        "y": 1537,
+        "w": 92,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "Confirmed",
+      "r": {
+        "x": 240,
+        "y": 1537,
+        "w": 84,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "Draft ready",
+      "r": {
+        "x": 52,
+        "y": 1572,
+        "w": 88,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.cta",
+      "text": "Sign in",
+      "r": {
+        "x": 56,
+        "y": 2098,
+        "w": 71,
+        "h": 31
+      }
+    },
+    {
+      "tag": "a.nxw-x",
+      "text": "@mastermindx001",
+      "r": {
+        "x": 89,
+        "y": 2210,
+        "w": 138,
+        "h": 30
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "NFLX",
+      "r": {
+        "x": 288,
+        "y": 2636,
+        "w": 37,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "MSFT",
+      "r": {
+        "x": 254,
+        "y": 2760,
+        "w": 37,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "TSLA",
+      "r": {
+        "x": 302,
+        "y": 3866,
+        "w": 37,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "SPY",
+      "r": {
+        "x": 219,
+        "y": 3990,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "QQQ",
+      "r": {
+        "x": 257,
+        "y": 3990,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "QQQ",
+      "r": {
+        "x": 35,
+        "y": 4656,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "GOOGL",
+      "r": {
+        "x": 73,
+        "y": 4656,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "S",
+      "r": {
+        "x": 247,
+        "y": 4780,
+        "w": 18,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "XHB",
+      "r": {
+        "x": 35,
+        "y": 4908,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "QQQ",
+      "r": {
+        "x": 35,
+        "y": 5057,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "USO",
+      "r": {
+        "x": 280,
+        "y": 5181,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "XLE",
+      "r": {
+        "x": 318,
+        "y": 5181,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "button#nxMore.gbtn.nx-more",
+      "text": "Show more (+21)",
+      "r": {
+        "x": 125,
+        "y": 5339,
+        "w": 140,
+        "h": 29
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "QQQ",
+      "r": {
+        "x": 50,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "SPY",
+      "r": {
+        "x": 86,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "GOOGL",
+      "r": {
+        "x": 122,
+        "y": 7418,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "XHB",
+      "r": {
+        "x": 171,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "USO",
+      "r": {
+        "x": 207,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "XLE",
+      "r": {
+        "x": 242,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "WMT",
+      "r": {
+        "x": 278,
+        "y": 7418,
+        "w": 31,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.nx-tk",
+      "text": "COST",
+      "r": {
+        "x": 50,
+        "y": 7442,
+        "w": 37,
+        "h": 19
+      }
+    },
+    {
+      "tag": "a.rf-x",
+      "text": "Follow @mastermindx001",
+      "r": {
+        "x": 18,
+        "y": 7889,
+        "w": 178,
+        "h": 28
+      }
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button.nav-toggle",
+      "text": "Toggle navigation menu",
+      "r": {
+        "x": 16,
+        "y": 37,
+        "w": 42,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.search-trigger",
+      "text": "600519.SS",
+      "r": {
+        "x": 16,
+        "y": 80,
+        "w": 358,
+        "h": 38
+      }
+    },
+    {
+      "tag": "button#settings-open.nav-settings-btn",
+      "text": "Settings",
+      "r": {
+        "x": 340,
+        "y": 37,
+        "w": 34,
+        "h": 34
+      }
+    },
+    {
+      "tag": "button.seg-btn.on",
+      "text": "All",
+      "r": {
+        "x": 35,
+        "y": 1046,
+        "w": 39,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Markets",
+      "r": {
+        "x": 76,
+        "y": 1046,
+        "w": 74,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Macro",
+      "r": {
+        "x": 153,
+        "y": 1046,
+        "w": 62,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Fed",
+      "r": {
+        "x": 217,
+        "y": 1046,
+        "w": 46,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.seg-btn",
+      "text": "Companies",
+      "r": {
+        "x": 264,
+        "y": 1046,
+        "w": 94,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter.on",
+      "text": "All stories",
+      "r": {
+        "x": 52,
+        "y": 1537,
+        "w": 80,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "High impact",
+      "r": {
+        "x": 140,
+        "y": 1537,
+        "w": 92,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "Confirmed",
+      "r": {
+        "x": 240,
+        "y": 1537,
+        "w": 84,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.nxi-filter",
+      "text": "Draft ready",
+      "r": {
+        "x": 52,
+        "y": 1572,
+        "w": 88,
+        "h": 27
+      }
+    },
+    {
+      "tag": "button.cta",
+      "text": "Sign in",
+      "r": {
+        "x": 56,
+        "y": 2098,
+        "w": 71,
+        "h": 31
+      }
+    },
+    {
+      "tag": "button#nxMore.gbtn.nx-more",
+      "text": "Show more (+21)",
+      "r": {
+        "x": 125,
+        "y": 5339,
+        "w": 140,
+        "h": 29
+      }
+    },
+    {
+      "tag": "summary.",
+      "text": "Newsroom diagnostics (108 filtered · 21 classes)",
+      "r": {
+        "x": 36,
+        "y": 7528,
+        "w": 318,
+        "h": 62
+      }
+    },
+    {
+      "tag": "div#mmb-boot.",
+      "text": "Ask Mastermind",
+      "r": {
+        "x": 318,
+        "y": 772,
+        "w": 56,
+        "h": 56
+      }
+    }
+  ],
+  "links": [
+    "start.html",
+    "macro.html",
+    "us_stocks.html",
+    "intraday_flow.html",
+    "sector_central.html",
+    "sector_central.html#confluence",
+    "strategies.html",
+    "alerts.html",
+    "news.html",
+    "options.html",
+    "darkpool.html",
+    "market_structure.html",
+    "china.html",
+    "china_stocks.html",
+    "china_heatmap.html",
+    "china_intel.html",
+    "sector_central_china.html",
+    "narrative_radar.html",
+    "flow_velocity.html",
+    "china_policy_watch.html",
+    "china_mechanics.html",
+    "china_special_situations.html",
+    "china_news.html",
+    "china_strategies.html",
+    "china_altdata.html",
+    "hk.html",
+    "hk_stocks.html",
+    "hk_heatmap.html",
+    "baskets_hk.html",
+    "allocation_hk.html",
+    "canada.html",
+    "canada_stocks.html",
+    "canada_heatmap.html",
+    "baskets_canada.html",
+    "allocation_canada.html",
+    "commodities.html",
+    "intl.html",
+    "intl_stocks.html",
+    "markets.html",
+    "country_cycles.html",
+    "baskets_intl.html",
+    "japan.html",
+    "south_korea.html",
+    "euro_area.html",
+    "united_kingdom.html",
+    "india.html",
+    "javascript:void(0)",
+    "crypto.html",
+    "vector.html",
+    "vector.html#strategy-track-record",
+    "commodity_strategies.html",
+    "spr.html",
+    "forex.html",
+    "bonds.html",
+    "commodities.html#gold",
+    "commodities.html#oil",
+    "commodities.html#copper",
+    "stock.html?ticker=BTC-USD",
+    "intelligence_hub.html",
+    "watchlist.html",
+    "https://bot.mastermind-x.com",
+    "reports.html",
+    "research_vault.html",
+    "stocks/earnings/index.html",
+    "fundamental_forensics.html",
+    "neural_web.html",
+    "market_memory.html",
+    "reference.html",
+    "foresight.html",
+    "state_of_themes.html",
+    "radar.html",
+    "stock_seasonality.html",
+    "confluence_screener.html",
+    "smart_money.html",
+    "etfs.html",
+    "cycle.html",
+    "macro_context.html",
+    "policy_watch.html",
+    "government_revenue.html",
+    "alt_data.html",
+    "special_situations.html",
+    "biocatalyst.html",
+    "capital_structure.html",
+    "sector_cycles.html",
+    "sector_cycles_china.html",
+    "https://app.mastermind-x.com",
+    "https://www.bloomberg.com/news/articles/2026-09-18/bofa-warns-of-warsh-s-fed-raising-rates-above-5-in-2022-redux",
+    "https://www.bloomberg.com/news/videos/2026-09-18/on-holdings-new-partner-netflix-analyst-downgrade-video",
+    "https://www.cnbc.com/2026/09/18/microsoft-ai-ceo-openais-latest-ai-revelation-a-serious-situation.html",
+    "https://www.bloomberg.com/news/articles/2026-09-18/deutsche-bank-s-dws-to-shut-us-property-fund-hit-by-redemptions",
+    "https://x.com/mastermindx001",
+    "stock.html#NFLX",
+    "stock.html#MSFT",
+    "https://www.cnbc.com/2026/09/18/stubhub-shares-tick-higher-for-third-day-in-a-row-after-citi-upgrade.html",
+    "https://www.bloomberg.com/news/videos/2026-09-18/new-svb-review-finds-fed-missed-repeated-warnings-video",
+    "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNdVhMeF8xaElKaXVlUmExRzVBU244d3pfR3k5V25FdlZJel9nOElkbTlXb1lILXhremYwQV9kTTZ2SGZBdjlMVWR2QU9JM3o4Q0E5OHpjSGlidkFUdG5vdkhkajZ0Q2hKUl9yZ2xfaXBMQU5vbHBjVHRhbk83ZVB0T2pRYlZzYUI3R2dCQkozekRHT0V4UFBRZUJYa3Nqa2c5R1Z0eUhCNXltdw?oc=5",
+    "https://www.cnbc.com/2026/09/18/fed-silicon-valley-bank.html",
+    "https://news.google.com/rss/articles/CBMitAFBVV95cUxPZ2p6dkpCd0xfbVRBMnhySFRVbm5OSElMZXRXc0NpaGhoRmw2MzNfSUstaC1RVFFnUU1DNUM0MEpHTmxhbHJxOC1Ec2lMWU0xMFVaSVdsZGdVSi1JaWpDX093SHhBdlBkdFdGZnFpd05yYW9LRXk2NkdOMnRWSzJ2dkhuTFpDN01LM1JvNjhyamFZM2dLRFRzM24xSUZwRGVBakhwM3N3em1ycFBuWVg2UVB2OTQ?oc=5",
+    "https://www.cnbc.com/2026/09/18/treasury-yields-fed-rates-volatile-week.html",
+    "https://news.google.com/rss/articles/CBMivwFBVV95cUxOYW1YaE5VZXdZbXVmcVlIMVBDRVFZNC1BRjlmSmplVHdSbXJuX0c0eTJPTkVVeWZZME1kODNrVkV4Wi1ZVmRDd1lTV1h1WDJoYmFKVzhtZDRrRmpub0hPV3RuZDduM29Bb2o3QkhnRmJBZ0tydnNrZGFTLVppWFlBNk9TdHc1QnNRd2h4X3c0U2hyWnNXa2dJdkVTU0FsZ0doNjVFb0NOZHNaT05KaFc3SVpWRGptcUZXTVE2Nlcxdw?oc=5",
+    "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPcVJSOWZtYmJPZXkzZmtfazJwd0xSQ19KTXVYX095aFdSWXk2MnlueWRtR0NrZzdudF9objBxd1BUYjA1QkRwZHFWYUF4WjBfVXluYVJGSFRRM01veW56dVphanpjaDUzTHpSTE1ISDRnMTc4Y05VOF9SX0pZMC1LOHlESVNrOF9YbFlJQnZ0M19TcWt1a0ppVXh6LXRIOWljdEs1STg3ZlZDTWRWSzZjczkxRk1lbFYyaGN2MXdCQnMxa3M2enZGSFcydVFmNjI0amQtZQ?oc=5",
+    "https://www.marketwatch.com/story/teslas-upcoming-product-frenzy-could-leave-investors-disappointed-18619fb3?mod=mw_rss_topstories",
+    "stock.html#TSLA",
+    "https://www.cnbc.com/2026/09/19/higher-interest-rates-and-ai-safety-fears-put-the-stock-market-to-the-test-last-week.html",
+    "stock.html#SPY",
+    "stock.html#QQQ",
+    "https://www.marketwatch.com/story/travis-kelce-and-others-lost-millions-in-a-ponzi-scheme-heres-what-a-basic-index-fund-would-have-earned-them-instead-c1ee3bd6?mod=mw_rss_topstories",
+    "https://news.google.com/rss/articles/CBMikAFBVV95cUxPaWtqc2R0WjNQRTlZU1hza3dfc29sRlByN0hYU1pvWjNCZzJQcEl2MEFOdXRqMVBDYVplZTAzd215MC0yRVdOSjg4S09mTjgxdUVFaXNzbXJfdktydVZMUWIyLVhZR3h6amtMMFQ0MlJRamlCQ3N0WEtOemk1azk4Smh1WFpMX19xOUdZMURlX0Q?oc=5",
+    "https://www.marketwatch.com/story/a-sideways-market-and-rising-earnings-are-presenting-opportunities-not-seen-since-chatgpt-first-launched-0c37f89d?mod=mw_rss_topstories",
+    "https://www.marketwatch.com/story/why-mortgage-bonds-are-set-to-deteriorate-and-possibly-hit-the-whole-market-according-to-this-wall-street-expert-0dd7f05d?mod=mw_rss_topstories",
+    "https://seekingalpha.com/news/4644563-google-gemini-ai-model-hacked-three-companies?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "stock.html#GOOGL",
+    "https://news.google.com/rss/articles/CBMiggFBVV95cUxQZ3Ffak1lbExncW9QQ0g0LWdRV1R0N1ZQY0RxMURhbENpU0tkNTNpbUJCUjNqWUVaMFhtZHdmdUpzTTdhN2JFUjdyVzQ3QXJtQmI4X1JZdWUtcnlDbTZMQm9tT19MR0V4VmNGM0hselY5cUZVRFBTMDdNWGVfRDJ4UFJR?oc=5",
+    "stock.html#S",
+    "https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "stock.html#XHB",
+    "https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "https://www.cnbc.com/2026/09/19/riyadh-airport-smoke-saudi-arabia.html",
+    "stock.html#USO",
+    "stock.html#XLE",
+    "https://seekingalpha.com/news/4644490-insider-trades-crowdstrike-uber-snowflake-among-notable-names?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "https://www.npr.org/2026/09/17/nx-s1-5971226/the-federal-reserve-raises-interest-rates-by-a-quarter-percentage-point",
+    "https://www.cnbc.com/2026/09/18/ai-trade-rebound-sparks-flurry-of-unusually-bullish-options-activity.html",
+    "https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy",
+    "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+    "https://finance.yahoo.com/healthcare/articles/abbvies-migraine-franchise-scored-big-192000630.html",
+    "https://finance.yahoo.com/markets/stocks/articles/fifth-third-fitb-comerica-merger-190743312.html",
+    "https://www.npr.org/2026/09/16/nx-s1-5971127/what-the-fed-rate-hike-means-for-pocketbooks-and-politics",
+    "https://www.marketwatch.com/story/like-costco-walmart-to-sell-medicare-advantage-plans-b31977d2?mod=mw_rss_topstories",
+    "stock.html#WMT",
+    "stock.html#COST",
+    "https://www.marketwatch.com/story/its-not-a-winner-take-all-stock-market-this-hedge-fund-manager-favors-three-underdogs-a366ab6f?mod=mw_rss_topstories",
+    "https://www.cnbc.com/2026/09/16/jb-hunt-stock-jbht-earnings.html",
+    "https://www.economist.com/finance-and-economics/2026/09/15/what-africas-biggest-ipo-can-do-for-its-stock-markets",
+    "https://www.npr.org/2026/09/17/nx-s1-5971197/economist-explains-the-feds-decision-to-raise-interest-rates",
+    "https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024",
+    "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260911a.htm",
+    "stock.html#XLF",
+    "https://www.economist.com/finance-and-economics/2026/09/16/soaring-bond-yields-gaping-deficits-and-towering-debts-what-could-go-wrong",
+    "https://www.economist.com/finance-and-economics/2026/09/17/the-gdp-per-person-slowdown-threatens-global-living-standards",
+    "https://www.bea.gov/about/budget-and-performance",
+    "https://www.marketwatch.com/story/its-almost-impossible-to-sell-a-condo-these-days-i-feel-trapped-1f96ce37?mod=mw_rss_topstories",
+    "https://www.marketwatch.com/story/90-of-retirees-are-making-this-miscalculation-with-their-savings-feb9db79?mod=mw_rss_topstories",
+    "https://www.economist.com/finance-and-economics/2026/09/17/the-trickle-down-economics-of-the-ai-boom",
+    "https://www.census.gov/services/index.html"
+  ],
+  "assets": [
+    "theme.css?v=665c4b34",
+    "assets/css/f987df53.css?v=f987df53",
+    "https://www.mastermind-x.com/account.js?v=20260913-account-actions",
+    "https://www.mastermind-x.com/nav_market.js?v=20260913-account-actions",
+    "https://cloud.umami.is/script.js",
+    "navigation-refresh.css?v=fed6efba",
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=3cb38601",
+    "theme.js?v=48082a1e"
+  ],
+  "route": "news.html",
+  "url": "https://www.mastermind-x.com/news.html",
+  "status": 200,
+  "title": "Markets News — What matters now · Mastermind",
+  "time": "2026-09-21T04:47:02.065482+00:00",
+  "browser": "153.0.8010.50",
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/live/wires.json",
+      "status": 401
+    },
+    {
+      "url": "https://www.mastermind-x.com/live/intelligence.json",
+      "status": 401
+    }
+  ],
+  "html_sha256": "a79aa4bce432dda834ff74a46cdf6bdfc3976a06a84db45f86e85722721abb1e"
+}
