@@ -203,7 +203,16 @@ async function api(path, opts) {
     }
     return value;
   })();
-  if (cacheable) apiCacheStore(path, { pending: request, expiresAt: 0 });
+  if (cacheable) {
+    apiCacheStore(path, { pending: request, expiresAt: 0 });
+    /* A transport-level failure has no Response, so the normal r.ok/r.status cache
+       cleanup above never runs. Evict only if this exact in-flight Promise is still
+       current: a later clear/refetch may already have installed a newer entry. */
+    request.catch(() => {
+      const current = API_CACHE.get(path);
+      if (current && current.pending === request) API_CACHE.delete(path);
+    });
+  }
   return request;
 }
 function post(path, body) {

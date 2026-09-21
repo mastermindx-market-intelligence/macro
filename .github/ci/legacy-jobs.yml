@@ -395,6 +395,8 @@ jobs:
         run: python3 scripts/check_admin_js.py
       - name: guard tests (real tree + planted #3693 offender, fail-closed in CI)
         run: python -m pytest tests/test_admin_js_no_undef.py -q
+      - name: admin API cache recovers after a transient fetch rejection
+        run: python -m pytest tests/test_admin_api_cache_recovery.py -q
       # Companion guard, same file, different failure: an inline on*= handler
       # built with JSON.stringify emits double quotes that CLOSE the attribute,
       # so the browser stores a truncated expression and the control is dead on
