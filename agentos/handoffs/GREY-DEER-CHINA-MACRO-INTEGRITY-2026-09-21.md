@@ -70,8 +70,10 @@ unresolved:
 - The blocked revised native review result remains unread. The Chairman waived it rather than granting alternate
   inspection or duplicate review.
 next_actions:
-- Consume current exact PR7592 CI; #7597 already closed the inherited P0B evidence drift. Refresh integration only
-  on material protected-main movement, then complete the existing release/publication path.
+- >-
+  Consume current exact PR7592 CI; PR7597 already closed the inherited P0B evidence drift.
+  Refresh integration only on material protected-main movement, then complete the existing
+  release/publication path.
 - Verify the real production collection status, saved breadth and China page, including unavailable-state wording
   and headline refresh.
 - Continue the original PR6989 custody/calibration and participation/dispersion programme without repeating its
