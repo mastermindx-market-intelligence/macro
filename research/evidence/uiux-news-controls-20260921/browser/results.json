@@ -1,0 +1,166 @@
+{
+  "mode": "local source with explicitly simulated anonymous 401 responses for the two gated feeds",
+  "cells": [
+    {
+      "cell": "desktop-en-dark",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": false,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": false,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": false,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": false,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": true,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": true,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "http": 200,
+      "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6",
+      "initial": {
+        "total": 45,
+        "matched": 45,
+        "shown": 24
+      },
+      "native_keyboard": true,
+      "native_touch": true,
+      "native_locale_change": true,
+      "translated_search_matches": true,
+      "query_order_preserved": true,
+      "guest_state_translated": true,
+      "clear_restores_focus": true,
+      "gated_grid_and_flex_hidden": true,
+      "topic_buttons_one_row": true,
+      "filter_min_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    }
+  ]
+}

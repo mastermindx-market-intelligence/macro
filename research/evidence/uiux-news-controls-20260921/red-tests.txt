@@ -1,0 +1,168 @@
+.......................................FFFFF                             [100%]
+=================================== FAILURES ===================================
+_____________ test_news_controls_are_named_native_pressed_buttons ______________
+
+    def test_news_controls_are_named_native_pressed_buttons():
+        html = _render_full()
+>       assert 'id="nxSeg" role="group"' in html
+E       assert 'id="nxSeg" role="group"' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt... pollTimer = setInterval(poll, POLL);\n  })();\n})();\n</script>\n\n<script src="theme.js"></script>\n</body>\n</html>'
+
+tests/test_news_page_render.py:683: AssertionError
+______ test_news_search_indexes_the_displayed_translation_and_escapes_it _______
+
+    def test_news_search_indexes_the_displayed_translation_and_escapes_it():
+        vm = _full_vm()
+        vm['news_feed'][0]['title_zh'] = '芯片需求 \"验证\" <test>'
+        html = _env().get_template("news.html.j2").render(**vm)
+        index = re.search(r'<article[^>]*data-search="([^"]*)"', html, re.S).group(1)
+>       assert '芯片需求' in index
+E       AssertionError: assert '芯片需求' in 'rtx beats q2, raises fy guidance rtx reuters'
+
+tests/test_news_page_render.py:697: AssertionError
+__________ test_news_dynamic_locale_uses_the_existing_document_event ___________
+
+    def test_news_dynamic_locale_uses_the_existing_document_event():
+        src = (ROOT / 'templates/news.html.j2').read_text(encoding='utf-8')
+>       assert "window.addEventListener('langchange'" not in src
+E       assert "window.addE...'langchange'" not in '{% extends ...ndblock %}\n'
+E         
+E         "window.addEventListener('langchange'" is contained here:
+E           stamps(); window.addEventListener('langchange', stamps);
+E           
+E             // ---- bilingual search placeholder (set here, never as t() inside an attribute) ----
+E             function setPh(){ var s=document.getElementById('nxSearch'); if(!s) return;
+E               var zh=document.documentElement.getAttribute('data-lang')==='zh';...
+E         
+E         ...Full output truncated (802 lines hidden), use '-vv' to show
+
+tests/test_news_page_render.py:703: AssertionError
+________ test_news_empty_search_has_native_recovery_and_touch_controls _________
+
+    def test_news_empty_search_has_native_recovery_and_touch_controls():
+        html = _render_full()
+>       assert 'id="nxReset"' in html
+E       assert 'id="nxReset"' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt... pollTimer = setInterval(poll, POLL);\n  })();\n})();\n</script>\n\n<script src="theme.js"></script>\n</body>\n</html>'
+
+tests/test_news_page_render.py:711: AssertionError
+___________ test_news_count_and_locale_follow_actual_visible_results ___________
+
+    def test_news_count_and_locale_follow_actual_visible_results():
+        import json
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            pytest.skip('Node is needed for the source-owned DOM interaction contract')
+        src = (ROOT / 'templates/news.html.j2').read_text(encoding='utf-8')
+        start = src.index('(function(){', src.index('{% block body_scripts %}'))
+        script = src[start:src.index('  // ---- INTELLIGENCE DESK', start)] + '})();'
+        harness = r"""
+    const assert=require('assert');
+    class E {
+     constructor(attrs={}) {this.attrs=attrs;this.handlers={};this.classes=new Set();this.style={};this.textContent='';this.value='';}
+     getAttribute(k){return this.attrs[k]??null;} setAttribute(k,v){this.attrs[k]=String(v);}
+     addEventListener(k,fn){(this.handlers[k]??=[]).push(fn);}
+     emit(k,e={}){for(const fn of this.handlers[k]||[])fn.call(this,e);}
+     get classList(){return {add:x=>this.classes.add(x),remove:x=>this.classes.delete(x),toggle:(x,v)=>v?this.classes.add(x):this.classes.delete(x),contains:x=>this.classes.has(x)};}
+     focus(){document.activeElement=this;}
+    }
+    const stamp=new E({'data-ts':new Date(Date.now()-3600000).toISOString()});
+    const stories=Array.from({length:30},(_,i)=>new E({'data-lane':i<5?'fed':'markets','data-search':'headline '+i+' 芯片'}));
+    const buttons=['all','markets','macro','fed','companies'].map(x=>new E({'data-lane':x}));
+    buttons.forEach(b=>{b.closest=()=>b;b.click=()=>seg.emit('click',{target:b});});
+    const seg=new E({'data-label-en':'Filter news by topic','data-label-zh':'按主题筛选新闻'});
+    seg.querySelectorAll=()=>buttons;seg.querySelector=()=>buttons[0];
+    const search=new E({'data-ph-en':'Search headlines, tickers…','data-ph-zh':'搜索标题、代码…','data-label-en':'Search news','data-label-zh':'搜索新闻'});
+    const count=new E(),empty=new E(),more=new E(),reset=new E();
+    const feed=new E();feed.querySelectorAll=()=>stories;
+    const root=new E({'data-lang':'en'});
+    global.document=new E();document.documentElement=root;
+    const ids={nxFeed:feed,nxSeg:seg,nxSearch:search,nxCount:count,nxEmpty:empty,nxMore:more,nxReset:reset};
+    document.getElementById=id=>ids[id]||null;document.querySelectorAll=q=>q.startsWith('.rel-time')?[stamp]:[];
+    global.window=new E();
+    """
+        checks = r"""
+    assert.equal(stories.filter(s=>!s.classes.has('hide')).length,24);
+    assert.equal(count.textContent,'24 of 30 headlines');
+    assert.equal(buttons[0].getAttribute('aria-pressed'),'true');
+    more.emit('click');assert.equal(count.textContent,'30 headlines');
+    buttons[3].click();assert.equal(count.textContent,'5 headlines');
+    assert.equal(buttons.filter(b=>b.getAttribute('aria-pressed')==='true').length,1);
+    assert.equal(buttons[3].getAttribute('aria-pressed'),'true');
+    search.value='missing';search.emit('input');assert.equal(count.textContent,'0 headlines');
+    assert.equal(empty.style.display,'block');
+    root.setAttribute('data-lang','zh');document.emit('langchange');
+    assert.equal(search.placeholder,'搜索标题、代码…');assert.equal(search.getAttribute('aria-label'),'搜索新闻');
+    assert.equal(seg.getAttribute('aria-label'),'按主题筛选新闻');assert.equal(count.textContent,'0 条');
+    assert.ok(stamp.textContent.includes('小时前'));assert.equal(search.value,'missing');
+    reset.emit('click');assert.equal(search.value,'');assert.equal(buttons[0].getAttribute('aria-pressed'),'true');
+    assert.equal(document.activeElement,search);assert.equal(count.textContent,'显示 24 / 30 条');
+    search.value='芯片';search.emit('input');assert.equal(count.textContent,'30 条');
+    root.setAttribute('data-lang','en');document.emit('langchange');assert.equal(count.textContent,'30 headlines');
+    console.log(JSON.stringify({passed:true}));
+    """
+        result = subprocess.run([node, '-e', harness + '\n' + script + '\n' + checks], capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: node:internal/assert/utils:146
+E           throw error;
+E           ^
+E         
+E         AssertionError [ERR_ASSERTION]: '30 shown' == '24 of 30 headlines'
+E             at [eval]:87:8
+E             at runScriptInThisContext (node:internal/vm:219:10)
+E             at node:internal/process/execution:483:12
+E             at [eval]-wrapper:6:24
+E             at runScriptInContext (node:internal/process/execution:481:60)
+E             at evalFunction (node:internal/process/execution:315:30)
+E             at evalTypeScript (node:internal/process/execution:327:3)
+E             at node:internal/main/eval_string:71:3 {
+E           generatedMessage: true,
+E           code: 'ERR_ASSERTION',
+E           actual: '30 shown',
+E           expected: '24 of 30 headlines',
+E           operator: '==',
+E           diff: 'simple'
+E         }
+E         
+E         Node.js v26.5.0
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '-e', "\nconst assert=require('assert');\nclass E {\n constructor(att...  actual: '30 shown',\n  expected: '24 of 30 headlines',\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v26.5.0\n").returncode
+
+tests/test_news_page_render.py:773: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-f8477a0b-0b98-415a-ab11-e45dc1fe7809/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-f8477a0b-0b98-415a-ab11-e45dc1fe7809/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-34ccb544-a18b-4fbe-bbcc-74ad0266b883/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-34ccb544-a18b-4fbe-bbcc-74ad0266b883/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-e077e43a-2d81-4631-a863-437effb9bc3f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-e077e43a-2d81-4631-a863-437effb9bc3f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-5d9c5b66-be5e-4a42-ab1a-832873ff8171/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-5d9c5b66-be5e-4a42-ab1a-832873ff8171/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-4f8a42ae-7ed4-402b-ab6d-e16a7eb27596/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-4f8a42ae-7ed4-402b-ab6d-e16a7eb27596/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_news_page_render.py::test_news_controls_are_named_native_pressed_buttons
+FAILED tests/test_news_page_render.py::test_news_search_indexes_the_displayed_translation_and_escapes_it
+FAILED tests/test_news_page_render.py::test_news_dynamic_locale_uses_the_existing_document_event
+FAILED tests/test_news_page_render.py::test_news_empty_search_has_native_recovery_and_touch_controls
+FAILED tests/test_news_page_render.py::test_news_count_and_locale_follow_actual_visible_results
+5 failed, 39 passed, 5 warnings in 6.46s

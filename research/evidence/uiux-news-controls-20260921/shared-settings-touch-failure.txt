@@ -1,0 +1,71 @@
+{"cell": "desktop-en-dark", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": false, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "desktop-en-light", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": false, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "desktop-zh-dark", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": false, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "desktop-zh-light", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": false, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "mobile-en-dark", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": true, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "mobile-en-light", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": true, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+{"cell": "mobile-zh-dark", "http": 200, "html_sha256": "30882f43a862c2d36bc74d89949d81ed5f12f2370596f2f09641cac7fee548b6", "initial": {"total": 45, "matched": 45, "shown": 24}, "native_keyboard": true, "native_touch": true, "native_locale_change": true, "translated_search_matches": true, "query_order_preserved": true, "guest_state_translated": true, "clear_restores_focus": true, "gated_grid_and_flex_hidden": true, "topic_buttons_one_row": true, "filter_min_height": 40, "overflow": 0, "page_errors": [], "passed": true}
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-news-controls-20260921/research/evidence/uiux-news-controls-20260921/verify_controls.py", line 68, in <module>
+    activate(p.locator('.settings-pop .lang-toggle'),touch)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-news-controls-20260921/research/evidence/uiux-news-controls-20260921/verify_controls.py", line 30, in activate
+    if touch: locator.tap()
+              ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 20248, in tap
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.tap(
+        ^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py", line 676, in tap
+    return await self._frame.tap(
+           ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py", line 625, in tap
+    await self._channel.send("tap", self._timeout, locals_to_params(locals()))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.tap: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator(".settings-pop .lang-toggle")
+    - locator resolved to <div tabindex="0" role="switch" class="lang-toggle" aria-checked="true" aria-label="语言 — 当前中文，切换为 English">…</div>
+  - attempting tap action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <header class="nx-head">…</header> from <div class="nxx">…</div> subtree intercepts pointer events
+    - retrying tap action
+    - waiting 20ms
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - <header class="nx-head">…</header> from <div class="nxx">…</div> subtree intercepts pointer events
+  2 × retrying tap action
+      - waiting 100ms
+      - waiting for element to be visible, enabled and stable
+      - element is not visible
+  56 × retrying tap action
+       - waiting 500ms
+       - waiting for element to be visible, enabled and stable
+       - element is not visible
+  - retrying tap action
+    - waiting 500ms
+

@@ -675,3 +675,122 @@ def test_naive_duplicate_macro_news_kwarg_raises_typeerror():
         tmpl.render(**vm, macro_news=dict(vm["macro_news"]),
                     macro_releases=None, news_rejected=None, news_calibration=None,
                     financial_news=None, news_feed=[])
+
+
+# News controls: real source-owned locale event, capped counts and filter semantics.
+def test_news_controls_are_named_native_pressed_buttons():
+    html = _render_full()
+    assert 'id="nxSeg" role="group"' in html
+    assert 'data-label-en="Filter news by topic"' in html
+    buttons = re.findall(r'<button[^>]*data-lane="([^"]+)"[^>]*>', html)
+    assert len(buttons) == 5
+    for tag in re.findall(r'<button[^>]*data-lane="[^"]+"[^>]*>', html):
+        assert 'type="button"' in tag and 'aria-pressed=' in tag
+    assert 'role="status"' in re.search(r'<span[^>]*id="nxCount"[^>]*>', html).group(0)
+
+
+def test_news_search_indexes_the_displayed_translation_and_escapes_it():
+    vm = _full_vm()
+    vm['news_feed'][0]['title_zh'] = '芯片需求 \"验证\" <test>'
+    html = _env().get_template("news.html.j2").render(**vm)
+    index = re.search(r'<article[^>]*data-search="([^"]*)"', html, re.S).group(1)
+    assert '芯片需求' in index
+    assert '&lt;test&gt;' in index and '<test>' not in index
+
+
+def test_news_dynamic_locale_uses_the_existing_document_event():
+    src = (ROOT / 'templates/news.html.j2').read_text(encoding='utf-8')
+    assert "window.addEventListener('langchange'" not in src
+    for fn in ('stamps', 'setPh', 'apply', 'repaint'):
+        assert "document.addEventListener('langchange', " + fn in src
+    assert 'data-label-zh="搜索新闻"' in src
+
+
+def test_news_empty_search_has_native_recovery_and_touch_controls():
+    html = _render_full()
+    assert 'id="nxReset"' in html
+    assert 'Clear filters' in html and '清除筛选' in html
+    assert 'min-height:40px' in html
+    assert '.seg-btn:focus-visible' in html
+
+
+def test_news_count_and_locale_follow_actual_visible_results():
+    import json
+    import shutil
+    import subprocess
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('Node is needed for the source-owned DOM interaction contract')
+    src = (ROOT / 'templates/news.html.j2').read_text(encoding='utf-8')
+    start = src.index('(function(){', src.index('{% block body_scripts %}'))
+    script = src[start:src.index('  // ---- INTELLIGENCE DESK', start)] + '})();'
+    harness = r"""
+const assert=require('assert');
+class E {
+ constructor(attrs={}) {this.attrs=attrs;this.handlers={};this.classes=new Set();this.style={};this.textContent='';this.value='';}
+ getAttribute(k){return this.attrs[k]??null;} setAttribute(k,v){this.attrs[k]=String(v);}
+ addEventListener(k,fn){(this.handlers[k]??=[]).push(fn);}
+ emit(k,e={}){for(const fn of this.handlers[k]||[])fn.call(this,e);}
+ get classList(){return {add:x=>this.classes.add(x),remove:x=>this.classes.delete(x),toggle:(x,v)=>v?this.classes.add(x):this.classes.delete(x),contains:x=>this.classes.has(x)};}
+ focus(){document.activeElement=this;}
+}
+const stamp=new E({'data-ts':new Date(Date.now()-3600000).toISOString()});
+const stories=Array.from({length:30},(_,i)=>new E({'data-lane':i<5?'fed':'markets','data-search':'headline '+i+' 芯片'}));
+const buttons=['all','markets','macro','fed','companies'].map(x=>new E({'data-lane':x}));
+buttons.forEach(b=>{b.closest=()=>b;b.click=()=>seg.emit('click',{target:b});});
+const seg=new E({'data-label-en':'Filter news by topic','data-label-zh':'按主题筛选新闻'});
+seg.querySelectorAll=()=>buttons;seg.querySelector=()=>buttons[0];
+const search=new E({'data-ph-en':'Search headlines, tickers…','data-ph-zh':'搜索标题、代码…','data-label-en':'Search news','data-label-zh':'搜索新闻'});
+const count=new E(),empty=new E(),more=new E(),reset=new E();
+const feed=new E();feed.querySelectorAll=()=>stories;
+const root=new E({'data-lang':'en'});
+global.document=new E();document.documentElement=root;
+const ids={nxFeed:feed,nxSeg:seg,nxSearch:search,nxCount:count,nxEmpty:empty,nxMore:more,nxReset:reset};
+document.getElementById=id=>ids[id]||null;document.querySelectorAll=q=>q.startsWith('.rel-time')?[stamp]:[];
+global.window=new E();
+"""
+    checks = r"""
+assert.equal(stories.filter(s=>!s.classes.has('hide')).length,24);
+assert.equal(count.textContent,'24 of 30 headlines');
+assert.equal(buttons[0].getAttribute('aria-pressed'),'true');
+more.emit('click');assert.equal(count.textContent,'30 headlines');
+buttons[3].click();assert.equal(count.textContent,'5 headlines');
+assert.equal(buttons.filter(b=>b.getAttribute('aria-pressed')==='true').length,1);
+assert.equal(buttons[3].getAttribute('aria-pressed'),'true');
+search.value='missing';search.emit('input');assert.equal(count.textContent,'0 headlines');
+assert.equal(empty.style.display,'block');
+root.setAttribute('data-lang','zh');document.emit('langchange');
+assert.equal(search.placeholder,'搜索标题、代码…');assert.equal(search.getAttribute('aria-label'),'搜索新闻');
+assert.equal(seg.getAttribute('aria-label'),'按主题筛选新闻');assert.equal(count.textContent,'0 条');
+assert.ok(stamp.textContent.includes('小时前'));assert.equal(search.value,'missing');
+reset.emit('click');assert.equal(search.value,'');assert.equal(buttons[0].getAttribute('aria-pressed'),'true');
+assert.equal(document.activeElement,search);assert.equal(count.textContent,'显示 24 / 30 条');
+search.value='芯片';search.emit('input');assert.equal(count.textContent,'30 条');
+root.setAttribute('data-lang','en');document.emit('langchange');assert.equal(count.textContent,'30 headlines');
+console.log(JSON.stringify({passed:true}));
+"""
+    result = subprocess.run([node, '-e', harness + '\n' + script + '\n' + checks], capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(result.stdout)['passed']
+
+
+def test_news_guest_state_does_not_invent_an_expired_session():
+    html = _render_full()
+    assert 'Your session has ended' not in html
+    assert 'Sign in to read live headlines.' in html
+    assert 'Sign in to read developing stories and their sources.' in html
+
+
+def test_news_gated_panels_honor_hidden_state_in_flex_and_grid():
+    html = _render_full()
+    assert '#nxIntel [hidden]' in html and '#nxWire [hidden]' in html
+    assert '#nxIntel[hidden]' in html and '#nxWire[hidden]' in html
+    assert '#nxIntel[data-state="quiet"] .nxi-health{display:none}' in html
+    assert 'display:none!important' in html
+
+
+def test_news_desk_intro_is_short_and_does_not_claim_live_before_loading():
+    html = _render_full()
+    assert 'Live story graph' not in html
+    assert 'Story updates' in html
+    assert 'Developing stories with their sources and market context.' in html

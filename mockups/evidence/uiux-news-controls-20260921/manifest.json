@@ -1,0 +1,633 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "news-search",
+        "spec": "news-search:focus(#nxSearch)",
+        "value": "#nxSearch"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ],
+      "tablet": [
+        820,
+        1180
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-21T06:48:43Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:51705/live/intelligence.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51705/live/wires.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51705/account.js?v=20260913-account-actions",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51705/live/intelligence.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51705/live/wires.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51705/account.js?v=20260913-account-actions"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 4117,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6916,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "tablet": {
+            "document_height_px": 5213,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 4117,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 2,
+          "h3": 0,
+          "h4": 2,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 528963,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 16,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1091
+      },
+      "page_id": "macro:news",
+      "registry_route": "/news.html",
+      "route": "/news.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 846186,
+          "captured": true,
+          "file": "82377af23329218e.png",
+          "force_state": null,
+          "height": 4117,
+          "locale": "en",
+          "sha256": "82377af23329218e6aac34cee0068ca101f8f410f11fd2b0ce6d44c7c4e4192b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 847202,
+          "captured": true,
+          "file": "6572d6851c2311fa--news-search.png",
+          "force_state": "news-search",
+          "height": 4117,
+          "locale": "en",
+          "sha256": "6572d6851c2311fabf975c0b38a07ab48a906565db2ac134ce989c4a9d3e4fd1",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 844166,
+          "captured": true,
+          "file": "4584a40c9ba588b5.png",
+          "force_state": null,
+          "height": 4119,
+          "locale": "en",
+          "sha256": "4584a40c9ba588b5b2e345353773c7dd9edd9483605cf62e8c4d2f68da122d76",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 845219,
+          "captured": true,
+          "file": "f6f8d90d31b97dfe--news-search.png",
+          "force_state": "news-search",
+          "height": 4119,
+          "locale": "en",
+          "sha256": "f6f8d90d31b97dfe7c2481aeb55031afe17a07094d58e339d930871f9e92526c",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 746522,
+          "captured": true,
+          "file": "05e23814477b5195.png",
+          "force_state": null,
+          "height": 4057,
+          "locale": "zh",
+          "sha256": "05e23814477b51951e7073e3b39e4c698cca8d970bb388493b0e307efe800c38",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 747777,
+          "captured": true,
+          "file": "3d4cdd2ea06458c6--news-search.png",
+          "force_state": "news-search",
+          "height": 4057,
+          "locale": "zh",
+          "sha256": "3d4cdd2ea06458c684b2352989fb49a8f23a465e4bc942216fb37d8be37bc135",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 749598,
+          "captured": true,
+          "file": "d72cc5d237d6acac.png",
+          "force_state": null,
+          "height": 4059,
+          "locale": "zh",
+          "sha256": "d72cc5d237d6acaceeaedd6b7f4df1abd18142cd73f58af61128a12d04d631f0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 750905,
+          "captured": true,
+          "file": "ff5b63d35b191057--news-search.png",
+          "force_state": "news-search",
+          "height": 4059,
+          "locale": "zh",
+          "sha256": "ff5b63d35b19105746068e4c1bd2b80c913b502a79e13f4296af13ef38e3c716",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 786033,
+          "captured": true,
+          "file": "052962540e06061a.png",
+          "force_state": null,
+          "height": 5213,
+          "locale": "en",
+          "sha256": "052962540e06061aab82cc92add05a143ab5fdd53ea0fe5900d10ad68de82108",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 787353,
+          "captured": true,
+          "file": "36857bcc17d74e43--news-search.png",
+          "force_state": "news-search",
+          "height": 5213,
+          "locale": "en",
+          "sha256": "36857bcc17d74e43f98fb6a4a098431ad4cf004c209dce16f8c5d89b09ff7c25",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 786696,
+          "captured": true,
+          "file": "af7292dc19c87899.png",
+          "force_state": null,
+          "height": 5215,
+          "locale": "en",
+          "sha256": "af7292dc19c87899aca8818d5f17659417a55b4cb186b7c4742d71fde92a67e9",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 788002,
+          "captured": true,
+          "file": "599189dfdd853651--news-search.png",
+          "force_state": "news-search",
+          "height": 5215,
+          "locale": "en",
+          "sha256": "599189dfdd853651e4c10e54f1c2fc10b596c1a65168f7cf62ee5193da864a5e",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 688560,
+          "captured": true,
+          "file": "35d00cee93db4fc1.png",
+          "force_state": null,
+          "height": 4911,
+          "locale": "zh",
+          "sha256": "35d00cee93db4fc1fcb2986ee8f5a831e27e74a6fec76a98e855297e147a54eb",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 690084,
+          "captured": true,
+          "file": "c1f7510f92d65606--news-search.png",
+          "force_state": "news-search",
+          "height": 4911,
+          "locale": "zh",
+          "sha256": "c1f7510f92d6560687458dce84b2962ed036f844b3889c318752f1d25a1b7942",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 693692,
+          "captured": true,
+          "file": "e5aea8fe3cfc4c9f.png",
+          "force_state": null,
+          "height": 4913,
+          "locale": "zh",
+          "sha256": "e5aea8fe3cfc4c9f131879c5b585253ae1dcdeef324165144c17a586e20fabf9",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 695109,
+          "captured": true,
+          "file": "6d19438cfec41835--news-search.png",
+          "force_state": "news-search",
+          "height": 4913,
+          "locale": "zh",
+          "sha256": "6d19438cfec41835a5a26b2a30016afebbad144b35b20cd63e08cd33fc10defd",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820,
+          "width": 820
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 741538,
+          "captured": true,
+          "file": "7d51dcb55da09594.png",
+          "force_state": null,
+          "height": 6916,
+          "locale": "en",
+          "sha256": "7d51dcb55da095946a950b1788860b4f179b3e311b626017098d095831deb44c",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 722194,
+          "captured": true,
+          "file": "0c992316a45b1b15--news-search.png",
+          "force_state": "news-search",
+          "height": 6916,
+          "locale": "en",
+          "sha256": "0c992316a45b1b15668a6b537dc1c7021615fc9b5a3fdd505acac675938a8e06",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 740853,
+          "captured": true,
+          "file": "06a948635a4b6785.png",
+          "force_state": null,
+          "height": 6918,
+          "locale": "en",
+          "sha256": "06a948635a4b678563e0b439bd862febc9683b2dadcf069f329a5ae2f8112586",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 721612,
+          "captured": true,
+          "file": "71645687978d0536--news-search.png",
+          "force_state": "news-search",
+          "height": 6918,
+          "locale": "en",
+          "sha256": "71645687978d0536f869f6a8ffaf68ad6b0e76a7cf7090536cd7c756027aeb12",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 641027,
+          "captured": true,
+          "file": "cbd92f4ae167582a.png",
+          "force_state": null,
+          "height": 6505,
+          "locale": "zh",
+          "sha256": "cbd92f4ae167582abbf45a35324411094168780e0b01fd79a9de65a7cebf5cd9",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 620598,
+          "captured": true,
+          "file": "05230a7e1b02baea--news-search.png",
+          "force_state": "news-search",
+          "height": 6505,
+          "locale": "zh",
+          "sha256": "05230a7e1b02baeac5c29143b9106f1157cc6f3841535c44e7347e238e009252",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 649347,
+          "captured": true,
+          "file": "dbee20aa3c3acba2.png",
+          "force_state": null,
+          "height": 6507,
+          "locale": "zh",
+          "sha256": "dbee20aa3c3acba237f601a8429e5b1be83113f7f76d1ed76a3c53908788aef8",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "news-search",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 629166,
+          "captured": true,
+          "file": "b8cf2a0bc8018746--news-search.png",
+          "force_state": "news-search",
+          "height": 6507,
+          "locale": "zh",
+          "sha256": "b8cf2a0bc8018746b41ab3cfd769d1ab8b691b882cd44f8f06434d8582fe5a54",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/news.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 330,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-news-controls-20260921",
+    "resolved_sha_or_none": "597bedad6cf1240150a5804522b1b75fe3baa2f3",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-news-controls-20260921 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-news-controls-20260921/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

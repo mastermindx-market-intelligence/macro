@@ -1,0 +1,80 @@
+...F...........F.............................F.......................... [ 32%]
+........................................................................ [ 65%]
+........................................................................ [ 98%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+_________________ test_the_impact_ring_is_gone_and_stays_gone __________________
+
+    def test_the_impact_ring_is_gone_and_stays_gone():
+        """The ring set an 8px uppercase label inside a circular overflow:hidden clip.
+    
+        It fits at 8px and clips the moment a browser enforces a minimum font size —
+        measured on the live page, from 12px at the 60px ring and from 10px at the 50px
+        mobile ring, which is what the operator saw ("IMPAC" with the T cut off). Type
+        that small is not under our control, so the fix is that no text lives inside a
+        circular clip here at all; the list's order carries the ranking and the
+        diagnostics drawer keeps the receipt. Re-adding the ring re-opens the defect.
+        """
+        html = _render_full()
+        assert "nx-impact" not in html
+        assert "font-size:8px" not in html, "sub-9px type is not under design control"
+        # the lead still leads, and still wraps rather than overflowing on a narrow screen
+        assert "nx-lead-title" in html
+>       assert ".nx-lead-title{ overflow-wrap:anywhere; }" in html
+E       assert '.nx-lead-title{ overflow-wrap:anywhere; }' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt... pollTimer = setInterval(poll, POLL);\n  })();\n})();\n</script>\n\n<script src="theme.js"></script>\n</body>\n</html>'
+
+tests/test_news_page_render.py:155: AssertionError
+____________ test_consequence_section_is_single_column_not_nx_cols _____________
+
+    def test_consequence_section_is_single_column_not_nx_cols():
+        """MAJOR 4 ruling: #nxConsequence is a full-width single column, not nx-cols."""
+        html = _render_full()
+        assert 'class="nx-consequence" id="nxConsequence"' in html
+        assert 'class="nx-cols" id="nxConsequence"' not in html
+        # The releases board may still use nx-cols; only this section left that grid.
+>       assert "#nxConsequence{ margin-top:26px; }" in html
+E       assert '#nxConsequence{ margin-top:26px; }' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt... pollTimer = setInterval(poll, POLL);\n  })();\n})();\n</script>\n\n<script src="theme.js"></script>\n</body>\n</html>'
+
+tests/test_news_page_render.py:264: AssertionError
+__________ test_news_gated_panels_honor_hidden_state_in_flex_and_grid __________
+
+    def test_news_gated_panels_honor_hidden_state_in_flex_and_grid():
+        html = _render_full()
+>       assert '#nxIntel [hidden]' in html and '#nxWire [hidden]' in html
+E       assert ('#nxIntel [hidden]' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt... pollTimer = setInterval(poll, POLL);\n  })();\n})();\n</script>\n\n<script src="theme.js"></script>\n</body>\n</html>')
+
+tests/test_news_page_render.py:786: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-208f0af9-e970-42e8-ba33-85a33db3ef61/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-208f0af9-e970-42e8-ba33-85a33db3ef61/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-cdf67c3a-24c6-4244-9cd5-2303e48ffe2c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-cdf67c3a-24c6-4244-9cd5-2303e48ffe2c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-a435d8e6-617f-4176-8e83-4f6f3f3d1675/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-a435d8e6-617f-4176-8e83-4f6f3f3d1675/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-6c430073-36aa-4ff8-b77a-47859e2808de/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-6c430073-36aa-4ff8-b77a-47859e2808de/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-31609bd1-a04f-4f84-aae2-8a5bb2e6f531/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-31609bd1-a04f-4f84-aae2-8a5bb2e6f531/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_news_page_render.py::test_the_impact_ring_is_gone_and_stays_gone
+FAILED tests/test_news_page_render.py::test_consequence_section_is_single_column_not_nx_cols
+FAILED tests/test_news_page_render.py::test_news_gated_panels_honor_hidden_state_in_flex_and_grid
+3 failed, 217 passed, 5 warnings in 12.17s

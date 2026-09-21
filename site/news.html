@@ -34,7 +34,7 @@
 <title>Markets News — What matters now · Mastermind</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=665c4b34">
-<link rel="stylesheet" href="assets/css/f987df53.css?v=f987df53">
+<link rel="stylesheet" href="assets/css/7c9ddf40.css?v=7c9ddf40">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=fed6efba">
 
@@ -438,18 +438,18 @@
 
 
 <div class="nx-controls">
-  <div class="seg" id="nxSeg" role="tablist">
-    <button class="seg-btn on" data-lane="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
-    <button class="seg-btn" data-lane="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span></button>
-    <button class="seg-btn" data-lane="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span></button>
-    <button class="seg-btn" data-lane="fed"><span class="l-en">Fed</span><span class="l-zh">美联储</span></button>
-    <button class="seg-btn" data-lane="companies"><span class="l-en">Companies</span><span class="l-zh">公司</span></button>
+  <div class="seg" id="nxSeg" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-zh="按主题筛选新闻">
+    <button type="button" class="seg-btn on" data-lane="all" aria-pressed="true"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+    <button type="button" class="seg-btn" data-lane="markets" aria-pressed="false"><span class="l-en">Markets</span><span class="l-zh">市场</span></button>
+    <button type="button" class="seg-btn" data-lane="macro" aria-pressed="false"><span class="l-en">Macro</span><span class="l-zh">宏观</span></button>
+    <button type="button" class="seg-btn" data-lane="fed" aria-pressed="false"><span class="l-en">Fed</span><span class="l-zh">美联储</span></button>
+    <button type="button" class="seg-btn" data-lane="companies" aria-pressed="false"><span class="l-en">Companies</span><span class="l-zh">公司</span></button>
   </div>
   <div class="nx-search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" placeholder="Search headlines, tickers…" aria-label="Search news">
+    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" placeholder="Search headlines, tickers…" aria-label="Search news" data-label-en="Search news" data-label-zh="搜索新闻" aria-controls="nxFeed">
   </div>
-  <span class="nx-count" id="nxCount"></span>
+  <span class="nx-count" id="nxCount" role="status" aria-live="polite" aria-atomic="true"></span>
 </div>
 
 
@@ -457,9 +457,9 @@
 <section class="nxi" id="nxIntel" data-state="loading" hidden>
   <div class="nxi-head">
     <div>
-      <div class="nxi-kicker"><span class="nxi-pulse"></span><span class="l-en">Live story graph</span><span class="l-zh">实时事件图谱</span></div>
+      <div class="nxi-kicker"><span class="nxi-pulse"></span><span class="l-en">Story updates</span><span class="l-zh">事件更新</span></div>
       <h2 class="nxi-title"><span class="l-en">Intelligence Desk</span><span class="l-zh">情报工作台</span></h2>
-      <p class="nxi-sub"><span class="l-en">One developing story per card — repeated reports merged, source receipts attached, market context checked, and X drafts held for review.</span><span class="l-zh">每张卡片对应一个持续发展的事件——合并重复报道、附上来源依据、核对市场背景，并将 X 草稿留待审核。</span></p>
+      <p class="nxi-sub"><span class="l-en">Developing stories with their sources and market context.</span><span class="l-zh">跟踪事件发展、相关来源和市场背景。</span></p>
     </div>
     <div class="nxi-health">
       <strong id="nxIntelHealth"><span class="l-en">Connecting to the desk</span><span class="l-zh">正在连接工作台</span></strong>
@@ -472,11 +472,11 @@
     <div class="nxi-metric"><b id="nxiDrafts">—</b><span><span class="l-en">Draft-ready</span><span class="l-zh">草稿就绪</span></span></div>
     <div class="nxi-metric"><b id="nxiSources">—</b><span><span class="l-en">Sources in view</span><span class="l-zh">当前来源</span></span></div>
   </div>
-  <div class="nxi-toolbar" id="nxIntelToolbar" hidden>
-    <button class="nxi-filter on" data-intel-filter="all"><span class="l-en">All stories</span><span class="l-zh">全部事件</span></button>
-    <button class="nxi-filter" data-intel-filter="high_impact"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
-    <button class="nxi-filter" data-intel-filter="confirmed"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></button>
-    <button class="nxi-filter" data-intel-filter="draft"><span class="l-en">Draft ready</span><span class="l-zh">草稿就绪</span></button>
+  <div class="nxi-toolbar" id="nxIntelToolbar" role="group" aria-label="Filter stories" data-label-en="Filter stories" data-label-zh="筛选事件" hidden>
+    <button type="button" class="nxi-filter on" data-intel-filter="all" aria-pressed="true"><span class="l-en">All stories</span><span class="l-zh">全部事件</span></button>
+    <button type="button" class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+    <button type="button" class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></button>
+    <button type="button" class="nxi-filter" data-intel-filter="draft" aria-pressed="false"><span class="l-en">Draft ready</span><span class="l-zh">草稿就绪</span></button>
     <span class="nxi-toolbar-note"><span class="l-en">Outbound posting is separate and remains review-gated.</span><span class="l-zh">对外发布为独立流程，仍需人工审核。</span></span>
   </div>
   <div class="nxi-list" id="nxIntelList" hidden></div>
@@ -536,7 +536,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="0"
-           data-search="bofa warns of warsh’s fed raising rates above 5% in 2022 redux  bloomberg.com"
+           data-search="bofa warns of warsh’s fed raising rates above 5% in 2022 redux  bloomberg.com bofa warns of warsh’s fed raising rates above 5% in 2022 redux"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bloomberg.com/news/articles/2026-09-18/bofa-warns-of-warsh-s-fed-raising-rates-above-5-in-2022-redux" target="_blank" rel="noopener"><span class="l-en">BofA Warns of Warsh’s Fed Raising Rates Above 5% in 2022 Redux</span><span class="l-zh">BofA Warns of Warsh’s Fed Raising Rates Above 5% in 2022 Redux</span></a><div class="nx-meta">
@@ -552,7 +552,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="1"
-           data-search="on holdings new partner; netflix analyst downgrade | stock movers nflx bloomberg.com"
+           data-search="on holdings new partner; netflix analyst downgrade | stock movers nflx bloomberg.com on holdings new partner; netflix analyst downgrade | stock movers"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bloomberg.com/news/videos/2026-09-18/on-holdings-new-partner-netflix-analyst-downgrade-video" target="_blank" rel="noopener"><span class="l-en">On Holdings New Partner; Netflix Analyst Downgrade | Stock Movers</span><span class="l-zh">On Holdings New Partner; Netflix Analyst Downgrade | Stock Movers</span></a><div class="nx-meta">
@@ -568,7 +568,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="2"
-           data-search="openai&#39;s latest ai revelation is a &#39;serious situation,&#39; microsoft&#39;s suleyman tells cnbc msft cnbc.com"
+           data-search="openai&#x27;s latest ai revelation is a &#x27;serious situation,&#x27; microsoft&#x27;s suleyman tells cnbc msft cnbc.com openai&#x27;s latest ai revelation is a &#x27;serious situation,&#x27; microsoft&#x27;s suleyman tells cnbc"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/18/microsoft-ai-ceo-openais-latest-ai-revelation-a-serious-situation.html" target="_blank" rel="noopener"><span class="l-en">OpenAI&#39;s latest AI revelation is a &#39;serious situation,&#39; Microsoft&#39;s Suleyman tells CNBC</span><span class="l-zh">OpenAI&#39;s latest AI revelation is a &#39;serious situation,&#39; Microsoft&#39;s Suleyman tells CNBC</span></a><div class="nx-meta">
@@ -584,7 +584,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="3"
-           data-search="deutsche bank’s dws to shut us property fund hit by redemptions  bloomberg.com"
+           data-search="deutsche bank’s dws to shut us property fund hit by redemptions  bloomberg.com deutsche bank’s dws to shut us property fund hit by redemptions"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bloomberg.com/news/articles/2026-09-18/deutsche-bank-s-dws-to-shut-us-property-fund-hit-by-redemptions" target="_blank" rel="noopener"><span class="l-en">Deutsche Bank’s DWS to Shut US Property Fund Hit by Redemptions</span><span class="l-zh">Deutsche Bank’s DWS to Shut US Property Fund Hit by Redemptions</span></a><div class="nx-meta">
@@ -600,7 +600,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="4"
-           data-search="stubhub shares tick higher for third day in a row after citi upgrade  cnbc.com"
+           data-search="stubhub shares tick higher for third day in a row after citi upgrade  cnbc.com stubhub shares tick higher for third day in a row after citi upgrade"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/18/stubhub-shares-tick-higher-for-third-day-in-a-row-after-citi-upgrade.html" target="_blank" rel="noopener"><span class="l-en">StubHub shares tick higher for third day in a row after Citi upgrade</span><span class="l-zh">StubHub shares tick higher for third day in a row after Citi upgrade</span></a><div class="nx-meta">
@@ -616,7 +616,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="5"
-           data-search="new svb review finds fed missed repeated warnings  bloomberg.com"
+           data-search="new svb review finds fed missed repeated warnings  bloomberg.com new svb review finds fed missed repeated warnings"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bloomberg.com/news/videos/2026-09-18/new-svb-review-finds-fed-missed-repeated-warnings-video" target="_blank" rel="noopener"><span class="l-en">New SVB Review Finds Fed Missed Repeated Warnings</span><span class="l-zh">New SVB Review Finds Fed Missed Repeated Warnings</span></a><div class="nx-meta">
@@ -632,7 +632,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="6"
-           data-search="fed&#39;s bowman says overhaul of bank stress test will make process more transparent  reuters.com"
+           data-search="fed&#x27;s bowman says overhaul of bank stress test will make process more transparent  reuters.com fed&#x27;s bowman says overhaul of bank stress test will make process more transparent"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMiqgFBVV95cUxNdVhMeF8xaElKaXVlUmExRzVBU244d3pfR3k5V25FdlZJel9nOElkbTlXb1lILXhremYwQV9kTTZ2SGZBdjlMVWR2QU9JM3o4Q0E5OHpjSGlidkFUdG5vdkhkajZ0Q2hKUl9yZ2xfaXBMQU5vbHBjVHRhbk83ZVB0T2pRYlZzYUI3R2dCQkozekRHT0V4UFBRZUJYa3Nqa2c5R1Z0eUhCNXltdw?oc=5" target="_blank" rel="noopener"><span class="l-en">Fed&#39;s Bowman says overhaul of bank stress test will make process more transparent</span><span class="l-zh">Fed&#39;s Bowman says overhaul of bank stress test will make process more transparent</span></a><div class="nx-meta">
@@ -648,7 +648,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="7"
-           data-search="fed staff should have known silicon valley bank was vulnerable, new report finds  cnbc.com"
+           data-search="fed staff should have known silicon valley bank was vulnerable, new report finds  cnbc.com fed staff should have known silicon valley bank was vulnerable, new report finds"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/18/fed-silicon-valley-bank.html" target="_blank" rel="noopener"><span class="l-en">Fed staff should have known Silicon Valley Bank was vulnerable, new report finds</span><span class="l-zh">Fed staff should have known Silicon Valley Bank was vulnerable, new report finds</span></a><div class="nx-meta">
@@ -664,7 +664,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="8"
-           data-search="wall st slips as higher treasury yields weigh on sentiment  reuters.com"
+           data-search="wall st slips as higher treasury yields weigh on sentiment  reuters.com wall st slips as higher treasury yields weigh on sentiment"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMitAFBVV95cUxPZ2p6dkpCd0xfbVRBMnhySFRVbm5OSElMZXRXc0NpaGhoRmw2MzNfSUstaC1RVFFnUU1DNUM0MEpHTmxhbHJxOC1Ec2lMWU0xMFVaSVdsZGdVSi1JaWpDX093SHhBdlBkdFdGZnFpd05yYW9LRXk2NkdOMnRWSzJ2dkhuTFpDN01LM1JvNjhyamFZM2dLRFRzM24xSUZwRGVBakhwM3N3em1ycFBuWVg2UVB2OTQ?oc=5" target="_blank" rel="noopener"><span class="l-en">Wall St slips as higher Treasury yields weigh on sentiment</span><span class="l-zh">Wall St slips as higher Treasury yields weigh on sentiment</span></a><div class="nx-meta">
@@ -680,7 +680,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="9"
-           data-search="treasury yields move higher as volatile week wraps up  cnbc.com"
+           data-search="treasury yields move higher as volatile week wraps up  cnbc.com treasury yields move higher as volatile week wraps up"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/18/treasury-yields-fed-rates-volatile-week.html" target="_blank" rel="noopener"><span class="l-en">Treasury yields move higher as volatile week wraps up</span><span class="l-zh">Treasury yields move higher as volatile week wraps up</span></a><div class="nx-meta">
@@ -696,7 +696,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="10"
-           data-search="exclusive: putin envoy and far-right afd prepare talks to get russian gas back for germany, sources say  reuters.com"
+           data-search="exclusive: putin envoy and far-right afd prepare talks to get russian gas back for germany, sources say  reuters.com exclusive: putin envoy and far-right afd prepare talks to get russian gas back for germany, sources say"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMivwFBVV95cUxOYW1YaE5VZXdZbXVmcVlIMVBDRVFZNC1BRjlmSmplVHdSbXJuX0c0eTJPTkVVeWZZME1kODNrVkV4Wi1ZVmRDd1lTV1h1WDJoYmFKVzhtZDRrRmpub0hPV3RuZDduM29Bb2o3QkhnRmJBZ0tydnNrZGFTLVppWFlBNk9TdHc1QnNRd2h4X3c0U2hyWnNXa2dJdkVTU0FsZ0doNjVFb0NOZHNaT05KaFc3SVpWRGptcUZXTVE2Nlcxdw?oc=5" target="_blank" rel="noopener"><span class="l-en">EXCLUSIVE: Putin envoy and far-right AfD prepare talks to get Russian gas back for Germany, sources say</span><span class="l-zh">EXCLUSIVE: Putin envoy and far-right AfD prepare talks to get Russian gas back for Germany, sources say</span></a><div class="nx-meta">
@@ -712,7 +712,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="11"
-           data-search="commentary: global rates reset, ai angst and oil&#39;s long haul: the financial week in five charts  reuters.com"
+           data-search="commentary: global rates reset, ai angst and oil&#x27;s long haul: the financial week in five charts  reuters.com commentary: global rates reset, ai angst and oil&#x27;s long haul: the financial week in five charts"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxPcVJSOWZtYmJPZXkzZmtfazJwd0xSQ19KTXVYX095aFdSWXk2MnlueWRtR0NrZzdudF9objBxd1BUYjA1QkRwZHFWYUF4WjBfVXluYVJGSFRRM01veW56dVphanpjaDUzTHpSTE1ISDRnMTc4Y05VOF9SX0pZMC1LOHlESVNrOF9YbFlJQnZ0M19TcWt1a0ppVXh6LXRIOWljdEs1STg3ZlZDTWRWSzZjczkxRk1lbFYyaGN2MXdCQnMxa3M2enZGSFcydVFmNjI0amQtZQ?oc=5" target="_blank" rel="noopener"><span class="l-en">COMMENTARY: Global rates reset, AI angst and oil&#39;s long haul: The financial week in five charts</span><span class="l-zh">COMMENTARY: Global rates reset, AI angst and oil&#39;s long haul: The financial week in five charts</span></a><div class="nx-meta">
@@ -728,7 +728,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="12"
-           data-search="tesla’s upcoming product frenzy could leave investors disappointed tsla marketwatch.com"
+           data-search="tesla’s upcoming product frenzy could leave investors disappointed tsla marketwatch.com tesla’s upcoming product frenzy could leave investors disappointed"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/teslas-upcoming-product-frenzy-could-leave-investors-disappointed-18619fb3?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">Tesla’s upcoming product frenzy could leave investors disappointed</span><span class="l-zh">Tesla’s upcoming product frenzy could leave investors disappointed</span></a><div class="nx-meta">
@@ -744,7 +744,7 @@
   
   <article class="nx-story" data-lane="fed"
            data-idx="13"
-           data-search="higher interest rates and ai safety fears put the stock market to the test last week spy qqq cnbc - tech"
+           data-search="higher interest rates and ai safety fears put the stock market to the test last week spy qqq cnbc - tech higher interest rates and ai safety fears put the stock market to the test last week"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/19/higher-interest-rates-and-ai-safety-fears-put-the-stock-market-to-the-test-last-week.html" target="_blank" rel="noopener"><span class="l-en">Higher interest rates and AI safety fears put the stock market to the test last week</span><span class="l-zh">Higher interest rates and AI safety fears put the stock market to the test last week</span></a><div class="nx-meta">
@@ -760,7 +760,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="14"
-           data-search="travis kelce and others lost millions in a ponzi scheme. here’s what a basic index fund would have earned them instead.  marketwatch.com"
+           data-search="travis kelce and others lost millions in a ponzi scheme. here’s what a basic index fund would have earned them instead.  marketwatch.com travis kelce and others lost millions in a ponzi scheme. here’s what a basic index fund would have earned them instead."
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/travis-kelce-and-others-lost-millions-in-a-ponzi-scheme-heres-what-a-basic-index-fund-would-have-earned-them-instead-c1ee3bd6?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">Travis Kelce and others lost millions in a Ponzi scheme. Here’s what a basic index fund would have earned them instead.</span><span class="l-zh">Travis Kelce and others lost millions in a Ponzi scheme. Here’s what a basic index fund would have earned them instead.</span></a><div class="nx-meta">
@@ -776,7 +776,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="15"
-           data-search="stock market falls on ai fears, hawkish fed but bounces back: weekly review  investor&#39;s business daily"
+           data-search="stock market falls on ai fears, hawkish fed but bounces back: weekly review  investor&#x27;s business daily stock market falls on ai fears, hawkish fed but bounces back: weekly review"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMikAFBVV95cUxPaWtqc2R0WjNQRTlZU1hza3dfc29sRlByN0hYU1pvWjNCZzJQcEl2MEFOdXRqMVBDYVplZTAzd215MC0yRVdOSjg4S09mTjgxdUVFaXNzbXJfdktydVZMUWIyLVhZR3h6amtMMFQ0MlJRamlCQ3N0WEtOemk1azk4Smh1WFpMX19xOUdZMURlX0Q?oc=5" target="_blank" rel="noopener"><span class="l-en">Stock Market Falls On AI Fears, Hawkish Fed But Bounces Back: Weekly Review</span><span class="l-zh">Stock Market Falls On AI Fears, Hawkish Fed But Bounces Back: Weekly Review</span></a><div class="nx-meta">
@@ -792,7 +792,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="16"
-           data-search="a sideways market and rising earnings are presenting a buying opportunity for this crucial sector  marketwatch.com"
+           data-search="a sideways market and rising earnings are presenting a buying opportunity for this crucial sector  marketwatch.com a sideways market and rising earnings are presenting a buying opportunity for this crucial sector"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/a-sideways-market-and-rising-earnings-are-presenting-opportunities-not-seen-since-chatgpt-first-launched-0c37f89d?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">A sideways market and rising earnings are presenting a buying opportunity for this crucial sector</span><span class="l-zh">A sideways market and rising earnings are presenting a buying opportunity for this crucial sector</span></a><div class="nx-meta">
@@ -808,7 +808,7 @@
   
   <article class="nx-story" data-lane="markets"
            data-idx="17"
-           data-search="why mortgage bonds are set to deteriorate, and possibly hit the whole market, according to this wall street expert  marketwatch.com"
+           data-search="why mortgage bonds are set to deteriorate, and possibly hit the whole market, according to this wall street expert  marketwatch.com why mortgage bonds are set to deteriorate, and possibly hit the whole market, according to this wall street expert"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/why-mortgage-bonds-are-set-to-deteriorate-and-possibly-hit-the-whole-market-according-to-this-wall-street-expert-0dd7f05d?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">Why mortgage bonds are set to deteriorate, and possibly hit the whole market, according to this Wall Street expert</span><span class="l-zh">Why mortgage bonds are set to deteriorate, and possibly hit the whole market, according to this Wall Street expert</span></a><div class="nx-meta">
@@ -824,7 +824,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="18"
-           data-search="google says gemini ai model hacked three companies in security test qqq googl seeking alpha - market currents"
+           data-search="google says gemini ai model hacked three companies in security test qqq googl seeking alpha - market currents google says gemini ai model hacked three companies in security test"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://seekingalpha.com/news/4644563-google-gemini-ai-model-hacked-three-companies?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener"><span class="l-en">Google says Gemini AI model hacked three companies in security test</span><span class="l-zh">Google says Gemini AI model hacked three companies in security test</span></a><div class="nx-meta">
@@ -840,7 +840,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="19"
-           data-search="paramount is one of today’s worst s&amp;p 500 stocks on a warning against mega-merger s barron&#39;s"
+           data-search="paramount is one of today’s worst s&amp;p 500 stocks on a warning against mega-merger s barron&#x27;s paramount is one of today’s worst s&amp;p 500 stocks on a warning against mega-merger"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://news.google.com/rss/articles/CBMiggFBVV95cUxQZ3Ffak1lbExncW9QQ0g0LWdRV1R0N1ZQY0RxMURhbENpU0tkNTNpbUJCUjNqWUVaMFhtZHdmdUpzTTdhN2JFUjdyVzQ3QXJtQmI4X1JZdWUtcnlDbTZMQm9tT19MR0V4VmNGM0hselY5cUZVRFBTMDdNWGVfRDJ4UFJR?oc=5" target="_blank" rel="noopener"><span class="l-en">Paramount Is One of Today’s Worst S&amp;P 500 Stocks on a Warning Against Mega-Merger</span><span class="l-zh">Paramount Is One of Today’s Worst S&amp;P 500 Stocks on a Warning Against Mega-Merger</span></a><div class="nx-meta">
@@ -856,7 +856,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="20"
-           data-search="real estate stocks slip as fed hikes, mortgage rates continue to climb xhb seeking alpha - market currents"
+           data-search="real estate stocks slip as fed hikes, mortgage rates continue to climb xhb seeking alpha - market currents real estate stocks slip as fed hikes, mortgage rates continue to climb"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener"><span class="l-en">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span><span class="l-zh">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span></a><div class="nx-meta">
@@ -872,7 +872,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="21"
-           data-search="spacex confirmed to get a weighting boost after nasdaq 100 rebalancing: bloomberg qqq seeking alpha - market currents"
+           data-search="spacex confirmed to get a weighting boost after nasdaq 100 rebalancing: bloomberg qqq seeking alpha - market currents spacex confirmed to get a weighting boost after nasdaq 100 rebalancing: bloomberg"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener"><span class="l-en">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span><span class="l-zh">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span></a><div class="nx-meta">
@@ -888,7 +888,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="22"
-           data-search="flames reported near saudi capital airport as pakistan presses iran over energy supplies uso xle cnbc - stock blog"
+           data-search="flames reported near saudi capital airport as pakistan presses iran over energy supplies uso xle cnbc - stock blog flames reported near saudi capital airport as pakistan presses iran over energy supplies"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/19/riyadh-airport-smoke-saudi-arabia.html" target="_blank" rel="noopener"><span class="l-en">Flames reported near Saudi capital airport as Pakistan presses Iran over energy supplies</span><span class="l-zh">Flames reported near Saudi capital airport as Pakistan presses Iran over energy supplies</span></a><div class="nx-meta">
@@ -904,7 +904,7 @@
   
   <article class="nx-story" data-lane="companies"
            data-idx="23"
-           data-search="insider trades: crowdstrike, uber, snowflake among notable names  seeking alpha - market currents"
+           data-search="insider trades: crowdstrike, uber, snowflake among notable names  seeking alpha - market currents insider trades: crowdstrike, uber, snowflake among notable names"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://seekingalpha.com/news/4644490-insider-trades-crowdstrike-uber-snowflake-among-notable-names?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener"><span class="l-en">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span><span class="l-zh">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span></a><div class="nx-meta">
@@ -920,7 +920,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="24"
-           data-search="the federal reserve raises interest rates by a quarter percentage point  npr - economy"
+           data-search="the federal reserve raises interest rates by a quarter percentage point  npr - economy 美联储将利率上调25个基点"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.npr.org/2026/09/17/nx-s1-5971226/the-federal-reserve-raises-interest-rates-by-a-quarter-percentage-point" target="_blank" rel="noopener"><span class="l-en">The Federal Reserve raises interest rates by a quarter percentage point</span><span class="l-zh">美联储将利率上调25个基点</span></a><div class="nx-meta">
@@ -936,7 +936,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="25"
-           data-search="ai trade rebound sparks flurry of unusually bullish options activity qqq cnbc - investing"
+           data-search="ai trade rebound sparks flurry of unusually bullish options activity qqq cnbc - investing ai trade rebound sparks flurry of unusually bullish options activity"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/18/ai-trade-rebound-sparks-flurry-of-unusually-bullish-options-activity.html" target="_blank" rel="noopener"><span class="l-en">AI trade rebound sparks flurry of unusually bullish options activity</span><span class="l-zh">AI trade rebound sparks flurry of unusually bullish options activity</span></a><div class="nx-meta">
@@ -952,7 +952,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="26"
-           data-search="ever wonder how the fed&#39;s interest rate actually works? we&#39;ve got answers  npr - business"
+           data-search="ever wonder how the fed&#x27;s interest rate actually works? we&#x27;ve got answers  npr - business ever wonder how the fed&#x27;s interest rate actually works? we&#x27;ve got answers"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy" target="_blank" rel="noopener"><span class="l-en">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span><span class="l-zh">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span></a><div class="nx-meta">
@@ -968,7 +968,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="27"
-           data-search="federal reserve issues fomc statement  federal reserve - monetary policy"
+           data-search="federal reserve issues fomc statement  federal reserve - monetary policy 美联储发布fomc声明"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm" target="_blank" rel="noopener"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span></a><div class="nx-meta">
@@ -984,7 +984,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="28"
-           data-search="abbvie&#39;s migraine franchise scored a big win. is this dividend king a no-brainer buy right now?  yahoo finance - top stories"
+           data-search="abbvie&#x27;s migraine franchise scored a big win. is this dividend king a no-brainer buy right now?  yahoo finance - top stories abbvie&#x27;s migraine franchise scored a big win. is this dividend king a no-brainer buy right now?"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://finance.yahoo.com/healthcare/articles/abbvies-migraine-franchise-scored-big-192000630.html" target="_blank" rel="noopener"><span class="l-en">AbbVie&#39;s Migraine Franchise Scored a Big Win. Is This Dividend King a No-Brainer Buy Right Now?</span><span class="l-zh">AbbVie&#39;s Migraine Franchise Scored a Big Win. Is This Dividend King a No-Brainer Buy Right Now?</span></a><div class="nx-meta">
@@ -1000,7 +1000,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="29"
-           data-search="fifth third’s (fitb) comerica merger is done, now comes the payoff  yahoo finance - top stories"
+           data-search="fifth third’s (fitb) comerica merger is done, now comes the payoff  yahoo finance - top stories fifth third’s (fitb) comerica merger is done, now comes the payoff"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://finance.yahoo.com/markets/stocks/articles/fifth-third-fitb-comerica-merger-190743312.html" target="_blank" rel="noopener"><span class="l-en">Fifth Third’s (FITB) Comerica Merger Is Done, Now Comes The Payoff</span><span class="l-zh">Fifth Third’s (FITB) Comerica Merger Is Done, Now Comes The Payoff</span></a><div class="nx-meta">
@@ -1016,7 +1016,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="30"
-           data-search="what the fed rate hike means for pocketbooks and politics  npr - economy"
+           data-search="what the fed rate hike means for pocketbooks and politics  npr - economy 美联储加息对钱包和政治意味着什么"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.npr.org/2026/09/16/nx-s1-5971127/what-the-fed-rate-hike-means-for-pocketbooks-and-politics" target="_blank" rel="noopener"><span class="l-en">What the Fed rate hike means for pocketbooks and politics</span><span class="l-zh">美联储加息对钱包和政治意味着什么</span></a><div class="nx-meta">
@@ -1032,7 +1032,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="31"
-           data-search="like costco, walmart will sell medicare advantage plans wmt cost marketwatch - top stories"
+           data-search="like costco, walmart will sell medicare advantage plans wmt cost marketwatch - top stories like costco, walmart will sell medicare advantage plans"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/like-costco-walmart-to-sell-medicare-advantage-plans-b31977d2?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">Like Costco, Walmart will sell Medicare Advantage plans</span><span class="l-zh">Like Costco, Walmart will sell Medicare Advantage plans</span></a><div class="nx-meta">
@@ -1048,7 +1048,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="32"
-           data-search="it’s not a winner-take-all stock market. this hedge-fund manager favors three underdogs. spy marketwatch - top stories"
+           data-search="it’s not a winner-take-all stock market. this hedge-fund manager favors three underdogs. spy marketwatch - top stories it’s not a winner-take-all stock market. this hedge-fund manager favors three underdogs."
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/its-not-a-winner-take-all-stock-market-this-hedge-fund-manager-favors-three-underdogs-a366ab6f?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">It’s not a winner-take-all stock market. This hedge-fund manager favors three underdogs.</span><span class="l-zh">It’s not a winner-take-all stock market. This hedge-fund manager favors three underdogs.</span></a><div class="nx-meta">
@@ -1064,7 +1064,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="33"
-           data-search="j.b. hunt stock plunges 13% after company warns third-quarter earnings will fall  cnbc - markets"
+           data-search="j.b. hunt stock plunges 13% after company warns third-quarter earnings will fall  cnbc - markets j.b. hunt 股价暴跌 13%，此前公司警告第三季度盈利将下降"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.cnbc.com/2026/09/16/jb-hunt-stock-jbht-earnings.html" target="_blank" rel="noopener"><span class="l-en">J.B. Hunt stock plunges 13% after company warns third-quarter earnings will fall</span><span class="l-zh">J.B. Hunt 股价暴跌 13%，此前公司警告第三季度盈利将下降</span></a><div class="nx-meta">
@@ -1080,7 +1080,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="34"
-           data-search="what africa’s biggest ipo can do for its stock markets spy the economist - finance &amp; economics"
+           data-search="what africa’s biggest ipo can do for its stock markets spy the economist - finance &amp; economics 非洲最大ipo能为其股市带来什么"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.economist.com/finance-and-economics/2026/09/15/what-africas-biggest-ipo-can-do-for-its-stock-markets" target="_blank" rel="noopener"><span class="l-en">What Africa’s biggest IPO can do for its stock markets</span><span class="l-zh">非洲最大IPO能为其股市带来什么</span></a><div class="nx-meta">
@@ -1096,7 +1096,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="35"
-           data-search="economist explains the fed&#39;s decision to raise interest rates  npr - economy"
+           data-search="economist explains the fed&#x27;s decision to raise interest rates  npr - economy 经济学家解释美联储加息决定"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.npr.org/2026/09/17/nx-s1-5971197/economist-explains-the-feds-decision-to-raise-interest-rates" target="_blank" rel="noopener"><span class="l-en">Economist explains the Fed&#39;s decision to raise interest rates</span><span class="l-zh">经济学家解释美联储加息决定</span></a><div class="nx-meta">
@@ -1112,7 +1112,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="36"
-           data-search="real personal consumption expenditures by state and real personal income by state, 2024  bea - current releases"
+           data-search="real personal consumption expenditures by state and real personal income by state, 2024  bea - current releases 2024年各州实际个人消费支出与实际个人收入"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024" target="_blank" rel="noopener"><span class="l-en">Real Personal Consumption Expenditures by State and Real Personal Income by State, 2024</span><span class="l-zh">2024年各州实际个人消费支出与实际个人收入</span></a><div class="nx-meta">
@@ -1128,7 +1128,7 @@
   
   <article class="nx-story hide" data-lane="companies"
            data-idx="37"
-           data-search="agencies seek comment on proposed third-party risk management guidance and issue statement on community bank engagement with core service providers xlf federal reserve - all press"
+           data-search="agencies seek comment on proposed third-party risk management guidance and issue statement on community bank engagement with core service providers xlf federal reserve - all press 监管机构就第三方风险管理指引草案征求意见，并发布关于社区银行与核心服务提供商合作的声明"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260911a.htm" target="_blank" rel="noopener"><span class="l-en">Agencies seek comment on proposed third-party risk management guidance and issue statement on community bank engagement with core service providers</span><span class="l-zh">监管机构就第三方风险管理指引草案征求意见，并发布关于社区银行与核心服务提供商合作的声明</span></a><div class="nx-meta">
@@ -1144,7 +1144,7 @@
   
   <article class="nx-story hide" data-lane="fed"
            data-idx="38"
-           data-search="soaring bond yields, gaping deficits and towering debts: what could go wrong?  the economist - finance &amp; economics"
+           data-search="soaring bond yields, gaping deficits and towering debts: what could go wrong?  the economist - finance &amp; economics 债券收益率飙升、赤字扩大和债务高企：可能会出什么问题？"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.economist.com/finance-and-economics/2026/09/16/soaring-bond-yields-gaping-deficits-and-towering-debts-what-could-go-wrong" target="_blank" rel="noopener"><span class="l-en">Soaring bond yields, gaping deficits and towering debts: what could go wrong?</span><span class="l-zh">债券收益率飙升、赤字扩大和债务高企：可能会出什么问题？</span></a><div class="nx-meta">
@@ -1160,7 +1160,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="39"
-           data-search="the gdp-per-person slowdown threatens global living standards  the economist - finance &amp; economics"
+           data-search="the gdp-per-person slowdown threatens global living standards  the economist - finance &amp; economics 人均gdp放缓威胁全球生活水平"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.economist.com/finance-and-economics/2026/09/17/the-gdp-per-person-slowdown-threatens-global-living-standards" target="_blank" rel="noopener"><span class="l-en">The GDP-per-person slowdown threatens global living standards</span><span class="l-zh">人均GDP放缓威胁全球生活水平</span></a><div class="nx-meta">
@@ -1176,7 +1176,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="40"
-           data-search="budget and performance  bea - current releases"
+           data-search="budget and performance  bea - current releases 预算与绩效"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.bea.gov/about/budget-and-performance" target="_blank" rel="noopener"><span class="l-en">Budget and Performance</span><span class="l-zh">预算与绩效</span></a><div class="nx-meta">
@@ -1192,7 +1192,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="41"
-           data-search="it’s almost impossible to sell a condo unit these days: ‘i feel trapped’  marketwatch - top stories"
+           data-search="it’s almost impossible to sell a condo unit these days: ‘i feel trapped’  marketwatch - top stories it’s almost impossible to sell a condo unit these days: ‘i feel trapped’"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/its-almost-impossible-to-sell-a-condo-these-days-i-feel-trapped-1f96ce37?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">It’s almost impossible to sell a condo unit these days: ‘I feel trapped’</span><span class="l-zh">It’s almost impossible to sell a condo unit these days: ‘I feel trapped’</span></a><div class="nx-meta">
@@ -1208,7 +1208,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="42"
-           data-search="90% of retirees are making this miscalculation with their savings  marketwatch - top stories"
+           data-search="90% of retirees are making this miscalculation with their savings  marketwatch - top stories 90% of retirees are making this miscalculation with their savings"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.marketwatch.com/story/90-of-retirees-are-making-this-miscalculation-with-their-savings-feb9db79?mod=mw_rss_topstories" target="_blank" rel="noopener"><span class="l-en">90% of retirees are making this miscalculation with their savings</span><span class="l-zh">90% of retirees are making this miscalculation with their savings</span></a><div class="nx-meta">
@@ -1224,7 +1224,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="43"
-           data-search="the trickle-down economics of the ai boom qqq the economist - finance &amp; economics"
+           data-search="the trickle-down economics of the ai boom qqq the economist - finance &amp; economics 人工智能繁荣的涓滴经济学"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.economist.com/finance-and-economics/2026/09/17/the-trickle-down-economics-of-the-ai-boom" target="_blank" rel="noopener"><span class="l-en">The trickle-down economics of the AI boom</span><span class="l-zh">人工智能繁荣的涓滴经济学</span></a><div class="nx-meta">
@@ -1240,7 +1240,7 @@
   
   <article class="nx-story hide" data-lane="macro"
            data-idx="44"
-           data-search="quarterly services survey  census - economic indicators"
+           data-search="quarterly services survey  census - economic indicators 季度服务业调查"
            style="--acc:var(--link);">
     <div class="nx-story-main">
       <a class="nx-story-title" href="https://www.census.gov/services/index.html" target="_blank" rel="noopener"><span class="l-en">Quarterly Services Survey</span><span class="l-zh">季度服务业调查</span></a><div class="nx-meta">
@@ -1253,9 +1253,9 @@
     </div>
   </article>
   
-  <div class="nx-empty" id="nxEmpty" style="display:none;"><span class="l-en">No stories match — try another lane or clear the search.</span><span class="l-zh">没有匹配的新闻——换个分类或清空搜索。</span></div>
+  <div class="nx-empty" id="nxEmpty" style="display:none;"><span class="l-en">No stories match — try another lane or clear the search.</span><span class="l-zh">没有匹配的新闻——换个分类或清空搜索。</span><button type="button" class="gbtn nx-reset" id="nxReset"><span class="l-en">Clear filters</span><span class="l-zh">清除筛选</span></button></div>
 </section>
-<button class="gbtn nx-more" id="nxMore"><span class="l-en">Show more</span><span class="l-zh">显示更多</span> <span class="num">(+21)</span></button>
+<button type="button" class="gbtn nx-more" id="nxMore"><span class="l-en">Show more</span><span class="l-zh">显示更多</span> <span class="num">(+21)</span></button>
 
 
 
@@ -1547,13 +1547,17 @@
     var d=h/24; return Math.floor(d)+(zh?'天前':'d ago');
   }
   function stamps(){ document.querySelectorAll('.rel-time[data-ts]').forEach(function(el){ el.textContent=rel(el.getAttribute('data-ts')); }); }
-  stamps(); window.addEventListener('langchange', stamps);
+  stamps(); document.addEventListener('langchange', stamps);
 
   // ---- bilingual search placeholder (set here, never as t() inside an attribute) ----
-  function setPh(){ var s=document.getElementById('nxSearch'); if(!s) return;
+  function setPh(){ var s=document.getElementById('nxSearch');
     var zh=document.documentElement.getAttribute('data-lang')==='zh';
-    s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder; }
-  setPh(); window.addEventListener('langchange', setPh);
+    if(s) s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder;
+    ['nxSearch','nxSeg','nxIntelToolbar'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      el.setAttribute('aria-label',el.getAttribute(zh?'data-label-zh':'data-label-en'));
+    }); }
+  setPh(); document.addEventListener('langchange', setPh);
 
   // ---- lane + search filter over the ranked feed ----
   var feed=document.getElementById('nxFeed');
@@ -1561,9 +1565,13 @@
     var stories=[].slice.call(feed.querySelectorAll('.nx-story'));
     var seg=document.getElementById('nxSeg'), search=document.getElementById('nxSearch');
     var countEl=document.getElementById('nxCount'), emptyEl=document.getElementById('nxEmpty');
-    var moreBtn=document.getElementById('nxMore');
+    var moreBtn=document.getElementById('nxMore'), resetBtn=document.getElementById('nxReset');
     var lane='all', q='', expanded=false, CAP=24;
     function apply(){
+      if(seg) seg.querySelectorAll('.seg-btn').forEach(function(b){
+        var selected=b.getAttribute('data-lane')===lane;
+        b.classList.toggle('on',selected); b.setAttribute('aria-pressed',String(selected));
+      });
       var shown=0;
       stories.forEach(function(el){
         var okLane = lane==='all' || el.getAttribute('data-lane')===lane;
@@ -1578,18 +1586,28 @@
         var okLane=lane==='all'||el.getAttribute('data-lane')===lane;
         var okQ=!q||(el.getAttribute('data-search')||'').indexOf(q)>=0; return okLane&&okQ;
       }).length;
-      if(countEl) countEl.textContent = total+(document.documentElement.getAttribute('data-lang')==='zh'?' 条':' shown');
+      if(countEl){
+        var zh=document.documentElement.getAttribute('data-lang')==='zh';
+        countEl.textContent=zh?(shown<total?'显示 '+shown+' / '+total+' 条':total+' 条'):
+          (shown<total?shown+' of '+total+' headlines':total+' headline'+(total===1?'':'s'));
+      }
       if(emptyEl) emptyEl.style.display = total? 'none':'block';
       if(moreBtn) moreBtn.style.display = (!expanded && !q && lane==='all' && total>CAP)? '':'none';
     }
     if(seg) seg.addEventListener('click', function(e){
       var b=e.target.closest('.seg-btn'); if(!b) return;
-      seg.querySelectorAll('.seg-btn').forEach(function(x){ x.classList.remove('on'); });
-      b.classList.add('on'); lane=b.getAttribute('data-lane'); apply();
+      lane=b.getAttribute('data-lane'); apply();
     });
     if(search) search.addEventListener('input', function(){ q=this.value.trim().toLowerCase(); apply(); });
     if(moreBtn) moreBtn.addEventListener('click', function(){ expanded=true; apply(); });
-    window.addEventListener('langchange', apply);
+    if(resetBtn) resetBtn.addEventListener('click', function(){
+      q=''; expanded=false; if(search) search.value='';
+      // Reuse the native topic control so the live wire sees the same reset.
+      var all=seg&&seg.querySelector('.seg-btn[data-lane="all"]');
+      if(all) all.click(); else {lane='all';apply();}
+      if(search) search.focus();
+    });
+    document.addEventListener('langchange', apply);
     apply();
   }
 
@@ -1942,7 +1960,7 @@
     function stateCopy(kind){
       return ({
         gate:[tx('Sign in to open the Intelligence Desk','登录后查看情报工作台'),
-          tx('The story graph, source receipts, and review drafts are available to registered accounts.','事件图谱、来源依据与审核草稿仅向注册账户开放。')],
+          tx('Sign in to read developing stories and their sources.','登录后可查看正在发展的事件及来源。')],
         down:[tx('The Intelligence Desk is reconnecting','情报工作台正在重新连接'),
           tx('Nothing to do — the live wire and ranked board use separate paths and remain available.','无需操作——实时快讯与排序新闻使用独立路径，仍可继续查看。')],
         quiet:[tx('The desk is quiet','工作台当前平静'),
@@ -1988,11 +2006,11 @@
     }
     if(toolbarEl) toolbarEl.addEventListener('click',function(e){
       var b=e.target.closest&&e.target.closest('.nxi-filter'); if(!b)return;
-      toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.remove('on');});
-      b.classList.add('on'); filter=b.getAttribute('data-intel-filter')||'all'; expanded=false; render();
+      toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false');});
+      b.classList.add('on'); b.setAttribute('aria-pressed','true'); filter=b.getAttribute('data-intel-filter')||'all'; expanded=false; render();
     });
     if(moreEl) moreEl.addEventListener('click',function(){expanded=true;render();});
-    window.addEventListener('langchange',function(){
+    document.addEventListener('langchange',function(){
       if(mode==='ok') showDesk({health:health,stories:stories,updated_at:updatedAt});
       else if(stateCopy(mode)) showState(mode);
     });
@@ -2228,8 +2246,8 @@
 
     var STATE_COPY = {
       gate: { h:['Sign in to see the live wire','登录后查看实时快讯'],
-              s:['The wire is open to every registered account. Your session has ended — sign back in and it picks up where it left off.',
-                 '实时快讯对所有已注册账户开放。您的登录状态已失效——重新登录即可继续查看。'],
+              s:['Sign in to read live headlines.',
+                 '登录后可阅读实时快讯。'],
               cta:['Sign in','登录'] },
       down: { h:['The live wire is not reachable right now','实时快讯暂时无法连接'],
               s:['Nothing to do — the ranked board below is built on a separate path and is current. The wire reconnects on its own.',
@@ -2341,7 +2359,7 @@
       var b = e.target.closest && e.target.closest('.seg-btn');
       if(b && mode === 'ok' && items.length) { renderList(); renderMeta(isStale()); }
     });
-    window.addEventListener('langchange', repaint);
+    document.addEventListener('langchange', repaint);
     document.addEventListener('visibilitychange', function(){
       if(document.hidden) return;
       if(mode === 'absent') return;                        // settled: nothing to re-ask
