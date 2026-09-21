@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T21:34:01.427230+00:00",
-  "count": 2595,
+  "generated_at": "2026-09-21T22:04:03.931586+00:00",
+  "count": 2596,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -392,6 +392,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0dbwi42hukc-02d7ff",
+      "title": "Global Markets Daily Re Assessing the Value of Duration for Balanced Portfolios",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:28Z",
+      "summary_points": [
+        "Global Yield Drivers: Middle East war (energy prices), AI debt issuance, and fiscal concerns drove YTD yield rises; US 10-yr near 5% (vs. 7% 250-yr avg), lifting long-term bond allocation norms.",
+        "60/40 Reassessment: Suboptimal; replace with receiver swaptions on front-end rates for recession convexity hedge and bond-like equities (negative beta) for diversification.",
+        "Recession Hedge Tactics: Short-dated USD rate receivers (1y/2y) outperform S&P 500 OTM puts in recessions, offering superior fixed income protection vs. equity hedges."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
