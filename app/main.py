@@ -1829,7 +1829,8 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     Positions mode first: open portfolio_positions (status=open) → shares + entry_price
     (exactly like brain_gateway._tool_get_watchlist). When there are no open positions,
     fall back to the watchlist symbols (equal-weight; shares/entry_price None). Reads via
-    the gateway's service-role _sb_get; any error → empty list (→ empty-book brief).
+    the gateway's service-role `_sb_get`; a failed read returns `unspecified`, and
+    the consuming endpoint fails closed before composing or caching a brief.
 
     W6 / packet amendment A8: this function is the ONLY place that knows which of the two
     queries answered, so it is the only place that can name the population. It is
@@ -1894,7 +1895,8 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     """Pro-only personalized daily portfolio brief (portfolio_brief.v2).
 
     401 (require_user) → not signed in. 403 {error:pro_required,tier} → not Pro.
-    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt.
+    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt;
+    503 {error:portfolio_store_unavailable} → private holdings did not answer.
     Cache: in-process per (uid, ctx-file-mtime, holdings fingerprint), TTL 300s;
     Cache-Control private,no-store.
     """
@@ -1921,6 +1923,10 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     # Holdings first: the population they carry is part of the cache key (see
     # _holdings_fingerprint), so the lookup cannot happen before the load.
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
 
     now = time.monotonic()
     ckey = (uid, mtime, _holdings_fingerprint(holdings, population))
@@ -1981,7 +1987,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     Body: {"previous": <state_digest from an earlier brief>}. A missing/blank previous
     is a FIRST visit and returns an empty change list — never a fabricated "everything
     is new". 401 → not signed in. 403 {error:pro_required,tier} → not Pro (same gate as
-    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx unavailable.
+    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx or private holdings
+    unavailable; no change digest is emitted from unknown state.
     """
     response.headers["Cache-Control"] = "private, no-store"
     uid = user.get("id") or user.get("email") or ""
@@ -2007,6 +2014,10 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
         raise HTTPException(503, "portfolio changes unavailable") from exc
 
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
     tickers = [r.get("ticker") for r in holdings if isinstance(r, dict)]
     current = snapshot_state(ctx, tickers)
 
