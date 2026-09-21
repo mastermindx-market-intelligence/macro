@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T04:31:48.311552+00:00",
-  "count": 2545,
+  "generated_at": "2026-09-21T04:47:05.374237+00:00",
+  "count": 2546,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -109,6 +109,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rzraz6r3fu6-2ac8ca",
+      "title": "GS Shelofsky IG Credit Week in Review 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:02Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
