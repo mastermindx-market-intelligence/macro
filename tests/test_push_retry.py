@@ -551,6 +551,49 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
     assert publisher_steps[1]["if"] == "always()"
 
 
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
+
+
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
     _doc, step = _daily_engine_commit_step()
     run = step["run"]

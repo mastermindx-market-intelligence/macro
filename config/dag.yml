@@ -1024,6 +1024,9 @@ lanes:
       - id: checkpoint_core_precommit_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
       - id: checkpoint_core_postrebase_inject_data_base
         module: scripts.inject_data_base
       - id: checkpoint_core_postrebase_externalize_css
