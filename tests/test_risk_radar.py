@@ -567,3 +567,141 @@ def test_replay_comparability_invalid_observation_index_is_refused():
              patch.object(rr, 'subscore_series', return_value=subs):
             with pytest.raises(ValueError, match='unique ordered'):
                 bt.state_accuracy({}, H=1)
+
+
+
+def test_gate_latency_pre_gate_state_matches_production_when_gate_open():
+    from unittest.mock import patch
+    from engine import risk_radar as rr
+    from engine import risk_radar_backtest as bt
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    subs = pd.DataFrame({
+        "credit": [20., 60., 70., 80., 90.],
+        "rates": [20., 20., 70., 20., 20.],
+        "vol": [20., 20., 20., 70., 20.],
+    }, index=idx)
+    calib = {
+        "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
+        "scares": {"credit": {"tier": "A"}, "rates": {"tier": "A"}, "vol": {"tier": "B"}},
+    }
+    with patch.object(rr, "context_gate_series", return_value=pd.Series(True, index=idx)):
+        production = bt.state_series(subs, calib)
+    assert gl.pre_gate_state_series(subs, calib).equals(production)
+
+
+
+def test_gate_latency_gate_components_preserve_unknown_breadth():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=220)
+    spy = pd.DataFrame({"close": range(100, 320)}, index=idx)
+    def fake_read(group, name):
+        if (group, name) == ("yahoo", "SPY"):
+            return spy
+        if (group, name) == ("breadth", "breadth"):
+            return None
+        raise AssertionError((group, name))
+    with patch.object(gl.store, "read", side_effect=fake_read):
+        gate = gl.gate_components(idx)
+    assert gate["gate_open"].isna().all()
+    assert gate["breadth_weak"].isna().all()
+
+
+def test_gate_latency_native_labels_refuse_missing_price_windows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    spy = pd.Series([100., float("nan"), 94., 100., 100.], index=idx)
+    out = gl.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[2] in out.index and not bool(out.loc[idx[2], "event"])
+
+
+
+def test_gate_latency_daily_tradeoff_counts_suppression():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=4)
+    raw_state = pd.Series(["elevated", "elevated", "elevated", "calm"], index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, False, False, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([True, False, True, True], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, True, False, True], index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06, -.06, -.01, -.01],
+        "event": [True, True, False, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["confusion"] == {"tp": 2, "fp": 1, "fn": 0, "tn": 1}
+    assert out["gated"]["confusion"] == {"tp": 1, "fp": 0, "fn": 1, "tn": 2}
+    assert out["FP_removed"] == 1 and out["TP_lost"] == 1
+    assert out["FP_removed_per_TP_lost"] == 1.0
+
+
+
+def test_gate_latency_event_timing_after_t0_before_breach():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    prices = pd.Series(100., index=idx)
+    prices.iloc[28:] = 94.
+    raw_state = pd.Series("calm", index=idx)
+    raw_state.iloc[20:31] = "elevated"
+    gate_open = pd.Series(False, index=idx, dtype="boolean")
+    gate_open.iloc[26:31] = True
+    gate = pd.DataFrame({
+        "gate_open": gate_open,
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    with patch.object(gl, "detect_events", return_value=[anchor]):
+        out = gl.event_latency_result(prices, idx, raw_state, gate)
+    row = out["rows"][0]
+    assert row["timing"] == "after_t0_before_breach"
+    assert row["raw_offset"] == -5
+    assert row["gated_offset"] == 1
+    assert row["latency"] == 6
+    assert out["timing_counts_among_raw_pre_t0"]["after_t0_before_breach"] == 1
+
+
+def test_gate_latency_suppression_attributes_binding_leg():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw = pd.Series(["elevated"] * 3, index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([False, False, False], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([False, True, False], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, False, False], index=idx, dtype="boolean"),
+    }, index=idx)
+    out = gl.suppression_attribution(raw, gate)
+    assert out["price_only"] == out["breadth_only"] == out["both_closed"] == 1
+
+
+
+def test_gate_latency_daily_tradeoff_excludes_unknown_state_rows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw_state = pd.Series([None, "elevated", "calm"], index=idx, dtype=object)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, True, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.10, -.10, -.01],
+        "event": [True, True, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["n"] == out["gated"]["n"] == 2
+    assert out["raw"]["confusion"] == {"tp": 1, "fp": 0, "fn": 0, "tn": 1}
