@@ -2454,6 +2454,12 @@ def run_selftest() -> int:
         (root / PACKET_ROOT / "MP-001.md").write_text("# packet with no receipt\n", encoding="utf-8")
         l8 = {f.code for f in rule_l8(root, {a.reference_id: a.status for a in sets})}
         check("packet-without-rig-receipt fires", "packet-without-rig-receipt" in l8, f"got {sorted(l8)}")
+        check("packet-without-editable-source fires", "packet-without-editable-source" in l8,
+              f"got {sorted(l8)}")
+        check("packet-without-component-delta fires", "packet-without-component-delta" in l8,
+              f"got {sorted(l8)}")
+        check("packet-without-state-interaction-matrix fires",
+              "packet-without-state-interaction-matrix" in l8, f"got {sorted(l8)}")
 
         (root / "config" / "product_experience").mkdir(parents=True, exist_ok=True)
         (root / REGISTRY_OVERRIDES).write_text(
