@@ -38,7 +38,7 @@
     "Passive sector-ETF residual flow stays distinct from discretionary manager conviction and stock recommendations",
     "Situation context links related observations without claiming independent confirmation",
     "Browser back and malformed legacy hash values do not crash",
-    "Dark/light × EN/ZH × desktop/mobile: no overflow and first signal in first viewport",
+    "320/390/430/1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls",
     "History selection retains the actual firing clock in its permalink"
   ],
   "screenshots": [
@@ -77,10 +77,18 @@
     "desktop-dark-zh.png",
     "desktop-light-en.png",
     "desktop-light-zh.png",
+    "mobile-430-dark-en.png",
+    "mobile-430-dark-zh.png",
+    "mobile-430-light-en.png",
+    "mobile-430-light-zh.png",
     "mobile-dark-en.png",
     "mobile-dark-zh.png",
     "mobile-light-en.png",
     "mobile-light-zh.png",
+    "mobile-320-dark-en.png",
+    "mobile-320-dark-zh.png",
+    "mobile-320-light-en.png",
+    "mobile-320-light-zh.png",
     "desktop-evidence-history.png"
   ],
   "page_errors": [],
@@ -88,75 +96,227 @@
   "viewport_metrics": [
     {
       "name": "desktop-dark-en.png",
+      "width": 1440,
+      "height": 900,
       "first_row": {
         "x": 171,
         "y": 652.5,
         "width": 1098,
         "height": 139.3125
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
     },
     {
       "name": "desktop-dark-zh.png",
+      "width": 1440,
+      "height": 900,
       "first_row": {
         "x": 171,
         "y": 652.5,
         "width": 1098,
         "height": 139.3125
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
     },
     {
       "name": "desktop-light-en.png",
+      "width": 1440,
+      "height": 900,
       "first_row": {
         "x": 171,
         "y": 652.5,
         "width": 1098,
         "height": 139.3125
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
     },
     {
       "name": "desktop-light-zh.png",
+      "width": 1440,
+      "height": 900,
       "first_row": {
         "x": 171,
         "y": 652.5,
         "width": 1098,
         "height": 139.3125
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-430-dark-en.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 404,
+        "height": 189.875
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-dark-zh.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 404,
+        "height": 168.875
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-light-en.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 404,
+        "height": 189.875
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-light-zh.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 404,
+        "height": 168.875
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
     },
     {
       "name": "mobile-dark-en.png",
+      "width": 390,
+      "height": 844,
       "first_row": {
         "x": 13,
         "y": 623,
         "width": 364,
         "height": 208
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
     },
     {
       "name": "mobile-dark-zh.png",
+      "width": 390,
+      "height": 844,
       "first_row": {
         "x": 13,
         "y": 600.5,
         "width": 364,
         "height": 168.875
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
     },
     {
       "name": "mobile-light-en.png",
+      "width": 390,
+      "height": 844,
       "first_row": {
         "x": 13,
         "y": 623,
         "width": 364,
         "height": 208
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
     },
     {
       "name": "mobile-light-zh.png",
+      "width": 390,
+      "height": 844,
       "first_row": {
         "x": 13,
         "y": 600.5,
         "width": 364,
         "height": 168.875
-      }
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-dark-en.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 695.5,
+        "width": 294,
+        "height": 226.75
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-dark-zh.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 294,
+        "height": 208
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-light-en.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 695.5,
+        "width": 294,
+        "height": 226.75
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-light-zh.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 294,
+        "height": 208
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
     }
   ],
   "passed": true
