@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T13:02:33.961214+00:00",
-  "count": 2570,
+  "generated_at": "2026-09-21T13:32:45.452825+00:00",
+  "count": 2571,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -581,6 +581,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nhprdwjdkrd-da28c6",
+      "title": "ETF Market Pulse Week 2 – September 2026 Commodities Surge, Cash Builds and AI Innovation Accelerates",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:00Z",
+      "summary_points": [
+        "Geopolitical Energy Shock: Drives commodities (Broad Commodities +7.2% W32, Gold +7.2% W32) and Japan equities to leadership, while pressuring US equities (-1.2% W33), Bitcoin (-3.2% W32), and long-duration assets (uranium, biotech) due to supply-chain disruptions and energy scarcity.",
+        "Selective ETF Flows: $25bn weekly inflows (70% equities) show cautious \"buy-the-dip\" stance—strong demand for Russell 2000, 20+Y Treasuries, and money-market ETFs, with outflows from crowded trades (semiconductors, Korea, US IG/HY credit).",
+        "Commodity Dominance: Commodities lead YTD returns (49.4%) amid negative momentum across equities/bonds; only commodities show positive 1-week momentum, signaling widespread risk-off sentiment and defensive rotation.",
+        "Thematic ETF Surge: Semiconductors, AI infrastructure (e.g., Global X MLCC ETF), and sustainability strategies drive active/passive ETF launches, reflecting strong momentum in AI/tech themes and manager discretion in thematic allocations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
