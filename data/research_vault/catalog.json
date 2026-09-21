@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T23:46:02.133668+00:00",
-  "count": 2531,
+  "generated_at": "2026-09-21T00:01:04.749854+00:00",
+  "count": 2532,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1049,6 +1049,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-34j7wqdxwcn-3fae93",
+      "title": "At a Glance",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:24Z",
+      "summary_points": [
+        "Fed Policy & Market Dynamics: Fed raised rates to 3.75–4.00% (25bps Sept), projecting another 25bps in Dec; markets overprice three hikes.",
+        "US-Iran conflict elevates oil prices but markets adapt via shipping/pipelines.",
+        "Fixed Income Strategy: Tactical exposure to high-quality bonds (US IG, EUR IG) in medium-to-long maturities for income, price gains during growth slowdowns, and portfolio diversification.",
+        "Equity Upside Drivers: Resilient economy, broadening earnings growth, and robust AI investment support gains; prioritize Eurozone, Asia ex-Japan, and emerging market equities over UK/Swiss.",
+        "Commodity Risk Mitigation: Copper favored to hedge supply shocks, geopolitical risks, and inflation spillovers due to power grid, data center, and electrification investments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
