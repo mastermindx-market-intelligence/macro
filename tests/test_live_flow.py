@@ -3301,6 +3301,41 @@ class TestDayStateVersionDiscard:
         )
         assert _load_day_state(SESSION_DATE)["source_asof"] == source_asof
 
+    def test_per_root_receipts_roundtrip_and_ignore_malformed(self, tmp_path, monkeypatch):
+        """Restart recovery preserves only canonical per-root source/ticker clocks."""
+        from scripts.live_flow_poller import _load_day_state, _save_day_state
+
+        state_dir = tmp_path / "live_flow_state"
+        state_dir.mkdir()
+        monkeypatch.setattr(
+            "scripts.live_flow_poller._state_dir", lambda: state_dir,
+        )
+        _save_day_state(
+            SESSION_DATE,
+            {
+                "emitted_ids": set(),
+                "seen_sequences": {},
+                "contract_vol": {},
+                "notability_history": {},
+                "root_source_receipts": {
+                    "SPY": "2026-07-02T18:30:00Z",
+                    "AMD": "not-a-time",
+                },
+                "root_ticker_receipts": {
+                    "SPY": "2026-07-02T18:29:59+00:00",
+                    "TLT": 123,
+                },
+            },
+        )
+
+        restored = _load_day_state(SESSION_DATE)
+        assert restored["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert restored["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:29:59Z",
+        }
+
 
 class TestDayStateLearningWal:
     @staticmethod

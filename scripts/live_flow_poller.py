@@ -1579,6 +1579,15 @@ def _load_day_state(session_date: str) -> dict:
             raw["source_asof"] = _canonical_utc_timestamp(
                 raw["source_asof"], field="day_state.source_asof",
             )
+        # Per-root source and ticker clocks are durable session state. Missing or
+        # malformed prior entries degrade independently instead of erasing the
+        # valid receipts needed to describe off-cycle roots after a restart.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            raw.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            raw.get("root_ticker_receipts", {})
+        )
         raw.setdefault("pending_learning_events", [])
         raw.setdefault("cycle_watermarks", {})
         return raw
@@ -1629,6 +1638,15 @@ def _save_day_state(session_date: str, state: dict) -> Path:
         raw["source_asof"] = (
             _canonical_utc_timestamp(source_asof, field="day_state.source_asof")
             if source_asof is not None else None
+        )
+        # Preserve the producer-owned per-root clocks across process restarts.
+        # Canonicalizing here also prevents malformed legacy entries from being
+        # re-emitted into the atomic Terminal catalog claim.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            state.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            state.get("root_ticker_receipts", {})
         )
         # Tuple-keyed dicts → string-keyed for JSON serialisation
         raw["contract_vol"]      = {_state_key(k): v
