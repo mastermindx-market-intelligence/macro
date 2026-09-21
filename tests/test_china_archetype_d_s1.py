@@ -288,15 +288,14 @@ def test_playbook_context_never_fabricates_policy_breadth_or_combined_signal() -
         assert fabricated not in text
 
 
-def test_live_market_headline_and_playbook_context_have_separate_dom_owners() -> None:
-    live_js = (ROOT / "templates" / "china_risk_state_live.js").read_text(encoding="utf-8")
-
+def test_market_headline_and_playbook_context_have_separate_dom_owners() -> None:
+    # Keep the producer-owned market-state headline on the incumbent .v-thesis
+    # node and render playbook posture as a separately qualified context node.
+    # This publication contract intentionally stays inside the China template
+    # closure; the existing live-plane suite owns live-script behavior.
+    assert '<p class="v-thesis cnx-thesis">' in TPL
     assert "{{ _ms_thesis or 'Market-state headline unavailable.' }}" in TPL
     assert "{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}" in TPL
-    assert 'class="cnx-playbook-context"' in TPL
-
-    # Existing live plane owns only the market-state headline and never rewrites
-    # the separately qualified playbook context.
-    assert 'document.querySelector(".v-thesis")' in live_js
-    assert 'blk.headline_en' in live_js and 'blk.headline_zh' in live_js
-    assert "cnx-playbook-context" not in live_js
+    assert '<div class="cnx-playbook-context">' in TPL
+    assert TPL.count("_hero_clause[0]") == 1
+    assert TPL.count("_hero_clause[1]") == 1
