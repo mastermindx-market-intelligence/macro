@@ -1054,6 +1054,7 @@
      retired compression experiment, without replacing the deep dashboard. */
   .cnx-wrap .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
   .cnx-wrap .cnx-live-freshness{margin-left:3px;opacity:.78}
+  .cnx-wrap .cnx-playbook-context{font-size:10.5px;line-height:1.35;color:var(--muted);margin:2px 0 0}
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
   .cnx-wrap .cnx-lens::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
@@ -1891,7 +1892,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           </div>
         </div>
       </div>
-      <p class="v-thesis cnx-thesis"><span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span></p>
+      <p class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_thesis or 'Market-state headline unavailable.' }}</span><span class="l-zh">{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}</span></p>
+      <div class="cnx-playbook-context"><span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span></div>
       <div class="v-flip cnx-flip">{{ t(_ms_flip or '—', _ms_flip_zh or '—') }}</div>
       <div class="cnx-hero-btns">
         {# signals button #}

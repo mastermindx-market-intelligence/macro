@@ -78,7 +78,8 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}",
         "{% for face in _todo_shown %}",
         'class="cnx-hero-meta"',
-        'class="v-thesis cnx-thesis"><span class="l-en">{{ _hero_clause[0] }}',
+        'class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_thesis or \'Market-state headline unavailable.\' }}',
+        'class="cnx-playbook-context"',
         "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
         'class="cnx-lens"',
@@ -96,8 +97,8 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
     ):
         assert marker in TPL
 
-    # The borrowed words-first read replaces the old headline slot; it must not
-    # grow into a second standalone hero block and make the restored page wordier.
+    # Market-state headline ownership stays with the producer/live patcher;
+    # playbook context is separately qualified and cannot become a second state owner.
     assert 'class="cnx-hero-read"' not in TPL
     assert 'class="cnx-live-freshness"' in TPL
     assert 'class="cnx-stance' not in TPL
@@ -241,3 +242,61 @@ def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
     monkeypatch.delenv("RENDER_NO_DRIP")
     monkeypatch.setenv("CHINA_FAST_RENDER", "1")
     assert china_news.enabled() is False
+
+
+def test_neutral_posture_and_growth_history_do_not_become_entry_advice() -> None:
+    from engine.china_tier1 import posture_lane, reason_faces
+
+    assert posture_lane("NEUTRAL") == ("Neutral", "中性")
+    assert posture_lane(None) == ("Unclear", "待确认")
+
+    face = reason_faces(
+        [("+", "Growth-scare contrarian bottom context", "增长恐慌是实测的历史背景")],
+        n=1,
+    )[0]
+    joined = " ".join((face["en"], face["zh"], face["tip_en"], face["tip_zh"])).lower()
+    for forbidden in ("buying window", "add quality", "re-drawn nightly", "每晚重新校准"):
+        assert forbidden.lower() not in joined
+    assert "not an entry signal" in face["en"]
+    assert "不是入场信号" in face["zh"]
+
+
+def test_playbook_context_never_fabricates_policy_breadth_or_combined_signal() -> None:
+    from engine.china_tier1 import hero_clause
+
+    missing_headline_pb = {
+        "dial": {"posture": "NEUTRAL"},
+        "progress": {"phase": "mid"},
+        "quad_meaning": {
+            "en": "Growth-scare — both growth and prices falling.",
+            "zh": "增长恐慌——增长与物价齐跌。",
+        },
+    }
+    assert hero_clause(missing_headline_pb, {"color": "red"}) == (
+        "Playbook posture: Neutral.",
+        "策略姿态：中性。",
+    )
+
+    bullish_playbook = {"dial": {"posture": "CONSTRUCTIVE"}}
+    assert hero_clause(
+        bullish_playbook,
+        {"color": "red", "headline_en": "Risk-off", "headline_zh": "避险"},
+    ) == ("Playbook posture: Constructive.", "策略姿态：积极。")
+
+    text = " ".join(hero_clause(missing_headline_pb, {"color": "red"})).lower()
+    for fabricated in ("policy stays easy", "falling broadly", "buy", "entry", "act on"):
+        assert fabricated not in text
+
+
+def test_live_market_headline_and_playbook_context_have_separate_dom_owners() -> None:
+    live_js = (ROOT / "templates" / "china_risk_state_live.js").read_text(encoding="utf-8")
+
+    assert "{{ _ms_thesis or 'Market-state headline unavailable.' }}" in TPL
+    assert "{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}" in TPL
+    assert 'class="cnx-playbook-context"' in TPL
+
+    # Existing live plane owns only the market-state headline and never rewrites
+    # the separately qualified playbook context.
+    assert 'document.querySelector(".v-thesis")' in live_js
+    assert 'blk.headline_en' in live_js and 'blk.headline_zh' in live_js
+    assert "cnx-playbook-context" not in live_js
