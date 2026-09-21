@@ -606,3 +606,28 @@ def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
         "PREMIUM INTERACTION PARITY — keyboard + touch feedback", 1
     )[1]
     assert ".nav-ctrls .terminal-link," in interaction
+
+
+
+def test_settings_rows_reflow_before_labels_collide_on_narrow_mobile() -> None:
+    """At 320px, Settings controls move below labels instead of obscuring them."""
+    for source in (THEME_JS, SITE_THEME_JS):
+        assert "@media (max-width:360px){" in source
+        assert (
+            ".settings-row:not(.settings-acct){display:grid;grid-template-columns:18px minmax(0,1fr);"
+            "column-gap:11px;row-gap:8px;align-items:center}"
+        ) in source
+        assert (
+            ".settings-row:not(.settings-acct)>.sr-ctrl{grid-column:1 / -1;width:100%;min-width:0}"
+        ) in source
+        assert (
+            ".settings-row:not(.settings-acct) .set-theme-seg{width:100%;box-sizing:border-box;min-width:0}"
+        ) in source
+        assert (
+            ".settings-row:not(.settings-acct) .set-seg-btn{flex:1 1 0;min-width:40px;padding-left:6px;padding-right:6px}"
+        ) in source
+        assert ".settings-row:not(.settings-acct) .lang-toggle{width:100%;box-sizing:border-box}" in source
+        assert ".settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;min-width:0}" in source
+        assert ".settings-acct .sa-btns{flex-direction:column}" in source
+        assert ".settings-acct-in{flex-wrap:wrap}" in source
+        assert ".settings-acct-in .sa-signout{width:100%}" in source
