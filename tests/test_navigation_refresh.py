@@ -454,6 +454,86 @@ def test_neural_web_public_view_exists_and_hides_proprietary_details() -> None:
     assert "committee" not in page.lower()
 
 
+def test_navigation_button_controls_share_focus_and_press_feedback() -> None:
+    """Newer button controls must match the shared nav link interaction grammar."""
+    assert "PREMIUM INTERACTION PARITY — keyboard + touch feedback" in REFRESH_CSS
+    interaction = REFRESH_CSS.split(
+        "PREMIUM INTERACTION PARITY — keyboard + touch feedback", 1
+    )[1]
+
+    for selector in (
+        ".nav-drill-trigger,",
+        ".nav-drill-back,",
+        ".ticker-search .search-trigger,",
+        ".ticker-search .search-esc,",
+        ".fan-card,",
+        ".result-row,",
+        ".search-pagination button",
+    ):
+        assert selector in interaction
+
+    assert "):focus-visible {" in interaction
+    assert (
+        "outline: 2px solid color-mix(in srgb, var(--link, #5b79ff) 70%, transparent);"
+        in interaction
+    )
+    assert "touch-action: manipulation;" in interaction
+
+    # Clickable containers get the same restrained pressed state; pagers keep
+    # their geometry stable and instead deepen their material treatment.
+    for selector in (
+        ".nav-mega.nav-mega .nm-feat:active",
+        ".nav-mega.nav-mega .nav-mega-item:active",
+        ".nav-drill-trigger:active",
+        ".nav-drill-back:active",
+        ".ticker-search .search-trigger:active",
+        ".fan-card:active",
+        ".result-row:active",
+    ):
+        assert selector in interaction
+    assert ".search-pagination button:active {" in interaction
+    assert "transition-duration: .06s;" in interaction
+    assert "min-height: 40px;" in interaction
+    assert "min-width: 40px;" in interaction
+    assert "@media (prefers-reduced-motion: reduce)" in interaction
+    reduced = interaction.split("@media (prefers-reduced-motion: reduce)", 1)[1]
+    for selector in (
+        ".nav-search.ticker-search,",
+        ".ticker-search .search-trigger,",
+        ".ticker-search .search-expanded,",
+        ".ticker-dropdown,",
+        ".fan-card,",
+        ".result-row,",
+    ):
+        assert selector in reduced
+    assert "animation: none !important;" in reduced
+    assert "transition: none !important;" in reduced
+    assert "transform: none;" in reduced
+
+
+def test_ticker_search_visibility_never_blocks_keyboard_focus_on_open() -> None:
+    """Opening visibility is immediate; only the closing edge waits for the fade."""
+    approved = REFRESH_CSS.split("APPROVED MOCKUP — SOURCE-OF-TRUTH PORT", 1)[1]
+    expanded = approved.rsplit(".ticker-search .search-expanded {", 1)[1].split("}", 1)[0]
+    opened = approved.rsplit(".ticker-search.open .search-expanded {", 1)[1].split("}", 1)[0]
+
+    assert "visibility 0s linear .2s;" in expanded
+    assert "visibility 0s linear 0s;" in opened
+
+
+
+
+def test_ticker_search_escape_restores_keyboard_focus() -> None:
+    """Escape/close returns keyboard users to the control that opened search."""
+    for source in (THEME_JS, SITE_THEME_JS):
+        assert "function closeSearch(restoreFocus)" in source
+        assert "if (restoreFocus)" in source
+        assert "trigger.focus({ preventScroll: true })" in source
+        assert "closeButton.addEventListener('click', function () { closeSearch(true); });" in source
+        escape = source.split("} else if (e.key === 'Escape') {", 1)[1].split("}", 1)[0]
+        assert "e.preventDefault();" in escape
+        assert "closeSearch(true);" in escape
+
 def test_navigation_assets_remain_paired() -> None:
     # theme.js is intentionally baked with public Supabase config on the site
     # side; its specialized sync contract lives in tests/test_site_assets.py.

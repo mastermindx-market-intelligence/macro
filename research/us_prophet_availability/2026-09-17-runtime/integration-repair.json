@@ -1,0 +1,14 @@
+{
+  "preimage_tree": "6cd351176401859f5896e2e2f7458ef6c5a0320f",
+  "preimage_result": "2 failed, 994 passed",
+  "source_failure": "duplicate existing TURN WATCH test ownership",
+  "snapshot_failure": "site/theme.js omitted from private source extraction",
+  "source_correction_head": "81c28903c7f18132b43d5819d2e3c5e6330d0ec1",
+  "source_change": "remove our duplicate TW/leader test entries from session-anchor-era; existing washout-turn-organ owner unchanged",
+  "snapshot_correction": "materialize site/theme.js from exact integrated Git tree",
+  "targeted_green": "38 passed",
+  "final_tree": "d6e4de9ef917dff7d1bebbc1e239a934a66cf4b7",
+  "final_result": "996 passed, 38 pre-existing warnings, zero skips",
+  "waivers": 0,
+  "production": false
+}
