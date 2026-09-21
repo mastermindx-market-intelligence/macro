@@ -8,6 +8,7 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
+{% from "_risk_envelope_band.html.j2" import risk_button_context %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -209,6 +210,85 @@
 {%- endif -%}
 </svg>
 {%- endmacro %}
+
+{# ── Wave B2 W1 (UD-B2-W1): vol-weather sub-row. Folded into the Risk isle
+   (sx-risk-v2) per seat ruling R3 (research/UNIFIED_DASHBOARD_DISPOSITION.md
+   rows 21+35). Plain-word glance tier (R-W1-B): the glance tier carries
+   ONLY the tier word family (calm / breeze / gust / storm, EN + ZH twins)
+   and short plain clauses. Internal metric names ("Term structure",
+   "Vol-of-vol balance", "vol demand", "Single-stock vol", "期限结构",
+   "波动率的波动", "盘中波动需求", "个股波动率") demote to the isle's
+   dialog / disclosure tier — never on glance. The tier word comes straight
+   from vm['vol_weather'].chips[].band — the engine already classifies; the
+   template does not re-classify from percentiles. No raw values, no
+   "higher/lower than N%" integers on the glance tier (one-integer law;
+   the hero already owns N/100). Color is class-driven (data-tier), not
+   inline style, so theme.css owns material decisions. -#}
+{% macro sx_vw_strip(scope_class) -%}
+{% set _vw_chips_all = vol_weather.get('chips') or [] %}
+{% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
+{% set _vw_plain_name = {
+  'vix_level':   ('Volatility level',                '波动率水平'),
+  'vix_velocity':('5-day volatility change',         '5 日波动率变化'),
+  'term_slope':  ('Near-term vs far-term outlook',   '近期与远期展望'),
+  'vvix_vix':    ('How much traders expect next',    '交易员对未来的预期'),
+  'vix1d':       ('Overnight price swings',          '隔夜价格波动'),
+  'cor1m':       ('How much stocks move together',   '股票同步程度'),
+  'cor3m':       ('3-month implied correlation',     '3个月隐含相关性'),
+  'dspx':        ('Stock-by-stock swings',           '个股走势分散度'),
+} %}
+{% set _vw_band_word = {
+  'calm':     ('calm',     '平静'),
+  'quiet':    ('breeze',   '微风'),
+  'low':      ('breeze',   '微风'),
+  'normal':   ('breeze',   '微风'),
+  'elevated': ('gust',     '疾风'),
+  'extreme':  ('storm',    '风暴'),
+} %}
+{% set _vw_band_idx = {'calm': 0, 'quiet': 1, 'low': 1, 'normal': 1, 'elevated': 2, 'extreme': 3} %}
+{% set _vw_map = {} %}
+{% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
+<div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
+  <div class="sx-vw-eyebrow">
+    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+  </div>
+  {% for key in _vw_order %}
+  {% set _chip = _vw_map.get(key) %}
+  {% if _chip %}
+  {% set _chip_fresh = _chip.get('freshness') %}
+  {% set _chip_band = (_chip.get('band') or 'normal') %}
+  {% set _wx_tier_idx = _vw_band_idx.get(_chip_band, 1) %}
+  {% set _wx_word_pair = _vw_band_word.get(_chip_band, ('breeze', '微风')) %}
+  {% set _name_pair = _vw_plain_name.get(key) %}
+  {% set _chip_tier = 'sx-vw-row--young' if _chip_fresh in ('young','missing') else ('sx-vw-row--' ~ _chip_band) %}
+  <div class="sx-vw-row {{ _chip_tier }}" data-sx-vw-chip="{{ key }}" data-tier="{{ 'young' if _chip_fresh in ('young','missing') else _chip_band }}">
+    <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier_idx) }}</div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">{{ _name_pair[0] if _name_pair else key }}</span><span class="l-zh">{{ _name_pair[1] if _name_pair else key }}</span>
+      </div>
+      {% if _chip_fresh in ('young', 'missing') %}
+      <div class="sx-vw-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
+      {% else %}
+      {# Glance tier (R-W1-B): tier word only — no engine plain_en, no raw
+         values, no internal metric names. Plain clauses demoted to the
+         isle's disclosure / dialog tier (engine still carries plain_en in
+         vm['vol_weather'].chips[].plain_en for that tier). -#}
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      {% endif %}
+    </div>
+    <div class="sx-vw-tier">
+      {% if _chip_fresh in ('young', 'missing') %}
+      <span class="l-en">—</span><span class="l-zh">—</span>
+      {% else %}
+      <span class="l-en">{{ _wx_word_pair[0] }}</span><span class="l-zh">{{ _wx_word_pair[1] }}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,6 +300,15 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 {% if mode != 'stocks' %}{% include "_lazy_heatmap_loader.html.j2" %}{% endif %}
+{# UD-B1 R-L (BLOCKER-1): at ≤640px, remove the server-rendered `open` attribute on
+   .ud-watch-details so the <summary> disclosure row takes over (CSS cannot override
+   the UA `:not([open]) > :not(summary) { display: none }` rule — the DOM state is
+   the only lawful fix). Desktop (>640px) keeps the `open` so the three cards paint
+   at 1440. State selection via JS is permitted; styling stays in CSS.
+   Must register the listener, not run synchronously: this <script> lives in
+   <head>, the <details> lives in <body>, and a synchronous querySelectorAll
+   returns empty. DOMContentLoaded fires after the body parses. #}
+<script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -2204,6 +2293,29 @@
        DOCTRINE §3: full display names WRAP, never truncate. */
     white-space:normal; line-height:1.35; flex:0 1 auto; min-width:0; max-width:100%; background:color-mix(in srgb,var(--info) 9%,var(--panel2)); border:1px solid color-mix(in srgb,var(--info) 28%,var(--line)); color:var(--ink-info, var(--info,var(--link))); cursor:help; }
   .two-reads-chip .tr-sep { opacity:.45; margin:0 2px; }
+
+  /* Prophet P1 — page-local display-only leader observation shelf. */
+  .plo{margin:14px 0 16px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:color-mix(in srgb,var(--panel2) 74%,transparent)}
+  .plo-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .plo-hd h3{margin:0;font-size:15px;letter-spacing:-.01em}
+  .plo-asof,.plo-summary,.plo-state,.plo-more{font-size:11.5px;color:var(--muted)}
+  .plo-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px;padding-bottom:10px;border-bottom:1px solid var(--hair,var(--line))}
+  .plo-summary b{font-family:var(--num);font-variant-numeric:tabular-nums;color:var(--text)}
+  .plo-authority{font-weight:600}
+  .plo-state{padding:10px 0 2px;font-weight:600}
+  .plo-rows{display:grid;gap:7px;margin-top:10px}
+  .plo-row{display:grid;grid-template-columns:minmax(54px,76px) minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--hair,var(--line));border-left:3px solid color-mix(in srgb,var(--link) 62%,var(--line));border-radius:var(--r-ctl,8px);background:var(--panel)}
+  .plo-row[data-state="PULLBACK"]{border-left-color:color-mix(in srgb,var(--warn) 72%,var(--line))}
+  .plo-row[data-state="RESET_TURN"]{border-left-color:color-mix(in srgb,var(--ok) 72%,var(--line))}
+  .plo-row[data-state="RESUMED"]{border-left-color:color-mix(in srgb,var(--muted) 72%,var(--line))}
+  .plo-ticker{font-family:var(--num);font-size:13px;font-weight:800;letter-spacing:.02em}
+  .plo-copy{font-size:12px;line-height:1.45;color:var(--text)}
+  .plo-zone{font-family:var(--num);font-size:11px;color:var(--muted);white-space:nowrap}
+  .plo-more{margin-top:9px;padding-top:8px;border-top:1px dashed var(--hair,var(--line));font-weight:600}
+  [data-theme="light"] .plo{background:var(--panel);box-shadow:var(--card-shadow)}
+  [data-theme="light"] .plo-row{background:var(--panel2)}
+  @media(max-width:620px){.plo{padding:12px}.plo-row{grid-template-columns:62px minmax(0,1fr)}.plo-zone{grid-column:2;white-space:normal}.plo-authority{flex-basis:100%}}
+  /* end Prophet P1 leader observation shelf */
 </style>
 {% if mode != 'stocks' %}
 <style id="macro-attio-type">
@@ -2500,7 +2612,17 @@
   {# Ignition Radar strip + "Big Seven" leadership board REMOVED 2026-07-23 (operator ruling — forced Mag-7 call failed; see research/DO_NOT_REBUILD.md §2/§4 and research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md). Engine lanes (mag7_regime, ignition_radar) keep accruing in the background. #}
   {% endif %}
 
-  {% if mode != 'stocks' %}
+  {% if mode == 'macro' %}
+  {# ====== UD-B1 · Unified Macro Dashboard hero (Stage 1, binding) ======
+     Inserts the spec §1 hero skeleton ABOVE every legacy isle. All remaining
+     isles KEEP their current rendering below this block; B2+ migrates them
+     per research/UNIFIED_DASHBOARD_DISPOSITION.md. Binds REAL view-model
+     keys (no illustrative numbers from the spec). The legacy #regime-radar
+     panel that follows is untouched and remains the deep surface for the
+     macro controls (ms-front, six-factor evidence matrix, multi-timeframe
+     tape, flip-context popover, alerts popover, etc.). #}
+  {% include "_unified_dashboard_hero.html.j2" %}
+
   <!-- ======================= HEADER ======================= -->
   <div class="panel span12" id="regime-radar">
   <input type="checkbox" id="ms-alerts-toggle" class="ms-alerts-cb" hidden aria-hidden="true">
@@ -3955,6 +4077,14 @@ body.page-macro.mx4-grid .mx4-rack{
 
 /* Show face in grid view (.mx4-grid is permanent in macro mode) */
 body.page-macro.mx4-grid .sxg-face{display:flex;}
+/* R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+   container on the macro route. Its face is display:none!important
+   BY DESIGN, including the .mx4-grid carve-out that would otherwise
+   flex-show .sxg-face. The visible risk surface is .mx5-sc-left. */
+body.page-macro #sx-risk-v2,
+body.page-macro.mx4-grid #sx-risk-v2{display:none!important;}
+body.page-macro #sx-risk-v2 .sxg-face,
+body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
 
 /* ── Card spans (desktop ≥1100px) ───────────────────────────── */
 /* v5 layout:
@@ -4001,9 +4131,10 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face hidden in grid (band zone-2 is its face) ── */
-body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
-/* But when data-open, show the tray normally */
+/* ── Risk card: the visible risk surface is the mx5 scorecard
+   (.mx5-sc-left). #sx-risk-v2 is an invisible legacy container
+   (R-W1-A-AMENDED). The vol-weather strip is a sub-row of
+   .mx5-sc-left, below the dial + scar chips. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -4174,20 +4305,10 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2: face and sum hidden — band zone-2 (S2/S3) is its card face.
-   The .sx element collapses to zero height when not open; when open (data-open),
-   it spans 1/-1 at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse the risk card when not expanded — it has no face in grid view */
-body.page-macro.mx4-grid #sx-risk-v2:not([data-open]){
-  min-height:0;
-  border:none;
-  background:transparent;
-  box-shadow:none;
-  padding:0;
-  margin:0;
-  /* still keep order:-1 so when opened it goes to top */
-}
+/* R-W1-A-AMENDED: #sx-risk-v2 is display:none!important on the macro
+   route (see the hide rule next to .mx4-grid .sxg-face). Empty card
+   chrome must not paint a leftover Risk sibling under the scorecard. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -4197,10 +4318,8 @@ body.page-macro.mx4-grid .mx4-grid-only{display:block;}
 body.page-macro .mx4-verdict-band{display:none!important;}
 
 /* ── In grid view: sx-evidence face = WHAT TO DO card (v5); popover button opens island ── */
-/* sx-risk-v2 face still hidden; its tray opens from the rack as before */
 /* sx-evidence face is now visible in grid view as the WTD card — override the hide rule */
 body.page-macro.mx4-grid #sx-evidence .sxg-face{display:flex!important;}
-/* sx-risk-v2 face already hidden via existing rule body.page-macro.mx4-grid #sx-risk-v2 .sxg-face */
 
 /* ══════════════════════════════════════════════════════════
    S2 — EVIDENCE face full content
@@ -6872,14 +6991,12 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* graph slot collapses when no history is present — no fake chart (house law) */
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
-#dlg-sentiment .vsb-vw-row{grid-template-columns:26px minmax(110px,1.3fr) 1fr 54px;gap:12px;}
-.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
+/* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
+   lives inside .mx5-sc-left and inherits tokens via .sx-vw-row.) */
+.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
 [data-theme="light"] .sg-pos{background:rgba(0,0,0,.08);}
-.sg-pos-mark{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);
-  background:var(--sg-wx-c,var(--muted));border:2px solid var(--panel,#0f1420);box-shadow:0 1px 3px rgba(0,0,0,.35);}
-[data-theme="light"] .sg-pos-mark{border-color:#fff;}
 .sg-pos-axis{display:flex;justify-content:space-between;font:600 8px/1 var(--font-ui,inherit);color:var(--muted);margin-top:4px;letter-spacing:.02em;}
 @media(prefers-reduced-motion:no-preference){
   #dlg-sentiment .sg-pos-mark{left:50%;transition:left 640ms cubic-bezier(.34,1.2,.5,1) .12s;}
@@ -6916,8 +7033,6 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 @media(max-width:430px){
   .sg-hero-num{font-size:34px;}
-  #dlg-sentiment .vsb-vw-row{grid-template-columns:24px 1fr 48px;}
-  #dlg-sentiment .vsb-vw-row .sg-pos-wrap{display:none;}
   .sg-split-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
   .row-pop .sg-dial{width:120px;height:68px;}
 }
@@ -7385,7 +7500,20 @@ html[data-theme="light"] :is(
         {# v-thesis as gradient headline #}
         <p class="v-thesis{{ (' ms-' + MS.color) if market_state else '' }}">{{ t(MS.headline_en, MS.headline_zh) }}</p>
         {% for o in MS.overrides %}<p class="v-override"><span class="ic">⚠</span>{{ t(o.note_en, o.note_zh) }}</p>{% endfor %}
-        {% if MS.flip_en %}<p class="v-flip">{{ t(MS.flip_en, MS.flip_zh) }}</p>{% endif %}
+        {# R-C / R-C FINAL FORM (one-integer law): the live flip clause may
+           quote its own constraint integer — strip GENERICALLY regardless
+           of the value, EN `(now X/100)` and ZH `（现 X/100）` — so the
+           score gauge stays the only visible integer on the page. Jinja does
+           not recognise Python's `r"..."` prefix; escape each backslash. #}
+        {%- set _flip_en_rcc = MS.flip_en or '' -%}
+        {%- set _flip_zh_rcc = MS.flip_zh or '' -%}
+        {%- if _flip_en_rcc -%}
+          {%- set _flip_en_rcc = _flip_en_rcc|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') -%}
+        {%- endif -%}
+        {%- if _flip_zh_rcc -%}
+          {%- set _flip_zh_rcc = _flip_zh_rcc|regex_replace('（现\\s*\\d+/100）', '') -%}
+        {%- endif -%}
+        {% if _flip_en_rcc or _flip_zh_rcc %}<p class="v-flip">{{ t(_flip_en_rcc, _flip_zh_rcc) }}</p>{% endif %}
         <div class="hero-sub mx2-hero-sub">
           {# COPY-09: TRANSITIONING → plain-word 'shifting' in EN; ZH uses LEX entry 转换中.
              COPY-07: date removed from visible hero-sub (topbar is the canonical page stamp).
@@ -7991,8 +8119,10 @@ html[data-theme="light"] :is(
          still reads correctly if the builder stops prefixing one. #}
       {% set _flip_en = (MS.flip_en | trim) %}
       {% set _flip_en = _flip_en[1:] | trim if _flip_en.startswith('→') else _flip_en %}
+      {% set _flip_en = _flip_en|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') %}
       {% set _flip_zh = (MS.flip_zh | trim) if MS.flip_zh else '' %}
       {% set _flip_zh = _flip_zh[1:] | trim if _flip_zh.startswith('→') else _flip_zh %}
+      {% set _flip_zh = _flip_zh|regex_replace('（现\\s*\\d+/100）', '') %}
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
         <span class="l-en">{{ _flip_en }}</span>
@@ -8037,6 +8167,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">{{ _mx5_risk_lbl[0] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
           <span class="l-zh">{{ _mx5_risk_lbl[1] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% else %}
         {# Fallback: risk not elevated, no ignition data — neutral Risk Detail #}
@@ -8049,6 +8180,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">Risk Detail</span>
           <span class="l-zh">风险详情</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% endif %}
         {# no down-caret: this button opens a modal dialog, not a popover-below
@@ -8093,6 +8225,16 @@ html[data-theme="light"] :is(
         </div>{# /mx5PopFactors #}
 
       </div>{# /mx5-btn-row #}
+
+      {# ── UD-B2-W1 (R-W1-A-AMENDED 2026-09-20): vol-weather sub-row sits
+         DIRECTLY BELOW the dial + scar chips, as a sub-row INSIDE the mx5
+         scorecard's left column (.mx5-sc-left). #sx-risk-v2 is an invisible
+         legacy container — do not host the strip there. #}
+      {% if vol_weather is defined and vol_weather %}
+      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
+        {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
+      </div>
+      {% endif %}
 
     </div>{# /mx5-sc-left #}
 
@@ -8499,13 +8641,6 @@ html[data-theme="light"] :is(
   </script>
   {% endif %}
   </div>{# /#regime-radar panel #}
-
-  {# ── THREE SEPARATE READS — Grey Deer settled risk envelope (macro mode only).
-       Sits immediately under the regime hero: the hero answers "what regime am I
-       in", this band answers the different question "do the reads agree", which
-       the page previously buried in a prose aside. Renders nothing when the
-       artifact is absent. ── #}
-  {% if mode != 'stocks' %}{% include "_risk_envelope_band.html.j2" %}{% endif %}
 
   {# ── V2 ROW-LEDGER SECTIONS (macro mode only) ── #}
   {% if mode != 'stocks' %}
@@ -11430,51 +11565,13 @@ html[data-theme="light"] :is(
   </div>{# /sx-markets-v2 #}
 
   {# ── 4. RISK row + tray (Stage B) ── #}
-  {# Requires: market_state (MS.radar), latest.risk_radar (if present), froth_fragility, fear_euphoria, fear_greed #}
+  {# R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+     container. The RISK/风险 + Credit Stress stub face was removed so
+     the strip and the risk read appear once, inside .mx5-sc-left. The
+     empty wrapper stays for any hash/JS that still names the id; CSS
+     sets display:none!important on the macro route. #}
   {% if market_state %}
-  {% set _rdr = market_state.radar if market_state.radar is defined else {} %}
-  {% set _rdr_state = _rdr.state if _rdr else 'unknown' %}
-  {% set _rdr_score = _rdr.top_score if _rdr else none %}
-  {% set _rdr_col = 'var(--down)' if _rdr_state == 'risk-off' else ('var(--orange,var(--warn))' if _rdr_state in ('elevated','caution') else 'var(--up)') %}
   <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)">
-    {# RISK face — opens the risk dialog (S1: wires to dialog; full redesign in S3) #}
-    {% set _rdr_label_en = _rdr.label_en if (_rdr.label_en is defined and _rdr.label_en) else _rdr_state %}
-    {% set _rdr_label_zh = (_rdr.label_zh if (_rdr.label_zh is defined and _rdr.label_zh) else none) or _rdr_label_en %}
-    <div class="sxg-face sxg-face-risk-hidden" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-risk');}">
-      <div class="sxg-face-eyebrow"><span class="l-en">Risk</span><span class="l-zh">风险</span></div>
-      <div class="sxg-face-stance" style="color:{{ _rdr_col }}">
-        {# COPY-01: use _rdr_label_en/_rdr_label_zh (set above at glance) for parity #}
-        <span class="l-en">{{ _rdr_label_en | title }}</span>
-        <span class="l-zh">{{ _rdr_label_zh }}</span>
-      </div>
-      {% if _rdr_score is not none %}
-      <div class="sxg-face-sub"><span class="l-en">Intensity {{ _rdr_score }}/100</span><span class="l-zh">强度 {{ _rdr_score }}/100</span></div>
-      {% endif %}
-      {# W4 EVW: high-impact event ≤2 trading days out — context chip (display-only, RIC-R3). #}
-      {# engine/risk_radar.py is untouched; this chip is rendered-only calendar context. #}
-      {% if evw_snap is defined and evw_snap and evw_snap.get('available') %}
-      {% set _evw_td_cpi = evw_snap.get('td_to_cpi') %}
-      {% set _evw_td_fomc = evw_snap.get('td_to_fomc') %}
-      {% set _evw_td_nfp = evw_snap.get('td_to_nfp') %}
-      {% set _evw_td_ppi = evw_snap.get('td_to_ppi') %}
-      {% set _evw_near = (
-          (_evw_td_cpi is not none and _evw_td_cpi <= 2) or
-          (_evw_td_fomc is not none and _evw_td_fomc <= 2) or
-          (_evw_td_nfp is not none and _evw_td_nfp <= 2) or
-          (_evw_td_ppi is not none and _evw_td_ppi <= 2)
-      ) %}
-      {% if _evw_near %}
-      {% set _evw_what_en = 'CPI' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('Fed decision' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('Payrolls' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else 'PPI')) %}
-      {% set _evw_what_zh = '消费者物价' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('美联储决议' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('非农就业' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else '生产者物价')) %}
-      {% set _evw_days_en = 'today' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('tomorrow' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else 'in 2 days') %}
-      {% set _evw_days_zh = '今日' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('明日' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else '2日后') %}
-      <div style="margin-top:5px;font-size:10.5px;color:var(--ink-warn, var(--warn,#f59e0b));line-height:1.4">
-        <span class="l-en">{{ _evw_what_en }} {{ _evw_days_en }} — expect elevated tape noise.</span>
-        <span class="l-zh">{{ _evw_what_zh }}{{ _evw_days_zh }}发布 — 市场噪音可能放大。</span>
-      </div>
-      {% endif %}
-      {% endif %}
-    </div>
   </div>{# /sx-risk-v2 #}
   {% endif %}{# /market_state #}
 
@@ -12565,6 +12662,9 @@ html[data-theme="light"] :is(
           <div class="riskdlg-stance">{{ t('Nothing to chase right now — watch.','当前无需追高 — 观望。') }}</div>
           {% endif %}
         </section>
+
+        {# Same engine, same Risk Radar entry point; no standalone envelope panel. #}
+        {% include "_risk_envelope_band.html.j2" %}
 
 {% set _rk_rd = MS.radar if (MS.radar is defined and MS.radar) else none %}
         {% if _rk_rd and _rk_rd.state %}
@@ -14579,54 +14679,9 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
 
-        {# VSB W3: Volatility weather strip #}
-        {% if vol_weather is defined and vol_weather %}
-        {% set _vw_chips_all = vol_weather.get('chips') or [] %}
-        {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
-        {% set _vw_map = {} %}
-        {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
-        <div class="mx5-dlg-sep"></div>
-        <div id="vsb-vol-weather-section" style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:10px">
-          <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
-        </div>
-        {% for key in _vw_order %}
-        {% set _chip = _vw_map.get(key) %}
-        {% if _chip %}
-        {% set _chip_fresh = _chip.get('freshness') %}
-        {% set _chip_pctile = _chip.get('pctile') %}
-        {# weather tier from percentile: calm ≤35, breeze ≤60, gust ≤82, storm >82 #}
-        {% set _wx_tier = (0 if _chip_pctile is none else (3 if _chip_pctile > 82 else (2 if _chip_pctile > 60 else (1 if _chip_pctile > 35 else 0)))) %}
-        {% set _wx_col = ('var(--muted)' if _chip_fresh in ('young','missing') else ('var(--down,#ef4444)' if _wx_tier >= 3 else ('var(--warn,#f59e0b)' if _wx_tier == 2 else ('var(--info,#4d8ef5)' if _wx_tier == 1 else 'var(--up,#22c55e)')))) %}
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="{{ key }}" style="--sg-wx-c:{{ _wx_col }}">
-          <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier) }}</div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">{{ _chip.get('name_en') or key }}</span><span class="l-zh">{{ _chip.get('name_zh') or _chip.get('name_en') or key }}</span></div>
-            {% if _chip_fresh in ('young', 'missing') %}
-            <div class="mx5-dlg-factor-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
-            {% else %}
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">{{ _chip.get('plain_en') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}higher than {{ _chip_pctile }}% of days{% else %}lower than {{ 100 - _chip_pctile }}% of days{% endif %}{% endif %}</span>
-              <span class="l-zh">{{ _chip.get('plain_zh') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}高于历史 {{ _chip_pctile }}% 的交易日{% else %}低于历史 {{ 100 - _chip_pctile }}% 的交易日{% endif %}{% endif %}</span>
-            </div>
-            {% endif %}
-          </div>
-          <div class="sg-pos-wrap">
-            {% if _chip_pctile is not none and _chip_fresh not in ('young','missing') %}
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:{{ _chip_pctile }}%"></span></div>
-            <div class="sg-pos-axis"><span>{{ t('Low','低') }}</span><span>{{ t('High','高') }}</span></div>
-            {% endif %}
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            {% if _chip_fresh in ('young', 'missing') %}
-            <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">—</span>
-            {% else %}
-            {{ _chip.get('value') if _chip.get('value') is not none else '—' }}
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+        {# VSB W3: Volatility weather strip — REMOVED 2026-09-20 (UD-B2-W1 fold).
+           The chips now live as a sub-row inside .mx5-sc-left;
+           the dialog no longer carries the duplicate section. #}
 
         {# VSB W4: AI names vs the rest #}
         {% if breadth_split is defined and breadth_split %}
@@ -16146,7 +16201,7 @@ html[data-theme="light"] :is(
            way to REACH the typed Candidates-unavailable state (B5) — gating
            the toggle on `_su` would bake that state and then make it
            permanently unreachable. -#}
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between tonight's candidate screen and the plan book" data-tip-zh="在今晚的候选筛选与计划簿之间切换">
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between the candidate screen and the plan book" data-tip-zh="在候选筛选与计划簿之间切换">
           <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _su else 'false' }}" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
           <button id="us-src-btn-plan" type="button" aria-selected="{{ 'false' if _su else 'true' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
@@ -16214,6 +16269,43 @@ html[data-theme="light"] :is(
       <div class="nb-stale-note">
         {% if _stale.get('unknown') or not _stale.get('price_through') %}<span class="l-en">We can’t confirm how current these prices are, so treat this board as out of date — check a live quote before you act.</span><span class="l-zh">目前无法确认这些价格是否最新，请把本榜单当作过期数据——操作前先看一下实时报价。</span>{% else %}<span class="l-en">Still ranked on prices as of {{ _stale.get('price_through') }}{% if _stale_behind is not none %} — {{ _stale_behind }} session{{ '' if _stale_behind == 1 else 's' }} behind{% endif %}. We’re updating it; check a live quote before you act.</span><span class="l-zh">仍按截至 {{ _stale.get('price_through') }} 的价格排序{% if _stale_behind is not none %}，落后 {{ _stale_behind }} 个交易日{% endif %}。数据正在更新，操作前请先看一下实时报价。</span>{% endif %}
       </div>
+      {% endif %}
+      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
+          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
+      {% if us_leader_observations %}
+      {% set _plo = us_leader_observations %}
+      {% set _plo_src = _plo.get('source') or {} %}
+      {% set _plo_counts = _plo.get('counts') or {} %}
+      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
+      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
+        <div class="plo-hd">
+          <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
+          <span class="plo-asof">
+            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
+            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
+          </span>
+        </div>
+        <div class="plo-summary">
+          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
+        </div>
+        {% if _plo.get('status') == 'unavailable' %}
+        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
+        {% elif _plo.get('status') == 'empty' %}
+        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
+        {% elif _plo.get('status') == 'degraded' %}
+        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
+        {% endif %}
+        <div class="plo-rows">
+          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
+        </div>
+        {% if _plo_gate %}
+        <div class="pg-more plo-more">
+          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
+          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
+        </div>
+        {% endif %}
+      </section>
       {% endif %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
@@ -16565,8 +16657,8 @@ html[data-theme="light"] :is(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows on tonight's board</span>
-          <span class="l-zh">今晚榜单还有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more plan rows in the plan book</span>
+          <span class="l-zh">计划簿中另有 {{ _life_visible_locked }} 条计划</span>
         </div>
         <div class="us-tw-p">
           <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
@@ -16638,14 +16730,16 @@ html[data-theme="light"] :is(
              render as visible `<b>55</b>` text instead of bold. Either way,
              the rule is the same: never pass HTML into t()/td(); compose the
              bilingual twin explicitly instead, as below. -#}
-          <span class="mx-sec-total"><span class="l-en"><b>{{ _cand_total }}</b> screened tonight</span><span class="l-zh">本次筛出 <b>{{ _cand_total }}</b> 只</span></span>
+          {# The board's source date is not the page build date. A cached screen must never promise "tonight". #}
+          {% set _cand_asof = _su.get('as_of') %}
+          <span class="mx-sec-total"><span class="l-en"><b>{{ _cand_total }}</b> screened · {% if _cand_asof %}as of <time datetime="{{ _cand_asof }}">{{ _cand_asof }}</time>{% else %}date unavailable{% endif %}</span><span class="l-zh">筛出 <b>{{ _cand_total }}</b> 只 · {% if _cand_asof %}截至 <time datetime="{{ _cand_asof }}">{{ _cand_asof }}</time>{% else %}筛选日期不可用{% endif %}</span></span>
           <a class="mx-sec-link" href="discovery.html">{{ t('Open the screener', '打开筛选器') }}</a>
         </div>
         {#- P0 #6185 (C5): "the board above"/"上方看板" described the pre-#6076
            layout where the candidate grid sat directly under the Setups
            board. In Candidates mode there is no board above — reword to the
            Plans view this population feeds. -#}
-        <p class="mx-sec-note">{{ t('Names tonight’s screen surfaced. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.', '本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。') }}</p>
+        <p class="mx-sec-note">{{ t('Names surfaced by this dated screen. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.', '本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。') }}</p>
         {%- if gate %}
         {#- Repair round, finding B3: restores the honest-preview disclosure the
            old (retired) stage-filter bar carried as #us-gate-note — this
@@ -16654,7 +16748,7 @@ html[data-theme="light"] :is(
         <div class="us-gate-note" id="us-gate-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <span class="l-en">You're seeing the first {{ gate.preview }} of {{ gate.total }} screened candidates. Sign in to see the full list.</span>
-          <span class="l-zh">当前显示今晚筛出的 {{ gate.total }} 只候选中的前 {{ gate.preview }} 只。登录后可查看完整名单。</span>
+          <span class="l-zh">当前显示本次筛出的 {{ gate.total }} 只候选中的前 {{ gate.preview }} 只。登录后可查看完整名单。</span>
         </div>
         {%- endif %}
         {%- if _sg.any %}
@@ -16689,8 +16783,8 @@ html[data-theme="light"] :is(
         {% if gate %}
         <div class="us-tier-wall" id="us-tier-wall">
           <div class="us-tw-h">
-            <span class="l-en">{{ gate.locked }} more names on tonight's board</span>
-            <span class="l-zh">今晚榜单还有 {{ gate.locked }} 只股票</span>
+            <span class="l-en">{{ gate.locked }} more names in this screen</span>
+            <span class="l-zh">本次筛选还有 {{ gate.locked }} 只股票</span>
           </div>
           <div class="us-tw-p">
             <span class="l-en">You're seeing the first {{ gate.preview }} of {{ gate.total }} names. Sign in to see the full ranked board, every entry stage, and the table view.</span>
@@ -17770,7 +17864,7 @@ window.__CHART_SWAP__ = {
    live.js is __mmLiveInit-guarded so this second include was a no-op — dropped. #}
 <script src="risk_state_live.js"></script>
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
-   include itself (_risk_envelope_band.html.j2, mode != 'stocks' above). #}
+   include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script src="risk_envelope_live.js"></script>{% endif %}
 <script src="release_publications_live.js"></script>
 <script>
@@ -19987,7 +20081,24 @@ if (document.readyState === 'loading') {
     for (var i = 0; i < notes.length; i++) notes[i].remove();
   }
 
+  function hydrateLeaderObservations(html){
+    if (!html) return;
+    var grid = document.querySelector('#us-leader-observations .plo-rows');
+    if (!grid) return;
+    var oldBar = grid.nextElementSibling;
+    if (!(oldBar && oldBar.classList && oldBar.classList.contains('sm-bar'))) oldBar = null;
+    var freshGrid = document.createElement('div');
+    freshGrid.className = grid.className;
+    freshGrid.setAttribute('data-showmore-rows', '3');
+    freshGrid.innerHTML = grid.innerHTML + html;
+    grid.parentNode.insertBefore(freshGrid, grid);
+    grid.parentNode.removeChild(grid);
+    if (oldBar && oldBar.parentNode) oldBar.parentNode.removeChild(oldBar);
+    if (window.initShowMore) window.initShowMore();
+  }
+
   function hydratePanels(payload){
+    hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
     appendTo('#us-standouts .pbr-l', payload.ran_html);

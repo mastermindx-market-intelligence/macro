@@ -73,9 +73,70 @@
                             '我们无法确认是哪家公司为该证券提交了文件，因此未显示到期债务信息。') }}</p>
     <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
                                '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
-  {% endif %}
+  {% endif -%}
+
+  {% if cash_runway and cash_runway.status != 'not_applicable' -%}
+  <div class="dmw-runway" data-panel="cash_runway.v1">
+    {% if cash_runway.status == 'reported' %}
+      {% set _end = cash_runway.period.end %}
+      {% set _form = cash_runway.period.form %}
+      {% set _year_en = 'In the year ending ' ~ _end ~ ' (' ~ _form ~ ')' %}
+      {% set _year_zh = '截至 ' ~ _end ~ ' 的财年（' ~ _form ~ '）' %}
+      {% if cash_runway.runway_display == 'self_funding' %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' it brought in more cash than it spent, including equipment — no burn to measure.',
+                              _year_zh ~ '其现金流入多于支出（包括设备支出），暂无可衡量的消耗。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% elif cash_runway.runway_display == 'more_than_10_years' %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.annual_burn_display ~ ' more than it brought in after buying equipment — at that pace the cash lasts more than 10 years.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '购买设备后的支出超过现金流入 ' ~ cash_runway.annual_burn_display ~ '，按此速度现金可支撑超过10年。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% elif cash_runway.runway_display == 'months' %}
+      {% set _n = '%.1f'|format(cash_runway.runway_months) if cash_runway.runway_months < 12 else '%d'|format(cash_runway.runway_months|round|int) %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.monthly_burn_display ~ ' more per month than it brought in after buying equipment — at that pace the cash lasts about ' ~ _n ~ ' months.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '每月购买设备后的支出超过现金流入约 ' ~ cash_runway.monthly_burn_display ~ '，按此速度现金可支撑约 ' ~ _n ~ ' 个月。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% if cash_runway.near_term_cover_pct %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
+                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+      {% endif %}
+
+    {% elif cash_runway.status == 'no_cash_facts' %}
+      <p class="dmw-null">{{ t('Its filings are available, but they do not include all three facts needed to measure cash burn — cash on hand, operating cash flow, and equipment spend.',
+                              '已获取其 SEC 文件，但文件中未包含衡量现金消耗所需的全部三项数据——现金、经营活动现金流及设备支出。') }}</p>
+      <p class="dmw-nullwhy">{{ t('Not every company reports all three of these facts. Nothing is being estimated in their place.',
+                                 '并非所有公司都会披露这三项数据；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'no_filings' %}
+      <p class="dmw-null">{{ t('No SEC filings available for this listing.', '该证券暂无可用的 SEC 文件。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC. None were found for this one, so there is nothing to show yet.',
+                                 '本面板仅读取发行人向 SEC 提交的文件。此处暂未找到相关文件，因此暂无可展示的内容。') }}</p>
+
+    {% elif cash_runway.status == 'not_loaded' %}
+      <p class="dmw-null">{{ t('Cash runway not loaded yet.', '现金跑道尚未加载。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel is still catching up to the SEC filings for this listing. Check back soon — nothing is being estimated in its place.',
+                                 '本面板仍在同步该证券的 SEC 文件，请稍后再查看；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'unresolved' %}
+      <p class="dmw-null">{{ t('We do not have an SEC filing record for this listing.', '我们目前没有该证券的 SEC 备案记录。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC, and this listing has not been matched to one.',
+                                 '本面板仅读取发行人向 SEC 提交的文件，该证券尚未匹配到对应的备案主体。') }}</p>
+
+    {% elif cash_runway.status == 'identity_mismatch' %}
+      <p class="dmw-null">{{ t('We could not confirm which company filed for this listing, so the cash runway is not shown.',
+                              '我们无法确认是哪家公司为该证券提交了文件，因此未显示现金跑道信息。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
+                                 '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
+    {% endif %}
+  </div><!-- .dmw-runway -->
+  {% endif -%}
 
   <div class="mod-ft">{{ t('Research context only — reported figures from SEC filings, not a rating, a signal or investment advice.',
                            '仅供研究参考 — 数据摘自 SEC 文件披露口径，不构成评级、信号或投资建议。') }}</div>
 </section>
-{% endif %}
+{% endif -%}
