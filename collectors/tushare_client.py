@@ -93,7 +93,9 @@ def last_transport_error() -> "dict | None":
     Shape: ``{api_name, kind, exception, ts}``. No exception message, URL parameters,
     request body, token, or vendor body is retained. ``kind`` is one of
     ``connect_timeout``, ``read_timeout``, ``tls``, ``connection``, or ``timeout``.
-    Any HTTP response clears the latch because DNS/TCP/TLS have then succeeded.
+    The receipt persists for the caller-owned diagnostic window even if a later request
+    succeeds: intermittent transport failure is still material to an all-zero pass.
+    ``clear_transport_error()`` is the only reset boundary.
     """
     return dict(_transport_error) if _transport_error else None
 
@@ -190,19 +192,20 @@ def query(api_name: str, fields: str = "", *, _retries: int = 2,
         except Exception as e:  # noqa: BLE001 — one bad call never breaks a build
             # Exception text can echo a request. Retain only a safe class/category receipt.
             kind = _transport_kind(e)
-            _transport_error = ({
-                "api_name": api_name,
-                "kind": kind,
-                "exception": type(e).__name__,
-                "ts": datetime.now(timezone.utc).isoformat(),
-            } if kind else None)
+            if kind:
+                _transport_error = {
+                    "api_name": api_name,
+                    "kind": kind,
+                    "exception": type(e).__name__,
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                }
             log.warning("tushare %s request failed (%s)", api_name, type(e).__name__)
             return None
 
-        # Any HTTP response proves the runner's resolver/TCP/TLS route reached the vendor.
-        # Clear a prior transport miss BEFORE parsing/status handling so an HTTP 4xx, redirect,
-        # malformed body, or vendor code can never masquerade as a DNS/network outage.
-        _transport_error = None
+        # Do NOT clear a prior failure merely because a later endpoint returns HTTP.
+        # The latch represents the whole caller-owned diagnostic window: intermittent
+        # transport failure remains the right explanation for an all-zero module pass,
+        # and a partially productive pass should still disclose degraded connectivity.
         try:
             if r.is_redirect or r.is_permanent_redirect or 300 <= r.status_code < 400:
                 log.warning("tushare %s refused HTTP redirect", api_name)

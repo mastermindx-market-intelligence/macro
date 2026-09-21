@@ -248,22 +248,63 @@ def test_tushare_client_latches_transport_cause_without_credential_leak(monkeypa
     assert tc.last_auth_error() is None
 
 
-def test_tushare_transport_latch_clears_on_any_http_response(monkeypatch):
-    """HTTP failure still proves resolver/TCP/TLS reachability and clears transport state."""
+def test_tushare_transport_latch_survives_later_http_success_until_window_reset(monkeypatch):
+    """A later success must not erase an intermittent failure from the same adapter pass."""
     from collectors import tushare_client as tc
 
     monkeypatch.setenv("TUSHARE_TOKEN", "fixture-token")
     monkeypatch.setattr(tc, "_last_call", {})
     monkeypatch.setattr(tc, "_auth_error", None)
-    monkeypatch.setattr(tc, "_transport_error", {
+    monkeypatch.setattr(tc, "_transport_error", None)
+    monkeypatch.setattr(tc, "_throttle", lambda api_name: None)
+
+    calls = iter([
+        tc.requests.exceptions.ConnectionError("resolver unavailable"),
+        _tushare_response({
+            "code": 0,
+            "data": {"fields": ["trade_date"], "items": [["20260918"]]},
+        }),
+    ])
+
+    def post(*args, **kwargs):
+        outcome = next(calls)
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return outcome
+
+    monkeypatch.setattr(tc.requests, "post", post)
+    assert tc.query("trade_cal") is None
+    first = tc.last_transport_error()
+    assert first and first["kind"] == "connection"
+
+    recovered = tc.query("trade_cal")
+    assert recovered is not None and recovered["trade_date"].iloc[0] == "20260918"
+    assert tc.last_transport_error() == first, (
+        "later HTTP/vendor success must not erase an earlier failure in this window"
+    )
+
+    tc.clear_transport_error()
+    assert tc.last_transport_error() is None
+
+
+def test_unclassified_request_exception_does_not_erase_prior_transport_receipt(monkeypatch):
+    """Only an explicit window reset may clear already-observed transport evidence."""
+    from collectors import tushare_client as tc
+
+    monkeypatch.setenv("TUSHARE_TOKEN", "fixture-token")
+    monkeypatch.setattr(tc, "_last_call", {})
+    prior = {
         "api_name": "trade_cal", "kind": "connection",
         "exception": "ConnectionError", "ts": "2026-09-20T00:00:00+00:00",
-    })
-    monkeypatch.setattr(tc.requests, "post",
-                        lambda *a, **k: _tushare_response({}, status_code=503))
+    }
+    monkeypatch.setattr(tc, "_transport_error", dict(prior))
+    monkeypatch.setattr(
+        tc.requests, "post",
+        lambda *a, **k: (_ for _ in ()).throw(ValueError("odd")),
+    )
 
-    assert tc.query("trade_cal") is None
-    assert tc.last_transport_error() is None
+    assert tc.query("daily_basic") is None
+    assert tc.last_transport_error() == prior
 
 
 def test_adapter_clears_transport_error_from_prior_consumer(monkeypatch):
