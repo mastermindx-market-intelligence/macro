@@ -5550,9 +5550,11 @@
       '.lens-pop.open{transform:none}' +
       '.lens-grab{display:block;width:38px;height:4px;border-radius:2px;margin:10px auto 2px;' +
         'background:color-mix(in srgb,var(--lens-text) 22%,transparent)}' +
-      '.lens-x{display:grid;place-items:center;position:absolute;top:10px;right:12px;width:26px;height:26px;' +
+      '.lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;z-index:2;width:40px;height:40px;' +
         'border-radius:50%;border:0;padding:0;font:600 11px/1 var(--font-ui,Inter,sans-serif);' +
         'color:var(--lens-mut);background:color-mix(in srgb,var(--lens-mut) 14%,transparent);cursor:pointer}' +
+      '.lens-x{touch-action:manipulation}' +
+      '.lens-x:focus-visible{outline:2px solid var(--lens-accent);outline-offset:-3px;color:var(--lens-text)}' +
       '.lens-hd{padding-top:8px}' +
       '.lens-ill{width:38px;height:38px}' +
       '.lens-ttl{padding:8px 18px 0;font-size:14px}' +
@@ -5671,7 +5673,11 @@
     pop.textContent = '';
     var grab = document.createElement('div'); grab.className = 'lens-grab'; pop.appendChild(grab);
     var x = document.createElement('button'); x.type = 'button'; x.className = 'lens-x';
-    x.setAttribute('aria-label', 'Close'); x.textContent = '✕'; pop.appendChild(x);
+    x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
+    x.textContent = '✕'; pop.appendChild(x);
     if (c.rich) {
       pop.classList.remove('lens-plain');
       var wrap = document.createElement('div'); wrap.innerHTML = c.rich;
@@ -5805,6 +5811,14 @@
         show(help);
       }
     }
+  });
+  document.addEventListener('langchange', function () {
+    if (!pop) return;
+    var x = pop.querySelector('.lens-x');
+    if (x) x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
   });
   window.addEventListener('scroll', function () {
     // The floating card FOLLOWS its trigger; it hides only when the trigger leaves

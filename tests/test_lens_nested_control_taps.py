@@ -193,6 +193,20 @@ def test_upgraded_help_icons_have_keyboard_and_coarse_pointer_affordances(name, 
     assert "e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'" in region
 
 
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_mobile_lens_sheet_close_is_a_real_touch_and_keyboard_target(name, src):
+    src = _require(name, src)
+    region = _lens_region(src)
+    assert (
+        ".lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;"
+        "z-index:2;width:40px;height:40px;" in region
+    )
+    assert ".lens-x{touch-action:manipulation}" in region
+    assert ".lens-x:focus-visible{outline:2px solid var(--lens-accent);" in region
+    assert "document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'" in region
+    assert "document.addEventListener('langchange'" in region
+
+
 # ---------------------------------------------------------------------------
 # Intelligence Hub ticker -> existing Terminal overlay boundary
 # ---------------------------------------------------------------------------
