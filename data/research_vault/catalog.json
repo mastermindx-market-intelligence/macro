@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T06:02:07.885274+00:00",
-  "count": 2549,
+  "generated_at": "2026-09-21T19:33:43.388189+00:00",
+  "count": 2589,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -82,6 +82,7 @@
     "The Market Ear",
     "The Punchline",
     "UBS",
+    "Vanda Research",
     "WEF",
     "WGC",
     "Westpac",
@@ -92,6 +93,463 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-hkwwlrogdln-f5e2cd",
+      "title": "GS MidDay Color US Equities Mid Day Color 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:19:27Z",
+      "summary_points": [
+        "Geopolitical catalyst: UN General Assembly optimism and US-China talks ahead of Trump/Xi summit drove AI/tech rally (NDX +237bps), with META (+8.9%) and NeoClouds (+580bps) leading; US equities saw largest net buying in five weeks (+0.9 SDs 1-year).",
+        "Retail flow momentum: Broad-based gains (325 SPX names green) fueled by retail pockets (GSCB) and AI themes, improving market breadth amid strong tech outperformance.",
+        "Short squeeze risk: High beta 12m losers (+183bps) and rolling short GSCBMSAL (+185bps) signal heightened vulnerability as AI/tech surges accelerate momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-f4gxuf5mmau-53a7ed",
+      "title": "Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:00:53Z",
+      "summary_points": [
+        "Institutional AI Buying Stalling: Institutional call ratios for Mag 7/SOXX AI complex stalled post-bullish positioning, signaling reduced buying pace amid slowing momentum.",
+        "CRWD Drives Retail AI Trend: CRWD dominates 53% of retail call activity (1M calls at 97th percentile), with retail buying underlying stock + calls, indicating new AI-themed retail trend.",
+        "NVDA Retail Dominance & Selectivity: NVDA accounts for 63% of SOXX retail inflows; retail selective (not indiscriminate), with 19/30 semis showing positive buying (Intel/Broadcom-led dips).",
+        "Fed/Geopolitics Constrain Broad Index Moves: Broader index buying requires Fed policy normalization and geopolitical tension fade; current retail flows remain bottom-up and selective."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pww9eod4fgq-febf19",
+      "title": "Vanda Research Retail Waiting For Macro Risks To Clear 21Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T18:35:00Z",
+      "summary_points": [
+        "Retail De-risking Shift: Retail moves from broad FOMO to selective stock-picking (e.g., CRWD, NFLX), now showing fading momentum and declining net turnover, de-risking equity exposure.",
+        "Rates Dominance Over Equities: Bond yields now constrain risk appetite as equity flows tighten; rates dynamics dominate positioning due to fading retail participation and tight equity-yield correlation.",
+        "Geopolitical Wall of Worry: Oil volatility, midterms, and AI narrative sustain elevated risk concerns, monitored via CTA re-risking signals amid de-risked market structure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mbqsdtjh2bt-3bf05a",
+      "title": "Macquarie Korea Nuclear",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:23:33Z",
+      "summary_points": [
+        "Korea-US nuclear framework delays & key swing factors: Korean supplier participation (Doosan > Hyundai E&C > BHI > KEPCO) and APR1400 inclusion are critical for binding contracts; US \"preferential selection without binding guarantees\" threatens capital flows into Korean firms.",
+        "Korea-Japan Framework Asymmetry: Korea’s $350bn framework (Nov 2025) includes guaranteed contracts and minimum allocation (X), while Japan’s $55bn (Sep 2025) lacks project financing and supplier guarantees (O), creating asymmetric execution risk for portfolio managers.",
+        "Nuclear Equity Performance Split: KEPCO E&C dominates with 120.2% 1yr return vs.",
+        "NuScale’s -85.6% YTD; momentum-driven gains (KEPCO E&C 79.0% vs. 52W High) contrast with project-specific risks (e.g., US regulatory hurdles) driving sector divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zeihs5chw4x-3736ec",
+      "title": "Wolfe Research The Wolfe Power Trip",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:21:23Z",
+      "summary_points": [
+        "Hyperscaler Demand & Offtake: Hyperscaler contracts (TLN/AMZN, VST/META) drive AI-powered electricity demand; PJM central procurement starts 9/30, but IRAS stakeholder opposition risks legal delays.",
+        "FERC Regulatory Timeline: FERC likely approves RBP with minimal changes (9/29 deadline), but PJM’s failed RBA proposal and White House push for emergency hyperscaler procurement create near-term regulatory uncertainty.",
+        "Debt Structure & Rate Sensitivity: NRG most exposed to rate hikes (4x leverage, 3.4% EPS impact per 100bps), while VST/CEG have low variable debt (6%) and swaps mitigating exposure.",
+        "Valuation Divergence: CEG trading at 23.5x P/E vs. sector 17.6x (overvalued), NRG at 12.9x (undervalued); sector EV/EBITDA (8.2x) near 2-year highs signaling potential overvaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 39,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mnrviw4stha-483248",
+      "title": "Zillow Sep 21",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T16:29:24Z",
+      "summary_points": [
+        "Zillow's Antitrust Claims Rejected: Court dismissed all antitrust allegations, ruling MRED's actions as legitimate business conduct with no conspiracy or market harm, removing a major overhang.",
+        "Compass's 3PM Strategy Acceleration: Ruling enables Compass to expand Private Exclusives (3PM), fragmenting listing inventory and reducing Zillow's accessible listings, threatening revenue and market share.",
+        "Zillow's Preferred Markets Offset: Accelerated Preferred Markets rollout (7.44% take rates in FY25) generates incremental revenue (8.7%-14.9% impact), countering 3PM-driven revenue loss ($76M-$214M) and supporting Buy rating.",
+        "Valuation Discount & Risk Mitigation: Zillow trades at significant discount (current $33.68 vs $50 target) due to cyclical headwinds, but Preferred Markets rollout mitigates Private Exclusives risk, justifying Buy.",
+        "MLS Defense Precedent: Ruling establishes MLSs can defend against antitrust claims without liability, validating industry-wide strategy and reducing long-term regulatory risk for Zillow."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qis7gidmnxv-bf0219",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T16:23:27Z",
+      "summary_points": [
+        "Fed Hawkish Shift: Goolsbee's speech signals market underprices rate hikes through YE27; Fed now forecasts inflation target until 2029, altering policy expectations.",
+        "Geopolitical Oil Risk: WTI up 19.1% over two weeks amid Houthi attacks on Riyadh and US travel warnings; inventory floor at 7,000 mb signals supply stress and price volatility.",
+        "JPM Data Revisions: Retail Sales beat (1.4% MoM vs 0.5% est) lifts 26Q3 GDP forecast to 3.5% (vs 2.75%); PCE core deflator maintained at +3.3% YoY.",
+        "Corporate Earnings Pressure: Tariffs, soaring energy costs, and higher rates directly compress US margins, threatening equity valuations and earnings growth.",
+        "Quant Resilience: Quant strategies outperform (+1.5% MTD vs global HF -0.6%); US crowding shows potential trough (60d return near 5yr lows)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rgegz18efcr-4be2b2",
+      "title": "GS Armbrust What Matters Today HF Pain Continues Muse 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:41Z",
+      "summary_points": [
+        "HF Performance Divergence: Fundamental L/S HFs underperformed Systematic HFs (-1.02% vs +1.28% weekly), with Fundamentals +12% YTD (Asian-driven) trailing Systematics +20% YTD.",
+        "Market Breadth Weakens: <30% of S&P 500 stocks above 50-day moving average, indicating broad market stress beyond headline indices.",
+        "SPX & Sentiment Deterioration: SPX at 7650.50 with GS Sentiment Indicator at -0.9 (lowest in 12 months), reflecting extreme bearish positioning.",
+        "AAII Survey Bearishness: Bearish sentiment at 53.3% (highest since May 2025), bullish at 28.8%, with negative bull-bear spread confirming extreme pessimism."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-genoeiwk8qt-09599b",
+      "title": "GS Callahan US TMT weekly + charts 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:35Z",
+      "summary_points": [
+        "Semis P/E at multi-year lows amid oil correlation: SOX P/E near 18.2998 correlates with inverted oil prices (rising oil = falling SOX P/E), indicating macro-driven valuation pressure, not AI-specific issues.",
+        "Macro risk dominates sector dynamics: Oil price trends directly influence Semis/AI valuations, signaling vulnerability to broader economic conditions over AI narrative-driven risks.",
+        "Valuation compression in key names: AMAT’s PE/SPX ratio (1.2559) below 1.4126 threshold confirms valuation compression amid market de-rating, with technical bounce off 200-dma supporting near-term resilience."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pwjqbzqafk4-8855ee",
+      "title": "Turkiye TCMB Reserves US$9bn Lower",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:52Z",
+      "summary_points": [
+        "Capital Flight into Domestic Deposits: TRY deposits surge to $20bn amid $1.8bn MMF outflows, signaling capital flight as FX volatility intensifies and central bank reserves decline $9bn (to $180bn).",
+        "Geopolitical Reserves Erosion: Iran war triggered $36.4bn gross FX asset decline and $9.5bn FX liquidity drop since start, severely constraining central bank intervention capacity amid currency volatility.",
+        "FX Liquidity Compression: FX liquidity at $47.1bn (vs $67.6bn peak) indicates constrained ability to stabilize TRY, critical for emerging market exposure and currency risk management.",
+        "Foreign Capital Shift to Debt: $20bn cumulative foreign inflows into domestic debt post-2024, while equity inflows remain negative, reflecting risk-averse positioning and debt preference.",
+        "Credit Market Stress: Commercial loan rates persist 9pp above policy rate (45%), signaling tight lending conditions and elevated credit risk despite policy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kufg2vdek5f-1a7522",
+      "title": "India Monthly Activity Chartbook Investment activity remains resilient in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:49Z",
+      "summary_points": [
+        "Investment Resilience: Electricity consumption at 12.8% yoy (two-year high), bank credit growth at 19.1% yoy (two-year high), industrial indicators (auto/steel/cement) robust in Aug-26.",
+        "Geopolitical & Weather Risks: Middle East conflict escalation, Brent crude >$100/bbl, El Niño-linked rainfall below average in key rice/wheat states threatening crop yields.",
+        "Urban Consumption Moderation: Urban demand indicators (light vehicles, aviation, petrol) show YoY declines in Aug-26; composite score at 88.9 (3m avg), signaling slowing activity.",
+        "Agricultural Supply Threats: Rainfall below long-term average in rice states (Exhibit 7), wheat reservoir levels at three-year lows (Exhibit 9), risking food security and inflation.",
+        "FX Reserves Surge: RBI FX reserves increased $45bn (Aug-Sept), reflecting robust dollar inflows and policy support for currency stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wkbzwf6mbxv-7b4e77",
+      "title": "Weekly US Earnings Estimates 21st 25th September 2026",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:10Z",
+      "summary_points": [
+        "Cross-Index Flow Catalyst: CTAS/PAYX reporting on Nasdaq 100 (23rd Sept) drives immediate cross-index flows, critical for short-term portfolio positioning.",
+        "Sector Revenue Benchmarks: CTAS ($2.98B Qtrly) and COST ($94.88B Qtrly) revenue releases (23rd/24th Sept) are fundamental data points for healthcare/retail sector analysis.",
+        "Growth Trajectory Signal: DRI’s $3.27B Next Qtr Revenue (24th Sept) directly signals Darden’s near-term growth trajectory for retail sector allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pfb3xjck5dd-7e7146",
+      "title": "Week in Focus 21 25th September 2026 Highlights include Xi s visit to the US Global Flash PMIs Aussie jobs and the SNB rate decision",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:07Z",
+      "summary_points": [
+        "FOMC Hawkish Shift: Fed raised rates 25bps to 3.75-4.00%, with median forecast easing to 3.875% in 2024; Goldman Sachs now expects another 25bps hike in October, signaling persistent inflation risks and tightening liquidity.",
+        "Japan PMI Expansion: Manufacturing PMI expected at 54.8 (services at 52.6, composite above 53.0), driven by semiconductor/AI demand and tourism, with price pressures monitored as key sector catalyst.",
+        "US Data & Geopolitical Risk: US retail sales rose 1.2% MoM (vs. 8% forecast), driven by non-store sales; Iran conflict elevates oil price volatility, compounding inflation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mcbhhiqiyzi-f65f1b",
+      "title": "GS Privorotsky GS Basics Muse & CPUs Europe Breadth Impaired 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:14Z",
+      "summary_points": [
+        "Rates Volatility Decoupled from Energy: WTI down 1.6% while 2s sold off 4.74%, signaling rates disconnection from energy fundamentals and heightened macro risk.",
+        "MOVE Index at 80.6 Confirms Rate Shock Risk: Rebid to 80.6 validates imminent volatility surge, cementing rate shock as the primary macro concern for portfolios.",
+        "Geopolitical Pathways Remain Uncertain: Trump-Xi meeting and Iran talks offer potential deal avenues but lack concrete outcomes, failing to offset core rate volatility risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-r4nsqixlmi5-8f5433",
+      "title": "GS Johnstone GS TMT SPEC SALES AI & Semis Security debate Classified names make a comeback Consumer Agents ACN & Anthropic 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:11Z",
+      "summary_points": [
+        "AI Safety Policy Geopolitics: US-China AI safety debates (Altman’s UN briefing, Bessent proposals) and Xi-Trump summit create regulatory uncertainty and political risk, impacting sector valuations and policy shifts.",
+        "OpenAI SoftBank Debt Risk: $10bn SoftBank funding for OpenAI (CDS watch) introduces AI-credit risk, with potential market disruption if debt terms or valuation pressures materialize.",
+        "Agentic AI Infrastructure Demand: Persistent 24/7 operations from AI agents (e.g., Muse/Instinct) drive surge in secure VMs, hyperscalers, data centers, and GPU demand, reinforcing sector fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tz1xuvdbiew-6c5d5b",
+      "title": "GS Crook GS MORNING GCEM Symposium Key Quotes Trump Xi Summit Preview NBH Views Global FX Trader Dollar Drift and Week Ahead 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:08Z",
+      "summary_points": [
+        "Fed Policy & AI-Driven Volatility: Regime change in Fed policy (30-70% move meetings) elevates equilibrium rate (R) due to AI-driven investment/deficits, heightening volatility and upward yield/term premium.",
+        "Fiscal Debt Fragility: US fiscal expansion (6-8% annual) worsens debt-to-GDP ratio, signaling nominal economy fragility versus Japan’s 2022 trajectory (220%→180%).",
+        "Trump-Xi Summit & Geopolitical Shifts: Sept 23-25 summit with USDCNY <6.70 as stability signal; China’s oil mediation (US-Iran talks) is key market-moving factor beyond trade/AI.",
+        "CNY Policy Divergence: CNY strengthens against CFETS basket (diversified basket) vs.",
+        "USD (e.g., 2022), revealing active USD/CNY management and potential policy shift toward market-driven rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pyzt8cziikz-942cc9",
+      "title": "GS Biswas GS Credit MarketStrats Ingredients (mostly technical) for a near term rally are shaping up 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:57Z",
+      "summary_points": [
+        "Rates Short Positioning Risk: $171mm DV01 short positions in JGBs/Bobl/Bunds (widest 15y levels) pricing 3+ Fed/ECB hikes, creating acute short squeeze risk if rates rally.",
+        "OATS Credit Risk Escalation: Idiosyncratic widening in OATS (Graphic 10) signals deteriorating credit quality, critical for bond portfolio fundamentals.",
+        "France Credit: Election Volatility & Policy Risk: Issuers prefunding 2027 for election volatility; 2026 budget labeled as imminent policy event requiring proactive portfolio adjustments.",
+        "Yield Curve Inversion Stress: Persistent long-term inversion (~-30) and short-term inversion (-0.92) signal systemic economic stress, recession risk, and capital flow shifts toward US assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kr6l96dhpwg-6d41ac",
+      "title": "GS Abbas GS US Daily Download 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:53Z",
+      "summary_points": [
+        "HF Energy & Retail Flows: HF net sold global Energy fastest in 4 months (equal short/long sales); retail buying persists despite low HF net/gross and bottom sentiment.",
+        "Macro Rate & MSFT NDR: Fed’s inflation-focused message reinforces flattening yields; ECB hawkish on energy, BoE QT plans; MSFT Buy rated with MAIA/MAI improvements.",
+        "Solar Sector Outlook: ENPH (Buy) for higher margins/new launches; RUN (Buy) with rate valuation headwind; SEDG (Sell) cautious; YETI targets $1bn platform/Project Upcycle.",
+        "Market Dynamics: AI rotation triggered by Anthropic’s “Dario Doomsday” call → worst AI vs AI-at-risk day since 2020; 10yr yields backed up to 5% (rate weakness)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-untdix5ejwy-2a2605",
+      "title": "Cost to Sweep Report 21 Sep 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T12:38:58Z",
+      "summary_points": [
+        "European Sovereign Liquidity Stress: Synchronized cost-to-sweep spikes across German (DU Schatz, RX Bund), Austrian (OE Bobl), UK (G Long Gilt), and Italian (IK Italy Bond) sovereigns signal systemic liquidity constraints, posing rebalancing risks and volatility for fixed-income portfolios.",
+        "European Equity Execution Risk: VG (Euro Stoxx 50) and Z (FTSE 100) indices show 7x higher cost-to-sweep than US equities (NO), indicating severe liquidity constraints for large orders and direct impact on trade profitability in Europe.",
+        "Asian Market Liquidity Crisis: SGX FTSE Taiwan exhibits extreme cost-to-sweep spikes (up to 12 bps), revealing severe liquidity constraints in regional markets and amplifying execution risk for portfolios with EM/Asia exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xvkblxzkzo7-a030e6",
+      "title": "Here is our FX Blueprint",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T09:18:02Z",
+      "summary_points": [
+        "Dollar & Geopolitical Tensions: Middle East peace developments critical for USD/EM long positions; EUR/USD constrained by resilient Eurozone growth and USD tail risks (Fed hikes/energy cap).",
+        "Stretched USD/EM Positioning: USD/EM longs favored due to compressed real rates against USD and stretched market positioning, creating tactical opportunity.",
+        "Selective FX Trades: Key trades: sell EUR/JPY, buy AUD/USD, USD/PLN/ILS, USD/CNH/TWD; USD/EM longs prioritized over crosses."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-b1wjvjbevqq-0c2f07",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T07:20:27Z",
+      "summary_points": [
+        "EU Political Risk & Bond Spread Widening: Germany’s CDU election loss and France’s OAT-Bund spread at 14yr high (>100bps) signal political instability, requiring hedging against French bond credit/currency risks.",
+        "Global Equity Broadening Reversal: SXXP outperforming SPX and MSCI ACWI indicates capital shift to Europe driven by US policy uncertainty and EU geopolitical advantages, signaling potential US weakness and European leadership.",
+        "Middle East Oil Supply Disruption: Sharp drop in Middle East exports (late 2022/early 2023) coincided with Brent spike; flows remain above normal (23 mbd), persisting supply risk impacting oil prices.",
+        "Core Inflation & Policy Tightening: Accelerating core inflation forecasts (Figure 3) and rising policy rate revisions signal persistent inflation, driving potential monetary tightening.",
+        "USD Net Options Flow Rebound: Broad-based USD buying (positive z-scores) post-mid-summer hiatus indicates heightened USD demand and currency risk exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ffwfou2dcsy-e4a907",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T07:16:46Z",
+      "summary_points": [
+        "German Election Turmoil & European Polarization: AfD’s 38.3% surge in Mecklenburg-Western Pomerania (doubling 2021 support) and Die Linke’s 25.3% Berlin win signal structural political fragmentation, undermining German stability and amplifying Europe-wide risk exposure.",
+        "US-Greenland Military Deal: Trump’s \"permanent control\" claim on Greenland (despite Danish sovereignty) risks escalating US-Danish tensions, creating a high-stakes geopolitical hotspot with direct implications for regional security and market volatility.",
+        "Fed Policy Signals & Critical Data: Williams/Barkin’s hawkish Fed commentary and Friday’s payroll report define near-term rate trajectory; US manufacturing PMI (54.0) and services PMI (56.1) are key growth indicators for policy decisions.",
+        "Geopolitical Catalysts & Trade Risks: US-China summit amid mixed PMIs and Fed/ECB speeches heightens policy uncertainty; trade tensions risk spillover to global growth, amplifying market volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a1lbsxy38mt-f8028b",
+      "title": "Bear Traps Report Turning Point Final New III Sep 20 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-21T03:34:29Z",
+      "summary_points": [
+        "Market Breadth Crisis: S&P 500 near highs but extreme breadth deterioration (more stocks at lows than highs, long-term uptrends plunging), comparable to 1973/1999 setups.",
+        "Credit Sell Signals: Convertible supply at record levels with 3+ months to election, signaling potential risk in credit markets (mirroring Q4 1999/2021).",
+        "1987 vs 2025 Bond-Stock Divergence: Treasury yields surged 200bps (7.25%→9.50%) triggering Black Monday; current high-yield bonds near 8%, French OATs up 360bps, debt-to-GDP double.",
+        "Bear Traps Report Cash Monitor: 76/13 positions in May 2025 (vs. 52 in Sep 2026); 55+ = RAISE CASH, 75+ = DEPLOY CASH, amplified by global trade disruptions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-iqyilwz1nhs-f45ee9",
       "title": "South Korea Chip Driven Acceleration in Early September Exports, with a Record High Trade Surplus of US$23bn",
@@ -108,6 +566,86 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jrcwqf89m6z-57d8ca",
+      "title": "Global Week Ahead September 21 – September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:45Z",
+      "summary_points": [
+        "Taiwan IP & Colombia Trade: Out-of-consensus bullish deviations (IP: 28.0% vs 24.6% consensus; Trade: -2300M vs -2617.5M), signaling regional economic strength and potential volatility.",
+        "SA Rate Hike Divergence: GS forecasts 25bps hike (vs consensus 0bps), indicating unpriced EM policy shift with high portfolio impact.",
+        "Germany PMI & US Goods Shipments: Strong bearish signals (PMI: -3.5; Goods: -2.5), highlighting material weakness in Eurozone manufacturing and US trade-sensitive assets.",
+        "Australia Unemployment: GS forecast 4.4% (vs 4.5% consensus), stronger labor market implying elevated risk sentiment and currency pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-obonfieqjt6-1a6678",
+      "title": "Central Bank Policy Tracker September 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:43Z",
+      "summary_points": [
+        "GS Policy Rate Mispricing: Goldman Sachs forecasts 0.1–0.4pp below market pricing in major DMs (US, Euro Area, Japan, UK, Canada, Australia), signaling dovish policy stance that could pressure bond yields and support risk assets.",
+        "EM Policy Divergence: Aggressive EM rate cuts (Kazakhstan -5.25pp, Turkey -4.0pp) contrast with hikes (Ghana +7.5pp, Turkey +3.5pp), escalating debt/currency risks and driving capital flow volatility.",
+        "Balance Sheet Normalization: UK MPC plans to wind down £488bn APF gilt stock to zero by 2024, while Japan’s balance sheet remains elevated vs.",
+        "US/UK normalization, impacting yield curves and cross-border flows.",
+        "Near-Term DM Hikes: Japan (2Q), Euro Area, US, UK, Australia, and others project rate hikes within 1–2 quarters, increasing interest rate risk for bond portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1vnfaskimwp-469c9e",
+      "title": "China Three things in China",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:37Z",
+      "summary_points": [
+        "GDP Revision: Q3/Q4 real GDP growth lowered to 4.4% (from 4.6%) due to mixed August data, full-year forecast at 4.5% (lower bound of 4.5-5.0% target range).",
+        "PBOC Fix Below 6.70: USD/CNY fixing below 6.70 (first since 2022) signals stability-seeking ahead of Trump-Xi summit, per May summit pattern.",
+        "Tier-1 Property Resilience: 70-city primary property prices declined less in Aug, with Tier-1 cities posting sequential gains, signaling real estate sector stability.",
+        "Fiscal Tightening: Aug 2026 fiscal deficit narrowing confirms persistent fiscal tightening, impacting government spending and growth trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-im8j44bxlqj-5a2d18",
+      "title": "China Matters Path of Least Resistance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:35Z",
+      "summary_points": [
+        "Production-Consumption Gap Widening: Industrial production growth (5.2% yoy) accelerates while retail sales slump (0.4% yoy), with official data underestimating domestic weakness due to retail sampling bias (large retailers surveyed comprehensively, small estimated), amplifying supply-demand divergence.",
+        "Tech Output Divergence: Industrial robots/semiconductors surge (34.6%/20.6% yoy) vs. smartphones/auto decline (25.6%/22.3% yoy), driven by AI capex and trade-in policies, signaling policy prioritization of advanced manufacturing over consumer tech.",
+        "Property Market Divergence: Tier-1 new home prices rise 2% (Jan-Aug 2023) while Tier-2/3 decline, with weak labor market (-0.6% rent inflation yoy) delaying recovery and deviating from typical bust patterns, creating critical risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -132,6 +670,125 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-btgnm174emo-58872a",
+      "title": "Vanchip (688153)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:29Z",
+      "summary_points": [
+        "Earnings Downgrades: 2026-27E net incomes downgraded 27%/18% due to smartphone market slowdown, pricing competition, and weak demand, with 2026 opex ratio exceeding estimates causing projected net loss (vs. prior Rmb27m net income).",
+        "Q2'26 Fundamentals Collapse: Revenue missed by 28% (Rmb491m vs.",
+        "GS Rmb687m), gross profit down 42%, operating margin collapsed to -9% (vs. 3% estimate), signaling severe operational deterioration."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2krf1j2fpos-c48311",
+      "title": "iFlytek (002230)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:26Z",
+      "summary_points": [
+        "Revenue miss & earnings revision: 2026 revenue (Rmb6.3bn, +2% YoY) missed estimates due to muted AI device growth, triggering 14%/13%/7% downward earnings revisions across all metrics (revenue, gross profit, op income, net income) for 2026E–2028E.",
+        "AI model catalyst & near-term risks: Upgraded AI model (Spark) launch in Oct 2026 targets higher performance, but near-term results pressured by rising memory costs, slower AI device adoption, and higher Opex ratio (Rmb368m vs.",
+        "Rmb165m estimate).",
+        "Valuation target revision: Revised target price cut to Rmb53.1 (from Rmb61.5) based on DCF with 12% YoY growth (2023–2036), terminal growth at 2%, and TP-implied P/S at 3.5x (below historical avg of 5x).",
+        "Key operational risks: Education contract performance volatility, intensifying competition, and expense control deviations threaten near-term recovery and margin expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6arzxlcx4ri-008397",
+      "title": "Natural Gas Comment Gastech Sentiment Bullish Near Term LNG Prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:23Z",
+      "summary_points": [
+        "Near-Term Price Targets: TTF to reach 100 EUR/MW and LNG $35/mmbtu by year-end, driven by Iran conflict status quo, US cargo shifts to Europe over Asia, and demand destruction uncertainty.",
+        "Asia Demand Destruction Threshold: India’s $30/mmBtu industrial demand destruction threshold critical; 15 mtpa LNG demand destruction observed in August, with industrial elasticity higher than power/residential in Asia.",
+        "Geopolitical Supply Risk: Persian Gulf military attacks and LNG ship-to-ship technical issues risk pushing TTF/JKM to 105 EUR/MWh/$35/mmbtu, amplifying winter deficit.",
+        "EU Methane Regulation Uncertainty: EU methane leak reporting rule (effective 2027, penalties 2030) creates compliance risk, deterring long-term contracts and increasing spot price volatility vulnerability.",
+        "Qatar Indexation Risk: Brent indexation terms for Qatar LNG contracts likely to decline vs pre-war levels due to heightened geopolitical risk perception."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yc06vleil7t-8d907a",
+      "title": "YETI Holdings (YETI) Investor Day Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:21Z",
+      "summary_points": [
+        "International Revenue Acceleration: $390mn FY25 international sales to exceed $1bn by FY30 (35% of total vs. 21% FY25), driven by Japan/Korea/China expansion and bags/coolers segment doubling.",
+        "Project Upcycle Margin Catalyst: $100mn productivity savings from COGS/operating expense optimization to drive LDD-high teens% EPS growth and support $1.2bn-$1.4bn cumulative FCF by FY30.",
+        "Valuation Upside Gap: $60 Goldman Sachs target (42.1% upside from $44.56 closing price) with consistent upward target trend, signaling strong fundamental catalysts and undervaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vktjbarox9i-d495c0",
+      "title": "Wiwynn (6669)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:19Z",
+      "summary_points": [
+        "Revenue Beat & Growth Catalysts: Aug revenues 27% above estimates driven by US CSP ASIC AI server demand; sequential growth to Dec 2026 at +46%/+22% QoQ from ASIC/GPU server expansion, agentic AI, and new ASIC customers.",
+        "Capex Expansion & Target Price: 2H26 capex budget $942m (NT$40bn) with $16m procurement confirming AI demand; TP raised to NT$3,777 (21.5x 2027E P/E) reflecting 8%/7%/5% revenue growth 2026-28E.",
+        "Key Downside Risks: Weaker AI server demand, slower general server recovery, and intensified competition in server ODM market.",
+        "Geopolitical & Debt Risk: Taiwan-based exposure (Greater China Tech) + leases in net debt creates geopolitical sensitivity and debt burden; M&A Rank 3 signals acquisition activity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-p4v4kvr4gic-f15b6e",
+      "title": "US Week Ahead September 21 September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:15Z",
+      "summary_points": [
+        "Services PMI Miss & Inflation Risks: Preliminary S&P Global US Services PMI at 53.5 (vs. 0 consensus) signals weak sector; Fed Governor Barr cites persistent core non-housing services inflation and risks from tariffs, Middle East conflict, and AI buildout.",
+        "Fed Policy Divergence: Hammack states policy is not restrictive while Paulson outlines two inflation scenarios, highlighting internal Fed uncertainty on timing of rate cuts amid inflation above target.",
+        "Core Capital Goods Strength: GS forecasts core capital goods orders up 0.5% (vs. durable goods down 1.0%), with core capital goods shipments rising 0.3%, indicating manufacturing resilience amid broader industrial trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6goqfhrgvdz-b29611",
       "title": "This Week in Asia Pacific Macro 21 27 September (Audio)",
       "institution": "Goldman Sachs",
@@ -149,6 +806,59 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-stm2kmza5hv-dec9fc",
+      "title": "The 720 Samsung Elec, SMIC, Shengyi Tech, Wiwynn, Japan Banks, Sumitomo Electric, Food & Life, India IT Services, China Matt...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:11Z",
+      "summary_points": [
+        "Samsung Electronics: Tight memory supply-demand and HBM demand drive 2027 growth; capacity constraints offset near-term margin headwinds despite buy rating with W490,000 TP - SMIC: China’s AI demand fuels 2H26 revenue growth (12% HoH, 27% YoY); tight capacity prevents ASP decline supporting buy with HK$153 TP - Wiwynn: US cloud providers drive AI server demand surge; 2026-2028E net income +3-7% and revenues +5-8% with NT$44bn capex by 2026 - Japan Banks: BOJ 25bp hike to 1.25% and subsequent rate hikes support earnings upside; banks with high deposit betas benefit from predictable rate hikes - China Growth & FX: Q3/Q4 2026 GDP at 4.4% yoy (full-year 4.5%); property downturn prolonged by weak labor market; RMB appreciation expected; 2027 growth target downgraded to 4.5% - Vale: Iron ore prices ($90-95/t) render ~120mtpa global supply uneconomical; long-term contracts (70-75% freight at $18-20/t) underpin resilience against weak prices"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ngamcw0xo3y-80c10c",
+      "title": "Bernstein Americas Oil The drone attacks on Russian refineries are stunning",
+      "institution": "Bernstein",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:19:53Z",
+      "summary_points": [
+        "Ukrainian drone strikes on Russian refineries: ~90% of Russia’s refining capacity (2 mln bpd) offline, representing ~80% of 2026 capacity, driving sustained global supply tightness and elevated crack spreads.",
+        "Russia’s refined product export ban: Export ban until Jan 2027 (Reuters) tightening global supply, directly benefiting refiners/integrated oil companies (ExxonMobil, Chevron) through 2027.",
+        "Crack spreads near record highs: Persistently widening despite moderate oil prices, reflecting acute supply constraints from Russian refining disruptions.",
+        "Multiple refinery fire risks: Satellite evidence (NASA FIRMS) confirms fire risks at Omsk (430k bpd), Volgograd (300k bpd), Yaroslavl (280k bpd), and others, threatening supply chain stability.",
+        "Geographic clustering vulnerability: Western Russia’s concentrated refinery infrastructure heightens geopolitical risk exposure and supply chain fragility amid sanctions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 41,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ujjixbqlnkj-b68158",
+      "title": "GS Garrett weekend prep 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:15Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-kvmrapjzy2n-b92194",
       "title": "GS Pasquariello markets macro 21 Sep 2026",
       "institution": "S&T",
@@ -160,6 +870,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-005k2njodqo-6def24",
+      "title": "GS Coppersmith US EQUITIES tougher internals 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:05Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -195,6 +920,63 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hrbqr4sbb9w-0caa0d",
+      "title": "Fixed Income Special Debt sustainability on the radar",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:18Z",
+      "summary_points": [
+        "Debt Sustainability Buffers: Germany’s widest buffer (6.57pp) contrasts with Italy’s narrowest (0.97pp), amid rising debt; US faces narrowing buffer from primary deficits + rising rates, signaling heightened fiscal fragility.",
+        "Critical Threshold: 5% of GDP in interest payments marks the stress threshold for debt servicing; high-debt countries face amplified exposure to growth shocks and borrowing cost spikes.",
+        "Investor Structure Shift: Central bank withdrawal elevates reliance on price-sensitive investors (foreign, funds), amplifying sovereign bond volatility in France/Italy; European sovereigns more exposed than US/Japan.",
+        "IMF Investor Risk Index: France/Italy show rising vulnerability (high debt + weak investor base) since 2023; Germany most resilient, Japan stable due to stable investor structure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nhprdwjdkrd-da28c6",
+      "title": "ETF Market Pulse Week 2 – September 2026 Commodities Surge, Cash Builds and AI Innovation Accelerates",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:00Z",
+      "summary_points": [
+        "Geopolitical Energy Shock: Drives commodities (Broad Commodities +7.2% W32, Gold +7.2% W32) and Japan equities to leadership, while pressuring US equities (-1.2% W33), Bitcoin (-3.2% W32), and long-duration assets (uranium, biotech) due to supply-chain disruptions and energy scarcity.",
+        "Selective ETF Flows: $25bn weekly inflows (70% equities) show cautious \"buy-the-dip\" stance—strong demand for Russell 2000, 20+Y Treasuries, and money-market ETFs, with outflows from crowded trades (semiconductors, Korea, US IG/HY credit).",
+        "Commodity Dominance: Commodities lead YTD returns (49.4%) amid negative momentum across equities/bonds; only commodities show positive 1-week momentum, signaling widespread risk-off sentiment and defensive rotation.",
+        "Thematic ETF Surge: Semiconductors, AI infrastructure (e.g., Global X MLCC ETF), and sustainability strategies drive active/passive ETF launches, reflecting strong momentum in AI/tech themes and manager discretion in thematic allocations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pywwk7uip0p-fd96c8",
+      "title": "FX View Fed, BOE and BoJ ahead, but an AI safety wobble to start the week",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:03:35Z",
+      "summary_points": [
+        "Document Missing: No source document provided for extraction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },

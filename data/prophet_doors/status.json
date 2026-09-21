@@ -80,14 +80,14 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1494,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-20 10:48:32",
-  "runtime_s": 147.8,
+  "run_utc": "2026-09-21 10:57:58",
+  "runtime_s": 105.4,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -138,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 26.7,
+    "runtime_s": 20.9,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 76,

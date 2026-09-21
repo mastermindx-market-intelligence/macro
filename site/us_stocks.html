@@ -24,6 +24,9 @@
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,16 +77,18 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=665c4b34">
+<link rel="stylesheet" href="theme.css?v=62b49cc0">
 
+
+<script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css?v=d390f599">
 
 <link rel="stylesheet" href="dashboard-icons.css?v=be32e541">
 <script defer src="dashboard-icons.js?v=ee1d5163"></script>
 
-<link rel="stylesheet" href="assets/css/bdd40640.css?v=bdd40640">
+<link rel="stylesheet" href="assets/css/c0cba28a.css?v=c0cba28a">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=fed6efba">
+<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 <link rel="preload" as="style" href="assets/css/20d98c47.css?v=20d98c47">
 <link rel="preload" as="style" href="assets/css/983df2de.css?v=983df2de">
 <link rel="preload" as="style" href="assets/css/65aef5e4.css?v=65aef5e4">
@@ -105,7 +110,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=fed6efba">
+    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -977,7 +982,7 @@
     
     
     <link rel="stylesheet" href="assets/css/6b41b25d.css?v=6b41b25d">
-    <div class="panel span12" id="prophet-live" hidden data-universe="1593">
+    <div class="panel span12" id="prophet-live" hidden data-universe="1588">
       <div class="plv-hd">
         <h2 class="plv-title">◐ <span class="l-en">Forming today</span><span class="l-zh">今日正在形成</span></h2>
         <span class="help" id="plv-help">?<span class="tip tip-wide"><span class="l-en"></span><span class="l-zh"></span></span></span>
@@ -1007,7 +1012,7 @@
         <h2 style="margin:0"><span class="l-en">Prophet Stock Signals</span><span class="l-zh">Prophet 选股</span></h2>
         <span class="pbs pbs-ahead" data-bs="ahead" hidden><span class="l-en">◐ Tonight&#39;s picks</span><span class="l-zh">◐ 今晚选股</span></span>
         <span class="pbs pbs-behind" data-bs="behind" hidden><span class="l-en">Last confirmed</span><span class="l-zh">上次确认</span> · <span class="pbs-dt"><span class="l-en"></span><span class="l-zh"></span></span></span>
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between tonight's candidate screen and the plan book" data-tip-zh="在今晚的候选筛选与计划簿之间切换">
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between the candidate screen and the plan book" data-tip-zh="在候选筛选与计划簿之间切换">
           <button id="us-src-btn-cand" type="button" aria-selected="true" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
           <button id="us-src-btn-plan" type="button" aria-selected="false" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
@@ -1038,6 +1043,34 @@
       
       
       
+      <section class="plo" id="us-leader-observations" data-status="unavailable">
+        <div class="plo-hd">
+          <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
+          <span class="plo-asof">
+            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
+            2026-09-17
+          </span>
+        </div>
+        <div class="plo-summary">
+          <span><b>0</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
+        </div>
+        
+        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
+        
+        <div class="plo-rows">
+          
+
+        </div>
+        
+      </section>
+      
+      
+      
+      
+      
+      
+      
       
       
       
@@ -1051,7 +1084,7 @@
           "stage":         "ENTRY",
           "price":         28.32,
           "conviction_score": 41,
-          "alpha":         1.13,
+          "alpha":         1.14,
           "off_high":      -2.8,
           "factor_z":      -0.384,
           "sue_z":         null,
@@ -1069,7 +1102,7 @@
           "stage":         "ENTRY",
           "price":         194.25,
           "conviction_score": 59,
-          "alpha":         -1.81,
+          "alpha":         -1.82,
           "off_high":      -49.8,
           "factor_z":      -0.591,
           "sue_z":         null,
@@ -1112,7 +1145,7 @@
       
       
       <div id="us-plan-block">
-      <div class="ladder-headline"><span class="ladder-n fig">254</span><span class="ladder-nl"><span class="l-en">live setups today</span><span class="l-zh">个跟踪中计划</span></span><span class="ladder-sub"><span class="l-en">the six published cells below add up to this number</span><span class="l-zh">下方 6 个已发布状态合计</span></span></div>
+      <div class="ladder-headline"><span class="ladder-n fig">278</span><span class="ladder-nl"><span class="l-en">live setups today</span><span class="l-zh">个跟踪中计划</span></span><span class="ladder-sub"><span class="l-en">the six published cells below add up to this number</span><span class="l-zh">下方 6 个已发布状态合计</span></span></div>
 <div class="mx-ladder mx-ladder--board" role="group" aria-label="Filter setups by lifecycle" id="us-life-ladder">
   <button type="button" class="mx-cell" data-life="watch" aria-pressed="false" data-zero="1">
     <span class="mx-cap mx-cap--watch" aria-hidden="true"></span>
@@ -1121,17 +1154,17 @@
   </button>
   <button type="button" class="mx-cell" data-life="ready" aria-pressed="false">
     <span class="mx-cap mx-cap--ready" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">72</span>
+    <span class="mx-cell-n fig">88</span>
     <span class="mx-cell-l"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span>
   </button>
   <button type="button" class="mx-cell" data-life="entered" aria-pressed="false">
     <span class="mx-cap mx-cap--entered" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">159</span>
+    <span class="mx-cell-n fig">166</span>
     <span class="mx-cell-l"><span class="l-en">Entered</span><span class="l-zh">入场</span></span>
   </button>
-  <button type="button" class="mx-cell" data-life="delivering" aria-pressed="false">
+  <button type="button" class="mx-cell" data-life="delivering" aria-pressed="false" data-zero="1">
     <span class="mx-cap mx-cap--delivering" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">1</span>
+    <span class="mx-cell-n fig">0</span>
     <span class="mx-cell-l"><span class="l-en">Delivering</span><span class="l-zh">达标</span></span>
   </button>
   <button type="button" class="mx-cell" data-life="overtime" aria-pressed="false" data-zero="1">
@@ -1141,14 +1174,14 @@
   </button>
   <button type="button" class="mx-cell mx-cell--last-live" data-life="invalidated" aria-pressed="false">
     <span class="mx-cap mx-cap--invalidated" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">22</span>
+    <span class="mx-cell-n fig">24</span>
     <span class="mx-cell-l"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span>
   </button>
   
   <div class="mx-ladder-gap" aria-hidden="true"></div>
   <button type="button" class="mx-cell mx-cell--term" data-life="resolved" aria-pressed="false">
     <span class="mx-cap mx-cap--resolved" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">146</span>
+    <span class="mx-cell-n fig">148</span>
     <span class="mx-cell-l"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span>
   </button>
   <div class="ladder-termnote"><span class="l-en">not in today’s count</span><span class="l-zh">不计入上方总数</span></div>
@@ -1224,12 +1257,12 @@
         <div class="mx-empty-why"><span class="l-en">Try another lifecycle cell, or clear the filter.</span><span class="l-zh">请尝试其他状态，或清除筛选。</span></div>
       </div><div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">398 more plan rows on tonight's board</span>
-          <span class="l-zh">今晚榜单还有 398 条计划</span>
+          <span class="l-en">424 more plan rows in the plan book</span>
+          <span class="l-zh">计划簿中另有 424 条计划</span>
         </div>
         <div class="us-tw-p">
-          <span class="l-en">You're seeing the first 2 of 400 plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
-          <span class="l-zh">当前显示 400 条计划中的前 2 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
+          <span class="l-en">You're seeing the first 2 of 426 plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
+          <span class="l-zh">当前显示 426 条计划中的前 2 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
         </div>
         <div class="us-tw-acts">
           <a class="us-tw-btn" href="plans.html"><span class="l-en">See plans</span><span class="l-zh">查看方案</span></a>
@@ -1242,12 +1275,14 @@
       
       </div><div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2"><span class="l-en">Candidates</span><span class="l-zh">候选</span></h2><span class="mx-sec-total"><span class="l-en"><b>52</b> screened tonight</span><span class="l-zh">本次筛出 <b>52</b> 只</span></span>
+          <h2 class="mx-sec-h2"><span class="l-en">Candidates</span><span class="l-zh">候选</span></h2>
+          
+          <span class="mx-sec-total"><span class="l-en"><b>52</b> screened · as of <time datetime="2026-09-18">2026-09-18</time></span><span class="l-zh">筛出 <b>52</b> 只 · 截至 <time datetime="2026-09-18">2026-09-18</time></span></span>
           <a class="mx-sec-link" href="discovery.html"><span class="l-en">Open the screener</span><span class="l-zh">打开筛选器</span></a>
-        </div><p class="mx-sec-note"><span class="l-en">Names tonight’s screen surfaced. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.</span><span class="l-zh">本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。</span></p><div class="us-gate-note" id="us-gate-note">
+        </div><p class="mx-sec-note"><span class="l-en">Names surfaced by this dated screen. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.</span><span class="l-zh">本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。</span></p><div class="us-gate-note" id="us-gate-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <span class="l-en">You're seeing the first 3 of 52 screened candidates. Sign in to see the full list.</span>
-          <span class="l-zh">当前显示今晚筛出的 52 只候选中的前 3 只。登录后可查看完整名单。</span>
+          <span class="l-zh">当前显示本次筛出的 52 只候选中的前 3 只。登录后可查看完整名单。</span>
         </div><div class="cand-shelves">
           <span class="cand-shelf"><b class="fig">9</b><span><span class="l-en">Live now</span><span class="l-zh">现在可操作</span></span><i><span class="l-en">entry window is open</span><span class="l-zh">入场窗口已打开</span></i></span>
           
@@ -1422,7 +1457,7 @@
   <div class="pv-bd">
     <div class="pv-hd">
       <span class="pv-idw"><span class="pv-tk">COIN</span><span class="pv-nm"><span class="l-en">Coinbase</span><span class="l-zh">Coinbase</span></span></span>
-      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">55</span></span>
+      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">56</span></span>
     </div>
     <div class="pv-ind"><span class="l-en">Financials</span><span class="l-zh">金融</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Continuation</span><span class="l-zh">延续</span></span><span class="pv-mk-i pv-mk-theme" data-tip-en="This stock belongs to a theme that is strengthening. Use it to understand the story; it does not change this card’s Priority." data-tip-zh="该股属于正在转强的主题。可用来理解背景，但不会改变卡片的优先级。"><span class="l-en">Crypto &amp; Digital Assets</span><span class="l-zh">加密与数字资产</span></span></div>
     <div class="pv-stp"><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot on"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
@@ -1519,8 +1554,8 @@
       </div>
         <div class="us-tier-wall" id="us-tier-wall">
           <div class="us-tw-h">
-            <span class="l-en">49 more names on tonight's board</span>
-            <span class="l-zh">今晚榜单还有 49 只股票</span>
+            <span class="l-en">49 more names in this screen</span>
+            <span class="l-zh">本次筛选还有 49 只股票</span>
           </div>
           <div class="us-tw-p">
             <span class="l-en">You're seeing the first 3 of 52 names. Sign in to see the full ranked board, every entry stage, and the table view.</span>
@@ -1537,8 +1572,8 @@
         
         <div class="cand-rows">
           <div class="cand-row"><span class="cand-tk">EGBN</span><span class="cand-nm"><span class="l-en">Eagle Bancorp Inc</span><span class="l-zh">Eagle Bancorp Inc</span></span><span class="cand-px fig">$28.32</span></div>
-          <div class="cand-row"><span class="cand-tk">REXR</span><span class="cand-nm"><span class="l-en">Rexford Industrial Realty</span><span class="l-zh">Rexford Industrial Realty</span></span><span class="cand-px fig">$38.39</span></div>
           <div class="cand-row"><span class="cand-tk">PRU</span><span class="cand-nm"><span class="l-en">Prudential Financial</span><span class="l-zh">Prudential Financial</span></span><span class="cand-px fig">$118.40</span></div>
+          <div class="cand-row"><span class="cand-tk">AZTA</span><span class="cand-nm"><span class="l-en">Azenta, Inc.</span><span class="l-zh">Azenta, Inc.</span></span><span class="cand-px fig">$33.24</span></div>
         </div>
         <p class="mx-sec-note" style="margin:12px 0 0">
           <span class="l-en">Showing 3 that carry no plan yet · <b>52</b> screened 2026-09-18</span>
@@ -1598,8 +1633,8 @@
     </li>
   </ul>
   <p class="pvr-open">
-    <span class="l-en">4 more already have a plan running — they're on the board above.</span>
-    <span class="l-zh">另有 4 只已有在跑的计划 — 就在上方榜单里。</span>
+    <span class="l-en">29 more already have a plan running — they're on the board above.</span>
+    <span class="l-zh">另有 29 只已有在跑的计划 — 就在上方榜单里。</span>
   </p>
   
   <p class="pvr-ft"><span class="l-en">Re-drawn nightly</span><span class="l-zh">每晚重绘</span>
@@ -3024,7 +3059,7 @@
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#FIX"><span class="ts-tk">FIX</span></a> <span class="ts-nm">Comfort Systems USA</span> <span class="ts-sue" data-tip-en="The latest earnings beat the stock's usual year-ago pattern. This clue has not held up over a long history, so treat it as supporting context only." data-tip-zh="最新盈利好于该股往年同期的常见表现。这个线索在长期历史中并不稳定，因此仅作辅助参考。">📈 <span class="l-en">earnings beat</span><span class="l-zh">盈利超预期</span></span></td>
     <td class="muted c-sector"><span class="l-en">Industrials</span><span class="l-zh">工业</span></td>
     <td class="r c-edge az-up">+1.60</td>
-    <td class="r muted c-rank">#12/264</td>
+    <td class="r muted c-rank">#11/263</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UPTREND</span><span class="l-zh">上涨趋势</span></td>
     <td class="c-trend"><span class="muted">intact</span></td>
@@ -3035,7 +3070,7 @@
   <tr class="ts-row" data-tkr="COHU">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#COHU"><span class="ts-tk">COHU</span></a> <span class="ts-nm">Cohu, Inc.</span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
-    <td class="r c-edge az-up">+1.58</td>
+    <td class="r c-edge az-up">+1.59</td>
     <td class="r muted c-rank">#18/222</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">BOTTOMING</span><span class="l-zh">筑底中</span></td>
@@ -3059,7 +3094,7 @@
   <tr class="ts-row" data-tkr="VTRS">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#VTRS"><span class="ts-tk">VTRS</span></a> <span class="ts-nm">Viatris</span></td>
     <td class="muted c-sector"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></td>
-    <td class="r c-edge az-up">+1.11</td>
+    <td class="r c-edge az-up">+1.12</td>
     <td class="r muted c-rank">#29/173</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="An earlier trigger fired. It often catches the turn closer to the low, but it also has more false starts." data-tip-zh="较早的信号已经触发。它往往更靠近低点，但也更容易出现假启动。"><span class="l-en">Early buy</span><span class="l-zh">提前买点</span></span></td>
     <td class="c-cycle"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></td>
@@ -3071,32 +3106,32 @@
   <tr class="ts-row" data-tkr="HAFC">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#HAFC"><span class="ts-tk">HAFC</span></a> <span class="ts-nm">Hanmi Financial Corporation</span></td>
     <td class="muted c-sector"><span class="l-en">Financials</span><span class="l-zh">金融</span></td>
-    <td class="r c-edge az-up">+0.86</td>
+    <td class="r c-edge az-up">+0.87</td>
     <td class="r muted c-rank">#53/261</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></td>
     <td class="c-trend"><span class="ent-warn"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
     <td class="r c-factor az-dn">-0.3</td>
-    <td class="r c-setup"><b>+0.25</b></td>
+    <td class="r c-setup"><b>+0.26</b></td>
   </tr>
 
   <tr class="ts-row" data-tkr="AMKR">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#AMKR"><span class="ts-tk">AMKR</span></a> <span class="ts-nm">Amkor Technology</span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
-    <td class="r c-edge az-up">+0.83</td>
+    <td class="r c-edge az-up">+0.84</td>
     <td class="r muted c-rank">#53/222</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></td>
     <td class="c-trend"><span class="ent-warn"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
     <td class="r c-factor az-dn">-0.7</td>
-    <td class="r c-setup"><b>+0.23</b></td>
+    <td class="r c-setup"><b>+0.24</b></td>
   </tr>
 
   <tr class="ts-row" data-tkr="STRL">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#STRL"><span class="ts-tk">STRL</span></a> <span class="ts-nm">Sterling Infrastructure</span> <span class="ts-sue" data-tip-en="The latest earnings beat the stock's usual year-ago pattern. This clue has not held up over a long history, so treat it as supporting context only." data-tip-zh="最新盈利好于该股往年同期的常见表现。这个线索在长期历史中并不稳定，因此仅作辅助参考。">📈 <span class="l-en">earnings beat</span><span class="l-zh">盈利超预期</span></span></td>
     <td class="muted c-sector"><span class="l-en">Industrials</span><span class="l-zh">工业</span></td>
     <td class="r c-edge az-up">+0.80</td>
-    <td class="r muted c-rank">#58/264</td>
+    <td class="r muted c-rank">#58/263</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></td>
     <td class="c-trend"><span class="muted">intact</span></td>
@@ -3330,8 +3365,8 @@
     <div class="sbx-grid">
       <div class="sbx-bar-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="sbxDlg(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();sbxDlg(1);}">
         <div class="sbx-counts">
-          <span class="sbx-cnt adv"><b id="sbx-adv">491</b><span class="w"><span class="l-en">advancing</span><span class="l-zh">上涨</span></span></span>
-          <span class="sbx-cnt dec"><span class="w"><span class="l-en">declining</span><span class="l-zh">下跌</span></span><b id="sbx-dec">1,008</b></span>
+          <span class="sbx-cnt adv"><b id="sbx-adv">492</b><span class="w"><span class="l-en">advancing</span><span class="l-zh">上涨</span></span></span>
+          <span class="sbx-cnt dec"><span class="w"><span class="l-en">declining</span><span class="l-zh">下跌</span></span><b id="sbx-dec">1,010</b></span>
         </div>
         <div class="sbx-bar" aria-hidden="true"><i class="a" id="sbx-bar-a" style="width:32.6%"></i><i class="u" id="sbx-bar-u" style="width:0.5%"></i><i class="d" id="sbx-bar-d" style="width:66.9%"></i></div>
         <p class="sbx-stance" id="sbx-stance"><span class="l-en">Participation looks</span><span class="l-zh">参与度看起来</span> <b class="neg" id="sbx-stance-l"><span class="l-en">thin</span><span class="l-zh">稀薄</span></b> — <span class="muted" id="sbx-stance-v"><span class="l-en">Few names hold their trend — rallies here are fragile</span><span class="l-zh">守住趋势的个股很少 — 此时的反弹较脆弱</span></span></p>
@@ -3392,7 +3427,7 @@
       <tr>
         <td class="l"><b><span class="l-en">Large cap</span><span class="l-zh">大盘</span></b> <span class="muted" style="font-size:11px">S&amp;P 500</span></td>
         <td class="l">
-          <span class="pos">155</span><span class="muted">/</span><span class="neg">346</span>
+          <span class="pos">156</span><span class="muted">/</span><span class="neg">348</span>
           <span class="bbar" style="width:54px" title="31% advancing"><i style="width:31.0%; background:var(--up)"></i><i style="width:69.0%; background:var(--down)"></i></span>
         </td>
         <td class="neg">29%</td>
@@ -3442,13 +3477,13 @@
         <div class="muted" style="font-size:11px; letter-spacing:.02em"><span class="l-en">McClellan Oscillator</span><span class="l-zh">麦克莱伦振荡指标</span>
           <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Ratio-adjusted McClellan Oscillator: the 19-day minus 39-day EMA of net advances (normalised so a changing universe size doesn&#39;t distort it). Above zero &amp; rising = breadth momentum building; below zero &amp; falling = internals rolling over. The Summation Index is its running total — its slope and sign carry the meaning, not the absolute (cumulative) level.</span><span class="l-zh">比率调整后的麦克莱伦振荡指标：净上涨家数的19日与39日指数均线之差（已归一化，避免样本规模变化造成失真）。高于零且上行 = 广度动量在累积；低于零且下行 = 内部结构在回落。累积指标是其累计和 — 关键在斜率与正负号，而非绝对（累计）水平。</span></span></span></div>
         <div style="display:flex; align-items:baseline; gap:8px; margin:4px 0 2px">
-          <b class="neg" style="font-size:22px">-49.9</b>
+          <b class="neg" style="font-size:22px">-49.1</b>
           <span class="pill neg" style="background:var(--panel)"><span class="l-en">negative</span><span class="l-zh">负向</span></span>
         </div>
-        <svg class="nch" viewBox="0 0 240 46" preserveAspectRatio="none" width="100%" height="46"><line x1="0" y1="22.9" x2="240" y2="22.9" stroke="var(--muted)" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.55"/><polyline points="0,46 0.0,34.6 1.3,29.7 2.7,25.0 4.0,19.1 5.4,26.9 6.7,22.0 8.0,20.9 9.4,21.8 10.7,21.9 12.1,19.6 13.4,17.5 14.7,19.9 16.1,28.4 17.4,20.4 18.8,19.9 20.1,24.3 21.5,21.5 22.8,23.0 24.1,26.6 25.5,24.9 26.8,25.5 28.2,23.6 29.5,23.0 30.8,18.2 32.2,22.9 33.5,16.2 34.9,17.1 36.2,16.2 37.5,16.2 38.9,22.4 40.2,17.6 41.6,19.4 42.9,17.7 44.2,21.4 45.6,18.3 46.9,23.4 48.3,18.9 49.6,19.9 50.9,16.6 52.3,17.1 53.6,19.2 55.0,26.5 56.3,25.3 57.7,31.7 59.0,36.4 60.3,35.1 61.7,38.9 63.0,41.2 64.4,46.0 65.7,42.5 67.0,33.5 68.4,28.9 69.7,36.7 71.1,36.8 72.4,41.8 73.7,32.6 75.1,29.6 76.4,25.1 77.8,27.9 79.1,34.0 80.4,31.1 81.8,21.4 83.1,19.0 84.5,17.0 85.8,14.1 87.2,17.5 88.5,9.9 89.8,9.8 91.2,17.4 92.5,13.1 93.9,12.9 95.2,15.9 96.5,14.8 97.9,9.2 99.2,10.4 100.6,16.8 101.9,19.8 103.2,19.7 104.6,24.2 105.9,25.7 107.3,26.8 108.6,30.7 109.9,23.7 111.3,27.7 112.6,32.1 114.0,27.7 115.3,24.0 116.6,27.8 118.0,29.4 119.3,30.5 120.7,29.3 122.0,32.3 123.4,28.7 124.7,33.4 126.0,27.0 127.4,29.7 128.7,23.9 130.1,21.9 131.4,17.0 132.7,17.9 134.1,19.4 135.4,20.6 136.8,23.6 138.1,25.7 139.4,25.1 140.8,27.3 142.1,21.3 143.5,22.1 144.8,25.7 146.1,19.6 147.5,23.8 148.8,20.3 150.2,13.7 151.5,14.8 152.8,15.2 154.2,25.2 155.5,24.4 156.9,23.5 158.2,22.0 159.6,18.9 160.9,17.1 162.2,14.6 163.6,17.1 164.9,20.1 166.3,18.6 167.6,14.4 168.9,17.4 170.3,17.1 171.6,25.2 173.0,22.8 174.3,18.9 175.6,18.9 177.0,22.2 178.3,22.7 179.7,17.4 181.0,23.8 182.3,28.4 183.7,29.1 185.0,28.9 186.4,30.4 187.7,24.4 189.1,20.8 190.4,16.4 191.7,21.2 193.1,24.4 194.4,26.0 195.8,21.6 197.1,16.7 198.4,18.6 199.8,22.1 201.1,19.0 202.5,21.0 203.8,20.6 205.1,21.1 206.5,18.4 207.8,19.2 209.2,26.2 210.5,27.4 211.8,25.5 213.2,30.1 214.5,25.4 215.9,22.8 217.2,25.4 218.5,23.8 219.9,28.9 221.2,29.5 222.6,34.4 223.9,37.4 225.3,33.1 226.6,27.4 227.9,30.4 229.3,34.5 230.6,40.3 232.0,41.8 233.3,34.5 234.6,31.1 236.0,34.1 237.3,36.6 238.7,32.1 240.0,35.1 240,46" fill="var(--down)" opacity="0.12" stroke="none"/><polyline points="0.0,34.6 1.3,29.7 2.7,25.0 4.0,19.1 5.4,26.9 6.7,22.0 8.0,20.9 9.4,21.8 10.7,21.9 12.1,19.6 13.4,17.5 14.7,19.9 16.1,28.4 17.4,20.4 18.8,19.9 20.1,24.3 21.5,21.5 22.8,23.0 24.1,26.6 25.5,24.9 26.8,25.5 28.2,23.6 29.5,23.0 30.8,18.2 32.2,22.9 33.5,16.2 34.9,17.1 36.2,16.2 37.5,16.2 38.9,22.4 40.2,17.6 41.6,19.4 42.9,17.7 44.2,21.4 45.6,18.3 46.9,23.4 48.3,18.9 49.6,19.9 50.9,16.6 52.3,17.1 53.6,19.2 55.0,26.5 56.3,25.3 57.7,31.7 59.0,36.4 60.3,35.1 61.7,38.9 63.0,41.2 64.4,46.0 65.7,42.5 67.0,33.5 68.4,28.9 69.7,36.7 71.1,36.8 72.4,41.8 73.7,32.6 75.1,29.6 76.4,25.1 77.8,27.9 79.1,34.0 80.4,31.1 81.8,21.4 83.1,19.0 84.5,17.0 85.8,14.1 87.2,17.5 88.5,9.9 89.8,9.8 91.2,17.4 92.5,13.1 93.9,12.9 95.2,15.9 96.5,14.8 97.9,9.2 99.2,10.4 100.6,16.8 101.9,19.8 103.2,19.7 104.6,24.2 105.9,25.7 107.3,26.8 108.6,30.7 109.9,23.7 111.3,27.7 112.6,32.1 114.0,27.7 115.3,24.0 116.6,27.8 118.0,29.4 119.3,30.5 120.7,29.3 122.0,32.3 123.4,28.7 124.7,33.4 126.0,27.0 127.4,29.7 128.7,23.9 130.1,21.9 131.4,17.0 132.7,17.9 134.1,19.4 135.4,20.6 136.8,23.6 138.1,25.7 139.4,25.1 140.8,27.3 142.1,21.3 143.5,22.1 144.8,25.7 146.1,19.6 147.5,23.8 148.8,20.3 150.2,13.7 151.5,14.8 152.8,15.2 154.2,25.2 155.5,24.4 156.9,23.5 158.2,22.0 159.6,18.9 160.9,17.1 162.2,14.6 163.6,17.1 164.9,20.1 166.3,18.6 167.6,14.4 168.9,17.4 170.3,17.1 171.6,25.2 173.0,22.8 174.3,18.9 175.6,18.9 177.0,22.2 178.3,22.7 179.7,17.4 181.0,23.8 182.3,28.4 183.7,29.1 185.0,28.9 186.4,30.4 187.7,24.4 189.1,20.8 190.4,16.4 191.7,21.2 193.1,24.4 194.4,26.0 195.8,21.6 197.1,16.7 198.4,18.6 199.8,22.1 201.1,19.0 202.5,21.0 203.8,20.6 205.1,21.1 206.5,18.4 207.8,19.2 209.2,26.2 210.5,27.4 211.8,25.5 213.2,30.1 214.5,25.4 215.9,22.8 217.2,25.4 218.5,23.8 219.9,28.9 221.2,29.5 222.6,34.4 223.9,37.4 225.3,33.1 226.6,27.4 227.9,30.4 229.3,34.5 230.6,40.3 232.0,41.8 233.3,34.5 234.6,31.1 236.0,34.1 237.3,36.6 238.7,32.1 240.0,35.1" fill="none" stroke="var(--down)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="35.1" r="2.6" fill="var(--down)"/></svg>
+        <svg class="nch" viewBox="0 0 240 46" preserveAspectRatio="none" width="100%" height="46"><line x1="0" y1="22.9" x2="240" y2="22.9" stroke="var(--muted)" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.55"/><polyline points="0,46 0.0,34.6 1.3,29.7 2.7,25.0 4.0,19.1 5.4,26.9 6.7,22.0 8.0,20.9 9.4,21.8 10.7,21.9 12.1,19.6 13.4,17.5 14.7,19.9 16.1,28.4 17.4,20.4 18.8,19.9 20.1,24.3 21.5,21.5 22.8,23.0 24.1,26.6 25.5,24.9 26.8,25.5 28.2,23.6 29.5,23.0 30.8,18.2 32.2,22.9 33.5,16.2 34.9,17.1 36.2,16.2 37.5,16.2 38.9,22.4 40.2,17.6 41.6,19.4 42.9,17.7 44.2,21.4 45.6,18.3 46.9,23.4 48.3,18.9 49.6,19.9 50.9,16.6 52.3,17.1 53.6,19.2 55.0,26.5 56.3,25.3 57.7,31.7 59.0,36.4 60.3,35.1 61.7,38.9 63.0,41.2 64.4,46.0 65.7,42.5 67.0,33.5 68.4,28.9 69.7,36.7 71.1,36.8 72.4,41.8 73.7,32.6 75.1,29.6 76.4,25.1 77.8,27.9 79.1,34.0 80.4,31.1 81.8,21.4 83.1,19.0 84.5,17.0 85.8,14.1 87.2,17.5 88.5,9.9 89.8,9.8 91.2,17.4 92.5,13.1 93.9,12.9 95.2,15.9 96.5,14.8 97.9,9.2 99.2,10.4 100.6,16.8 101.9,19.8 103.2,19.7 104.6,24.2 105.9,25.7 107.3,26.8 108.6,30.7 109.9,23.7 111.3,27.7 112.6,32.1 114.0,27.7 115.3,24.0 116.6,27.8 118.0,29.4 119.3,30.5 120.7,29.3 122.0,32.3 123.4,28.7 124.7,33.4 126.0,27.0 127.4,29.7 128.7,23.9 130.1,21.9 131.4,17.0 132.7,17.9 134.1,19.4 135.4,20.6 136.8,23.6 138.1,25.7 139.4,25.1 140.8,27.3 142.1,21.3 143.5,22.1 144.8,25.7 146.1,19.6 147.5,23.8 148.8,20.3 150.2,13.7 151.5,14.8 152.8,15.2 154.2,25.2 155.5,24.4 156.9,23.5 158.2,22.0 159.6,18.9 160.9,17.1 162.2,14.6 163.6,17.1 164.9,20.1 166.3,18.6 167.6,14.4 168.9,17.4 170.3,17.1 171.6,25.2 173.0,22.8 174.3,18.9 175.6,18.9 177.0,22.2 178.3,22.7 179.7,17.4 181.0,23.8 182.3,28.4 183.7,29.1 185.0,28.9 186.4,30.4 187.7,24.4 189.1,20.8 190.4,16.4 191.7,21.2 193.1,24.4 194.4,26.0 195.8,21.6 197.1,16.7 198.4,18.6 199.8,22.1 201.1,19.0 202.5,21.0 203.8,20.6 205.1,21.1 206.5,18.4 207.8,19.2 209.2,26.2 210.5,27.4 211.8,25.5 213.2,30.1 214.5,25.5 215.9,22.9 217.2,25.3 218.5,23.8 219.9,28.8 221.2,29.5 222.6,34.4 223.9,37.4 225.3,33.1 226.6,27.3 227.9,30.3 229.3,34.4 230.6,40.2 232.0,41.7 233.3,34.5 234.6,31.1 236.0,34.0 237.3,36.4 238.7,31.9 240.0,34.9 240,46" fill="var(--down)" opacity="0.12" stroke="none"/><polyline points="0.0,34.6 1.3,29.7 2.7,25.0 4.0,19.1 5.4,26.9 6.7,22.0 8.0,20.9 9.4,21.8 10.7,21.9 12.1,19.6 13.4,17.5 14.7,19.9 16.1,28.4 17.4,20.4 18.8,19.9 20.1,24.3 21.5,21.5 22.8,23.0 24.1,26.6 25.5,24.9 26.8,25.5 28.2,23.6 29.5,23.0 30.8,18.2 32.2,22.9 33.5,16.2 34.9,17.1 36.2,16.2 37.5,16.2 38.9,22.4 40.2,17.6 41.6,19.4 42.9,17.7 44.2,21.4 45.6,18.3 46.9,23.4 48.3,18.9 49.6,19.9 50.9,16.6 52.3,17.1 53.6,19.2 55.0,26.5 56.3,25.3 57.7,31.7 59.0,36.4 60.3,35.1 61.7,38.9 63.0,41.2 64.4,46.0 65.7,42.5 67.0,33.5 68.4,28.9 69.7,36.7 71.1,36.8 72.4,41.8 73.7,32.6 75.1,29.6 76.4,25.1 77.8,27.9 79.1,34.0 80.4,31.1 81.8,21.4 83.1,19.0 84.5,17.0 85.8,14.1 87.2,17.5 88.5,9.9 89.8,9.8 91.2,17.4 92.5,13.1 93.9,12.9 95.2,15.9 96.5,14.8 97.9,9.2 99.2,10.4 100.6,16.8 101.9,19.8 103.2,19.7 104.6,24.2 105.9,25.7 107.3,26.8 108.6,30.7 109.9,23.7 111.3,27.7 112.6,32.1 114.0,27.7 115.3,24.0 116.6,27.8 118.0,29.4 119.3,30.5 120.7,29.3 122.0,32.3 123.4,28.7 124.7,33.4 126.0,27.0 127.4,29.7 128.7,23.9 130.1,21.9 131.4,17.0 132.7,17.9 134.1,19.4 135.4,20.6 136.8,23.6 138.1,25.7 139.4,25.1 140.8,27.3 142.1,21.3 143.5,22.1 144.8,25.7 146.1,19.6 147.5,23.8 148.8,20.3 150.2,13.7 151.5,14.8 152.8,15.2 154.2,25.2 155.5,24.4 156.9,23.5 158.2,22.0 159.6,18.9 160.9,17.1 162.2,14.6 163.6,17.1 164.9,20.1 166.3,18.6 167.6,14.4 168.9,17.4 170.3,17.1 171.6,25.2 173.0,22.8 174.3,18.9 175.6,18.9 177.0,22.2 178.3,22.7 179.7,17.4 181.0,23.8 182.3,28.4 183.7,29.1 185.0,28.9 186.4,30.4 187.7,24.4 189.1,20.8 190.4,16.4 191.7,21.2 193.1,24.4 194.4,26.0 195.8,21.6 197.1,16.7 198.4,18.6 199.8,22.1 201.1,19.0 202.5,21.0 203.8,20.6 205.1,21.1 206.5,18.4 207.8,19.2 209.2,26.2 210.5,27.4 211.8,25.5 213.2,30.1 214.5,25.5 215.9,22.9 217.2,25.3 218.5,23.8 219.9,28.8 221.2,29.5 222.6,34.4 223.9,37.4 225.3,33.1 226.6,27.3 227.9,30.3 229.3,34.4 230.6,40.2 232.0,41.7 233.3,34.5 234.6,31.1 236.0,34.0 237.3,36.4 238.7,31.9 240.0,34.9" fill="none" stroke="var(--down)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="34.9" r="2.6" fill="var(--down)"/></svg>
         <div class="muted" style="font-size:11px; margin-top:3px"><span class="l-en">Summation Index</span><span class="l-zh">累积指标</span>
           <b class="neg"><span class="l-en">falling</span><span class="l-zh">下行</span></b>
-          <span class="muted">(20d -741)</span>
+          <span class="muted">(20d -736)</span>
         </div>
       </div>
       
@@ -3465,7 +3500,7 @@
         <span style="position:relative; display:block; height:10px; background:var(--panel); border-radius:5px; margin:10px 0 6px" title="0.40 washed → 0.615 thrust">
           <i style="position:absolute; left:25.0%; top:-3px; width:2px; height:16px; background:var(--muted); opacity:.7"></i>
           <i style="position:absolute; left:78.8%; top:-3px; width:2px; height:16px; background:var(--up)"></i>
-          <i style="position:absolute; left:calc(30.0% - 5px); top:0; width:10px; height:10px; border-radius:50%; background:var(--link); box-shadow:0 0 0 2px var(--panel2)"></i>
+          <i style="position:absolute; left:calc(30.2% - 5px); top:0; width:10px; height:10px; border-radius:50%; background:var(--link); box-shadow:0 0 0 2px var(--panel2)"></i>
         </span>
         <div class="muted" style="font-size:11px; margin-top:3px">
           <span class="l-en">last strict thrust</span><span class="l-zh">上次严格脉冲</span> <b>2023-11-03</b>
@@ -3499,7 +3534,7 @@
         <div style="display:flex; align-items:baseline; gap:8px; margin:4px 0 2px; min-height:30px">
           <b class="muted" style="font-size:16px"><span class="l-en">in range</span><span class="l-zh">区间内</span></b>
         </div>
-        <svg class="nch" viewBox="0 0 240 46" preserveAspectRatio="none" width="100%" height="46"><polyline points="0,46 0.0,46.0 2.0,40.5 4.0,38.8 6.1,37.2 8.1,34.7 10.1,36.2 12.1,30.6 14.1,29.2 16.1,32.9 18.2,29.5 20.2,28.2 22.2,29.1 24.2,27.5 26.2,22.8 28.2,22.0 30.3,24.8 32.3,25.9 34.3,25.2 36.3,27.5 38.3,28.3 40.3,29.0 42.4,31.7 44.4,27.5 46.4,29.9 48.4,33.0 50.4,30.7 52.4,28.5 54.5,30.9 56.5,32.3 58.5,33.5 60.5,33.3 62.5,35.7 64.5,34.1 66.6,37.7 68.6,34.4 70.6,36.6 72.6,33.4 74.6,32.1 76.6,28.7 78.7,28.8 80.7,29.2 82.7,29.6 84.7,31.4 86.7,32.8 88.7,32.6 90.8,34.2 92.8,30.6 94.8,30.9 96.8,33.3 98.8,29.4 100.8,31.8 102.9,29.5 104.9,24.8 106.9,24.6 108.9,23.9 110.9,29.7 112.9,29.3 115.0,28.7 117.0,27.7 119.0,25.4 121.0,23.6 123.0,21.3 125.0,22.0 127.1,23.2 129.1,21.7 131.1,18.3 133.1,19.2 135.1,18.2 137.1,22.8 139.2,21.1 141.2,18.2 143.2,17.5 145.2,19.1 147.2,19.0 149.2,15.1 151.3,18.6 153.3,21.4 155.3,22.0 157.3,22.3 159.3,23.6 161.3,20.0 163.4,17.5 165.4,14.1 167.4,16.5 169.4,18.2 171.4,19.1 173.4,16.2 175.5,12.5 177.5,12.9 179.5,14.5 181.5,12.1 183.5,12.8 185.5,12.0 187.6,11.7 189.6,9.5 191.6,9.2 193.6,13.2 195.6,13.9 197.6,12.8 199.7,15.8 201.7,13.1 203.7,11.3 205.7,12.7 207.7,11.6 209.7,14.8 211.8,15.5 213.8,19.1 215.8,22.0 217.8,20.4 219.8,17.5 221.8,19.9 223.9,23.3 225.9,28.2 227.9,30.9 229.9,27.9 231.9,26.9 233.9,29.8 236.0,32.8 238.0,31.4 240.0,34.5 240,46" fill="var(--link)" opacity="0.12" stroke="none"/><polyline points="0.0,46.0 2.0,40.5 4.0,38.8 6.1,37.2 8.1,34.7 10.1,36.2 12.1,30.6 14.1,29.2 16.1,32.9 18.2,29.5 20.2,28.2 22.2,29.1 24.2,27.5 26.2,22.8 28.2,22.0 30.3,24.8 32.3,25.9 34.3,25.2 36.3,27.5 38.3,28.3 40.3,29.0 42.4,31.7 44.4,27.5 46.4,29.9 48.4,33.0 50.4,30.7 52.4,28.5 54.5,30.9 56.5,32.3 58.5,33.5 60.5,33.3 62.5,35.7 64.5,34.1 66.6,37.7 68.6,34.4 70.6,36.6 72.6,33.4 74.6,32.1 76.6,28.7 78.7,28.8 80.7,29.2 82.7,29.6 84.7,31.4 86.7,32.8 88.7,32.6 90.8,34.2 92.8,30.6 94.8,30.9 96.8,33.3 98.8,29.4 100.8,31.8 102.9,29.5 104.9,24.8 106.9,24.6 108.9,23.9 110.9,29.7 112.9,29.3 115.0,28.7 117.0,27.7 119.0,25.4 121.0,23.6 123.0,21.3 125.0,22.0 127.1,23.2 129.1,21.7 131.1,18.3 133.1,19.2 135.1,18.2 137.1,22.8 139.2,21.1 141.2,18.2 143.2,17.5 145.2,19.1 147.2,19.0 149.2,15.1 151.3,18.6 153.3,21.4 155.3,22.0 157.3,22.3 159.3,23.6 161.3,20.0 163.4,17.5 165.4,14.1 167.4,16.5 169.4,18.2 171.4,19.1 173.4,16.2 175.5,12.5 177.5,12.9 179.5,14.5 181.5,12.1 183.5,12.8 185.5,12.0 187.6,11.7 189.6,9.5 191.6,9.2 193.6,13.2 195.6,13.9 197.6,12.8 199.7,15.8 201.7,13.1 203.7,11.3 205.7,12.7 207.7,11.6 209.7,14.8 211.8,15.5 213.8,19.1 215.8,22.0 217.8,20.4 219.8,17.5 221.8,19.9 223.9,23.3 225.9,28.2 227.9,30.9 229.9,27.9 231.9,26.9 233.9,29.8 236.0,32.8 238.0,31.4 240.0,34.5" fill="none" stroke="var(--link)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="34.5" r="2.6" fill="var(--link)"/></svg>
+        <svg class="nch" viewBox="0 0 240 46" preserveAspectRatio="none" width="100%" height="46"><polyline points="0,46 0.0,46.0 2.0,40.5 4.0,38.8 6.1,37.2 8.1,34.7 10.1,36.2 12.1,30.6 14.1,29.2 16.1,32.9 18.2,29.5 20.2,28.2 22.2,29.1 24.2,27.5 26.2,22.8 28.2,22.0 30.3,24.8 32.3,25.9 34.3,25.2 36.3,27.5 38.3,28.3 40.3,29.0 42.4,31.7 44.4,27.5 46.4,29.9 48.4,33.0 50.4,30.7 52.4,28.5 54.5,30.9 56.5,32.3 58.5,33.5 60.5,33.3 62.5,35.7 64.5,34.1 66.6,37.7 68.6,34.4 70.6,36.6 72.6,33.4 74.6,32.1 76.6,28.7 78.7,28.8 80.7,29.2 82.7,29.6 84.7,31.4 86.7,32.8 88.7,32.6 90.8,34.2 92.8,30.6 94.8,30.9 96.8,33.3 98.8,29.4 100.8,31.8 102.9,29.5 104.9,24.8 106.9,24.6 108.9,23.9 110.9,29.7 112.9,29.3 115.0,28.7 117.0,27.7 119.0,25.4 121.0,23.6 123.0,21.3 125.0,22.0 127.1,23.2 129.1,21.7 131.1,18.3 133.1,19.2 135.1,18.2 137.1,22.8 139.2,21.1 141.2,18.2 143.2,17.5 145.2,19.1 147.2,19.0 149.2,15.1 151.3,18.6 153.3,21.4 155.3,22.0 157.3,22.3 159.3,23.6 161.3,20.0 163.4,17.5 165.4,14.1 167.4,16.5 169.4,18.2 171.4,19.1 173.4,16.2 175.5,12.5 177.5,12.9 179.5,14.5 181.5,12.1 183.5,12.8 185.5,12.0 187.6,11.7 189.6,9.5 191.6,9.2 193.6,13.2 195.6,13.9 197.6,12.8 199.7,15.8 201.7,13.1 203.7,11.3 205.7,12.6 207.7,11.6 209.7,14.8 211.8,15.5 213.8,19.2 215.8,22.1 217.8,20.5 219.8,17.5 221.8,19.8 223.9,23.2 225.9,28.2 227.9,30.9 229.9,27.9 231.9,26.9 233.9,29.8 236.0,32.7 238.0,31.2 240.0,34.4 240,46" fill="var(--link)" opacity="0.12" stroke="none"/><polyline points="0.0,46.0 2.0,40.5 4.0,38.8 6.1,37.2 8.1,34.7 10.1,36.2 12.1,30.6 14.1,29.2 16.1,32.9 18.2,29.5 20.2,28.2 22.2,29.1 24.2,27.5 26.2,22.8 28.2,22.0 30.3,24.8 32.3,25.9 34.3,25.2 36.3,27.5 38.3,28.3 40.3,29.0 42.4,31.7 44.4,27.5 46.4,29.9 48.4,33.0 50.4,30.7 52.4,28.5 54.5,30.9 56.5,32.3 58.5,33.5 60.5,33.3 62.5,35.7 64.5,34.1 66.6,37.7 68.6,34.4 70.6,36.6 72.6,33.4 74.6,32.1 76.6,28.7 78.7,28.8 80.7,29.2 82.7,29.6 84.7,31.4 86.7,32.8 88.7,32.6 90.8,34.2 92.8,30.6 94.8,30.9 96.8,33.3 98.8,29.4 100.8,31.8 102.9,29.5 104.9,24.8 106.9,24.6 108.9,23.9 110.9,29.7 112.9,29.3 115.0,28.7 117.0,27.7 119.0,25.4 121.0,23.6 123.0,21.3 125.0,22.0 127.1,23.2 129.1,21.7 131.1,18.3 133.1,19.2 135.1,18.2 137.1,22.8 139.2,21.1 141.2,18.2 143.2,17.5 145.2,19.1 147.2,19.0 149.2,15.1 151.3,18.6 153.3,21.4 155.3,22.0 157.3,22.3 159.3,23.6 161.3,20.0 163.4,17.5 165.4,14.1 167.4,16.5 169.4,18.2 171.4,19.1 173.4,16.2 175.5,12.5 177.5,12.9 179.5,14.5 181.5,12.1 183.5,12.8 185.5,12.0 187.6,11.7 189.6,9.5 191.6,9.2 193.6,13.2 195.6,13.9 197.6,12.8 199.7,15.8 201.7,13.1 203.7,11.3 205.7,12.6 207.7,11.6 209.7,14.8 211.8,15.5 213.8,19.2 215.8,22.1 217.8,20.5 219.8,17.5 221.8,19.8 223.9,23.2 225.9,28.2 227.9,30.9 229.9,27.9 231.9,26.9 233.9,29.8 236.0,32.7 238.0,31.2 240.0,34.4" fill="none" stroke="var(--link)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="34.4" r="2.6" fill="var(--link)"/></svg>
         <div class="muted" style="font-size:11px; margin-top:3px"><span class="l-en">neither price nor the advance/decline line is at a 3-month extreme — no divergence to read</span><span class="l-zh">价格与腾落线均未触及三个月极值 — 暂无背离可读</span>.
           <span class="muted">(60d corr 0.35)</span>
         </div>
@@ -4074,7 +4109,7 @@ window.__CHART_SWAP__ = {
            "HY OAS %":"高收益债利差 %","% S&P500 > 50DMA":"标普500 高于50日均线 %"}
 };
 </script>
-<script src="theme.js?v=48082a1e" defer></script>
+<script src="theme.js?v=a5808ca0" defer></script>
 <script src="tier_preview.js?v=d80100db" defer></script>
 <script src="chart_i18n.js?v=23272c48" defer></script>
 <script src="timemachine.js?v=92798ed7" defer></script>
@@ -6245,7 +6280,7 @@ if (document.readyState === 'loading') {
   /* P-MP1-SHELL §8b: the Setups grid's OWN gate, over the plan book rather
      than the candidate board GATE splits — same payload, same URL, a third
      independent switch. */
-  var LIFE_GATE = {"locked": 397, "payload": "/premiumdata/us_stocks.json", "preview": 3, "tier": "essential", "total": 400};
+  var LIFE_GATE = {"locked": 423, "payload": "/premiumdata/us_stocks.json", "preview": 3, "tier": "essential", "total": 426};
   var SRC = (GATE && GATE.payload) || (PGATE && PGATE.payload) || (LIFE_GATE && LIFE_GATE.payload);
   if (!SRC) return;
 
@@ -6290,7 +6325,24 @@ if (document.readyState === 'loading') {
     for (var i = 0; i < notes.length; i++) notes[i].remove();
   }
 
+  function hydrateLeaderObservations(html){
+    if (!html) return;
+    var grid = document.querySelector('#us-leader-observations .plo-rows');
+    if (!grid) return;
+    var oldBar = grid.nextElementSibling;
+    if (!(oldBar && oldBar.classList && oldBar.classList.contains('sm-bar'))) oldBar = null;
+    var freshGrid = document.createElement('div');
+    freshGrid.className = grid.className;
+    freshGrid.setAttribute('data-showmore-rows', '3');
+    freshGrid.innerHTML = grid.innerHTML + html;
+    grid.parentNode.insertBefore(freshGrid, grid);
+    grid.parentNode.removeChild(grid);
+    if (oldBar && oldBar.parentNode) oldBar.parentNode.removeChild(oldBar);
+    if (window.initShowMore) window.initShowMore();
+  }
+
   function hydratePanels(payload){
+    hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
     appendTo('#us-standouts .pbr-l', payload.ran_html);
