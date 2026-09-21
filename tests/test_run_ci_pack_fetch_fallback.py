@@ -59,10 +59,40 @@ def test_deepen_falls_back_to_main_when_all_branches_fetch_fails(
     assert all(line.startswith("::warning") for line in warning_lines)
 
 
-def test_deepen_raises_when_even_main_fallback_fails(
+def test_deepen_falls_back_to_shallow_window_when_main_deepen_fails(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        calls.append(list(cmd))
+        if "--depth=2147483647" in cmd:
+            raise subprocess.CalledProcessError(1, cmd)
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
+    run_ci_pack._prepare_provided_actions(
+        _fetch_depth_zero_job(),
+        root=Path.cwd(),
+        tested_tree_sha="0" * 40,
+    )
+    assert len(calls) == 3
+    assert "--shallow-since=30 days ago" in calls[2]
+    assert "+refs/heads/main:refs/remotes/origin/main" in calls[2]
+    assert "--tags" not in calls[2]
+    out = capsys.readouterr().out
+    warning_lines = [line for line in out.splitlines() if "::warning" in line]
+    assert len(warning_lines) == 2
+    assert all(line.startswith("::warning") for line in warning_lines)
+
+
+def test_deepen_raises_when_every_rung_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    calls: list[list[str]] = []
+
     def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        calls.append(list(cmd))
         raise subprocess.CalledProcessError(1, cmd)
 
     monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
@@ -72,6 +102,7 @@ def test_deepen_raises_when_even_main_fallback_fails(
             root=Path.cwd(),
             tested_tree_sha="0" * 40,
         )
+    assert len(calls) == 3
 
 
 def test_deepen_single_fetch_when_healthy(
