@@ -200,6 +200,8 @@ def _dlg(html: str) -> str:
 
 def _default_visible(dlg: str) -> str:
     """Strip collapsed <details> bodies, keeping each <summary>."""
+    # Embedded bilingual data is not visible copy.
+    dlg = re.sub(r"<script\b[^>]*>.*?</script>", "", dlg, flags=re.S)
 
     def _keep_summary(match: re.Match[str]) -> str:
         block = match.group(0)

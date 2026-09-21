@@ -96,6 +96,37 @@ def _load_json(path: Path) -> dict | None:
     return None
 
 
+def _no_network_render() -> bool:
+    """True for site-only rerender lanes that must reuse committed China caches.
+
+    ``render.yml`` promises a no-collector/no-network rebake through
+    ``RENDER_NO_DRIP=1``.  ``CHINA_FAST_RENDER=1`` is the bounded VPS/dev sibling
+    used for emergency template publication.  Neither lane may refresh Eastmoney
+    or the per-stock context drips; the normal nightly remains their owner.
+    """
+    import os
+
+    return (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    )
+
+
+def _build_china_library_for_page(alpha: dict | None) -> dict | None:
+    """Build the stock library only on its owning data-refresh lanes.
+
+    Site-only rerenders fall through to the already-committed
+    ``china_standouts.json`` contract later in ``main`` instead of spending
+    minutes in keyless Eastmoney/akshare drips whose writes are discarded.
+    """
+    if _no_network_render():
+        log.info("china stock library: no-network rerender; reusing persisted board")
+        return None
+    from scripts import build_china_library
+
+    return build_china_library.main(alpha=alpha)
+
+
 def _is_current_prophet_artifact(doc: dict | None) -> bool:
     """True when `doc` is a board the CURRENT engine definition produced.
 
@@ -434,6 +465,10 @@ def _leaderboard() -> dict | None:
     """Stock-Connect 'smart money' leaderboard — today's most-active A-shares by foreign
     (northbound) turnover + the HK names mainland (southbound) money net-bought/sold.
     A build-time fetch (ephemeral top-N, no history needed); fully best-effort."""
+    if _no_network_render():
+        log.info("china leaderboard: no-network rerender; skipping ephemeral fetch")
+        return None
+
     import requests
     UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -1623,8 +1658,7 @@ def main() -> int:
         # china.html. Built here so the setups board renders server-side below.
         setups = None
         try:
-            from scripts import build_china_library
-            setups = build_china_library.main(alpha=alpha)
+            setups = _build_china_library_for_page(alpha)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             # exc_info: this fallback silently served a stale china_standouts.json for
             # 3 sessions (07-13→07-16) because the one-line message gave no traceback

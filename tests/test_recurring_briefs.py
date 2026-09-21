@@ -6,6 +6,7 @@ idempotency is a real second-call proof, not a static fixture.
 from __future__ import annotations
 
 import json
+import urllib.error
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -840,7 +841,8 @@ def test_no_target_user_id_returns_target_unavailable(monkeypatch):
     monkeypatch.setattr(rb, "_pg", fake_pg)
     monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
     result = rb.read_target(sub)
-    assert result is None
+    assert result.state == "missing"
+    assert result.target is None
     assert captured.get("calls"), "read_target must issue at least one Supabase GET"
     assert any("user_id=eq." in c for c in captured["calls"]), (
         f"read_target URL must owner-scope on subscription.user_id, got {captured['calls']}"
@@ -886,7 +888,7 @@ def test_run_surfaces_write_errors_via_result(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.error_n == 1
     assert result.planned_n == 1
@@ -905,7 +907,7 @@ def test_cli_dry_run_prints_what_it_would_write(monkeypatch, capsys):
             "daily_after_us_close",
             "--dry-run",
             "--run-date",
-            "2026-09-13",
+            "2026-09-11",
         ]
     )
     assert rc == 0
@@ -914,7 +916,8 @@ def test_cli_dry_run_prints_what_it_would_write(monkeypatch, capsys):
     assert "1 ready" in out
     # Frozen-spec item (2): prints what it would write.
     assert "(dry-run): 1 planned" in out or "1 planned" in out
-    assert "-- subscription" in out
+    assert "-- planned row" in out
+    assert SUB_ID[:8] not in out
 
 
 def test_cli_surfaces_write_failure_as_warning(monkeypatch, capsys):
@@ -927,7 +930,7 @@ def test_cli_surfaces_write_failure_as_warning(monkeypatch, capsys):
         lambda row, dry_run=False: "error" if not dry_run else "dry",
     )
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-11"]
     )
     assert rc == 0
     out = capsys.readouterr().out
@@ -994,15 +997,260 @@ def test_user_facing_strings_reject_translation_pending_for_weekly():
 
 
 # ---------------------------------------------------------------------------
+# Sol product-integrity repairs — privacy, real US-close slots, read truth
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "closed_day",
+    [
+        date(2026, 9, 19),  # Saturday
+        date(2026, 9, 20),  # Sunday
+        date(2026, 12, 25), # NYSE Christmas closure
+    ],
+)
+def test_daily_non_session_skips_before_any_subscription_or_target_read(monkeypatch, closed_day):
+    assert rb.is_nyse_session(closed_day) is False
+
+    def should_not_read(*args, **kwargs):
+        raise AssertionError("non-session daily cadence must not read user subscription/target data")
+
+    monkeypatch.setattr(rb, "read_subscriptions", should_not_read)
+    monkeypatch.setattr(rb, "load_published_artifact", should_not_read)
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=closed_day,
+    )
+    assert result.skipped_non_session is True
+    assert result.subscription_read_state == "not_due"
+    assert result.slot is None
+    assert result.subscription_n == 0
+    assert result.planned_n == 0
+
+
+def test_owner_run_date_uses_new_york_calendar_day_across_utc_midnight():
+    # 01:30 UTC Saturday is still Friday evening in New York.
+    assert rb.owner_run_date(datetime(2026, 9, 19, 1, 30, tzinfo=timezone.utc)) == date(2026, 9, 18)
+    # Later Saturday UTC after ET midnight belongs to Saturday and will be skipped.
+    assert rb.owner_run_date(datetime(2026, 9, 19, 6, 0, tzinfo=timezone.utc)) == date(2026, 9, 19)
+
+
+def test_daily_real_session_keeps_the_existing_owner_path(monkeypatch):
+    session_day = date(2026, 9, 18)
+    assert rb.is_nyse_session(session_day) is True
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: None)
+    monkeypatch.setattr(
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=()),
+    )
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=True,
+        run_date=session_day,
+    )
+    assert result.skipped_non_session is False
+    assert result.subscription_read_state == "ok"
+    assert result.subscription_n == 0
+    assert result.planned_n == 0
+
+
+def test_subscription_read_distinguishes_healthy_empty_from_unavailable(monkeypatch):
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setattr(rb, "_pg", lambda *args, **kwargs: [])
+    healthy = rb.read_subscriptions("daily_after_us_close")
+    assert healthy.state == "ok"
+    assert healthy.rows == ()
+    assert healthy.error_class is None
+
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
+    missing = rb.read_subscriptions("daily_after_us_close")
+    assert missing.state == "unavailable"
+    assert missing.rows == ()
+    assert missing.error_class == "no_credentials"
+
+
+def test_subscription_http_failure_is_machine_visible_and_reads_no_targets(monkeypatch):
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    def fail_pg(*args, **kwargs):
+        raise urllib.error.HTTPError("https://example.invalid", 503, "down", {}, None)
+
+    monkeypatch.setattr(rb, "_pg", fail_pg)
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("target reads must not run when subscriptions are unavailable")
+        ),
+    )
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 18),
+    )
+    assert result.subscription_read_state == "unavailable"
+    assert result.subscription_read_error == "http_503"
+    assert result.read_unavailable == 1
+    assert result.subscription_n == 0
+    assert result.planned_n == 0
+
+
+def test_dry_run_never_logs_private_target_or_body_content(monkeypatch, capsys):
+    client = FakeClient()
+    private_target = _thesis_target()
+    private_target["name"] = "PRIVATE THESIS acquisition target"
+    _patch_run(
+        monkeypatch,
+        artifact=_briefing(
+            as_of="2026-09-11",
+            situation="PRIVATE BODY do not log this",
+        ),
+        target=private_target,
+        client=client,
+    )
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    rc = entry.main([
+        "--cadence",
+        "daily_after_us_close",
+        "--dry-run",
+        "--run-date",
+        "2026-09-11",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "PRIVATE THESIS acquisition target" not in out
+    assert "PRIVATE BODY do not log this" not in out
+    assert SUB_ID[:8] not in out
+    assert "-- planned row slot 2026-09-11 state ready" in out
+
+
+def test_target_http_failure_writes_honest_miss_not_deleted_target_copy(monkeypatch):
+    client = FakeClient()
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing(as_of="2026-09-18"))
+    monkeypatch.setattr(
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=(_sub(run_date="2026-09-18"),)),
+    )
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: rb.TargetReadResult(state="unavailable", error_class="http_503"),
+    )
+    monkeypatch.setattr(
+        rb,
+        "write_delivery",
+        lambda row, dry_run=False: client.write(row, dry_run=dry_run),
+    )
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 18),
+    )
+    assert result.degraded_n == 1
+    assert result.read_unavailable == 1
+    assert len(client.deliveries) == 1
+    row = client.deliveries[0]
+    assert row["degraded_reason"] == rb.TARGET_READ_UNAVAILABLE_REASON
+    sentence = row["body"]["market_read"][0]["sentence_en"]
+    assert sentence == rb.TARGET_READ_UNAVAILABLE_EN
+    assert "no longer available" not in sentence.lower()
+
+
+def test_cli_warns_on_target_read_outage_without_private_content(monkeypatch, capsys):
+    client = FakeClient()
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing(as_of="2026-09-18"))
+    monkeypatch.setattr(
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=(_sub(run_date="2026-09-18"),)),
+    )
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: rb.TargetReadResult(state="unavailable", error_class="http_503"),
+    )
+    monkeypatch.setattr(
+        rb,
+        "write_delivery",
+        lambda row, dry_run=False: client.write(row, dry_run=dry_run),
+    )
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+
+    rc = entry.main([
+        "--cadence",
+        "daily_after_us_close",
+        "--run-date",
+        "2026-09-18",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::warning title=recurring-briefs-target-read-unavailable::" in out
+    assert "1 target read(s) unavailable" in out
+    assert USER_ID not in out
+    assert THESIS_ID not in out
+    assert SUB_ID[:8] not in out
+
+
+def test_read_target_http_failure_is_typed_unavailable(monkeypatch):
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    def fail_pg(*args, **kwargs):
+        raise urllib.error.HTTPError("https://example.invalid", 503, "down", {}, None)
+
+    monkeypatch.setattr(rb, "_pg", fail_pg)
+    result = rb.read_target(_sub(run_date="2026-09-18"))
+    assert result.state == "unavailable"
+    assert result.target is None
+    assert result.error_class == "http_503"
+
+
+def test_monitor_read_failure_is_explicit_not_false_calm(monkeypatch):
+    # Keep this unit hermetic: the recurring-briefs CI lane intentionally
+    # installs only pytest, while the real thesis monitor imports numpy/pandas.
+    import sys
+    import types
+
+    fake_tcm = types.ModuleType("engine.thesis_condition_monitor")
+    fake_tcm.load_tripwire_view = lambda: ([], {}, "read_unavailable")
+    fake_tcm.fired_windows = lambda entries, latch_state: ()
+    monkeypatch.setitem(sys.modules, "engine.thesis_condition_monitor", fake_tcm)
+
+    rows = rb.load_monitors_for_target(_thesis_target())
+    assert rows == [{
+        "name": "Conditions we watch",
+        "state_en": rb.MONITOR_READ_UNAVAILABLE_EN,
+        "state_zh": rb.MONITOR_READ_UNAVAILABLE_ZH,
+    }]
+    assert rows[0]["state_en"] != "No change in the conditions we watch."
+
+
+# ---------------------------------------------------------------------------
 # run() with FakeClient — idempotency, dry-run, degraded
 # ---------------------------------------------------------------------------
 
 def _patch_run(monkeypatch, *, artifact, target, client, subscriptions=None):
     monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: artifact)
+    rows = [_sub()] if subscriptions is None else subscriptions
     monkeypatch.setattr(
-        rb, "read_subscriptions", lambda cadence: subscriptions or [_sub()]
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=tuple(rows)),
     )
-    monkeypatch.setattr(rb, "read_target", lambda sub: target)
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: (
+            rb.TargetReadResult(target=target)
+            if target is not None
+            else rb.TargetReadResult(state="missing")
+        ),
+    )
     monkeypatch.setattr(
         rb, "write_delivery", lambda row, dry_run=False: client.write(row, dry_run=dry_run)
     )
@@ -1016,16 +1264,16 @@ def test_run_writes_one_ready_row(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.subscription_n == 1
     assert result.ready_n == 1
     assert result.degraded_n == 0
-    assert result.slot == date(2026, 9, 13)
+    assert result.slot == date(2026, 9, 11)
     assert len(client.deliveries) == 1
     row = client.deliveries[0]
     assert row["state"] == "ready"
-    assert row["slot_asof"] == "2026-09-13"
+    assert row["slot_asof"] == "2026-09-11"
     assert row["subscription_id"] == SUB_ID
     assert row["degraded_reason"] is None
 
@@ -1033,8 +1281,8 @@ def test_run_writes_one_ready_row(monkeypatch):
 def test_idempotent_second_run_writes_nothing(monkeypatch):
     client = FakeClient()
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
-    r1 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
-    r2 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
+    r1 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 11))
+    r2 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 11))
     assert r1.ready_n == 1
     assert len(client.deliveries) == 1
     assert client.insert_calls == 2
@@ -1074,11 +1322,11 @@ def test_missing_artifact_writes_degraded_for_todays_slot_not_a_skip(monkeypatch
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.degraded_n == 1
     assert len(client.deliveries) == 1
-    assert client.deliveries[0]["slot_asof"] == "2026-09-13"
+    assert client.deliveries[0]["slot_asof"] == "2026-09-11"
 
 
 def test_unavailable_target_writes_degraded_target_unavailable(monkeypatch):
@@ -1087,7 +1335,7 @@ def test_unavailable_target_writes_degraded_target_unavailable(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.degraded_n == 1
     assert client.deliveries[0]["degraded_reason"] == "target unavailable"
@@ -1099,7 +1347,7 @@ def test_dry_run_writes_nothing(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=True,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.ready_n == 1
     assert result.planned_n == 1
@@ -1121,7 +1369,7 @@ def test_paused_subscription_is_not_written(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 11),
     )
     assert result.subscription_n == 0
     assert client.deliveries == []
@@ -1129,12 +1377,12 @@ def test_paused_subscription_is_not_written(monkeypatch):
 
 def test_run_does_not_backfill_yesterday(monkeypatch):
     client = FakeClient()
-    _patch_run(monkeypatch, artifact=_briefing(as_of="2026-09-13"),
+    _patch_run(monkeypatch, artifact=_briefing(as_of="2026-09-11"),
                target=_thesis_target(), client=client)
-    rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
+    rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 11))
     slots = {r["slot_asof"] for r in client.deliveries}
-    assert slots == {"2026-09-13"}
-    assert "2026-09-12" not in slots
+    assert slots == {"2026-09-11"}
+    assert "2026-09-10" not in slots
 
 
 def test_write_delivery_uses_on_conflict_do_nothing():
@@ -1162,7 +1410,7 @@ def test_cli_prints_r6_line_and_notice_at_line_start(monkeypatch, capsys):
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
     monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-11"]
     )
     assert rc == 0
     out = capsys.readouterr().out
@@ -1175,7 +1423,7 @@ def test_cli_prints_r6_line_and_notice_at_line_start(monkeypatch, capsys):
     assert "1 subscriptions" in summary[0]
     assert "1 ready" in summary[0]
     assert "0 degraded" in summary[0]
-    assert "slot 2026-09-13" in summary[0]
+    assert "slot 2026-09-11" in summary[0]
     notices = [ln for ln in lines if ln.startswith("::notice")]
     assert notices, "expected a ::notice line at the start of some output line"
     assert "recurring briefs:" in notices[0]
@@ -1186,7 +1434,7 @@ def test_cli_dormant_without_enable_flag_writes_nothing(monkeypatch, capsys):
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
     monkeypatch.delenv("RECURRING_BRIEFS_ENABLE", raising=False)
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-11"]
     )
     assert rc == 0
     assert client.deliveries == []
@@ -1205,7 +1453,7 @@ def test_cli_dry_run_flag_writes_nothing_even_when_enabled(monkeypatch, capsys):
             "daily_after_us_close",
             "--dry-run",
             "--run-date",
-            "2026-09-13",
+            "2026-09-11",
         ]
     )
     assert rc == 0
@@ -1218,11 +1466,13 @@ def test_cli_always_exits_zero_without_credentials(monkeypatch, capsys):
     monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
     monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-11"]
     )
     assert rc == 0
     out = capsys.readouterr().out
     assert "recurring briefs:" in out
+    assert "::warning title=recurring-briefs-subscription-read-unavailable::" in out
+    assert "no_credentials" in out
 
 
 def test_no_llm_call_in_producer_source():
@@ -1257,7 +1507,11 @@ def test_daily_step_sits_after_briefing_and_thesis_monitor():
     assert i_brief < i_mon < i_ours
     assert "python -m scripts.build_recurring_briefs --cadence daily_after_us_close" in text
     assert "RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}" in text
-    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" in text
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}" in text
+    ours = text[text.find("recurring briefs producer"):]
+    ours = ours[: ours.find("\n      - name: ")]
+    assert "SUPABASE_URL: ${{ secrets.SUPABASE_URL }}" not in ours
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" not in ours
 
 
 def test_weekly_step_sits_after_brief_producers():
@@ -1268,6 +1522,11 @@ def test_weekly_step_sits_after_brief_producers():
     assert i_brief < i_ours
     assert "python -m scripts.build_recurring_briefs --cadence weekly_saturday" in text
     assert "RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}" in text
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}" in text
+    ours = text[text.find("recurring briefs producer"):]
+    ours = ours[: ours.find("\n      - name: ")]
+    assert "SUPABASE_URL: ${{ secrets.SUPABASE_URL }}" not in ours
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" not in ours
 
 
 def test_gating_mirrors_thesis_monitor():
