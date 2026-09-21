@@ -148,3 +148,27 @@ unavailable. No rank, score, classifier, tape or trade authority changes.
 Sixteen cohort cases were RED then passed; four consumer cases were RED then passed.
 Combined participation/publication/whole-board regression:154 passed. This excludes
 the15 known-failing pending clock tests; freshness is NOT represented as repaired.
+
+### Dated index-cohort capability verified
+The actual no-network China builder emitted the new CSI300-member section inside
+the existing expandable participation evidence. Source03b2f4b6de5a107bdb6f2d83a9ac83f596febb7c;
+page SHA2567de2aa8b851e6ebd78c66c1c89f14714540b6967306d0b83de4a230dc676fcff.
+Sixteen rest/focus captures and eight expanded-detail interactions passed across
+1440/390, EN/ZH and dark/light. The browser checked300/300 eligible members,
+negative member median alongside a positive ETF return, both observation dates,
+and the explicit historical-membership/starting-weight limitations.
+Source-page bytes were unchanged during capture; temporary browser/server closed.
+No capture console errors, failed responses or document overflow were recorded.
+Expanded desktop-dark and mobile-Chinese-light images were visually inspected.
+The incumbent floating assistant can overlap part of a long-page capture; no claim
+of zero overlay overlap or a shared assistant-widget repair is made.
+Visual-evidence guard passes; design ratchet reports zero added blocking findings.
+Evidence:mockups/evidence/china-index-cohort-20260921/interaction-proof.json.
+
+The original27 generated data/site differences from this isolated builder were
+restored only after preserving its exact page and receipts. Product source, other
+worktrees, risk ledgers and PR7592 were not restored or rewritten by this cleanup.
+This is a tested, published-source candidate, not live deployment or fresh data.
+Remaining clock implementation is still blocked with15 pending failing cases;
+weighted contribution remains unavailable without suitable official start weights
+and historical membership. CI/release remain intentionally deferred.
