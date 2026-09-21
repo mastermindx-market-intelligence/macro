@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T11:19:49.583405+00:00",
-  "count": 2565,
+  "generated_at": "2026-09-21T11:47:24.923961+00:00",
+  "count": 2566,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -368,6 +368,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-p4v4kvr4gic-f15b6e",
+      "title": "US Week Ahead September 21 September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:15Z",
+      "summary_points": [
+        "Services PMI Miss & Inflation Risks: Preliminary S&P Global US Services PMI at 53.5 (vs. 0 consensus) signals weak sector; Fed Governor Barr cites persistent core non-housing services inflation and risks from tariffs, Middle East conflict, and AI buildout.",
+        "Fed Policy Divergence: Hammack states policy is not restrictive while Paulson outlines two inflation scenarios, highlighting internal Fed uncertainty on timing of rate cuts amid inflation above target.",
+        "Core Capital Goods Strength: GS forecasts core capital goods orders up 0.5% (vs. durable goods down 1.0%), with core capital goods shipments rising 0.3%, indicating manufacturing resilience amid broader industrial trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
