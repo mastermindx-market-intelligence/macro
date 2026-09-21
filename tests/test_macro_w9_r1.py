@@ -83,6 +83,35 @@ def test_grey_deer_face_names_the_fact_not_the_program():
     assert "项生效" in src
 
 
+def test_w9_capital_face_on_radar_integrated_band():
+    """RECONCILE-7062: W9 capital-restriction copy on the #7467/#7482 radar band.
+
+    RED on previous head 012205a85d: that tree still ships the standalone
+    `panel span12 gde-band` and has no `risk_button_context`, `gde-causes`, or
+    `gde-context-copy` (those arrived on main via #7467/#7482). Taking main's
+    template unchanged fails `test_grey_deer_face_names_the_fact_not_the_program`.
+    """
+    src = (ROOT / "templates" / "_risk_envelope_band.html.j2").read_text()
+    assert "No capital restrictions in force" in src
+    assert "当前无资金限制" in src
+    assert "No Grey Deer policy active" not in src
+    assert "未启用任何 Grey Deer 政策" not in src
+    assert "risk_button_context" in src
+    assert "gde-causes" in src
+    assert 'id="gde-context-copy"' in src
+    assert 'id="gde-live-reading"' in src
+    assert 'id="gde-live-fallback"' in src
+    assert 'id="gde-live-sources"' in src
+    assert "source_states" in src
+    assert 'class="panel span12 gde-band"' not in src
+    assert "Three reads, kept separate" not in src
+    # Glance cells (Trend / Stress) must not grow a second integer or a date.
+    glance = src[src.find('class="gde-reads"'):src.find("gde-context-line")]
+    assert "source_session" not in glance
+    assert "/100" not in glance
+    assert "as_of" not in glance
+
+
 # --------------------------------------------------------------------------- #
 # 2. GEX detail on the face; machine message + what_* in dlg-news
 # --------------------------------------------------------------------------- #
