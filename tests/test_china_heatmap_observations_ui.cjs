@@ -26,7 +26,7 @@ test('malformed valid state with null return cannot claim valid interval',()=>as
 test('selected timeframe uses its own reference',()=>{const t=tile();t.perf['1W']=2;t.observation.timeframes['1W']={status:'VALID',observation_session:'2026-09-18',reference_session:'2026-09-11'};assert.match(load().observationHtml({...data,_tf:'1W'},t),/2026-09-11/);});
 test('coverage exposes member denominator and missing names',()=>{
  const d={...data,observation_coverage:{basis:'current_membership',membership_count:1706,timeframes:{'1D':{denominator:1706,valid_count:1700,missing_count:6}}}};
- const s=load().observationCoverageHtml(d,'1D');assert.match(s,/1700 \/ 1706/);assert.match(s,/6 unavailable/);
+ const s=load().observationCoverageHtml(d,'1D');assert.match(s,/1700 \/ 1706/);assert.match(s,/6 unavailable/);assert.match(s,/1700 \/ 1706 个标的具备有效区间行情/);assert.match(s,/6 个不可用/);
 });
 test('bad coverage accounting is not displayed as success',()=>{const d={...data,observation_coverage:{membership_count:3,timeframes:{'1D':{denominator:3,valid_count:4,missing_count:-1}}}};assert.match(load().observationCoverageHtml(d,'1D'),/coverage unavailable/);});
 test('coverage is not automatically inherited by other markets',()=>assert.equal(load().observationCoverageHtml({market:'hk'},'1D'),''));

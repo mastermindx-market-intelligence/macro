@@ -28,6 +28,7 @@ for(const [label,mutate] of [
  ['wrong observation session',f=>{f.tiles[0].observation.observation_session='2026-09-17';}],
  ['non-null return with missing status',f=>{f.tiles[1].perf['1D']=0.78;}],
  ['numeric return with null status',f=>{f.tiles[0].observation.timeframes['1D'].status='CURRENT_MISSING';}],
+ ['valid current quote cannot claim a missing current endpoint',f=>{f.tiles[0].observation.timeframes['1D'].status='CURRENT_MISSING';f.tiles[0].perf['1D']=null;}],
  ['missing coverage',f=>{delete f.observation_coverage;}],
  ['invented coverage count',f=>{f.observation_coverage.timeframes['1D'].valid_count=4;f.observation_coverage.timeframes['1D'].missing_count=1;}],
  ['wrong denominator',f=>{f.observation_coverage.membership_count=4;}],

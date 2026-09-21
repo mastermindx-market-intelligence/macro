@@ -79,8 +79,12 @@
           throw new Error('China return interval mismatch');
         }
         references[tf] = frame.reference_session;
-        if (obs.current_status !== 'VALID' && frame.status !== 'CURRENT_' + obs.current_status) {
-          throw new Error('China unavailable-observation status mismatch');
+        if (obs.current_status !== 'VALID') {
+          if (frame.status !== 'CURRENT_' + obs.current_status) {
+            throw new Error('China unavailable-observation status mismatch');
+          }
+        } else if (frame.status === 'CURRENT_MISSING' || frame.status === 'CURRENT_INVALID') {
+          throw new Error('China valid current observation cannot claim an unavailable current endpoint');
         }
         if (frame.status === 'VALID') {
           if (!chinaNumber(value)) throw new Error('Valid China return must be numeric');
@@ -740,8 +744,8 @@
     var text = valid
       ? L(c.valid_count + ' / ' + c.denominator + ' names have observed endpoint pairs · '
           + c.missing_count + ' unavailable.',
-          c.valid_count + ' / ' + c.denominator + ' 只具备有效区间行情 · '
-          + c.missing_count + ' 只不可用。')
+          c.valid_count + ' / ' + c.denominator + ' 个标的具备有效区间行情 · '
+          + c.missing_count + ' 个不可用。')
       : L('Observation coverage unavailable.', '观测覆盖率不可用。');
     return '<div class="hx-bscope hm-observation-coverage" role="status">' + text + '</div>';
   }
