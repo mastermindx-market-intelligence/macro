@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T23:04:09.965442+00:00",
-  "count": 2599,
+  "generated_at": "2026-09-21T23:27:58.860549+00:00",
+  "count": 2600,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -471,6 +471,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ymeasvvuqd3-ca4306",
+      "title": "Hong Kong Tracker Softened housing volume but resilient pricing. Office recovery broadening to non central districts. Retail...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:54Z",
+      "summary_points": [
+        "HK Property Valuation Discount: Property stocks trade at 0.5x P/B (-54% NAV discount) vs historical 0.6x P/B (-42% NAV), signaling deep undervaluation amid resilient prices.",
+        "Capital Controls Impact: Tighter Chinese capital controls (Jun 5, 2026) threaten demand drivers, yet residential prices rose 12.5% YTD (CCL Index +16.3% YoY) despite softened transaction volume (-26% yoy).",
+        "Office Demand Surge: Financial institutions drove +313k sqft net office take-up in Jul-26 (+4% YTD rents, vacancy down to 12.8%), contrasting with retail sector weakness (rents -1.5% ytd).",
+        "Mortgage Sensitivity: +100bps rate hike would increase monthly payments 7.0%-12.9% across classes, with Class C (70-99.9 sqm) most vulnerable, heightening housing equity risk.",
+        "2027E Housing Softening: HK residential prices forecasted +15% YoY for 2026E but declining to 7%/4% for 2027E/2028E, signaling near-term market peak."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
