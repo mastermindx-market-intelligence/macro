@@ -7312,6 +7312,20 @@ body.page-macro.mx4-grid .mx5-deep-chip:hover{
 }
 [data-theme="light"] body.page-macro.mx4-grid .mx5-deep-chip:hover{
   border-color:rgba(0,0,0,.1);background:rgba(0,0,0,.04);}
+/* Look-up row. Same chip component as .mx5-deep-chips; only the mark differs.
+   The # is the library's own mark (it is the reveal glyph on reference.html's
+   index lines) — it appears on the dashboard wherever a definition is one click
+   away, and nowhere else. One idea, two surfaces. */
+body.page-macro.mx4-grid .mx5-deep-chips--ref{padding-top:8px;border-top:0;}
+body.page-macro.mx4-grid .mx5-ref-hash{font-weight:600;margin-right:1px;}
+/* DARK: hold the mark back with opacity — on graphite, depth is the quiet axis
+   and a full-strength glyph would read as a bullet.
+   LIGHT: opacity on white is contrast LOSS, so light restores full colour and
+   adds weight instead. Same emphasis, opposite mechanism. */
+body.page-macro.mx4-grid .mx5-ref-hash{opacity:.55;}
+[data-theme="light"] body.page-macro.mx4-grid .mx5-ref-hash{opacity:1;font-weight:700;
+  color:var(--muted);}
+body.page-macro.mx4-grid .mx5-ref-chip:hover .mx5-ref-hash{opacity:1;}
 @media(max-width:760px){
   body.page-macro.mx4-grid .wnx-cards{grid-template-columns:1fr;}
 }
@@ -11407,16 +11421,10 @@ html[data-theme="light"] :is(
       <span class="l-en">Composite at {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_en | lower }} zone</span>
       <span class="l-zh">综合指数 {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_zh }}区间</span>
     </div>
-    {# VSB W5: AI breadth caveat — only when spread_50 is meaningful (|spread|>=15) #}
-    {% if breadth_split is defined and breadth_split %}
-    {% set _bsv5_spread = breadth_split.get('latest', {}).get('spread_50') %}
-    {% if _bsv5_spread is not none and (_bsv5_spread | float | abs) >= 15 %}
-    <div id="vsb-sentiment-caveat" style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.4));margin-top:6px;line-height:1.4">
-      <span class="l-en">{{ breadth_split.get('stance_en') or '' }}</span>
-      <span class="l-zh">{{ breadth_split.get('stance_zh') or '' }}</span>
-    </div>
-    {% endif %}
-    {% endif %}
+    {# VSB W5: AI breadth caveat — REMOVED 2026-09-21 (UD-B2-W3 R6 relocate).
+       Census #36 (AI / non-AI breadth split) moved to advanced.html
+       (#vsb-breadth-split-section) with a chip link from the hero breadth
+       driver. Do not duplicate the glance-tier caveat here. #}
     {# Quiet open affordance (unified face anatomy) #}
     <div class="plf-open plf-open-sent"><span class="l-en">Open sentiment detail</span><span class="l-zh">打开情绪详情</span> &rarr;</div>
   </div>
@@ -12025,6 +12033,17 @@ html[data-theme="light"] :is(
         <a class="mx5-deep-chip" href="committee.html"><span class="l-en">Neural Web</span><span class="l-zh">神经网络</span></a>
         <a class="mx5-deep-chip" href="macro_signals.html"><span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span></a>
         <a class="mx5-deep-chip" href="china_intel.html"><span class="l-en">China Intel</span><span class="l-zh">中国情报</span></a>
+      </div>
+      {# Look up row — definitions for exactly the faces this rack renders.
+         Same chip component as the More row; the leading # is the library's mark. #}
+      <div class="mx5-deep-chips mx5-deep-chips--ref">
+        <span class="mx5-deep-chips-lbl"><span class="l-en">Look up</span><span class="l-zh">查询</span></span>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#market-state-score"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Market State Score</span><span class="l-zh">市场状态分</span></a>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#regime-quadrant"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Regime Quadrant</span><span class="l-zh">状态象限</span></a>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#transition-state"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Transition State</span><span class="l-zh">转换状态</span></a>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#risk-radar"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span></a>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#evidence-matrix"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Evidence Matrix</span><span class="l-zh">证据矩阵</span></a>
+        <a class="mx5-deep-chip mx5-ref-chip" href="reference.html#sector-heat"><span class="mx5-ref-hash" aria-hidden="true">#</span><span class="l-en">Sector Heat</span><span class="l-zh">板块热力</span></a>
       </div>
     </div>
   </div>{# /sx-deep-context #}
@@ -14681,70 +14700,9 @@ html[data-theme="light"] :is(
            The chips now live as a sub-row inside .mx5-sc-left;
            the dialog no longer carries the duplicate section. #}
 
-        {# VSB W4: AI names vs the rest #}
-        {% if breadth_split is defined and breadth_split %}
-        {% set _bs = breadth_split %}
-        {% set _bs_lat = _bs.get('latest') or {} %}
-        {% set _bs_cs = _bs.get('cohort_sizes') or {} %}
-        <div class="mx5-dlg-sep"></div>
-        <div id="vsb-breadth-split-section" style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:10px">
-          <span class="l-en">AI names vs the rest</span><span class="l-zh">AI 相关个股 vs 其他</span>
-        </div>
-        {# Stance line #}
-        {% if _bs.get('stance_en') %}
-        <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--ink-1,rgba(255,255,255,.85))">
-          <span class="l-en">{{ _bs.stance_en }}</span><span class="l-zh">{{ _bs.get('stance_zh') or _bs.stance_en }}</span>
-        </div>
-        {% endif %}
-        {# Two-cohort split visual — proportional animated bars + delta chip.
-           data-vsb-bs attrs + the two label strings are pinned by tests. #}
-        {% set _bs_ai50 = _bs_lat.get('ai_pct50') %}
-        {% set _bs_nonai50 = _bs_lat.get('nonai_pct50') %}
-        {% set _bs_delta = (_bs_ai50 - _bs_nonai50) if (_bs_ai50 is not none and _bs_nonai50 is not none) else none %}
-        <div class="sg-split">
-          {% if _bs_ai50 is not none %}
-          <div class="sg-split-row" data-vsb-bs="ai">
-            <span class="sg-split-lbl"><span class="l-en">AI-linked names above their 50-day trend</span><span class="l-zh">AI 相关个股站上 50 日均线</span></span>
-            <span class="sg-split-track"><span class="sg-split-fill ai" style="width:{{ _bs_ai50 | round(0) | int }}%"></span></span>
-            <span class="sg-split-val">{{ _bs_ai50 | round(0) | int }}%</span>
-          </div>
-          {% endif %}
-          {% if _bs_nonai50 is not none %}
-          <div class="sg-split-row" data-vsb-bs="nonai">
-            <span class="sg-split-lbl"><span class="l-en">Everyone else</span><span class="l-zh">其他个股</span></span>
-            <span class="sg-split-track"><span class="sg-split-fill non" style="width:{{ _bs_nonai50 | round(0) | int }}%"></span></span>
-            <span class="sg-split-val">{{ _bs_nonai50 | round(0) | int }}%</span>
-          </div>
-          {% endif %}
-        </div>
-        {% if _bs_delta is not none %}
-        <div class="sg-split-delta">
-          <span class="l-en">{{ _bs_delta | abs | round(0) | int }} pts {{ 'wider for AI' if _bs_delta >= 0 else 'wider for the rest' }}</span>
-          <span class="l-zh">{{ _bs_delta | abs | round(0) | int }} 个百分点差距，{{ 'AI 领先' if _bs_delta >= 0 else '其他领先' }}</span>
-        </div>
-        {% endif %}
-        {# Cohort size note #}
-        {% set _bs_ai_n = _bs_cs.get('ai_total') %}
-        {% set _bs_univ = _bs_cs.get('universe') %}
-        {% if _bs_ai_n is not none and _bs_univ is not none %}
-        <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:8px;line-height:1.5">
-          <span class="l-en">{{ _bs_ai_n }} AI-linked names out of {{ _bs_univ }} tracked</span>
-          <span class="l-zh">{{ _bs_univ }} 只跟踪个股中有 {{ _bs_ai_n }} 只 AI 相关</span>
-        </div>
-        {% endif %}
-        {# Young note #}
-        {% if _bs.get('young') %}
-        <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:4px">
-          <span class="l-en">Still building history — readings will stabilise over time.</span>
-          <span class="l-zh">历史数据仍在积累，读数将随时间趋于稳定。</span>
-        </div>
-        {% endif %}
-        {# Static circularity-watch note #}
-        <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:8px;line-height:1.5;border-top:1px solid rgba(255,255,255,.06);padding-top:8px">
-          <span class="l-en">Watch: the AI buildout recycles capital among related names. If stocks start moving together again, the calm can break quickly — watch, don't chase.</span>
-          <span class="l-zh">注意：AI 基础设施建设在相关个股间循环资金。若股票重新同步波动，表面平静可能迅速打破，保持观察而非追高。</span>
-        </div>
-        {% endif %}
+        {# VSB W4: AI names vs the rest — REMOVED 2026-09-21 (UD-B2-W3 R6 relocate).
+           Census #36 moved to advanced.html#vsb-breadth-split-section. Move, do
+           not duplicate. The data contract (vm['breadth_split']) is unchanged. #}
 
         {# ── ONE dialog footer: merged disclaimer + single as-of (Wave B section-j) ── #}
         {% set _sg_asof = _dlg_fg.get('as_of') or (vol_weather.as_of if (vol_weather is defined and vol_weather) else none) or (breadth_split.as_of if (breadth_split is defined and breadth_split) else none) %}

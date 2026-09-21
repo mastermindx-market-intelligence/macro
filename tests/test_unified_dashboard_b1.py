@@ -510,24 +510,25 @@ def test_design_system_ratchet_passes_on_added_code():
 # No inline <style> in the hero template (lives in theme.css).
 # --------------------------------------------------------------------------- #
 
-def test_hero_template_inline_style_is_only_w2_caveat_scope():
-    """B2-W2 added one deliberately local, token-only caveat rule.
+def test_hero_template_inline_style_is_single_token_scoped_ud_block():
+    """The retained off-route hero may carry one token-only scoped style block.
 
-    Keep the original B1 ratchet against arbitrary inline styling while
-    accepting that later scoped rule on the retained off-route candidate.
+    Preserve the accepted B2-W2 caveat rule while allowing later UD driver-fold
+    rules to share that same block; never reopen arbitrary inline styling.
     """
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
-    blocks = re.findall(r"<style>(.*?)</style>", src, re.DOTALL | re.IGNORECASE)
+    blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", src, flags=re.I | re.S)
     assert len(blocks) == 1, (
-        "retained hero candidate may carry exactly one B2-W2 scoped style block"
+        f"retained hero may carry exactly one scoped <style> block, found {len(blocks)}"
     )
     css = blocks[0]
     assert ".mx-spine-caveat" in css
     assert 'html[data-theme="light"] .mx-spine-caveat' in css
     assert "color-mix" not in css.lower()
     assert not re.search(r"#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(", css, re.IGNORECASE), (
-        "B2-W2 local caveat CSS must remain token-only"
+        "retained UD local CSS must remain token-only"
     )
+
 
 
 # --------------------------------------------------------------------------- #
