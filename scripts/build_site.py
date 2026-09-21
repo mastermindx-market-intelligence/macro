@@ -6724,6 +6724,53 @@ def main() -> int:
     except Exception:  # noqa: BLE001 — additive, never break the build
         pass
 
+    # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
+    # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
+    # their own nightly cadences) — the macro page never recomputes the blender
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
+    # ms_history is added so the spine row can compute month-ago travel the same way
+    # the US subject row does (>=22 rows → real, shorter → designed-null travel
+    # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
+    # ~:362-384 — never substitute raw_score).
+    def _persisted_ms_view(market_key: str) -> dict | None:
+        try:
+            from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+            _snap = _lp(market_key=market_key)
+            if not _snap:
+                return None
+            _view = {
+                "score": _snap.get("score"),
+                "raw_score": _snap.get("raw_score"),
+                "verdict": _snap.get("verdict"),
+                "label_en": _snap.get("label_en"),
+                "label_zh": _snap.get("label_zh"),
+                "asof": _snap.get("asof"),
+                "caveat_en": _snap.get("caveat_en") or "",
+                "caveat_zh": _snap.get("caveat_zh") or "",
+                "display_only": True,
+                "market": market_key,
+                "ms_history": [],      # filled below from the parquet log
+            }
+            # score_log.parquet is keyed by the per-market directory; CN lives
+            # under data/china_market_state/ (the existing convention used by
+            # build_china.py:1888), HK under data/hk_market_state/.
+            _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+            _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+            if _sl_path.exists():
+                _all = pd.read_parquet(_sl_path).sort_values("date")
+                _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+            return _view
+        except Exception as _e:  # noqa: BLE001 — additive, never fatal
+            log.warning("%s_market_state ingest failed (%s); degrading to None",
+                        market_key, _e)
+            return None
+
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
+
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
     # Both fail-open; skips attach entirely if no data.
@@ -6888,6 +6935,11 @@ def main() -> int:
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
+        # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
+        # build_china. Read-only on this lane; off the heavy render path.
+        hk_market_state=_hk_ms_view,
+        cn_market_state=_cn_ms_view,
         idx_spark=_idx_spark_view(),      # v5 scorecard: 20-point sparklines SPY/QQQ/^DJI/^RUT — graceful absent
         signal_stack=build_signal_stack(latest),  # consolidated cross-subsystem read (display-only)
         vol_shock=_vol_shock_view(latest, event_risk),  # forward vol-shock risk gauge (display-only)
