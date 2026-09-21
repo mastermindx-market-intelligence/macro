@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T05:16:53.122347+00:00",
-  "count": 2547,
+  "generated_at": "2026-09-21T05:37:05.256309+00:00",
+  "count": 2548,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -126,6 +126,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kvmrapjzy2n-b92194",
+      "title": "GS Pasquariello markets macro 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:08Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
