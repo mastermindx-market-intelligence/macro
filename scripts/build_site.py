@@ -2566,6 +2566,7 @@ def _sector_heat_view() -> dict | None:
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
@@ -2580,9 +2581,10 @@ def _sector_heat_view() -> dict | None:
         # whose own tier is literally heating (never hot).
         producer_heating = pulse.get("heating")
         if isinstance(producer_heating, list):
-            heating = [by_id[theme_id] for theme_id in producer_heating if theme_id in by_id][:4]
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
         else:
-            heating = [t for t in themes if t.get("heat") == "heating"][:4]
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2624,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
