@@ -19,7 +19,7 @@ evidence:
   - 'Chairman screenshot and direct instruction, 2026-09-21: remove this purple message completely.'
   - 'Source: templates/mm_brain.js at 14335094062d3f73fd169778a447727640ded139; composer mmb-rrow and mmb-rpill.'
   - 'Regression coverage: tests/test_mm_brain_asset.py.'
-affects: [templates/mm_brain.js, site/mm_brain.js, tests/test_mm_brain_asset.py]
+affects: [templates/mm_brain.js, site/mm_brain.js, site/theme.js, tests/test_mm_brain_asset.py]
 confidence: high
 reversibility: easy
 decided_by: chairman

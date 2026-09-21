@@ -5170,7 +5170,7 @@
      <script> tags, so this dynamic request and a page-authored one share ONE
      cache key. An unbaked build (local/custom, serving templates/ raw) leaves
      it '' and simply requests the unversioned URL. */
-  var MM_BRAIN_VER = "cc2fa93e";
+  var MM_BRAIN_VER = "2a93db87";
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;
