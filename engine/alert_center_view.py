@@ -204,6 +204,30 @@ _MACRO_SECTOR_RS_LOW = re.compile(
     r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed below '
     r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
 )
+_MACRO_HOLDINGS_ACTIVE_CHANGE = re.compile(
+    r'^([A-Z0-9._\-]+): manager (added|cut) ([A-Z0-9._\-]+) by '
+    r'([+-][0-9]+(?:\.[0-9]+)?)% of position '
+    r'\(([0-9]{4}-[0-9]{2}-[0-9]{2})\.\.([0-9]{4}-[0-9]{2}-[0-9]{2}), '
+    r'flow-normalized\)$'
+)
+_MACRO_CIRCUIT_BREAKER_OPEN = re.compile(
+    r"^Source '([A-Za-z0-9_.:\-]+)' marked dead after ([1-9][0-9]*) consecutive failures — "
+    r'collector skipped until it recovers; affected signals degrade$'
+)
+_FOREX_TRANSMISSION_EFFECT_HEADLINE = re.compile(
+    r'^Dollar link to (.+?) changed: now (a headwind|a tailwind|not linked now)$'
+)
+_FOREX_TRANSMISSION_EFFECT_DETAIL = re.compile(
+    r'^The (.+?) dollar-transmission effect shifted from '
+    r'(headwind|tailwind|neutral) to (headwind|tailwind|neutral)\.$'
+)
+_FOREX_TRANSMISSION_STABILITY_HEADLINE = re.compile(
+    r'^Dollar link to (.+?): stability changed to (decoupled|flipping|stable)$'
+)
+_FOREX_TRANSMISSION_STABILITY_DETAIL = re.compile(
+    r'^The (.+?) dollar-transmission stability shifted from '
+    r'(decoupled|flipping|stable) to (decoupled|flipping|stable)\.$'
+)
 
 _FOREX_RESIDUAL_HEADLINE = re.compile(
     r"^([A-Z]{3}/[A-Z]{3}): Unusual move the dollar and rates don't explain \((up|down)\)$"
@@ -1093,6 +1117,129 @@ def build_alert_brief(row: dict) -> dict:
             })
             return brief
 
+    holdings_change = _MACRO_HOLDINGS_ACTIVE_CHANGE.fullmatch(detail)
+    if (source == 'macro' and type_ == 'holdings_active_change' and
+            str(row.get('asset') or '') == 'macro' and holdings_change and
+            _plain(row.get('headline') or '') == 'A star fund manager made a notable move'):
+        fund, verb, position, pct_text, window_start, window_end = holdings_change.groups()
+        pct = float(pct_text)
+        sign_ok = (verb == 'added' and pct > 0) or (verb == 'cut' and pct < 0)
+        if sign_ok and window_start <= window_end:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the latest holdings snapshots.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核最新持仓快照。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the position change persisted '
+                    'between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录触发并不能证明该持仓变化在观测之间持续存在。')
+            direction = 'increased' if pct > 0 else 'decreased'
+            brief.update({
+                'status': 'supported', 'family': 'macro.holdings_active_change',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source flow-normalized holdings calculation reports {fund}’s continuing '
+                    f'{position} position {direction} by {abs(pct):g}% between {window_start} and '
+                    f'{window_end}; this is a manager-activity observation to verify, not a copy trade.'),
+                'implication_zh': (
+                    f'来源的资金流标准化持仓计算显示，{fund} 的 {position} 持续持仓在 '
+                    f'{window_start} 至 {window_end} 期间变化 {abs(pct):g}%；'
+                    '这是需要复核的经理活动观测，并非跟单交易。'),
+                'limitation': (
+                    'Flow normalization estimates and removes mechanical fund creation/redemption '
+                    'effects; it does not establish the manager’s motive, conviction, information '
+                    'advantage, expected return or recommendation. The source explicitly treats this '
+                    'as context rather than a recommendation.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '资金流标准化用于估算并剔除基金申赎的机械影响；它不能证明经理的动机、信念、信息优势、'
+                    '预期收益或建议。来源明确将其视为背景，而非推荐。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current tracked-holdings panel and verify {fund}’s latest {position} '
+                    f'snapshots, the {window_start}..{window_end} flow-normalized change and whether '
+                    'a newer snapshot reversed or extended it before using the observation.'),
+                'next_action_zh': (
+                    f'打开当前跟踪持仓面板，核对 {fund} 的最新 {position} 快照、'
+                    f'{window_start}..{window_end} 的资金流标准化变化，并确认更新快照是否反转或延续该变化。'),
+                'next_action_label': 'Recheck manager holding',
+                'next_action_label_zh': '复核经理持仓',
+                'reassessment': (
+                    'Change the read if the latest flow-normalized position change reverses, shrinks '
+                    'below the alert threshold, or a newer holdings window supersedes this event.'),
+                'reassessment_zh': (
+                    '若最新资金流标准化持仓变化反转、缩小到警报阈值以下，或新的持仓窗口取代该事件，则改变判断。'),
+                'evidence_label': 'Open current tracked holdings',
+                'evidence_label_zh': '打开当前跟踪持仓',
+            })
+            return brief
+
+    breaker = _MACRO_CIRCUIT_BREAKER_OPEN.fullmatch(detail)
+    if (source == 'macro' and type_ == 'circuit_breaker_open' and
+            str(row.get('asset') or '') == 'macro' and breaker and
+            _plain(row.get('headline') or '') == 'A data source went dark'):
+        source_name, failures_text = breaker.groups()
+        failures = int(failures_text)
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current outage status cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前中断状态。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck whether the source has recovered.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核该来源是否已恢复。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        fire_count = int(row.get('fire_count') or 0)
+        if fire_count > 1 and not row.get('continuity_verified'):
+            recurrence_limit = (
+                f' {fire_count} recorded firings do not prove the source stayed unavailable '
+                'between observations.')
+            recurrence_limit_zh = (
+                f' {fire_count} 次记录触发并不能证明该来源在观测之间持续不可用。')
+        brief.update({
+            'status': 'supported', 'family': 'macro.circuit_breaker_open',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source-health circuit breaker opened for {source_name} after {failures} '
+                'consecutive collection failures, so affected signals have missing or degraded '
+                'evidence until collection recovers.'),
+            'implication_zh': (
+                f'{source_name} 在连续 {failures} 次采集失败后触发来源健康断路器；'
+                '在采集恢复前，相关信号的证据缺失或降级。'),
+            'limitation': (
+                'This is data-pipeline health, not a market signal. Missing evidence must not be '
+                'interpreted as a quiet market, zero risk, confirmation, or a directional view.' +
+                age_limit + recurrence_limit),
+            'limitation_zh': (
+                '这是数据管线健康状态，并非市场信号。证据缺失不能被解释为市场平静、零风险、确认或方向判断。' +
+                age_limit_zh + recurrence_limit_zh),
+            'next_action': (
+                f'Open the current Macro source-health panel and verify {source_name} breaker state, '
+                'last successful collection and downstream coverage before interpreting any affected signal.'),
+            'next_action_zh': (
+                f'打开当前宏观来源健康面板，核对 {source_name} 的断路器状态、最近一次成功采集和下游覆盖，'
+                '再解读受影响的任何信号。'),
+            'next_action_label': 'Check source health',
+            'next_action_label_zh': '检查来源健康',
+            'reassessment': (
+                'Clear the outage read only after the current breaker is closed and a fresh successful '
+                'collection restores the affected evidence path.'),
+            'reassessment_zh': (
+                '仅当当前断路器关闭且新的成功采集恢复受影响证据路径后，才解除中断判断。'),
+            'evidence_label': 'Open current Macro source health',
+            'evidence_label_zh': '打开当前宏观来源健康',
+        })
+        return brief
+
     sector_low = _MACRO_SECTOR_RS_LOW.fullmatch(detail)
     if source == 'macro' and type_ == 'sector_rs_cross_low' and sector_low:
         sector, benchmark, threshold_text, current_text = sector_low.groups()
@@ -1154,6 +1301,103 @@ def build_alert_brief(row: dict) -> dict:
                     '取代此次穿越，则改变判断。'),
                 'evidence_label': 'Open current Macro sector panel',
                 'evidence_label_zh': '打开当前宏观板块面板',
+            })
+            return brief
+
+    transmission_effect_headline = _FOREX_TRANSMISSION_EFFECT_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    transmission_effect_detail = _FOREX_TRANSMISSION_EFFECT_DETAIL.fullmatch(detail)
+    transmission_stability_headline = _FOREX_TRANSMISSION_STABILITY_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    transmission_stability_detail = _FOREX_TRANSMISSION_STABILITY_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'transmission_shift' and str(row.get('asset') or '') == 'dollar':
+        relation_kind = ''
+        relation_name = ''
+        previous = ''
+        current = ''
+        valid_shape = False
+        if transmission_effect_headline and transmission_effect_detail:
+            headline_name, headline_label = transmission_effect_headline.groups()
+            detail_name, previous, current = transmission_effect_detail.groups()
+            expected_label = {
+                'headwind': 'a headwind',
+                'tailwind': 'a tailwind',
+                'neutral': 'not linked now',
+            }[current]
+            valid_shape = headline_name == detail_name and headline_label == expected_label and previous != current
+            relation_kind = 'effect'
+            relation_name = detail_name
+        elif transmission_stability_headline and transmission_stability_detail:
+            headline_name, headline_state = transmission_stability_headline.groups()
+            detail_name, previous, current = transmission_stability_detail.groups()
+            valid_shape = headline_name == detail_name and headline_state == current and previous != current
+            relation_kind = 'stability'
+            relation_name = detail_name
+        if valid_shape:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current transmission state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前传导状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded transitions do not prove the relationship stayed in '
+                    'that state between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录转换并不能证明该关系在观测之间持续保持该状态。')
+            if relation_kind == 'effect':
+                implication = (
+                    f'The source dollar-transmission model changed {relation_name} from {previous} '
+                    f'to {current}; this is a relationship classification to verify against the '
+                    'current dollar and asset tape.')
+                implication_zh = (
+                    f'来源的美元传导模型将 {relation_name} 的关系从 {previous} 切换到 {current}；'
+                    '这是需要结合当前美元与相关资产行情复核的关系分类。')
+            else:
+                implication = (
+                    f'The source dollar-transmission model changed {relation_name} stability from '
+                    f'{previous} to {current}; this says the measured relationship changed, not why.')
+                implication_zh = (
+                    f'来源的美元传导模型将 {relation_name} 的稳定性从 {previous} 切换到 {current}；'
+                    '这表示测量关系发生变化，并不说明原因。')
+            brief.update({
+                'status': 'supported', 'family': 'forex.transmission_shift',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication,
+                'implication_zh': implication_zh,
+                'limitation': (
+                    'A transmission label is a source-model description of a rolling dollar/asset '
+                    'relationship, not a causal driver, calibrated probability, return forecast or '
+                    'directional trade. Source conviction is documented, but this family is not '
+                    'separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '传导标签只是来源模型对滚动美元/资产关系的描述，并非因果驱动、校准概率、收益预测或方向交易。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX transmission panel and verify {relation_name} is still '
+                    f'classified {current}, inspect the current fast/slow relationship inputs and '
+                    'source clock, and check whether a newer transition supersedes this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇传导面板，确认 {relation_name} 当前仍被分类为 {current}，检查当前快/慢关系输入'
+                    '和来源时间，并确认是否有更新转换取代该事件。'),
+                'next_action_label': 'Recheck dollar transmission',
+                'next_action_label_zh': '复核美元传导',
+                'reassessment': (
+                    f'Change the read if the current {relation_kind} classification is no longer '
+                    f'{current}, the underlying relationship inputs no longer support it, or a newer '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前 {relation_kind} 分类不再是 {current}、底层关系输入不再支持该分类，'
+                    '或新的转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX transmission panel',
+                'evidence_label_zh': '打开当前外汇传导面板',
             })
             return brief
 

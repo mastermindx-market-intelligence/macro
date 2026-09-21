@@ -355,6 +355,34 @@ def main():
             page.screenshot(path=str(out / 'desktop-sector-rs-low.png'))
             report['screenshots'].append('desktop-sector-rs-low.png')
             report['checks'].append('Sector relative-strength breakdowns expose rotation verification without inventing flows or sell calls')
+            context_families = {
+                'forex.transmission_shift': (
+                    'desktop-forex-transmission.png',
+                    'FX transmission shifts expose current relationship verification without becoming causal or directional claims'),
+                'macro.holdings_active_change': (
+                    'desktop-holdings-active-change.png',
+                    'Flow-normalized manager activity exposes current holdings verification without becoming a copy trade'),
+                'macro.circuit_breaker_open': (
+                    'desktop-source-circuit-breaker.png',
+                    'Source outages expose missing-evidence handling without masquerading as market calm'),
+            }
+            for family, (shot, statement) in context_families.items():
+                context_id = next((
+                    id_ for id_, brief in payload['explorer']['briefs'].items()
+                    if brief.get('family') == family), None)
+                if context_id is None:
+                    report['checks'].append(
+                        f'Current real snapshot has no {family} observation; browser proof does not synthesize one')
+                    continue
+                context_brief = payload['explorer']['briefs'][context_id]
+                page.goto(url + '#view=explore&id=' + context_id, wait_until='domcontentloaded')
+                context_text = page.locator('#ac-detail').inner_text()
+                assert context_brief['limitation'] in context_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == context_brief['next_action']
+                assert context_brief['evidence_label'] in context_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+                report['checks'].append(statement)
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]

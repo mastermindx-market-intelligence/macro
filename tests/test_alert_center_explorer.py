@@ -1890,3 +1890,151 @@ def test_forex_triple_red_abstains_on_asset_headline_or_detail_mismatch():
     briefs = project(list(rows))['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_holdings_active_change_keeps_flow_normalization_distinct_from_conviction():
+    row = signal('holdings-active', source='macro', type_='holdings_active_change', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 5, 'fire_count': 44, 'continuity_verified': False,
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager added META by +25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'detail_zh': 'ARKK：经理 加仓 META 仓位 +25%（2026-09-09..2026-09-16，已按资金流标准化）',
+        'edge': 'Context — what an active manager did, not a recommendation.',
+        'link': 'us_stocks.html#holdings',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.holdings_active_change'
+    assert brief['attention'] == 'for_awareness'
+    assert 'ARKK' in brief['implication'] and 'META' in brief['implication']
+    assert 'flow-normalized holdings calculation' in brief['implication']
+    assert 'does not establish the manager’s motive, conviction' in brief['limitation']
+    assert 'context rather than a recommendation' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert '44 recorded firings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck manager holding'
+    assert brief['evidence_label'] == 'Open current tracked holdings'
+
+
+def test_holdings_active_change_abstains_on_sign_headline_or_window_mismatch():
+    wrong_sign = signal('holdings-sign', source='macro', type_='holdings_active_change', asset='macro')
+    wrong_sign.update({
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager added META by -25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    wrong_headline = signal('holdings-head', source='macro', type_='holdings_active_change', asset='macro')
+    wrong_headline.update({
+        'headline': 'Copy this manager trade',
+        'detail': 'ARKK: manager added META by +25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    bad_window = signal('holdings-window', source='macro', type_='holdings_active_change', asset='macro')
+    bad_window.update({
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager cut META by -25% of position (2026-09-16..2026-09-09, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    rows = (wrong_sign, wrong_headline, bad_window)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_circuit_breaker_open_is_missing_evidence_not_market_calm():
+    row = signal('breaker-open', source='macro', type_='circuit_breaker_open', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 10, 'fire_count': 7, 'continuity_verified': False,
+        'headline': '🔌 A data source went dark',
+        'detail': "Source 'china_universe' marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade",
+        'detail_zh': "数据源 'china_universe' 连续 3 次失败后被标记为中断 —采集器暂停直至恢复；相关信号置信度下降",
+        'edge': 'Plumbing — data health, not a market signal.',
+        'link': 'macro.html#health',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.circuit_breaker_open'
+    assert 'china_universe' in brief['implication']
+    assert '3 consecutive collection failures' in brief['implication']
+    assert 'not a market signal' in brief['limitation']
+    assert 'Missing evidence must not be interpreted as a quiet market' in brief['limitation']
+    assert '10 days old' in brief['limitation']
+    assert '7 recorded firings' in brief['limitation']
+    assert brief['next_action_label'] == 'Check source health'
+
+
+def test_circuit_breaker_open_abstains_on_wrong_asset_or_unsupported_shape():
+    wrong_asset = signal('breaker-asset', source='macro', type_='circuit_breaker_open', asset='china')
+    wrong_asset.update({
+        'headline': '🔌 A data source went dark',
+        'detail': "Source 'china_universe' marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade",
+        'link': 'macro.html#health',
+    })
+    malformed = signal('breaker-shape', source='macro', type_='circuit_breaker_open', asset='macro')
+    malformed.update({
+        'headline': '🔌 A data source went dark',
+        'detail': 'China universe is unavailable so China risk is zero.',
+        'link': 'macro.html#health',
+    })
+    briefs = project([wrong_asset, malformed])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (wrong_asset, malformed))
+
+
+def test_forex_transmission_effect_and_stability_are_relationship_context_only():
+    effect = signal('fx-trans-effect', source='forex', type_='transmission_shift', asset='dollar')
+    effect.update({
+        'tier': 'context', 'age_days': 5, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Dollar link to US bonds (10y) changed: now a headwind',
+        'detail': 'The US bonds (10y) dollar-transmission effect shifted from neutral to headwind.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    stability = signal('fx-trans-stability', source='forex', type_='transmission_shift', asset='dollar')
+    stability.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Dollar link to Gold: stability changed to flipping',
+        'detail': 'The Gold dollar-transmission stability shifted from stable to flipping.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    briefs = project([effect, stability])['briefs']
+    for row in (effect, stability):
+        brief = briefs[row['alert_id']]
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'forex.transmission_shift'
+        assert 'not a causal driver' in brief['limitation']
+        assert 'not separately backtested as a timing signal' in brief['limitation']
+        assert brief['next_action_label'] == 'Recheck dollar transmission'
+    assert 'US bonds (10y)' in briefs[effect['alert_id']]['implication']
+    assert '5 days old' in briefs[effect['alert_id']]['limitation']
+    assert '2 recorded transitions' in briefs[effect['alert_id']]['limitation']
+    assert 'Gold stability from stable to flipping' in briefs[stability['alert_id']]['implication']
+
+
+def test_forex_transmission_abstains_on_headline_detail_or_asset_mismatch():
+    mismatch = signal('fx-trans-mismatch', source='forex', type_='transmission_shift', asset='dollar')
+    mismatch.update({
+        'headline': 'Dollar link to Gold changed: now a headwind',
+        'detail': 'The Gold dollar-transmission effect shifted from neutral to tailwind.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_name = signal('fx-trans-name', source='forex', type_='transmission_shift', asset='dollar')
+    wrong_name.update({
+        'headline': 'Dollar link to Gold: stability changed to flipping',
+        'detail': 'The Oil dollar-transmission stability shifted from stable to flipping.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-trans-asset', source='forex', type_='transmission_shift', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Dollar link to Gold changed: now a tailwind',
+        'detail': 'The Gold dollar-transmission effect shifted from neutral to tailwind.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (mismatch, wrong_name, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
