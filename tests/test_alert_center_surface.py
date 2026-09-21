@@ -59,6 +59,18 @@ def test_javascript_does_not_create_a_second_style_or_storage_plane():
     assert "createElement('style')" not in source and 'localStorage.setItem' not in source
 
 
+def test_standalone_alert_controls_keep_the_40px_interaction_floor():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert '.page-alerts .acx-chip' in css
+    assert 'min-height:40px' in css
+    assert '.page-alerts #ac-reset,.page-alerts #ac-browse-all{min-height:40px}' in css
+
+
+def test_alert_center_css_uses_shared_palette_tokens_not_local_color_functions():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert 'color-mix(' not in css
+
+
 def test_shared_html_never_inlines_account_specific_legacy_rows():
     from engine import i18n
     env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)

@@ -447,20 +447,45 @@ def main():
             assert page.locator('#ac-noresults').is_visible()
             report['checks'].append('Browser back and malformed legacy hash values do not crash')
             page.goto(url, wait_until='domcontentloaded')
-            for width, height, size in [(1440, 900, 'desktop'), (390, 844, 'mobile')]:
+            viewport_specs = [
+                (1440, 900, 'desktop'),
+                (430, 932, 'mobile-430'),
+                (390, 844, 'mobile'),
+                (320, 568, 'mobile-320'),
+            ]
+            for width, height, size in viewport_specs:
                 page.set_viewport_size({'width': width, 'height': height})
                 for theme in ('dark', 'light'):
                     for lang in ('en', 'zh'):
                         page.evaluate('([theme,lang]) => {document.documentElement.dataset.theme=theme;document.documentElement.dataset.lang=lang;}', [theme, lang])
                         page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
                         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'Horizontal overflow: {size}/{theme}/{lang}'
+                        browse_box = page.locator('#ac-browse-all').bounding_box()
+                        assert browse_box and browse_box['height'] >= 40, f'Browse Explore interaction floor: {size}/{theme}/{lang}'
+                        page.locator('#ac-more-filters').evaluate('(d) => {d.open = true}')
+                        reset_box = page.locator('#ac-reset').bounding_box()
+                        chip_boxes = page.locator('.acx-chip').evaluate_all(
+                            '(nodes) => nodes.map(n => n.getBoundingClientRect().height)')
+                        assert reset_box and reset_box['height'] >= 40, f'Reset interaction floor: {size}/{theme}/{lang}'
+                        assert chip_boxes and min(chip_boxes) >= 40, f'Quick-filter interaction floor: {size}/{theme}/{lang}'
+                        page.locator('#ac-more-filters').evaluate('(d) => {d.open = false}')
                         first_row = page.locator('#ac-results .acx-row').first.bounding_box()
+                        assert first_row, f'Missing first alert row: {size}/{theme}/{lang}'
                         name = f'{size}-{theme}-{lang}.png'
                         page.screenshot(path=str(out / name))
                         report['screenshots'].append(name)
-                        report.setdefault('viewport_metrics', []).append({'name':name, 'first_row':first_row})
-                        assert first_row and first_row['y'] + first_row['height'] <= height, f'No first-glance signal: {size}/{theme}/{lang}'
-            report['checks'].append('Dark/light × EN/ZH × desktop/mobile: no overflow and first signal in first viewport')
+                        report.setdefault('viewport_metrics', []).append({
+                            'name': name,
+                            'width': width,
+                            'height': height,
+                            'first_row': first_row,
+                            'browse_height': browse_box['height'],
+                            'reset_height': reset_box['height'],
+                            'quick_filter_min_height': min(chip_boxes),
+                        })
+                        if width >= 390:
+                            assert first_row['y'] + first_row['height'] <= height, f'No first-glance signal: {size}/{theme}/{lang}'
+            report['checks'].append('320/390/430/1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls')
             page.set_viewport_size({'width':1440, 'height':900})
             page.evaluate("document.documentElement.dataset.theme='dark';document.documentElement.dataset.lang='en'")
             page.click('[data-view="history"]')
