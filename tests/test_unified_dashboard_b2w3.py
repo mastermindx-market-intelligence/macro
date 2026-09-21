@@ -195,8 +195,6 @@ def test_leadership_tile_renders_real_sector_bias_from_election_cycle():
     assert avoid_zh in tile
     assert "Under the surface:" in tile
     assert "表面之下：" in tile
-    assert "Defensives held" in tile
-    assert "防御坚挺" in tile
 
 
 def test_leadership_tile_designed_null_when_sector_bias_absent():
@@ -299,8 +297,8 @@ def test_hero_breadth_chip_links_to_advanced_anchor():
     html = _render_hero(_base_vm())
     mtf = _driver_slice(html, "mtf")
     assert 'href="advanced.html#vsb-breadth-split-section"' in mtf
-    assert "AI names vs the rest" in mtf
-    assert "AI 相关个股 vs 其他" in mtf
+    assert "See how AI names compare with everyone else." in mtf
+    assert "查看 AI 相关个股与其他个股相比如何。" in mtf
     # The module itself must NOT be duplicated on the hero.
     assert 'id="vsb-breadth-split-section"' not in html
     assert 'data-vsb-bs="ai"' not in html
@@ -453,8 +451,8 @@ def test_new_tiles_bilingual_en_zh_parity():
         en_count = tile.count("l-en")
         zh_count = tile.count("l-zh")
         assert en_count > 0 and zh_count > 0, f"{name} must carry both locales"
-        assert abs(en_count - zh_count) <= 2, (
-            f"{name} EN/ZH span counts should roughly match "
+        assert en_count == zh_count, (
+            f"{name} EN/ZH span counts must match exactly "
             f"(en={en_count}, zh={zh_count})"
         )
         assert "title=" not in tile, (
@@ -481,3 +479,122 @@ def test_hero_template_has_no_hex_or_color_mix_in_w3_block():
     assert "rgba(" not in block
     assert "rgb(" not in block
     assert "border-radius:" not in block or "var(--r-" in block
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-1 — three live driver tiles + locked fourth (spec §6/§7, disposition R1)
+# --------------------------------------------------------------------------- #
+
+
+def test_drivers_are_three_live_plus_locked_fourth():
+    """Disposition R1 is 'one of three driver tiles'. Spec §6/§7 driver 4
+    is TierLock (390 hides .ud-driver--locked, counter 1 / 3). Leadership
+    folds into the breadth tile; it must not occupy the locked slot."""
+    html = _render_hero(_base_vm())
+    panels = re.findall(r'<div class="panel ud-driver[^"]*"', html)
+    locked = [p for p in panels if "ud-driver--locked" in p]
+    live = [p for p in panels if "ud-driver--locked" not in p]
+    assert len(live) == 3, f"expected 3 live driver panels, got {live}"
+    assert len(locked) == 1, f"expected 1 locked driver panel, got {locked}"
+    assert "Full sector narrative is locked." in html
+    assert "完整板块叙事已锁定。" in html
+    assert "1 of 3" in html
+    assert "1 / 3" in html
+    assert "1 of 4" not in html
+    assert "1 / 4" not in html
+    # Leadership is a leg of the breadth tile, not a fourth live panel.
+    mtf = _driver_slice(html, "mtf")
+    lead = _driver_slice(html, "leadership")
+    assert 'data-driver="leadership"' in mtf
+    assert 'data-contract="market_state.radar.cycle.sector_bias"' in lead
+    assert "ud-driver--locked" not in lead
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text(encoding="utf-8")
+    style = src[src.find("UD-B2-W3 Drivers fold"): src.find("</style>", src.find("UD-B2-W3 Drivers fold"))]
+    assert ".ud-driver--locked" in style and "display:none" in style.replace(" ", "")
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-2 — RED-first pin: Jinja `{#` must not swallow advanced.html chrome
+# --------------------------------------------------------------------------- #
+
+
+def test_advanced_style_block_does_not_open_a_jinja_comment():
+    """RED-first pin for 20620b6766. c38c46673f shipped
+    `@media(max-width:820px){#vsb-breadth-split-section` which Jinja
+    treats as `{#` … `#}` and drops `</style></head><body>` plus the
+    nav include. test_advanced_html_gains_breadth_split_module stayed
+    green on that broken HTML because the `<div id=…>` sat AFTER the
+    closing `#}`. Reintroducing `{#id` inside <style> must go RED.
+    """
+    src = (TEMPLATES / "advanced.html.j2").read_text(encoding="utf-8")
+    style_start = src.index("<style>")
+    style_end = src.index("</style>", style_start)
+    style = src[style_start:style_end]
+    assert "{#" not in style, (
+        "a `{#` inside <style> is a Jinja comment opener; CSS id "
+        "selectors after `{` must be spaced or on their own line"
+    )
+    assert "{#vsb-breadth-split-section" not in src
+
+    ctx = {
+        "latest": {"date": "2026-09-20"},
+        "generated_utc": "2026-09-20T00:00:00Z",
+        "cross_asset": None,
+        "portfolio": None,
+        "ic_scorecard": None,
+        "components_confirming": [],
+        "components_contradicting": [],
+        "flip_plain": "",
+        "internals": [],
+        "size_style": [],
+        "breadth_div": None,
+        "accumulation": [],
+        "holdings_changes": [],
+        "holdings_threshold": 1,
+        "flows_html": None,
+        "breadth_split": {
+            "stance_en": "AI names leading — watch, don't chase",
+            "stance_zh": "AI 相关股领涨，观察而非追高",
+            "latest": {"ai_pct50": 72.0, "nonai_pct50": 47.0, "spread_50": 25.0},
+            "cohort_sizes": {"ai_total": 100, "universe": 400},
+            "young": False,
+        },
+    }
+    html = _render_advanced(ctx)
+    lower = html.lower()
+    style_i = lower.index("</style>")
+    head_i = lower.index("</head>")
+    body_i = lower.index("<body")
+    nav_i = html.index('class="site-nav"')
+    sec_i = html.index('id="vsb-breadth-split-section"')
+    assert style_i < head_i < body_i < nav_i < sec_i, (
+        "Jinja must not comment-out </style></head><body> or the nav "
+        f"(style={style_i}, head={head_i}, body={body_i}, nav={nav_i}, sec={sec_i})"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Evidence capture honesty (BLOCKER-1/2, MINOR-3) — pin the capture script
+# --------------------------------------------------------------------------- #
+
+
+def test_capture_script_paints_body_from_tokens_and_crops_w3_tiles():
+    """Hero dark evidence must paint `--bg`/`--text` onto the canvas (the
+    rule lives at templates/dashboard.html.j2:326 and the isolated fixture
+    must include it). 390 cells must element-crop the W3 tiles, not only
+    `page.screenshot(full_page=False)` of the first swipe card. applied_*
+    attestations must be measured from computed paint, not set-then-read.
+    """
+    src = (ROOT / "mockups" / "evidence" / "unified-dashboard-b2w3" / "capture.py").read_text(
+        encoding="utf-8"
+    )
+    compact = src.replace(" ", "")
+    assert "background:var(--bg)" in compact
+    assert "color:var(--text)" in compact
+    assert "getComputedStyle" in src
+    assert "generated_at" in src and "2026-09-21T00:00:00Z" not in src
+    assert "data-driver=\"leadership\"" in src or "data-driver='leadership'" in src
+    assert "data-driver=\"fear_greed\"" in src or "data-driver='fear_greed'" in src
+    assert ".screenshot" in src
+    # Must not be viewport-only after a scroll of .ud-drivers.
+    assert "full_page=False" not in src or "locator(" in src
