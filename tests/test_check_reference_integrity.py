@@ -56,6 +56,13 @@ MODULE_PATH = ROOT / "scripts" / "check_reference_integrity.py"
 FOUNDING_ID = "prophet-board-5514-original"
 FOUNDING_DIR = ROOT / "research" / "reference_integrity" / FOUNDING_ID
 
+EDITABLE_PACKET_FIELDS = """\
+3A EDITABLE SOURCE: Figma file IKqTiq7jeVBJusBfoHnPsH · frame 11:2
+3B COMPONENT DELTA:
+  Reuse MX/Button and MX/State Panel; no new primitive.
+3C STATE + INTERACTION MATRIX: dark/light × EN/ZH × 1440/390; hover and focus-visible use real browser capture.
+"""
+
 
 def _load_module():
     spec = importlib.util.spec_from_file_location("check_reference_integrity_under_test", MODULE_PATH)
@@ -804,6 +811,9 @@ def test_a_closed_pre_rig_packet_without_a_receipt_does_not_fire(tmp_path, capsy
     )
     fired = _cli_codes(tmp_path, capsys)
     assert "packet-without-rig-receipt" not in fired, sorted(fired)
+    assert "packet-without-editable-source" not in fired, sorted(fired)
+    assert "packet-without-component-delta" not in fired, sorted(fired)
+    assert "packet-without-state-interaction-matrix" not in fired, sorted(fired)
 
 
 def test_a_closed_pre_rig_packet_citing_a_receipt_is_validated_normally(tmp_path, capsys):
@@ -829,11 +839,56 @@ def test_a_packet_citing_an_approved_reference_passes(tmp_path, capsys):
     packets = tmp_path / "research" / "migration_packets"
     packets.mkdir(parents=True, exist_ok=True)
     (packets / "MP-001-board.md").write_text(
-        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n", encoding="utf-8"
+        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + EDITABLE_PACKET_FIELDS,
+        encoding="utf-8",
     )
     fired = _cli_codes(tmp_path, capsys)
     assert "packet-without-rig-receipt" not in fired, sorted(fired)
     assert "packet-cites-unapproved-reference" not in fired, sorted(fired)
+    assert "packet-without-editable-source" not in fired, sorted(fired)
+    assert "packet-without-component-delta" not in fired, sorted(fired)
+    assert "packet-without-state-interaction-matrix" not in fired, sorted(fired)
+
+
+@pytest.mark.parametrize(
+    ("field_prefix", "finding_code"),
+    (
+        ("3A ", "packet-without-editable-source"),
+        ("3B ", "packet-without-component-delta"),
+        ("3C ", "packet-without-state-interaction-matrix"),
+    ),
+)
+def test_each_editable_packet_field_is_required(tmp_path, capsys, field_prefix, finding_code):
+    write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
+    packets = tmp_path / "research" / "migration_packets"
+    packets.mkdir(parents=True, exist_ok=True)
+    kept = "\n".join(
+        line for line in EDITABLE_PACKET_FIELDS.splitlines()
+        if not line.startswith(field_prefix)
+        and not (field_prefix == "3B " and line.startswith("  Reuse "))
+    )
+    (packets / "MP-001-board.md").write_text(
+        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + kept + "\n",
+        encoding="utf-8",
+    )
+    fired = _cli_codes(tmp_path, capsys)
+    assert finding_code in fired, sorted(fired)
+
+
+def test_required_placeholder_does_not_satisfy_editable_source(tmp_path, capsys):
+    write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
+    packets = tmp_path / "research" / "migration_packets"
+    packets.mkdir(parents=True, exist_ok=True)
+    body = EDITABLE_PACKET_FIELDS.replace(
+        "3A EDITABLE SOURCE: Figma file IKqTiq7jeVBJusBfoHnPsH · frame 11:2",
+        "3A EDITABLE SOURCE: REQUIRED — tool + exact file and frame ids",
+    )
+    (packets / "MP-001-board.md").write_text(
+        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + body,
+        encoding="utf-8",
+    )
+    fired = _cli_codes(tmp_path, capsys)
+    assert "packet-without-editable-source" in fired, sorted(fired)
 
 
 def test_a_packet_citing_an_unapproved_reference_fires(tmp_path, capsys):
