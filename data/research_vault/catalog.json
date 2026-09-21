@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T14:47:47.194445+00:00",
-  "count": 2575,
+  "generated_at": "2026-09-21T15:17:53.094214+00:00",
+  "count": 2577,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -148,6 +148,45 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-r4nsqixlmi5-8f5433",
+      "title": "GS Johnstone GS TMT SPEC SALES AI & Semis Security debate Classified names make a comeback Consumer Agents ACN & Anthropic 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:11Z",
+      "summary_points": [
+        "AI Safety Policy Geopolitics: US-China AI safety debates (Altman’s UN briefing, Bessent proposals) and Xi-Trump summit create regulatory uncertainty and political risk, impacting sector valuations and policy shifts.",
+        "OpenAI SoftBank Debt Risk: $10bn SoftBank funding for OpenAI (CDS watch) introduces AI-credit risk, with potential market disruption if debt terms or valuation pressures materialize.",
+        "Agentic AI Infrastructure Demand: Persistent 24/7 operations from AI agents (e.g., Muse/Instinct) drive surge in secure VMs, hyperscalers, data centers, and GPU demand, reinforcing sector fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pyzt8cziikz-942cc9",
+      "title": "GS Biswas GS Credit MarketStrats Ingredients (mostly technical) for a near term rally are shaping up 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:57Z",
+      "summary_points": [
+        "Rates Short Positioning Risk: $171mm DV01 short positions in JGBs/Bobl/Bunds (widest 15y levels) pricing 3+ Fed/ECB hikes, creating acute short squeeze risk if rates rally.",
+        "OATS Credit Risk Escalation: Idiosyncratic widening in OATS (Graphic 10) signals deteriorating credit quality, critical for bond portfolio fundamentals.",
+        "France Credit: Election Volatility & Policy Risk: Issuers prefunding 2027 for election volatility; 2026 budget labeled as imminent policy event requiring proactive portfolio adjustments.",
+        "Yield Curve Inversion Stress: Persistent long-term inversion (~-30) and short-term inversion (-0.92) signal systemic economic stress, recession risk, and capital flow shifts toward US assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
