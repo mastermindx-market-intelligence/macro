@@ -4364,6 +4364,7 @@ def build_advanced_page(env: Environment, site: Path, generated: str, latest: di
         accumulation=accumulation_rows(), holdings_changes=holdings_rows(),
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
         flows_html=flows_html_table(),
+        breadth_split=_breadth_split_view(),  # UD-B2-W3 R6: relocated from macro dialog
     )
     write_page(site / "advanced.html", html)
     log.info("wrote advanced.html (%.0f KB)", (site / "advanced.html").stat().st_size / 1024)
