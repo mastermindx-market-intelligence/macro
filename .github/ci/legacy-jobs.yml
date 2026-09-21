@@ -3899,21 +3899,6 @@ jobs:
   china-board-breadth:
     if: ${{ false }}
     gate: code
-    paths:
-      - "engine/china_heatmap_observations.py"
-      - "engine/market_heatmap.py"
-      - "lib/cn_calendar.py"
-      - "templates/heatmap.js"
-      - "templates/market_heatmap.html.j2"
-      - "tests/china_heatmap_refresh_harness.cjs"
-      - "tests/fixtures/china_heatmap_refresh/**"
-      - "tests/test_china_board_breadth.py"
-      - "tests/test_china_heatmap_gate.py"
-      - "tests/test_china_heatmap_observation_refresh.cjs"
-      - "tests/test_china_heatmap_observations.py"
-      - "tests/test_china_heatmap_observations_ui.cjs"
-      - "tests/test_china_heatmap_refresh.cjs"
-      - "tests/test_market_heatmap.py"
     # Whole-board 沪深 涨跌家数 (~5,200 names) behind the A-share heatmap's breadth
     # card. WIRING LAW (#1253 precedent): tests/test_market_heatmap.py was named by
     # NO job before this — the CN/HK/CA map contract merged untested for its whole
@@ -3928,21 +3913,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow requests pyyaml jinja2
-      - name: whole-board breadth + exact-observation payload and SSR contracts
-        run: >-
-          python -m pytest
-          tests/test_china_board_breadth.py
-          tests/test_market_heatmap.py
-          tests/test_china_heatmap_observations.py
-          tests/test_china_heatmap_gate.py
-          -q
-      - name: coherent China heatmap browser refresh contracts
-        run: >-
-          node --test
-          tests/test_china_heatmap_observations_ui.cjs
-          tests/test_china_heatmap_refresh.cjs
-          tests/test_china_heatmap_observation_refresh.cjs
+        run: pip install pytest pandas numpy pyarrow requests pyyaml
+      - name: whole-board breadth collector + heatmap payload contract
+        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py -q
 
   china-search-universe:
     if: ${{ false }}
@@ -11570,8 +11543,18 @@ jobs:
       # venv is pytest/pyyaml/jinja2/fastapi/httpx and would error, not fail.
       # The boundary half is pinned in tier-gate by test_site_access_boundary.py
       # and test_regwall.py, which read the same three mirrors.
-      - name: china_heatmap tier preview (SSR content layer + hover-card gate)
-        run: python -m pytest tests/test_china_heatmap_gate.py -q
+      - name: china_heatmap tier preview + exact observation payload contracts
+        run: >-
+          python -m pytest
+          tests/test_china_heatmap_gate.py
+          tests/test_china_heatmap_observations.py
+          -q
+      - name: coherent China heatmap browser refresh contracts
+        run: >-
+          node --test
+          tests/test_china_heatmap_observations_ui.cjs
+          tests/test_china_heatmap_refresh.cjs
+          tests/test_china_heatmap_observation_refresh.cjs
 
   unrun-picks-boards:
     # pick lab runners + US/CN board surfaces — shipped picks, their outcome
