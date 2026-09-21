@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T17:48:19.225367+00:00",
-  "count": 2584,
+  "generated_at": "2026-09-21T18:18:22.832351+00:00",
+  "count": 2585,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-mbqsdtjh2bt-3bf05a",
+      "title": "Macquarie Korea Nuclear",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:23:33Z",
+      "summary_points": [
+        "Korea-US nuclear framework delays & key swing factors: Korean supplier participation (Doosan > Hyundai E&C > BHI > KEPCO) and APR1400 inclusion are critical for binding contracts; US \"preferential selection without binding guarantees\" threatens capital flows into Korean firms.",
+        "Korea-Japan Framework Asymmetry: Korea’s $350bn framework (Nov 2025) includes guaranteed contracts and minimum allocation (X), while Japan’s $55bn (Sep 2025) lacks project financing and supplier guarantees (O), creating asymmetric execution risk for portfolio managers.",
+        "Nuclear Equity Performance Split: KEPCO E&C dominates with 120.2% 1yr return vs.",
+        "NuScale’s -85.6% YTD; momentum-driven gains (KEPCO E&C 79.0% vs. 52W High) contrast with project-specific risks (e.g., US regulatory hurdles) driving sector divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-zeihs5chw4x-3736ec",
       "title": "Wolfe Research The Wolfe Power Trip",
