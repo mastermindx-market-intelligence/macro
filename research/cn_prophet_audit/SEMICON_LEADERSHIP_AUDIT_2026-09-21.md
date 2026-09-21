@@ -97,3 +97,7 @@ Research gates: point-in-time memberships and data availability; identical clock
 Sibling custody: #7526 owns semantic thesis repair/shared CI; #7455 owns closed-session leadership observations; #7508 owns returned group/member entry context; #7453 owns independent acceptance. Those descriptive deliveries are not automatically live recommendation authority. This carrier does not copy their implementations or edit their manifests.
 
 Primary continuation: review and release this display-only carrier through exact-head CI and independent acceptance, then prove deployed bytes. In parallel, the incumbent Prophet/Theme Intelligence owners should reproduce the full-universe gate audit on a single bake and evaluate the existing continuation/leadership path before any rank/admission promotion. The overall concentrated-rally recommendation capability remains unresolved.
+
+## Continuity record correction — 2026-09-21
+
+The original PR's free-form Agent OS handoff failed the hosted record-schema gate. It is now recorded as `DSC:CN-PROPHET-SEMICON-LEADERSHIP-GATE-AUDIT` in `agentos/discoveries/DSC-CN-PROPHET-SEMICON-LEADERSHIP-GATE-AUDIT.md`, retaining the evidence and scoped continuation without inventing a workstream or replacing a program-wide latest handoff. No product/ranking bytes changed in this correction. See that record for exact current CI and Slack convergence blockers.
