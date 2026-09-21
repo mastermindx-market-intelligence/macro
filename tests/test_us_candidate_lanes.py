@@ -1391,3 +1391,109 @@ def test_archive_annotation_preserves_order_score_and_protected_name_boundary():
     assert "AMD" not in str(view["archive"])
     assert "by_ticker" not in view["archive"]
     assert view["source_digest"] != bare["source_digest"]
+
+
+# Chairman CPU/memory acceptance cases: a price-prefix replay is NOT a live entry.
+def _entry_battery_prices():
+    return pd.Series([100.0, 102.0, 105.0, 110.0],
+                     index=pd.to_datetime(['2026-09-15', '2026-09-16',
+                                           '2026-09-17', '2026-09-18']))
+
+
+def test_entry_battery_calls_existing_owners_on_prefixes_only():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices()
+    before = prices.copy(deep=True)
+    calls = []
+    def assess(ticker, prefix):
+        calls.append((ticker, list(prefix.index)))
+        return {'eligible': len(prefix) >= 3, 'reason': 'owner reason', 'ticks': 1}
+    def rearm(verdict, prefix):
+        return {'fires': False, 'weekly_bull': False}
+    result = evaluate_prefixes('AMD', prices, start='2026-09-16',
+                              as_of='2026-09-17', gate=assess, rearm=rearm)
+    assert [r['session'] for r in result['rows']] == ['2026-09-16', '2026-09-17']
+    assert [len(index) for _, index in calls] == [2, 3]
+    assert all(index[-1] <= pd.Timestamp('2026-09-17') for _, index in calls)
+    assert result['first_eligible_in_window'] == '2026-09-17'
+    assert result['live_decision_replay_verified'] is False
+    assert result['entry_fill_verified'] is False
+    assert result['rows'][-1]['gate']['reason'] == 'owner reason'
+    pd.testing.assert_series_equal(prices, before)
+
+
+def test_entry_battery_future_prices_cannot_change_past_decisions():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    a = _entry_battery_prices()
+    b = a.copy(); b.iloc[-1] = 99999
+    gate = lambda ticker, prefix: {'eligible': bool(prefix.iloc[-1] > 103), 'reason': 'measured'}
+    rearm = lambda verdict, prefix: {'fires': False}
+    options = dict(start='2026-09-15', as_of='2026-09-17', gate=gate, rearm=rearm)
+    assert evaluate_prefixes('AMD', a, **options) == evaluate_prefixes('AMD', b, **options)
+
+
+@pytest.mark.parametrize('bad', [True, float('inf'), -1.0, 0.0])
+def test_entry_battery_invalid_prices_refuse_instead_of_becoming_signals(bad):
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices().astype(object); prices.iloc[1] = bad
+    def forbidden(*args):
+        raise AssertionError('invalid data reached an entry evaluator')
+    result = evaluate_prefixes('AMD', prices, start='2026-09-15',
+                              as_of='2026-09-17', gate=forbidden, rearm=forbidden)
+    assert result['status'] == 'unavailable'
+    assert result['rows'] == []
+
+
+def test_entry_battery_duplicate_or_non_daily_session_refuses():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices()
+    prices.index = pd.to_datetime(['2026-09-15', '2026-09-15', '2026-09-17', '2026-09-18'])
+    assert evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')['status'] == 'unavailable'
+    prices = _entry_battery_prices(); prices.index += pd.Timedelta(hours=5)
+    assert evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')['status'] == 'unavailable'
+
+
+def test_entry_battery_error_remains_unknown_not_false_eligibility():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    def fail(*args):
+        raise RuntimeError('/private/secret-must-not-leak')
+    result = evaluate_prefixes('AMD', _entry_battery_prices(), start='2026-09-15',
+                              as_of='2026-09-17', gate=fail, rearm=fail)
+    assert result['status'] == 'degraded'
+    assert all(r['gate']['eligible'] is None for r in result['rows'])
+    assert '/private/' not in json.dumps(result)
+
+
+def test_entry_battery_recorded_sightings_are_not_manufactured_entries():
+    from research.prophet.cpu_leadership.entry_battery import recorded_sightings
+    rows = [{'ticker': 'MU', 'date': '2026-09-10', 'door': 'T', 'features': {'theme': 'Semiconductors'}},
+            {'ticker': 'MU', 'date': '2026-09-21', 'door': 'T', 'features': {}},
+            {'ticker': 'AMD', 'date': '2026-09-10', 'door': 'R', 'features': {}}]
+    before = copy.deepcopy(rows)
+    result = recorded_sightings(rows, 'MU', as_of='2026-09-18')
+    assert len(result) == 1 and result[0]['date'] == '2026-09-10'
+    assert result[0]['live_entry_authority'] is False
+    assert result[0]['historical_availability_verified'] is False
+    assert rows == before
+
+
+def test_entry_battery_does_not_replace_missing_close_with_adjacent_session():
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    prices = _entry_battery_prices().iloc[:2]
+    result = evaluate_prefixes('AMD', prices, start='2026-09-15', as_of='2026-09-18')
+    assert result['status'] == 'unavailable'
+    assert result['reason'] == 'requested_session_close_missing'
+
+
+def test_entry_battery_default_gate_explicitly_excludes_mutable_context(monkeypatch):
+    from research.prophet.cpu_leadership.entry_battery import evaluate_prefixes
+    from engine import signal_gate, prophet_doors
+    calls = []
+    def gate(ticker, close, **kwargs):
+        calls.append(kwargs)
+        return {'eligible': False, 'reason': 'flat: sell'}
+    monkeypatch.setattr(signal_gate, 'gate', gate)
+    monkeypatch.setattr(prophet_doors, 'door_r_legs', lambda verdict, close: {'fires': False})
+    result = evaluate_prefixes('AMD', _entry_battery_prices(), start='2026-09-17', as_of='2026-09-18')
+    assert calls == [{'washout_waiver': False}, {'washout_waiver': False}]
+    assert result['contextual_waiver_replayed'] is False
