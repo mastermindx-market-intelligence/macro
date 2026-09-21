@@ -1462,10 +1462,10 @@ entries:
       any_of:
         - 'unified.{0,30}macro.{0,30}dashboard'
     reason: >
-      **SUSPENDED / DESIGN-CANDIDATE ONLY — Chairman ruling
-      2026-09-20.** The first production composition stacked a second
-      global/cross-market regime surface above the existing macro
-      dashboard, increased p
-    source: '`research/UNIFIED_DASHBOARD_DISPOSITION.md` § Primary-route override — 2026-09-20'
+      **SUSPENDED / DESIGN-CANDIDATE ONLY — Chairman rulings 2026-09-20
+      and 2026-09-21.** The first production composition stacked a
+      second global/cross-market regime surface above the existing US
+      macro das
+    source: '`research/UNIFIED_DASHBOARD_DISPOSITION.md` §§ Primary-route override / Current-main reconciliation — 2026-09-21'
 
 # --- END GENERATED FROM DO_NOT_REBUILD.md ---

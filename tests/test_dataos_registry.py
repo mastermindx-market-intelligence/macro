@@ -378,11 +378,12 @@ def test_validate_registry_returns_and_never_exits() -> None:
     assert isinstance(out, list) and all(isinstance(v, str) for v in out)
 
 
-def test_china_gold_source_contracts_are_proposed_until_natural_nightly_acceptance() -> None:
-    """The source-plane ids may be durable before their first live store, but not PRODUCED.
+def test_china_gold_source_contracts_are_produced_after_live_acceptance() -> None:
+    """The stable source-plane ids are PRODUCED only after real stores + live path proof.
 
-    This lets closeout promote the exact same ids after a natural nightly without making
-    today's registry lie about artifacts that have not landed yet.
+    The 2026-09-20 protected-main backfill landed both parquet stores, and the
+    exact-main source -> engine -> render/machine audit made the bounded Data OS
+    promotion eligible before these statuses changed.
     """
     registry = load_registry()
     sge = registry.get("commodity.gold.sge_au9999.close")
@@ -391,7 +392,7 @@ def test_china_gold_source_contracts_are_proposed_until_natural_nightly_acceptan
     assert sge is not None
     assert global_ref is not None
     for item in (sge, global_ref):
-        assert item.status is DatasetStatus.PROPOSED
+        assert item.status is DatasetStatus.PRODUCED
         assert item.owner == "macro-dashboard"
         assert item.producer == "collectors/china_gold_basis.py::ChinaGoldBasisAdapter"
         assert item.storage.startswith("data/gold_china_basis/")
@@ -399,6 +400,7 @@ def test_china_gold_source_contracts_are_proposed_until_natural_nightly_acceptan
         assert item.temporal_profile is TemporalProfile.SNAPSHOT_SERIES
         assert item.conflict_policy is ConflictPolicy.PRIMARY_ONLY
         assert item.code_consumers == ("engine/china_gold_premium.py",)
+        assert "PRODUCED 2026-09-20" in item.notes
 
     assert sge.schema["rmb_per_g"]["unit"] == "CNY_per_gram"
     assert global_ref.schema["cny_per_oz"]["unit"] == "CNY_per_troy_ounce"

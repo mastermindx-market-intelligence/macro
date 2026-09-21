@@ -1820,6 +1820,13 @@ lanes:
   - workflow: .github/workflows/daily.yml
     job: stock_briefs
     steps:
+      - id: fetch_r2_stockdata
+        module: scripts.fetch_r2
+        args: [--dirs, stockdata]
+        note: >
+          Restore the existing R2-only stockdata context before stock-brief
+          generation. Input materialization only; no ranking, admission,
+          publication, or trade authority originates here.
       - id: build_stock_briefs
         module: scripts.build_stock_briefs
       - id: publish_r2_stockdata

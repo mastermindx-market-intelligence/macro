@@ -26,6 +26,22 @@ Do **not** move this block wholesale to `intl.html`: that route owns the ex-US i
 comparison. The repository's current global-cycle route is `markets.html`; any compact global-regime
 successor should be evaluated there (or through the existing route owner) before publication.
 
+### Current-main reconciliation — 2026-09-21
+
+Two B2 slices reached `main` after the first primary-route override and are reconciled rather than
+blindly reverted. **UD-B2-W1** improved the real US dashboard's existing `.mx5-sc-left` risk surface
+by folding volatility-weather chips into that surface; that useful US-route capability stays.
+**UD-B2-W2** added HK/CN market-state persistence plus truthful lighter-evidence caveats and bound
+those feeds inside the retained hero candidate. Its engines, persisted artifacts, component source,
+tests, and evidence stay; only the candidate's `#ud-hero` / five-market spine is kept **off**
+`macro.html`. Component-level tests prove the retained HK/CN bindings while the committed-page gate
+proves that the US route opens on `#regime-radar` with no stacked candidate.
+
+Relocation is therefore a recomposition, not a copy: reuse the strongest visual primitives and the
+now-real HK/CN bindings in the `markets.html` global-cycle owner, alongside that route's existing
+country-cycle/global-equity evidence. Do not label the default US `market_state` score as a global
+composite, and do not re-home the whole hero into `intl.html`.
+
 The disposition table below remains a design inventory for the retained candidate, not current
 primary-route deployment authority. **No module may be silently dropped.**
 
@@ -72,10 +88,10 @@ silently dropped; no module is relocated or removed without a seat ruling.
 | 18 | Sector Temperature isle (sx-v5-sector) | RETAIN | §6 *Go deeper* — sector rotation chip | "Compass card" link to sector_central.html |
 | 19 | Markets isle (sx-markets-v2 — 4-tile futures grid) | RETAIN (R2) | §2 spine — five markets on one rail (US / HK / China A / Gov bonds / Commodities) | The 4-tile glance row becomes a row in the spine; deep stays in the dialog |
 | 19a | Spine feed · US stocks (`market_state.score`) | BOUND | §2 spine · subject row | `vm["market_state"]["score"]` is the regime score; the row carries today's marker + the stance derived from `vm["stance"]`. Real published data. |
-| 19b | Spine feed · Hong Kong | BLOCKED_DATA | §2 spine · designed-null row | `hk_regime` is not yet wired into the macro vm. Row carries `data-blocked-feed="hk_regime"` + dashed rail + "Read being updated" chip. Will bind when `vm["hk_regime"]` lands in `scripts/build_site.py`. |
-| 19c | Spine feed · China A-shares | BLOCKED_DATA | §2 spine · designed-null row | `china_a_regime` is not yet wired. `data-blocked-feed="china_a_regime"`; same designed-null treatment as HK. |
-| 19d | Spine feed · Government bonds | BLOCKED_DATA | §2 spine · designed-null row | `gov_bonds_regime` is not yet wired. `data-blocked-feed="gov_bonds_regime"`; same designed-null treatment. |
-| 19e | Spine feed · Commodities | BLOCKED_DATA | §2 spine · designed-null row | `commodities_regime` is not yet wired. `data-blocked-feed="commodities_regime"`; same designed-null treatment. |
+| 19b | Spine feed · Hong Kong | BOUND | §2 spine · HK row | **UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS).** Source = `HK_PROFILE` `market_state.score` persisted by `build_hk` to `data/hk_market_state/latest.json`; macro vm reads `{score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true}` per `R-W2-4`. Same blender, identical leg weights 0.24/0.18/0.16/0.16/0.14/0.12 and verdict cuts 60/42 as the US subject row. Lighter evidence (no VIX term, no HY, uncalibrated downturn gauges, no hard overrides); the engine caveat travels with the number on the row's disclosure. Row carries `data-blocked-feed="hk_market_state"` (renamed from the quad's `hk_regime` slug, which was a wiring trap), real today marker, month-ago travel from `score_log.parquet` (≥22 rows → real; shorter → designed-null travel with a real today marker — never `raw_score`). Stance = verdict-band fallback (no HK `regime_stance` is in the macro vm). |
+| 19c | Spine feed · China A-shares | BOUND | §2 spine · CN row | **UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS).** Source = `CN_PROFILE` `market_state.score` persisted by `build_china` to `data/china_market_state/latest.json` (the existing convention used by `build_china.py:1888` for the CN score_log); macro vm entry shape identical to HK above. Same blender; lighter evidence (QVIX, no HY, PBoC overlay, uncalibrated downturn gauges). The ROW rejects `intl_market_state.market_states()` (`CN` not covered; turn-state is not risk-on — `crash`/`parabolic` would lie on this axis) and the `china_regime` quad (cycle location ≠ risk-on). Row carries `data-blocked-feed="cn_market_state"` (renamed from the would-be `china_a_regime` slug, which would have wired the quad). Travel + stance follow the HK row pattern. |
+| 19d | Spine feed · Government bonds | BLOCKED_DATA | §2 spine · designed-null row | `gov_bonds_regime` is not yet wired. **R-W2-3 (ratified product state, not deferral):** no published 0-100 on the same kind of evidence; bond health (`engine/bonds.py`) is economic/credit stress, not a bond-market risk-on read, and bond_compass duration lean's polarity is the opposite of the spine unless inverted (which would originate a new signal). Slug stays UNCHANGED — `gov_bonds_regime` stays honest as a not-yet-existing contract. Row keeps dashed rail + "Read being updated" chip. |
+| 19e | Spine feed · Commodities | BLOCKED_DATA | §2 spine · designed-null row | `commodities_regime` is not yet wired. **R-W2-3 (ratified product state, not deferral):** spec mockup already designed this row as null (UNIFIED_DASHBOARD_SPEC.md §3:128–129, §7:248); the complex is internally mixed (gold vs copper) and no published 0-100 exists. Inverted `risk_index` or `ts_trend` mappers would originate a complex-level risk-on identity the engine does not publish. Slug stays UNCHANGED — `commodities_regime` stays honest as a not-yet-existing contract. Row keeps dashed rail + "Read being updated" chip. |
 | 20 | Markets dialog (dlg-markets) | RETAIN (R2) | companion to §2 spine | Hub-and-spoke — index-health · sector heatmap · cross-asset preview |
 | 21 | Risk isle (sx-risk-v2, Risk Radar) | IMPROVE (R3) | §2 spine — receives the vol-weather chips (see R3) | The risk isle keeps its dial + scar chips; absorbs the vol-weather chips below |
 | 22 | Risk dialog (dlg-risk) | RETAIN | companion to §2 spine — risk state band + leading-signal stack + themes-rot | The deepest risk read; daily |
