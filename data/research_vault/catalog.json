@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T18:18:22.832351+00:00",
-  "count": 2585,
+  "generated_at": "2026-09-21T19:33:43.388189+00:00",
+  "count": 2589,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -82,6 +82,7 @@
     "The Market Ear",
     "The Punchline",
     "UBS",
+    "Vanda Research",
     "WEF",
     "WGC",
     "Westpac",
@@ -92,6 +93,64 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-hkwwlrogdln-f5e2cd",
+      "title": "GS MidDay Color US Equities Mid Day Color 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:19:27Z",
+      "summary_points": [
+        "Geopolitical catalyst: UN General Assembly optimism and US-China talks ahead of Trump/Xi summit drove AI/tech rally (NDX +237bps), with META (+8.9%) and NeoClouds (+580bps) leading; US equities saw largest net buying in five weeks (+0.9 SDs 1-year).",
+        "Retail flow momentum: Broad-based gains (325 SPX names green) fueled by retail pockets (GSCB) and AI themes, improving market breadth amid strong tech outperformance.",
+        "Short squeeze risk: High beta 12m losers (+183bps) and rolling short GSCBMSAL (+185bps) signal heightened vulnerability as AI/tech surges accelerate momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-f4gxuf5mmau-53a7ed",
+      "title": "Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:00:53Z",
+      "summary_points": [
+        "Institutional AI Buying Stalling: Institutional call ratios for Mag 7/SOXX AI complex stalled post-bullish positioning, signaling reduced buying pace amid slowing momentum.",
+        "CRWD Drives Retail AI Trend: CRWD dominates 53% of retail call activity (1M calls at 97th percentile), with retail buying underlying stock + calls, indicating new AI-themed retail trend.",
+        "NVDA Retail Dominance & Selectivity: NVDA accounts for 63% of SOXX retail inflows; retail selective (not indiscriminate), with 19/30 semis showing positive buying (Intel/Broadcom-led dips).",
+        "Fed/Geopolitics Constrain Broad Index Moves: Broader index buying requires Fed policy normalization and geopolitical tension fade; current retail flows remain bottom-up and selective."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pww9eod4fgq-febf19",
+      "title": "Vanda Research Retail Waiting For Macro Risks To Clear 21Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T18:35:00Z",
+      "summary_points": [
+        "Retail De-risking Shift: Retail moves from broad FOMO to selective stock-picking (e.g., CRWD, NFLX), now showing fading momentum and declining net turnover, de-risking equity exposure.",
+        "Rates Dominance Over Equities: Bond yields now constrain risk appetite as equity flows tighten; rates dynamics dominate positioning due to fading retail participation and tight equity-yield correlation.",
+        "Geopolitical Wall of Worry: Oil volatility, midterms, and AI narrative sustain elevated risk concerns, monitored via CTA re-risking signals amid de-risked market structure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-mbqsdtjh2bt-3bf05a",
       "title": "Macquarie Korea Nuclear",
@@ -129,6 +188,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 39,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mnrviw4stha-483248",
+      "title": "Zillow Sep 21",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T16:29:24Z",
+      "summary_points": [
+        "Zillow's Antitrust Claims Rejected: Court dismissed all antitrust allegations, ruling MRED's actions as legitimate business conduct with no conspiracy or market harm, removing a major overhang.",
+        "Compass's 3PM Strategy Acceleration: Ruling enables Compass to expand Private Exclusives (3PM), fragmenting listing inventory and reducing Zillow's accessible listings, threatening revenue and market share.",
+        "Zillow's Preferred Markets Offset: Accelerated Preferred Markets rollout (7.44% take rates in FY25) generates incremental revenue (8.7%-14.9% impact), countering 3PM-driven revenue loss ($76M-$214M) and supporting Buy rating.",
+        "Valuation Discount & Risk Mitigation: Zillow trades at significant discount (current $33.68 vs $50 target) due to cyclical headwinds, but Preferred Markets rollout mitigates Private Exclusives risk, justifying Buy.",
+        "MLS Defense Precedent: Ruling establishes MLSs can defend against antitrust claims without liability, validating industry-wide strategy and reducing long-term regulatory risk for Zillow."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
