@@ -598,3 +598,93 @@ def test_capture_script_paints_body_from_tokens_and_crops_w3_tiles():
     assert ".screenshot" in src
     # Must not be viewport-only after a scroll of .ud-drivers.
     assert "full_page=False" not in src or "locator(" in src
+
+
+# --------------------------------------------------------------------------- #
+# Round-3 review — Major (direction token as severity) + two minors
+# RED-first against c79fdb867369c4f3c8a479dd9a56cbb3b91f908c:
+#   * hidden-selling rail painted with var(--down) (flips green in ZH)
+#   * aria-label="locked depth" (English-only machine text)
+#   * froth glance EN was {{ _ff_band|capitalize }} (slug title-case)
+# --------------------------------------------------------------------------- #
+
+
+def _w3_style_block() -> str:
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text(encoding="utf-8")
+    start = src.find("UD-B2-W3 Drivers fold")
+    assert start > 0
+    return src[start: src.find("</style>", start)]
+
+
+def test_hidden_selling_rail_uses_severity_token_not_direction():
+    """R-W3-R3-1. Hidden selling is a health/severity read (red=bad in
+    both languages). var(--down) is a DIRECTION token and swaps to green
+    under html[data-lang="zh"] (theme.css). Paint with --act, which stays
+    red. RED on c79fdb8673: `.ud-froth-fill--b{ background:var(--down); }`.
+    """
+    block = _w3_style_block()
+    assert "var(--down)" not in block, (
+        "W3 CSS must not paint severity with a direction token; --down "
+        "flips to green in ZH"
+    )
+    assert "var(--up)" not in block, (
+        "W3 CSS must not paint severity with a direction token"
+    )
+    compact = block.replace(" ", "")
+    assert ".ud-froth-fill--b{background:var(--act);}" in compact
+    assert ".ud-froth-fill{height:100%;background:var(--warn);}" in compact
+
+
+def test_locked_driver_aria_is_bilingual_plain_sentences():
+    """R-W3-R3-2. Screen-reader copy is user-facing. Follow the hero's
+    existing bilingual aria pattern (l-en / l-zh each carry aria-label).
+    RED on c79fdb8673: aria-label=\"locked depth\".
+    """
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text(encoding="utf-8")
+    assert 'aria-label="locked depth"' not in src
+    html = _render_hero(_base_vm())
+    assert 'aria-label="Full sector narrative is locked."' in html
+    assert 'aria-label="完整板块叙事已锁定。"' in html
+    lock_en = re.search(
+        r'<span class="l-en" aria-label="Full sector narrative is locked\.">',
+        html,
+    )
+    lock_zh = re.search(
+        r'<span class="l-zh" aria-label="完整板块叙事已锁定。">',
+        html,
+    )
+    assert lock_en, "EN lock copy must carry its own aria-label sentence"
+    assert lock_zh, "ZH lock copy must carry its own aria-label sentence"
+
+
+def test_froth_glance_en_maps_band_slug_not_capitalize():
+    """R-W3-R3-3. Fear/Euphoria glance maps engine bands through a dict
+    (Panic/Fear/Neutral/…). Froth EN must do the same — never |capitalize
+    on a slug. ZH already uses band_zh. RED on c79fdb8673:
+    `{{ _ff_band|capitalize if _ff_band else _null_word_en }}`.
+    """
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text(encoding="utf-8")
+    assert "_ff_band|capitalize" not in src
+    assert "|capitalize" not in src.split("data-driver-leg=\"froth_fragility\"")[1].split("ud-froth-row")[0]
+    assert "'calm':" in src and "'watch':" in src and "'extreme':" in src
+
+    vm = _base_vm()
+    vm["fear_euphoria"] = {"fe_score": 42, "band": "Neutral"}
+    vm["froth_fragility"] = {
+        "band": "watch",
+        "band_zh": "关注",
+        "quadrant_en": "Calm & broad",
+        "quadrant_zh": "平静且广泛",
+        "face_a": {"score": 30},
+        "face_b": {"score": 20},
+    }
+    tile = _driver_slice(_render_hero(vm), "fear_greed")
+    assert ">Watch<" in tile
+    assert ">watch<" not in tile
+    assert ">关注<" in tile
+
+    vm["froth_fragility"]["band"] = "elevated"
+    vm["froth_fragility"]["band_zh"] = "升高"
+    tile = _driver_slice(_render_hero(vm), "fear_greed")
+    assert ">Elevated<" in tile
+    assert ">升高<" in tile

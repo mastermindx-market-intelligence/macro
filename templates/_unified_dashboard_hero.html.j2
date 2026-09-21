@@ -267,7 +267,7 @@ html[data-theme="light"] .ud-sent-rail{
   overflow:hidden;
 }
 .ud-froth-fill{ height:100%; background:var(--warn); }
-.ud-froth-fill--b{ background:var(--down); }
+.ud-froth-fill--b{ background:var(--act); }
 html[data-theme="light"] .ud-froth-track{
   background:var(--panel);
   box-shadow:0 0 0 1px var(--line);
@@ -825,6 +825,7 @@ html[data-theme="light"] .ud-froth-track{
         {%- set _ff_quad_en = _ff.get('quadrant_en') if _ff else none -%}
         {%- set _ff_quad_zh = (_ff.get('quadrant_zh') or _ff_quad_en) if _ff else none -%}
         {%- set _ff_band = _ff.get('band') if _ff else none -%}
+        {%- set _ff_band_en = {'calm':'Calm','watch':'Watch','elevated':'Elevated','high':'High','extreme':'Extreme'}.get(_ff_band, _ff_band) if _ff_band else none -%}
         {%- set _ff_band_zh = (_ff.get('band_zh') or _ff_band) if _ff else none -%}
         {%- set _ff_a = ((_ff.get('face_a') or {}).get('score')) if _ff else none -%}
         {%- set _ff_b = ((_ff.get('face_b') or {}).get('score')) if _ff else none -%}
@@ -852,7 +853,7 @@ html[data-theme="light"] .ud-froth-track{
             <div class="ud-sent-lens" data-driver-leg="froth_fragility"
                  data-tip-en="{{ _ff_quad_en or 'Froth and fragility context — display only, not a signal.' }}"
                  data-tip-zh="{{ _ff_quad_zh or '狂热与脆弱背景——仅供展示，不是信号。' }}">
-              <span class="ud-sent-lens-name"><span class="l-en">{{ _ff_band|capitalize if _ff_band else _null_word_en }}</span><span class="l-zh">{{ _ff_band_zh if _ff_band_zh else _null_word_zh }}</span></span>
+              <span class="ud-sent-lens-name"><span class="l-en">{{ _ff_band_en if _ff_band_en else _null_word_en }}</span><span class="l-zh">{{ _ff_band_zh if _ff_band_zh else _null_word_zh }}</span></span>
               {%- if _ff_a is not none and _ff_b is not none %}
               <div class="ud-froth-row" aria-hidden="true">
                 <span class="ud-froth-lbl"><span class="l-en">Euphoria</span><span class="l-zh">亢奋度</span></span>
@@ -876,13 +877,13 @@ html[data-theme="light"] .ud-froth-track{
            spec §4 / §7 (driver 4 = TierLock; 390 hides .ud-driver--locked,
            counter 1 / 3). R1 folds leadership into the breadth tile above,
            not into this locked slot. #}
-        <div class="panel ud-driver ud-driver--locked" aria-label="locked depth">
+        <div class="panel ud-driver ud-driver--locked">
           <div class="mx-tier-blurred--spec" aria-hidden="true">
             <div class="ud-driver"><b class="ud-driver-head">██████</b><p class="ud-driver-body">████ ████ ████████ ████ ███████</p></div>
           </div>
           <div class="ud-driver-lock">
-            <span class="l-en">Full sector narrative is locked.</span>
-            <span class="l-zh">完整板块叙事已锁定。</span>
+            <span class="l-en" aria-label="Full sector narrative is locked.">Full sector narrative is locked.</span>
+            <span class="l-zh" aria-label="完整板块叙事已锁定。">完整板块叙事已锁定。</span>
           </div>
         </div>
 
