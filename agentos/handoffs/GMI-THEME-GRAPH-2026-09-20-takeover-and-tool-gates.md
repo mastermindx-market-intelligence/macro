@@ -3,25 +3,27 @@ workstream: WS:GMI-THEME-GRAPH
 session: sol/gmi-d2d-ontology-neighborhood-20260919
 model: sol
 ended_because: ci_handoff
-mission: Build useful GMI research capabilities while release CI is pending; preserve canonical graph, curation and investment authority.
-state_before: At 20e6b0322b466466d127190a97bb0f8d18f8efb4 exact node/proposal readers were built, but researchers had no evidence-preserving historical change brief.
+mission: Build usable GMI research and curation evidence through existing graph and proposal owners; parent mission remains incomplete.
+state_before: At 939d1bef1e55693959e0185bbfcbcdc65ae6220c exact readers and historical briefs existed, but proposal overlap required manually comparing all endpoint membership rows.
 changed:
-  - {path: engine/theme_graph/change_report.py, what: Compare two existing neighborhood documents with explicit effective-date versus knowledge-revision labels and JSON plus readable Markdown output.}
-  - {path: scripts/explain_theme_changes.py, what: Add a real bounded file-to-report CLI that rejects malformed or mismatched inputs and never overwrites input or existing output files.}
-  - {path: contracts/theme_graph/ontology_change_report.v1.schema.json, what: Strict report contract references existing neighborhood and relation/proposal definitions.}
-  - {path: tests/test_theme_graph_local_plane.py, what: Add 17 hosted tests for membership/evidence/proposal separation, missing-baseline abstention, stable ordering, input protection and readable correction details.}
-  - {path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-20-takeover-and-tool-gates.md, what: Preserve real build progress and the independently deferred discovery prototype.}
+  - {path: engine/theme_graph/membership_evidence.py, what: Pure exact-member overlap drilldown preserving both sides of each membership and original proposal statistics separately.}
+  - {path: scripts/explain_theme_overlap.py, what: JSON or readable Markdown CLI consuming existing proposal-review exports without graph access or overwrites.}
+  - {path: contracts/theme_graph/ontology_overlap_evidence.v1.schema.json, what: Research-internal projection referencing the existing relation contract with explicit unavailable states.}
+  - {path: tests/test_theme_graph_local_plane.py, what: Twelve additional hosted cases for exact counts, duplicate evidence, clock and identity binding, stable ordering, immutability, and CLI protection.}
+  - {path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-20-takeover-and-tool-gates.md, what: Cumulative build and gate checkpoint; no source or reviewer transfer.}
 verified:
-  - {claim: Historical comparison is a working capability rather than a release-status artifact., command: "python3 -m pytest tests/test_theme_graph_local_plane.py -q -k gmi_change_report", result: "Initial 14 failures before implementation; one missing human status detail reproduced separately and repaired. All new cases included in final 540-test owner pass."}
-  - {claim: Existing graph and downstream consumers remain compatible., command: "Nine-module pytest owner command in change-report/owner-final.log and verification.json", result: "540 passed; owner-final.exit=0. Existing strict graph guard exit 0."}
-  - {claim: Real history is preserved without graph mutation., command: "25 real local-theme comparisons at 2026-08-14 versus 2026-08-15, fixed cutoff 2026-09-20; verification.json binds final working blobs", result: "26 recorded membership removals across 25 themes; original input hashes unchanged. Cloud Databases report identifies co:us:CFLT with old evidence IDs."}
-  - {claim: Real default CLI produces both machine and human results., command: "python3 scripts/explain_theme_changes.py --baseline <evidence>/cloud-baseline.json --target <evidence>/cloud-target.json [--format markdown]", result: "Both modes exit 0; JSON equals verified history. GOLD report labels KNOWLEDGE_REVISION and names status canonical to retired; SNDK reports nine recorded membership additions."}
+  - {claim: The new consumer discriminates the missing capability., command: "python3 -m pytest tests/test_theme_graph_local_plane.py -k gmi_overlap -q", result: "12 failed before implementation; 12 passed after implementation."}
+  - {claim: Existing graph and consumers remain compatible., command: "Nine-module pytest owner command recorded in overlap-evidence/verification.json", result: "552 passed; owner.exit=0. Graph selftest and strict audit both exit 0."}
+  - {claim: Exact real membership evidence is preserved., command: "PYTHONPATH=$PWD python3 <evidence-root>/overlap-evidence/audit_overlap.py <evidence-root>/overlap-evidence/corpus.json", result: "234/234 packets schema-valid; 801 distinct graph member IDs; all six canonical input hashes unchanged."}
+  - {claim: Real CLI works in both output modes., command: "python3 scripts/explain_theme_overlap.py --review <evidence-root>/overlap-evidence/utilities-review.json [--format markdown]", result: "Both exit 0 and equal corpus output; Utilities has 31 source IDs, 9 target IDs, 9 shared, 22 source-only, 0 target-only."}
+  - {claim: Shared dashboard suite registration now exists., command: "git grep tests/test_unified_dashboard_b1.py 2042b2f4ca5bcd84da47f0937f3b6a1e3d488b77 -- .github/ci/legacy-jobs.yml", result: "Registered at line 2929; incumbent 7511 merged. Fresh binding CI is still required, not inferred."}
 unverified:
-  - {claim: Exact new-head integration and independent release acceptance., what_would_verify: "Immutable current-base composition, binding checks and actual independent review; source publication is not acceptance."}
-  - {claim: Full GMI production outcome including discovery and remaining D2D breadth., what_would_verify: "Lawful unblocked implementation and acceptance of remaining curation/structural/discovery work, D2C natural proof, then D2E/W3B/W3C."}
-unresolved: [Discovery append platform-refused and preserved rather than rerouted, independent review still owed, shared registration dependency on incumbent 7511, natural D2C engine cancelled without published proof]
-next_actions: [Publish this verified independent history-report capability on the same PR, consume exact-head independent review without repeating old repairs, preserve deferred discovery evidence until its authoring gate is resolved, continue remaining lawful D2D capabilities]
-do_not_redo: [Merged 6809 and 7458, accepted PIT replay and no-op, repaired lifecycle and UTC and mixed-clock readers, dismissed addressed reviews, any replacement GMI graph or carrier]
-danger_areas: [Recorded membership changes are not capital flows, input digests are not source authenticity or coverage proof, no curation decisions or graph data writes, no duplicate state store or discovery service, missing comparison is not zero membership]
+  - {claim: Exact amended-head integration, independent review and release., what_would_verify: "Immutable integration and binding checks plus actual independent review; no reviewer START has returned."}
+  - {claim: Missing-data and null-peer regression coverage for this increment., what_would_verify: "The specific attempted test append was platform-refused, read back NOT_APPLIED and not retried; those proposed fixtures remain absent."}
+  - {claim: Full D2D and GMI production acceptance., what_would_verify: "Remaining governed curation and structural breadth, accepted natural D2C output, then D2E/W3B/W3C."}
+unresolved: [Independent exact-head acceptance, new binding CI, absent refused regression appendix, previously refused discovery and structural actions, natural D2C proof absent at last reconciliation]
+next_actions: [Publish tested overlap capability on same PR 7462, qualify current-main integration, consume independent review and binding gates, retain explicit untested negative-path coverage rather than retrying its refused edit]
+do_not_redo: [Merged 6809 and 7458, PIT replay and no-op proof, repaired reader clocks and dismissed addressed reviews, accepted source proof for exact proposal and history readers, any replacement GMI carrier]
+danger_areas: [Overlap is not mapping approval, node IDs are not normalized securities, zero recorded memberships is not coverage completeness, no curation or graph-data write, no public-display or investment authority]
 prs: [7462, 6809, 7458, 7511]
 ---

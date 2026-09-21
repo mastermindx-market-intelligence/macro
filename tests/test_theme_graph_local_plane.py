@@ -2174,3 +2174,111 @@ def test_gmi_change_report_human_brief_names_subject_correction():
     report = _report(before, after)
     text = _change_report_module().render_markdown(report)
     assert "status: canonical → retired" in text
+
+
+def _overlap_review():
+    view = _review_view(present=True)
+    for ticker in ("AAA", "BBB", "CCC"):
+        view._nodes.append(_ont_node("co:us:" + ticker, "company", name=ticker))
+    for index, (ticker, target) in enumerate((("AAA", _REVIEW_LOCAL), ("BBB", _REVIEW_LOCAL),
+                                            ("BBB", _REVIEW_THEME), ("CCC", _REVIEW_THEME))):
+        view._edges.append(_ont_edge("member-" + str(index), "MEMBER_OF", "co:us:" + ticker, target))
+    return _review_proposal(view)
+
+
+def _overlap_report(document):
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.membership_evidence"), "membership evidence consumer missing"
+    from engine.theme_graph.membership_evidence import build_overlap_evidence
+    from referencing import Registry, Resource
+    result = build_overlap_evidence(document)
+    path = ROOT / "contracts/theme_graph"
+    neighborhood = json.loads((path / "ontology_neighborhood.v1.schema.json").read_text())
+    registry = Registry().with_resource(neighborhood["$id"], Resource.from_contents(neighborhood))
+    schema = json.loads((path / "ontology_overlap_evidence.v1.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+    return result
+
+
+def test_gmi_overlap_exact_company_evidence_and_descriptive_counts():
+    result = _overlap_report(_overlap_review())
+    assert result["availability"]["state"] == "OK"
+    assert result["counts"] == dict(source=2, target=2, shared=1, source_only=1, target_only=1, union=3)
+    assert result["ratios"] == dict(source_containment=0.5, target_containment=0.5, jaccard=1 / 3)
+    assert [row["node_id"] for row in result["shared"]] == ["co:us:BBB"]
+    assert result["shared"][0]["source_memberships"][0]["evidence_refs"] == ["ev:test"]
+    assert result["shared"][0]["source_memberships"][0]["rights"][0]["public_display_allowed"] is False
+    assert result["reported_evidence"] == {"overlap": 9}
+    assert result["proposal_status"] == "proposed"
+    assert result["mapping_relation_state"] == "RELATION_PRESENT"
+    assert result["authority_ceiling"] == "research_internal_only"
+
+
+@pytest.mark.parametrize("status", ["proposed", "ratified", "rejected"])
+def test_gmi_overlap_never_turns_overlap_into_approval(status):
+    document = _overlap_review(); proposal = document["proposal"]
+    proposal.update(status=status, ratified_by="curator:test" if status == "ratified" else None,
+                    adjudicated_at=None if status == "proposed" else "2026-02-02T00:00:00Z")
+    report = _overlap_report(document)
+    assert report["proposal_status"] == status
+    assert report["counts"]["shared"] == 1
+    assert not ({"approved", "recommendation", "score", "rank", "weight"} & set(report))
+
+
+def test_gmi_overlap_duplicate_evidence_does_not_inflate_members():
+    import copy
+    document = _overlap_review(); row = next(r for r in document["endpoints"][0]["relations"] if r["peer_node_id"] == "co:us:BBB")
+    extra = copy.deepcopy(row); extra["edge_id"] = "independent-proof"; extra["evidence_refs"] = ["ev:second"]
+    document["endpoints"][0]["relations"].append(extra)
+    result = _overlap_report(document)
+    assert result["counts"]["shared"] == 1
+    assert len(result["shared"][0]["source_memberships"]) == 2
+
+
+@pytest.mark.parametrize("field", ["node_id", "asof", "knowledge_cutoff", "proposal_id"])
+def test_gmi_overlap_rejects_incoherent_review_binding(field):
+    document = _overlap_review()
+    if field == "proposal_id": document["proposal"][field] = "prop:bbbbbbbbbbbbbbbb"
+    else: document["endpoints"][0][field] = "theme:wrong" if field == "node_id" else "2026-05-01"
+    with pytest.raises(ValueError): _overlap_report(document)
+
+
+def test_gmi_overlap_sorting_immutability_and_no_label_based_merging():
+    import copy
+    document = _overlap_review(); before = copy.deepcopy(document)
+    left = document["endpoints"][0]
+    for row in left["relations"]:
+        if row.get("peer"): row["peer"]["name_en"] = "SAME NAME"
+    expected = _overlap_report(document)
+    for endpoint in document["endpoints"]: endpoint["relations"].reverse()
+    actual = _overlap_report(document)
+    for key in ("shared", "source_only", "target_only", "counts", "ratios"):
+        assert actual[key] == expected[key]
+    assert actual["counts"]["union"] == 3
+    restored = copy.deepcopy(before); _overlap_report(restored)
+    assert restored == before
+
+
+def test_gmi_overlap_does_not_use_other_relationships_as_membership():
+    document = _overlap_review()
+    for endpoint in document["endpoints"]:
+        for row in endpoint["relations"]:
+            if row["peer_node_id"] == "co:us:BBB": row["type"] = "EXPRESSES"
+    report = _overlap_report(document)
+    assert report["counts"] == dict(source=1, target=1, shared=0, source_only=1, target_only=1, union=2)
+    assert report["ratios"]["jaccard"] == 0
+
+
+def test_gmi_overlap_cli_json_and_markdown_preserve_input(tmp_path, capsys):
+    _overlap_report(_overlap_review())
+    from scripts.explain_theme_overlap import main
+    source = tmp_path / "review.json"; source.write_text(json.dumps(_overlap_review()))
+    before = source.read_bytes()
+    assert main(["--review", str(source)]) == 0
+    assert json.loads(capsys.readouterr().out)["counts"]["shared"] == 1
+    output = tmp_path / "brief.md"
+    assert main(["--review", str(source), "--format", "markdown", "--out", str(output)]) == 0
+    text = output.read_text(); assert "co:us:BBB" in text and "ev:test" in text
+    assert main(["--review", str(source), "--out", str(source)]) == 2
+    assert main(["--review", str(source), "--out", str(output)]) == 2
+    assert source.read_bytes() == before and output.read_text() == text
