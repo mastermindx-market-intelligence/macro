@@ -738,8 +738,10 @@ def test_no_other_canary_job_can_race_the_four_slot_candidate() -> None:
         "contamination-probe",
     }
     assert jobs["four-slot-preflight"]["if"] == "inputs.slots == '4'"
-    for job_id in ("cache-negative-control", "contamination-probe"):
-        assert jobs[job_id]["if"] == "inputs.slots == '1'"
+    assert jobs["cache-negative-control"]["if"] == "inputs.slots == '1'"
+    contamination_if = str(jobs["contamination-probe"]["if"])
+    assert "always()" in contamination_if
+    assert "inputs.slots == '1'" in contamination_if
 
 
 def test_four_slot_keeps_all_evidence_legs_and_production_parallelism_frozen() -> None:
