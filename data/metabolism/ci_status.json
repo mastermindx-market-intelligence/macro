@@ -1,6 +1,6 @@
 {
-  "ts": "2026-09-21T13:10:18+00:00",
-  "main_sha": "f9107deed5899fd3f245d8c38db38aa472a2b391",
+  "ts": "2026-09-21T19:45:45+00:00",
+  "main_sha": "daa93114577285863bcc9c1b56868bf8d46b469e",
   "red_required": [
     {
       "name": "free-content-estate",
@@ -28,9 +28,9 @@
     }
   ],
   "green": false,
-  "consecutive_failures": 165,
+  "consecutive_failures": 166,
   "sensed_shas": [
-    "f9107deed5899fd3f245d8c38db38aa472a2b391",
+    "daa93114577285863bcc9c1b56868bf8d46b469e",
     "f0aad2482359440c4b6c1428b0f078fff212ee8f"
   ],
   "heartbeat_degraded": false
