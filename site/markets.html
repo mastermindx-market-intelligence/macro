@@ -49,11 +49,9 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=665c4b34">
+<link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="cycle.css?v=4">
 <link rel="stylesheet" href="markets.css?v=4">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=fed6efba">
 </head>
 <body>
 
@@ -62,7 +60,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=fed6efba">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -276,10 +274,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=3cb38601" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -306,18 +304,41 @@
     <div class="ht">
       <div class="cyc-kicker"><span class="hb"></span> <span class="l-en">Global Market Cycles</span><span class="l-zh">全球市场周期</span></div>
       <h1 class="cyc-title"><span class="l-en">Where every market stands</span><span class="l-zh">各市场所处位置</span></h1>
-      <p class="cyc-sub"><span class="l-en">Eleven national equity markets on one clock — the US, UK, Europe, Japan, China, Hong Kong,
-        Taiwan, India, Canada, South Korea and Australia. The y-axis is a <b>cycle oscillator (0–100)</b>: high = extended near record highs,
-        low = washed-out deep below them. Nine markets are engine-backed (country_cycles pos_v2);
-        US and Europe show analyst estimates until their proxies are added to the engine.
-        Observed history (solid), projection (dashed + uncertainty cone), and curated valuations with as-of dates
-        — so you see not just <em>when</em> in the cycle each market sits, but how <em>cheap or rich</em> it is there.
-        Projections here are windows, not certainties — re-drawn nightly as new data lands.</span><span class="l-zh">十一个国家股市同框 —— 美国、英国、欧洲、日本、中国、香港、台湾、印度、加拿大、韩国与澳大利亚。纵轴是<b>周期振荡器（0–100）</b>：高=接近历史高点（拉伸），低=深跌超卖。九个市场使用引擎数据（country_cycles pos_v2）；美国与欧洲的代理 ETF 尚未入引擎，显示分析师估算。实线为历史，虚线（含锥形区间）为预测，并附带标注截止日期的精选估值 —— 让你不仅看到每个市场处于周期的<em>哪个阶段</em>，还能看到它在该位置是<em>便宜还是昂贵</em>。这里的预测是时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
+      <p class="cyc-sub"><span class="l-en">Eleven national equity markets on one cycle oscillator. Nine positions are engine-backed; US and Europe remain clearly marked analyst estimates. History, projections and valuation stay separate below.</span><span class="l-zh">十一个国家股市共用一套周期振荡器。九个市场使用引擎位置；美国与欧洲仍明确标注为分析师估算。历史、预测与估值在下方保持分离。</span></p>
     </div>
     <div class="cyc-ctrls">
       <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="cyc-asof">…</span></span>
     </div>
   </header>
+
+  <section class="global-regime-pulse" id="global-regime-pulse" aria-labelledby="global-regime-pulse-label">
+    <div class="grp-copy">
+      <div class="grp-eyebrow">
+        <span class="l-en">Global equity cycle · measured spread</span><span class="l-zh">全球股市周期 · 实测分布</span>
+        <span class="grp-asof" id="global-regime-pulse-asof"></span>
+      </div>
+      <h2 class="grp-label" id="global-regime-pulse-label">—</h2>
+      <p class="grp-summary" id="global-regime-pulse-summary"></p>
+      <div class="grp-metrics" id="global-regime-pulse-metrics"></div>
+    </div>
+    <div class="grp-map">
+      <div class="grp-map-head">
+        <span class="l-en">One scale, eleven equity markets</span><span class="l-zh">同一标尺，十一个股市</span>
+        <small><span class="l-en">0 washed-out · 100 extended</span><span class="l-zh">0 深度回落 · 100 高位拉伸</span></small>
+      </div>
+      <div class="grp-axis-labels" aria-hidden="true">
+        <span><span class="l-en">Lower cycle</span><span class="l-zh">周期低位</span></span>
+        <span><span class="l-en">Mid-cycle</span><span class="l-zh">周期中段</span></span>
+        <span><span class="l-en">Extended</span><span class="l-zh">高位拉伸</span></span>
+      </div>
+      <div class="grp-track" id="global-regime-pulse-track" aria-label="Cross-market cycle positions"></div>
+      <div class="grp-source-key">
+        <span><i class="grp-source-dot engine" aria-hidden="true"></i><span class="l-en">engine-backed</span><span class="l-zh">引擎数据</span></span>
+        <span><i class="grp-source-dot estimate" aria-hidden="true"></i><span class="l-en">analyst estimate</span><span class="l-zh">分析师估算</span></span>
+      </div>
+      <div class="grp-buckets" id="global-regime-pulse-buckets"></div>
+    </div>
+  </section>
 
   <section class="cyc-stage">
     <div class="cyc-hero">
@@ -379,12 +400,12 @@
      a pinned ref is SKIPPED by the pass, stays synchronous, and races ahead of the
      deferred data (that blanked cycle.html). Inline consumers below run on
      DOMContentLoaded (fires after every defer script). -->
-<script src="regimedata/regime_prior.js?v=fbb311d1" defer></script>
-<script src="markets_i18n.js?v=b83891fc" defer></script>
-<script src="markets_data.js?v=dbe70aa3" defer></script>
-<script src="marketsdata/markets_engine.js?v=23761784" defer></script>
-<script src="mm_charts.js?v=244eb769" defer></script>
-<script src="markets_app.js?v=a9d2b30f" defer></script>
+<script src="regimedata/regime_prior.js"></script>
+<script src="markets_i18n.js"></script>
+<script src="markets_data.js"></script>
+<script src="marketsdata/markets_engine.js"></script>
+<script src="mm_charts.js"></script>
+<script src="markets_app.js"></script>
 <script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('cyc-asof').textContent=(window.MARKET_META||{}).asOf||'';}catch(e){}});</script>
 <script>
 /* W4.5 regime-prior reconciliation banner for markets.html.
@@ -465,7 +486,7 @@ document.addEventListener('DOMContentLoaded',function(){
   } catch(e) {}
 });
 </script>
-<script src="theme.js?v=48082a1e" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
+<script src="theme.js"></script>
+<script defer data-whb data-root="" src="wh_banner.js"></script>
 </body>
 </html>

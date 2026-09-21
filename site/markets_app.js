@@ -497,6 +497,83 @@
         '</div><div class="disp-n">' + t(washed + " washed-out / recovering", washed + " 个超卖/复苏中") + '</div></div>';
   }
 
+  /* ---- compact global regime pulse ---------------------------------------- */
+  function renderGlobalPulse() {
+    var host = document.getElementById("global-regime-pulse");
+    if (!host || !CYCLES || !CYCLES.length) return;
+
+    var points = CYCLES.map(function (c) {
+      var ep = engPos(c);
+      return { c: c, p: Math.round(nowPosOf(c)), source: ep.source };
+    }).sort(function (a, b) { return b.p - a.p; });
+    var n = points.length;
+    var ps = points.map(function (x) { return x.p; });
+    var mean = ps.reduce(function (sum, v) { return sum + v; }, 0) / n;
+    var sd = Math.sqrt(ps.reduce(function (sum, v) { return sum + Math.pow(v - mean, 2); }, 0) / n);
+    var highs = points.filter(function (x) { return x.p >= 78; });
+    var lower = points.filter(function (x) { return x.p <= 45; });
+    var engineN = points.filter(function (x) { return x.source === "engine"; }).length;
+    var label = sd >= 22 ? t("Wide dispersion", "分化显著")
+      : highs.length >= Math.ceil(n * 0.6) ? t("Broadly extended", "整体偏高位")
+      : lower.length >= Math.ceil(n * 0.4) ? t("Lower-cycle clustering", "周期低位聚集")
+      : t("Mixed cycle map", "周期位置分化");
+
+    var dispersion = sd >= 22 ? t("wide", "较宽")
+      : sd >= 13 ? t("moderate", "适中") : t("tight", "较窄");
+    var summary = t(
+      highs.length + " of " + n + " markets are near cycle highs; " +
+        lower.length + " are lower-cycle or washed-out. Dispersion is " + dispersion +
+        ". This is a distribution, not a fused global risk score.",
+      n + " 个市场中有 " + highs.length + " 个接近周期高位；" +
+        lower.length + " 个处于周期低位或深度回落。当前离散度" + dispersion +
+        "。这里展示的是分布，不是融合后的全球风险评分。"
+    );
+
+    var asof = ((window.MARKETS_ENGINE || {}).as_of || META.asOf || "");
+    document.getElementById("global-regime-pulse-label").textContent = label;
+    document.getElementById("global-regime-pulse-summary").textContent = summary;
+    document.getElementById("global-regime-pulse-asof").textContent =
+      t("through ", "截至 ") + asof;
+
+    var metrics = document.getElementById("global-regime-pulse-metrics");
+    metrics.innerHTML =
+      '<span><b>' + highs.length + ' / ' + n + '</b>' + t(" near highs", " 高位") + '</span>' +
+      '<span><b>' + lower.length + ' / ' + n + '</b>' + t(" lower cycle", " 低位") + '</span>' +
+      '<span><b>σ ' + sd.toFixed(0) + '</b>' + t(" dispersion", " 离散度") + '</span>' +
+      '<span><b>' + engineN + ' / ' + n + '</b>' + t(" engine-backed", " 引擎数据") + '</span>';
+
+    var track = document.getElementById("global-regime-pulse-track");
+    track.innerHTML = points.map(function (x) {
+      var src = x.source === "engine" ? "engine" : "estimate";
+      var srcLabel = x.source === "engine" ? t("engine-backed", "引擎数据") : t("analyst estimate", "分析师估算");
+      var aria = shrt(x.c) + " · " + x.p + " / 100 · " + srcLabel;
+      return '<button class="grp-dot ' + src + '" data-id="' + x.c.id +
+        '" data-source="' + src + '" style="left:' + x.p + '%" aria-label="' + aria +
+        '" title="' + aria + '"><span></span></button>';
+    }).join("");
+
+    function bucket(titleEn, titleZh, items) {
+      return '<div class="grp-bucket"><b>' + t(titleEn, titleZh) + '</b><div>' +
+        items.map(function (x) {
+          var src = x.source === "engine" ? "engine" : "estimate";
+          return '<button class="grp-market-chip ' + src + '" data-id="' + x.c.id +
+            '" data-source="' + src + '">' + shrt(x.c) + ' <span>' + x.p + '</span></button>';
+        }).join("") + '</div></div>';
+    }
+    var buckets = document.getElementById("global-regime-pulse-buckets");
+    buckets.innerHTML =
+      bucket("Extended", "高位拉伸", points.filter(function (x) { return x.p >= 78; })) +
+      bucket("Mid-cycle", "周期中段", points.filter(function (x) { return x.p > 45 && x.p < 78; })) +
+      bucket("Lower cycle", "周期低位", points.filter(function (x) { return x.p <= 45; }));
+
+    host.querySelectorAll("[data-id]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setFocus(button.getAttribute("data-id"));
+        if (window.innerWidth <= 880) expandSheet(true);
+      });
+    });
+  }
+
   /* ---- VALUATION map ----------------------------------------------------- */
   function renderScatter() {
     var host = document.getElementById("mkt-scatter");
@@ -682,13 +759,9 @@
       return '<div class="xc-row"><div class="xc-rh">' + title + '<span>' + note + '</span></div><div class="xc-chips">' + chips + '</div></div>';
     }
     def.innerHTML = '' +
-      '<div class="cyc-grp cyc-grp-full">' +
-        '<div class="cyc-lbl">' + t("Global-equity regime · ", "全球股市格局 · ") + META.asOf + (regField("asOfNote") ? ' · <span style="text-transform:none;letter-spacing:0;font-weight:500">' + regField("asOfNote") + '</span>' : '') + '</div>' +
-        '<div class="rg-head"><div class="rg-label">' + regField("label") + '</div><div class="rg-sub">' + regField("sub") + '</div></div>' +
-        '<p class="rg-headline">' + regField("headline") + '</p>' +
-      '</div>' +
       '<div class="cyc-grp cyc-grp-3">' +
-        '<div class="cyc-lbl">' + t("Conditions", "宏观条件") + '</div>' +
+        '<div class="cyc-lbl">' + t("Macro context · curated", "宏观背景 · 精选") + '</div>' +
+        (regField("asOfNote") ? '<p class="rg-context-note">' + regField("asOfNote") + '</p>' : '') +
         '<div class="rg-stats">' + stats + '</div>' +
         '<p class="rg-tilt">' + regField("tilt") + '</p>' +
       '</div>' +
@@ -754,6 +827,7 @@
     mountCards();
     renderSnapSort(); renderSnapshot(); renderDispersion();
     renderScatter();
+    renderGlobalPulse();
     buildDefaultPanel();
     renderStalenessBanner();
     applyGroupFilter();
@@ -767,6 +841,7 @@
     if (!META || !CYCLES) return;
     mountChips();
     mountHero();
+    renderGlobalPulse();
     buildDefaultPanel();
     renderSnapSort();
     mountSnapshot();
