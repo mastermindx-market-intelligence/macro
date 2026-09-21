@@ -67,8 +67,9 @@ _auth_error: dict | None = None
 
 # Latest failure before the vendor returned any HTTP response, or None. This is deliberately
 # separate from _auth_error: a DNS/connection/TLS outage says nothing about the credential or
-# account tier. Cleared as soon as requests.post returns a response — even an HTTP/vendor error
-# proves the runner reached the vendor transport.
+# account tier. It persists for one caller-owned diagnostic window — later HTTP success proves
+# reachability at that moment but does not erase earlier intermittent failure from the same pass.
+# ``clear_transport_error()`` is the sole reset boundary between consumers/runs.
 _transport_error: dict | None = None
 
 
