@@ -73,7 +73,8 @@ def test_hub_hero_describes_a_snapshot_not_the_viewers_clock(monkeypatch) -> Non
     blob = [{"cc": "US", "macro_asof": "2026-09-18"}]
     monkeypatch.setattr(build_vector, "_globe_markets", lambda: blob)
     monkeypatch.setattr(build_vector, "_g_legend", lambda _blob: "")
-    monkeypatch.setattr(build_vector, "_standout_tickers", lambda _key: [])
+    # _hub_html reads _standout_labels (not _standout_tickers) as of this head.
+    monkeypatch.setattr(build_vector, "_standout_labels", lambda _key: [])
     monkeypatch.setattr(build_vector, "_latest_report_data", lambda: None)
     monkeypatch.setattr(build_vector, "_g_markets", lambda *_a, **_k: "")
     monkeypatch.setattr(build_vector, "_g_vectors", lambda *_a, **_k: "")
@@ -95,6 +96,17 @@ def test_hub_hero_describes_a_snapshot_not_the_viewers_clock(monkeypatch) -> Non
     assert "setInterval(tick" not in html
     assert "setInterval" not in html
     assert "live macro dashboard" not in html.lower()
+
+
+def test_hub_html_calls_standout_labels_not_tickers() -> None:
+    """RED on a3cc6de0: glance-copy test patched _standout_tickers, a dead seam.
+
+    _hub_html now walks _standout_labels so CN/HK chips can carry company names.
+    """
+    import inspect
+    src = inspect.getsource(build_vector._hub_html)
+    assert "_standout_labels(_key)" in src
+    assert "_standout_tickers(_key)" not in src
 
 
 _START_HTML = Path(__file__).resolve().parents[1] / "site" / "start.html"

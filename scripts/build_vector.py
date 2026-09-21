@@ -3164,12 +3164,12 @@ _HUB_BOND_LABEL = {
 def _hub_risk_chip(vm: dict) -> tuple[str, str, str, str]:
     """Glance + tip for the Bitcoin Vector risk chip.
 
-    Producer: engine/btc_signals.risk — risk_index is 0..100 (0 calm, 100 max
-    stress); risk_on means the tape is in the low-stress / risk-taking regime
-    (vm['risk_label'] is already 'Low Risk' / 'High Risk').
+    Glance is main's later copy ("Risk on" / "风险偏好"). Producer
+    engine/btc_signals.risk — risk_index is 0..100 (0 calm, 100 max stress);
+    the H1 scale lives in the hover, never as the rest-state face.
     """
     on = bool(vm.get("risk_on"))
-    glance_en, glance_zh = ("Low risk", "低风险") if on else ("High risk", "高风险")
+    glance_en, glance_zh = ("Risk on", "风险偏好") if on else ("Risk off", "风险规避")
     idx = vm.get("risk_index")
     idx_s = str(idx) if idx is not None else "—"
     if on:
@@ -3177,12 +3177,12 @@ def _hub_risk_chip(vm: dict) -> tuple[str, str, str, str]:
                   "Risk-on means the Bitcoin tape is in a low-stress, "
                   "risk-taking regime.")
         tip_zh = (f"风险指数 {idx_s}/100（0 为平静，100 为最大压力）。"
-                  "风险开启表示比特币处于低压力、可承担风险的状态。")
+                  "风险偏好表示比特币处于低压力、可承担风险的状态。")
     else:
         tip_en = (f"Risk index {idx_s}/100 (0 = calm, 100 = max stress). "
                   "Risk-off means the Bitcoin tape is in a high-stress regime.")
         tip_zh = (f"风险指数 {idx_s}/100（0 为平静，100 为最大压力）。"
-                  "风险关闭表示比特币处于高压力状态。")
+                  "风险规避表示比特币处于高压力状态。")
     return glance_en, glance_zh, tip_en, tip_zh
 
 
@@ -3198,18 +3198,16 @@ def _hub_mom_chip(vm: dict) -> tuple[str, str, str, str]:
     except (TypeError, ValueError):
         m = None
     if m is None:
-        return ("Momentum: no reading yet", "动量：暂无读数",
+        return ("Momentum unavailable", "动量暂缺",
                 "Momentum reading unavailable.", "动量读数暂缺。")
-    if m > 0.5:
-        glance_en, glance_zh = "Strong up-momentum", "动量偏强向上"
-    elif m < -0.5:
-        glance_en, glance_zh = "Strong down-momentum", "动量偏强向下"
-    elif m > 0:
-        glance_en, glance_zh = "Mild up-momentum", "动量温和向上"
+    # Glance matches main's later face (sign only). |score| > 0.5 is the
+    # engine's 'Strong' cut and lives in the hover, not the rest-state chip.
+    if m > 0:
+        glance_en, glance_zh = "Momentum positive", "动量偏强"
     elif m < 0:
-        glance_en, glance_zh = "Mild down-momentum", "动量温和向下"
+        glance_en, glance_zh = "Momentum negative", "动量偏弱"
     else:
-        glance_en, glance_zh = "Flat momentum", "动量持平"
+        glance_en, glance_zh = "Momentum flat", "动量持平"
     tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble of up to eight votes "
               "(EMA trend, EMA cross, MACD, 200-day SMA, 20-day ROC, RSI; "
               "SOPR and short-term holder cost only when chain data is present). "
@@ -3252,11 +3250,11 @@ def _hub_health_chip(bonds: dict | None) -> tuple[str, str, str, str] | None:
     lab_en, lab_zh = _HUB_BOND_LABEL[label]
     phase = str(b.get("phase") or "").strip().lower()
     pw_en, pw_zh = _HUB_BOND_PHASE.get(phase, ("", ""))
-    glance_en = lab_en + ((" · " + pw_en) if pw_en else "")
-    glance_zh = lab_zh + ((" · " + pw_zh) if pw_zh else "")
+    # Glance is main's later face; H1 label · phase lives in the hover.
+    glance_en, glance_zh = "Bond health", "债券健康"
     tip_en = (f"Bond health {hs}/100 (healthy ≥ {healthy_cut}, "
-              f"stressed < {stressed_cut}).")
-    tip_zh = (f"债券健康度 {hs}/100（健康 ≥ {healthy_cut}，承压 < {stressed_cut}）。")
+              f"stressed < {stressed_cut}). {lab_en}.")
+    tip_zh = (f"债券健康度 {hs}/100（健康 ≥ {healthy_cut}，承压 < {stressed_cut}）。{lab_zh}。")
     if phase == "late":
         tip_en += " Late-cycle: credit is tight or the yield curve is flattening."
         tip_zh += " 周期晚段：信用偏紧或收益率曲线走平。"
@@ -3304,21 +3302,10 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
                 '<h3 class="card-h"><span class="ch-full">' + _bi(h_en, h_zh) + '</span><span class="ch-mini">' + _bi(h_en_s, h_zh_s) + '</span></h3></div>' + body
                 + '<span class="go"><span class="go-tx">' + _bi(go_en, go_zh) + '</span></span></a>')
 
-    # Main later glance ("Risk on" / "Momentum positive") stays the card face;
-    # H1 scale readings live in the hover, never as raw rest-state chips.
-    _, _, r_tip_en, r_tip_zh = _hub_risk_chip(vm)
-    _, _, m_tip_en, m_tip_zh = _hub_mom_chip(vm)
-    _risk_en = "Risk on" if vm["risk_on"] else "Risk off"
-    _risk_zh = "风险偏好" if vm["risk_on"] else "风险规避"
-    _mom = vm.get("momentum")
-    if _mom is None:
-        _mom_en, _mom_zh = "Momentum unavailable", "动量暂缺"
-    elif _mom > 0:
-        _mom_en, _mom_zh = "Momentum positive", "动量偏强"
-    elif _mom < 0:
-        _mom_en, _mom_zh = "Momentum negative", "动量偏弱"
-    else:
-        _mom_en, _mom_zh = "Momentum flat", "动量持平"
+    # Glance is the helper first pair (main's later copy). H1 scale readings
+    # live in the hover, never as raw rest-state chips.
+    _risk_en, _risk_zh, r_tip_en, r_tip_zh = _hub_risk_chip(vm)
+    _mom_en, _mom_zh, m_tip_en, m_tip_zh = _hub_mom_chip(vm)
     btc = ('<div class="chips"><span class="pill ' + risk_cls + '"'
            + _tip_attrs(r_tip_en, r_tip_zh) + '>' + _bi(_risk_en, _risk_zh)
            + '</span><span class="pill ' + mom_cls + '"'
@@ -3329,8 +3316,12 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
     # decoration on the glance tier and could leak untranslated phase strings in ZH.
     # H1 scale/phase copy is the hover, not the glance face.
     health = _hub_health_chip(bonds)
-    bd_tip = _tip_attrs(health[2], health[3]) if health is not None else ""
-    bd = '<div class="chips"><span class="pill"' + bd_tip + '>' + _bi("Bond health", "债券健康") + '</span></div>'
+    if health is not None:
+        bd = ('<div class="chips"><span class="pill"'
+              + _tip_attrs(health[2], health[3]) + '>'
+              + _bi(health[0], health[1]) + '</span></div>')
+    else:
+        bd = '<div class="chips"><span class="pill">' + _bi("Bond health", "债券健康") + '</span></div>'
     com_label = (commodities or {}).get("label", "—")
     com_q = _GQUAD_CLS.get(com_label, "")   # tint the pill by regime quadrant (was a no-op guard)
     # zh users previously saw the English regime word ("Goldilocks") — translate it

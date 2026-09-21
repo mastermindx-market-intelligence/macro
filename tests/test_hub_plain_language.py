@@ -1,19 +1,25 @@
 """start.html Tier-1 plain-language pins (H1).
 
 Producer-level string composition for the signed-in hub: the what-changed
-receipt, Other Features chips, China/HK stock-card labels, the IPO lock-up
-line, and the hero live-clock skeleton. Full-page render is skipped in a
+receipt, Explore chips, China/HK stock-card labels, the IPO lock-up
+line, and the hero snapshot clock-wrap. Full-page render is skipped in a
 sparse tree (no data/ / site/).
 """
 from __future__ import annotations
 
 import inspect
 import json
+from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from scripts import build_vector as bv
+
+_EVIDENCE_README = (
+    Path(__file__).resolve().parents[1]
+    / "mockups" / "evidence" / "start-tier1-pass" / "README.md"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -90,32 +96,36 @@ def test_hub_feed_alert_view_does_not_pass_stored_message_zh():
 
 
 # ---------------------------------------------------------------------------
-# P2 — Other Features chips
+# P2 — Explore chips
 # ---------------------------------------------------------------------------
 
 def test_hub_risk_chip_plain_words_demote_index():
     en, zh, tip_en, tip_zh = bv._hub_risk_chip(
         {"risk_on": True, "risk_word": "ON", "risk_index": 2})
-    assert en == "Low risk"
-    assert zh == "低风险"
+    assert en == "Risk on"
+    assert zh == "风险偏好"
     assert "Risk ON" not in en and "Risk ON" not in zh
+    assert "Low risk" not in en
     assert "2/100" in tip_en and "2/100" in tip_zh
     assert "0 = calm" in tip_en
     assert "低压力" in tip_zh
+    assert "风险偏好" in tip_zh and "风险开启" not in tip_zh
 
 
 def test_hub_mom_chip_uses_minus1_to_plus1_scale():
     en, zh, tip_en, tip_zh = bv._hub_mom_chip({"momentum": 0.63})
-    assert en == "Strong up-momentum"
-    assert zh == "动量偏强向上"
+    assert en == "Momentum positive"
+    assert zh == "动量偏强"
     assert "Mom 0.63" not in en
+    assert "Strong up-momentum" not in en
     assert "0.63" in tip_en and "0.63" in tip_zh
     assert "−1 to +1" in tip_en or "-1 to +1" in tip_en
     assert "−1 到 +1" in tip_zh or "-1 到 +1" in tip_zh
+    assert "above 0.5 is strong" in tip_en
 
     down, down_zh, _, _ = bv._hub_mom_chip({"momentum": -0.8})
-    assert down == "Strong down-momentum"
-    assert down_zh == "动量偏强向下"
+    assert down == "Momentum negative"
+    assert down_zh == "动量偏弱"
 
     # Vote roster is the engine's actual momentum votes (engine/btc_signals.py
     # momentum(): ema_trend, ema_cross, macd_hist, sma200, roc20, rsi_zone,
@@ -135,21 +145,22 @@ def test_hub_mom_chip_uses_minus1_to_plus1_scale():
 
 def test_hub_mom_chip_unavailable_is_a_worded_null():
     en, zh, tip_en, tip_zh = bv._hub_mom_chip({"momentum": None})
-    assert en == "Momentum: no reading yet"
-    assert zh == "动量：暂无读数"
+    assert en == "Momentum unavailable"
+    assert zh == "动量暂缺"
     assert en != "Momentum" and zh != "动量"
     assert "unavailable" in tip_en.lower()
     empty_en, empty_zh, _, _ = bv._hub_mom_chip({})
-    assert empty_en == "Momentum: no reading yet"
-    assert empty_zh == "动量：暂无读数"
+    assert empty_en == "Momentum unavailable"
+    assert empty_zh == "动量暂缺"
 
 
 def test_hub_health_chip_states_scale_and_late_cycle():
     out = bv._hub_health_chip({"score": 88, "phase": "late", "label": "healthy"})
     assert out is not None
     en, zh, tip_en, tip_zh = out
-    assert en == "Healthy · late-cycle"
-    assert zh == "健康 · 周期晚段"
+    assert en == "Bond health"
+    assert zh == "债券健康"
+    assert "Healthy · late-cycle" not in en
     assert "Health 88" not in en
     assert "88/100" in tip_en and "88/100" in tip_zh
     assert "healthy ≥ 67" in tip_en
@@ -182,6 +193,63 @@ def test_g_vectors_chips_carry_lens_tips():
     assert "动量暂缺" in null_html
     assert ">Momentum<" not in null_html
     assert "Momentum reading unavailable." in null_html
+
+
+def test_hub_chip_helpers_return_main_glance_not_h1_face():
+    """RED on a3cc6de0: helpers returned H1 face strings that _g_vectors discarded.
+
+    That head's _hub_risk_chip / _hub_mom_chip / _hub_health_chip first pair
+    was "Low risk" / "Strong up-momentum" / "Healthy · late-cycle". A later
+    caller that used the first pair on the card face would regress main's
+    glance ("Risk on" / "Momentum positive" / "Bond health").
+    """
+    vm = {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": 0.63}
+    r_en, r_zh, _, _ = bv._hub_risk_chip(vm)
+    m_en, m_zh, _, _ = bv._hub_mom_chip(vm)
+    h = bv._hub_health_chip({"score": 88, "phase": "late", "label": "healthy"})
+    assert r_en == "Risk on" and r_zh == "风险偏好"
+    assert m_en == "Momentum positive" and m_zh == "动量偏强"
+    assert h is not None
+    assert h[0] == "Bond health" and h[1] == "债券健康"
+    assert r_en != "Low risk" and r_zh != "低风险"
+    assert m_en != "Strong up-momentum"
+    assert h[0] != "Healthy · late-cycle"
+
+
+def test_hub_risk_chip_zh_face_and_hover_share_one_name():
+    """RED on a3cc6de0: ZH face said 风险偏好 while the hover said 风险开启.
+
+    Same state, two names. Face and hover must share main's glance noun.
+    """
+    on_en, on_zh, on_tip_en, on_tip_zh = bv._hub_risk_chip(
+        {"risk_on": True, "risk_word": "ON", "risk_index": 2})
+    off_en, off_zh, off_tip_en, off_tip_zh = bv._hub_risk_chip(
+        {"risk_on": False, "risk_word": "OFF", "risk_index": 81})
+    assert on_en == "Risk on" and on_zh == "风险偏好"
+    assert off_en == "Risk off" and off_zh == "风险规避"
+    assert "风险偏好" in on_tip_zh and "风险开启" not in on_tip_zh
+    assert "风险规避" in off_tip_zh and "风险关闭" not in off_tip_zh
+    assert "Risk-on" in on_tip_en and "Risk-off" in off_tip_en
+
+
+def test_g_vectors_uses_chip_helper_first_pair():
+    """RED on a3cc6de0: _g_vectors unpacked _, _, tip and wrote its own face.
+
+    The card face must be the helper first pair so the two cannot drift.
+    """
+    src = inspect.getsource(bv._g_vectors)
+    assert "_, _, r_tip_en, r_tip_zh = _hub_risk_chip(vm)" not in src
+    assert "_, _, m_tip_en, m_tip_zh = _hub_mom_chip(vm)" not in src
+    vm = {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": 0.63}
+    r_en, r_zh, _, _ = bv._hub_risk_chip(vm)
+    m_en, m_zh, _, _ = bv._hub_mom_chip(vm)
+    html = bv._g_vectors(
+        vm, None, None, {"score": 88, "phase": "late", "label": "healthy"},
+        None, None, None, None)
+    assert r_en in html and r_zh in html
+    assert m_en in html and m_zh in html
+    assert "Low risk" not in html
+    assert "Healthy · late-cycle" not in html
 
 
 # ---------------------------------------------------------------------------
@@ -423,6 +491,27 @@ def _what_changed_alert(i=0):
         "detail_zh": "周期状态由「新周期」转为「转换中」",
         "link": "macro.html",
     }
+
+
+@pytest.mark.skipif(
+    not _EVIDENCE_README.exists(),
+    reason="sparse tree: start-tier1 evidence README is skip-worktree",
+)
+def test_start_tier1_evidence_readme_describes_this_head():
+    """RED on a3cc6de0: README still framed r3 H1 Other Features / Low risk.
+
+    The packet must describe this head's Explore band, Risk on / Bond health
+    glance, de-emoji bonds card, and snapshot clock word.
+    """
+    text = _EVIDENCE_README.read_text(encoding="utf-8")
+    assert "Explore" in text
+    assert "Risk on" in text
+    assert "Bond health" in text
+    assert "Latest market snapshot" in text
+    assert "Other Features" not in text
+    assert "OTHER FEATURES" not in text
+    assert "Low risk" not in text
+    assert "Healthy · late-cycle" not in text
 
 
 def test_what_changed_chip_singular_and_plural_en():
