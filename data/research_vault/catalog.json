@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T02:31:25.990637+00:00",
-  "count": 2539,
+  "generated_at": "2026-09-21T02:46:28.840893+00:00",
+  "count": 2540,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -564,6 +564,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tlapbjzly98-81ee53",
+      "title": "MC FED 09 26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-20T03:40:57Z",
+      "summary_points": [
+        "Fed Hawkish Action & Geopolitical Risk: Fed raised rates to 3.75%-4%, signaling further hikes; Middle East tensions elevate uncertainty but domestic spending remains resilient amid solid economic expansion.",
+        "Inflation Sticky Despite Policy Signals: Core PCE at 3.2% (Aug) drives elevated inflation; Fed targets \"timelier return\" to 2% but markets price excessive 2027 hikes amid sticky risks.",
+        "FOMC Data: Core PCE & Growth: Unanimous 2023 hike decision (12/16 participants), 8 members favor 2027 hike; growth revised up, unemployment at 4.1%, core PCE 3.2% (Aug)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
