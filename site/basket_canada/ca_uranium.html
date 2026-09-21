@@ -1418,7 +1418,7 @@ function render(){
     </tr>`;}).join('');
   const nBoard=mem.filter(m=>m.on_board).length;
   h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
-  <div class="panel"><div class="ts"><table id="hold">
+  <div class="panel"><div class="ts tbl-scroll"><table id="hold">
     <caption class="hold-sr-only">${L('Holdings. Column buttons change sort order. Potential uses research priority rather than numeric score order.','成分股。列标题按钮可改变排序。潜力列采用研究优先顺序，而非简单数值排序。')}</caption>
     <colgroup><col class="hold-stock"><col class="hold-potential"><col class="hold-verdict"><col class="hold-entry"><col class="hold-20d"></colgroup>
     <thead><tr><th scope="col">${L('Stock','个股')}</th>${holdSortHeader('recommend','Potential','潜力','hold-potential')}<th scope="col">${L('Verdict','结论')}</th><th scope="col" class="hold-entry">${L('Entry now','入场时机')}</th>${holdSortHeader('r20','20d','20日','hold-20d')}</tr></thead>
