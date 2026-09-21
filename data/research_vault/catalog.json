@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T19:18:45.971223+00:00",
-  "count": 2588,
+  "generated_at": "2026-09-21T19:33:43.388189+00:00",
+  "count": 2589,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-hkwwlrogdln-f5e2cd",
+      "title": "GS MidDay Color US Equities Mid Day Color 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:19:27Z",
+      "summary_points": [
+        "Geopolitical catalyst: UN General Assembly optimism and US-China talks ahead of Trump/Xi summit drove AI/tech rally (NDX +237bps), with META (+8.9%) and NeoClouds (+580bps) leading; US equities saw largest net buying in five weeks (+0.9 SDs 1-year).",
+        "Retail flow momentum: Broad-based gains (325 SPX names green) fueled by retail pockets (GSCB) and AI themes, improving market breadth amid strong tech outperformance.",
+        "Short squeeze risk: High beta 12m losers (+183bps) and rolling short GSCBMSAL (+185bps) signal heightened vulnerability as AI/tech surges accelerate momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-f4gxuf5mmau-53a7ed",
       "title": "Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
