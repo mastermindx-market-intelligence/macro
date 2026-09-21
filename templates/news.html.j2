@@ -37,7 +37,8 @@
 {# ---- release board / calendar / odds (null-safe) ------------------------ #}
 {% set releases = (macro_releases.get('cards') if macro_releases is mapping else none) %}
 {% set releases = ((releases if releases is iterable and releases is not string else [])|select('mapping')|list) %}
-{% set catalysts = (macro_catalysts if macro_catalysts is iterable and macro_catalysts is not string else []) %}
+{% set _cats_unknown = macro_catalysts is none %}
+{% set catalysts = [] if _cats_unknown else (macro_catalysts if macro_catalysts is iterable and macro_catalysts is not string else []) %}
 {% set estrip = (event_strip if event_strip is iterable and event_strip is not string else []) %}
 {% set pmkts = (prediction_markets.events if prediction_markets is mapping and prediction_markets.events else []) %}
 
@@ -949,7 +950,12 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   </main>
 
   <aside class="nx-rail">
-    {% if catalysts or estrip %}
+    {% if _cats_unknown %}
+    <div class="nx-rail-card">
+      <div class="nx-rail-hd">{{ t('Calendar ahead','未来日程') }}</div>
+      <div class="nx-rail-note">{{ t('Watch — this read is being updated.','观望——该读数更新中。') }}</div>
+    </div>
+    {% elif catalysts or estrip %}
     <div class="nx-rail-card">
       <div class="nx-rail-hd">{{ t('Calendar ahead','未来日程') }}</div>
       {% for c in catalysts[:5] %}
@@ -959,7 +965,11 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       {% for s in estrip[:5] %}
       <div class="nx-line"><span class="d">{{ s.dow }} {{ s.md }}</span><span class="lbl">{{ t(s.label|e, (s.label_zh or s.label)|e) }}</span></div>
       {% endfor %}
-      {% if not catalysts and not estrip %}<div class="nx-rail-note">{{ t('No scheduled events in the window.','窗口内暂无排定事件。') }}</div>{% endif %}
+    </div>
+    {% else %}
+    <div class="nx-rail-card">
+      <div class="nx-rail-hd">{{ t('Calendar ahead','未来日程') }}</div>
+      <div class="nx-rail-note">{{ t('No scheduled events in the window.','窗口内暂无排定事件。') }}</div>
     </div>
     {% endif %}
 

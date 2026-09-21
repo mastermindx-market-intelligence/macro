@@ -298,6 +298,137 @@ def _live_entries() -> list[dict]:
     return entries
 
 
+P5_FIXTURES = ROOT / "tests" / "fixtures" / "macro_command_p5"
+_E2_AVAILABILITY = frozenset({"SOURCE_FAILED", "STALE_SOURCE"})
+
+
+def _load_p5_fixture(name: str) -> dict:
+    return json.loads((P5_FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def _fixture_entries(snapshots: dict) -> list[dict]:
+    entries = []
+    for page in builder.SUITE_PAGES:
+        identity = builder._identity(page)
+        snap = snapshots.get(page.workspace_id)
+        entries.append({
+            "workspace_id": page.workspace_id,
+            "region": page.region,
+            "output": page.output,
+            "title": identity["title"],
+            "subtitle": identity["subtitle"],
+            "snapshot": snap,
+            "failure": None if snap else {"kind": "NOT_COVERED"},
+        })
+    return entries
+
+
+def _bake_hub(entries: list[dict], tmp_path: Path) -> tuple[str, Path]:
+    out = tmp_path / "site"
+    env = builder._environment(ROOT)
+    dest = builder.build_hub(
+        entries, out_dir=out, env=env, page_built_at=BUILT_AT, root=ROOT)
+    return dest.read_text(encoding="utf-8"), out
+
+
+def _workspace_snapshot(workspace_id: str) -> dict:
+    path = DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _reading_present(value: object) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _json_has_comparable_rows(snap: dict) -> bool:
+    changes = snap.get("changes") or {}
+    if changes.get("comparability") != "COMPARABLE":
+        return False
+    for delta in changes.get("deltas") or []:
+        if all(_reading_present(delta.get(key)) for key in (
+                "prior_value", "current_value", "delta")):
+            return True
+    return False
+
+
+def _stance_snapshot_for(section_id: str) -> tuple[str, dict]:
+    section = next(item for item in builder.SECTIONS if item.id == section_id)
+    if section.subtabs:
+        for tab in section.subtabs:
+            snap = _workspace_snapshot(tab.workspace_id)
+            if (snap.get("headline") or {}).get("status") == "PRESENT":
+                return tab.workspace_id, snap
+        first = section.subtabs[0]
+        return first.workspace_id, _workspace_snapshot(first.workspace_id)
+    assert section.workspace_id
+    return section.workspace_id, _workspace_snapshot(section.workspace_id)
+
+
+def _json_empty_voice(snap: dict) -> str | None:
+    """Empty-card id from the workspace JSON. None means the stance stays.
+
+    STALE_SOURCE and SOURCE_FAILED are E2 even when deltas exist. No date
+    and no comparable rows, and not a structural not-applicable, is E1.
+    Anything else with no comparable rows is E3.
+    """
+    state = (snap.get("availability") or {}).get("state")
+    if state in _E2_AVAILABILITY:
+        return "e2"
+    headline = snap.get("headline") or {}
+    if _json_has_comparable_rows(snap):
+        return None
+    if not headline.get("effective_date") and headline.get("null_reason") != "NOT_APPLICABLE":
+        return "e1"
+    return "e3"
+
+
+def _json_state_key(snap: dict) -> str:
+    headline = snap.get("headline") or {}
+    if headline.get("status") == "PRESENT" and headline.get("state_id"):
+        return str(headline["state_id"])
+    if headline.get("null_reason") == "NOT_APPLICABLE":
+        return "unstated"
+    return "unavailable"
+
+
+def _json_input_note(section_id: str) -> str | None:
+    section = next(item for item in builder.SECTIONS if item.id == section_id)
+    workspaces = (
+        [tab.workspace_id for tab in section.subtabs]
+        if section.subtabs else [section.workspace_id]
+    )
+    notes = []
+    for workspace_id in workspaces:
+        if not workspace_id:
+            continue
+        view = builder._workspace_view(
+            _workspace_snapshot(workspace_id),
+            workspace_id=workspace_id, page_built_at=BUILT_AT)
+        notes.append(builder._input_note_from_view(view))
+    pair = builder._input_note_pair(*notes)
+    if pair == L.FOOT["stale"]:
+        return "stale"
+    if pair == L.FOOT["disagree"]:
+        return "disagree"
+    return None
+
+
+def _apply_force_spec(snap: dict, spec: dict, *, tab_id: str | None,
+                      section_id: str) -> None:
+    """Overlay a committed empty-state fixture onto one workspace snapshot."""
+    if "availability" in spec:
+        snap.setdefault("availability", {}).update(spec["availability"])
+    if "headline" in spec:
+        snap.setdefault("headline", {}).update(spec["headline"])
+    if "changes" in spec:
+        snap.setdefault("changes", {}).update(spec["changes"])
+    if spec.get("withhold_command_tab") and tab_id:
+        snap["withheld_command_tabs"] = [tab_id]
+    entitlement = spec.get("entitlement")
+    if entitlement:
+        snap["entitlement"] = str(entitlement).format(section_id=section_id)
+
+
 def test_copy_ids_is_the_twelve_and_primers_stay_the_first_three() -> None:
     assert builder.COPY_IDS == frozenset({
         "overview", "money", "policy", "rates", "inflation",
@@ -427,39 +558,66 @@ def test_financial_conditions_a_c_match_composer_quadrants() -> None:
 
 
 def test_live_page_carries_every_emitted_p4_string(built: tuple[str, Path]) -> None:
-    html, _ = built
+    """Every P4 panel carries the copy its workspace JSON actually published.
+
+    Question, primer and the two watch lines are state-independent. The
+    stance sentence is the letter, unstated, or unavailable key on that
+    JSON, unless freshness or a dateless gap replaced it with an empty
+    card. The foot note is the stale/disagree decision on that JSON.
+    """
+    html, out = built
     plain = unescape(html)
-    live = {
-        "growth": "stance.B",
-        "jobs": "stance.B",
-        "housing": "stance.unavailable",
-        "consumer": "stance.B",
-        "credit": "stance.B",
-        "debt": "stance.unavailable",
-        "trade": "stance.unstated",
-    }
-    for section_id, stance_key in live.items():
+    for section_id in P4_IDS:
+        _workspace_id, snap = _stance_snapshot_for(section_id)
+        voice = _json_empty_voice(snap)
         panel = unescape(_panel(plain, section_id))
-        keys = ["question", stance_key, "primer", "watch.1", "watch.2"]
-        # I4 drops the caption on current-only figures; the state line lives
-        # in the fragment for sub-tabbed sections, so do not require caption
-        # on the hub panel. The I4 tests pin the drop.
-        if 'class="mc-caption' in panel:
-            keys.append("caption")
-        for key in keys:
+        state_key = None if voice else _json_state_key(snap)
+        print(
+            f"p4 copy branch section={section_id} "
+            f"voice={voice or 'stance'} key={state_key}")
+        for key in ("question", "primer", "watch.1", "watch.2"):
             en, zh = _PINNED[(section_id, key)]
             assert en in panel, (section_id, key, en)
             assert zh in panel, (section_id, key, zh)
-        if 'class="mc-caption' not in panel:
+        if 'class="mc-caption' in panel:
+            en, zh = _PINNED[(section_id, "caption")]
+            assert en in panel, (section_id, en)
+            assert zh in panel, (section_id, zh)
+        else:
             assert "Each row shows the last two readings" not in panel
-            assert "compared against the previous publication" not in panel
-    assert _PINNED[("FOOT", "disagree")][0] in unescape(_panel(plain, "growth"))
-    assert _PINNED[("FOOT", "disagree")][1] in unescape(_panel(plain, "growth"))
-    assert _PINNED[("FOOT", "stale")][0] in unescape(_panel(plain, "consumer"))
-    assert _PINNED[("FOOT", "stale")][1] in unescape(_panel(plain, "consumer"))
-    inflation = unescape(_panel(plain, "inflation"))
-    assert _PINNED[("FOOT", "stale")][0] in inflation
-    assert _PINNED[("FOOT", "disagree")][0] not in inflation
+        if voice:
+            fragment = unescape(
+                (out / "macro" / "fragments" / f"{section_id}.html")
+                .read_text(encoding="utf-8"))
+            title = L.EMPTY_STATES[voice]["title"]
+            assert f'data-mc-empty="{voice}"' in fragment, (section_id, voice)
+            assert title["en"] in fragment, (section_id, voice)
+            assert title["zh"] in fragment, (section_id, voice)
+            assert 'class="mc-stance' not in panel, section_id
+            assert title["en"] not in panel, (section_id, voice)
+        else:
+            assert state_key is not None
+            en, zh = _PINNED[(section_id, f"stance.{state_key}")]
+            assert en in panel, (section_id, state_key, en)
+            assert zh in panel, (section_id, state_key, zh)
+            for other in (*QUADRANTS, "unavailable", "unstated"):
+                if other == state_key:
+                    continue
+                pinned = _PINNED.get((section_id, f"stance.{other}"))
+                if pinned:
+                    assert pinned[0] not in panel, (section_id, other)
+    for section_id in (*P4_IDS, "inflation"):
+        note = _json_input_note(section_id)
+        panel = unescape(_panel(plain, section_id))
+        print(f"p4 foot branch section={section_id} note={note}")
+        if note:
+            en, zh = _PINNED[("FOOT", note)]
+            assert en in panel, (section_id, note)
+            assert zh in panel, (section_id, note)
+        other = {"stale": "disagree", "disagree": "stale"}.get(note or "", None)
+        absent = [other] if other else ["stale", "disagree"]
+        for key in absent:
+            assert _PINNED[("FOOT", key)][0] not in panel, (section_id, key)
 
 
 def test_quadrant_copy_that_is_not_live_today_is_on_the_view() -> None:
@@ -521,12 +679,59 @@ def test_boundary_axis_conditions_impulse_is_in_the_metric_pool() -> None:
     builder._require_metric("conditions_level")
 
 
+def test_consumer_b_fixture_tone_is_warn(tmp_path: Path) -> None:
+    """Stance B on a current consumer snapshot is the warn tone, EN and ZH."""
+    snapshot = _load_p5_fixture("consumer_stance_b.json")
+    assert snapshot["availability"]["state"] == "CURRENT"
+    assert snapshot["headline"]["state_id"] == "B"
+    html, _out = _bake_hub(
+        _fixture_entries({"consumer_payments": snapshot}), tmp_path)
+    consumer = unescape(_panel(html, "consumer"))
+    print("consumer tone branch=fixture-B")
+    assert _PINNED[("consumer", "stance.B")][0] in consumer
+    assert _PINNED[("consumer", "stance.B")][1] in consumer
+    stance = re.search(r'class="mc-stance ([^"]+)"', consumer)
+    assert stance, consumer[:400]
+    assert "mq-tone-warn" in stance.group(1)
+    assert "mq-tone-neutral" not in stance.group(1)
+
+
 def test_consumer_tone_is_warn_on_live_b(built: tuple[str, Path]) -> None:
-    html, _ = built
+    """The live consumer panel wears the tone of the state it actually published.
+
+    B on a current source is warn. A stale or failed source is the E2 card
+    and has no stance tone. The B→warn row stays pinned on the label table.
+    """
+    html, out = built
+    snap = _workspace_snapshot("consumer_payments")
+    state = (snap.get("availability") or {}).get("state")
+    headline = snap.get("headline") or {}
+    state_id = headline.get("state_id")
+    print(f"consumer tone branch=live state={state} state_id={state_id}")
+    assert L.STATE_TONE["consumer_payments"]["B"] == "warn"
     consumer = _panel(html, "consumer")
-    assert "mq-tone-warn" in consumer
-    assert "mq-tone-neutral" not in re.search(
-        r'class="mc-stance ([^"]+)"', consumer).group(1)
+    if state in _E2_AVAILABILITY:
+        fragment = unescape(
+            (out / "macro" / "fragments" / "consumer.html").read_text(encoding="utf-8"))
+        assert 'data-mc-empty="e2"' in fragment
+        assert L.EMPTY_STATES["e2"]["title"]["en"] in fragment
+        assert L.EMPTY_STATES["e2"]["title"]["zh"] in fragment
+        assert 'class="mc-stance' not in consumer
+        assert _PINNED[("consumer", "stance.B")][0] not in unescape(consumer)
+        return
+    if headline.get("status") == "PRESENT" and state_id in L.STATE_TONE["consumer_payments"]:
+        tone = L.STATE_TONE["consumer_payments"][str(state_id)]
+        stance = re.search(r'class="mc-stance ([^"]+)"', consumer)
+        assert stance, state_id
+        assert f"mq-tone-{tone}" in stance.group(1)
+        if state_id == "B":
+            assert "mq-tone-neutral" not in stance.group(1)
+            assert _PINNED[("consumer", "stance.B")][0] in unescape(consumer)
+        return
+    voice = _json_empty_voice(snap)
+    assert voice in {"e1", "e3"}, (state, state_id, voice)
+    fragment = (out / "macro" / "fragments" / "consumer.html").read_text(encoding="utf-8")
+    assert f'data-mc-empty="{voice}"' in fragment
 
 
 def test_input_note_stale_wins_over_disagree() -> None:
@@ -748,7 +953,18 @@ def test_p4_live_figures_follow_i4_mode_table() -> None:
             assert figure["state_line"]["en"] != current_en, name
         else:
             raise AssertionError(f"{name}: unexpected kinds {kinds}")
-    assert seen_current >= 1
+    seen_movement = 0
+    seen_mixed = 0
+    for _name, figure in figures:
+        kinds = {row["kind"] for row in figure["rows"]}
+        if kinds == {"movement"}:
+            seen_movement += 1
+        elif kinds == {"current", "movement"}:
+            seen_mixed += 1
+    print(
+        f"p4 figure branch current={seen_current} "
+        f"movement={seen_movement} mixed={seen_mixed}")
+    assert seen_current + seen_movement + seen_mixed == len(figures)
 
 
 def test_p4_mixed_section_figure_uses_mixed_pair_not_current_only() -> None:
@@ -758,6 +974,20 @@ def test_p4_mixed_section_figure_uses_mixed_pair_not_current_only() -> None:
     mixed_zh = L.COUNT["overview_mixed"]["zh"]
     current_en = L.COUNT["same_publication"]["en"]
     current_zh = L.COUNT["same_publication"]["zh"]
+    seeded = builder._figure_block(
+        [
+            {"kind": "movement", "prior": "1.00", "current": "1.10",
+             "delta": "+0.10", "sign": "up"},
+            {"kind": "current", "prior": None, "current": "2.00",
+             "delta": None, "sign": None},
+        ],
+        overview=False, shown=2, total=2)
+    assert {row["kind"] for row in seeded["rows"]} == {"current", "movement"}
+    assert seeded["count_text"] is None
+    assert seeded["state_line"]["en"] == mixed_en
+    assert seeded["state_line"]["zh"] == mixed_zh
+    assert current_en not in seeded["state_line"]["en"]
+    assert current_zh not in seeded["state_line"]["zh"]
     seen = 0
     for name, figure in _iter_p4_figures(sections):
         rows = copy.deepcopy(figure["rows"])
@@ -783,38 +1013,21 @@ def test_p4_mixed_section_figure_uses_mixed_pair_not_current_only() -> None:
         assert mixed["state_line"]["en"] != current_en, name
         assert current_en not in mixed["state_line"]["en"]
         assert current_zh not in mixed["state_line"]["zh"]
-    assert seen >= 1
+    print(f"p4 mixed-fabricate branch=live figures={seen}")
+    assert seen == len(_iter_p4_figures(sections))
 
 
 def test_p4_mixed_section_routes_through_macro_command_sections() -> None:
     """N10: a mixed P4 section through the real builder path, not _figure_block."""
-    entries = copy.deepcopy(_live_entries())
+    snapshot = _load_p5_fixture("jobs_mixed_pair.json")
+    assert snapshot["changes"]["prior_effective_date"] != snapshot["headline"]["effective_date"]
+    assert snapshot["changes"]["deltas"][1]["prior_value"] is None
+    entries = _fixture_entries({"labor_markets": snapshot})
     mixed_en = L.COUNT["overview_mixed"]["en"]
     mixed_zh = L.COUNT["overview_mixed"]["zh"]
     current_en = L.COUNT["same_publication"]["en"]
     current_zh = L.COUNT["same_publication"]["zh"]
-    victim = None
-    for entry in entries:
-        if entry["workspace_id"] != "labor_markets":
-            continue
-        snap = entry["snapshot"] or {}
-        headline = snap.setdefault("headline", {})
-        changes = snap.setdefault("changes", {})
-        deltas = list(changes.get("deltas") or [])
-        assert len(deltas) >= 2, "labor_markets needs two deltas to mix"
-        headline["effective_date"] = "2026-09-04"
-        changes["prior_effective_date"] = "2026-08-04"
-        first, extra = deltas[0], deltas[1]
-        first["prior_value"] = first.get("prior_value") if first.get("prior_value") is not None else 1.0
-        first["current_value"] = first.get("current_value") if first.get("current_value") is not None else 1.1
-        first["delta"] = first.get("delta") if first.get("delta") is not None else 0.1
-        extra["prior_value"] = None
-        extra["delta"] = None
-        extra["current_value"] = extra.get("current_value") if extra.get("current_value") is not None else 2.0
-        changes["deltas"] = [first, extra]
-        victim = entry
-        break
-    assert victim is not None
+    print("p4 mixed branch=fixture-jobs")
     sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     jobs = next(section for section in sections if section["id"] == "jobs")
     figure = jobs["figure"]
@@ -829,33 +1042,99 @@ def test_p4_mixed_section_routes_through_macro_command_sections() -> None:
     assert current_en not in (jobs.get("stance") or {}).get("text", {}).get("en", "")
 
 
+def _assert_current_only_fragment(body: str, section_id: str) -> None:
+    state_en = L.COUNT["same_publication"]["en"]
+    state_zh = L.COUNT["same_publication"]["zh"]
+    assert "mc-move-current-only" in body, section_id
+    assert state_en in body, section_id
+    assert state_zh in body, section_id
+    assert "compared against the previous publication" not in body
+    assert "与上一次发布相比" not in body
+    assert "mc-move-prior" not in body
+    assert "mq-delta-flat" not in body
+    assert 'class="mc-caption' not in body
+
+
+def test_p4_current_only_fragment_from_fixture(tmp_path: Path) -> None:
+    """A same-publication jobs snapshot prints the current-only line, not a comparison."""
+    snapshot = _load_p5_fixture("jobs_current_only.json")
+    assert snapshot["changes"]["prior_effective_date"] == snapshot["headline"]["effective_date"]
+    entries = _fixture_entries({"labor_markets": snapshot})
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    jobs = next(section for section in sections if section["id"] == "jobs")
+    figure = jobs["figure"]
+    assert figure is not None
+    assert {row["kind"] for row in figure["rows"]} == {"current"}
+    assert figure["count_text"] is None
+    assert figure["state_line"]["en"] == L.COUNT["same_publication"]["en"]
+    assert figure["state_line"]["zh"] == L.COUNT["same_publication"]["zh"]
+    assert figure["state_line"]["en"] != L.COUNT["overview_mixed"]["en"]
+    for row in figure["rows"]:
+        assert row["prior"] is None
+        assert row["delta"] is None
+        assert row["sign"] is None
+        assert row["current"]
+    _html, out = _bake_hub(entries, tmp_path)
+    body = unescape(
+        (out / "macro" / "fragments" / "jobs.html").read_text(encoding="utf-8"))
+    print("p4 figure branch=fixture-current jobs")
+    _assert_current_only_fragment(body, "jobs")
+
+
 def test_p4_live_hub_html_prints_the_i4_state_line(built: tuple[str, Path]) -> None:
+    """Each live P4 fragment wears the chrome its row kinds actually are."""
     html, out = built
     state_en = L.COUNT["same_publication"]["en"]
     state_zh = L.COUNT["same_publication"]["zh"]
-    seen = 0
+    mixed_en = L.COUNT["overview_mixed"]["en"]
+    mixed_zh = L.COUNT["overview_mixed"]["zh"]
     for section_id in P4_IDS:
         fragment = (out / "macro" / "fragments" / f"{section_id}.html")
         body = unescape(fragment.read_text(encoding="utf-8")
                         if fragment.exists()
                         else _panel(html, section_id))
-        if "mc-move-current-only" not in body:
-            continue
-        seen += 1
-        assert state_en in body, section_id
-        assert state_zh in body, section_id
-        assert "compared against the previous publication" not in body
-        assert "与上一次发布相比" not in body
-        assert "mc-move-prior" not in body
-        assert "mq-delta-flat" not in body
-        assert 'class="mc-caption' not in body
-    assert seen >= 1
+        empty = re.search(r'data-mc-empty="(e[1-6])"', body)
+        current_rows = body.count("mc-move-current-only")
+        move_rows = body.count("mc-move-row")
+        if empty and not move_rows:
+            mode = "empty"
+        elif current_rows and move_rows > current_rows:
+            mode = "mixed"
+        elif current_rows:
+            mode = "current"
+        elif move_rows:
+            mode = "movement"
+        else:
+            raise AssertionError(f"{section_id}: no figure and no empty card")
+        print(
+            f"p4 html branch section={section_id} mode={mode} "
+            f"current_rows={current_rows}")
+        if mode == "current":
+            _assert_current_only_fragment(body, section_id)
+        elif mode == "movement":
+            assert "mc-move-current-only" not in body, section_id
+            assert state_en not in body, section_id
+            assert state_zh not in body, section_id
+            assert "compared against the previous publication" in body, section_id
+            assert "与上一次发布相比" in body, section_id
+            assert '<p class="mc-move-state">' not in body, section_id
+        elif mode == "mixed":
+            assert mixed_en in body, section_id
+            assert mixed_zh in body, section_id
+            assert state_en not in body, section_id
+            assert '<p class="mc-move-state">' in body, section_id
+            assert 'class="mc-caption' not in body, section_id
+        else:
+            empty_id = empty.group(1) if empty else ""
+            title = L.EMPTY_STATES[empty_id]["title"]
+            assert title["en"] in body, (section_id, empty_id)
+            assert title["zh"] in body, (section_id, empty_id)
+            assert "mc-move-current-only" not in body, section_id
+            assert state_en not in body, section_id
 
 
-def test_overview_current_only_emits_no_figure_state_line(built: tuple[str, Path]) -> None:
-    """MIN-2: all-current Overview speaks once via overview_current, never the figure line."""
-    html, _ = built
-    overview = unescape(_panel(html, "overview"))
+def _assert_overview_current_only(overview: str) -> None:
+    """All-current Overview speaks once via overview_current, never the figure line."""
     assert "mc-move-current-only" in overview
     current_en = L.COUNT["same_publication"]["en"]
     current_zh = L.COUNT["same_publication"]["zh"]
@@ -866,6 +1145,94 @@ def test_overview_current_only_emits_no_figure_state_line(built: tuple[str, Path
     assert overview.count(stance_en) == 1
     assert overview.count(stance_zh) == 1
     assert '<p class="mc-move-state">' not in overview
+
+
+def test_overview_current_only_fixture_emits_no_figure_state_line(tmp_path: Path) -> None:
+    """MIN-2 on the committed same-publication deck, not on today's print."""
+    snapshot = _load_p5_fixture("same_publication_deck.json")
+    assert snapshot["changes"]["prior_effective_date"] == snapshot["headline"]["effective_date"]
+    html, _out = _bake_hub(
+        _fixture_entries({"liquidity_regime": snapshot}), tmp_path)
+    overview = unescape(_panel(html, "overview"))
+    print("overview figure branch=fixture-current")
+    _assert_overview_current_only(overview)
+
+
+def _json_overview_mode() -> tuple[str, bool]:
+    """Movement / current / mixed, and whether every rendered section is current.
+
+    Same row rule as the hub: an earlier prior with a comparable delta is a
+    movement row. The deck is the first HUB_CHANGE_LIMIT rows.
+    """
+    from lib import macro_suite_view
+
+    kinds: list[str] = []
+    for page in builder.SUITE_PAGES:
+        snap = _workspace_snapshot(page.workspace_id)
+        changes = snap.get("changes") or {}
+        headline_date = (snap.get("headline") or {}).get("effective_date")
+        earlier = macro_suite_view.prior_publication_is_earlier(
+            changes.get("prior_effective_date"), headline_date)
+        no_earlier = changes.get("comparability") == "NO_EARLIER_PUBLICATION"
+        for delta in changes.get("deltas") or []:
+            prior_ok = _reading_present(delta.get("prior_value"))
+            current_ok = _reading_present(delta.get("current_value"))
+            raw_delta = delta.get("delta")
+            delta_ok = _reading_present(raw_delta)
+            if prior_ok and current_ok and raw_delta is None and not no_earlier:
+                delta_ok = True
+            is_movement = bool(earlier and prior_ok and current_ok and delta_ok)
+            if is_movement or current_ok:
+                kinds.append("movement" if is_movement else "current")
+    shown = kinds[:macro_suite_view.HUB_CHANGE_LIMIT]
+    if not shown:
+        mode = "none"
+    elif all(kind == "movement" for kind in shown):
+        mode = "movement"
+    elif all(kind == "current" for kind in shown):
+        mode = "current"
+    else:
+        mode = "mixed"
+    entries = _live_entries()
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    panel_ids = {section["id"] for section in sections}
+    available, total = builder.populated_section_coverage_tally(entries, panel_ids)
+    return mode, available == total
+
+
+def test_overview_current_only_emits_no_figure_state_line(built: tuple[str, Path]) -> None:
+    """Overview copy follows the deck the workspace JSON actually published."""
+    html, _out = built
+    overview = unescape(_panel(html, "overview"))
+    mode, all_read = _json_overview_mode()
+    print(f"overview figure branch=live mode={mode} all_read={all_read}")
+    if mode == "current":
+        _assert_overview_current_only(overview)
+        key = "all_read_current" if all_read else "some_unread_current"
+    elif mode == "movement":
+        assert "mc-move-current-only" not in overview
+        assert L.COUNT["same_publication"]["en"] not in overview
+        assert L.COUNT["overview_current"]["en"] not in overview
+        assert L.COUNT["overview_current"]["zh"] not in overview
+        assert '<p class="mc-move-state">' not in overview
+        assert "compared readings" in overview
+        key = "all_read" if all_read else "some_unread"
+    elif mode == "mixed":
+        assert "mc-move-current-only" in overview
+        assert L.COUNT["overview_mixed"]["en"] in overview
+        assert L.COUNT["same_publication"]["en"] not in overview
+        assert '<p class="mc-move-state">' not in overview
+        key = "all_read_mixed" if all_read else "some_unread_mixed"
+    else:
+        raise AssertionError("overview published no comparable rows")
+    chosen = L.STANCES["overview"][key]
+    assert overview.count(chosen["en"]) == 1, key
+    assert overview.count(chosen["zh"]) == 1, key
+    for other, pair in L.STANCES["overview"].items():
+        if other == key:
+            continue
+        assert pair["en"] not in overview, other
+        assert pair["zh"] not in overview, other
 
 
 def _e6_slot_texts() -> dict[str, dict[str, str]]:
@@ -1633,6 +2000,13 @@ def _p4_plan(section_id: str) -> str:
 
 
 def _mutate_p4_entries_for_empty(entries: list[dict], empty_id: str) -> None:
+    """Apply the committed empty-force fixture. Live leftovers do not decide.
+
+    E1 and E3 set availability to CURRENT. A stale or failed source is E2
+    even with a dateless headline, so a force that left that state in place
+    was not an E1.
+    """
+    spec = _load_p5_fixture(f"empty_force_{empty_id}.json")
     ws_to_section = {
         workspace_id: section_id
         for section_id, workspace_ids in _p4_workspaces().items()
@@ -1648,35 +2022,10 @@ def _mutate_p4_entries_for_empty(entries: list[dict], empty_id: str) -> None:
         workspace_id = entry["workspace_id"]
         if workspace_id not in ws_to_section:
             continue
-        snap = entry["snapshot"]
-        section_id = ws_to_section[workspace_id]
-        if empty_id == "e1":
-            snap["headline"]["effective_date"] = None
-            snap["headline"]["status"] = "ABSENT"
-            snap["headline"]["state_id"] = None
-            snap["headline"]["null_reason"] = "NOT_YET_RELEASED"
-            snap["changes"]["deltas"] = []
-            snap["changes"]["comparability"] = "NO_PRIOR"
-            snap["changes"]["status"] = "ABSENT"
-            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
-        elif empty_id == "e2":
-            snap["availability"]["state"] = "SOURCE_FAILED"
-            snap["headline"]["status"] = "ABSENT"
-            snap["headline"]["state_id"] = None
-            snap["headline"]["effective_date"] = None
-            snap["changes"]["deltas"] = []
-        elif empty_id == "e3":
-            if not snap["headline"].get("effective_date"):
-                snap["headline"]["effective_date"] = "2026-09-01"
-            snap["changes"]["deltas"] = []
-            snap["changes"]["comparability"] = "NO_PRIOR"
-            snap["changes"]["status"] = "ABSENT"
-            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
-        elif empty_id == "e4":
-            if workspace_id in tab_id_by_workspace:
-                snap["withheld_command_tabs"] = [tab_id_by_workspace[workspace_id]]
-        elif empty_id == "e6":
-            snap["entitlement"] = _p4_plan(section_id)
+        _apply_force_spec(
+            entry["snapshot"], spec,
+            tab_id=tab_id_by_workspace.get(workspace_id),
+            section_id=ws_to_section[workspace_id])
 
 
 def _section_has_empty(section: dict, empty_id: str) -> bool:
@@ -1770,10 +2119,45 @@ def _assert_empty_vocabulary(card: str, empty_id: str, plan: str | None) -> None
                 lang), (empty_id, lang)
 
 
+def test_dateless_current_fixture_is_e1_and_stale_stays_e2() -> None:
+    """A dateless CURRENT workspace is E1. STALE_SOURCE on that same shape is E2.
+
+    The builder checks freshness before the dateless gap. Leaving a live
+    STALE_SOURCE in place is not a forced E1.
+    """
+    spec = _load_p5_fixture("empty_force_e1.json")
+    assert spec["availability"]["state"] == "CURRENT"
+    assert spec["headline"]["effective_date"] is None
+    assert spec["headline"]["null_reason"] == "NOT_YET_RELEASED"
+    assert spec["changes"]["deltas"] == []
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        if entry["workspace_id"] != "consumer_payments":
+            continue
+        _apply_force_spec(
+            entry["snapshot"], spec, tab_id=None, section_id="consumer")
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    consumer = next(section for section in sections if section["id"] == "consumer")
+    assert consumer["empty"]["id"] == "e1"
+    assert consumer["empty"]["title"]["en"] == L.EMPTY_STATES["e1"]["title"]["en"]
+    assert consumer["empty"]["title"]["zh"] == L.EMPTY_STATES["e1"]["title"]["zh"]
+    assert consumer["stance"] is None
+    for entry in entries:
+        if entry["workspace_id"] == "consumer_payments":
+            entry["snapshot"]["availability"]["state"] = "STALE_SOURCE"
+    stale = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    consumer = next(section for section in stale if section["id"] == "consumer")
+    assert consumer["empty"]["id"] == "e2"
+    assert consumer["empty"]["title"]["en"] == "No reading arrived today."
+    assert consumer["empty"]["title"]["zh"] == "今天没有新的读数。"
+    assert consumer["stance"] is None
+
+
 def test_seven_p4_sections_share_e1_e4_e6_vocabulary(tmp_path: Path) -> None:
     """MINOR-E3(b): rendered-page vocabulary on every P4 section × E1–E4/E6."""
     by_section = {section.id: section for section in builder.SECTIONS}
     for empty_id in ("e1", "e2", "e3", "e4", "e6"):
+        print(f"p4 empty vocabulary branch=fixture-{empty_id}")
         out = _render_forced_hub(tmp_path, empty_id)
         hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
         cards: dict[str, str] = {}

@@ -1,8 +1,10 @@
 """Macro Command P3 — the six typed empty states (pin §G, spec §7)."""
 from __future__ import annotations
 
+import json
 import re
 from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -11,6 +13,18 @@ from lib import macro_suite_labels as L
 from scripts import build_macro_suite_pages as builder
 
 ROOT = Path(__file__).resolve().parents[1]
+P5_FIXTURES = ROOT / "tests" / "fixtures" / "macro_command_p5"
+_E2_AVAILABILITY = frozenset({"SOURCE_FAILED", "STALE_SOURCE"})
+_E2_SENTENCES = (
+    "No reading arrived today.",
+    "今天没有新的读数。",
+    "The data provider did not deliver in time",
+    "数据提供方未能及时送达",
+)
+_RATES_UNSTATED_EN = (
+    "No single reading is published here. Watch the two-year and ten-year together, not either one alone."
+)
+_RATES_UNSTATED_ZH = "此处不发布单一状态读数。请把两年期与十年期一起看，不要只看其一。"
 
 
 def _render_empty(state: dict) -> str:
@@ -205,76 +219,139 @@ def test_e6_suite_vocabulary_is_pinned() -> None:
     assert spec["why"]["zh"] == "本板块属于{plan}。"
 
 
-def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
-    """MINOR-E6: no visible sentence appears twice in one section."""
-    from html.parser import HTMLParser
+class _Visible(HTMLParser):
+    def __init__(self, lang: str) -> None:
+        super().__init__()
+        self.lang = lang
+        self._skip = 0
+        self.texts: list[str] = []
 
-    class _Visible(HTMLParser):
-        def __init__(self, lang: str) -> None:
-            super().__init__()
-            self.lang = lang
-            self._skip = 0
-            self.texts: list[str] = []
+    def handle_starttag(self, tag, attrs):
+        cls = dict(attrs).get("class", "")
+        if self.lang == "en" and "l-zh" in cls.split():
+            self._skip += 1
+        elif self.lang == "zh" and "l-en" in cls.split():
+            self._skip += 1
+        elif self._skip:
+            self._skip += 1
 
-        def handle_starttag(self, tag, attrs):
-            cls = dict(attrs).get("class", "")
-            if self.lang == "en" and "l-zh" in cls.split():
-                self._skip += 1
-            elif self.lang == "zh" and "l-en" in cls.split():
-                self._skip += 1
-            elif self._skip:
-                self._skip += 1
+    def handle_endtag(self, tag):
+        if self._skip:
+            self._skip -= 1
 
-        def handle_endtag(self, tag):
-            if self._skip:
-                self._skip -= 1
+    def handle_data(self, data):
+        if self._skip:
+            return
+        text = " ".join(data.split())
+        if text:
+            self.texts.append(text)
 
-        def handle_data(self, data):
-            if self._skip:
-                return
-            text = " ".join(data.split())
-            if text:
-                self.texts.append(text)
 
-    data_root = ROOT / "site" / "macrodata"
-    import tempfile
-    with tempfile.TemporaryDirectory() as tmp:
-        dest = Path(tmp) / "site"
-        builder.render(
-            ROOT, data_root=data_root, out_dir=dest,
-            page_built_at="2026-09-06T00:00:00Z")
-        hub = dest.joinpath("macro_monetary.html").read_text(encoding="utf-8")
-        frag = dest.joinpath("macro", "fragments", "rates.html").read_text(
-            encoding="utf-8")
-        match = re.search(
-            r'<section class="mc-panel" id="rates".*?(?=<section class="mc-panel"|</main>)',
-            hub, re.S)
-        assert match
-        panel = match.group(0)
-        composed = (
-            panel.replace(
-                '<p class="mc-figure-pending" hidden data-mc-pending>',
-                '<p class="mc-figure-pending" hidden data-mc-pending hidden-skip>',
-            ).replace(
-                '<p class="mc-figure-offer" data-mc-offer>',
-                "<div>" + frag + '</div><p class="mc-figure-offer" hidden data-mc-offer>',
-            )
+def _compose_rates(hub: str, frag: str) -> str:
+    match = re.search(
+        r'<section class="mc-panel" id="rates".*?(?=<section class="mc-panel"|</main>)',
+        hub, re.S)
+    assert match
+    panel = match.group(0)
+    return (
+        panel.replace(
+            '<p class="mc-figure-pending" hidden data-mc-pending>',
+            '<p class="mc-figure-pending" hidden data-mc-pending hidden-skip>',
+        ).replace(
+            '<p class="mc-figure-offer" data-mc-offer>',
+            "<div>" + frag + '</div><p class="mc-figure-offer" hidden data-mc-offer>',
         )
-        text = unescape(composed)
-        for sentence in (
-            "No reading arrived today.",
-            "今天没有新的读数。",
-            "The data provider did not deliver in time",
-            "数据提供方未能及时送达",
-        ):
-            assert text.count(sentence) == 1, sentence
-        for lang in ("en", "zh"):
-            parser = _Visible(lang)
-            parser.feed(composed)
-            empty_lines = [
-                t for t in parser.texts
-                if "No reading arrived" in t or "没有新的读数" in t
-                or "did not deliver" in t or "未能及时送达" in t
-            ]
-            assert empty_lines, lang
-            assert len(empty_lines) == len(set(empty_lines)), (lang, empty_lines)
+    )
+
+
+def _assert_e2_sentences_once(composed: str) -> None:
+    """The E2 card speaks each sentence once. The panel does not repeat it."""
+    text = unescape(composed)
+    for sentence in _E2_SENTENCES:
+        assert text.count(sentence) == 1, sentence
+    for lang in ("en", "zh"):
+        parser = _Visible(lang)
+        parser.feed(composed)
+        empty_lines = [
+            t for t in parser.texts
+            if "No reading arrived" in t or "没有新的读数" in t
+            or "did not deliver" in t or "未能及时送达" in t
+        ]
+        assert empty_lines, lang
+        assert len(empty_lines) == len(set(empty_lines)), (lang, empty_lines)
+
+
+def _fixture_entries(snapshots: dict) -> list[dict]:
+    entries = []
+    for page in builder.SUITE_PAGES:
+        identity = builder._identity(page)
+        snap = snapshots.get(page.workspace_id)
+        entries.append({
+            "workspace_id": page.workspace_id,
+            "region": page.region,
+            "output": page.output,
+            "title": identity["title"],
+            "subtitle": identity["subtitle"],
+            "snapshot": snap,
+            "failure": None if snap else {"kind": "NOT_COVERED"},
+        })
+    return entries
+
+
+def test_hydrated_e2_fixture_has_no_repeated_sentence(tmp_path: Path) -> None:
+    """MINOR-E6 on a committed stale rates snapshot, not on today's print."""
+    snapshot = json.loads((P5_FIXTURES / "rates_e2_stale.json").read_text(encoding="utf-8"))
+    assert snapshot["availability"]["state"] == "STALE_SOURCE"
+    assert len(snapshot["changes"]["deltas"]) == 4
+    out = tmp_path / "site"
+    env = builder._environment(ROOT)
+    builder.build_hub(
+        _fixture_entries({"rates_curves": snapshot}),
+        out_dir=out, env=env, root=ROOT, page_built_at="2026-09-06T00:00:00Z")
+    hub = (out / "macro_monetary.html").read_text(encoding="utf-8")
+    frag = (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8")
+    print("rates hydrated branch=fixture-e2")
+    _assert_e2_sentences_once(_compose_rates(hub, frag))
+
+
+def test_hydrated_empty_section_has_no_repeated_sentence(tmp_path: Path) -> None:
+    """MINOR-E6 on the live rates workspace: the copy matches that JSON.
+
+    A stale or failed source is the E2 card, each sentence once. Any other
+    freshness states the structural rates sentence and does not claim that
+    today's reading failed to arrive.
+    """
+    data_root = ROOT / "site" / "macrodata"
+    snap = json.loads(
+        (data_root / "workspaces" / "rates_curves" / "US" / "latest.json")
+        .read_text(encoding="utf-8"))
+    state = (snap.get("availability") or {}).get("state")
+    null_reason = (snap.get("headline") or {}).get("null_reason")
+    print(f"rates hydrated branch=live state={state} null={null_reason}")
+    dest = tmp_path / "site"
+    builder.render(
+        ROOT, data_root=data_root, out_dir=dest,
+        page_built_at="2026-09-06T00:00:00Z")
+    hub = (dest / "macro_monetary.html").read_text(encoding="utf-8")
+    frag = (dest / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8")
+    composed = _compose_rates(hub, frag)
+    text = unescape(composed)
+    if state in _E2_AVAILABILITY:
+        _assert_e2_sentences_once(composed)
+        return
+    for sentence in _E2_SENTENCES:
+        assert text.count(sentence) == 0, sentence
+    assert 'data-mc-empty="e2"' not in text
+    headline = snap.get("headline") or {}
+    if null_reason == "NOT_APPLICABLE":
+        key = "unstated"
+    elif headline.get("status") == "PRESENT" and headline.get("state_id"):
+        key = str(headline["state_id"])
+    else:
+        key = "unavailable"
+    pair = L.STANCES["rates"][key]
+    print(f"rates hydrated branch=live stance={key}")
+    assert text.count(pair["en"]) == 1, key
+    assert text.count(pair["zh"]) == 1, key
+    assert pair["en"] == _RATES_UNSTATED_EN or key != "unstated"
+    assert pair["zh"] == _RATES_UNSTATED_ZH or key != "unstated"
