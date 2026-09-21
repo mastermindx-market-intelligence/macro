@@ -753,6 +753,15 @@ def test_news_locale_events_use_document_and_controls_have_localizable_names():
     assert 'data-label-zh="筛选事件"' in html
 
 
+def test_news_intelligence_language_repaint_preserves_expanded_state():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    marker = "document.addEventListener('langchange',function(){"
+    block = src[src.index(marker):src.index("document.addEventListener('visibilitychange'", src.index(marker))]
+    assert "showDesk(" not in block
+    assert "render();" in block
+    assert "expanded=false" not in block
+
+
 def test_news_gated_panels_honor_hidden_state_and_guest_copy_is_truthful():
     html = _render_full()
     assert "#nxIntel[hidden]" in html and "#nxIntel [hidden]" in html
