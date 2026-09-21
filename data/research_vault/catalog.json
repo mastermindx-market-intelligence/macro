@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T01:31:13.890605+00:00",
-  "count": 2536,
+  "generated_at": "2026-09-21T01:46:18.494011+00:00",
+  "count": 2537,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -383,6 +383,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0rzcdjwbfy2-44c038",
+      "title": "Energy update",
+      "institution": "Allianz",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:57:09Z",
+      "summary_points": [
+        "Hormuz Chokepoint Supply Gap: 4.3 mbpd Persian Gulf supply gap from pipeline outage (Saudi attack + stalled talks), with Strait of Hormuz as critical bottleneck; Brent volatility spikes to $100+/bbl if outage extends beyond weeks, directly threatening energy-intensive sectors (transport, agriculture, petrochemicals).",
+        "Strategic Reserve Buffer Depletion: US SPR draws at 0.3 mbpd/month (near historic lows), eliminating large-scale shock absorption capacity; persistent disruptions risk prolonged Brent near $100/bbl with no policy buffer.",
+        "Refined Products Tightness: Global refined product inventories drying as US refiners operate at 98% utilization (shipping exports for margin), while geopolitical disruptions (Russia strikes, China restrictions) sustain record crack spreads (US: $62/bbl, Europe: €74/bbl), constraining supply below $40/bbl by 2024."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
