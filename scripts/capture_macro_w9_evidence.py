@@ -267,6 +267,24 @@ _PREP_DLG = """
 }
 """
 
+_PREP_GDE = """
+() => {
+  const dlg = document.getElementById('dlg-risk');
+  if (dlg) {
+    dlg.classList.add('open', 'mx5-dlg-in');
+    dlg.style.display = 'flex';
+    const panel = dlg.querySelector('.mx5-dlg-panel');
+    if (panel) {
+      panel.style.opacity = '1';
+      panel.style.transform = 'none';
+      panel.style.visibility = 'visible';
+    }
+  }
+  const disc = document.querySelector('#risk-envelope-band details.gde-disc');
+  if (disc) disc.open = true;
+}
+"""
+
 
 def content_address_png(png: bytes, output_dir: Path) -> tuple[str, str, int, int]:
     digest = hashlib.sha256(png).hexdigest()
@@ -486,6 +504,8 @@ def _prep_for(page_name: str, full_page: bool = False, selector: str = "") -> st
             return _PREP_TIP
         if selector == "#ev-fed-policy":
             return _PREP_LIVE
+        if selector == ".gde-policy":
+            return _PREP_GDE
         return _PAINT_QUOTES
     if page_name == "null_markets.html":
         return _PREP_NULL

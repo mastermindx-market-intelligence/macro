@@ -1,6 +1,6 @@
 # macro.html W9 r4 — evidence matrix
 
-S1 rig: fixture-rendered `templates/dashboard.html.j2` (`mode=macro`) with real `body.page-macro mx4-grid` classes. Playwright seeds `window.__skyDeck`, applies theme/lang via `setTheme`/`setLang`, refuses a cell on attribute mismatch, hides decorative layers, and records a per-crop overlay column from a post-shot computed-style probe. Screenshots are content-addressed (`cells/<sha16>.png`) plus human aliases. Capture: `python3 -m scripts.capture_macro_w9_evidence` **at a clean committed HEAD** (r4 code sha `795fda103318def45393e147c638892c6765a096`).
+S1 rig: fixture-rendered `templates/dashboard.html.j2` (`mode=macro`) with real `body.page-macro mx4-grid` classes. Playwright seeds `window.__skyDeck`, applies theme/lang via `setTheme`/`setLang`, refuses a cell on attribute mismatch, hides decorative layers, and records a per-crop overlay column from a post-shot computed-style probe. Screenshots are content-addressed (`cells/<sha16>.png`) plus human aliases. Capture: `python3 -m scripts.capture_macro_w9_evidence` **at a clean committed HEAD** (`bf443d24f4c84d68bfef88be9a64ffee0ac3ddbc`, 2026-09-21 recapture after the radar-integrate merge).
 
 ## Axis coverage (per subject family — not a uniform 8-cell REST)
 
@@ -38,6 +38,7 @@ Mechanisms that intentionally differ: dark keeps restrained field glow on score 
 - **Empty `mx5-ai-ticker-pill` under "AI Brief"** (both themes, fullpage + `stance-aibrief-*`): fixture `macro_news.synthesis.top_tickers` is a list of **strings** (`["XLE"]`); the face reads `tk.ticker` (live producer emits `[{"ticker": k, "count": v}, …]` per `engine/macro_news.py`). The ~40×12px mint/dim-green capsule is that empty pill — fixture-VM, not a live empty-chip defect. Named so the recapture is not mistaken for a product chip with no label.
 - Nav ticker in the null shot is a planted `#nb-tape` chip used to prove the no-op.
 - **Stocks week-ahead band** (`test_stocks_band_tristate_source_pin_unreachable_code`): source-string pin on unreachable code inside the macro-only wrapper. **Source-verified, never render-verified.**
+- **Capital-policy copy lives in `#dlg-risk`** (`details.gde-disc` / `.gde-policy`), not a page-level band. The gde-policy crops open that dialog; fullpage no longer shows a standalone "THREE READS, KEPT SEPARATE" / "CAPITAL POLICY" panel (radar-integrate merge).
 
 DO-NOT-TOUCH surfaces (`#release-radar`, `#sx-risk-v2`, `details#health`) were not edited this round.
 
@@ -86,4 +87,4 @@ DO-NOT-TOUCH surfaces (`#release-radar`, `#sx-risk-v2`, `details#health`) were n
 
 m1 recapture (both themes, content-height card): `events-none-dark-en-desktop.png`, `events-none-light-en-desktop.png` (ZH twins and `events-none-dark-en-mobile.png` also recaptured).
 
-Manifest: `mockups/evidence/macro-w9/manifest.json` (`mastermind.p0_evidence.v2`, outcome=`captured`, 74/74, `target.resolved_sha_or_none` = `795fda103318def45393e147c638892c6765a096`). Receipt: `EVIDENCE.yml`.
+Manifest: `mockups/evidence/macro-w9/manifest.json` (`mastermind.p0_evidence.v2`, outcome=`captured`, 74/74, `target.resolved_sha_or_none` = `bf443d24f4c84d68bfef88be9a64ffee0ac3ddbc`). Receipt: `EVIDENCE.yml`.

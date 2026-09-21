@@ -6,7 +6,9 @@ unknown/cautious default on every stance map.
 """
 from __future__ import annotations
 
+import json
 import re
+import subprocess
 from pathlib import Path
 
 from tests.test_dashboard_template_render import _base_vm, _env
@@ -110,6 +112,71 @@ def test_w9_capital_face_on_radar_integrated_band():
     assert "source_session" not in glance
     assert "/100" not in glance
     assert "as_of" not in glance
+
+
+_W9_FACE_TEMPLATES = (
+    "templates/dashboard.html.j2",
+    "templates/_risk_envelope_band.html.j2",
+    "templates/live.js",
+)
+
+
+def _git_blob(rev: str, path: str) -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", f"{rev}:{path}"],
+        cwd=ROOT,
+        text=True,
+    ).strip()
+
+
+def test_w9_evidence_depicts_current_face_templates():
+    """Committed W9 cells must depict this HEAD's face templates.
+
+    RED on bf443d24: manifest still pins 795fda10. That sha's
+    dashboard.html.j2 / _risk_envelope_band.html.j2 / live.js blobs
+    (99bdad9d7c / faf4e48f12 / a413444826) differ from HEAD
+    (a9a1b1155b / c911aef171 / 6c15cdfc1f) after the radar-integrate
+    merge, so the PNGs still show the pre-reconcile standalone
+    "THREE READS, KEPT SEPARATE" / "CAPITAL POLICY" band.
+    """
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-w9" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    captured = (manifest.get("target") or {}).get("resolved_sha_or_none")
+    assert captured, "macro-w9 manifest must pin the capture HEAD"
+    head = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
+    mismatches = []
+    for path in _W9_FACE_TEMPLATES:
+        captured_blob = _git_blob(captured, path)
+        head_blob = _git_blob(head, path)
+        if captured_blob != head_blob:
+            mismatches.append(
+                f"{path}: capture {captured[:12]} blob {captured_blob[:12]} "
+                f"!= HEAD {head[:12]} blob {head_blob[:12]}"
+            )
+    assert mismatches == [], (
+        "macro-w9 evidence does not depict this HEAD's face templates — "
+        "recapture via python3 -m scripts.capture_macro_w9_evidence:\n"
+        + "\n".join(mismatches)
+    )
+
+
+def test_w9_capture_opens_radar_dialog_for_gde_policy_crop():
+    """RED on bf443d24: gde-policy prep was the live-quotes paint, but
+    `.gde-policy` now lives inside closed `#dlg-risk` / `details.gde-disc`.
+    Recapture would time out or crop the old standalone band unless the
+    writer opens that dialog first.
+    """
+    src = (ROOT / "scripts" / "capture_macro_w9_evidence.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'selector == ".gde-policy"' in src
+    gde_prep = src[src.find("_PREP_GDE"):src.find("def content_address_png")]
+    assert "dlg-risk" in gde_prep
+    assert "gde-disc" in gde_prep
+    assert 'classList.add("open"' in gde_prep or "classList.add('open'" in gde_prep
+    assert "disc.open = true" in gde_prep or "disc.setAttribute('open'" in gde_prep
 
 
 # --------------------------------------------------------------------------- #
