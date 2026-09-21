@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T16:33:05.529258+00:00",
-  "count": 2580,
+  "generated_at": "2026-09-21T16:48:09.060754+00:00",
+  "count": 2581,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-qis7gidmnxv-bf0219",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T16:23:27Z",
+      "summary_points": [
+        "Fed Hawkish Shift: Goolsbee's speech signals market underprices rate hikes through YE27; Fed now forecasts inflation target until 2029, altering policy expectations.",
+        "Geopolitical Oil Risk: WTI up 19.1% over two weeks amid Houthi attacks on Riyadh and US travel warnings; inventory floor at 7,000 mb signals supply stress and price volatility.",
+        "JPM Data Revisions: Retail Sales beat (1.4% MoM vs 0.5% est) lifts 26Q3 GDP forecast to 3.5% (vs 2.75%); PCE core deflator maintained at +3.3% YoY.",
+        "Corporate Earnings Pressure: Tariffs, soaring energy costs, and higher rates directly compress US margins, threatening equity valuations and earnings growth.",
+        "Quant Resilience: Quant strategies outperform (+1.5% MTD vs global HF -0.6%); US crowding shows potential trough (60d return near 5yr lows)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-genoeiwk8qt-09599b",
       "title": "GS Callahan US TMT weekly + charts 21Sep2026",
