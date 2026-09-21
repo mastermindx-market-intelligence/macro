@@ -302,6 +302,16 @@ _BONDS_CURVE_DESCRIPTIONS = {
     'Bear flattener': 'short rates rising faster than long — a hawkish Fed; classic late-cycle tightening',
 }
 
+_EMERGENCE_NARRATIVE_HEADLINE = re.compile(
+    r'^New forming narrative — (.+)$'
+)
+_EMERGENCE_NARRATIVE_DETAIL = re.compile(
+    r'^Score ([0-9]+(?:\.[0-9]+)?) \((Forming|Forming fast)\); '
+    r'([1-9][0-9]*) names tightening\. Watch: '
+    r'([A-Z0-9._\-]+(?:, [A-Z0-9._\-]+){0,3})\. '
+    r'Candidate for review — not a buy list\.$'
+)
+
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
     r"([A-Z0-9.\-]+)'s analyst revisions — a forward-demand signal not yet fully in "
@@ -1455,6 +1465,79 @@ def build_alert_brief(row: dict) -> dict:
                     '若残差恢复正常、美元/利率模型可以解释该波动，或更新的来源证据识别出驱动因素，则改变判断。'),
                 'evidence_label': 'Open current FX timeline',
                 'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    narrative_headline = _EMERGENCE_NARRATIVE_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    narrative_detail = _EMERGENCE_NARRATIVE_DETAIL.fullmatch(detail)
+    if source == 'emergence' and type_ == 'narrative_forming' and narrative_headline and narrative_detail:
+        narrative_name = narrative_headline.group(1)
+        score_text, score_label, names_text, watch_names = narrative_detail.groups()
+        score = float(score_text)
+        names_count = int(names_text)
+        asset = str(row.get('asset') or '')
+        link = str(row.get('link') or '')
+        watch_list = watch_names.split(', ')
+        if (55 <= score <= 100 and names_count >= len(watch_list) and
+                re.fullmatch(r'[0-9a-f]{12}', asset) and
+                link.endswith('#ne-' + asset)):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck whether the narrative is still forming.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核该叙事是否仍在形成。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the cluster persisted between '
+                    'observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录触发并不能证明该聚类在观测之间持续存在。')
+            brief.update({
+                'status': 'supported', 'family': 'emergence.narrative_forming',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source emergence model newly surfaced “{narrative_name}” at score '
+                    f'{score_text} ({score_label}), with {names_count} names tightening together. '
+                    f'The named watch candidates are {watch_names}.'),
+                'implication_zh': (
+                    f'来源的叙事涌现模型新识别出“{narrative_name}”，评分 {score_text}（{score_label}），'
+                    f'共有 {names_count} 个标的同步收紧。当前关注候选为 {watch_names}。'),
+                'limitation': (
+                    'This is context-only cluster detection. The emergence score is not a calibrated '
+                    'probability, expected return, independent-confirmation count or evidence that the '
+                    'cluster is a durable economic theme. The watch candidates are explicitly not a '
+                    'buy list, and this family has no validated forward edge.' +
+                    age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '这只是背景层的聚类检测。涌现评分不是校准概率、预期收益、独立确认数量，也不能证明该聚类'
+                    '已经成为持久的经济主题。关注候选明确不是买入清单，且该信号族没有经过验证的前瞻优势。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current forming-narrative card and verify “{narrative_name}” still '
+                    f'scores at least 55, the {names_count}-name cluster remains coherent, and the '
+                    f'current watch candidates still include {watch_names} before promoting it to '
+                    'deeper research.'),
+                'next_action_zh': (
+                    f'打开当前成形叙事卡片，确认“{narrative_name}”评分仍至少为 55、{names_count} 个标的的'
+                    f'聚类仍保持一致，并核对当前关注候选仍包含 {watch_names}，再决定是否进入更深研究。'),
+                'next_action_label': 'Recheck forming narrative',
+                'next_action_label_zh': '复核成形叙事',
+                'reassessment': (
+                    'Change the read if the narrative disappears, its score falls below the source '
+                    '55-point alert bar, the cluster stops tightening, or the current constituent set '
+                    'materially re-forms.'),
+                'reassessment_zh': (
+                    '若该叙事消失、评分跌破来源的 55 分警报门槛、聚类不再收紧，或当前成分集合发生实质重组，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current forming narrative',
+                'evidence_label_zh': '打开当前成形叙事',
             })
             return brief
 

@@ -214,6 +214,17 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == rotation_brief['next_action']
                 assert rotation_brief['evidence_label'] in text
             report['checks'].append('Three rotation rollover families render breadth-aware limits and current-panel reassessment')
+            emergence_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                if brief.get('family') == 'emergence.narrative_forming')
+            emergence_brief = payload['explorer']['briefs'][emergence_id]
+            page.goto(url + '#view=explore&id=' + emergence_id, wait_until='domcontentloaded')
+            emergence_text = page.locator('#ac-detail').inner_text()
+            assert emergence_brief['limitation'] in emergence_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == emergence_brief['next_action']
+            assert emergence_brief['evidence_label'] in emergence_text
+            page.screenshot(path=str(out / 'desktop-forming-narrative.png'))
+            report['screenshots'].append('desktop-forming-narrative.png')
+            report['checks'].append('Forming narratives expose exact cluster verification without turning model score or watch names into trade authority')
             demand_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
                              if brief.get('family') == 'demand.demand_ahead')
             demand_brief = payload['explorer']['briefs'][demand_id]

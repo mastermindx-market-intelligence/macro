@@ -677,6 +677,79 @@ def test_rotation_family_specific_copy_abstains_on_unsupported_shapes():
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
 
 
+def test_emergence_narrative_forming_keeps_cluster_detection_context_only():
+    row = signal('emergence-forming', source='emergence', type_='narrative_forming',
+                 asset='6e6b1732126c')
+    row.update({
+        'tier': 'context', 'age_days': 5,
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'detail_zh': '评分 63.9（成形）；5 只个股共动收紧。关注：BILL, CPAY, GEN, DBX。供审阅的候选 — 非买入清单。',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'emergence.narrative_forming'
+    assert brief['attention'] == 'for_awareness'
+    assert 'score 63.9 (Forming)' in brief['implication']
+    assert '5 names tightening together' in brief['implication']
+    assert 'BILL, CPAY, GEN, DBX' in brief['implication']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'not a buy list' in brief['limitation']
+    assert 'no validated forward edge' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck forming narrative'
+    assert brief['evidence_label'] == 'Open current forming narrative'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_emergence_narrative_forming_fast_keeps_alert_bar_and_reformation_falsifier():
+    row = signal('emergence-fast', source='emergence', type_='narrative_forming',
+                 asset='b1eeeea0dba4')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 70.5 (Forming fast); 6 names tightening. Watch: PGNY, BILL, CPAY, GEN. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-b1eeeea0dba4',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'scores at least 55' in brief['next_action']
+    assert 'score falls below the source 55-point alert bar' in brief['reassessment']
+    assert 'constituent set materially re-forms' in brief['reassessment']
+
+
+def test_emergence_narrative_forming_abstains_on_score_anchor_or_shape_mismatch():
+    below = signal('emergence-below', source='emergence', type_='narrative_forming',
+                   asset='6e6b1732126c')
+    below.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 54.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+    })
+    wrong_anchor = signal('emergence-anchor', source='emergence', type_='narrative_forming',
+                          asset='6e6b1732126c')
+    wrong_anchor.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-deadbeefcafe',
+    })
+    malformed = signal('emergence-shape', source='emergence', type_='narrative_forming',
+                       asset='6e6b1732126c')
+    malformed.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9; buy these names now.',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+    })
+    rows = (below, wrong_anchor, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_demand_ahead_gets_expectations_gap_brief_without_mutation():
     row = signal('demand-ahead', source='demand', type_='demand_ahead', asset='AVGO')
     row.update({
