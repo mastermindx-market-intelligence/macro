@@ -157,25 +157,30 @@ def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -
 @pytest.mark.needs_full_checkout("site")
 def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
     html, _ = built
+    rates_voice = _empty_voice_from_snapshot(
+        next(section for section in builder.SECTIONS if section.id == "rates"))
+    print(f"p3 rates branch={rates_voice or 'stance'}")
     for section_id in ("money", "policy", "rates", "inflation"):
         panel = _panel(html, section_id)
         order = _child_classes(panel)
         assert order[0] == "mc-arrival", section_id
         assert "mc-panel-head" in order
-        if section_id == "rates":
-            # MINOR-E6: the empty card is the one voice; no stance echo.
+        # MINOR-E6: an empty card is the one voice and does not echo a stance.
+        # A section that published compared readings keeps the stance.
+        # Rates is decided from its workspace JSON, not from a pinned E2.
+        voice = rates_voice if section_id == "rates" else _empty_voice_from_snapshot(
+            next(section for section in builder.SECTIONS if section.id == section_id))
+        expect_no_stance = voice is not None
+        if expect_no_stance:
             assert "mc-stance" not in order, (section_id, order)
         else:
             assert "mc-stance" in order, (section_id, order)
         assert "mc-primer" in order
         assert "mc-figure" in order
-        # M2: a section-level empty (live #rates is E2) drops the caption.
-        # The hidden E5 <template> also carries data-mc-empty — ignore it.
         text = unescape(panel)
-        # Caption is a comparison claim. E2 (section empty) and I4
-        # (same-publication current-only, often only in the fragment)
-        # must not keep it.
-        if (section_id == "rates"
+        # Caption is a comparison claim. An empty card and a current-only
+        # figure must not keep it.
+        if (expect_no_stance
                 or "Only one reading is published so far" in text
                 or "Each row shows the last two readings" not in text):
             assert "mc-caption" not in order, (section_id, order)
@@ -183,7 +188,7 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
             assert "mc-caption" in order, (section_id, order)
         assert "mc-watch" in order
         assert "mc-details" in order
-        if section_id == "rates":
+        if expect_no_stance:
             assert order.index("mc-figure") < order.index("mc-watch")
         else:
             assert order.index("mc-stance") < order.index("mc-figure") < order.index("mc-watch")
@@ -193,24 +198,46 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
 
 @pytest.mark.needs_full_checkout("site")
 def test_p4_sections_have_stance_primer_caption_watch(built: tuple[str, Path]) -> None:
-    html, _ = built
-    # Live #rates is E2 — the empty card is the one voice, so 11 stances.
-    assert html.count('<p class="mc-stance') == 11
+    html, out = built
+    # MINOR-E6: an empty card is the one voice, so that section has no stance.
+    # The empty id is read from the workspace JSON (STALE_SOURCE / SOURCE_FAILED
+    # is the E2 card even when deltas exist). It is not asked of the builder.
+    voices = {}
+    for section in builder.SECTIONS:
+        if section.id == "overview":
+            voices[section.id] = None
+            continue
+        voices[section.id] = _empty_voice_from_snapshot(section)
+        print(
+            f"p4 voice branch={voices[section.id] or 'stance'} "
+            f"section={section.id}")
+    dropped = [section_id for section_id, voice in voices.items() if voice]
+    expected_stances = len(P3_IDS) + len(P4_IDS) - len(dropped)
+    assert html.count('<p class="mc-stance') == expected_stances, (expected_stances, dropped)
     assert html.count('<details class="mc-primer') == 12
     assert html.count('<div class="mc-watch') == 12
-    # P4-3 drops the caption on an E1/E2 figure. I4 also drops it when the
-    # figure is current-only (same-publication prior). Live data today is
-    # current-only, so the caption count is not the naive twelve.
     for section_id in P4_IDS:
         panel = _panel(html, section_id)
-        assert 'class="mc-stance' in panel, section_id
+        voice = voices[section_id]
         assert 'class="mc-primer' in panel, section_id
         assert 'class="mc-watch' in panel, section_id
         assert 'class="mc-panel-question"' in panel, section_id
         # P4 primers ship closed — open-by-default stays the first three.
         assert 'class="mc-primer" open' not in panel, section_id
+        if voice:
+            assert 'class="mc-stance' not in panel, section_id
+            fragment = unescape(
+                (out / "macro" / "fragments" / f"{section_id}.html")
+                .read_text(encoding="utf-8"))
+            assert f'data-mc-empty="{voice}"' in fragment, section_id
+            title = L.EMPTY_STATES[voice]["title"]
+            assert title["en"] in fragment, (section_id, voice)
+            assert title["zh"] in fragment, (section_id, voice)
+        else:
+            assert 'class="mc-stance' in panel, section_id
         text = unescape(panel)
-        if ("Today's number didn't arrive" in text
+        if (voice
+                or "Today's number didn't arrive" in text
                 or "Only one reading is published so far" in text
                 or "Each row shows the last two readings" not in text):
             assert 'class="mc-caption' not in panel, section_id
@@ -346,13 +373,22 @@ def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
 
 @pytest.mark.needs_full_checkout("site")
 def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
-        built: tuple[str, Path]) -> None:
-    """M6 / MINOR-E6: #rates is E2 — the empty card speaks once.
+        tmp_path: Path, built: tuple[str, Path]) -> None:
+    """M6 / MINOR-E6: a STALE rates card is E2 — the empty card speaks once.
 
+    The fixture still carries four compared readings. Stale wins: the card
+    is E2, not the structural "no single reading" stance and not those rows.
     The empty figure lives in the fragment (JS hydrates `[data-mc-figure]`);
     the panel shell must not repeat the title as a stance line.
+
+    The committed hub follows the live rates snapshot. CURRENT with compared
+    readings is a comparison, not an E2 card.
     """
-    html, out = built
+    snapshot = _load_p5_fixture("rates_e2_stale.json")
+    assert snapshot["availability"]["state"] == "STALE_SOURCE"
+    assert len(snapshot["changes"]["deltas"]) == 4
+    html, out = _bake_hub(
+        _fixture_entries({"rates_curves": snapshot}), tmp_path)
     rates = unescape(_panel(html, "rates"))
     fragment = unescape(
         (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8"))
@@ -363,6 +399,27 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
     assert "No single reading is published here" not in rates
     assert "Each row shows the last two readings" not in rates
     assert "hasn't arrived" in unescape(html)  # strip chip stays the transient voice
+    live_html, live_out = built
+    live_snap = _workspace_snapshot("rates_curves")
+    live_state = (live_snap.get("availability") or {}).get("state")
+    n_deltas = len((live_snap.get("changes") or {}).get("deltas") or [])
+    print(f"rates live branch={live_state} deltas={n_deltas}")
+    live_rates = unescape(_panel(live_html, "rates"))
+    live_fragment = unescape(
+        (live_out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8"))
+    if live_state in _E2_AVAILABILITY:
+        assert 'data-mc-empty="e2"' in live_fragment
+        assert "No reading arrived today." in live_fragment
+        assert "mc-stance" not in live_rates
+        assert "Each row shows the last two readings" not in live_rates
+    else:
+        assert 'data-mc-empty="e2"' not in live_fragment
+        assert "No reading arrived today." not in live_fragment
+        assert "mc-stance" in live_rates
+        assert (
+            f"{n_deltas} readings compared against the previous publication"
+            in live_fragment
+        ), n_deltas
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -420,24 +477,29 @@ def test_built_hub_coverage_uses_populated_tally_and_some_unread(
         r'class="mc-stance mq-tone-(\w+)".*?class="mc-stance-text">(.*?)</span>',
         overview, re.S)
     assert stance, "Overview lost its stance"
-    assert stance.group(1) == "warn"
     text = re.sub(r"<[^>]+>", "", stance.group(2))
-    assert "Some desks have not reported yet" in text
-    assert CURRENT_ONLY_DECK_EN in text
-    assert MOVEMENT_DECK_EN not in text
-    assert "Every desk reported today" not in overview
-    assert "Every desk reported today" not in html
+    key = _assert_overview_deck(overview)
+    assert L.STANCES["overview"][key]["en"] in text
     plain = unescape(html)
     note = re.search(r"(\d+) of (\d+) sections have today's data", plain)
     assert note, "coverage chip lost its counted note"
     available, total = int(note.group(1)), int(note.group(2))
     populated_ids = set(P3_IDS + P4_IDS)
     assert total == len(populated_ids)
-    assert available < total
+    assert (available, total) == _json_coverage_tally()
     assert (available, total) == builder.populated_section_coverage_tally(
         _live_entries(), populated_ids)
     opening = re.search(r'<p class="mc-stance[^"]*"', overview)
-    assert opening and "mq-tone-ok" not in opening.group(0)
+    assert opening
+    if key.startswith("all_read"):
+        assert stance.group(1) == "ok"
+        assert "mq-tone-ok" in opening.group(0)
+        assert "Some desks have not reported yet" not in text
+    else:
+        assert stance.group(1) == "warn"
+        assert "mq-tone-ok" not in opening.group(0)
+        assert "Every desk reported today" not in overview
+        assert "Every desk reported today" not in html
 
 
 def _live_entries() -> list[dict]:
@@ -461,6 +523,236 @@ def _live_entries() -> list[dict]:
 def _figure_is_current_only(section: dict) -> bool:
     rows = list((section.get("figure") or {}).get("rows") or [])
     return bool(rows) and all(row.get("kind") == "current" for row in rows)
+
+
+# SOURCE_FAILED / STALE_SOURCE are the E2 card even when deltas exist.
+# The card is the one voice: no second stance (MINOR-E6).
+_E2_AVAILABILITY = frozenset({"SOURCE_FAILED", "STALE_SOURCE"})
+P5_FIXTURES = ROOT / "tests" / "fixtures" / "macro_command_p5"
+_DECK_KEY = {
+    ("movement", True): "all_read",
+    ("movement", False): "some_unread",
+    ("current", True): "all_read_current",
+    ("current", False): "some_unread_current",
+    ("mixed", True): "all_read_mixed",
+    ("mixed", False): "some_unread_mixed",
+}
+
+
+def _reading_present(value: object) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+    )
+
+
+def _load_p5_fixture(name: str) -> dict:
+    return json.loads((P5_FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def _workspace_snapshot(workspace_id: str) -> dict:
+    path = DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _json_has_comparable_rows(snap: dict) -> bool:
+    """Comparable prior/current/delta rows. Not an E2 decision."""
+    changes = snap.get("changes") or {}
+    if changes.get("comparability") != "COMPARABLE":
+        return False
+    for delta in changes.get("deltas") or []:
+        if all(_reading_present(delta.get(key)) for key in (
+                "prior_value", "current_value", "delta")):
+            return True
+    return False
+
+
+def _stance_workspace_id(section) -> str | None:
+    """First sub-tab whose headline status is PRESENT; else the section's own."""
+    if section.subtabs:
+        for tab in section.subtabs:
+            snap = _workspace_snapshot(tab.workspace_id)
+            if (snap.get("headline") or {}).get("status") == "PRESENT":
+                return tab.workspace_id
+        return section.subtabs[0].workspace_id
+    return section.workspace_id or None
+
+
+def _empty_voice_from_snapshot(section) -> str | None:
+    """Empty-card id from the workspace JSON. None means the section keeps its stance.
+
+    STALE_SOURCE and SOURCE_FAILED are the E2 card and no second stance, even
+    when the snapshot still carries deltas. No date and no comparable rows,
+    and not a structural "not applicable", is E1. Anything else with no
+    comparable rows is E3. This does not call the builder.
+    """
+    workspace_id = _stance_workspace_id(section)
+    if not workspace_id:
+        return None
+    snap = _workspace_snapshot(workspace_id)
+    state = (snap.get("availability") or {}).get("state")
+    if state in _E2_AVAILABILITY:
+        return "e2"
+    headline = snap.get("headline") or {}
+    has_date = bool(headline.get("effective_date"))
+    not_applicable = headline.get("null_reason") == "NOT_APPLICABLE"
+    if _json_has_comparable_rows(snap):
+        return None
+    if not has_date and not not_applicable:
+        return "e1"
+    return "e3"
+
+
+def _fixture_entries(snapshots: dict) -> list[dict]:
+    entries = []
+    for page in builder.SUITE_PAGES:
+        identity = builder._identity(page)
+        snap = snapshots.get(page.workspace_id)
+        entries.append({
+            "workspace_id": page.workspace_id,
+            "region": page.region,
+            "output": page.output,
+            "title": identity["title"],
+            "subtitle": identity["subtitle"],
+            "snapshot": snap,
+            "failure": None if snap else {"kind": "NOT_COVERED"},
+        })
+    return entries
+
+
+def _bake_hub(entries: list[dict], tmp_path: Path) -> tuple[str, Path]:
+    out = tmp_path / "site"
+    env = builder._environment(ROOT)
+    dest = builder.build_hub(
+        entries, out_dir=out, env=env, page_built_at=BUILT_AT, root=ROOT)
+    return dest.read_text(encoding="utf-8"), out
+
+
+def _json_coverage_tally() -> tuple[int, int]:
+    """Sections whose primary workspace availability is CURRENT, plus Overview."""
+    available = 0
+    total = 0
+    for section in builder.SECTIONS:
+        total += 1
+        if section.id == "overview":
+            available += 1
+            continue
+        workspace_id = builder._section_coverage_workspace(section.id)
+        state = None
+        if workspace_id:
+            state = (
+                _workspace_snapshot(workspace_id).get("availability") or {}
+            ).get("state")
+        if state == "CURRENT":
+            available += 1
+    return available, total
+
+
+def _json_deck_mode() -> str:
+    """Movement / current / mixed from the snapshots, in registry order.
+
+    Same row rule the hub uses: an earlier prior with a comparable delta is
+    a movement row; a present current value that is not movement is current.
+    The deck is the first HUB_CHANGE_LIMIT rows, not the whole pool.
+    """
+    kinds: list[str] = []
+    for page in builder.SUITE_PAGES:
+        snap = _workspace_snapshot(page.workspace_id)
+        changes = snap.get("changes") or {}
+        headline_date = (snap.get("headline") or {}).get("effective_date")
+        earlier = macro_suite_view.prior_publication_is_earlier(
+            changes.get("prior_effective_date"), headline_date)
+        no_earlier = changes.get("comparability") == "NO_EARLIER_PUBLICATION"
+        for delta in changes.get("deltas") or []:
+            prior_ok = _reading_present(delta.get("prior_value"))
+            current_ok = _reading_present(delta.get("current_value"))
+            raw_delta = delta.get("delta")
+            delta_ok = _reading_present(raw_delta)
+            if prior_ok and current_ok and raw_delta is None and not no_earlier:
+                delta_ok = True
+            comparable = prior_ok and current_ok and delta_ok
+            is_movement = bool(earlier and comparable)
+            if is_movement or current_ok:
+                kinds.append("movement" if is_movement else "current")
+    shown = kinds[:macro_suite_view.HUB_CHANGE_LIMIT]
+    if not shown:
+        return "none"
+    if all(kind == "movement" for kind in shown):
+        return "movement"
+    if all(kind == "current" for kind in shown):
+        return "current"
+    return "mixed"
+
+
+def _shown_movement_signs() -> list[str | None]:
+    """Sign of each movement row in the deck window. Current rows are omitted."""
+    signs: list[str | None] = []
+    rows: list[tuple[str, float | None]] = []
+    for page in builder.SUITE_PAGES:
+        snap = _workspace_snapshot(page.workspace_id)
+        changes = snap.get("changes") or {}
+        headline_date = (snap.get("headline") or {}).get("effective_date")
+        earlier = macro_suite_view.prior_publication_is_earlier(
+            changes.get("prior_effective_date"), headline_date)
+        no_earlier = changes.get("comparability") == "NO_EARLIER_PUBLICATION"
+        for delta in changes.get("deltas") or []:
+            prior_ok = _reading_present(delta.get("prior_value"))
+            current_ok = _reading_present(delta.get("current_value"))
+            raw_delta = delta.get("delta")
+            delta_ok = _reading_present(raw_delta)
+            if prior_ok and current_ok and raw_delta is None and not no_earlier:
+                raw_delta = float(delta["current_value"]) - float(delta["prior_value"])
+                delta_ok = True
+            comparable = prior_ok and current_ok and delta_ok
+            is_movement = bool(earlier and comparable)
+            if not (is_movement or current_ok):
+                continue
+            sign = None
+            if is_movement and delta_ok:
+                number = float(raw_delta)
+                if abs(number) < 1e-12:
+                    sign = "flat"
+                elif number > 0:
+                    sign = "up"
+                else:
+                    sign = "down"
+            rows.append(("movement" if is_movement else "current", sign))
+    for kind, sign in rows[:macro_suite_view.HUB_CHANGE_LIMIT]:
+        if kind == "movement":
+            signs.append(sign)
+    return signs
+
+
+def _overview_deck_key() -> str:
+    mode = _json_deck_mode()
+    available, total = _json_coverage_tally()
+    if mode == "none":
+        raise AssertionError("overview mode 'none' has no deck sentence")
+    key = _DECK_KEY[(mode, available == total)]
+    print(
+        f"overview deck branch={key} mode={mode} "
+        f"available={available} total={total}")
+    return key
+
+
+def _assert_overview_deck(overview_html: str) -> str:
+    """The one deck sentence for this JSON state, in English and Chinese.
+
+    An all-read movement deck uses ``all_read``, which does not contain
+    "What moved below is what we do have." A some-unread movement deck does.
+    """
+    key = _overview_deck_key()
+    plain = unescape(overview_html)
+    chosen = L.STANCES["overview"][key]
+    assert plain.count(chosen["en"]) == 1, key
+    assert plain.count(chosen["zh"]) == 1, key
+    for other, pair in L.STANCES["overview"].items():
+        if other == key:
+            continue
+        assert pair["en"] not in plain, other
+        assert pair["zh"] not in plain, other
+    return key
 
 
 def test_all_populated_current_uses_all_read_stance() -> None:
@@ -747,13 +1039,17 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
 def test_production_path_ignores_contract_forbidden_fixture_keys() -> None:
     """m-e: without --empty-state-fixture the production builder ignores
     entitlement and withheld_command_tabs exactly as additionalProperties:false
-    requires."""
-    entries = copy.deepcopy(_live_entries())
-    for entry in entries:
-        if entry["workspace_id"] == "liquidity_central_banks":
-            entry["snapshot"]["withheld_command_tabs"] = ["central_banks"]
-        if entry["workspace_id"] == "inflation_system":
-            entry["snapshot"]["entitlement"] = "Research"
+    requires.
+
+    The banks and inflation snapshots are the committed fixture: each would
+    draw a figure, and each also carries a contract-forbidden key. Production
+    must ignore the key and keep the figure. The live banks card follows the
+    workspace JSON: STALE_SOURCE is the E2 card, not a missing empty.
+    """
+    fixture = _load_p5_fixture("forbidden_fixture_keys.json")
+    assert fixture["liquidity_central_banks"]["withheld_command_tabs"] == ["central_banks"]
+    assert fixture["inflation_system"]["entitlement"] == "Research"
+    entries = _fixture_entries(fixture)
     assert builder._entitlement_plan(
         {"entitlement": "Research"}, allow_fixture_keys=False) is None
     assert builder._command_tab_withheld(
@@ -774,6 +1070,24 @@ def test_production_path_ignores_contract_forbidden_fixture_keys() -> None:
         assert inflation["figure"].get("state_line")
     else:
         assert inflation["caption"] is not None
+    banks_state = (
+        _workspace_snapshot("liquidity_central_banks").get("availability") or {}
+    ).get("state")
+    print(f"banks live branch={banks_state}")
+    live_sections = builder._macro_command_sections(
+        _live_entries(), page_built_at=BUILT_AT)
+    live_money = next(s for s in live_sections if s["id"] == "money")
+    live_banks = next(t for t in live_money["subtabs"] if t["id"] == "central_banks")
+    if banks_state in _E2_AVAILABILITY:
+        assert (live_banks.get("empty") or {}).get("id") == "e2"
+        assert live_banks["figure"] is None
+        assert (live_banks.get("empty") or {}).get("id") != "e4"
+    elif _json_has_comparable_rows(_workspace_snapshot("liquidity_central_banks")):
+        assert live_banks["empty"] is None
+        assert live_banks["figure"] is not None
+    else:
+        assert live_banks["empty"] is not None
+        assert live_banks["empty"]["id"] != "e4"
 
 
 def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
@@ -1118,11 +1432,13 @@ def test_i4_exploding_compare_is_current_only(monkeypatch) -> None:
     assert figure["state_line"] == dict(L.COUNT["same_publication"])
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
-        built: tuple[str, Path]) -> None:
+        tmp_path: Path) -> None:
     """N5-M1: same-publication prior → current-only deck sentence once, EN+ZH."""
-    html, _ = built
+    snapshot = _load_p5_fixture("same_publication_deck.json")
+    assert snapshot["changes"]["prior_effective_date"] == snapshot["headline"]["effective_date"]
+    html, _out = _bake_hub(
+        _fixture_entries({"liquidity_regime": snapshot}), tmp_path)
     overview = unescape(_panel(html, "overview"))
     assert overview.count(CURRENT_ONLY_DECK_EN) == 1
     assert overview.count(CURRENT_ONLY_DECK_ZH) == 1
@@ -1133,6 +1449,7 @@ def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
     # One voice: the figure state line is not repeated under the stance.
     assert "Only one reading is published so far" not in overview
     assert "目前只有一次读数" not in overview
+    assert "mq-delta-flat" not in overview
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -1182,11 +1499,25 @@ def test_i4_live_hub_does_not_claim_a_comparison_it_did_not_make(
         built: tuple[str, Path]) -> None:
     html, _ = built
     overview = unescape(_panel(html, "overview"))
-    assert overview.count(CURRENT_ONLY_DECK_EN) == 1
-    assert overview.count(CURRENT_ONLY_DECK_ZH) == 1
+    key = _assert_overview_deck(overview)
+    mode = _json_deck_mode()
+    if mode == "movement":
+        assert "compared readings" in overview
+    elif mode == "current":
+        assert "compared readings" not in overview
+    if any(sign == "flat" for sign in _shown_movement_signs()):
+        assert "mq-delta-flat" in overview
+    else:
+        assert "mq-delta-flat" not in overview
     assert "compared against the previous publication" not in overview
-    assert "mq-delta-flat" not in overview
     assert "Only one reading is published so far" not in overview
+    # all_read movement does not wear the some-unread sentence.
+    if key == "all_read":
+        assert MOVEMENT_DECK_EN not in overview
+        assert MOVEMENT_DECK_ZH not in overview
+    elif key == "some_unread":
+        assert overview.count(MOVEMENT_DECK_EN) == 1
+        assert overview.count(MOVEMENT_DECK_ZH) == 1
 
 
 def test_i3_arrival_punctuation_lives_inside_the_t_pair() -> None:
@@ -1281,9 +1612,37 @@ def test_r6_m2_pure_movement_overview_keeps_movement_voice() -> None:
     ])
     assert builder._figure_mode(section["figure"]["rows"]) == "movement"
     assert "and what moved" in section["question"]["en"]
+    assert section["stance"]["text"]["en"] == L.STANCES["overview"]["some_unread"]["en"]
+    assert section["stance"]["text"]["zh"] == L.STANCES["overview"]["some_unread"]["zh"]
+    assert MOVEMENT_DECK_EN in section["stance"]["text"]["en"]
+    assert MOVEMENT_DECK_ZH in section["stance"]["text"]["zh"]
     assert MIXED_DECK_EN not in section["stance"]["text"]["en"]
     assert CURRENT_ONLY_DECK_EN not in section["stance"]["text"]["en"]
     assert section["figure"]["state_line"] is None
+    assert [row["kind"] for row in section["figure"]["rows"]] == [
+        "movement", "movement"]
+
+
+def test_r6_m2_all_read_movement_uses_the_all_read_sentence() -> None:
+    """All-read movement does not wear the some-unread sentence.
+
+    ``all_read`` is "Every desk reported today. Start with what moved…".
+    It does not contain "What moved below is what we do have."
+    """
+    section = _overview_from_rows([
+        {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+         "sign": "up"},
+        {"kind": "movement", "prior": "3", "current": "3", "delta": "0",
+         "sign": "flat"},
+    ], available=5, total=5)
+    text = section["stance"]["text"]
+    assert text["en"] == L.STANCES["overview"]["all_read"]["en"]
+    assert text["zh"] == L.STANCES["overview"]["all_read"]["zh"]
+    assert MOVEMENT_DECK_EN not in text["en"]
+    assert MOVEMENT_DECK_ZH not in text["zh"]
+    assert "Some desks have not reported yet" not in text["en"]
+    assert section["stance"]["tone"] == "ok"
+    assert "and what moved" in section["question"]["en"]
     assert [row["kind"] for row in section["figure"]["rows"]] == [
         "movement", "movement"]
 

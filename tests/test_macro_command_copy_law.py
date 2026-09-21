@@ -1861,42 +1861,162 @@ def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
     assert inflation["en"] == "Faster price rises, across fewer categories."
 
 
-def test_vector_axes_resolve_by_id_not_list_order() -> None:
-    """M2: ids come from committed builder payloads; list order does not bind."""
+def _render_workspace_html(workspace_id: str, snapshot: dict) -> str:
+    """Bake one suite page from a snapshot. Does not read or write site/."""
+    from lib import macro_suite_view
+    page = next(item for item in builder.SUITE_PAGES if item.workspace_id == workspace_id)
+    artifact = {
+        "path": f"macrodata/workspaces/{workspace_id}/US/latest.json",
+        "manifest_path": "macrodata/workspaces/manifest.json",
+        "sha256": "fixture",
+        "bytes": 1,
+        "min_client_contract": builder.MIN_CLIENT_CONTRACT,
+    }
+    view = macro_suite_view.build_view(
+        snapshot, page_built_at=BUILT_AT, artifact=artifact,
+        layout=builder._layout_for(workspace_id))
+    return builder.render_page(builder._environment(ROOT), page, view)
+
+
+def _assert_one_lineage_kind(html: str, kind: str) -> None:
+    """The page states this kind's fact and its Chinese sentence, and no other kind."""
+    from lib.macro_suite_disclosure import (
+        LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
+    )
+    for other, fact in LINEAGE_NOTE_KIND_FACTS.items():
+        zh = LINEAGE_NOTE_KIND_SENTENCES[other]["zh"]
+        if other == kind:
+            assert fact in html, kind
+            assert zh in html, kind
+        else:
+            assert fact not in html, other
+            assert zh not in html, other
+    assert "A correction note is on file for this reading." not in html
+    assert "cannot summarise the correction note yet" not in html
+
+
+def _assert_live_lineage_matches_note(workspace_id: str, page_name: str) -> None:
+    """The committed page says the sentence its corrections.note actually is."""
+    import json
+    from lib.macro_suite_disclosure import classify_lineage_kind
+    snap = json.loads(
+        (DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json")
+        .read_text(encoding="utf-8"))
+    note = (snap.get("corrections") or {}).get("note")
+    kind = classify_lineage_kind(note)
+    html = (ROOT / "site" / page_name).read_text(encoding="utf-8")
+    print(f"lineage branch={kind} page={page_name}")
+    _assert_one_lineage_kind(html, kind)
+
+
+def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
+    """List order does not bind. Swapping the items keeps the same ids and move."""
     from lib.macro_suite_disclosure import resolve_vector_axes
     from lib.macro_suite_labels import vector_move_pair
     from lib.macro_suite_view import _headline
+    assert vector.get("x_axis_id") and vector.get("y_axis_id")
+    got_x, got_y = resolve_vector_axes(items, vector)
+    assert got_x["axis_id"] == vector["x_axis_id"]
+    assert got_y["axis_id"] == vector["y_axis_id"]
+    # The fixture stores y first. A positional bind would name that item as x.
+    if items and items[0].get("axis_id") != vector["x_axis_id"]:
+        assert got_x["axis_id"] != items[0]["axis_id"]
+    swapped = list(reversed(items))
+    again_x, again_y = resolve_vector_axes(swapped, vector)
+    assert again_x["axis_id"] == got_x["axis_id"]
+    assert again_y["axis_id"] == got_y["axis_id"]
+    if vector.get("status") == "PRESENT":
+        first = vector_move_pair(vector.get("dx"), vector.get("dy"), got_x, got_y)
+        second = vector_move_pair(vector.get("dx"), vector.get("dy"), again_x, again_y)
+        assert first == second
+        view = _headline(snap, swapped)
+        assert view["vector"]["x_axis_id"] == vector["x_axis_id"]
+        assert view["vector"]["y_axis_id"] == vector["y_axis_id"]
+        if view["vector"]["move"]:
+            assert view["vector"]["move"] == first
+
+
+def test_vector_axes_resolve_by_id_not_list_order() -> None:
+    """M2: ids come from committed builder payloads; list order does not bind.
+
+    The pair scenario is a committed fixture, so a workspace that later drops
+    its vector cannot erase the law. A live workspace with no resolvable pair
+    must not invent a move, and a planted axis list must not bind by position.
+    """
     import json
-    for page in builder.SUITE_PAGES:
-        path = DATA_ROOT / "workspaces" / page.workspace_id / page.region / "latest.json"
-        snap = json.loads(path.read_text(encoding="utf-8"))
-        items = list((snap.get("axes") or {}).get("items") or [])
-        vector = (snap.get("headline") or {}).get("one_month_vector") or {}
-        assert "x_axis_id" in vector and "y_axis_id" in vector, page.output
-        if len(items) < 2:
-            continue
-        assert vector["x_axis_id"] and vector["y_axis_id"], page.output
-        got_x, got_y = resolve_vector_axes(items, vector)
-        assert got_x["axis_id"] == vector["x_axis_id"]
-        assert got_y["axis_id"] == vector["y_axis_id"]
-        swapped = list(reversed(items))
-        again_x, again_y = resolve_vector_axes(swapped, vector)
-        assert again_x["axis_id"] == got_x["axis_id"]
-        assert again_y["axis_id"] == got_y["axis_id"]
-        if vector.get("status") == "PRESENT":
-            first = vector_move_pair(vector.get("dx"), vector.get("dy"), got_x, got_y)
-            second = vector_move_pair(vector.get("dx"), vector.get("dy"), again_x, again_y)
-            assert first == second
-            view = _headline(snap, swapped)
-            assert view["vector"]["x_axis_id"] == vector["x_axis_id"]
-            assert view["vector"]["y_axis_id"] == vector["y_axis_id"]
-            if view["vector"]["move"]:
-                assert view["vector"]["move"] == first
+    from html import unescape
+    from lib.macro_suite_disclosure import resolve_vector_axes
+    from lib.macro_suite_labels import vector_move_pair
+    from lib.macro_suite_view import _headline
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "vector_axes_by_id.json").read_text(encoding="utf-8"))
+    fixture_items = list(fixture["axes"]["items"])
+    fixture_vector = fixture["headline"]["one_month_vector"]
+    assert fixture_items[0]["axis_id"] != fixture_vector["x_axis_id"]
+    assert len(fixture_items) >= 2
+    print("vector-axes branch=fixture-resolve-by-id")
+    _assert_axes_resolve_by_id(fixture_items, fixture_vector, fixture)
     with pytest.raises(KeyError, match="missing required x_axis_id"):
         resolve_vector_axes(
             [{"axis_id": "a"}, {"axis_id": "b"}],
             {},
         )
+    resolved = 0
+    no_pair = 0
+    planted = (
+        {"axis_id": "funding_pressure"},
+        {"axis_id": "balance_sheet_support"},
+    )
+    cant_show = (
+        "We can't show the move yet — there is nothing comparable to measure it against."
+    )
+    for page in builder.SUITE_PAGES:
+        path = DATA_ROOT / "workspaces" / page.workspace_id / page.region / "latest.json"
+        snap = json.loads(path.read_text(encoding="utf-8"))
+        items = list((snap.get("axes") or {}).get("items") or [])
+        raw_vector = (snap.get("headline") or {}).get("one_month_vector")
+        page_html = unescape(
+            (ROOT / "site" / page.output).read_text(encoding="utf-8"))
+        ids_ready = (
+            isinstance(raw_vector, dict)
+            and raw_vector.get("x_axis_id")
+            and raw_vector.get("y_axis_id")
+            and len(items) >= 2
+        )
+        if ids_ready:
+            print(f"vector-axes branch=resolve-by-id workspace={page.workspace_id}")
+            _assert_axes_resolve_by_id(items, raw_vector, snap)
+            if raw_vector.get("status") == "PRESENT":
+                got_x, got_y = resolve_vector_axes(items, raw_vector)
+                move = vector_move_pair(
+                    raw_vector.get("dx"), raw_vector.get("dy"), got_x, got_y)
+                assert move["en"] in page_html, page.output
+                assert move["zh"] in page_html, page.output
+            resolved += 1
+            continue
+        print(
+            f"vector-axes branch=no-pair workspace={page.workspace_id} "
+            f"vector_null={raw_vector is None} n_items={len(items)}")
+        view = _headline(snap, items)
+        assert view["vector"]["present"] is False, page.output
+        assert view["vector"]["move"] is None, page.output
+        assert not view["vector"]["x_axis_id"], page.output
+        assert not view["vector"]["y_axis_id"], page.output
+        with pytest.raises(KeyError, match="missing required x_axis_id"):
+            resolve_vector_axes(
+                list(planted),
+                raw_vector if isinstance(raw_vector, dict) else {},
+            )
+        assert cant_show in page_html, page.output
+        invented = vector_move_pair(
+            0.4, -0.2,
+            {"axis_id": "funding_pressure"},
+            {"axis_id": "balance_sheet_support"})
+        assert invented["en"] not in page_html, page.output
+        no_pair += 1
+    assert resolved >= 1, "no live workspace published a resolvable axis pair"
+    assert no_pair >= 1, "no live workspace lacked a resolvable axis pair"
 
 
 def test_visible_text_parser_treats_void_elements_as_self_closing() -> None:
@@ -2087,10 +2207,18 @@ def test_unknown_lineage_fallback_is_typed_and_warns(capsys) -> None:
 
 @pytest.mark.needs_full_checkout("site")
 def test_financial_conditions_page_shows_no_change_republication() -> None:
-    html = (ROOT / "site" / "macro_financial_conditions.html").read_text(
-        encoding="utf-8")
+    """No-change republication is a fixture scenario. The committed page
+    follows whatever kind its corrections.note actually is."""
+    import json
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "fc_no_change_republication.json").read_text(encoding="utf-8"))
+    html = _render_workspace_html("financial_conditions", fixture)
     assert "no-change republication" in html
     assert "A correction note is on file for this reading." not in html
+    _assert_one_lineage_kind(html, "no_change_republication")
+    _assert_live_lineage_matches_note(
+        "financial_conditions", "macro_financial_conditions.html")
 
 
 def test_hysteresis_note_distinguishes_configured_from_unused() -> None:
@@ -2153,21 +2281,44 @@ def test_trace_row_present_iff_trace_ref() -> None:
     assert "mq-trace" in src
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_restored_row_families_on_non_composite_page() -> None:
-    html = (ROOT / "site" / "macro_monetary_policy.html").read_text(
-        encoding="utf-8")
+_RESTORED_ROW_PAIRS = (
+    ("Method version", "方法版本"),
+    ("Changed fingerprints", "已变更指纹"),
+    ("Hysteresis", "滞回"),
+    ("replaces the prior one", "本期取代上一期"),
+)
+
+
+def _assert_restored_row_family(html: str) -> None:
     assert "mq-axis-method" not in html
-    for en, zh in (
-        ("Method version", "方法版本"),
-        ("Changed fingerprints", "已变更指纹"),
-        ("Hysteresis", "滞回"),
-        ("replaces the prior one", "本期取代上一期"),
-    ):
+    for en, zh in _RESTORED_ROW_PAIRS:
         assert en in html, en
         assert zh in html, zh
     assert "Definition version" in html
     assert "A correction note is on file for this reading." not in html
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_restored_row_families_on_non_composite_page() -> None:
+    """Value-correction rows are a fixture scenario. The committed page
+    keeps the row family and the sentence its own note classifies as."""
+    import json
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "mp_value_correction.json").read_text(encoding="utf-8"))
+    baked = _render_workspace_html("monetary_policy", fixture)
+    _assert_restored_row_family(baked)
+    _assert_one_lineage_kind(baked, "value_correction")
+    live = (ROOT / "site" / "macro_monetary_policy.html").read_text(
+        encoding="utf-8")
+    assert "mq-axis-method" not in live
+    for en, zh in _RESTORED_ROW_PAIRS[:3]:
+        assert en in live, en
+        assert zh in live, zh
+    assert "Definition version" in live
+    assert "A correction note is on file for this reading." not in live
+    _assert_live_lineage_matches_note(
+        "monetary_policy", "macro_monetary_policy.html")
 
 
 @pytest.mark.needs_full_checkout("mockups")
