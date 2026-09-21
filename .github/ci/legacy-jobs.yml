@@ -9869,6 +9869,12 @@ jobs:
       # immediately above.
       - name: public glossary directory (view-model contract + rendered-page wiring)
         run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
+      # Global Market Cycles is a public rendered surface, but its bespoke builder is
+      # outside build_public_pages.py. Keep its new measured-pulse contract in this
+      # public-render code gate so contract-delta cannot accept a test that no PR pack
+      # executes. The suite is file-contract only and needs no dependency widening.
+      - name: Global Market Cycles measured regime pulse contract
+        run: python -m pytest tests/test_markets_global_regime_pulse.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
