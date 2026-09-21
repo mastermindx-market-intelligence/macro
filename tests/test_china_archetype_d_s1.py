@@ -147,7 +147,7 @@ def test_four_driver_synthesis_is_a_compact_rail_over_existing_dialogs() -> None
     assert 'class="cnx-driver-rail"' in TPL
     assert "{{ t('Why this regime','为什么这样判断') }}" in TPL
     for dialog in ("cnx-dlg-policy", "cnx-dlg-flows", "cnx-dlg-risk", "cnx-dlg-property"):
-        assert f"onclick="cnxOpenDlg('{dialog}')"" in TPL
+        assert f"onclick=\"cnxOpenDlg(\'{dialog}\')\"" in TPL
 
     # The synthesis is a glance layer only; the accepted deep module rows remain.
     for marker in (
