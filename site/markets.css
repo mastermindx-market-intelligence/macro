@@ -214,9 +214,21 @@
   .grp-map { padding: 11px 10px 10px; }
   .grp-axis-labels { font-size: 8.5px; }
   .grp-track { margin-inline: 6px; }
-  .grp-buckets { grid-template-columns: 1fr; }
-  .grp-bucket { display: grid; grid-template-columns: 82px 1fr; align-items: start; gap: 6px; }
-  .grp-bucket > b { margin: 3px 0 0; }
+  .grp-buckets {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .grp-bucket {
+    flex: 0 0 auto;
+    min-width: 210px;
+    max-width: 250px;
+    scroll-snap-align: start;
+  }
+  .grp-bucket > b { margin: 0 0 5px; }
   .grp-source-key { justify-content: flex-start; }
 }
 

@@ -100,6 +100,19 @@ def test_global_pulse_css_has_mobile_reduction_and_no_literal_hex():
     assert not re.search(r"#[0-9a-fA-F]{3,8}\b", block)
 
 
+def test_mobile_bucket_groups_scroll_horizontally_instead_of_stacking():
+    src = CSS.read_text(encoding="utf-8")
+    start = src.index("@media (max-width: 760px)")
+    mobile = src[start: src.index("/* ---- two-up:", start)]
+    assert ".grp-buckets {" in mobile
+    assert "display: flex" in mobile
+    assert "overflow-x: auto" in mobile
+    assert "scroll-snap-type: x proximity" in mobile
+    assert ".grp-bucket {" in mobile
+    assert "min-width: 210px" in mobile
+    assert "scroll-snap-align: start" in mobile
+
+
 def test_built_markets_page_contains_global_pulse_when_present():
     if not BUILT.exists():
         return
@@ -117,6 +130,7 @@ def test_built_markets_page_keeps_asset_stamps_and_defer_contract():
         return
     html = BUILT.read_text(encoding="utf-8")
     assert re.search(r'href="theme\.css\?v=[0-9a-f]{8}"', html)
+    assert re.search(r'href="markets\.css\?v=[0-9a-f]{8}"', html)
     assert re.search(r'href="navigation-refresh\.css\?v=[0-9a-f]{8}"', html)
     assert re.search(r'src="markets_app\.js\?v=[0-9a-f]{8}" defer', html)
     assert re.search(r'src="theme\.js\?v=[0-9a-f]{8}" defer', html)
