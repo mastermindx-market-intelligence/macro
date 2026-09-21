@@ -390,7 +390,7 @@ jobs:
         with:
           node-version: "20"
       - name: install test deps
-        run: pip install pytest
+        run: pip install pytest pyyaml requests
       - name: admin JS must have no out-of-scope references (eslint no-undef)
         run: python3 scripts/check_admin_js.py
       - name: guard tests (real tree + planted #3693 offender, fail-closed in CI)
@@ -404,6 +404,10 @@ jobs:
       # them. Pure Python: no node, so a minimal pip lane cannot disarm it.
       - name: inline handler attributes must not interpolate JS string literals
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
+      - name: Prophet rotation diagnostic producer and executed renderer contracts
+        run: |
+          node --version
+          python -m pytest tests/test_prophet_rotation_diagnostics.py tests/test_prophet_rotation_diagnostics_ui.py tests/test_prophet_rotation_diagnostics_integration.py tests/test_admin_prophet.py -q
 
   path-prune-lint:
     if: ${{ false }}
