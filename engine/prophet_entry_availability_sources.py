@@ -21,6 +21,7 @@ from typing import Mapping, Sequence
 
 from engine.prophet_entry_availability import evaluate_entry_availability
 from engine.prophet_live.interval import ADJUSTED, UNADJUSTED
+from engine.signal_gate import is_buyable as signal_gate_is_buyable
 
 LIVE_SYMBOL_VENDOR = "store"
 
@@ -133,6 +134,49 @@ def _entry_signal_for_symbol(entry_rows_by_symbol: Mapping[str, object], symbol:
     return signal
 
 
+def _bind_owner_confluence(
+    signal_gate_artifact: Mapping[str, object] | None,
+    *,
+    symbol: str,
+    market_session: str,
+    decision_clock: datetime,
+) -> tuple[str, str | None]:
+    """Bind only a positive incumbent signal-gate verdict with its native clock.
+
+    ``signal_gate.json`` is display-tier but it is the incumbent confluence owner
+    consumed by ``entry_signal``.  Its ``emit`` stamp carries the writer-process
+    lineage clock.  A positive T1/T2/T3 verdict can therefore prove PASS when the
+    artifact session matches B4 and the owner emitted it no later than decision_at.
+
+    A non-buyable compact verdict deliberately remains UNKNOWN: the slim artifact
+    does not preserve enough refusal provenance to distinguish a true market FAIL
+    from thin history / engine refusal.  This adapter never upgrades that ambiguity
+    to a deterministic negative claim.
+    """
+    if signal_gate_artifact is None:
+        return "UNKNOWN", None
+    if not isinstance(signal_gate_artifact, Mapping):
+        raise RuntimeOwnerFactError("signal_gate_artifact must be an object")
+    if signal_gate_artifact.get("as_of") != market_session:
+        raise RuntimeOwnerFactError("signal-gate artifact session does not match B4 market_session")
+    emit = signal_gate_artifact.get("emit")
+    if not isinstance(emit, Mapping):
+        raise RuntimeOwnerFactError("signal-gate artifact has no native emit lineage")
+    if emit.get("writer") != "build_stock_library":
+        raise RuntimeOwnerFactError("signal-gate artifact writer is not the incumbent owner")
+    pair_id = _text(emit.get("pair_id"), "signal_gate.emit.pair_id")
+    emitted_at = _utc(emit.get("at_utc"), "signal_gate.emit.at_utc")
+    if emitted_at > decision_clock:
+        raise RuntimeOwnerFactError("signal-gate owner verdict was emitted after B4 decision clock")
+    verdicts = signal_gate_artifact.get("verdicts")
+    verdict = verdicts.get(symbol) if isinstance(verdicts, Mapping) else None
+    if not isinstance(verdict, Mapping):
+        return "UNKNOWN", None
+    if verdict.get("eligible") is not True or not signal_gate_is_buyable(dict(verdict)):
+        return "UNKNOWN", None
+    return "PASS", f"signal-gate-pair:{pair_id}"
+
+
 def _live_state_for_symbol(live_state_artifact: Mapping[str, object], symbol: str, market_session: str) -> Mapping[str, object]:
     if not isinstance(live_state_artifact, Mapping):
         raise RuntimeOwnerFactError("live_state_artifact must be an object")
@@ -164,6 +208,7 @@ def compose_runtime_owner_facts(
     live_state_artifact: Mapping[str, object],
     entry_rows_by_symbol: Mapping[str, object],
     metric_inputs: Mapping[str, object],
+    signal_gate_artifact: Mapping[str, object] | None = None,
     owner_gate_facts: Mapping[str, object] | None = None,
     owner_source_receipts: Sequence[str] = (),
 ) -> dict[str, object]:
@@ -223,6 +268,13 @@ def compose_runtime_owner_facts(
     metrics = {key: _positive(metric_inputs.get(key), f"metric_inputs.{key}") for key in sorted(_METRIC_KEYS)}
 
     gates = dict(_GATE_DEFAULTS)
+    owner_confluence, confluence_receipt = _bind_owner_confluence(
+        signal_gate_artifact,
+        symbol=symbol,
+        market_session=market_session,
+        decision_clock=decision_clock,
+    )
+    gates["owner_confluence"] = owner_confluence
     if owner_gate_facts not in (None, {}):
         raise RuntimeOwnerFactError(
             "owner_gate_facts cannot inject gate verdicts without native owner evidence"
@@ -254,6 +306,8 @@ def compose_runtime_owner_facts(
         _text(candidate_projection.get("projection_id"), "candidate_projection.projection_id"),
         _text(live_state.get("basis_receipt"), "live_state.basis_receipt"),
     ]
+    if confluence_receipt is not None:
+        receipts.append(confluence_receipt)
 
     return {
         "decision_at": decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),

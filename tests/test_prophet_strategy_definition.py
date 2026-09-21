@@ -583,6 +583,61 @@ def test_b4_runtime_adapter_refuses_unbound_external_gate_or_receipt_injection()
         )
 
 
+
+
+def _b4_signal_gate(symbol="UNIT", *, eligible=True, tier="T1", at_utc="2026-09-18T19:30:07Z", as_of="2026-09-18"):
+    return {
+        "as_of": as_of,
+        "verdicts": {symbol: {"eligible": eligible, "tier_cascade": tier}},
+        "emit": {
+            "pair_id": "unit-pair-001",
+            "at_utc": at_utc,
+            "writer": "build_stock_library",
+        },
+    }
+
+
+def test_b4_runtime_adapter_binds_only_positive_pit_safe_owner_confluence():
+    facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate()),
+    )
+    assert facts["deterministic_gates"]["owner_confluence"] == "PASS"
+    assert "signal-gate-pair:unit-pair-001" in facts["source_receipts"]
+    assert facts["deterministic_gates"]["risk_ceiling"] == "UNKNOWN"
+
+    not_buyable = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate(eligible=False, tier=None)),
+    )
+    assert not_buyable["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
+    assert "signal-gate-pair:unit-pair-001" not in not_buyable["source_receipts"]
+
+    malformed = _b4_signal_gate()
+    malformed["verdicts"]["UNIT"]["eligible"] = "true"
+    malformed_facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(signal_gate_artifact=malformed),
+    )
+    assert malformed_facts["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
+
+
+def test_b4_runtime_adapter_refuses_stale_or_future_signal_gate_lineage():
+    with pytest.raises(RuntimeOwnerFactError, match="session does not match"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate(as_of="2026-09-17")),
+        )
+
+    with pytest.raises(RuntimeOwnerFactError, match="emitted after B4 decision clock"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                signal_gate_artifact=_b4_signal_gate(at_utc="2026-09-18T19:30:09Z")
+            ),
+        )
+
+
 def test_b4_runtime_adapter_binds_quote_clock_to_live_state_freshness_owner():
     facts = compose_runtime_owner_facts(
         _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
