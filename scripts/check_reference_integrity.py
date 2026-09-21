@@ -295,7 +295,7 @@ _DATA_MOTIVE_PATTERNS: tuple[re.Pattern[str], ...] = (
 _RIG_RECEIPT_RE = re.compile(r"^RIG-RECEIPT:[ \t]*(\S+)", re.MULTILINE)
 
 _PACKET_NUMBERED_FIELD_RE = re.compile(
-    r"^[ \t]*(?:#{1,6}[ \t]+)?(?:[0-9]{1,2}[A-Z]?)(?:[ \t]+|[.:\\-–—][ \t]*)",
+    r"^[ \t]*(?:#{1,6}[ \t]+)?(?:[0-9]{1,2}[A-Z]?)(?:[ \t]+|[.:\-–—][ \t]*)",
     re.IGNORECASE,
 )
 _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
@@ -303,8 +303,8 @@ _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         "packet-without-editable-source",
         "3A EDITABLE SOURCE",
         re.compile(
-            r"^[ \t]*(?:#{1,6}[ \t]+)?3A[ \t]+EDITABLE[ \t]+SOURCE\\b"
-            r"[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3A[ \t]+EDITABLE[ \t]+SOURCE\b"
+            r"[ \t]*(?:[:\-–—][ \t]*)?(?P<value>[^\n]*)$",
             re.IGNORECASE | re.MULTILINE,
         ),
     ),
@@ -312,8 +312,8 @@ _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         "packet-without-component-delta",
         "3B COMPONENT DELTA",
         re.compile(
-            r"^[ \t]*(?:#{1,6}[ \t]+)?3B[ \t]+COMPONENT[ \t]+DELTA\\b"
-            r"[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3B[ \t]+COMPONENT[ \t]+DELTA\b"
+            r"[ \t]*(?:[:\-–—][ \t]*)?(?P<value>[^\n]*)$",
             re.IGNORECASE | re.MULTILINE,
         ),
     ),
@@ -321,8 +321,8 @@ _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         "packet-without-state-interaction-matrix",
         "3C STATE + INTERACTION MATRIX",
         re.compile(
-            r"^[ \t]*(?:#{1,6}[ \t]+)?3C[ \t]+STATE[ \t]*\\+[ \t]*INTERACTION"
-            r"(?:[ \t]+MATRIX)?\\b[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3C[ \t]+STATE[ \t]*\+[ \t]*INTERACTION"
+            r"(?:[ \t]+MATRIX)?\b[ \t]*(?:[:\-–—][ \t]*)?(?P<value>[^\n]*)$",
             re.IGNORECASE | re.MULTILINE,
         ),
     ),
