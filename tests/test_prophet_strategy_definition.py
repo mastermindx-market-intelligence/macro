@@ -392,3 +392,190 @@ def test_b4_validator_rejects_rehashed_strategy_identity_mutation(field, value):
         match=f"availability {field} diverges from accepted strategy definition",
     ):
         validate_entry_availability(tampered)
+
+# ---------------------------------------------------------------------------
+# B4 runtime owner-fact adapter: canonical identity -> incumbent source facts.
+
+from datetime import date
+
+from engine.prophet_entry_availability_sources import (
+    RuntimeOwnerFactError,
+    compose_runtime_owner_facts,
+    evaluate_runtime_entry_availability,
+)
+
+
+class _B4Aliases:
+    def __init__(self, symbol="UNIT", *, reverse="SEC:US-XNAS-AAPL"):
+        self.symbol = symbol
+        self.reverse = reverse
+
+    def vendor_symbol_for(self, vendor, security_id, on):
+        assert vendor == "store"
+        assert security_id == "SEC:US-XNAS-AAPL"
+        assert on == date(2026, 9, 18)
+        return self.symbol
+
+    def resolve(self, vendor, symbol, on):
+        assert vendor == "store"
+        assert symbol == self.symbol
+        assert on == date(2026, 9, 18)
+        return self.reverse
+
+
+def _b4_runtime_sources(symbol="UNIT"):
+    quote = {
+        "price": 42.70,
+        "quote_ts": "2026-09-18T19:30:00+00:00",
+        "quote_ts_synthetic": False,
+        "source": "polygon",
+        "price_basis": "trade",
+        "delay_min": 0.1,
+        "prev_close": 42.10,
+    }
+    live = {
+        "schema": "prophet_live.states/v1",
+        "meta": {"session_et": "2026-09-18"},
+        "states": {
+            symbol: {
+                "state": "forming",
+                "price": 42.70,
+                "quote_age_min": 0.1,
+                "basis_status": "RESOLVED",
+                "basis_receipt": "sha256:" + "9" * 64,
+            }
+        },
+    }
+    entry = {
+        symbol: {
+            "entry_signal": {
+                "status": "buy_now",
+                "buy_zone": {"low": 41.80, "high": 43.25},
+                "chase_above": 43.60,
+                "stop": 40.95,
+                "confluence_gated": False,
+            }
+        }
+    }
+    metrics = {"first_trigger_price": 41.72, "anchor_price": 42.10, "atr": 1.15}
+    return {symbol: quote}, live, entry, metrics
+
+
+def _b4_runtime_kwargs(symbol="UNIT", **extra):
+    quotes, live, entry, metrics = _b4_runtime_sources(symbol)
+    out = {
+        "decision_at": "2026-09-18T19:30:08Z",
+        "market_session": "2026-09-18",
+        "alias_table": _B4Aliases(symbol),
+        "quotes_by_symbol": quotes,
+        "live_state_artifact": live,
+        "entry_rows_by_symbol": entry,
+        "metric_inputs": metrics,
+    }
+    out.update(extra)
+    return out
+
+
+def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_minting_gates():
+    facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
+    )
+    assert facts["quote"]["price"] == 42.70
+    assert facts["quote"]["asof"] == "2026-09-18T19:30:00Z"
+    assert facts["quote"]["basis_version"] == UNADJUSTED
+    assert facts["geometry"]["basis_version"] == ADJUSTED
+    assert facts["geometry"]["owner_status"] == "buy_now"
+    assert facts["deterministic_gates"]["source_health"] == "PASS"
+    assert facts["deterministic_gates"]["corporate_action_basis"] == "RESOLVED"
+    assert facts["deterministic_gates"]["liquidity_fillability"] == "UNKNOWN"
+    assert facts["deterministic_gates"]["risk_ceiling"] == "UNKNOWN"
+
+    out = evaluate_runtime_entry_availability(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        **_b4_runtime_kwargs(),
+    )
+    assert out["state"] == "UNAVAILABLE_DATA"
+    assert out["entry_open"] is False
+    assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
+
+
+def test_b4_runtime_adapter_has_no_ticker_equality_fallback():
+    kwargs = _b4_runtime_kwargs()
+    kwargs["alias_table"] = _B4Aliases("RENAMED")
+    with pytest.raises(RuntimeOwnerFactError, match="live quote owner has no row"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    kwargs = _b4_runtime_kwargs()
+    kwargs["alias_table"] = _B4Aliases(reverse="SEC:OTHER")
+    with pytest.raises(RuntimeOwnerFactError, match="does not round-trip"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+
+def test_b4_runtime_adapter_refuses_synthetic_dark_unresolved_or_mismatched_live_inputs():
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    quotes["UNIT"]["quote_ts_synthetic"] = True
+    with pytest.raises(RuntimeOwnerFactError, match="real source-market timestamp"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            decision_at="2026-09-18T19:30:08Z", market_session="2026-09-18",
+            alias_table=_B4Aliases(), quotes_by_symbol=quotes,
+            live_state_artifact=live, entry_rows_by_symbol=entry, metric_inputs=metrics,
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    live["states"]["UNIT"]["state"] = "dark"
+    with pytest.raises(RuntimeOwnerFactError, match="marks canonical store symbol dark"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs(
+                live_state_artifact=live, quotes_by_symbol=quotes,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            )
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    live["states"]["UNIT"].pop("basis_receipt")
+    with pytest.raises(RuntimeOwnerFactError, match="basis receipt"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs(
+                live_state_artifact=live, quotes_by_symbol=quotes,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            )
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    live["states"]["UNIT"]["price"] = 42.71
+    with pytest.raises(RuntimeOwnerFactError, match="disagree on price"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs(
+                live_state_artifact=live, quotes_by_symbol=quotes,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            )
+        )
+
+
+def test_b4_runtime_adapter_only_opens_when_every_external_gate_owner_explicitly_passes():
+    gates = {
+        "owner_confluence": "PASS",
+        "risk_ceiling": "PASS",
+        "liquidity_fillability": "PASS",
+        "gap_velocity": "PASS",
+        "session_eligibility": "PASS",
+        "event_status": "ACTIVE",
+        "structural_invalidation": "CLEAR",
+    }
+    out = evaluate_runtime_entry_availability(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        **_b4_runtime_kwargs(owner_gate_facts=gates),
+    )
+    assert out["state"] == "ENTRY_OPEN"
+    assert out["entry_open"] is True
+
+    with pytest.raises(RuntimeOwnerFactError, match="unowned or unknown gate"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(owner_gate_facts={"source_health": "PASS"}),
+        )
