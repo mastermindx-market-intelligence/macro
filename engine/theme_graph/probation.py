@@ -22,6 +22,7 @@ import hashlib
 import json
 import logging
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -148,6 +149,36 @@ def validate(row: dict) -> list[str]:
     ):
         out.append("adjudicated_at predates created")
     return out
+
+
+@lru_cache(maxsize=1)
+def _contract_validator():
+    """Use the existing proposal schema; this is not a second curation contract."""
+    import jsonschema
+    path = Path(__file__).resolve().parents[2] / "contracts/theme_graph/probation_proposal.v1.schema.json"
+    return jsonschema.Draft202012Validator(json.loads(path.read_text(encoding="utf-8")))
+
+
+def require_valid_rows(rows: list[dict]) -> None:
+    """Fail closed before selection, so damaged objects cannot look like absence.
+
+    Syntax-only strict reading and the legacy forgiving default remain unchanged.
+    This guard is for complete research-consumer snapshots, not queue mutation.
+    """
+    import jsonschema
+    seen: set[str] = set()
+    for position, row in enumerate(rows, start=1):
+        try:
+            _contract_validator().validate(row)
+            json.dumps(row, allow_nan=False)
+        except (jsonschema.ValidationError, TypeError, ValueError) as exc:
+            raise ValueError(f"invalid probation proposal at row {position}") from exc
+        errors = validate(row)
+        if errors:
+            raise ValueError(f"invalid probation proposal at row {position}: {errors}")
+        if row["proposal_id"] in seen:
+            raise ValueError(f"duplicate probation proposal identity at row {position}")
+        seen.add(row["proposal_id"])
 
 
 def _unique_proposal_object(pairs):

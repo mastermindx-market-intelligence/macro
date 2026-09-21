@@ -45,7 +45,9 @@ class RepositoryStore:
 
     def read_proposals(self) -> Any:
         # Canonical research reads must not turn missing/corrupt input into absence.
-        return probation.read_proposals(store.probation_path(), strict=True)
+        rows = probation.read_proposals(store.probation_path(), strict=True)
+        probation.require_valid_rows(rows)
+        return rows
 
 
 def _records(value: Any) -> list[dict[str, Any]]:

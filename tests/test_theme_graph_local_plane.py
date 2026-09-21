@@ -2844,3 +2844,178 @@ def test_gmi_repository_neighborhood_distinguishes_unreadable_queue_from_empty(m
         assert status == 2 and captured.out == ""
         assert json.loads(captured.err)["code"] == "ONTOLOGY_QUERY_UNAVAILABLE"
         assert path.exists() == (queue_state == "nonobject")
+
+
+@pytest.mark.parametrize("damage", ["missing_id", "missing_subject", "bad_kind", "evidence_type", "extra_field", "decision_clock", "nonfinite", "duplicate_id"])
+def test_gmi_review_refuses_schema_corruption_before_absence(monkeypatch, tmp_path, capsys, damage):
+    from engine.theme_graph import store
+    from scripts import list_theme_proposals as worklist_cli, query_theme_ontology as review_cli
+    path, output = tmp_path / "proposals.jsonl", tmp_path / "review.json"
+    row = _worklist_rows()[0]
+    path.write_text(json.dumps(row) + "\n")
+    monkeypatch.setattr(store, "probation_path", lambda: path)
+    assert worklist_cli.main(["--asof", "2026-02-01"]) == 0
+    query = json.loads(capsys.readouterr().out)["items"][0]["review_query"]
+    if damage == "missing_id": row.pop("proposal_id")
+    elif damage == "missing_subject": row.pop("subject")
+    elif damage == "bad_kind": row["kind"] = "approved"
+    elif damage == "evidence_type": row["evidence"] = []
+    elif damage == "extra_field": row["auto_approve"] = True
+    elif damage == "decision_clock": row.update(status="rejected", adjudicated_at="2025-01-01")
+    elif damage == "nonfinite": row["evidence"] = {"count": float("nan")}
+    raw = json.dumps(row) + "\n"
+    if damage == "duplicate_id": raw += raw
+    path.write_text(raw)
+    assert review_cli.main(["--proposal-id", query["proposal_id"], "--asof", query["asof"], "--out", str(output)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert json.loads(captured.err)["code"] == "ONTOLOGY_QUERY_UNAVAILABLE"
+    assert not output.exists() and path.read_text() == raw
+
+
+# D2D inventory is a read-only discovery entry into the existing exact reader.
+def _inventory_view():
+    names = ["ltheme:finviz:ai", "ltheme:ths:300001", "ltheme:ths:300002", "ltheme:ths:300003"]
+    nodes = [_ont_node(x, "local_theme", name="AI") for x in names]
+    nodes += [_ont_node("theme:a", "theme"), _ont_node("theme:b", "theme"), _ont_node("co:us:AAA", "company")]
+    edges = [_ont_edge("edge:a", "EXPRESSES", names[0], "theme:a"),
+             _ont_edge("edge:b", "EXPRESSES", names[0], "theme:b"),
+             _ont_edge("edge:member", "MEMBER_OF", "co:us:AAA", names[1])]
+    proposed = _ont_proposal("prop:0000000000000011", {"local_theme": names[1], "canonical_theme": "theme:a"}, created="2026-01-01")
+    rejected = _ont_proposal("prop:0000000000000012", {"local_theme": names[2], "canonical_theme": "theme:a"}, created="2026-01-01")
+    rejected.update(status="rejected", adjudicated_at="2026-02-01")
+    return _OntologyStore(nodes=nodes, edges=edges, proposals=[proposed, rejected])
+
+
+def _inventory(view=None, **kwargs):
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.ontology_inventory"), "ontology inventory missing"
+    from engine.theme_graph.ontology_inventory import compose_inventory
+    from referencing import Registry, Resource
+    result = compose_inventory(_inventory_view() if view is None else view,
+        asof=kwargs.pop("asof", "2026-03-01"), rights_resolver=_ont_rights, **kwargs)
+    root = ROOT / "contracts/theme_graph"
+    schema = json.loads((root / "ontology_neighborhood.v1.schema.json").read_text())
+    registry = Registry().with_resource(schema["$id"], Resource.from_contents(schema))
+    schema = json.loads((root / "ontology_inventory.v1.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+    return result
+
+
+def test_gmi_inventory_closed_denominator_and_many_parents_without_forced_mapping():
+    import copy
+    view = _inventory_view(); before = copy.deepcopy(vars(view)); result = _inventory(view)
+    assert result["counts"] == dict(visible=4, matching=4, returned=4, mapped=1, unmapped=3, with_proposals=2, without_proposals=2)
+    assert result["counts"]["mapped"] + result["counts"]["unmapped"] == result["counts"]["visible"]
+    assert sum(result["facets"]["source_family"].values()) == 4
+    items = {x["node"]["node_id"]: x for x in result["items"]}
+    assert items["ltheme:finviz:ai"]["canonical_mapping"]["theme_node_ids"] == ["theme:a", "theme:b"]
+    assert items["ltheme:ths:300001"]["canonical_mapping"]["state"] == "UNMAPPED"
+    assert items["ltheme:ths:300001"]["curation"]["state"] == "PROPOSED"
+    assert items["ltheme:ths:300002"]["curation"]["state"] == "REJECTED"
+    assert items["ltheme:ths:300003"]["curation"]["state"] == "NONE"
+    assert items["ltheme:finviz:ai"]["rights"]["public_display_allowed"] is False
+    assert vars(view) == before
+
+
+def test_gmi_inventory_drilldown_is_the_existing_exact_owner_projection():
+    view = _inventory_view()
+    from engine.theme_graph.ontology import compose_neighborhood
+    for item in _inventory(view)["items"]:
+        document = compose_neighborhood(view, **item["neighborhood_query"], rights_resolver=_ont_rights)
+        assert item["node"] == document["subject"]
+        assert item["canonical_mapping"] == document["canonical_mapping"]
+        assert item["curation"] == document["curation"]
+        assert item["neighborhood_counts"] == document["counts"]
+
+
+def test_gmi_inventory_uses_owner_effective_and_knowledge_clocks():
+    view = _inventory_view()
+    future = _ont_node("ltheme:ths:future", "local_theme"); future["computed_at"] = "2026-04-01T00:00:00Z"
+    view._nodes.append(future)
+    view._edges[0].update(belief_time="2026-04-01", computed_at="2026-04-01T00:00:00Z")
+    result = _inventory(view, knowledge_cutoff="2026-01-15")
+    assert result["counts"]["visible"] == 4
+    assert result["items"][0]["canonical_mapping"]["theme_node_ids"] == ["theme:b"]
+    assert result["items"][2]["curation"]["state"] == "PROPOSED"
+    assert all(x["neighborhood_query"]["knowledge_cutoff"] == "2026-01-15" for x in result["items"])
+
+
+def test_gmi_inventory_ratification_does_not_manufacture_graph_mapping():
+    view = _inventory_view(); view._proposals[0].update(status="ratified", ratified_by="curator", adjudicated_at="2026-02-01")
+    row = _inventory(view)["items"][1]
+    assert row["canonical_mapping"]["state"] == "UNMAPPED"
+    assert row["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+@pytest.mark.parametrize("filters,count", [({"source_family":"ths_concepts"},3), ({"mapping":"unmapped"},3),
+    ({"curation":"without_proposals"},2), ({"curation":"with_proposals"},2), ({"curation":"rejected"},1),
+    ({"source_family":"unknown_owner"},0)])
+def test_gmi_inventory_exact_filters_keep_full_denominator(filters, count):
+    result = _inventory(**filters)
+    assert result["counts"]["visible"] == 4 and result["counts"]["matching"] == count
+    assert result["availability"]["state"] == ("OK" if count else "NO_MATCH")
+
+
+def test_gmi_inventory_digest_bound_pages_preserve_source_order_independence():
+    view = _inventory_view(); first = _inventory(view, limit=2)
+    view._nodes.reverse(); view._edges.reverse(); view._proposals.reverse()
+    second = _inventory(view, limit=2, offset=2, expected_snapshot=first["snapshot_sha256"])
+    ids = [x["node"]["node_id"] for x in first["items"] + second["items"]]
+    assert len(ids) == len(set(ids)) == 4 and ids == sorted(ids)
+    assert second["page"]["next_offset"] is None
+    view._proposals[0]["note"] = "changed evidence"
+    with pytest.raises(ValueError, match="snapshot"):
+        _inventory(view, limit=2, offset=2, expected_snapshot=first["snapshot_sha256"])
+
+
+@pytest.mark.parametrize("arguments", [{"limit":0},{"limit":101},{"limit":True},{"offset":-1},{"offset":1},
+    {"expected_snapshot":"wrong"},{"mapping":"approved"},{"curation":"approve"},{"source_family":" ths_concepts"}])
+def test_gmi_inventory_refuses_ambiguous_selection(arguments):
+    with pytest.raises(ValueError): _inventory(**arguments)
+
+
+def test_gmi_inventory_refuses_duplicate_local_identity_and_malformed_proposals():
+    view = _inventory_view(); view._nodes.append(dict(view._nodes[0]))
+    with pytest.raises(ValueError, match="duplicate"): _inventory(view)
+    view = _inventory_view(); view._proposals[0].pop("proposal_id")
+    with pytest.raises(ValueError, match="proposal"): _inventory(view)
+
+
+def test_gmi_inventory_unavailable_graph_is_not_an_empty_curation_queue():
+    missing = _inventory(_OntologyStore())
+    assert missing["availability"]["state"] == "GRAPH_UNAVAILABLE" and missing["counts"] is None
+    empty = _inventory(_OntologyStore(nodes=[_ont_node("co:us:AAA", "company")]))
+    assert empty["availability"]["state"] == "EMPTY" and empty["counts"]["visible"] == 0
+
+
+def test_gmi_inventory_reads_each_canonical_source_only_once():
+    view = _inventory_view(); calls = {}
+    for name in ["read_nodes", "read_edges", "read_node_lifecycle", "read_proposals"]:
+        original = getattr(view, name)
+        def counted(original=original, name=name):
+            calls[name] = calls.get(name, 0) + 1
+            return original()
+        setattr(view, name, counted)
+    _inventory(view)
+    assert calls == {name: 1 for name in calls}
+
+
+def test_gmi_inventory_cli_json_markdown_and_output_preservation(monkeypatch, tmp_path, capsys):
+    _inventory()
+    from scripts import list_theme_ontology as cli
+    source = tmp_path / "input.parquet"; source.write_bytes(b"source")
+    monkeypatch.setattr(cli, "source_paths", lambda: [source])
+    monkeypatch.setattr(cli, "RepositoryStore", _inventory_view)
+    assert cli.main(["--asof", "2026-03-01", "--mapping", "unmapped"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["counts"]["matching"] == 3
+    assert cli.main(["--asof", "2026-03-01", "--format", "markdown"]) == 0
+    assert "UNMAPPED" in capsys.readouterr().out
+    assert cli.main(["--asof", "2026-03-01", "--out", str(source)]) == 2
+    assert source.read_bytes() == b"source"
+    capsys.readouterr(); source.unlink()
+    out = tmp_path / "new.json"
+    assert cli.main(["--asof", "2026-03-01", "--out", str(out)]) == 2
+    assert json.loads(capsys.readouterr().err)["code"] == "ONTOLOGY_INVENTORY_UNAVAILABLE"
+    assert not out.exists()
