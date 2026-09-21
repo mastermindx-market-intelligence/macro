@@ -1497,3 +1497,122 @@ def test_entry_battery_default_gate_explicitly_excludes_mutable_context(monkeypa
     result = evaluate_prefixes('AMD', _entry_battery_prices(), start='2026-09-17', as_of='2026-09-18')
     assert calls == [{'washout_waiver': False}, {'washout_waiver': False}]
     assert result['contextual_waiver_replayed'] is False
+
+
+# Sighting-to-episode conversion: research receipts are not trade attribution.
+def _conversion_case():
+    from engine.us_candidate_episode import canonical_json
+    from hashlib import sha256
+    flag = {'schema': 'prophet_doors/v1', 'date': '2026-09-10',
+            'door': 'T', 'ticker': 'MU', 'features': {'theme': 'Semiconductors'}}
+    record = {'source_system': 'doors', 'source_schema': 'prophet_doors/v1',
+              'source_event_id': 'doors:2026-09-10:T:MU',
+              'source_receipt': 'sha256:' + sha256(canonical_json(flag).encode()).hexdigest(),
+              'event_type': 'OBSERVED', 'episode_id': 'observed-episode',
+              'known_at': '2026-09-10T20:00:00Z', 'recorded_at': '2026-09-11T05:00:00Z'}
+    return flag, record
+
+
+def _trace_case(flags, events=(), suppressions=(), **overrides):
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+    kwargs = dict(events=events, suppressions=suppressions,
+                  generation_recorded_at='2026-09-18T09:08:31Z',
+                  as_of='2026-09-21T11:00:00Z')
+    kwargs.update(overrides)
+    return trace_sightings(flags, **kwargs)
+
+
+def test_conversion_exact_source_receipt_is_retained_not_a_trade():
+    flag, record = _conversion_case()
+    result = _trace_case([flag], [record])
+    assert result['rows'][0]['status'] == 'event_recorded'
+    assert result['rows'][0]['episode_id'] == 'observed-episode'
+    assert result['trade_conversion_proven'] is False
+
+
+def test_conversion_explicit_suppression_is_not_silent_absence():
+    flag, record = _conversion_case()
+    record['reason'] = 'MISSING_STRUCTURAL_ANCHOR'
+    result = _trace_case([flag], suppressions=[record])
+    assert result['rows'][0]['status'] == 'suppression_recorded'
+    assert result['rows'][0]['reason'] == 'MISSING_STRUCTURAL_ANCHOR'
+
+
+def test_conversion_absence_keeps_generation_scope():
+    flag, _ = _conversion_case()
+    assert _trace_case([flag])['rows'][0]['status'] == 'no_record_in_selected_generation'
+
+
+def test_conversion_future_sighting_is_excluded():
+    flag, _ = _conversion_case()
+    flag['date'] = '2026-09-22'
+    assert _trace_case([flag])['rows'] == []
+
+
+def test_conversion_old_generation_is_not_a_detected_drop():
+    flag, _ = _conversion_case()
+    assert _trace_case([flag], generation_recorded_at='2026-09-09T09:00:00Z')['rows'][0]['status'] == 'generation_predates_sighting'
+
+
+def test_conversion_same_day_before_close_is_not_known_publication():
+    flag, _ = _conversion_case()
+    result = _trace_case([flag], generation_recorded_at='2026-09-10T09:00:00Z')
+    assert result['rows'][0]['status'] == 'no_record_in_selected_generation'
+    assert result['rows'][0]['first_publication_verified'] is False
+
+
+def test_conversion_changed_payload_never_inherits_an_old_receipt():
+    flag, record = _conversion_case()
+    flag['features']['theme'] = 'Changed'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'source_receipt_mismatch'
+
+
+def test_conversion_future_record_is_not_historical_knowledge():
+    flag, record = _conversion_case()
+    record['recorded_at'] = '2026-09-22T01:00:00Z'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'record_after_cutoff'
+
+
+def test_conversion_rejects_future_generation_and_duplicate_ownership():
+    flag, record = _conversion_case()
+    with pytest.raises(ValueError):
+        _trace_case([flag], generation_recorded_at='2026-09-22T01:00:00Z')
+    with pytest.raises(ValueError):
+        _trace_case([flag], [record], [record])
+
+
+def test_conversion_preserves_inputs_and_rejects_bad_sighting_schema():
+    flag, record = _conversion_case()
+    before = copy.deepcopy((flag, record))
+    _trace_case([flag], [record])
+    assert (flag, record) == before
+    flag['schema'] = 'unknown'
+    with pytest.raises(ValueError):
+        _trace_case([flag])
+
+
+def test_conversion_plan_presence_is_not_causal_attribution():
+    from research.prophet.cpu_leadership.conversion_trace import published_plan_presence
+    book = {'schema': 'prophet.index/v1', 'source_asof': '2026-09-18', 'plan_count': 8,
+            'plans': [{'id': 'unrelated-MU-plan', 'asset': 'MU'}]}
+    result = published_plan_presence(book, ['MU', 'ARM'])
+    assert result['by_ticker'] == {'MU': ['unrelated-MU-plan'], 'ARM': []}
+    assert result['total'] == 1 and result['declared_plan_count'] == 8
+    assert result['historical_trade_absence_proven'] is False
+    assert 'no causal' in result['relation']
+    with pytest.raises(ValueError):
+        published_plan_presence({}, ['MU'])
+
+
+def test_conversion_other_source_same_event_name_is_not_a_match():
+    flag, record = _conversion_case()
+    record['source_system'] = 'candidate'
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'no_record_in_selected_generation'
+
+
+def test_conversion_duplicate_flags_and_naive_cutoff_fail_closed():
+    flag, _ = _conversion_case()
+    with pytest.raises(ValueError):
+        _trace_case([flag, flag])
+    with pytest.raises(ValueError):
+        _trace_case([flag], as_of='2026-09-21T11:00:00')

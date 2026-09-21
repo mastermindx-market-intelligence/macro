@@ -35,16 +35,18 @@ Chris directs this session as main CEO of this recovery without Slack. This supe
 former Slack gate, not another STARTed writer, runtime lease or controlled activation. The
 unrelated C1/C2/C4 OS assignment is not merged into this program.
 
-Current procedure: protected Mastermind@0f4aeae4d25f3770474a7ac70e0ce12af6e2d075,
-Skillpack 1.0.1/bootstrap 1. Required skills were freshly fetched atomically and remain
-byte-identical to the prior loaded compatible version.
+Current procedure: protected Mastermind@c49956d14878bd7b9c001258855e12d547596f13,
+Skillpack 1.0.1/bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION,
+RECONCILE_STATE and CLOSEOUT were read from that same protected commit.
 
 Carrier: macro #7572 / sol/us-prophet-candidate-visibility-20260921. Product pickup base:
-4bf1b3aee532114b0c67e06c532b6e4ed7884549. Last runtime semantic head:
-7665039b6eae9deb5fecb574ce958565de60ef74. This continuation changes proof/script/records
-only; engine, builder, templates, ranking, archive writer and workflows are unchanged.
-Current main observed: 1dc11fb3eb326393c803bc2eff408db89bb91bc1. Direct proof is a
-lower-overhead principal review unit, not a new worker commission or model-route claim.
+4bf1b3aee532114b0c67e06c532b6e4ed7884549. Last runtime semantic head remains
+7665039b6eae9deb5fecb574ce958565de60ef74. Interrupted-turn research commit
+e96f5dd5f6e8239b888792ab47179a848c24ebb7 was reconciled as local=remote with green
+hosted CI/fences, clean source and no independent approval; its entry battery is not redone.
+This unit changes research/test/continuity only. Current data/core pin:
+c48e15193a29fd5eff94e963d0d0c4d6f3104867. Direct execution is principal diagnosis and
+acceptance judgment; no worker was STARTed, no model route or source transfer is implied.
 
 ## Verified capability
 
@@ -91,6 +93,43 @@ MastermindX1 is now FORMALLY requested through GitHub on #7567 and #7572; API re
 confirms both reviewRequests. Earlier mentions alone did not do that. No pickup, reviewer
 START, approval, merge, deployment, native worker or autonomous wake is claimed.
 
+## Current model frontier — retain sightings, then qualify entries
+
+The recovered e96 research battery executes existing gates and Door R on each dated price
+prefix, without current contextual waivers or fabricated historical state. It found earlier
+INTC/MU semiconductor Door-T sightings and an AMD eligible signal; ARM had no matching flag.
+A 60-session high-recency gate is an entry-family restriction, not a general leadership
+verdict. Generic no-veto leader reset already has adverse evidence in the incumbent masterplan
+section 2.5 and must not be rerun or promoted merely because these four names rallied.
+
+This unit adds conversion_trace.py on the same research carrier. It validates the exact
+HEAD-backed episode generation with the canonical reader and joins source identity AND
+payload digest. All 35 September Door flags yield 8 event receipts, 3 explicit suppression
+receipts, 24 missing in that selected generation. INTC/MU September 10 sightings lack exact
+receipts; AMD September 18 also lacks one, but the selected generation is recorded at
+2026-09-18T09:08:31Z, before that closing signal. This is not a 24/35 production loss rate.
+The current plan index has 426 actual rows, separate declared plan_count448; no AMD/INTC/ARM/MU
+row is present. Current-index absence is not historical-trade absence or causal attribution.
+
+The source intake chooses only the newest date in the persisted Door ledger, so skipped
+older observations are not automatically replayed. Door observations carry no structural
+anchor: the core attaches to an existing active episode or records MISSING_STRUCTURAL_ANCHOR.
+These are distinct retention/entry issues. Never fabricate an anchor, knowledge timestamp,
+earlier trade, or unconditional live entry to resolve them.
+
+Thirteen conversion regressions cover source/hash/time/duplicate and plan-attribution errors.
+The initial ten were RED before implementation; 213 owner tests passed with no skips/failures
+and five inherited temporary-Chromium cleanup warnings. The final additive count-disclosure
+change is separately retested. Evidence: CONVERSION_FINDINGS_2026-09-21.md and evidence/conversion/.
+No live model/UI/writer change or performance validation is claimed. The four market cases
+are motivating regressions, not a selection-free validation cohort.
+
+#7477 owns active B1 core/reconciler source; #7604 owns the complementary emerging-subtheme
+admission/scoring/Featured funnel. Their source is not overwritten. #7604 head observed
+abcf15fad369534eae73207e338913f2da96e8b4; its current-only membership evidence cannot be
+backdated. Lossless backlog intake must use existing source-event identities, true ingestion
+knowledge time and existing event/suppression ownership before any controlled entry treatment.
+
 ## Critical dependencies — preserve original carriers
 
 #7180 / f83c3603f74591db8920b25c7a5b4b9d9b80b7bf owns source/clock and curated-publication
@@ -117,10 +156,13 @@ and #7264/#7237 unrelated dashboard semantics. No sibling source was copied or r
 
 ## Exact next action and do-not-redo
 
-Consume exact-new-head hosted CI and genuine independent review; then use the existing
-release path and prove deployed authenticated whole-page behavior. In parallel advance
-#7180 only within its original source/effect binding, and #6992 only within controlled
-activation. The ranking comparison needs complete source-bound evidence first.
+Primary model action: qualify a lossless unconsumed-sighting intake with the incumbent B1
+source owner, using the exact Intel/Micron source identities and current knowledge-time
+boundaries, then preregister the context-conditioned entry treatment. Do not wait for archive
+repair to inspect model mechanics; do require proper cohorts/clocks/fills before promotion.
+The independent release lane consumes exact-head CI and genuine review for #7572/#7567,
+then proves deployed authenticated behavior. #7180 retains producer archival durability;
+#6992 retains controlled China activation; #7604 retains its complementary subtheme funnel.
 
 Do not redo the lossless view, supplied audit, archive reader, China input implementation,
 existing pool/ledger/auth owners, or accepted timing/failure controls. Reject CPU-always-first,
