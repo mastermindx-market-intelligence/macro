@@ -976,7 +976,7 @@ def price_breadth_context(
                     q10, median, q90 = (float(ret.quantile(q)) for q in (.1, .5, .9))
                     w.update(status='ok', up=int((ret > 0).sum()), down=int((ret < 0).sum()),
                              flat=int((ret == 0).sum()), positive_pct=float((ret > 0).mean() * 100),
-                             median_return_pct=median, mean_return_pct=float(ret.mean()),
+                             median_return_pct=median, mean_return_pct=float((ret / len(ret)).sum()),
                              p10_return_pct=q10, p90_return_pct=q90, dispersion_pp=q90-q10)
                     bw = b.tail(horizon + 1)
                     br = float((bw.iloc[-1] / bw.iloc[0] - 1) * 100) if bw.notna().all() else np.nan
@@ -995,14 +995,14 @@ def price_breadth_context(
             trend['eligible'] = int(names.sum())
             if names.mean() >= min_coverage:
                 trend['above200_pct'] = float((current.iloc[-1, names.values] >
-                                               current.loc[:, names].mean()).mean() * 100)
+                                               current.loc[:, names].div(len(current)).sum()).mean() * 100)
         if len(p) == 205:
             paired = p.notna().all()
             trend['paired_eligible'] = int(paired.sum())
             if paired.mean() >= min_coverage:
                 same = p.loc[:, paired]
-                old = same.iloc[-6] > same.iloc[:-5].mean()
-                new = same.iloc[-1] > same.iloc[-200:].mean()
+                old = same.iloc[-6] > same.iloc[:-5].div(200).sum()
+                new = same.iloc[-1] > same.iloc[-200:].div(200).sum()
                 trend['paired_change_pp'] = float((new.mean() - old.mean()) * 100)
         result['trend'] = trend
         if result['status'] == 'current':
@@ -1053,7 +1053,7 @@ def board_breadth_context(board: pd.DataFrame, *, asof: str) -> dict:
     return r
 
 
-def load_breadth_context(*, asof: str) -> dict:
+def load_breadth_context(*, asof: str, sector_universe: dict | None = None) -> dict:
     """Read existing stores once. No collection, mutation, ledger or new artifact."""
     from lib import store
     gaps = []
@@ -1075,7 +1075,32 @@ def load_breadth_context(*, asof: str) -> dict:
     members = [s for s in closes.columns if ashare(s)]
     sample = price_breadth_context(closes, bench.get('close',pd.Series(dtype=float)),
                                   members=members, asof=asof)
+    sectors = sector_breadth_context(
+        {t: read('china',t) for t in (sector_universe or {})},
+        bench.get('close',pd.Series(dtype=float)),names=sector_universe or {},asof=asof)
     return {'authority': 'context_only', 'assessment_asof': str(asof),
             'benchmark': 'CSI 300 ETF (510300.SS)',
             'sample': sample, 'daily_board': board_breadth_context(board,asof=asof),
-            'data_gaps': gaps}
+            'sectors':sectors, 'data_gaps': gaps}
+
+
+def sector_breadth_context(prices: dict, benchmark: pd.Series, *, names: dict, asof: str) -> dict:
+    """Sector-ETF absolute returns and arithmetic gaps, not rankings or signals."""
+    rows = []
+    for ticker, meta in names.items():
+        frame = prices.get(ticker)
+        close = frame.get('close',pd.Series(dtype=float)) if isinstance(frame,pd.DataFrame) else pd.Series(dtype=float)
+        name = str(meta[0] if isinstance(meta,(tuple,list)) and meta else meta)
+        context = price_breadth_context(close.to_frame(ticker),benchmark,members=[ticker],
+                                       asof=asof,min_coverage=1.0)
+        window = context.get('windows',{}).get('20',{})
+        value = window.get('median_return_pct')
+        comparator = window.get('benchmark_return_pct')
+        rows.append({'ticker':ticker,'name':name,'asof':context.get('asof'),
+                     'status':context['status'],'start':window.get('start'),
+                     'return_pct':value,
+                     'benchmark_gap_pp':value-comparator if value is not None and comparator is not None else None})
+    available = [r for r in rows if r['status']=='current' and r['return_pct'] is not None]
+    return {'declared':len(names),'eligible':len(available),
+            'rising':sum(r['return_pct']>0 for r in available),
+            'rows':rows,'authority':'context_only'}

@@ -40,3 +40,18 @@ These observations describe recent improvement within longer-window weakness;
 they do not measure cap-weight concentration or validate the legacy94 forecast.
 Next:full isolated checkout, actual builder and dual-theme/mobile/browser proof.
 No CI run, reviewer, collector, release or deployment is being claimed.
+
+## Sector and robustness completion before browser proof
+All16 configured sector ETFs retain explicit coverage; unavailable names do not
+vanish from the denominator. Their20-session absolute return is separate from the
+arithmetic percentage-point gap to CSI300 ETF; no ranking/action field changes.
+Three sector counterexamples were RED, then closed. An extreme-finite-price
+counterexample exposed arithmetic overflow; stable pre-scaled means close it
+without changing ordinary arithmetic or emitting non-JSON Infinity.
+Current full three-suite local regression:133 passed, including41 new context
+cases plus existing participation, China publication and whole-board controls.
+The actual stored snapshot has4/16 sector ETFs rising, although10/16 outperform
+the falling benchmark. Semiconductors:-0.362% absolute vs+1.732pp benchmark gap;
+Technology:-0.078% absolute vs+2.016pp. Relative strength is not an absolute gain.
+Next: build/capture the complete China route from this isolated source, not a
+static mockup. Hosted CI and release are intentionally deferred by current intent.

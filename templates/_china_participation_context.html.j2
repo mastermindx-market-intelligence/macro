@@ -1,10 +1,11 @@
 {# Descriptive participation evidence. Never an input to risk/state/size policy. #}
 {% macro bl(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
 {% macro pct(v, signed=false) -%}{% if v is number %}{{ ('%+.2f' if signed else '%.1f')|format(v) }}%{% else %}{{ bl('Unavailable','暂不可用') }}{% endif %}{%- endmacro %}
-{% macro participation_panel(ctx) -%}
+{% macro participation_panel(ctx, translate=none) -%}
 {% set ctx = ctx if ctx is mapping else {} %}
 {% set sample = ctx.get('sample') or {} %}{% set board = ctx.get('daily_board') or {} %}
 {% set windows = sample.get('windows') or {} %}{% set week = windows.get('5') or {} %}{% set month = windows.get('20') or {} %}
+{% set sector = ctx.get('sectors') or {} %}
 {% set trend = sample.get('trend') or {} %}
 <style>
 .cnx-participation{margin:0 0 18px}
@@ -14,6 +15,7 @@
 .cnx-part-sub{font-size:11px;color:var(--muted);line-height:1.6}
 .cnx-participation details{border-top:1px solid var(--line);margin-top:14px;padding-top:6px}
 .cnx-participation summary{cursor:pointer;min-height:36px;line-height:36px;font-size:12px;color:var(--text)}
+.cnx-part-table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}.cnx-part-table th,.cnx-part-table td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--line)}.cnx-part-table th:first-child,.cnx-part-table td:first-child{text-align:left;width:42%}
 .cnx-participation summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 .cnx-participation .cnx-part-note{font-size:12px;line-height:1.6;color:var(--muted);max-width:100ch}
 @media(max-width:700px){.cnx-part-grid{grid-template-columns:1fr;gap:14px}.cnx-part-col+.cnx-part-col{border-top:1px solid var(--line);padding-top:12px}}
@@ -48,7 +50,7 @@
       <div class="cnx-part-data">{{ pct(trend.get('above200_pct')) }}</div>
       <div class="cnx-part-sub">{{ bl('Above own 200-session average','高于自身200个交易日均线') }} · {{ sample.get('asof') or '—' }}</div>
       <div class="cnx-part-sub">{{ trend.get('eligible',0) }} {{ bl('eligible sampled stocks','只符合数据要求的样本股') }}</div>
-      <div class="cnx-kv"><span class="k">{{ bl('Five-session change','5个交易日变化') }}</span><span class="v">{% if trend.get('paired_change_pp') is number %}{{ '%+.1f'|format(trend.paired_change_pp) }} {{ bl('pp','个百分点') }}{% else %}{{ bl('Unavailable','暂不可用') }}{% endif %}</span></div>
+      <div class="cnx-kv"><span class="k">{{ bl('Five-session change','5个交易日变化') }}</span><span class="v">{% if trend.get('paired_change_pp') is number %}{{ '%+.1f'|format(trend.paired_change_pp) }} {{ bl('points','个百分点') }}{% else %}{{ bl('Unavailable','暂不可用') }}{% endif %}</span></div>
       <div class="cnx-part-sub">{{ bl('Same stocks at both endpoints','前后使用同一组成分股') }} · {{ trend.get('paired_eligible',0) }}</div>
     </div>
   </div>
@@ -60,6 +62,12 @@
     <div class="cnx-kv"><span class="k">{{ bl('Sample mean return','样本平均收益') }}</span><span class="v">{{ pct(w.get('mean_return_pct'),true) }}</span></div>
     <div class="cnx-kv"><span class="k">{{ bl('Middle 80% of stock returns','中间80%个股收益范围') }}</span><span class="v">{{ pct(w.get('p10_return_pct'),true) }} → {{ pct(w.get('p90_return_pct'),true) }}</span></div>
     {% endfor %}
+    {% if sector.get('rows') %}
+    <div class="cnx-lbl">{{ bl('Sector ETFs · absolute returns','行业ETF · 绝对收益') }} · {{ ctx.get('assessment_asof') or sample.get('requested_asof') or '—' }}</div>
+    <p class="cnx-part-note">{% if sector.eligible %}{{ sector.rising }} / {{ sector.eligible }} {{ bl('current eligible sector proxies rose over 20 sessions;','只当期有效行业代理在20个交易日内上涨；') }} {{ sector.declared }} {{ bl('configured. Outperforming a falling benchmark can still mean losing money.','只已配置。跑赢下跌的基准，仍可能是负收益。') }}{% else %}{{ bl('Sector participation unavailable.','行业参与度暂不可用。') }}{% endif %}</p>
+    <table class="cnx-part-table"><thead><tr><th>{{ bl('Sector proxy','行业代理') }}</th><th>{{ bl('20 sessions','20个交易日') }}</th><th>{{ bl('Gap vs CSI 300 ETF (pp)','相对沪深300 ETF差值（百分点）') }}</th></tr></thead><tbody>
+    {% for row in sector.rows %}<tr><td>{{ translate(row.name) if translate else row.name }}{% if row.status != 'current' %}<div class="cnx-part-sub">{{ bl('Delayed / unavailable','延迟／暂不可用') }} · {{ row.asof or '—' }}</div>{% endif %}</td><td>{{ pct(row.return_pct,true) }}</td><td>{% if row.benchmark_gap_pp is number %}{{ '%+.2f'|format(row.benchmark_gap_pp) }}{% else %}—{% endif %}</td></tr>{% endfor %}
+    </tbody></table>{% endif %}
     <p class="cnx-part-note">{{ bl('Not an equal-weight index: the sample mean is an arithmetic mean of eligible stock returns, not a rebalanced portfolio. Current library membership is not a historical constituent archive. Returns use unfilled stored closes; suspensions, missing sessions and short histories reduce coverage.','不是等权指数：样本均值是符合要求个股收益的算术平均，并非再平衡组合。当前价格库成员并非历史成分档案。使用不填充的存储收盘价；停牌、缺失交易日和历史不足都会减少覆盖。') }}</p>
     <p class="cnx-part-note">{{ bl('Long-trend changes use the same eligible names at both endpoints; changes in percentage points are not stock returns. Wide dispersion is descriptive, not automatically bearish and not a pullback probability.','长期趋势变化使用前后同一组有效成分；百分点变化不是个股收益。收益分化仅描述差异，不自动代表看跌，更非回撤概率。') }}</p>
   </details>

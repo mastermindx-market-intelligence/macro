@@ -1,24 +1,26 @@
 {
-  "source_pin": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
-  "input_receipts": {
-    "data/china_search/closes.parquet": {
-      "sha256": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
-      "rows": 1280,
-      "columns": 1816,
-      "asof": "2026-09-18 00:00:00"
-    },
-    "data/china/510300.SS.parquet": {
-      "sha256": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7",
-      "rows": 3482,
-      "columns": 2,
-      "asof": "2026-09-18 00:00:00"
-    },
-    "data/china_board_breadth/breadth.parquet": {
-      "sha256": "fbed97a359af2aabf582d461b74351f1273ce1c435dc1775db1ba42a3930d897",
-      "rows": 33,
-      "columns": 7,
-      "asof": "2026-09-18 00:00:00"
-    }
+  "input_base": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
+  "source_hashes": {
+    "data/china_regime/latest.json": "1cc278b3094771429b6a8de25efff6bff0f6a19c78324b70775bb3d57a7d0925",
+    "data/china_search/closes.parquet": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+    "data/china/510300.SS.parquet": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7",
+    "data/china_board_breadth/breadth.parquet": "fbed97a359af2aabf582d461b74351f1273ce1c435dc1775db1ba42a3930d897",
+    "data/china/512800.SS.parquet": "1f46154e23eabeb41eddb3d3abc0ae5fb62cbd8f3173e2405278331c3910f584",
+    "data/china/512880.SS.parquet": "b56a8a9b609429421f5ef8860fc0dba54dd1f92d6dd8dd2d7c4ca4ad7e28b875",
+    "data/china/512690.SS.parquet": "68bfb0404b54a7a64e019ea83e7fff9c634db4ac3029fa1c3938fcc707302894",
+    "data/china/159928.SZ.parquet": "94a172c626d3fd0854e173476c80df6b3a93437361c48ec44ddf57a26bef2674",
+    "data/china/512170.SS.parquet": "3982896e813903e321dcea6a9e83301bb71f0aaac642505332d767d594a795f3",
+    "data/china/159992.SZ.parquet": "1e2fd5e2ae2d94a039cb89d39f68f8a4c6c14e8c2fbd4f83edc16b33e9846bfe",
+    "data/china/512760.SS.parquet": "1d07debbc4b7d6856dbc4904f9bafd913619276c9195024e2325b194403dfa98",
+    "data/china/515000.SS.parquet": "45df8fa11defb415e3341f1280c8ee333fe67db03a4cbdd949ab3ed951786ab6",
+    "data/china/515030.SS.parquet": "d15436514812b7351dacd6735e3d8c53a1a49ccfbf9f2483cce4ed1b8eec987a",
+    "data/china/515790.SS.parquet": "d4c0308c411811067d34fb66961805026c3c8ab3c6cf0d38dd3722e6d27077d3",
+    "data/china/512660.SS.parquet": "36da89bf7a4344785d886a8b7d02168784c9995ac32d2d57c7bb87649f243e6b",
+    "data/china/512400.SS.parquet": "a077b0aaa9de2e23e04b54ca865e7c6e370071e88b1317232aa14c7c3bab885a",
+    "data/china/515220.SS.parquet": "ff2df5a7e6e24b78277e0c02013ce14b4c882805ff2700bfc9e99ebdfe1e05ae",
+    "data/china/512200.SS.parquet": "21ae9d4d3d7b4751e8486917e08b15a224a3003277bea664ee612175205c61c8",
+    "data/china/515250.SS.parquet": "1f25eb887632a3784f33553b56a7eb4cd1cd251bad4dd5bda3db726752d60a16",
+    "data/china/512980.SS.parquet": "280f92e13cbc62f8b426919a15163e2f799dab41c9f5ae5875d6dd7f46d7cbac"
   },
   "context": {
     "authority": "context_only",
@@ -65,7 +67,7 @@
           "flat": 19,
           "positive_pct": 43.950905902980715,
           "median_return_pct": -0.8928549127512841,
-          "mean_return_pct": 0.30359259397803723,
+          "mean_return_pct": 0.3035925939780373,
           "p10_return_pct": -9.030104743631195,
           "p90_return_pct": 11.123106992574726,
           "dispersion_pp": 20.15321173620592,
@@ -95,6 +97,158 @@
       "median_return_pct": 1.039,
       "source": "tushare",
       "data_gaps": []
+    },
+    "sectors": {
+      "declared": 16,
+      "eligible": 16,
+      "rising": 4,
+      "rows": [
+        {
+          "ticker": "512800.SS",
+          "name": "Banks",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": 2.453985396935132,
+          "benchmark_gap_pp": 4.548003627398489
+        },
+        {
+          "ticker": "512880.SS",
+          "name": "Securities & Brokers",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -0.5644330157035582,
+          "benchmark_gap_pp": 1.5295852147597988
+        },
+        {
+          "ticker": "512690.SS",
+          "name": "Baijiu & Liquor",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -1.9093046335783126,
+          "benchmark_gap_pp": 0.1847135968850444
+        },
+        {
+          "ticker": "159928.SZ",
+          "name": "Consumer Staples",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -1.0622108801544128,
+          "benchmark_gap_pp": 1.0318073503089442
+        },
+        {
+          "ticker": "512170.SS",
+          "name": "Healthcare",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -2.5787974669222002,
+          "benchmark_gap_pp": -0.48477923645884324
+        },
+        {
+          "ticker": "159992.SZ",
+          "name": "Innovative Drugs",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -6.494963908153051,
+          "benchmark_gap_pp": -4.400945677689694
+        },
+        {
+          "ticker": "512760.SS",
+          "name": "Semiconductors",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -0.36231418494478973,
+          "benchmark_gap_pp": 1.7317040455185673
+        },
+        {
+          "ticker": "515000.SS",
+          "name": "Technology",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -0.07818973383427741,
+          "benchmark_gap_pp": 2.0158284966290796
+        },
+        {
+          "ticker": "515030.SS",
+          "name": "New-Energy Vehicle",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -8.576644029471092,
+          "benchmark_gap_pp": -6.482625799007735
+        },
+        {
+          "ticker": "515790.SS",
+          "name": "Solar & Photovoltaic",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -4.3427230703835695,
+          "benchmark_gap_pp": -2.2487048399202125
+        },
+        {
+          "ticker": "512660.SS",
+          "name": "Defense & Military",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": 4.787712160499846,
+          "benchmark_gap_pp": 6.881730390963203
+        },
+        {
+          "ticker": "512400.SS",
+          "name": "Nonferrous Metals",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -7.086837997664041,
+          "benchmark_gap_pp": -4.992819767200684
+        },
+        {
+          "ticker": "515220.SS",
+          "name": "Coal",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -2.1926388587572454,
+          "benchmark_gap_pp": -0.0986206282938884
+        },
+        {
+          "ticker": "512200.SS",
+          "name": "Real Estate",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": 1.8211982942018201,
+          "benchmark_gap_pp": 3.915216524665177
+        },
+        {
+          "ticker": "515250.SS",
+          "name": "Automobiles",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": -0.10810671486588541,
+          "benchmark_gap_pp": 1.9859115155974716
+        },
+        {
+          "ticker": "512980.SS",
+          "name": "Media",
+          "asof": "2026-09-18",
+          "status": "current",
+          "start": "2026-08-21",
+          "return_pct": 0.741654171057804,
+          "benchmark_gap_pp": 2.835672401521161
+        }
+      ],
+      "authority": "context_only"
     },
     "data_gaps": []
   },

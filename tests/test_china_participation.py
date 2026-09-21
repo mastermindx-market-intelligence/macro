@@ -975,9 +975,69 @@ def test_context_builder_binds_to_assessment_date_not_render_clock(monkeypatch):
     from scripts import build_china
     from engine import china_participation as pc
     seen = []
-    def load(*, asof):
+    def load(*, asof, sector_universe):
+        assert sector_universe
         seen.append(asof)
         return {'assessment_asof':asof,'authority':'context_only'}
     monkeypatch.setattr(pc, 'load_breadth_context', load)
     assert build_china._participation_context('2026-09-18')['assessment_asof'] == '2026-09-18'
     assert seen == ['2026-09-18']
+
+
+def test_context_sector_outperformance_does_not_mean_sector_rose():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 98
+    bench.iloc[-1] = 95
+    r = sector_breadth_context({'ETF':prices.iloc[:,0].to_frame('close')},bench,
+                              names={'ETF':['Banks']},asof='2026-09-18')
+    row = r['rows'][0]
+    assert row['return_pct'] == pytest.approx(-2)
+    assert row['benchmark_gap_pp'] == pytest.approx(3)
+    assert r['rising'] == 0 and r['eligible'] == 1
+
+
+def test_context_sector_missing_data_does_not_shrink_declared_universe():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    r = sector_breadth_context({'ETF':prices.iloc[:,0].to_frame('close')},bench,
+                              names={'ETF':['Banks'],'MISSING':['Missing']},asof='2026-09-18')
+    assert r['declared'] == 2 and len(r['rows']) == 2 and r['eligible'] == 1
+    assert r['rows'][1]['return_pct'] is None
+
+
+def test_context_sector_delayed_read_does_not_count_in_current_rising_tally():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    r = sector_breadth_context({'ETF':prices.iloc[:-1,0].to_frame('close')},bench,
+                              names={'ETF':['Banks']},asof='2026-09-18')
+    assert r['eligible'] == 0 and r['rows'][0]['status'] == 'delayed'
+
+
+def test_context_extreme_finite_quotes_cannot_export_infinite_metrics():
+    import json
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 1e308
+    result = _price_context(prices,bench,names)
+    json.dumps(result,allow_nan=False)
+
+
+def test_context_boolean_prices_are_invalid_not_one_currency_unit():
+    prices, bench, names = _price_context_fixture()
+    prices = prices.astype(object)
+    prices.iloc[-1,4:] = True
+    r = _price_context(prices,bench,names)
+    assert r['quote_count'] == 4 and r['windows']['20']['median_return_pct'] is None
+
+
+def test_context_unsorted_rows_do_not_change_the_snapshot():
+    prices, bench, names = _price_context_fixture()
+    assert _price_context(prices.iloc[::-1],bench.iloc[::-1],names) == _price_context(prices,bench,names)
+
+
+def test_context_input_frames_are_not_mutated():
+    prices, bench, names = _price_context_fixture()
+    original, original_bench = prices.copy(), bench.copy()
+    _price_context(prices,bench,names)
+    pd.testing.assert_frame_equal(prices,original)
+    pd.testing.assert_series_equal(bench,original_bench)
