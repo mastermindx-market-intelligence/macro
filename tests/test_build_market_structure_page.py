@@ -500,23 +500,23 @@ def test_m3_null_pctile_is_missing_data_sentence_never_0th(tmp_path):
     assert "本次快照没有百分位读数" in hero
 
 
-def test_p3_machine_money_stance_map(tmp_path):
+def test_p3_systematic_fund_stance_map(tmp_path):
     cases = {
         "aligned_adding": (
-            "Watch — don't chase: machine buying is already in the price.",
-            "观望——勿追涨：机器买盘已在价格中。",
+            "Watch — don't chase: systematic buying is already in the price.",
+            "观望——勿追涨：系统化买盘已反映在价格中。",
         ),
         "aligned_cutting": (
-            "Watch — machine money is stepping back; don't lean against it.",
-            "观望——机器资金正在撤减，勿逆势加仓。",
+            "Watch — systematic funds are stepping back; don't lean against it.",
+            "观望——系统化资金正在撤减，勿逆势加仓。",
         ),
         "paused": (
-            "Stand aside — machine flows aren't pushing either way.",
-            "暂不行动——机器资金没有明确方向。",
+            "Stand aside — systematic flows aren't pushing either way.",
+            "暂不行动——系统化资金没有明确方向。",
         ),
         "split": (
-            "Stand aside — machine flows aren't pushing either way.",
-            "暂不行动——机器资金没有明确方向。",
+            "Stand aside — systematic flows aren't pushing either way.",
+            "暂不行动——系统化资金没有明确方向。",
         ),
         None: (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
         "mystery": (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
@@ -594,7 +594,7 @@ def test_p6_six_warmups_market_facing_both_lanes():
     pairs = [
         ("Shock-absorber reading isn't on this page yet.", "缓冲机制读数尚未出现在本页。"),
         ("Dealer-exposure history isn't on this page yet.", "做市商敞口历史尚未出现在本页。"),
-        ("Machine-money flows aren't on this page yet.", "机器资金动向尚未出现在本页。"),
+        ("Systematic fund flows aren't on this page yet.", "系统化资金流尚未出现在本页。"),
         ("Stock-picker conditions aren't on this page yet.", "选股行情尚未出现在本页。"),
         ("Vol weather isn't on this page yet.", "波动率天气尚未出现在本页。"),
         ("This week's expected range isn't on this page yet.", "本周预期区间尚未出现在本页。"),
@@ -671,8 +671,8 @@ def test_p10_vocabulary_glossed_in_place():
     assert "1个月隐含相关性" in html
     assert "later months cost more than the front (contango)" in html
     assert "远月贵于近月（升水）" in html
-    assert "typical range (±1σ, about 68% of weeks)" in html
-    assert "wide range (±2σ, about 95% of weeks)" in html
+    assert "typical range (about 68% of weeks)" in html
+    assert "wide range (about 95% of weeks)" in html
     assert "flip level (dealer hedging switch)" in html
     assert "M1 = front month" in html
     assert "M1=近月" in html
@@ -933,3 +933,87 @@ def test_m1_zero_window_uses_unavailable_form_both_lanes(tmp_path):
     assert "5日加仓中" not in html
     assert "window is being updated" in html
     assert "窗口更新中" in html
+
+
+# UIUX continuation: chart windows are preferences, never unchecked render inputs.
+def _run_msp_js(body: str) -> object:
+    import subprocess
+    source = (REPO / "templates" / "market_structure.html.j2").read_text()
+    get_range = source[source.index("function getRange("):source.index("function setRange(")]
+    slice_tail = source[source.index("function sliceTail("):source.index("function clearSVG(")]
+    assert "function rangeSummary(" in source
+    summary = source[source.index("function rangeSummary("):source.index("function paintRangeSummary(")]
+    result = subprocess.run(["node", "-e", get_range + slice_tail + summary + "\n" + body],
+                            capture_output=True, text=True, timeout=10, check=True)
+    return json.loads(result.stdout)
+
+
+def test_msp_saved_ranges_accept_only_real_choices():
+    result = _run_msp_js("""
+      const bad=['broken','63days','0','-1','1.5','Infinity','126','',null];
+      const observed=bad.map(v=>{global.localStorage={getItem:()=>v};return getRange('x',252,[63,252,9999]);});
+      global.localStorage={getItem:()=>{throw new Error('blocked storage')}};
+      observed.push(getRange('x',252,[63,252,9999]));
+      const good=['63','252','9999'].map(v=>{global.localStorage={getItem:()=>v};return getRange('x',252,[63,252,9999]);});
+      console.log(JSON.stringify({observed,good}));
+    """)
+    assert result == {"observed": [252] * 10, "good": [63,252,9999]}
+
+
+def test_msp_range_summary_uses_actual_available_dates_without_mutating_history():
+    result = _run_msp_js("""
+      const history=[{date:'2026-09-15',v:1},{date:'2026-09-16',v:2},{date:'2026-09-17',v:3}];
+      const before=JSON.stringify(history);
+      const full=rangeSummary(history,252),last=rangeSummary(history,1);
+      const empty=rangeSummary([],252),missing=rangeSummary([{date:null}],252);
+      const invalid=rangeSummary([{date:'2026-02-30'}],252);
+      console.log(JSON.stringify({full,last,empty,missing,invalid,unchanged:before===JSON.stringify(history)}));
+    """)
+    assert result['full'] == {'en':'3 observations · 2026-09-15 — 2026-09-17','zh':'3个观测 · 2026-09-15 — 2026-09-17'}
+    assert result['last'] == {'en':'1 observation · 2026-09-17','zh':'1个观测 · 2026-09-17'}
+    assert result['empty'] == {'en':'No chart history','zh':'暂无图表历史'}
+    assert result['missing']['en'] == '1 observation · dates unavailable'
+    assert result['invalid']['en'] == '1 observation · dates unavailable'
+    assert result['unchanged']
+
+
+def test_msp_range_controls_expose_native_selected_state_and_chart_context():
+    from html.parser import HTMLParser
+    class Tags(HTMLParser):
+        def __init__(self):
+            super().__init__(); self.tags=[]
+        def handle_starttag(self,tag,attrs):
+            self.tags.append((tag,dict(attrs)))
+    html = _render_with_fixture()
+    parser=Tags(); parser.feed(html)
+    nodes={a['id']:a for tag,a in parser.tags if a.get('id')}
+    groups={'gex':('126','gex-chart spx-flip-chart'),'sys':('252','sys-chart'),'cor':('252','cor-chart')}
+    for group,(selected,charts) in groups.items():
+        wrapper=nodes[f'{group}-range-btns']
+        assert wrapper['role']=='group' and wrapper['aria-labelledby'] in nodes
+        buttons=[a for tag,a in parser.tags if tag=='button' and a.get('aria-controls')==charts]
+        assert len(buttons)==(5 if group=='gex' else 3)
+        assert [b['data-range'] for b in buttons if b['aria-pressed']=='true']==[selected]
+        assert all(b.get('type')=='button' for b in buttons)
+        status=nodes[f'{group}-range-status']; assert status['role']=='status'
+        for chart in charts.split():
+            svg=nodes[chart]
+            assert svg['role']=='img' and svg['aria-describedby']==status['id']
+            assert svg.get('data-chart-label-en') and svg.get('data-chart-label-zh')
+
+
+def test_msp_range_controller_keeps_one_click_owner_and_static_touch_style():
+    source=(REPO/'templates/market_structure.html.j2').read_text()
+    controller=source[source.index('function wireRange('):source.index('function init(){')]
+    assert controller.count("addEventListener('click'")==1
+    assert "setAttribute('aria-pressed'" in controller
+    assert "getRange(key,def,allowed)" in controller
+    assert "addEventListener('keydown'" not in controller
+    assert "document.addEventListener('langchange',syncChartLanguage)" in source
+    block=source[source.index('<style data-market-range-controls>'):source.index('</style>',source.index('<style data-market-range-controls>'))+8]
+    assert 'min-height:40px' in block and 'min-width:44px' in block
+    assert '.rbtn:focus-visible' in block
+    html=(REPO/'site/market_structure.html').read_text()
+    assert block in html
+    runtime=source[source.index('function getRange('):source.index('</script>',source.index('function getRange('))]
+    assert runtime in html
