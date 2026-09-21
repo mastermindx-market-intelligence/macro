@@ -295,17 +295,27 @@ def test_product_header_has_one_page_independent_geometry() -> None:
     assert "margin: 18px auto 16px !important;" in rule
 
 
-def test_start_hub_uses_canonical_product_navigation_and_demotes_clock() -> None:
+def test_start_hub_uses_canonical_navigation_and_truthful_snapshot_shell() -> None:
+    """The signed-in hub keeps one product nav and one baked snapshot label.
+
+    `hub-live-meta` was the obsolete live-clock strip removed by #7346; keeping
+    this navigation guard aligned with the current snapshot contract prevents a
+    deliberate UX cleanup from leaving the broader dashboard suite red.
+    """
     source = (ROOT / "scripts" / "build_vector.py").read_text(encoding="utf-8")
     assert 'get_template("_site_nav.html.j2")' in source
     assert "+ _hub_product_nav_html()" in source
-    assert "'<div class=\"hub-live-meta\">" in source
+    assert "'<div class=\"hub-snapshot-meta\">" in source
+    assert "hub-clock-wrap" in source
+    assert "hub-live-meta" not in source
     assert "'<div class=\"hub-top\">'" not in source
 
     rendered = (ROOT / "site" / "start.html").read_text(encoding="utf-8")
     assert 'class="site-nav"' in rendered
     assert 'body class="hub-page"' in rendered
-    assert 'class="hub-live-meta"' in rendered
+    assert 'class="hub-snapshot-meta"' in rendered
+    assert 'class="hub-clock-wrap"' in rendered
+    assert 'class="hub-live-meta"' not in rendered
     assert 'class="hub-top"' not in rendered
 
 

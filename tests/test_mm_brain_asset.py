@@ -55,6 +55,34 @@ def test_css_template_literal_has_no_interior_backtick(path: pathlib.Path) -> No
     )
 
 
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_launcher_collapses_to_orb_before_tablet_content_is_obscured(
+    path: pathlib.Path,
+) -> None:
+    """The labelled fixed launcher is too wide for portrait-tablet content.
+
+    The macro dashboard's 820px scorecard has decision rows at the viewport's
+    lower-right edge. Keep the full label on desktop, but collapse to the same
+    accessible orb used on phones at 1024px and below.
+    """
+    text = path.read_text(encoding="utf-8")
+    start, close = _css_template_span(text)
+    css = text[start + 1 : close]
+    marker = "@media(max-width:1024px){"
+    assert marker in css, (
+        "the fixed Brain launcher needs a tablet breakpoint; the former 700px "
+        "cutoff leaves its labelled pill covering dashboard rows at 820px"
+    )
+    tablet = css.split(marker, 1)[1].split("@media(max-width:700px){", 1)[0]
+    assert "body.page-macro #mmb-launch{" in tablet
+    assert "body.page-macro #mmb-launch .lt{display:none}" in tablet
+    phone = css.split("@media(max-width:700px){", 1)[1].split(
+        "/* scrim + panel */", 1
+    )[0]
+    assert "#mmb-launch{" in phone
+    assert "#mmb-launch .lt{display:none}" in phone
+
+
 # ── the Research toggle reads the ceiling sentence (W9B F11-8) ───────────────
 #
 # The compact pill was a disclosure in name only. The widget's own sheet hides
