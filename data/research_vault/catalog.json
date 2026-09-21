@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T10:02:20.715149+00:00",
-  "count": 2561,
+  "generated_at": "2026-09-21T10:17:20.612694+00:00",
+  "count": 2562,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -382,6 +382,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ujjixbqlnkj-b68158",
+      "title": "GS Garrett weekend prep 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:15Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
