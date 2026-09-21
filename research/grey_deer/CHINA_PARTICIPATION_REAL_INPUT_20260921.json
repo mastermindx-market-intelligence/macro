@@ -1,0 +1,103 @@
+{
+  "source_pin": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
+  "input_receipts": {
+    "data/china_search/closes.parquet": {
+      "sha256": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+      "rows": 1280,
+      "columns": 1816,
+      "asof": "2026-09-18 00:00:00"
+    },
+    "data/china/510300.SS.parquet": {
+      "sha256": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7",
+      "rows": 3482,
+      "columns": 2,
+      "asof": "2026-09-18 00:00:00"
+    },
+    "data/china_board_breadth/breadth.parquet": {
+      "sha256": "fbed97a359af2aabf582d461b74351f1273ce1c435dc1775db1ba42a3930d897",
+      "rows": 33,
+      "columns": 7,
+      "asof": "2026-09-18 00:00:00"
+    }
+  },
+  "context": {
+    "authority": "context_only",
+    "assessment_asof": "2026-09-18",
+    "benchmark": "CSI 300 ETF (510300.SS)",
+    "sample": {
+      "authority": "context_only",
+      "status": "current",
+      "scope": "ashare_price_library_sample",
+      "requested_asof": "2026-09-18",
+      "asof": "2026-09-18",
+      "configured_count": 1816,
+      "quote_count": 1715,
+      "current_comparison": "both_down",
+      "windows": {
+        "5": {
+          "sessions": 5,
+          "status": "ok",
+          "eligible": 1714,
+          "coverage_pct": 94.38325991189427,
+          "start": "2026-09-11",
+          "end": "2026-09-18",
+          "up": 983,
+          "down": 705,
+          "flat": 26,
+          "positive_pct": 57.351225204200695,
+          "median_return_pct": 0.7898522238441008,
+          "mean_return_pct": 2.2537372221126466,
+          "p10_return_pct": -3.2015406866275162,
+          "p90_return_pct": 9.918970190903417,
+          "dispersion_pp": 13.120510877530933,
+          "benchmark_return_pct": 0.0655117397849958,
+          "comparison": "both_up"
+        },
+        "20": {
+          "sessions": 20,
+          "status": "ok",
+          "eligible": 1711,
+          "coverage_pct": 94.21806167400881,
+          "start": "2026-08-21",
+          "end": "2026-09-18",
+          "up": 752,
+          "down": 940,
+          "flat": 19,
+          "positive_pct": 43.950905902980715,
+          "median_return_pct": -0.8928549127512841,
+          "mean_return_pct": 0.30359259397803723,
+          "p10_return_pct": -9.030104743631195,
+          "p90_return_pct": 11.123106992574726,
+          "dispersion_pp": 20.15321173620592,
+          "benchmark_return_pct": -2.094018230463357,
+          "comparison": "both_down"
+        }
+      },
+      "trend": {
+        "window": 200,
+        "change_sessions": 5,
+        "eligible": 1670,
+        "above200_pct": 28.323353293413174,
+        "paired_eligible": 1669,
+        "paired_change_pp": 2.636309167165968
+      },
+      "data_gaps": []
+    },
+    "daily_board": {
+      "scope": "hushen_traded_board",
+      "status": "current",
+      "asof": "2026-09-18",
+      "n": 5209,
+      "adv": 3937,
+      "dec": 1109,
+      "flat": 163,
+      "positive_pct": 75.5807256671146,
+      "median_return_pct": 1.039,
+      "source": "tushare",
+      "data_gaps": []
+    },
+    "data_gaps": []
+  },
+  "production": false,
+  "fresh_collection": false
+}

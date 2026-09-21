@@ -1,3 +1,4 @@
+{% import "_china_participation_context.html.j2" as cbx %}
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_decision_card.html.j2" as dc %}
 {% import "_lens.html.j2" as lens %}
@@ -2130,6 +2131,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
     </div>
   </div>
+
+  {{ cbx.participation_panel(breadth_context | default(none)) }}
 
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">

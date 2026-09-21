@@ -919,6 +919,12 @@ def _rd_word(value, bands):
     return None
 
 
+def _participation_context(asof: str) -> dict:
+    """Read-only breadth evidence; no classifier or publication ownership change."""
+    from engine.china_participation import load_breadth_context
+    return load_breadth_context(asof=asof)
+
+
 def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     """Assemble the `radar_dlg` ctx the shared Risk Radar dialog consumes on china.html.
 
@@ -1419,6 +1425,7 @@ def main() -> int:
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "sectors": sectors,
             "breadth": _breadth(),
+            "breadth_context": _participation_context(latest.get("date")),
             "benchmark": _benchmark_card(),
             "pair": latest.get("pair_ratios", {}),
             "pref": latest.get("preference_check", {}),

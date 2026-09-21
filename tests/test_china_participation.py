@@ -736,3 +736,248 @@ if __name__ == "__main__":
 
     print(f"\nResult: {PASS_COUNT} passed, {FAIL_COUNT} failed")
     sys.exit(0 if FAIL_COUNT == 0 else 1)
+
+# Chairman China dispersion slice: descriptive, never a second scored state.
+def _price_context_fixture():
+    dates = pd.bdate_range(end='2026-09-18', periods=210)
+    names = [f'{600000+i}.SS' for i in range(10)]
+    prices = pd.DataFrame(100.0, index=dates, columns=names)
+    bench = pd.Series(100.0, index=dates)
+    return prices, bench, names
+
+
+def _price_context(prices, bench, names, **kw):
+    from engine import china_participation as pc
+    return pc.price_breadth_context(prices, bench, members=names,
+                                   asof='2026-09-18', **kw)
+
+
+def test_context_exposes_index_up_while_most_sampled_shares_fall():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = [170.0] + [98.0] * 9
+    bench.iloc[-1] = 104.0
+    r = _price_context(prices, bench, names)
+    w = r['windows']['20']
+    assert r['status'] == 'current'
+    assert (w['eligible'], w['up'], w['down']) == (10, 1, 9)
+    assert w['median_return_pct'] == pytest.approx(-2)
+    assert w['mean_return_pct'] == pytest.approx(5.2)
+    assert w['benchmark_return_pct'] == pytest.approx(4)
+    assert w['comparison'] == 'index_up_sample_down'
+    assert w['dispersion_pp'] >= 0
+    assert r['authority'] == 'context_only'
+    assert 'probability' not in r and 'risk_score' not in r
+
+
+@pytest.mark.parametrize('bad', [None, float('nan'), float('inf'), 0.0, -1.0, 'bad'])
+def test_context_missing_current_prices_are_not_filled(bad):
+    prices, bench, names = _price_context_fixture()
+    prices = prices.astype(object)
+    prices.iloc[-1, 4:] = bad
+    r = _price_context(prices, bench, names)
+    assert r['asof'] == '2026-09-18'
+    assert r['quote_count'] == 4
+    assert r['windows']['20']['status'] == 'insufficient_coverage'
+    assert r['windows']['20']['median_return_pct'] is None
+
+
+def test_context_old_price_sample_is_dated_not_current():
+    prices, bench, names = _price_context_fixture()
+    r = _price_context(prices.iloc[:-10], bench, names)
+    assert r['status'] == 'delayed'
+    assert r['asof'] == str(prices.index[-11].date())
+    assert r['requested_asof'] == '2026-09-18'
+    assert r['current_comparison'] is None
+
+
+def test_context_future_rows_cannot_change_past_snapshot():
+    prices, bench, names = _price_context_fixture()
+    expected = _price_context(prices, bench, names)
+    prices.loc[pd.Timestamp('2026-09-21')] = 2000.0
+    bench.loc[pd.Timestamp('2026-09-21')] = 500.0
+    assert _price_context(prices, bench, names) == expected
+
+
+def test_context_internal_gap_disqualifies_stock_from_return_window():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-7, 0] = np.nan
+    r = _price_context(prices, bench, names)
+    assert r['windows']['5']['eligible'] == 10
+    assert r['windows']['20']['eligible'] == 9
+
+
+def test_context_benchmark_gap_cannot_look_like_a_zero_return():
+    prices, bench, names = _price_context_fixture()
+    bench.iloc[-1] = np.nan
+    w = _price_context(prices, bench, names)['windows']['20']
+    assert w['benchmark_return_pct'] is None
+    assert w['comparison'] == 'sample_only'
+
+
+def test_context_unrequested_symbol_cannot_improve_coverage():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1, 4:] = np.nan
+    prices['EXTRA'] = 100.0
+    r = _price_context(prices, bench, names)
+    assert r['configured_count'] == 10 and r['quote_count'] == 4
+
+
+@pytest.mark.parametrize('which', ['date', 'column', 'members'])
+def test_context_duplicate_inputs_refuse_without_double_counting(which):
+    prices, bench, names = _price_context_fixture()
+    if which == 'date': prices = pd.concat([prices, prices.iloc[-1:]])
+    elif which == 'column': prices = pd.concat([prices, prices.iloc[:, :1]], axis=1)
+    else: names += names[:1]
+    assert _price_context(prices, bench, names)['status'] == 'unavailable'
+
+
+def test_context_ma_change_uses_identical_members_at_both_endpoints():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-5:, :4] = 110.0
+    prices.iloc[-1, 8:] = np.nan
+    r = _price_context(prices, bench, names)['trend']
+    assert r['eligible'] == 8 and r['paired_eligible'] == 8
+    assert r['above200_pct'] == 50
+    assert r['paired_change_pp'] == 50
+
+
+def test_context_percent_change_is_not_percentage_point_difference():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 110.0
+    w = _price_context(prices, bench, names)['windows']['20']
+    assert w['median_return_pct'] == pytest.approx(10)
+    assert w['positive_pct'] == 100
+
+
+def test_context_empty_inputs_keep_explicit_absence():
+    _, bench, names = _price_context_fixture()
+    r = _price_context(pd.DataFrame(), bench, names)
+    assert r['status'] == 'unavailable'
+    assert r['current_comparison'] is None
+
+
+def test_context_short_history_does_not_fake_ma_or_twenty_sessions():
+    prices, bench, names = _price_context_fixture()
+    r = _price_context(prices.iloc[-6:], bench, names)
+    assert r['windows']['5']['status'] == 'ok'
+    assert r['windows']['20']['status'] == 'insufficient_coverage'
+    assert r['trend']['above200_pct'] is None
+
+
+def _board_fixture():
+    return pd.DataFrame({'n': [5000], 'adv': [4000], 'dec': [900], 'flat': [100],
+                         'med_pct': [1.5], 'source': ['sina']},
+                        index=pd.to_datetime(['2026-09-18']))
+
+
+def test_context_board_keeps_full_board_and_sample_scopes_separate():
+    from engine.china_participation import board_breadth_context
+    r = board_breadth_context(_board_fixture(), asof='2026-09-18')
+    assert r['status'] == 'current' and r['n'] == 5000
+    assert r['positive_pct'] == 80 and r['median_return_pct'] == 1.5
+    assert r['scope'] == 'hushen_traded_board'
+
+
+@pytest.mark.parametrize('field,value', [('n',200), ('adv',-1), ('flat',np.nan),
+                                         ('dec',999), ('adv',True), ('med_pct',np.inf)])
+def test_context_board_bad_counts_never_become_broad_confirmation(field, value):
+    from engine.china_participation import board_breadth_context
+    df = _board_fixture().astype(object)
+    df.loc[df.index[0],field] = value
+    r = board_breadth_context(df, asof='2026-09-18')
+    assert r['status'] == 'unavailable' and r['positive_pct'] is None
+
+
+def test_context_board_does_not_relabel_old_counts_as_current():
+    from engine.china_participation import board_breadth_context
+    r = board_breadth_context(_board_fixture(), asof='2026-09-21')
+    assert r['status'] == 'delayed' and r['asof'] == '2026-09-18'
+
+
+def test_context_loader_reads_existing_stores_without_network_or_writes(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    prices, bench, names = _price_context_fixture()
+    reads = []
+    inputs = {('china_search','closes'): prices,
+              ('china','510300.SS'): bench.to_frame('close'),
+              ('china_board_breadth','breadth'): _board_fixture()}
+    def read(g, n):
+        reads.append((g,n))
+        return inputs.get((g,n))
+    monkeypatch.setattr(store, 'read', read)
+    r = pc.load_breadth_context(asof='2026-09-18')
+    assert r['sample']['configured_count'] == 10 and r['daily_board']['n'] == 5000
+    assert set(reads) == set(inputs)
+
+
+def test_context_loader_ignores_etfs_and_offshore_symbols(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    prices, bench, names = _price_context_fixture()
+    for name in ['510300.SS','00700.HK','200011.SZ','830799.BJ']:
+        prices[name] = 10.0
+    monkeypatch.setattr(store, 'read', lambda g,n: prices if g=='china_search' else
+                        bench.to_frame('close') if g=='china' else _board_fixture())
+    assert pc.load_breadth_context(asof='2026-09-18')['sample']['configured_count'] == 10
+
+
+def _render_participation_context(context):
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader
+    env = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parents[1]/'templates')),
+                      autoescape=True)
+    return env.from_string('{% import "_china_participation_context.html.j2" as cbx %}'
+                           '{{ cbx.participation_panel(ctx) }}').render(ctx=context)
+
+
+def test_context_panel_distinguishes_recent_improvement_from_twenty_day_weakness():
+    from engine import china_participation as pc
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-21:-5] = 110.0
+    prices.iloc[-5:] = 105.0
+    # Synthetic scenario: force named window values; producer arithmetic is tested above.
+    sample = _price_context(prices, bench, names)
+    sample['windows']['5'].update(status='ok', median_return_pct=1.0, positive_pct=60)
+    sample['windows']['20'].update(status='ok', median_return_pct=-1.0, positive_pct=40)
+    html = _render_participation_context({'sample':sample,
+                         'daily_board':pc.board_breadth_context(_board_fixture(),asof='2026-09-18')})
+    assert 'Recent rebound, uneven recovery' in html
+    assert '20-session sample' in html and 'Latest board session' in html
+    assert 'Not an equal-weight index' in html
+    assert 'Price-library sample' in html and '沪深' in html
+
+
+def test_context_panel_missing_data_is_not_a_calm_or_bearish_verdict():
+    html = _render_participation_context({})
+    assert 'Participation unavailable' in html and '参与度暂不可用' in html
+    assert 'Recent rebound' not in html
+    assert 'Risk-off' not in html and 'Risk-on' not in html
+
+
+def test_context_panel_stale_sample_never_gets_a_current_rebound_headline():
+    prices, bench, names = _price_context_fixture()
+    sample = _price_context(prices.iloc[:-5],bench,names)
+    html = _render_participation_context({'sample':sample})
+    assert 'Sample behind assessment' in html
+    assert sample['asof'] in html
+    assert 'Recent rebound, uneven recovery' not in html
+
+
+def test_context_panel_nonfinite_prices_do_not_leak_json_nan():
+    import json
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = np.inf
+    json.dumps(_price_context(prices,bench,names),allow_nan=False)
+
+
+def test_context_builder_binds_to_assessment_date_not_render_clock(monkeypatch):
+    from scripts import build_china
+    from engine import china_participation as pc
+    seen = []
+    def load(*, asof):
+        seen.append(asof)
+        return {'assessment_asof':asof,'authority':'context_only'}
+    monkeypatch.setattr(pc, 'load_breadth_context', load)
+    assert build_china._participation_context('2026-09-18')['assessment_asof'] == '2026-09-18'
+    assert seen == ['2026-09-18']
