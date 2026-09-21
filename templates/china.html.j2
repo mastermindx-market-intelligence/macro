@@ -1057,9 +1057,6 @@
   .cnx-wrap .cnx-playbook-context{font-size:10.5px;line-height:1.35;color:var(--muted);margin:2px 0 0}
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
-  .cnx-wrap .cnx-lens::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
-  html[data-lang="zh"] .cnx-wrap .cnx-lens::after{content:attr(data-tip-zh)}
-  .cnx-wrap .cnx-lens.cnx-tip-open::after{display:block}
   .cnx-wrap .cnx-change-list{display:grid;gap:0}
   .cnx-wrap .cnx-change-row{display:grid;grid-template-columns:44px minmax(66px,.34fr) minmax(0,1fr);gap:8px;align-items:start;padding:7px 4px;margin:0 -4px;border-bottom:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:11.5px;text-decoration:none;color:inherit}
   .cnx-wrap .cnx-change-row:last-child{border-bottom:none}
@@ -2144,7 +2141,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
             {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
-          {% if not face.empty %}<button type="button" class="cnx-lens" aria-expanded="false" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}" onclick="cnxToggleLens(this,event)">?</button>{% endif %}</div>
+          {% if not face.empty %}<button type="button" class="cnx-lens" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}">?</button>{% endif %}</div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}
@@ -4672,17 +4669,6 @@ window.__CHART_SWAP__ = {
   function cnxClosePops(){
     document.querySelectorAll('.cnx-pop.open').forEach(function(p){p.classList.remove('open');});
   }
-  function cnxCloseLenses(){
-    document.querySelectorAll('.cnx-lens.cnx-tip-open').forEach(function(btn){
-      btn.classList.remove('cnx-tip-open');btn.setAttribute('aria-expanded','false');
-    });
-  }
-  function cnxToggleLens(btn,ev){
-    if(ev){ev.preventDefault();ev.stopPropagation();}
-    var was=btn.classList.contains('cnx-tip-open');
-    cnxCloseLenses();
-    if(!was){btn.classList.add('cnx-tip-open');btn.setAttribute('aria-expanded','true');}
-  }
   function cnxToggleHm(ev){
     if(ev){ev.stopPropagation();}
     var w=document.getElementById('cnx-hm');
@@ -4710,18 +4696,16 @@ window.__CHART_SWAP__ = {
   document.addEventListener('keydown',function(e){
     if(e.key!=='Escape')return;
     if(document.querySelector('.hm-ov'))return;
-    if(document.querySelector('.cnx-lens.cnx-tip-open')){cnxCloseLenses();return;}
+    if(document.querySelector('.lens-pop.open'))return;
     cnxCloseDlg();
   });
-  /* close glance popovers/lenses on outside click */
-  document.addEventListener('click',function(){cnxClosePops();cnxCloseLenses();});
+  /* close China-local popovers on outside click; the shared Lens owns data-tip receipts. */
+  document.addEventListener('click',function(){cnxClosePops();});
   /* expose on window for onclick= attrs */
   window.cnxOpenDlg=cnxOpenDlg;
   window.cnxCloseDlg=cnxCloseDlg;
   window.cnxTogglePop=cnxTogglePop;
   window.cnxClosePops=cnxClosePops;
-  window.cnxToggleLens=cnxToggleLens;
-  window.cnxCloseLenses=cnxCloseLenses;
   window.cnxToggleHm=cnxToggleHm;
   cnxResolveHash();
   window.addEventListener('hashchange',cnxResolveHash);

@@ -112,6 +112,14 @@ _API_CACHE_TTL_S = 15.0
 # (/fp/realtime, the "N active" pill) is on _API_CACHE_BYPASS_PATHS below and is not
 # cached at all, so nothing being watched for freshness is affected by this.
 _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
+    # Match Intelligence OS's own five-minute derived-estate cache.  Re-sending
+    # and re-serializing the same 100+ KB census every 15s buys no freshness:
+    # the underlying derivation itself is intentionally stable for five minutes.
+    ("/api/intelligence_os", 300.0),
+    # Metabolism's live run strip is a separate no-cache endpoint; the panel
+    # snapshot (repo variables + recent-run summary) does not need a full GitHub
+    # round trip every time the operator tabs away and back.
+    ("/api/metabolism", 60.0),
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256
@@ -511,7 +519,8 @@ class Handler(BaseHTTPRequestHandler):
         for c in (cookies or []):
             self.send_header("Set-Cookie", c)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _csv(self, filename: str, body: bytes) -> None:
         """A real file download, not a JSON envelope the client re-wraps.
@@ -537,7 +546,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _file(self, name: str) -> None:
         p = (STATIC / name).resolve()
@@ -568,7 +578,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _body(self) -> dict:
         try:
@@ -739,6 +750,15 @@ class Handler(BaseHTTPRequestHandler):
             if not self._origin_ok():
                 return ("cross-origin request rejected", 403)
         return None
+
+    def do_HEAD(self):
+        """Mirror GET status and headers without writing a response body.
+
+        External monitors and HTTP clients routinely probe web surfaces with HEAD.
+        BaseHTTPRequestHandler otherwise answers 501, which made a healthy admin
+        console look unavailable even though GET / was 200.
+        """
+        return self.do_GET()
 
     # ---- GET ----------------------------------------------------------------
     _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
@@ -927,7 +947,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'none'; style-src 'unsafe-inline'; sandbox")
                 self.end_headers()
-                self.wfile.write(body)
+                if getattr(self, "command", None) != "HEAD":
+                    self.wfile.write(body)
                 return
             # Allies (ecosystem) cockpit — MKT-D11. Read-only; the page never
             # contacts anyone. Status is folded from the operator ledger.
