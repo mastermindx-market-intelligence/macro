@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T02:01:20.792492+00:00",
-  "count": 2538,
+  "generated_at": "2026-09-21T02:31:25.990637+00:00",
+  "count": 2539,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -684,6 +684,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3rmqbtefyzb-dd4b9b",
+      "title": "Strategy Daily",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:50:42Z",
+      "summary_points": [
+        "Geopolitical Risk Premium: Iran/Houthi tensions elevate risk premium despite Saudi pipeline restart reducing immediate oil supply risk (not clean de-escalation) - USD Technical Correction: Post-FOMC bounce is oversold; DXY range 100.20-100.30 tests resilience amid industrial data - ECB Hike Constraint: Market pricing limits ECB hikes to 3 by April, constraining EUR upside - France Fiscal Focus: Leconomy’s €54bn consolidation and 5% deficit target by 2027 drive EUR/USD floor at 1.1480"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
