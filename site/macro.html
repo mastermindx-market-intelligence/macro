@@ -24,6 +24,9 @@
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,6 +101,8 @@
   };
 })();
 </script>
+
+<script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
 
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -2784,317 +2789,6 @@ html body.page-macro.mx4-grid > .grid :is(
 }
 </style>
 <style id="risk-envelope-band-css">
-/* ═══════════════════════════════════════════════════════════════════════════════
-   THREE SEPARATE READS — Grey Deer risk-envelope band (macro.html only)
-
-   Page-local scope under body.page-macro. Every value is a token derivation — no
-   new :root family, no hex literal, no new font stack (MASTER_PRODUCT_DESIGN_SYSTEM
-   §2). The page's own --sp-*/--r-*/--ink-*/--hair/--tile locals are already bound to
-   theme values, so dark, light and the zh 红涨绿跌 flip all propagate at paint.
-
-   THE SIGNATURE — the split spine
-   ────────────────────────────────
-   Coherence cannot be a colour: the reserved-hue law gives hue exactly five
-   meanings (direction, health, wayfinding, epistemic tier, lock) and "agreement"
-   is not one of them. So agreement is structural. Each read carries a 3px left
-   rail; when the reads agree the rails butt into ONE continuous spine, and when
-   they disagree the container opens a gap and each rail takes its own row's
-   meaning-ink. One line = one truth. Three marks = three truths.
-
-   Ink assignment, and why the zh flip lands correctly on its own:
-     · trend row  → --ink-up/--ink-down. This IS market direction, so it SHOULD flip
-                    under 红涨绿跌, and it does, globally.
-     · hazard row → --ink-ok/--ink-warn/--ink-act. This IS health/severity, which
-                    never flips (theme.css:378-390 scopes the zh pole remap to the
-                    .rrx/.igx gauges only), so red stays danger for every reader.
-     · null       → --prov-ink, the TEXT-grade provisional rung (theme.css:367-376).
-                    Never --prov, which is fill-grade.
-     · posture    → achromatic. Zero policies means nothing is restricted; there is
-                    no reserved meaning for hue to carry, so it takes none.
-
-   The SETTLED band itself does not animate. Motion law: an animated element must
-   encode a live or ongoing fact, and this artifact is settled. The stillness is
-   deliberate — it reads as "settled" beside the GD-3 live overlay's one earned
-   exception: the live-provisional chip's dot, which reuses theme.css's existing
-   `.dtp-dot` / `@keyframes dtp-pulse` (never a new animation) because it encodes
-   the ONE ongoing fact this band ever carries — "this is ticking right now" — see
-   the "GD-3 live-provisional overlay" block below.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-body.page-macro .gde-band { padding: var(--sp-5) var(--pad) var(--sp-5); }
-
-/* ── header: eyebrow + the section's question + one session stamp ───────────── */
-body.page-macro .gde-head {
-  display: flex; align-items: baseline; justify-content: space-between;
-  flex-wrap: wrap; gap: var(--sp-2) var(--sp-4);
-  padding: 0 0 var(--sp-3); margin: 0 0 var(--sp-4);
-  border-bottom: var(--rule) solid var(--hair-strong);
-}
-body.page-macro .gde-eyebrow {
-  display: block; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-eyebrow { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-h2 {
-  font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em;
-  color: var(--ink-1); margin: 3px 0 0; line-height: 1.3;
-}
-html[data-lang="zh"] body.page-macro .gde-h2 { letter-spacing: 0; }
-/* the ONE as-of stamp for this panel (doctrine §9.6 — per-source clocks live on
-   the rows themselves, and the drawer carries the full table) */
-body.page-macro .gde-stamp {
-  font-size: var(--fs-micro); font-weight: 600; color: var(--ink-3);
-  letter-spacing: .04em; cursor: help; white-space: nowrap;
-}
-
-/* ── the answer: this section's primary question, answered first ────────────── */
-body.page-macro .gde-lead {
-  font-size: var(--fs-md); line-height: 1.55; color: var(--ink-1);
-  margin: 0 0 var(--sp-5); max-width: 78ch;
-}
-body.page-macro .gde-lead b { font-weight: 800; }
-
-/* ── the three reads ────────────────────────────────────────────────────────── */
-/* default (agreeing): zero gap + one shared neutral rail = a single spine */
-body.page-macro .gde-reads { display: grid; gap: 0; }
-/* disagreeing: the spine breaks into three separate, differently-inked marks */
-body.page-macro .gde-reads.is-split { gap: var(--sp-4); }
-
-body.page-macro .gde-read {
-  padding: var(--sp-3) 0 var(--sp-3) var(--sp-4);
-  border-left: 3px solid var(--line);
-  /* grid items default to min-width:auto, so without this the evidence table's
-     min-width pushes the whole row past the viewport instead of scrolling inside
-     .gde-tblwrap — measured as a 516px document at a 390px viewport with the
-     drawer open, which is exactly the overflow the 390 gate forbids */
-  min-width: 0;
-}
-/* The grid is on .gde-row, NOT on .gde-read, so the evidence drawer sits OUTSIDE
-   column sizing. When the drawer was a grid child, opening it let the wide table
-   collapse the clause column and the row re-flowed under the reader's cursor.
-   The clause column is capped at a readable measure rather than stretched, so the
-   "when" column sits immediately after the "why" instead of being stranded at the
-   far edge of a 1440 panel. Three rows, three clocks, one column — which is what
-   makes the three clocks comparable at a glance. */
-body.page-macro .gde-row {
-  display: grid;
-  grid-template-columns: minmax(0, 232px) minmax(0, 58ch) max-content;
-  grid-template-areas:
-    "q      clause clock"
-    "answer clause clock";
-  column-gap: var(--sp-6); row-gap: 2px; align-items: start;
-}
-body.page-macro .gde-reads.is-split .gde-read { border-left-color: var(--gde-c, var(--line)); }
-/* (GD-2R1: the former .gde-read--quiet posture row is gone from the spine entirely —
-   see .gde-policy below. A railed posture row implied it was a party to the
-   agreement the rail encodes, which it is not.) */
-
-body.page-macro .gde-q {
-  grid-area: q; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-q { letter-spacing: 0; text-transform: none; }
-
-/* the answer word — 22px/800 keeps it subordinate to the regime hero above
-   (34px score) while still reading as an answer rather than a label */
-body.page-macro .gde-a {
-  grid-area: answer; margin: 1px 0 0;
-  font-size: var(--fs-num-lg); font-weight: 800; line-height: 1.15;
-  letter-spacing: -.01em; color: var(--gde-c, var(--ink-1));
-}
-html[data-lang="zh"] body.page-macro .gde-a { letter-spacing: 0; }
-/* the direction sign — smaller than the word, same ink, so "up" survives the zh
-   hue flip that makes direction and danger share a colour */
-body.page-macro .gde-arr { font-size: .58em; margin-left: .32em; vertical-align: .18em; }
-
-body.page-macro .gde-c {
-  grid-area: clause; margin: 0; align-self: center;
-  font-size: var(--fs-sm); line-height: 1.55; color: var(--ink-2); max-width: 60ch;
-}
-/* the score is a QUOTE of the hero's number, not a second headline (§9.11) */
-body.page-macro .gde-quote {
-  color: var(--ink-1); font-weight: 700; text-decoration: none;
-  border-bottom: 1px dashed var(--hair-strong);
-}
-body.page-macro .gde-quote:hover { border-bottom-color: var(--ink-link, var(--link)); }
-body.page-macro .gde-outof { color: var(--ink-3); font-weight: 400; }
-
-body.page-macro .gde-clock {
-  grid-area: clock; justify-self: start; align-self: center;
-  font-size: var(--fs-micro); color: var(--ink-3); white-space: nowrap;
-}
-/* shown ONLY when coverage is not clean — a caveat that changes how the row's
-   answer should be read belongs beside it, never only behind the drawer */
-body.page-macro .gde-flag { color: var(--ink-warn); white-space: normal; }
-
-/* ── GD-3 live-provisional overlay — same idiom, no new tokens. The live dot
-   reuses theme.css's existing .dtp-dot / @keyframes dtp-pulse (already shared by
-   etfs.html.j2, sector_central.html.j2 and the dashboard's own #dtp-token) rather
-   than inventing a new animation — motion here encodes the SAME "this is ticking
-   right now" fact that idiom already carries elsewhere on the site (etfs.html.j2,
-   sector_central.html.j2, the dashboard's own #dtp-token). Painted/hidden only by
-   risk_envelope_live.js; every rule here is dormant until the `hidden` attribute
-   is removed. ─────────────────────────────────────────────────────────────── */
-body.page-macro .gde-stamp-live {
-  color: var(--ink-ok); display: inline-flex; align-items: center; gap: 5px;
-}
-body.page-macro .gde-live-time { color: var(--ink-3); font-weight: 500; }
-/* pending badge — the SAME warn ink the coverage flag already uses; a candidate
-   shift is a caveat on how to read the row, not a new health verdict */
-body.page-macro .gde-pending { color: var(--ink-warn); }
-body.page-macro .gde-receipt-live { border-top: none; padding-top: 0; margin-top: var(--sp-2); }
-
-/* ── evidence drawer: the only home for source enums, receipts and technicals ── */
-body.page-macro .gde-disc { margin: var(--sp-3) 0 0; min-width: 0; }
-body.page-macro .gde-disc > summary {
-  cursor: pointer; display: inline-block;
-  font-size: var(--fs-sm); font-weight: 600; color: var(--ink-3);
-}
-body.page-macro .gde-disc > summary:hover { color: var(--ink-link, var(--link)); }
-body.page-macro .gde-disc-body {
-  margin: var(--sp-3) 0 0; padding: var(--sp-3) var(--sp-4);
-  background: var(--tile); border: var(--rule) solid var(--hair); border-radius: var(--r-md);
-  min-width: 0;
-}
-body.page-macro .gde-tblwrap { overflow-x: auto; max-width: 100%; }
-body.page-macro .gde-tbl { width: 100%; min-width: 520px; border-collapse: collapse; }
-/* dates and heads scroll rather than wrap — a broken "2026-08-\n18" is harder to
-   read than a scroll, and the container already owns the overflow */
-body.page-macro .gde-tbl th,
-body.page-macro .gde-tbl td.tnum { white-space: nowrap; }
-/* The page centres/right-aligns every non-first cell for numeric columns
-   (dashboard.html.j2:1738). This is an evidence LIST — source names, state words
-   and dates — so every column reads left, like the prose it is. */
-body.page-macro .gde-tbl th,
-body.page-macro .gde-tbl td:not(:first-child):not(.l) { text-align: left; }
-body.page-macro .gde-tbl th {
-  font-size: var(--fs-micro); font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--ink-3); text-align: left;
-  padding: 0 var(--sp-3) var(--sp-2) 0; border-bottom: var(--rule) solid var(--hair);
-}
-/* tablesort.js enhances every table on the page. A 3-row evidence receipt has
-   nothing meaningful to sort by, so drop the affordance rather than advertise one. */
-body.page-macro .gde-tbl th .sarrow { display: none; }
-body.page-macro .gde-tbl th.th-sort { cursor: default; }
-html[data-lang="zh"] body.page-macro .gde-tbl th { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-tbl td {
-  font-size: var(--fs-sm); color: var(--ink-2); padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
-  border-bottom: var(--rule) solid var(--hair); vertical-align: top;
-}
-body.page-macro .gde-tbl tr:last-child td { border-bottom: none; }
-body.page-macro .gde-tbl td.l { color: var(--ink-1); font-weight: 600; }
-/* health ink for a coverage problem — this IS severity, so the hue is earned */
-body.page-macro .gde-warn { color: var(--ink-warn); }
-body.page-macro .gde-req {
-  font-size: var(--fs-micro); color: var(--ink-3); border: var(--rule) solid var(--hair);
-  border-radius: var(--r-sm); padding: 0 5px; margin-left: 4px; white-space: nowrap;
-}
-body.page-macro .gde-disc-h {
-  font-size: var(--fs-label); font-weight: 700; letter-spacing: var(--trk);
-  text-transform: uppercase; color: var(--ink-3); margin: var(--sp-4) 0 var(--sp-2);
-}
-html[data-lang="zh"] body.page-macro .gde-disc-h { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-conflicts { margin: 0; padding-left: 1.15em; }
-body.page-macro .gde-conflicts li {
-  font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.5; margin-bottom: 3px;
-}
-body.page-macro .gde-conflicts b { color: var(--ink-1); font-weight: 700; }
-/* the machine receipt — never at rest, always here (doctrine §9.7) */
-body.page-macro .gde-receipt {
-  margin: var(--sp-4) 0 0; padding-top: var(--sp-2);
-  border-top: var(--rule) solid var(--hair);
-  font-size: var(--fs-micro); color: var(--ink-3); line-height: 1.6; word-break: break-word;
-}
-
-/* ── capital policy — ORTHOGONAL to the spine (GD-2R1 §0.5) ─────────────────
-   No rail: the rail IS the agreement encoding, and a posture built from zero
-   policies is not a party to that agreement. An inset strip rather than a railed
-   row, so the difference is structural and needs no caption to be understood.   */
-body.page-macro .gde-policy {
-  display: grid;
-  grid-template-columns: minmax(0, 232px) minmax(0, 1fr) max-content;
-  grid-template-areas: "lbl note count" "state note count";
-  column-gap: var(--sp-6); row-gap: 2px; align-items: center;
-  margin: var(--sp-5) 0 0; padding: var(--sp-3) var(--sp-4);
-  background: var(--tile); border: var(--rule) solid var(--hair);
-  border-radius: var(--r-md);
-}
-body.page-macro .gde-policy-lbl {
-  grid-area: lbl; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-policy-lbl { letter-spacing: 0; text-transform: none; }
-/* achromatic by construction — zero policies means no reserved meaning for hue */
-body.page-macro .gde-policy-state {
-  grid-area: state; font-size: var(--fs-md); font-weight: 700; color: var(--ink-2);
-}
-body.page-macro .gde-policy-note {
-  grid-area: note; font-size: var(--fs-sm); color: var(--ink-3); max-width: 58ch;
-}
-body.page-macro .gde-policy-count {
-  grid-area: count; justify-self: start; font-size: var(--fs-micro); color: var(--ink-3);
-  white-space: nowrap;
-}
-
-/* ── footer: one descriptive sentence. No stance chip: while zero policies exist
-   this band reports and never instructs (GD-2R1 §0.4).                          */
-body.page-macro .gde-foot {
-  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4);
-  margin: var(--sp-4) 0 0; padding-top: var(--sp-3);
-  border-top: var(--rule) solid var(--hair);
-}
-body.page-macro .gde-note { font-size: var(--fs-sm); color: var(--ink-3); }
-
-/* ── focus: visible, token-derived, both themes ─────────────────────────────── */
-body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset: 2px;
-}
-
-/* ── responsive ─────────────────────────────────────────────────────────────── */
-/* ≤980w: the clock leaves its own column and rides under the answer, so the
-   clause keeps a readable measure instead of being squeezed to three words */
-@media (max-width: 980px) {
-  body.page-macro .gde-row {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-    grid-template-areas:
-      "q      clause"
-      "answer clause"
-      "clock  clause";
-  }
-  body.page-macro .gde-clock { justify-self: start; align-self: start; margin-top: 3px; }
-  body.page-macro .gde-policy {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-    grid-template-areas: "lbl note" "state note" "count note";
-  }
-}
-/* ≤720w (tablet portrait → phone): one column, deliberate stack. Reading order is
-   question → answer → why → when, which is the order the row is meant to be read
-   in anyway — the desktop grid is the compression, not this. */
-@media (max-width: 720px) {
-  body.page-macro .gde-band { padding: var(--sp-4) var(--sp-4) var(--sp-4); }
-  body.page-macro .gde-read { padding-left: var(--sp-3); }
-  body.page-macro .gde-row {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "q" "answer" "clause" "clock";
-    row-gap: 4px;
-  }
-  body.page-macro .gde-c { align-self: start; max-width: none; }
-  body.page-macro .gde-clock { justify-self: start; margin-top: 2px; }
-  /* the answer word deliberately keeps its 22px on phones: it is the row's answer,
-     and shrinking it below 18px would also drop it under the ink-rung threshold */
-  body.page-macro .gde-lead { font-size: var(--fs-body); margin-bottom: var(--sp-4); }
-  body.page-macro .gde-head { flex-wrap: wrap; }
-  body.page-macro .gde-disc-body { padding: var(--sp-3); }
-  body.page-macro .gde-policy {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "lbl" "state" "note" "count";
-    row-gap: 4px; padding: var(--sp-3);
-  }
-  body.page-macro .gde-policy-note { max-width: none; }
-}
-</style>
-
-<style id="risk-envelope-band-css">
 /* Risk Envelope: compact context inside the existing Risk Radar, never a page panel.
    Dark: subtle luminance inset. Light: quiet structured inset with a hairline, no glow. */
 #dlg-risk .riskdlg-context {
@@ -3160,6 +2854,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
 </style>
+
 </head>
 <body class="page-macro mx4-grid">
 
@@ -3419,6 +3114,27 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   
   
 
+<style>
+/* UD-B2-W2: spine caveat disclosure — engine-verbatim lighter-evidence note.
+   Scope-narrowed to this hero template (the spine is a UD-B1 + UD-B2-W2
+   construct, never re-used elsewhere). Token-scoped only: every value is
+   a var() reference, no hex / rgba / colour-function / radius literal /
+   inline custom-property literal. This stays in the template (not
+   templates/theme.css) to keep the THEME-CLOSURE re-bind sweep out of
+   this PR's scope — the new rule only fires on the new .mx-spine-caveat
+   class, which is unique to the HK + CN bound rows. */
+.mx-spine-caveat{
+  margin-top:6px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--line);
+  border-radius: var(--r-ctl,8px);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
+</style>
+
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
 
@@ -3444,8 +3160,8 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
         </h1>
         <p class="ud-clause l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</p>
         <p class="ud-clause l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</p>
-        <p class="ud-flip l-en">→ Mixed if risk appetite breaks down (now 85/100).</p>
-        <p class="ud-flip l-zh">→ 若风险偏好走坏（现 85/100），则转「混合」。</p>
+        <p class="ud-flip l-en">→ Mixed if risk appetite breaks down.</p>
+        <p class="ud-flip l-zh">→ 若风险偏好走坏，则转「混合」。</p>
 
         <div class="ud-meta">
           <span class="mx-stance mx-stance--warn">
@@ -3533,19 +3249,47 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
         </div>
 
+        <div class="mx-spine-row" data-market="hk" data-state="real" data-blocked-feed="hk_market_state"
+             data-stance="stand-aside"
+             data-caveat-en="Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast." data-caveat-zh="仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。">
+          <div class="mx-spine-name">
+            <span class="l-en">Hong Kong</span><span class="l-zh">香港</span>
+          </div>
+          <div class="mx-spine-rail-wrap">
+            <div class="mx-spine-rail">
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:57.0%"></div>
+              <div class="mx-spine-conn" style="left:37%;width:20.0%"></div>
+              <div class="mx-spine-mark" style="left:37%"></div>
+            </div>
+            <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div><div class="mx-spine-caveat">
+              <span class="l-en" aria-label="As of 2026-09-18. Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.">As of 2026-09-18. Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.</span><span class="l-zh" aria-label="截至 2026-09-18。仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。">截至 2026-09-18。仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。</span>
+            </div>
+          </div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−20</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+        </div>
+
+        <div class="mx-spine-row" data-market="cn" data-state="real" data-blocked-feed="cn_market_state"
+             data-stance="stand-aside"
+             data-caveat-en="Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast." data-caveat-zh="仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。">
+          <div class="mx-spine-name">
+            <span class="l-en">China A-shares</span><span class="l-zh">A股</span>
+          </div>
+          <div class="mx-spine-rail-wrap">
+            <div class="mx-spine-rail">
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div>
+              <div class="mx-spine-conn" style="left:37%;width:5%"></div>
+              <div class="mx-spine-mark" style="left:37%"></div>
+            </div>
+            <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div><div class="mx-spine-caveat">
+              <span class="l-en" aria-label="As of 2026-09-18. Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast.">As of 2026-09-18. Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast.</span><span class="l-zh" aria-label="截至 2026-09-18。仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。">截至 2026-09-18。仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。</span>
+            </div>
+          </div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−5</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+        </div>
+
         
-        <div class="mx-spine-row" data-null="1" data-blocked-feed="hk_regime">
-          <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small>—</small></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
-        </div>
-        <div class="mx-spine-row" data-null="1" data-blocked-feed="china_a_regime">
-          <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small>—</small></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
-        </div>
         <div class="mx-spine-row" data-null="1" data-blocked-feed="gov_bonds_regime">
           <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
@@ -3570,11 +3314,11 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
       <div class="mx-sec">
         <h3 class="l-en">What changed since last look</h3><h3 class="l-zh">与上次相比的变化</h3>
         <small class="mx-asof l-en">Each row is one fired condition from the alert log.</small>
-        <small class="mx-asof l-zh">每行对应警报日志中的一次触发。</small>
+        <small class="mx-asof l-zh">每行对应触发日志中的一次触发。</small>
       </div>
         <div class="mx-chg-row">
           <span class="mx-chg-name tnum"><span class="l-en">Recent</span><span class="l-zh">最近</span></span>
-          <span class="mx-chg-what"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
+          <span class="mx-chg-what"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
           </span>
           <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch</span><span class="l-zh">观察</span>
@@ -3630,7 +3374,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <details class="ud-watch-details">
+      <details class="ud-watch-details" open>
         <summary class="ud-watch-summary">
           <div class="ud-watch-summary-row">
             <span class="ud-watch-summary-h">
@@ -5135,6 +4879,14 @@ body.page-macro.mx4-grid .mx4-rack{
 
 /* Show face in grid view (.mx4-grid is permanent in macro mode) */
 body.page-macro.mx4-grid .sxg-face{display:flex;}
+/* R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+   container on the macro route. Its face is display:none!important
+   BY DESIGN, including the .mx4-grid carve-out that would otherwise
+   flex-show .sxg-face. The visible risk surface is .mx5-sc-left. */
+body.page-macro #sx-risk-v2,
+body.page-macro.mx4-grid #sx-risk-v2{display:none!important;}
+body.page-macro #sx-risk-v2 .sxg-face,
+body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
 
 /* ── Card spans (desktop ≥1100px) ───────────────────────────── */
 /* v5 layout:
@@ -5181,9 +4933,10 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face hidden in grid (band zone-2 is its face) ── */
-body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
-/* But when data-open, show the tray normally */
+/* ── Risk card: the visible risk surface is the mx5 scorecard
+   (.mx5-sc-left). #sx-risk-v2 is an invisible legacy container
+   (R-W1-A-AMENDED). The vol-weather strip is a sub-row of
+   .mx5-sc-left, below the dial + scar chips. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -5354,20 +5107,10 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2: face and sum hidden — band zone-2 (S2/S3) is its card face.
-   The .sx element collapses to zero height when not open; when open (data-open),
-   it spans 1/-1 at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse the risk card when not expanded — it has no face in grid view */
-body.page-macro.mx4-grid #sx-risk-v2:not([data-open]){
-  min-height:0;
-  border:none;
-  background:transparent;
-  box-shadow:none;
-  padding:0;
-  margin:0;
-  /* still keep order:-1 so when opened it goes to top */
-}
+/* R-W1-A-AMENDED: #sx-risk-v2 is display:none!important on the macro
+   route (see the hide rule next to .mx4-grid .sxg-face). Empty card
+   chrome must not paint a leftover Risk sibling under the scorecard. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -5377,10 +5120,8 @@ body.page-macro.mx4-grid .mx4-grid-only{display:block;}
 body.page-macro .mx4-verdict-band{display:none!important;}
 
 /* ── In grid view: sx-evidence face = WHAT TO DO card (v5); popover button opens island ── */
-/* sx-risk-v2 face still hidden; its tray opens from the rack as before */
 /* sx-evidence face is now visible in grid view as the WTD card — override the hide rule */
 body.page-macro.mx4-grid #sx-evidence .sxg-face{display:flex!important;}
-/* sx-risk-v2 face already hidden via existing rule body.page-macro.mx4-grid #sx-risk-v2 .sxg-face */
 
 /* ══════════════════════════════════════════════════════════
    S2 — EVIDENCE face full content
@@ -8052,14 +7793,12 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* graph slot collapses when no history is present — no fake chart (house law) */
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
-#dlg-sentiment .vsb-vw-row{grid-template-columns:26px minmax(110px,1.3fr) 1fr 54px;gap:12px;}
-.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
+/* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
+   lives inside .mx5-sc-left and inherits tokens via .sx-vw-row.) */
+.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
 [data-theme="light"] .sg-pos{background:rgba(0,0,0,.08);}
-.sg-pos-mark{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);
-  background:var(--sg-wx-c,var(--muted));border:2px solid var(--panel,#0f1420);box-shadow:0 1px 3px rgba(0,0,0,.35);}
-[data-theme="light"] .sg-pos-mark{border-color:#fff;}
 .sg-pos-axis{display:flex;justify-content:space-between;font:600 8px/1 var(--font-ui,inherit);color:var(--muted);margin-top:4px;letter-spacing:.02em;}
 @media(prefers-reduced-motion:no-preference){
   #dlg-sentiment .sg-pos-mark{left:50%;transition:left 640ms cubic-bezier(.34,1.2,.5,1) .12s;}
@@ -8096,8 +7835,6 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 @media(max-width:430px){
   .sg-hero-num{font-size:34px;}
-  #dlg-sentiment .vsb-vw-row{grid-template-columns:24px 1fr 48px;}
-  #dlg-sentiment .vsb-vw-row .sg-pos-wrap{display:none;}
   .sg-split-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
   .row-pop .sg-dial{width:120px;height:68px;}
 }
@@ -8454,7 +8191,7 @@ html[data-theme="light"] :is(
         
         <p class="v-thesis ms-green"><span class="l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</span><span class="l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</span></p>
         
-        <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down (now 85/100).</span><span class="l-zh">→ 若风险偏好走坏（现 85/100），则转「混合」。</span></p>
+        <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down.</span><span class="l-zh">→ 若风险偏好走坏，则转「混合」。</span></p>
         <div class="hero-sub mx2-hero-sub">
           
           
@@ -8545,7 +8282,7 @@ html[data-theme="light"] :is(
                   
                   <a class="ms-sig sev-warn" data-ms-dlg="dlg-events" href="#dlg-events">
                     <div class="ms-sig-head"><span class="ms-sig-ico">📅</span><span class="ms-sig-title"><span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
                     <div class="ms-sig-what"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
                     <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — a volatility window, not a direction call. Size for the noise.</span><span class="l-zh">背景 — 波动窗口而非方向判断。按噪声调整仓位。</span></div>
                   </a>
@@ -8906,10 +8643,12 @@ html[data-theme="light"] :is(
       
       
       
+      
+      
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
-        <span class="l-en">Mixed if risk appetite breaks down (now 85/100).</span>
-        <span class="l-zh">若风险偏好走坏（现 85/100），则转「混合」。</span>
+        <span class="l-en">Mixed if risk appetite breaks down.</span>
+        <span class="l-zh">若风险偏好走坏，则转「混合」。</span>
       </div>
       
 
@@ -8942,7 +8681,8 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">Risk building &middot; 56</span>
           <span class="l-zh">风险积聚 &middot; 56</span>
-        <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span></button>
+          <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span>
+        </button>
         
         
 
@@ -9055,6 +8795,233 @@ html[data-theme="light"] :is(
         </div>
 
       </div>
+
+      
+      
+      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
+        
+
+
+
+
+
+
+<div class="sx-vw-strip sx-vw-strip--risk-isle" data-sx-vw-strip>
+  <div class="sx-vw-eyebrow">
+    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--calm" data-sx-vw-chip="vix_level" data-tier="calm">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">Volatility level</span><span class="l-zh">波动率水平</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">calm</span><span class="l-zh">平静</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--quiet" data-sx-vw-chip="vix_velocity" data-tier="quiet">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">5-day volatility change</span><span class="l-zh">5 日波动率变化</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="term_slope" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">Near-term vs far-term outlook</span><span class="l-zh">近期与远期展望</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="vvix_vix" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">How much traders expect next</span><span class="l-zh">交易员对未来的预期</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="vix1d" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">Overnight price swings</span><span class="l-zh">隔夜价格波动</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="cor1m" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">How much stocks move together</span><span class="l-zh">股票同步程度</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="cor3m" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">3-month implied correlation</span><span class="l-zh">3个月隐含相关性</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--low" data-sx-vw-chip="dspx" data-tier="low">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">Stock-by-stock swings</span><span class="l-zh">个股走势分散度</span>
+      </div>
+      
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+</div>
+      </div>
+      
 
     </div>
 
@@ -10097,67 +10064,6 @@ html[data-theme="light"] :is(
   </script>
   
   </div>
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  
-    
-  
-  
-
-  
-  
-
-
-
-
-
-
-
-  
-  
-
-  
-  
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   
   
@@ -13062,35 +12968,7 @@ html[data-theme="light"] :is(
   
   
   
-  
-  
-  
-  
   <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)">
-    
-    
-    
-    <div class="sxg-face sxg-face-risk-hidden" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-risk');}">
-      <div class="sxg-face-eyebrow"><span class="l-en">Risk</span><span class="l-zh">风险</span></div>
-      <div class="sxg-face-stance" style="color:var(--orange,var(--warn))">
-        
-        <span class="l-en">Credit Stress</span>
-        <span class="l-zh">信用压力</span>
-      </div>
-      
-      <div class="sxg-face-sub"><span class="l-en">Intensity 56/100</span><span class="l-zh">强度 56/100</span></div>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-    </div>
   </div>
   
 
@@ -13227,13 +13105,13 @@ html[data-theme="light"] :is(
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
-        
         <span class="mx5-ai-ticker-pill">SPY</span>
         
-        <span class="mx5-ai-ticker-pill">GOOGL</span>
+        <span class="mx5-ai-ticker-pill">XLF</span>
         
-        <span class="mx5-ai-ticker-pill">XHB</span>
+        <span class="mx5-ai-ticker-pill">USO</span>
+        
+        <span class="mx5-ai-ticker-pill">XLE</span>
         
       </div>
       
@@ -13241,14 +13119,14 @@ html[data-theme="light"] :is(
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">1 High-Impact Items</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 High-Impact Items</span><br>
           Dominant channel: <span style="color:var(--mx5-accent-ink);font-weight:600">rates</span><br>
-          1 high-impact signals across channels
+          4 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">1 条高影响信息</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 条高影响信息</span><br>
           主导频道：<span style="color:var(--mx5-accent-ink);font-weight:600">利率</span><br>
-          1 条高影响信号
+          4 条高影响信号
         </span>
         
       </div>
@@ -13309,8 +13187,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">重大事件临近 — 双向波动或加大</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for t…</span>
-              <span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
+              <span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for t…</span>
+              <span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
             </div>
           </div>
         </div>
@@ -13324,11 +13202,11 @@ html[data-theme="light"] :is(
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Higher interest rates and AI safety fears put the stock market to the test last …</span>
-              <span class="l-zh">Higher interest rates and AI safety fears put the stock mark…</span>
+              <span class="l-en">‘It&#39;s awful’: How tariffs, soaring fuel costs and higher interest rates are sque…</span>
+              <span class="l-zh">‘It&#39;s awful’: How tariffs, soaring fuel costs and higher int…</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>CNBC - Tech</span> · 
+              <span>CNBC - Stock Blog</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -14311,6 +14189,8 @@ html[data-theme="light"] :is(
           
         </section>
 
+        
+        
 
 
 
@@ -14327,16 +14207,20 @@ html[data-theme="light"] :is(
 
 
 
+  
+  
+  
+  
 
+  
+  
+  
+  
 
-
-
-
-
-
-
-
-
+  
+  
+  
+  
 
 
 
@@ -14351,16 +14235,16 @@ html[data-theme="light"] :is(
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
       <span class="l-en">Signals diverge</span><span class="l-zh">信号分歧</span>
-
+      
     </span>
   </div>
   <div class="gde-reads">
     <div class="gde-read" style="--gde-c: var(--ink-up)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-
+        
         <span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span><span class="gde-arr" aria-hidden="true">▲</span>
-
+        
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-warn)">
@@ -14368,20 +14252,20 @@ html[data-theme="light"] :is(
       <strong class="gde-a"><span class="l-en">Fragile</span><span class="l-zh">脆弱</span></strong>
     </div>
   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+    
+    
+    
+    
+  
+    
+    
+    
+    
+  
   <p class="gde-causes"><span class="l-en">AI-hardware leaders: damaged · Credit stress: building</span><span class="l-zh">AI硬件龙头：受损 · 信用压力：积聚中</span></p>
   <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   <script type="application/json" id="gde-context-copy">{"copy": {"ai_leaders": ["AI-hardware leaders", "AI\u786c\u4ef6\u9f99\u5934"], "checking": ["Checking stress", "\u538b\u529b\u5f85\u786e\u8ba4"], "coverage": {"FRESH": ["current session", "\u672c\u4ea4\u6613\u65e5"], "MISSING": ["not available", "\u6682\u65e0\u6570\u636e"], "STALE": ["older read", "\u8f83\u65e9\u8bfb\u6570"]}, "hazard": {"BREAKDOWN": ["Breakdown", "\u5df2\u7834\u4f4d"], "FRAGILE": ["Fragile", "\u8106\u5f31"], "NONE": ["No stress flagged", "\u672a\u89c1\u538b\u529b"], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "hint": {"BREAKDOWN": ["Internal breakdown", "\u5185\u90e8\u7834\u4f4d"], "FRAGILE": ["Fragile internals", "\u5185\u90e8\u8106\u5f31"], "NONE": ["", ""], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "live": ["Live stress", "\u5b9e\u65f6\u538b\u529b"], "live_missing": ["Live update unavailable; settled read shown.", "\u5b9e\u65f6\u66f4\u65b0\u4e0d\u53ef\u7528\uff0c\u663e\u793a\u6536\u76d8\u8bfb\u6570\u3002"], "live_pending": ["Live candidate", "\u5b9e\u65f6\u5f85\u786e\u8ba4"], "older_trend": ["Trend includes older inputs.", "\u8d8b\u52bf\u8bfb\u6570\u542b\u8f83\u65e9\u6570\u636e\u3002"], "partial_hint": ["Partial read", "\u8bfb\u6570\u4e0d\u5168"], "source": ["Tracked source", "\u8ffd\u8e2a\u6765\u6e90"], "source_missing": ["read unavailable", "\u6682\u65e0\u8bfb\u6570"], "source_states": {"BROKEN": ["damaged", "\u53d7\u635f"], "CRACKING": ["weakening", "\u8f6c\u5f31"], "HEALTHY": ["holding up", "\u7ef4\u6301\u7a33\u5b9a"], "WATCH": ["under watch", "\u9700\u5173\u6ce8"], "calm": ["quiet", "\u5e73\u7a33"], "caution": ["building", "\u79ef\u805a\u4e2d"], "elevated": ["elevated", "\u504f\u9ad8"], "risk-off": ["stressed", "\u627f\u538b"], "watch": ["under watch", "\u9700\u5173\u6ce8"]}, "unknown": ["Incomplete read", "\u6570\u636e\u4e0d\u5168"]}, "settled_stage": "FRAGILE"}</script>
@@ -14407,7 +14291,7 @@ html[data-theme="light"] :is(
                 <th><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
               </tr></thead>
               <tbody>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></td>
                   <td class="tnum">RISK_ON · 61</td>
@@ -14417,7 +14301,7 @@ html[data-theme="light"] :is(
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Leadership cohort</span><span class="l-zh">龙头股群体</span></td>
                   <td class="tnum">BROKEN</td>
@@ -14427,37 +14311,37 @@ html[data-theme="light"] :is(
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Cross-asset scares</span><span class="l-zh">跨资产风险扫描</span></td>
                   <td class="tnum">caution · 56</td>
                   <td class="tnum">2026-09-18</td>
                   <td>
                     <span class="l-en">This session</span><span class="l-zh">本交易日</span>
-
+                    
                   </td>
                 </tr>
-
+              
               </tbody>
             </table>
           </div>
 
-
+          
           <p class="gde-disc-h"><span class="l-en">Where they disagree</span><span class="l-zh">分歧所在</span></p>
           <ul class="gde-conflicts">
-
+            
             <li>
               <span class="l-en">Market state reads <b>RISK_ON</b> while Leadership cohort reads <b>BROKEN</b>.</span>
               <span class="l-zh">市场状态 读为 <b>RISK_ON</b>，而 龙头股群体 读为 <b>BROKEN</b>。</span>
             </li>
-
+            
             <li>
               <span class="l-en">Market state reads <b>RISK_ON</b> while Cross-asset scares reads <b>caution</b>.</span>
               <span class="l-zh">市场状态 读为 <b>RISK_ON</b>，而 跨资产风险扫描 读为 <b>caution</b>。</span>
             </li>
-
+            
           </ul>
-
+          
 
           <p class="gde-receipt tnum">
             grey-deer-v1-2026-08-19 · bundle 78ec0ad274f00a29 ·
@@ -14467,7 +14351,7 @@ html[data-theme="light"] :is(
             stage_since null (no_episode_lifecycle_in_v0) ·
             engine/risk_envelope.py
           </p>
-
+          
           <div id="gde-live-sources" hidden><p class="gde-disc-h"><span class="l-en">Live source dates</span><span class="l-zh">实时来源日期</span></p><div class="gde-live-source-rows" id="gde-live-source-rows"><span class="l-en"></span><span class="l-zh"></span></div></div>
           <div class="gde-receipt gde-receipt-live" id="gde-live-receipt" hidden></div>
       <p class="gde-policy">
@@ -14477,7 +14361,6 @@ html[data-theme="light"] :is(
     </div>
   </details>
 </section>
-
 
 
 
@@ -16814,7 +16697,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
                 <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
                 
               </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
             </div>
           </div>
           
@@ -16833,15 +16716,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/19/higher-interest-rates-and-ai-safety-fears-put-the-stock-market-to-the-test-last-week.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Higher interest rates and AI safety fears put the stock market to the test last week</span><span class="l-zh">Higher interest rates and AI safety fears put the stock market to the test last week</span></span>
+              <span class="nbx-title"><span class="l-en">‘It&#39;s awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies</span><span class="l-zh">‘It&#39;s awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16851,87 +16734,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644563-google-gemini-ai-model-hacked-three-companies?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Google says Gemini AI model hacked three companies in security test</span><span class="l-zh">Google says Gemini AI model hacked three companies in security test</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span><span class="l-zh">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span><span class="l-zh">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644490-insider-trades-crowdstrike-uber-snowflake-among-notable-names?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span><span class="l-zh">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/09/17/nx-s1-5971226/the-federal-reserve-raises-interest-rates-by-a-quarter-percentage-point" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644593-global-markets-weekly-fed-inflation-and-rate-decisions-drive-market-moves?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">The Federal Reserve raises interest rates by a quarter percentage point</span><span class="l-zh">美联储将利率上调25个基点</span></span>
+              <span class="nbx-title"><span class="l-en">Global markets weekly: Fed, inflation and rate decisions drive market moves</span><span class="l-zh">Global markets weekly: Fed, inflation and rate decisions drive market moves</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 17</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16941,15 +16752,33 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/18/ai-trade-rebound-sparks-flurry-of-unusually-bullish-options-activity.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://finance.yahoo.com/markets/stocks/articles/orion-energy-oesx-raises-guidance-195100572.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
+              <span class="nbx-title"><span class="l-en">Orion Energy (OESX) Raises Guidance. How Firm is the Retailer Opportunity?</span><span class="l-zh">Orion Energy (OESX) Raises Guidance. How Firm is the Retailer Opportunity?</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/20/williams-sonoma-stock-rises-housing-market.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">AI trade rebound sparks flurry of unusually bullish options activity</span><span class="l-zh">AI trade rebound sparks flurry of unusually bullish options activity</span></span>
+              <span class="nbx-title"><span class="l-en">Williams-Sonoma&#39;s stock has soared in a sluggish housing market. Here&#39;s how it won over Wall Street</span><span class="l-zh">Williams-Sonoma&#39;s stock has soared in a sluggish housing market. Here&#39;s how it won over Wall Street</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 18</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16959,33 +16788,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/20/bill-franke-frontier-spirit-budget-airlines.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">official</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 16</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span><span class="l-zh">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span></span>
+              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
+              <span class="nbx-title"><span class="l-en">Budget airline king Bill Franke warms to first-class seats and premium upgrades</span><span class="l-zh">Budget airline king Bill Franke warms to first-class seats and premium upgrades</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16995,15 +16806,87 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/17/anthropic-shares-3-metrics-to-help-ai-companies-monitor-development.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://finance.yahoo.com/markets/stocks/articles/vera-bradley-vra-returns-operating-185154105.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Fiscal</span><span class="l-zh">财政</span></span>
+              <span class="nbx-title"><span class="l-en">Vera Bradley (VRA) Returns to Operating Profit. Can the Recovery Outlast Tariff Refunds?</span><span class="l-zh">Vera Bradley (VRA) Returns to Operating Profit. Can the Recovery Outlast Tariff Refunds?</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644595-greenland-linked-stocks-soar-after-trump-announces-u-s-security-agreement?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Anthropic shares 3 metrics to help AI companies monitor pace of development</span><span class="l-zh">Anthropic分享3项指标，帮助AI公司监测发展步伐</span></span>
+              <span class="nbx-title"><span class="l-en">Greenland-linked stocks soar after Trump announces U.S. security agreement</span><span class="l-zh">Greenland-linked stocks soar after Trump announces U.S. security agreement</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 17</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644589-n-y-yankees-near-deal-giving-apollo-16-percent-stake-in-storied-franchise?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">N.Y. Yankees near deal giving Apollo 16% stake in storied franchise</span><span class="l-zh">N.Y. Yankees near deal giving Apollo 16% stake in storied franchise</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644594-ubs-ceo-pushes-back-on-swiss-capital-rules-ahead-of-parliamentary-vote?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">UBS CEO pushes back on Swiss capital rules ahead of parliamentary vote</span><span class="l-zh">UBS CEO pushes back on Swiss capital rules ahead of parliamentary vote</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://finance.yahoo.com/real-estate/articles/lennar-len-cuts-delivery-forecast-204510657.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
+              <span class="nbx-title"><span class="l-en">Lennar (LEN) Cuts Delivery Forecast. Can Construction Savings Offset Heavy Incentives?</span><span class="l-zh">Lennar (LEN) Cuts Delivery Forecast. Can Construction Savings Offset Heavy Incentives?</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -18305,273 +18188,6 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
 
         
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-sep"></div>
-        <div id="vsb-vol-weather-section" style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:10px">
-          <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="vix_level" style="--sg-wx-c:var(--up,#22c55e)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">VIX level</span><span class="l-zh">VIX 水平</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Volatility is low by recent standards. &middot; lower than 86% of days</span>
-              <span class="l-zh">近期波动率偏低。 &middot; 低于历史 86% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:14%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            15.3
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="vix_velocity" style="--sg-wx-c:var(--info,#4d8ef5)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">VIX velocity (5d change)</span><span class="l-zh">VIX 速度（5日变动）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Volatility change is within normal daily variation. &middot; lower than 61% of days</span>
-              <span class="l-zh">波动率变化处于正常日常波动范围内。 &middot; 低于历史 61% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:39%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            -0.5
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="term_slope" style="--sg-wx-c:var(--up,#22c55e)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">VIX term slope (9D / 3M)</span><span class="l-zh">VIX 期限斜率（9D / 3M）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Term structure is normal — vol market shows no unusual stress. &middot; lower than 67% of days</span>
-              <span class="l-zh">期限结构正常，波动率市场无异常压力。 &middot; 低于历史 67% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:33%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            0.722
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="vvix_vix" style="--sg-wx-c:var(--up,#22c55e)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">VVIX / VIX divergence</span><span class="l-zh">VVIX / VIX 背离</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Implied vol-of-vol is within normal range. &middot; lower than 89% of days</span>
-              <span class="l-zh">隐含波动率的波动率处于正常区间。 &middot; 低于历史 89% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:11%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            5.681
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="vix1d" style="--sg-wx-c:var(--info,#4d8ef5)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">VIX1D (intraday vol demand)</span><span class="l-zh">VIX1D（盘中波动需求）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Very short-term vol demand is normal. &middot; higher than 54% of days</span>
-              <span class="l-zh">超短期波动需求处于正常水平。 &middot; 高于历史 54% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:54%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            13.12
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="cor1m" style="--sg-wx-c:var(--info,#4d8ef5)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">COR1M (1-month implied correlation)</span><span class="l-zh">COR1M（1个月隐含相关性）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">How much stocks move together is within the normal range. &middot; lower than 55% of days</span>
-              <span class="l-zh">股票的同步程度处于正常区间。 &middot; 低于历史 55% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:45%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            10.79
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="cor3m" style="--sg-wx-c:var(--up,#22c55e)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">COR3M (3-month implied correlation)</span><span class="l-zh">COR3M（3个月隐含相关性）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Expected co-movement among stocks over the next quarter is normal. &middot; lower than 71% of days</span>
-              <span class="l-zh">预期未来一季度股票间的联动程度处于正常区间。 &middot; 低于历史 71% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:29%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            11.58
-            
-          </div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="dspx" style="--sg-wx-c:var(--up,#22c55e)">
-          <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">DSPX (single-stock vol vs index)</span><span class="l-zh">DSPX（个股波动 vs 指数）</span></div>
-            
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">Single-stock vol is subdued relative to index vol — stocks are moving in lockstep. &middot; lower than 75% of days</span>
-              <span class="l-zh">个股波动率相对指数偏低，个股走势趋于同步。 &middot; 低于历史 75% 的交易日</span>
-            </div>
-            
-          </div>
-          <div class="sg-pos-wrap">
-            
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:25%"></span></div>
-            <div class="sg-pos-axis"><span><span class="l-en">Low</span><span class="l-zh">低</span></span><span><span class="l-en">High</span><span class="l-zh">高</span></span></div>
-            
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            
-            32.91
-            
-          </div>
-        </div>
-        
-        
-        
 
         
         
@@ -19186,7 +18802,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
       <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
-      <span class="fold-stat">15 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 189 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
+      <span class="fold-stat">9 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
     </summary>
     <table>
@@ -19340,9 +18956,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">china_board_breadth</td>
         
         
-        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">whole-board A-share snapshot unavailable (Tushare gated / Sina throttled)</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-18</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -19367,9 +18983,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">china_cgb_curve</td>
         
         
-        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">bond_china_yield blocked (non-CN IP / endpoint drift) — CGB curve context only</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>30</td><td>2026-09-20</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -19395,7 +19011,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19403,9 +19019,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">china_filings</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: china_filings: all exchanges failed — sse: HTTPConnectionPool(host=&#39;www.cnin</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-20</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -19431,7 +19047,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2381</td><td>2026-09-18</td>
+        <td>2382</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19440,7 +19056,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19448,9 +19064,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">china_irm</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: china_irm: every leg failed at transport level (4/4 names + velocity)</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-20</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -19458,7 +19074,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19467,7 +19083,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2542</td><td>2026-09-18</td>
+        <td>2543</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19485,7 +19101,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19494,7 +19110,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-09-18</td>
+        <td>5</td><td>2026-09-19</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19503,7 +19119,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19512,7 +19128,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19521,7 +19137,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19530,7 +19146,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>9024</td><td>2026-09-18</td>
+        <td>9023</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19539,7 +19155,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>10239</td><td>2026-09-19</td>
+        <td>714</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19548,7 +19164,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>744</td><td>2026-09-18</td>
+        <td>8135</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19566,7 +19182,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19575,7 +19191,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>133841</td><td>2026-09-19</td>
+        <td>143345</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19584,7 +19200,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>49778</td><td>2026-09-18</td>
+        <td>50694</td><td>2026-09-18</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19593,7 +19209,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>49688</td><td>2026-09-18</td>
+        <td>50604</td><td>2026-09-18</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19601,17 +19217,17 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">china_trade_detail</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host=&#39;engl</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-20</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
         <td class="l">china_tushare</td>
         
         
-        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19629,7 +19245,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19638,7 +19254,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>989</td><td>2026-09-18</td>
+        <td>990</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -19976,6 +19592,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
       </tr>
       
       <tr>
+        <td class="l">gold_china_basis</td>
+        
+        
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>394</td><td>2026-09-18</td>
+        <td class="l muted"></td>
+      </tr>
+      
+      <tr>
         <td class="l">google_trends</td>
         
         
@@ -20034,7 +19659,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20070,7 +19695,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20079,7 +19704,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-18</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20087,9 +19712,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">hk_indices</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: hk_indices: all HSTECH sources failed — sina: HTTPSConnectionPool(host=&#39;fina</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1497</td><td>2026-09-18</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -20097,7 +19722,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-18</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20106,7 +19731,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>189</td><td>2026-09-19</td>
+        <td>191</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20160,7 +19785,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-19</td>
+        <td>1</td><td>2026-09-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -20168,9 +19793,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <td class="l">hk_valuation</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: hk_valuation: no series resolved for any name — 0700.HK/pe: Failed to perfor</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>367</td><td>2026-09-20</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -20895,9 +20520,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-20 04:35 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-20 21:10 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-20 04:35 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-20 21:10 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
@@ -20997,8 +20622,8 @@ window.__CHART_SWAP__ = {
 
 <script src="risk_state_live.js"></script>
 
-<script src="risk_envelope_live.js?v=47a6eb04" defer></script>
-<script src="release_publications_live.js?v=d9a19340" defer></script>
+<script src="risk_envelope_live.js"></script>
+<script src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
    the viewport, and clamp horizontally near the left/right edges. Hover-only,
