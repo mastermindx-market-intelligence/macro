@@ -5467,11 +5467,16 @@
     '.lens-term:hover,.lens-term.lens-on,.lens-term:focus-visible{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-bottom:1px solid var(--info,var(--blue,#5b9bf0));background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 9%,transparent);outline:none}' +
     /* upgraded legacy "?" icons pick up the same live hover accent as .lens-q */
-    'span.help.help-upgraded{cursor:help;transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
+    'span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;' +
+      'transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
     'span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-color:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 55%,transparent);' +
       'background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 13%,transparent);' +
       'box-shadow:0 0 0 3px color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 12%,transparent)}' +
+    'span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;' +
+      'outline:2px solid currentColor;outline-offset:3px}' +
+    '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{content:"";position:absolute;' +
+      'left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}' +
     /* One glass shell, shared with the rotation hover card and the heatmap card so
        every popup on a page reads as one component. --glass-* are theme-aware
        (theme.css rebinds them for light); the dark values stay inlined as fallbacks
@@ -5790,7 +5795,16 @@
     // bare data-tip chips: desktop clicks pass through (hover already shows the tip)
   }, true);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) hide();
+    if (e.key === 'Escape' && isOpen()) { hide(); return; }
+    if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
+        e.target && e.target.closest) {
+      var help = e.target.closest('span.help.help-upgraded');
+      if (help && contentFor(help)) {
+        e.preventDefault();
+        e.stopPropagation();
+        show(help);
+      }
+    }
   });
   window.addEventListener('scroll', function () {
     // The floating card FOLLOWS its trigger; it hides only when the trigger leaves
@@ -5852,13 +5866,24 @@
     if (!en) return false;
     el.setAttribute('data-tip-en', en);
     el.setAttribute('data-tip-zh', zh || en);
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
     el.classList.add('help-upgraded');
+    syncUpgradedHelpLabel(el);
     return true;
+  }
+  function syncUpgradedHelpLabel(el) {
+    if (!el) return;
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    el.setAttribute('aria-label', zh ? '更多信息' : 'More information');
   }
   function upgradeHelpIcons(root) {
     var icons = (root || document).querySelectorAll('span.help:not([data-tip-en])');
     for (var i = 0; i < icons.length; i++) upgradeOne(icons[i]);
   }
+  document.addEventListener('langchange', function () {
+    document.querySelectorAll('span.help.help-upgraded').forEach(syncUpgradedHelpLabel);
+  });
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { upgradeHelpIcons(); });
   } else {

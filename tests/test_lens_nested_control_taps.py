@@ -28,9 +28,16 @@ FOCUSABLE = ("button", "a", "input", "select", "textarea", "label", '[role="butt
 
 
 def _lens_region(src: str) -> str:
-    """The lens IIFE, from its SEL definition to the end of its keydown binding."""
+    """The lens event core, from SEL through the delegated keydown binding."""
     start = src.index("var SEL = '[data-tip-en], .lens-q, .lens-term';")
-    end = src.index("if (e.key === 'Escape' && isOpen()) hide();", start)
+    end = src.index("  window.addEventListener('scroll'", start)
+    return src[start:end]
+
+
+def _lens_full_region(src: str) -> str:
+    """The full lens implementation, including the legacy-help upgrade tail."""
+    start = src.index("var SEL = '[data-tip-en], .lens-q, .lens-term';")
+    end = src.index("  window._upgradeHelpIcon = upgradeOne;", start)
     return src[start:end]
 
 
@@ -146,6 +153,44 @@ def test_the_toggle_this_healed_still_carries_its_tooltip():
         "the tooltip was removed instead of relying on the lens carve-out — if that "
         "was deliberate, delete this test and say why in the PR"
     )
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_upgraded_help_icons_have_keyboard_and_coarse_pointer_affordances(name, src):
+    """The tiny legacy glyph may stay visually compact, but its real interaction
+    contract must not remain a 15px mouse-only target."""
+    src = _require(name, src)
+    region = _lens_full_region(src)
+    assert (
+        "span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;"
+        in region
+    )
+    assert (
+        "span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{" in region
+    )
+    assert (
+        "span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;"
+        in region
+    )
+    assert (
+        "outline:2px solid currentColor;outline-offset:3px}" in region
+    )
+    assert (
+        '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{'
+        'content:"";position:absolute;' in region
+    )
+    assert (
+        'left:50%;top:50%;width:40px;height:40px;'
+        'transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}'
+        in region
+    )
+    assert "el.setAttribute('tabindex', '0');" in region
+    assert "el.setAttribute('role', 'button');" in region
+    assert "syncUpgradedHelpLabel(el);" in region
+    assert "zh ? '更多信息' : 'More information'" in region
+    assert "document.addEventListener('langchange'" in region
+    assert "e.target.closest('span.help.help-upgraded')" in region
+    assert "e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'" in region
 
 
 # ---------------------------------------------------------------------------
