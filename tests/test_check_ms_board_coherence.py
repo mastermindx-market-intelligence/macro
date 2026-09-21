@@ -54,6 +54,14 @@ def test_coherent_boards_pass():
     assert guard.check_text("intl", guard.FIX_INTL_FORCES_OK) == []
 
 
+def test_coherent_board_accepts_score_metadata_after_id():
+    html = guard.FIX_COHERENT_MIXED.replace(
+        'id="ms-score">56<',
+        'id="ms-score" data-measured-score="56">56<',
+    )
+    assert guard.check_text("score-metadata", html) == []
+
+
 def test_selftest_green():
     assert guard._selftest() == 0
 
