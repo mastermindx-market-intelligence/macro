@@ -2314,6 +2314,8 @@
     body.page-macro .qm { transition: none; }
   }
 
+  body.page-macro details.fold.health-unknown > summary::before,
+  body.page-macro details.fold.health-neutral > summary::before { background: var(--ink-3); box-shadow: none; }
   /* ===== HERO enlargement + "New here?" tuck (desktop) ===== */
   body.page-macro #regime-radar { position: relative; }
   body.page-macro .qmini { grid-template-columns: repeat(2, 41px); grid-template-rows: repeat(2, 41px); gap: 6px; }
@@ -2335,7 +2337,7 @@
   body.page-macro details.fold > summary::-webkit-details-marker { display: none; }
   body.page-macro details.fold > summary::before { content: ""; flex: none; width: 3px; height: 14px;
     border-radius: 1.5px; background: var(--link); }
-  /* Wave E — Data health: status dot reflecting live health (green OK / amber attention) */
+  /* Wave E — Data health: green observed-OK / amber attention / gray neutral or unavailable. */
   body.page-macro details.fold.health-strip > summary::before { width: 9px; height: 9px; border-radius: 50%; }
   body.page-macro details.fold.health-ok > summary::before { background: var(--up, #22d97a);
     box-shadow: 0 0 7px color-mix(in srgb, var(--up, #22d97a) 55%, transparent); }
@@ -18477,7 +18479,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
   
   <details class="panel span12 fold health-strip health-warn" id="health" style="position:relative">
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
-      <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
+      <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Observed health entries for data sources this dashboard depends on. No entries means health is unavailable, not healthy. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘依赖数据源的已观测健康记录。没有记录表示健康状态不可用，并不代表正常。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
       <span class="fold-stat">9 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>

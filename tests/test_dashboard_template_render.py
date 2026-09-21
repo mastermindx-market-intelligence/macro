@@ -395,6 +395,15 @@ def test_macro_health_ok_plus_blocked_is_neutral_not_observed_healthy():
     assert "all observed sources OK" not in panel
 
 
+def test_committed_macro_health_projection_carries_truth_state_contract():
+    html = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
+    assert "health-unknown" in html
+    assert "health-neutral" in html
+    assert "Observed health entries for data sources this dashboard depends on." in html
+    assert "No entries means health is unavailable, not healthy." in html
+    assert "Every data source this dashboard depends on. OK = fresh." not in html
+
+
 def test_macro_health_degraded_source_remains_attention_state():
     vm = _base_vm()
     vm["health"] = [{
