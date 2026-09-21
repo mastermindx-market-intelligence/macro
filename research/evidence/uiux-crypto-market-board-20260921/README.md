@@ -33,3 +33,6 @@ Forex findings were routed to incumbent #7409 / issuecomment-5767703491; no Fore
 
 ## Publication preflight
 Current main 2b62f49603e731daf68877516d3f6f748497b160 has no change in the ten checked source/build/theme dependencies versus the fixture pin. Fresh exact-file PR census found no competing writer. Visual and design gates pass; all 24 capture digests match. A local Agent OS validator-discovery read was blocked by the platform safety check and was not repeated or rerouted. No local Agent OS validator pass is claimed; the normal repository check remains mandatory. There is no open source-write uncertainty.
+
+## First hosted fence finding and exact repair
+The first fence run 35658320088 failed only the new discovery record: its falsifier described the geometry check but omitted the required runnable command token. The failure is owned by this batch, not an inherited baseline. The falsifier now names the actual existing-suite pytest command and committed browser verifier plus the pinned pre-fix counterexamples. No checker, permission, failure classification, UI source, page, stylesheet, data, screenshot or test was changed. The ordinary repository fence must conclude on the corrected head; no failed run was blindly retried.
