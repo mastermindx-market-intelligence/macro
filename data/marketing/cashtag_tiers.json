@@ -2,7 +2,7 @@
   "schema": "marketing.cashtag_tiers/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-09-20T10:24:58Z",
+  "produced_at": "2026-09-21T10:16:15Z",
   "tier": "display",
   "as_of": "2026-09-18",
   "universe_n": 2657,
@@ -6918,7 +6918,7 @@
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 4070.0519354499997,
-        "in_index_universe": false
+        "in_index_universe": true
       }
     },
     "BEAM": {
@@ -7734,7 +7734,7 @@
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 223.12096775,
-        "in_index_universe": true
+        "in_index_universe": false
       }
     },
     "BLFS": {
@@ -8801,7 +8801,7 @@
         "mcap_weight": null,
         "pct_1d": -1.0747185261003156,
         "pct_1w": null,
-        "earnings_in_days": null,
+        "earnings_in_days": 46,
         "dollar_vol_musd": 40.883557659999994,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -20924,7 +20924,7 @@
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 827.7228315,
-        "in_index_universe": false
+        "in_index_universe": true
       }
     },
     "IMAX": {
@@ -29304,7 +29304,7 @@
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 679.85096175,
-        "in_index_universe": false
+        "in_index_universe": true
       }
     },
     "PAA": {
@@ -29656,7 +29656,7 @@
         "mcap_weight": null,
         "pct_1d": 2.079256360078263,
         "pct_1w": null,
-        "earnings_in_days": null,
+        "earnings_in_days": 55,
         "dollar_vol_musd": 37.217628090000005,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -37217,7 +37217,7 @@
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 202.44778099,
-        "in_index_universe": true
+        "in_index_universe": false
       }
     },
     "TARS": {
@@ -38241,7 +38241,7 @@
         "mcap_weight": null,
         "pct_1d": -1.5306122448979664,
         "pct_1w": null,
-        "earnings_in_days": 38,
+        "earnings_in_days": 54,
         "dollar_vol_musd": 27.78094664,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -38322,7 +38322,7 @@
         "mcap_weight": null,
         "pct_1d": -4.978540772532192,
         "pct_1w": null,
-        "earnings_in_days": null,
+        "earnings_in_days": 49,
         "dollar_vol_musd": 25.22812639,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -38725,7 +38725,7 @@
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
         "adv20_musd": 336.05126105,
-        "in_index_universe": true
+        "in_index_universe": false
       }
     },
     "TTE": {
