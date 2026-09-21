@@ -18,7 +18,7 @@ when the vendor REJECTED the token and nothing landed rows (see fetch()).
 Token absent → ``expected_failure`` is set so the runner reports 'blocked',
 never a breaker-counted failure. Token present but rejected, or a runner-side
 DNS/network/TLS transport outage before any vendor response, is NOT expected —
-either is a quiet data day, and ``expected_failure`` stays unset so the breaker
+neither is a quiet data day, and ``expected_failure`` stays unset so the breaker
 counts it while preserving the two remedies as distinct.
 
 HEARTBEAT LIVENESS (2026-08-05). The heartbeat is stamped ``utcnow()``, so it is
