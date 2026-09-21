@@ -1,7 +1,9 @@
 # Intraday Options Root Coverage Producer Design
 
-**Operation:** `intraday-options-root-coverage-20260920-sol-001`  
-**Issue:** `mastermindx-market-intelligence/mastermind-terminal#681`  
+**Operation:** `intraday-options-root-coverage-20260920-sol-001`
+
+**Issue:** `mastermindx-market-intelligence/mastermind-terminal#681`
+
 **Skillpack:** `mastermindx-market-intelligence/Mastermind@bceb5e1593b1dd7e9e34c3bccbceb02e6ccd5a26`
 
 ## Outcome
