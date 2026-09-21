@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T12:47:33.855957+00:00",
-  "count": 2569,
+  "generated_at": "2026-09-21T13:02:33.961214+00:00",
+  "count": 2570,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -561,6 +561,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hrbqr4sbb9w-0caa0d",
+      "title": "Fixed Income Special Debt sustainability on the radar",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:18Z",
+      "summary_points": [
+        "Debt Sustainability Buffers: Germany’s widest buffer (6.57pp) contrasts with Italy’s narrowest (0.97pp), amid rising debt; US faces narrowing buffer from primary deficits + rising rates, signaling heightened fiscal fragility.",
+        "Critical Threshold: 5% of GDP in interest payments marks the stress threshold for debt servicing; high-debt countries face amplified exposure to growth shocks and borrowing cost spikes.",
+        "Investor Structure Shift: Central bank withdrawal elevates reliance on price-sensitive investors (foreign, funds), amplifying sovereign bond volatility in France/Italy; European sovereigns more exposed than US/Japan.",
+        "IMF Investor Risk Index: France/Italy show rising vulnerability (high debt + weak investor base) since 2023; Germany most resilient, Japan stable due to stable investor structure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
