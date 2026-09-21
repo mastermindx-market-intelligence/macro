@@ -81,6 +81,24 @@ def macro_html() -> str:
     return MACRO_HTML.read_text()
 
 
+def _shipping_projection(html: str) -> str:
+    """Return the committed document plus any local linked stylesheets.
+
+    The render pipeline externalizes large ``<style>`` blocks into content-
+    hashed assets. Regression checks must follow the bytes the browser loads,
+    rather than assume every CSS rule remains inline in ``macro.html``.
+    """
+    linked_css = []
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css(?:\?[^"#]*)?)"', html):
+        rel = href.split("?", 1)[0]
+        if rel.startswith(("/", "http://", "https://")):
+            continue
+        css_path = MACRO_HTML.parent / rel
+        if css_path.is_file():
+            linked_css.append(css_path.read_text(encoding="utf-8"))
+    return html + "\n" + "\n".join(linked_css)
+
+
 # ---------------------------------------------------------------------------
 # Slice extraction helpers
 # ---------------------------------------------------------------------------
@@ -349,14 +367,16 @@ class TestUDB2W1VwFold:
         assert "mx5BtnRisk" in sc_left, (
             "mx5-sc-left must carry the scar-chip risk button"
         )
-        # Face hide rule lives in the page's inline <style> (dashboard.html.j2).
+        # The rule may be inline or externalized into a content-hashed asset;
+        # both are the same shipping projection from dashboard.html.j2.
+        projection = _shipping_projection(macro_html)
         assert (
             "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}"
-            in macro_html
+            in projection
             or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important}"
-            in macro_html
+            in projection
             or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none !important}"
-            in macro_html
+            in projection
         ), (
             "R-W1-A-AMENDED: #sx-risk-v2 face is display:none!important "
             "BY DESIGN on the macro route, including the .mx4-grid carve-out"

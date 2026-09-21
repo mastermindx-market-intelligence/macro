@@ -589,9 +589,9 @@ def test_spine_slice_does_not_wire_quad_artifact(intl_root):
 
 
 # --------------------------------------------------------------------------- #
-# Built-page assertion — reads site/macro.html directly (R-H: the tests must
-# prove the COMMITTED page, not just the partial template render in isolation).
-# Site/macro.html is the file users actually receive via the VPS pull.
+# Primary-route assertion — reads site/macro.html directly. B2-W2's binding
+# semantics remain proven above against the retained component; the US route
+# itself must not mount that candidate over the established macro dashboard.
 # --------------------------------------------------------------------------- #
 
 def _committed_macro_html() -> str | None:
@@ -613,75 +613,20 @@ def _committed_spine_slice(macro_html: str) -> str | None:
     return m.group(0)[: m.group(0).rfind("<p class=")]
 
 
-def test_committed_macro_html_spine_renamed_slugs():
-    """BLOCKER-2 / Major-4 fix: the COMMITTED site/macro.html must carry the
-    renamed slugs (R-W2-5). Pre-fix state: the old slugs hk_regime /
-    china_a_regime were committed in the file. This test gates that they
-    are gone AND the new hk_market_state / cn_market_state slugs are
-    present in the actual served page bytes (not just the template)."""
+def test_committed_macro_html_keeps_retained_spine_off_us_primary_route():
+    """The B2-W2 spine remains a tested design candidate, not a US-route mount.
+
+    The component-level tests above prove the HK/CN persisted market-state
+    bindings and caveats. The committed US page must instead open on the
+    established regime radar, with no #ud-hero or B2 spine slice stacked over it.
+    """
     macro_html = _committed_macro_html()
     if macro_html is None:
         pytest.skip("site/macro.html absent in this checkout; built-page gate N/A")
-    slice_ = _committed_spine_slice(macro_html)
-    assert slice_ is not None, (
-        "spine slice not found in committed site/macro.html — page was not regenerated"
-    )
-    # New slugs present in the committed bytes.
-    assert 'data-blocked-feed="hk_market_state"' in slice_
-    assert 'data-blocked-feed="cn_market_state"' in slice_
-    # Old slugs absent — the wiring trap is closed.
-    assert 'data-blocked-feed="hk_regime"' not in slice_
-    assert 'data-blocked-feed="china_a_regime"' not in slice_
-    # Bonds + Commodities slugs UNCHANGED (R-W2-3).
-    assert 'data-blocked-feed="gov_bonds_regime"' in slice_
-    assert 'data-blocked-feed="commodities_regime"' in slice_
-
-
-def test_committed_macro_html_hk_row_binds_real_with_caveat():
-    """BLOCKER-2 fix: the COMMITTED site/macro.html must carry the HK row in
-    the BOUND state (data-state="real") with the engine caveat surfaced in
-    the disclosure (the named failure mode is binding the score WITHOUT the
-    caveat)."""
-    macro_html = _committed_macro_html()
-    if macro_html is None:
-        pytest.skip("site/macro.html absent in this checkout; built-page gate N/A")
-    slice_ = _committed_spine_slice(macro_html)
-    assert slice_ is not None
-    # HK row: real state + marker geometry + caveat disclosure present.
-    assert 'data-market="hk"' in slice_
-    assert 'data-state="real"' in slice_
-    assert re.search(r'data-market="hk"[^>]*data-state="real"', slice_, re.S), (
-        "HK row must carry data-state=real — the engineered bind, not a deferred null"
-    )
-    # Marker geometry present (one-integer law: NO score integer in the row slice).
-    hk_block = re.search(
-        r'data-market="hk"[^>]*>(.*?)</div>\s*<div class="mx-spine-travel"',
-        slice_, re.S,
-    )
-    assert hk_block, "HK row block not located in committed spine"
-    assert re.search(r'class="mx-spine-mark" style="left:\d+(\.\d+)?%"', hk_block.group(1)), (
-        "HK row must carry marker geometry in the committed page"
-    )
-    # Caveat text surfaces in the disclosure (engine string, not the test's wording).
-    assert "Display-only" in hk_block.group(1) or "display-only" in hk_block.group(1)
-
-
-def test_committed_macro_html_cn_row_binds_real_with_caveat():
-    """Mirror of the HK row gate for the CN row."""
-    macro_html = _committed_macro_html()
-    if macro_html is None:
-        pytest.skip("site/macro.html absent in this checkout; built-page gate N/A")
-    slice_ = _committed_spine_slice(macro_html)
-    assert slice_ is not None
-    assert 'data-market="cn"' in slice_
-    assert re.search(r'data-market="cn"[^>]*data-state="real"', slice_, re.S)
-    cn_block = re.search(
-        r'data-market="cn"[^>]*>(.*?)</div>\s*<div class="mx-spine-travel"',
-        slice_, re.S,
-    )
-    assert cn_block, "CN row block not located in committed spine"
-    assert re.search(r'class="mx-spine-mark" style="left:\d+(\.\d+)?%"', cn_block.group(1))
-    assert "Display-only" in cn_block.group(1) or "display-only" in cn_block.group(1)
+    assert 'id="ud-hero"' not in macro_html
+    assert _committed_spine_slice(macro_html) is None
+    assert 'data-spec="ud-b1"' not in macro_html
+    assert 'id="regime-radar"' in macro_html
 
 
 def test_engine_market_state_persist_docstring_accurate():
