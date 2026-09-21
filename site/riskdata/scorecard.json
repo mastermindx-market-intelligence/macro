@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-21T10:43:10+00:00",
+  "generated_at": "2026-09-21T13:24:15+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-09-17",
@@ -258,14 +258,14 @@
       }
     },
     "cn": {
-      "asof_last_row": "2026-09-18",
+      "asof_last_row": "2026-09-21",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 3,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 13
+        "graded_n": 14
       },
       "windows": {
         "full": {
@@ -276,10 +276,10 @@
             "hit_rate": 0.4
           },
           "watch_caution": {
-            "n": 8,
+            "n": 9,
             "tp": 7,
-            "tn": 1,
-            "precursor_rate": 0.875
+            "tn": 2,
+            "precursor_rate": 0.778
           },
           "calm": {
             "n": 0,
@@ -305,10 +305,10 @@
             "hit_rate": 0.4
           },
           "watch_caution": {
-            "n": 8,
+            "n": 9,
             "tp": 7,
-            "tn": 1,
-            "precursor_rate": 0.875
+            "tn": 2,
+            "precursor_rate": 0.778
           },
           "calm": {
             "n": 0,
@@ -329,14 +329,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-09-18",
+      "asof_last_row": "2026-09-21",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 3,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 19,
         "backlog_cutoff_bd": 28,
-        "graded_n": 12
+        "graded_n": 13
       },
       "windows": {
         "full": {
@@ -353,8 +353,8 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 1,
-            "dd_missed": 0,
+            "n": 2,
+            "dd_missed": 1,
             "quiet": 1,
             "quiet_rate": null
           },
@@ -382,8 +382,8 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 1,
-            "dd_missed": 0,
+            "n": 2,
+            "dd_missed": 1,
             "quiet": 1,
             "quiet_rate": null
           },
