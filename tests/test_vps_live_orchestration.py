@@ -1441,6 +1441,22 @@ def test_regime_self_heal_runs_after_the_us_close():
     assert '- cron: "15 21 * * 1-5"' in workflow
 
 
+def test_regime_self_heal_dispatches_macro_render_only_after_repair_push():
+    """A fresh canonical pointer must reach the existing static render carrier."""
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+
+    assert "actions: write" in workflow
+    assert "id: commit" in workflow
+    assert 'echo "changed=false" >> "$GITHUB_OUTPUT"' in workflow
+    assert 'echo "changed=true" >> "$GITHUB_OUTPUT"' in workflow
+    assert "if: ${{ steps.commit.outputs.changed == 'true' }}" in workflow
+    assert "gh workflow run render.yml" in workflow
+    assert '--ref main' in workflow
+    assert '-f scope=macro' in workflow
+    assert '-f runner=macstudio' in workflow
+
+
 def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "live-setup.sh").read_text()
