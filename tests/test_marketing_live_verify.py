@@ -8,7 +8,7 @@ and config overrides. Pure-function tests; no network, no ledger writes.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -483,3 +483,20 @@ def test_market_closed_mode_disabled_by_config_reverts_to_skip():
     cfg = {"publish": {"live_gate": {"market_closed_mode": False}}}
     v = lv.verify_item(item, live=live, now=SAT, cfg=cfg)
     assert v["action"] == "skip"   # strict wall-clock gate restored
+
+
+def test_quote_observed_at_is_the_same_clock_quote_age_uses():
+    """PIT consumers can carry the exact clock without copying freshness selection."""
+    own = NOW - timedelta(minutes=7)
+    quote = _q(price=10.0, prev=9.0, ts_ms=int(own.timestamp() * 1000))
+    stale_fallback = (NOW - timedelta(minutes=90)).isoformat()
+
+    observed = lv._quote_observed_at(quote, stale_fallback)
+    assert observed == own
+    assert lv._quote_age_min(quote, stale_fallback, NOW) == pytest.approx(7.0)
+
+    untimed = _q(price=10.0, prev=9.0, ts_ms=None)
+    observed_fallback = lv._quote_observed_at(untimed, stale_fallback)
+    assert observed_fallback == NOW - timedelta(minutes=90)
+    assert lv._quote_age_min(untimed, stale_fallback, NOW) == pytest.approx(90.0)
+    assert lv._quote_observed_at(untimed, None) is None

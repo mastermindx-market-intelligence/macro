@@ -449,13 +449,18 @@ def load_live_quotes(
             "feed_delay_min": feed_delay}
 
 
-def _quote_age_min(quote: dict, asof: str | None, now: datetime) -> float | None:
-    """Age of a quote in minutes, from its own ts, else the artifact asof."""
+def _quote_observed_at(quote: dict, asof: str | None) -> datetime | None:
+    """Clock actually used for one quote: own timestamp, else artifact fallback.
+
+    This is the source-clock half of :func:`_quote_age_min`.  Keeping selection in
+    one helper lets read-only consumers carry the same point-in-time fact without
+    reimplementing the stale-tape rule or treating the artifact clock as a fresher
+    per-name timestamp when an own timestamp exists.
+    """
     ts_ms = quote.get("ts_ms")
     if ts_ms:
         try:
-            dt = datetime.fromtimestamp(float(ts_ms) / 1000.0, tz=timezone.utc)
-            return (now - dt).total_seconds() / 60.0
+            return datetime.fromtimestamp(float(ts_ms) / 1000.0, tz=timezone.utc)
         except Exception:  # noqa: BLE001
             pass
     if asof:
@@ -463,10 +468,18 @@ def _quote_age_min(quote: dict, asof: str | None, now: datetime) -> float | None
             dt = datetime.fromisoformat(str(asof).replace("Z", "+00:00"))
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
-            return (now - dt).total_seconds() / 60.0
+            return dt.astimezone(timezone.utc)
         except Exception:  # noqa: BLE001
             pass
     return None
+
+
+def _quote_age_min(quote: dict, asof: str | None, now: datetime) -> float | None:
+    """Age of a quote in minutes, from its own ts, else the artifact asof."""
+    observed_at = _quote_observed_at(quote, asof)
+    if observed_at is None:
+        return None
+    return (now - observed_at).total_seconds() / 60.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────

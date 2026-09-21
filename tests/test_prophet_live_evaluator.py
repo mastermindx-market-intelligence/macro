@@ -1709,3 +1709,36 @@ def test_config_block_defaults_resolve_from_config_yml():
     # A partial override must not drop the sibling keys of a nested block.
     part = LS.live_cfg({"prophet_live": {"window_et": {"end": "16:00"}}})
     assert part["window_et"] == {"start": "09:25", "end": "16:00"}
+
+
+def test_live_state_carries_positive_quote_clock_only_from_freshness_owner():
+    """The served row exposes the exact source clock B4 needs, never pass-time guesswork."""
+    q = quotes_with_prev({"AAA": 101.0}, {"AAA": 95.0})
+    own = NOW - timedelta(minutes=3)
+    q["AAA"]["ts_ms"] = int(own.timestamp() * 1000)
+
+    art = LS.evaluate(
+        pack({"AAA": near(100.0)}),
+        q,
+        None,
+        now=NOW,
+        cfg=CFG,
+        quote_asof="2026-07-29T12:00:00Z",
+        delay_min=15,
+        quote_age_of=lambda _q: 3.0,
+        quote_asof_of=lambda _q: own,
+    )
+    assert art["states"]["AAA"]["quote_asof"] == own.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    unknown_clock = LS.evaluate(
+        pack({"AAA": near(100.0)}),
+        quotes(AAA=101.0),
+        None,
+        now=NOW,
+        cfg=CFG,
+        quote_asof=None,
+        delay_min=15,
+        quote_age_of=lambda _q: 1.0,
+        quote_asof_of=lambda _q: None,
+    )
+    assert "quote_asof" not in unknown_clock["states"]["AAA"]

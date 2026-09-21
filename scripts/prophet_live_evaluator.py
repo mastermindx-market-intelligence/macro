@@ -309,6 +309,16 @@ def quote_ager(live: dict[str, Any], now: datetime):
     return lambda q: LV._quote_age_min(q, asof, now)  # noqa: SLF001
 
 
+def quote_clock(live: dict[str, Any]):
+    """Return the exact source clock selected by the SAME freshness owner.
+
+    B4 and other PIT consumers need the timestamp whose age was actually judged,
+    not the evaluator pass time and not an independently re-derived approximation.
+    """
+    asof = live.get("asof")
+    return lambda q: LV._quote_observed_at(q, asof)  # noqa: SLF001
+
+
 def no_publish_set() -> bool:
     """True when the operator kill switch is engaged (an INTENTIONAL stand-down)."""
     return os.environ.get("PROPHET_LIVE_NO_PUBLISH", "").strip() not in ("", "0", "false")
@@ -408,7 +418,8 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
 
     art = LS.evaluate(pack, quotes, prev, now=ts, cfg=lc,
                       quote_asof=live.get("asof"), delay_min=delay_min,
-                      quote_age_of=quote_ager(live, ts))
+                      quote_age_of=quote_ager(live, ts),
+                      quote_asof_of=quote_clock(live))
     art["meta"]["quote_source"] = live.get("source")
     # Ownership identity travels ON the artifact, house idiom = the producing script
     # path (cf. build_security_master). The external dead-man requires it, and the

@@ -876,7 +876,7 @@ def dark_artifact(reason: str, *, now: datetime, cfg: dict[str, Any],
 def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str, Any] | None,
              *, now: datetime, cfg: dict[str, Any],
              quote_asof: str | None = None, delay_min: int | None = None,
-             quote_age_of=None) -> dict[str, Any]:
+             quote_age_of=None, quote_asof_of=None) -> dict[str, Any]:
     """One evaluator pass.
 
     ``quotes`` is ``load_live_quotes()["quotes"]`` — ``{ticker: {price, ts_ms, …}}``.
@@ -940,10 +940,16 @@ def evaluate(pack: dict[str, Any] | None, quotes: dict[str, Any], prev: dict[str
         q = quotes.get(tkr) or {}
         px = q.get("price")
         age = quote_age_of(q) if (quote_age_of and q) else None
+        observed_at = quote_asof_of(q) if (quote_asof_of and q) else None
         gap = gaps.get(tkr)
         st = name_state(entry, price=px, quote_age_min=age,
                         prev=prev_states.get(tkr), now=now, cfg=cfg,
                         basis_gap_pct=gap)
+        if isinstance(observed_at, datetime):
+            # Positive point-in-time fact only.  Do not stamp evaluator pass time or
+            # reconstruct a clock from rounded quote_age_min when the freshness owner
+            # cannot identify which source timestamp it actually used.
+            st["quote_asof"] = _iso(observed_at)
         # A positive row-local basis receipt is emitted only after the incumbent audit
         # actually measured this name and the live state did not fail dark.  Missing
         # prev_close therefore remains absence of evidence, never an inferred pass.
