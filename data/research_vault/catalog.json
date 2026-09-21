@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T22:19:10.051370+00:00",
-  "count": 2597,
+  "generated_at": "2026-09-21T22:49:08.457997+00:00",
+  "count": 2598,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -431,6 +431,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-srs7ndz9ngi-2e0e02",
+      "title": "Americas Transportation Higher Railcar Prices Supportive of Valuation",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:06Z",
+      "summary_points": [
+        "Industry Consolidation Catalyst: 2 railcar manufacturers control 90% of industry backlog, driving elevated prices amid post-Covid inflation and commodity surges, creating durable asset value support (40-50 yr asset life).",
+        "GATX Scale Advantage: 250k-unit fleet (largest owner) vs.",
+        "TRN/GBX (100k/20k units) enables superior valuation leverage, with EV/Replacement Cost at 0.5x (global) vs. peer avg 0.8x.",
+        "Valuation Gap & Upside: GATX trades at 0.5x global replacement cost (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
