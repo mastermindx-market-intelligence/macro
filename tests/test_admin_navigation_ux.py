@@ -249,3 +249,56 @@ for (const data of [{}, {funnel:null}, {funnel:{drop_reasons:{}}}]) {
   assert(!html.includes('Every planned post got words'));
 }
 """)
+
+
+def test_content_queue_distinguishes_local_delivery_refusal_and_unknown_effect():
+    _node_assert("""
+const classify = new Function(block('const CS_INTEL_REFUSAL_LABEL = ', 'async function csQueueIntel(') + '; return csIntelQueueOutcome;')();
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:true}), 'queued');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:false}), 'local_only');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha'}), 'local_only');
+assert.equal(classify({ok:false,reason:'story_locked'}), 'refused');
+for (const result of [null, {}, {ok:true}, {ok:false,error:'server failed'}, {ok:false,reason:'error'}, {ok:false,reason:'__proto__'}]) {
+  assert.equal(classify(result), 'unknown');
+}
+""")
+
+
+def test_content_queue_lost_ack_never_claims_no_effect_or_reissues_write():
+    _node_assert("""
+const source = block('const CS_INTEL_REFUSAL_LABEL = ', '/* Filters update one shared selection');
+async function exercise(response, throws = false) {
+  const calls = [], links = [], messages = [];
+  const out = {style:{}, textContent:'', append(...nodes) { links.push(...nodes.filter(node => node && node.type === 'button')); }};
+  const card = {querySelector: () => out, getAttribute: key => key === 'data-story-id' ? 'story-a' : 'draft-a'};
+  const button = {disabled:false, textContent:'Queue for X', closest: () => card};
+  const doc = {createElement: () => ({}), createTextNode: text => text};
+  const queue = new Function('post','toast','document','go',source + '; return csQueueIntel;')(
+    async (path, body) => { calls.push({path,body}); if (throws) throw new Error('lost acknowledgement'); return response; },
+    message => messages.push(message), doc, page => messages.push(page)
+  );
+  await queue(button);
+  const label = button.textContent, detail = out.textContent;
+  await queue(button);
+  return {calls, links, label, detail, button, messages};
+}
+const lost = await exercise(null, true);
+assert.equal(lost.calls.length, 1);
+assert.equal(lost.label, 'Status unknown');
+assert(lost.detail.includes('may have completed'));
+assert(!lost.detail.includes('nothing was queued'));
+assert.equal(lost.links.length, 1);
+assert.equal(lost.button.disabled, true);
+assert.deepEqual(lost.calls[0].body, {story_id:'story-a',draft_id:'draft-a'});
+const local = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:false});
+assert.equal(local.calls.length, 1);
+assert.equal(local.label, 'Delivery unconfirmed');
+assert(local.detail.includes('not confirmed'));
+const confirmed = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:true});
+assert.equal(confirmed.calls.length, 1);
+assert.equal(confirmed.label, 'Queued');
+const refused = await exercise({ok:false,reason:'story_locked',detail:'already owned'});
+assert.equal(refused.label, 'Queue for X');
+assert.equal(refused.button.disabled, false);
+assert(refused.detail.includes('Refused by'));
+""")

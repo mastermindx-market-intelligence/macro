@@ -7844,7 +7844,16 @@ const CS_INTEL_REFUSAL_LABEL = {
   outbox_unavailable:  "the outbox path",
 };
 
+function csIntelQueueOutcome(result) {
+  if (result && result.ok === true && typeof result.item_id === "string" && result.item_id
+      && typeof result.account === "string" && result.account) return result.delivered === true ? "queued" : "local_only";
+  if (result && result.ok === false && typeof result.reason === "string"
+      && Object.prototype.hasOwnProperty.call(CS_INTEL_REFUSAL_LABEL, result.reason)) return "refused";
+  return "unknown";
+}
+
 async function csQueueIntel(btn) {
+  if (!btn || btn.disabled) return;
   const card = btn && btn.closest ? btn.closest(".cs-intel-item") : null;
   if (!card) return;
   const out = card.querySelector(".cs-intel-outcome");
@@ -7872,18 +7881,30 @@ async function csQueueIntel(btn) {
   } catch (e) {
     r = null;
   }
-  if (r && r.ok) {
+  const outcome = csIntelQueueOutcome(r);
+  if (outcome === "queued") {
     btn.textContent = "Queued";
     say(`Queued as ${r.item_id} for ${r.account}. ${r.note || ""}`.trim(), "ok");
     toast(`Queued for ${r.account}`);
     return;
   }
+  if (outcome === "unknown" || outcome === "local_only") {
+    btn.textContent = outcome === "unknown" ? "Status unknown" : "Delivery unconfirmed";
+    say(outcome === "unknown"
+      ? "Queue status is unknown. The request may have completed. Check this draft in the Outbox before trying again."
+      : `Saved as ${r.item_id} for ${r.account}, but delivery to the publisher's queue is not confirmed. ${r.note || "Check the Outbox record."}`, "err");
+    if (out) {
+      const inspect = document.createElement("button");
+      inspect.type = "button"; inspect.className = "btn sm"; inspect.textContent = "Open Outbox";
+      inspect.onclick = () => go("marketing_outbox");
+      out.append(document.createTextNode(" "), inspect);
+    }
+    toast(outcome === "unknown" ? "Queue status unknown. Check Outbox before retrying."
+      : "Saved locally; delivery needs review.", true);
+    return; // keep the action disabled; a lost acknowledgement is not no effect
+  }
   btn.disabled = false;
   btn.textContent = label;
-  if (!r) {
-    say("No answer from the server, so nothing was queued. Try again.", "err");
-    return;
-  }
   /* An honest refusal names its gate. `reason` is the approve path's contract;
      `error` is what the shared route guards (bad request, auth, CSRF) return. */
   const reason = r.reason || null;
