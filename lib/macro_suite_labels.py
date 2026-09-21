@@ -340,6 +340,12 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "benign-expansion": _pair("Benign expansion", "良性扩张"),
     "stress-expansion": _pair("Stressed expansion", "承压扩张"),
     "neutral-hollow": _pair("Neutral level, weak composition", "中性水平，结构偏弱"),
+    "rising": _pair("Rising", "上升"),
+    "falling": _pair("Falling", "下降"),
+    # Auction security type (Treasury Bill / Note / Bond), not a footnote.
+    "Note": _pair("Note", "中期国债"),
+    "Bill": _pair("Bill", "短期国债"),
+    "Bond": _pair("Bond", "长期国债"),
 }
 
 # --- metric identities -------------------------------------------------------
@@ -1405,6 +1411,15 @@ _BREADTH_NUM_RE = re.compile(
     r"(?P<prefix>breadth|广度)\s+(?P<sign>[+\u2212-])?(?P<num>\d+(?:\.\d+)?)(?![\d.%])",
     re.I,
 )
+# E-m4: variable letters never lead customer copy. Live values stay; x=/y=
+# become "level" / "impulse" (ZH 水平 / 脉冲). Letters remain only in
+# .mq-axis-method and details, which this rewriter does not need to spare —
+# those slots already have reviewed labels.
+_XY_LEAD_RE = re.compile(
+    r"\b(?P<axis>[xy])\s*=\s*(?P<sign>[+\u2212-])?(?P<num>\d+(?:\.\d+)?)",
+    re.I,
+)
+_CJK_RE = re.compile(r"[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]")
 
 
 def format_user_facing_text(text: str) -> str:
@@ -1435,7 +1450,20 @@ def format_user_facing_text(text: str) -> str:
         formatted = format_user_facing_number(value, kind="percent")
         return f"{match.group('prefix')} {formatted}" if formatted else match.group(0)
 
-    return _BREADTH_NUM_RE.sub(_repl_breadth, text)
+    text = _BREADTH_NUM_RE.sub(_repl_breadth, text)
+
+    def _repl_xy(match: re.Match[str]) -> str:
+        raw = f"{match.group('sign') or ''}{match.group('num')}"
+        formatted = format_user_facing_number(
+            raw.replace("\u2212", "-"), kind="count") or match.group("num")
+        chinese = bool(_CJK_RE.search(text))
+        if match.group("axis").lower() == "x":
+            word = "水平" if chinese else "level"
+        else:
+            word = "脉冲" if chinese else "impulse"
+        return f"{word} {formatted}"
+
+    return _XY_LEAD_RE.sub(_repl_xy, text)
 
 
 def fmt_number(value: Any) -> str | None:

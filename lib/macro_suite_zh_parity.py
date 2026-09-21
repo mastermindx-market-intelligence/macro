@@ -505,6 +505,11 @@ ZH_PARITY: dict[str, str] = {
     "Customs tariff receipts": "关税收入",
     "Trade services detail": "服务贸易明细",
     "Usd bn": "十亿美元",
+    "Rising": "上升",
+    "Falling": "下降",
+    "Note": "中期国债",
+    "Bill": "短期国债",
+    "Bond": "长期国债",
 }
 
 

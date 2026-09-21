@@ -859,7 +859,7 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
     if not changes.get("comparable"):
         out.append({
             "tone": "neutral",
-            "title": _pair("No method-comparable prior print", "无方法可比的历史读数"),
+            "title": _pair("No earlier print that uses the same method", "没有使用同一方法的更早读数"),
             "body": changes["comparability_label"],
         })
 
@@ -2104,8 +2104,8 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "The first few changes in suite order — not a ranking. Open a workspace for its full list.",
                 "按套件既定顺序列出的前几项变化 — 并非重要性排序。完整列表请进入相应工作区。"),
             "empty_text": _pair(
-                "No workspace published a method-comparable change in this build.",
-                "本次构建中，没有工作区发布方法可比的变化。"),
+                "No workspace published a comparable change in this build.",
+                "本次构建中，没有工作区发布可比较的变化。"),
         },
         "attention": {
             "entries": attention,
