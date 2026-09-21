@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-09-19T03:01:34.351501+00:00",
+  "generated_at": "2026-09-21T02:57:27.784478+00:00",
   "n_ledgers": 34,
   "n_closed": 26,
   "n_grader_starved": 8,
@@ -14,9 +14,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 102315,
-      "n_graded": 144968,
-      "last_graded_at": "2026-09-19T02:57:57.319824+00:00",
+      "n_logged": 103932,
+      "n_graded": 147888,
+      "last_graded_at": "2026-09-20T11:33:17.546729+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -28,9 +28,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 144968,
-      "n_graded": 144968,
-      "last_graded_at": "2026-09-19T02:57:57.319824+00:00",
+      "n_logged": 147888,
+      "n_graded": 147888,
+      "last_graded_at": "2026-09-20T11:33:17.546729+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -42,7 +42,7 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 800,
+      "n_logged": 801,
       "n_graded": 476,
       "last_graded_at": null,
       "tune_step": "N",
@@ -98,7 +98,7 @@
       "graders": [
         "engine/china_standout_track.py"
       ],
-      "n_logged": 4011,
+      "n_logged": 4013,
       "n_graded": 1849,
       "last_graded_at": null,
       "tune_step": "N",
@@ -155,7 +155,7 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 531,
+      "n_logged": 538,
       "n_graded": 164,
       "last_graded_at": null,
       "tune_step": "N",
@@ -379,9 +379,9 @@
       "graders": [
         "engine/btc_override_ledger.py"
       ],
-      "n_logged": 57,
+      "n_logged": 58,
       "n_graded": 0,
-      "last_graded_at": "2026-09-18",
+      "last_graded_at": "2026-09-19",
       "tune_step": "N",
       "verdict": "GRADER-STARVED"
     },
@@ -408,8 +408,8 @@
         "scripts/grade_policy_calendar.py"
       ],
       "n_logged": 864,
-      "n_graded": 789,
-      "last_graded_at": "2026-09-18",
+      "n_graded": 804,
+      "last_graded_at": "2026-09-19",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -449,7 +449,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 3890,
+      "n_logged": 3990,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
@@ -463,7 +463,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 3890,
+      "n_logged": 3990,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",

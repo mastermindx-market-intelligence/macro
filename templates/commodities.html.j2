@@ -442,6 +442,90 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .det { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media(max-width:640px){ .det { grid-template-columns: 1fr; } }
 
+/* Gold · China physical premium — display-only context, no score authority. */
+.cgp { margin-top:16px; padding:18px; overflow:hidden; }
+.cgp-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.cgp h3 { margin:0; font-size:19px; line-height:1.25; letter-spacing:-.01em; }
+.cgp-deck { margin:4px 0 0; color:var(--mut); font-size:12.5px; }
+.cgp-method-wrap { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.cgp-method { border:1px solid var(--line); background:var(--panel2); color:var(--mut);
+              border-radius:var(--r-pill,999px); padding:4px 9px; font-size:11px; font-weight:700; }
+.cgp-freshness { border-radius:var(--r-pill,999px); padding:4px 9px; font-size:11px; font-weight:750; border:1px solid var(--line); }
+.cgp-stale { color:var(--ink-warn,var(--amb)); border-color:color-mix(in srgb,var(--amb) 44%,var(--line));
+             background:color-mix(in srgb,var(--amb) 8%,var(--panel2)); }
+.cgp-hero { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:16px; }
+.cgp-number { font-size:40px; line-height:1; font-weight:760; letter-spacing:-.04em; }
+.cgp-positive { color:var(--gold); }
+.cgp-negative { color:var(--ink-down,var(--dn)); }
+.cgp-flat { color:var(--tx); }
+.cgp-state { border-radius:var(--r-pill,999px); padding:4px 9px; font-size:11px; font-weight:750;
+             border:1px solid var(--line); color:var(--mut); background:var(--panel2); }
+.cgp-state-premium { color:var(--gold); border-color:color-mix(in srgb,var(--gold) 44%,var(--line)); }
+.cgp-state-discount { color:var(--ink-down,var(--dn)); border-color:color-mix(in srgb,var(--dn) 44%,var(--line)); }
+.cgp-stance { max-width:78ch; margin:10px 0 0; color:var(--mut); font-size:13px; line-height:1.55; }
+.cgp-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:16px; }
+.cgp-stats > div { min-width:0; border:1px solid var(--line); background:var(--panel2);
+                   border-radius:var(--r-card,12px); padding:10px 11px; display:flex; flex-direction:column; gap:3px; }
+.cgp-k { color:var(--faint); font-size:10.5px; font-weight:650; letter-spacing:.03em; }
+.cgp-stats strong { font-size:14px; overflow-wrap:anywhere; }
+.cgp-gold { color:var(--gold); }
+.cgp-controls { display:flex; justify-content:space-between; align-items:center; gap:12px;
+                margin-top:16px; max-width:100%; overflow-x:auto; scrollbar-width:none; }
+.cgp-controls::-webkit-scrollbar { display:none; }
+.cgp-mode-tabs,.cgp-range-tabs { display:flex; gap:6px; flex:none; }
+.cgp-btn { font:inherit; font-size:11px; font-weight:700; color:var(--mut); background:var(--panel2);
+           border:1px solid var(--line); border-radius:var(--r-ctl,4px); padding:6px 10px; cursor:pointer; white-space:nowrap; }
+.cgp-btn:hover { color:var(--tx); border-color:var(--line2); }
+.cgp-btn.is-active { color:var(--gold); border-color:color-mix(in srgb,var(--gold) 58%,var(--line));
+                     background:color-mix(in srgb,var(--gold) 8%,var(--panel2)); }
+.cgp-chart-wrap { margin-top:10px; border:1px solid var(--line); border-radius:var(--r-card,12px); padding:10px 8px 8px; }
+.cgp-chart { display:block; width:100%; height:auto; min-height:210px; overflow:visible; }
+.cgp-grid line { stroke:var(--line); stroke-width:1; }
+.cgp-zero { stroke:var(--line2); stroke-width:1.2; }
+.cgp-line { fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+.cgp-line-pos { stroke:var(--gold); }
+.cgp-line-neg { stroke:var(--ink-down,var(--dn)); }
+.cgp-line-main { stroke:var(--gold); }
+.cgp-line-alt { stroke:var(--ink-link,var(--blue)); }
+.cgp-line-avg { stroke:var(--faint); stroke-width:1.6; stroke-dasharray:4 5; }
+.cgp-axis { fill:var(--faint); font:10px/1 var(--font-ui); }
+.cgp-legend { display:flex; gap:16px; flex-wrap:wrap; padding:4px 6px 0; color:var(--faint); font-size:11px; }
+.cgp-leg { display:inline-flex; align-items:center; gap:6px; }
+.cgp-leg[hidden] { display:none; }
+.cgp-leg i { display:inline-block; width:18px; height:2px; background:var(--gold); }
+.cgp-leg-avg i { background:var(--faint); }
+.cgp-leg-alt i { background:var(--ink-link,var(--blue)); }
+.cgp-data { margin-top:10px; color:var(--mut); font-size:12px; }
+.cgp-data summary,.cgp-details summary { cursor:pointer; color:var(--tx); font-weight:650; }
+.cgp-data-scroll { max-width:100%; margin-top:8px; overflow-x:auto; border:1px solid var(--line); border-radius:var(--r-card,12px); }
+.cgp-data-scroll:focus-visible { outline:2px solid var(--ink-link,var(--blue)); outline-offset:2px; }
+.cgp-data-table { width:100%; min-width:680px; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+.cgp-data-table caption { padding:10px 11px 7px; color:var(--faint); text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.03em; }
+.cgp-data-table th,.cgp-data-table td { padding:7px 10px; border-top:1px solid var(--line); text-align:right; white-space:nowrap; }
+.cgp-data-table thead th { color:var(--faint); background:var(--panel2); font-size:10.5px; font-weight:700; }
+.cgp-data-table th:first-child,.cgp-data-table td:first-child { text-align:left; }
+.cgp-data-table tbody th { color:var(--mut); font-weight:600; }
+.cgp-details { margin-top:12px; color:var(--mut); font-size:12px; }
+.cgp-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 18px; margin-top:10px; }
+.cgp-detail-grid > div { display:flex; flex-direction:column; gap:2px; min-width:0; overflow-wrap:anywhere; }
+.cgp-note { color:var(--faint); font-size:11.5px; line-height:1.55; margin:10px 0 0; }
+.cgp-empty { margin-top:14px; border-left:3px solid var(--line2); padding:10px 12px; background:var(--panel2); }
+.cgp-empty p { margin:5px 0 0; color:var(--mut); font-size:12.5px; }
+html[data-theme='light'] .cgp { background:var(--panel); backdrop-filter:none; -webkit-backdrop-filter:none;
+                                box-shadow:var(--card-shadow,none); }
+html[data-theme='light'] .cgp-chart-wrap { background:var(--panel); }
+@media(max-width:760px){
+  .cgp-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .cgp-detail-grid { grid-template-columns:1fr; }
+  .cgp-controls { align-items:flex-start; }
+}
+@media(max-width:420px){
+  .cgp { padding:15px; }
+  .cgp-number { font-size:36px; }
+  .cgp-stats { grid-template-columns:1fr 1fr; }
+  .cgp-chart { min-height:170px; }
+}
+
 /* MTF table — plain headers */
 .mtf { width: 100%; border-collapse: collapse; font-size: 12px; }
 .mtf th { text-align: left; color: var(--faint); font-weight: 500; padding: 5px 6px;
@@ -1187,6 +1271,10 @@ html[data-theme="light"] :is(
       {% endif %}
     </div>
   </div>
+  {% if d.name == 'gold' %}
+    {% set g = d.get('china_gold_premium') or {} %}
+    {% include "_china_gold_premium.html.j2" %}
+  {% endif %}
   {% endif %}
 </div>
 {% endfor %}
