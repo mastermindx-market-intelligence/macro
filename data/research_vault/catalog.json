@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T11:19:49.583405+00:00",
-  "count": 2565,
+  "generated_at": "2026-09-21T13:02:33.961214+00:00",
+  "count": 2570,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,25 @@
   ],
   "items": [
     {
+      "id": "marketdesk-untdix5ejwy-2a2605",
+      "title": "Cost to Sweep Report 21 Sep 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T12:38:58Z",
+      "summary_points": [
+        "European Sovereign Liquidity Stress: Synchronized cost-to-sweep spikes across German (DU Schatz, RX Bund), Austrian (OE Bobl), UK (G Long Gilt), and Italian (IK Italy Bond) sovereigns signal systemic liquidity constraints, posing rebalancing risks and volatility for fixed-income portfolios.",
+        "European Equity Execution Risk: VG (Euro Stoxx 50) and Z (FTSE 100) indices show 7x higher cost-to-sweep than US equities (NO), indicating severe liquidity constraints for large orders and direct impact on trade profitability in Europe.",
+        "Asian Market Liquidity Crisis: SGX FTSE Taiwan exhibits extreme cost-to-sweep spikes (up to 12 bps), revealing severe liquidity constraints in regional markets and amplifying execution risk for portfolios with EM/Asia exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xvkblxzkzo7-a030e6",
       "title": "Here is our FX Blueprint",
       "institution": "Deutsche Bank",
@@ -149,6 +168,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a1lbsxy38mt-f8028b",
+      "title": "Bear Traps Report Turning Point Final New III Sep 20 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-21T03:34:29Z",
+      "summary_points": [
+        "Market Breadth Crisis: S&P 500 near highs but extreme breadth deterioration (more stocks at lows than highs, long-term uptrends plunging), comparable to 1973/1999 setups.",
+        "Credit Sell Signals: Convertible supply at record levels with 3+ months to election, signaling potential risk in credit markets (mirroring Q4 1999/2021).",
+        "1987 vs 2025 Bond-Stock Divergence: Treasury yields surged 200bps (7.25%→9.50%) triggering Black Monday; current high-yield bonds near 8%, French OATs up 360bps, debt-to-GDP double.",
+        "Bear Traps Report Cash Monitor: 76/13 positions in May 2025 (vs. 52 in Sep 2026); 55+ = RAISE CASH, 75+ = DEPLOY CASH, amplified by global trade disruptions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
@@ -372,6 +411,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-p4v4kvr4gic-f15b6e",
+      "title": "US Week Ahead September 21 September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:15Z",
+      "summary_points": [
+        "Services PMI Miss & Inflation Risks: Preliminary S&P Global US Services PMI at 53.5 (vs. 0 consensus) signals weak sector; Fed Governor Barr cites persistent core non-housing services inflation and risks from tariffs, Middle East conflict, and AI buildout.",
+        "Fed Policy Divergence: Hammack states policy is not restrictive while Paulson outlines two inflation scenarios, highlighting internal Fed uncertainty on timing of rate cuts amid inflation above target.",
+        "Core Capital Goods Strength: GS forecasts core capital goods orders up 0.5% (vs. durable goods down 1.0%), with core capital goods shipments rising 0.3%, indicating manufacturing resilience amid broader industrial trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6goqfhrgvdz-b29611",
       "title": "This Week in Asia Pacific Macro 21 27 September (Audio)",
       "institution": "Goldman Sachs",
@@ -503,6 +561,43 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hrbqr4sbb9w-0caa0d",
+      "title": "Fixed Income Special Debt sustainability on the radar",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:18Z",
+      "summary_points": [
+        "Debt Sustainability Buffers: Germany’s widest buffer (6.57pp) contrasts with Italy’s narrowest (0.97pp), amid rising debt; US faces narrowing buffer from primary deficits + rising rates, signaling heightened fiscal fragility.",
+        "Critical Threshold: 5% of GDP in interest payments marks the stress threshold for debt servicing; high-debt countries face amplified exposure to growth shocks and borrowing cost spikes.",
+        "Investor Structure Shift: Central bank withdrawal elevates reliance on price-sensitive investors (foreign, funds), amplifying sovereign bond volatility in France/Italy; European sovereigns more exposed than US/Japan.",
+        "IMF Investor Risk Index: France/Italy show rising vulnerability (high debt + weak investor base) since 2023; Germany most resilient, Japan stable due to stable investor structure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pywwk7uip0p-fd96c8",
+      "title": "FX View Fed, BOE and BoJ ahead, but an AI safety wobble to start the week",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:03:35Z",
+      "summary_points": [
+        "Document Missing: No source document provided for extraction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },

@@ -5770,7 +5770,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: design governance unit suites
-        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py -q
+        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_check_p0b_receipt_closure.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
         run: python3 scripts/check_design_system.py --self-check
       - name: runtime-style injection guard selftest (gate fires on planted injection)
@@ -5803,6 +5803,24 @@ jobs:
           fi
           git diff --unified=0 "$mb" HEAD -- templates site > /tmp/ui.diff
           python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff
+      # P0B receipt closure: #7603 changed templates/hk.html.j2 without reminting
+      # the browser receipts (same class as #7500 / navigation-refresh.css).
+      # Derive the pin set FROM the receipts at runtime; a pinned path in the
+      # PR diff without the receipts that pin it fails closed.
+      - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
+        run: python3 scripts/check_p0b_receipt_closure.py --selftest
+      - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
+        run: |
+          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            exit 1
+          fi
+          if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
+            echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            exit 1
+          fi
+          git diff --name-only "$mb" HEAD > /tmp/p0b.changed
+          python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
 
   template-site-sync:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
