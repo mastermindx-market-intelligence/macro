@@ -57,7 +57,10 @@ RULE LEVELS (RIG §8).  Each rule prints a STABLE finding code; tests pin the st
     L7  reference-namespace closure         unclaimed-reference-file,
                                             double-claimed-reference-file
     L8  migration-packet coupling           packet-without-rig-receipt,
-                                            packet-cites-unapproved-reference
+                                            packet-cites-unapproved-reference,
+                                            packet-without-editable-source,
+                                            packet-without-component-delta,
+                                            packet-without-state-interaction-matrix
     L9  page-registry coupling              compliant-row-without-approved-reference,
                                             missing-registry-file
     L10 revision continuity (§13, V1.1)     continuity-missing, continuity-item-missing,
@@ -181,6 +184,11 @@ NAMESPACE_EXEMPT = CLOSED_PRE_RIG_REFERENCES | {"specimen.html"}
 # missing-receipt state of the pre-gate debt).
 CLOSED_PRE_RIG_PACKETS = frozenset({"MP-1-prophet-board.md"})
 
+# The same one historical packet predates the 2026-09-20 editable-source contract.
+# Keep that debt explicit and closed rather than making a later checker retroactively
+# invalidate an accepted historical packet. New packets get no wildcard exemption.
+CLOSED_PRE_EDITABLE_SOURCE_PACKETS = frozenset({"MP-1-prophet-board.md"})
+
 # ── Vocabularies (RIG §1-§7).  Unknown ENUMS fail; unknown top-level KEYS are
 # tolerated on purpose, so a later schema revision can add fields without a flag day. ──
 SCHEMA_IDS = {
@@ -285,6 +293,72 @@ _DATA_MOTIVE_PATTERNS: tuple[re.Pattern[str], ...] = (
 )
 
 _RIG_RECEIPT_RE = re.compile(r"^RIG-RECEIPT:[ \t]*(\S+)", re.MULTILINE)
+
+_PACKET_NUMBERED_FIELD_RE = re.compile(
+    r"^[ \t]*(?:#{1,6}[ \t]+)?(?:[0-9]{1,2}[A-Z]?)(?:[ \t]+|[.:\\-–—][ \t]*)",
+    re.IGNORECASE,
+)
+_EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
+    (
+        "packet-without-editable-source",
+        "3A EDITABLE SOURCE",
+        re.compile(
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3A[ \t]+EDITABLE[ \t]+SOURCE\\b"
+            r"[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+    ),
+    (
+        "packet-without-component-delta",
+        "3B COMPONENT DELTA",
+        re.compile(
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3B[ \t]+COMPONENT[ \t]+DELTA\\b"
+            r"[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+    ),
+    (
+        "packet-without-state-interaction-matrix",
+        "3C STATE + INTERACTION MATRIX",
+        re.compile(
+            r"^[ \t]*(?:#{1,6}[ \t]+)?3C[ \t]+STATE[ \t]*\\+[ \t]*INTERACTION"
+            r"(?:[ \t]+MATRIX)?\\b[ \t]*(?:[:\\-–—][ \t]*)?(?P<value>[^\\n]*)$",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+    ),
+)
+_PACKET_PLACEHOLDER_PREFIXES = ("required", "todo", "tbd")
+
+
+def _packet_field_payload(body: str, marker: re.Pattern[str]) -> str:
+    """Return normalized non-placeholder content for one numbered packet field."""
+
+    match = marker.search(body)
+    if match is None:
+        return ""
+    parts = [match.group("value").strip()]
+    for line in body[match.end():].splitlines():
+        if _PACKET_NUMBERED_FIELD_RE.match(line):
+            break
+        parts.append(line.strip())
+    value = " ".join(part for part in parts if part)
+    value = re.sub(r"[\x60*_>#]+", " ", value)
+    value = " ".join(value.split()).strip()
+    lowered = value.casefold()
+    if not lowered:
+        return ""
+    if lowered.startswith("<") and lowered.endswith(">"):
+        return ""
+    if any(
+        lowered == prefix
+        or lowered.startswith(prefix + " ")
+        or lowered.startswith(prefix + ":")
+        or lowered.startswith(prefix + "-")
+        or lowered.startswith(prefix + "—")
+        for prefix in _PACKET_PLACEHOLDER_PREFIXES
+    ):
+        return ""
+    return value
 
 
 # ── Findings ──────────────────────────────────────────────────────────────────
@@ -1513,6 +1587,15 @@ def rule_l8(repo_root: Path, status_by_id: dict[str, str]) -> list[Finding]:
         except (OSError, UnicodeDecodeError) as exc:
             out.append(Finding("packet-without-rig-receipt", rel, f"unreadable: {exc}"))
             continue
+        if packet.name not in CLOSED_PRE_EDITABLE_SOURCE_PACKETS:
+            for code, label, marker in _EDITABLE_PACKET_FIELD_SPECS:
+                if not _packet_field_payload(body, marker):
+                    out.append(Finding(
+                        code,
+                        rel,
+                        f"a migration packet must include a non-placeholder '{label}' field "
+                        "under the editable-source contract; semantic adequacy remains reviewer-owned",
+                    ))
         cited = [m.group(1) for m in _RIG_RECEIPT_RE.finditer(body)]
         if not cited:
             if packet.name in CLOSED_PRE_RIG_PACKETS:
