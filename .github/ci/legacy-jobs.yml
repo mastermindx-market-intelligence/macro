@@ -11600,6 +11600,12 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - scripts/build_ticker_pages.py
+      - scripts/capture_debt_maturity_evidence.py
+      - scripts/capture_hk_tier1_shell.py
+      - site/assets/js/company-intelligence-dossier.js
+      - templates/ticker.html.j2
+      - tests/test_ticker_pages.py
       # HK-H2 closure widening 2026-09-21 (contract-delta): the hub copy pass
       # import closure now reaches the marketing/intel/indicator modules below.
       - "engine/indicators_m2.py"
