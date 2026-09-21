@@ -23,6 +23,7 @@ from engine.prophet_candidate_state import validate_candidate_state_projection
 from engine.prophet_strategy_definition import (
     ENTRY_POLICY_VERSION,
     STRATEGY_ID,
+    build_early_leadership_sector_rotation_definition,
     validate_strategy_definition,
 )
 
@@ -262,6 +263,13 @@ def evaluate_entry_availability(
 
     decision_at_text = _text(facts.get("decision_at"), "decision_at")
     decision_at = _utc(decision_at_text, "decision_at")
+    candidate_generated_at = _utc(
+        candidate_projection.get("generated_at"), "candidate_projection.generated_at"
+    )
+    if candidate_generated_at > decision_at:
+        raise EntryAvailabilityContractError(
+            "candidate_projection.generated_at cannot be after decision_at"
+        )
     market_session = _session(facts.get("market_session"))
     if candidate_projection.get("market_session") != market_session:
         raise EntryAvailabilityContractError("B3 and B4 market_session mismatch")
@@ -491,6 +499,14 @@ def validate_entry_availability(payload: Mapping[str, object]) -> None:
         raise EntryAvailabilityContractError("availability output fields are not closed")
     if payload.get("schema") != SCHEMA or payload.get("definition") != DEFINITION:
         raise EntryAvailabilityContractError("availability schema/definition mismatch")
+    accepted_strategy = _strategy_identity(
+        build_early_leadership_sector_rotation_definition()
+    )
+    for field, value in accepted_strategy.items():
+        if payload.get(field) != value:
+            raise EntryAvailabilityContractError(
+                f"availability {field} diverges from accepted strategy definition"
+            )
     state = payload.get("state")
     if state not in AVAILABILITY_STATES:
         raise EntryAvailabilityContractError("availability state invalid")

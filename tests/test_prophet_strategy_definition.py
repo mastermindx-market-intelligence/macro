@@ -1,4 +1,6 @@
 import copy
+import hashlib
+import json
 
 import pytest
 
@@ -131,11 +133,15 @@ def _b4_episode(state="ACTIVE", terminal_reason=None):
     }
 
 
-def _b4_projection(state="ACTIVE", terminal_reason=None):
+def _b4_projection(
+    state="ACTIVE",
+    terminal_reason=None,
+    generated_at="2026-09-18T19:30:00Z",
+):
     return project_candidate_states(
         _B4Snap(_B4_GEN, _B4Gen((_b4_episode(state, terminal_reason),))),
         market_session="2026-09-18",
-        generated_at="2026-09-18T21:00:00Z",
+        generated_at=generated_at,
     )
 
 
@@ -188,6 +194,18 @@ def _b4_evaluate(p=None, f=None, strategy=None):
     )
 
 
+def _b4_rehash(payload):
+    material = {key: value for key, value in payload.items() if key != "availability_id"}
+    encoded = json.dumps(
+        material,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    payload["availability_id"] = "pea:" + hashlib.sha256(encoded).hexdigest()
+
+
 def test_b4_entry_open_binds_canonical_identity_strategy_horizon_and_current_facts():
     out = _b4_evaluate()
     assert out["schema"] == "prophet.entry_availability/v1"
@@ -206,6 +224,15 @@ def test_b4_entry_open_binds_canonical_identity_strategy_horizon_and_current_fac
     assert out["current_price_basis"] == "adjusted:v7"
     assert out["availability_id"].startswith("pea:")
     validate_entry_availability(out)
+
+
+def test_b4_rejects_future_candidate_projection_before_availability_evaluation():
+    future_projection = _b4_projection(generated_at="2026-09-18T21:00:00Z")
+    with pytest.raises(
+        EntryAvailabilityContractError,
+        match="candidate_projection.generated_at cannot be after decision_at",
+    ):
+        _b4_evaluate(p=future_projection)
 
 
 def test_b4_stale_quote_ambiguous_basis_or_unknown_required_fact_fail_closed():
@@ -329,4 +356,26 @@ def test_b4_availability_identity_detects_mutation():
     tampered["state"] = "WAIT_PULLBACK"
     tampered["entry_open"] = False
     with pytest.raises(EntryAvailabilityContractError, match="availability_id mismatch"):
+        validate_entry_availability(tampered)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("strategy_definition_id", "psd:" + "0" * 64),
+        ("strategy_id", "OTHER_STRATEGY"),
+        ("strategy_version", "999"),
+        ("horizon", "99_SESSIONS"),
+        ("horizon_role", "hold_only"),
+        ("entry_policy_version", "evil-v999"),
+    ),
+)
+def test_b4_validator_rejects_rehashed_strategy_identity_mutation(field, value):
+    tampered = copy.deepcopy(_b4_evaluate())
+    tampered[field] = value
+    _b4_rehash(tampered)
+    with pytest.raises(
+        EntryAvailabilityContractError,
+        match=f"availability {field} diverges from accepted strategy definition",
+    ):
         validate_entry_availability(tampered)
