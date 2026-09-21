@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T04:31:48.311552+00:00",
-  "count": 2545,
+  "generated_at": "2026-09-21T06:02:07.885274+00:00",
+  "count": 2549,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,25 @@
   ],
   "items": [
     {
+      "id": "marketdesk-iqyilwz1nhs-f45ee9",
+      "title": "South Korea Chip Driven Acceleration in Early September Exports, with a Record High Trade Surplus of US$23bn",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:48Z",
+      "summary_points": [
+        "Record Trade Surplus: South Korea hit a historic $23bn monthly trade surplus (vs $14bn prior), driven by chip exports surging 16.0% mom sa (60% of headline increase) and accelerated overall exports.",
+        "Chip Export Dominance: Semiconductors fueled 60% of the sequential export growth, with chip exports rising 16.0% mom sa, underscoring sector-specific strength amid global demand.",
+        "Near-Term Export Momentum: Workday-adjusted exports showed sharp acceleration in early September (Exhibit 1), signaling sustained export strength beyond the current surplus record."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-23hszonk8iu-92177d",
       "title": "Asia Economics Analyst Korea – Tracking Corporate Cash and Financial market Flows",
       "institution": "Goldman Sachs",
@@ -109,6 +128,53 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6goqfhrgvdz-b29611",
+      "title": "This Week in Asia Pacific Macro 21 27 September (Audio)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:13Z",
+      "summary_points": [
+        "Asia-Pacific Macro Outlook: Upcoming economic data and central bank policies (21–27 Sep 2026) as key drivers for regional portfolio positioning - Critical Events Highlight: Trump-Xi Summit geopolitical risk and Bank Indonesia policy decisions as immediate portfolio catalysts - Critical Events Highlight: Korea 20-day exports data and Australia/NZ economic preview for fundamental market flow assessment - Critical Events Highlight: Taiwan IP developments as critical technical and policy risk factor for semiconductor sector exposure"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kvmrapjzy2n-b92194",
+      "title": "GS Pasquariello markets macro 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:08Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rzraz6r3fu6-2ac8ca",
+      "title": "GS Shelofsky IG Credit Week in Review 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:02Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
