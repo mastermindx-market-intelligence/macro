@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T13:02:33.961214+00:00",
-  "count": 2570,
+  "generated_at": "2026-09-21T14:32:44.358380+00:00",
+  "count": 2574,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,65 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pwjqbzqafk4-8855ee",
+      "title": "Turkiye TCMB Reserves US$9bn Lower",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:52Z",
+      "summary_points": [
+        "Capital Flight into Domestic Deposits: TRY deposits surge to $20bn amid $1.8bn MMF outflows, signaling capital flight as FX volatility intensifies and central bank reserves decline $9bn (to $180bn).",
+        "Geopolitical Reserves Erosion: Iran war triggered $36.4bn gross FX asset decline and $9.5bn FX liquidity drop since start, severely constraining central bank intervention capacity amid currency volatility.",
+        "FX Liquidity Compression: FX liquidity at $47.1bn (vs $67.6bn peak) indicates constrained ability to stabilize TRY, critical for emerging market exposure and currency risk management.",
+        "Foreign Capital Shift to Debt: $20bn cumulative foreign inflows into domestic debt post-2024, while equity inflows remain negative, reflecting risk-averse positioning and debt preference.",
+        "Credit Market Stress: Commercial loan rates persist 9pp above policy rate (45%), signaling tight lending conditions and elevated credit risk despite policy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wkbzwf6mbxv-7b4e77",
+      "title": "Weekly US Earnings Estimates 21st 25th September 2026",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:10Z",
+      "summary_points": [
+        "Cross-Index Flow Catalyst: CTAS/PAYX reporting on Nasdaq 100 (23rd Sept) drives immediate cross-index flows, critical for short-term portfolio positioning.",
+        "Sector Revenue Benchmarks: CTAS ($2.98B Qtrly) and COST ($94.88B Qtrly) revenue releases (23rd/24th Sept) are fundamental data points for healthcare/retail sector analysis.",
+        "Growth Trajectory Signal: DRI’s $3.27B Next Qtr Revenue (24th Sept) directly signals Darden’s near-term growth trajectory for retail sector allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pfb3xjck5dd-7e7146",
+      "title": "Week in Focus 21 25th September 2026 Highlights include Xi s visit to the US Global Flash PMIs Aussie jobs and the SNB rate decision",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:07Z",
+      "summary_points": [
+        "FOMC Hawkish Shift: Fed raised rates 25bps to 3.75-4.00%, with median forecast easing to 3.875% in 2024; Goldman Sachs now expects another 25bps hike in October, signaling persistent inflation risks and tightening liquidity.",
+        "Japan PMI Expansion: Manufacturing PMI expected at 54.8 (services at 52.6, composite above 53.0), driven by semiconductor/AI demand and tourism, with price pressures monitored as key sector catalyst.",
+        "US Data & Geopolitical Risk: US retail sales rose 1.2% MoM (vs. 8% forecast), driven by non-store sales; Iran conflict elevates oil price volatility, compounding inflation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-untdix5ejwy-2a2605",
       "title": "Cost to Sweep Report 21 Sep 2026",
@@ -581,6 +640,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nhprdwjdkrd-da28c6",
+      "title": "ETF Market Pulse Week 2 – September 2026 Commodities Surge, Cash Builds and AI Innovation Accelerates",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:04:00Z",
+      "summary_points": [
+        "Geopolitical Energy Shock: Drives commodities (Broad Commodities +7.2% W32, Gold +7.2% W32) and Japan equities to leadership, while pressuring US equities (-1.2% W33), Bitcoin (-3.2% W32), and long-duration assets (uranium, biotech) due to supply-chain disruptions and energy scarcity.",
+        "Selective ETF Flows: $25bn weekly inflows (70% equities) show cautious \"buy-the-dip\" stance—strong demand for Russell 2000, 20+Y Treasuries, and money-market ETFs, with outflows from crowded trades (semiconductors, Korea, US IG/HY credit).",
+        "Commodity Dominance: Commodities lead YTD returns (49.4%) amid negative momentum across equities/bonds; only commodities show positive 1-week momentum, signaling widespread risk-off sentiment and defensive rotation.",
+        "Thematic ETF Surge: Semiconductors, AI infrastructure (e.g., Global X MLCC ETF), and sustainability strategies drive active/passive ETF launches, reflecting strong momentum in AI/tech themes and manager discretion in thematic allocations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },

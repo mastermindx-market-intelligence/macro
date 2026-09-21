@@ -2580,6 +2580,14 @@ class TestRunCycleEndToEnd:
         assert meta["fetch_compute_sec"] >= 0
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 1
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["SPY"]
+        assert state["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
         assert meta["source_response_at_first"] == "2026-07-02T18:30:00Z"
         assert meta["source_response_at_last"] == "2026-07-02T18:30:00Z"
         assert meta["asof"] == "2026-07-02T18:30:00Z"
@@ -2632,11 +2640,17 @@ class TestRunCycleEndToEnd:
             lambda root, *_args, **_kwargs: (root, None, None),
         )
         prior_source = "2026-07-02T17:45:00Z"
+        prior_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
         feed, heat, meta, state, _ = poller.run_cycle(
             roots=["SPY"],
             session_date=SESSION_DATE,
             delta_mode="full_day",
-            day_state={"source_asof": prior_source},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+            },
             baselines={},
             cfg={
                 "max_concurrent": 2,
@@ -2654,8 +2668,86 @@ class TestRunCycleEndToEnd:
         assert state["source_asof"] == prior_source
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
+
+    @pytest.mark.parametrize("failed_leg", ["call", "put"])
+    def test_partial_leg_failure_retains_prior_receipts_and_skips_engine(
+        self, monkeypatch, failed_leg,
+    ):
+        import scripts.live_flow_poller as poller
+
+        successful = self._root_frame("SPY", "09:30", seq_base=1000)
+        if failed_leg == "call":
+            successful["right"] = "P"
+
+        def partial_fetch(root, *_args, **_kwargs):
+            if failed_leg == "call":
+                return root, None, successful.copy()
+            return root, successful.copy(), None
+
+        monkeypatch.setattr(poller, "_fetch_root", partial_fetch)
+        processed_roots: list[str] = []
+        real_process_batch = lf.process_batch
+
+        def recording_process_batch(**kwargs):
+            processed_roots.append("SPY")
+            return real_process_batch(**kwargs)
+
+        monkeypatch.setattr(lf, "process_batch", recording_process_batch)
+        prior_source = "2026-07-02T17:45:00Z"
+        prior_source_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
+
+        feed, heat, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {"SPY": successful},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_source_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+                "root_minutes": {
+                    "SPY": {"09:29": {"ncp": 100.0, "npp": 0.0, "vol": 1}},
+                },
+            },
+        )
+
+        assert processed_roots == []
+        assert meta["asof"] == prior_source
+        assert feed["source_asof"] == prior_source
+        assert heat["source_asof"] == prior_source
+        assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_source_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
+
+    def test_root_source_receipts_update_in_requested_order_and_preserve_prior(self, monkeypatch):
+        prior_receipts = {"IWM": "2026-07-02T17:40:00Z"}
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {
+                "QQQ": self._root_frame("QQQ", "09:30", seq_base=2000),
+                "SPY": self._root_frame("SPY", "09:30", seq_base=1000),
+            },
+            day_state={"root_source_receipts": prior_receipts},
+        )
+
+        assert meta["roots_with_source_payload_names"] == ["QQQ", "SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["QQQ", "SPY"]
+        assert state["root_source_receipts"] == {
+            "IWM": "2026-07-02T17:40:00Z",
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
 
     def test_engine_failure_does_not_advance_root_watermark(self, monkeypatch):
         frames = {
@@ -2666,11 +2758,21 @@ class TestRunCycleEndToEnd:
             lf, "process_batch",
             lambda **kwargs: (_ for _ in ()).throw(RuntimeError("synthetic engine failure")),
         )
-        self._run_real_cycle(
-            monkeypatch, frames, cycle_watermarks=watermarks,
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            frames,
+            cycle_watermarks=watermarks,
+            day_state={
+                "root_ticker_receipts": {"SPY": "2026-07-02T17:30:00Z"},
+            },
         )
         assert watermarks == {
             "SPY": {"ts": "2026-07-02T13:29:00Z", "seq": 999}
+        }
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T17:30:00Z",
         }
 
     def test_market_tide_gross_sums_all_roots_same_minute(self, monkeypatch):
@@ -3198,6 +3300,41 @@ class TestDayStateVersionDiscard:
             },
         )
         assert _load_day_state(SESSION_DATE)["source_asof"] == source_asof
+
+    def test_per_root_receipts_roundtrip_and_ignore_malformed(self, tmp_path, monkeypatch):
+        """Restart recovery preserves only canonical per-root source/ticker clocks."""
+        from scripts.live_flow_poller import _load_day_state, _save_day_state
+
+        state_dir = tmp_path / "live_flow_state"
+        state_dir.mkdir()
+        monkeypatch.setattr(
+            "scripts.live_flow_poller._state_dir", lambda: state_dir,
+        )
+        _save_day_state(
+            SESSION_DATE,
+            {
+                "emitted_ids": set(),
+                "seen_sequences": {},
+                "contract_vol": {},
+                "notability_history": {},
+                "root_source_receipts": {
+                    "SPY": "2026-07-02T18:30:00Z",
+                    "AMD": "not-a-time",
+                },
+                "root_ticker_receipts": {
+                    "SPY": "2026-07-02T18:29:59+00:00",
+                    "TLT": 123,
+                },
+            },
+        )
+
+        restored = _load_day_state(SESSION_DATE)
+        assert restored["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert restored["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:29:59Z",
+        }
 
 
 class TestDayStateLearningWal:
