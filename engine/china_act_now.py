@@ -90,7 +90,8 @@ A name in reduce_avoid that is ALSO in bottoming_watch keeps entries in BOTH lan
 The reduce_avoid row gets dual_read=True + dual_chip_en/zh set.
 Basket cycle ids use a 'b-' prefix (e.g. 'b-cn_baijiu') while theme ids do not
 ('cn_baijiu'); dual-read matching normalizes by stripping the 'b-' prefix.
-Never merged, never re-ranked.
+Raw evidence lanes are never merged or re-ranked. The additive display_lanes
+projection renders one card per exact entity and retains every source read.
 
 BUY-WORD PROHIBITION (F1/W8-R3)
 bottoming_watch rows must not contain: buy, entry, accumulate, enter (case-insensitive)
@@ -99,6 +100,7 @@ in any name, tag, reco field.  The lane caption enforces this at template level.
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any
 
 from engine.i18n import tr
@@ -235,6 +237,56 @@ def _cycle_row(r: dict) -> dict:
     row["rs_63d"] = r.get("rs_63d")
     row["rs_rank"] = r.get("rs_rank")
     return row
+
+
+def _display_lanes(lanes: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    """Project one card per exact entity without changing source recommendations.
+
+    THEME/BASKET share the existing canonical basket id (including ``b-``
+    normalization). Sector identities stay separate: equal names are not proof
+    of equivalent exposures, and parent/child themes must never be collapsed.
+    Source rows remain in ``lanes`` and in each projected card's ``source_reads``.
+    An existing action outranks a watch observation; conflicting buy/reduce
+    sources are disclosed on the defensive lane, never resolved into a new buy.
+    This is presentation only: no Prophet rank, entry, size or ledger authority.
+    """
+    priority = {"reduce_avoid": 0, "buy_now": 1,
+                "wait_pullback": 2, "bottoming_watch": 3}
+    grouped: dict[str, list[tuple[str, int, dict]]] = {}
+    for lane, rows in lanes.items():
+        for index, row in enumerate(rows):
+            rid = str(row.get("id") or "")
+            kind = row.get("kind")
+            if not rid:
+                key = f"unidentified:{lane}:{index}"
+            elif kind in ("THEME", "BASKET"):
+                key = "basket:" + (rid[2:] if rid.startswith("b-") else rid)
+            else:
+                key = f"{kind or 'unknown'}:{rid}"
+            grouped.setdefault(key, []).append((lane, index, row))
+
+    projected: dict[str, list[tuple[int, dict]]] = {lane: [] for lane in lanes}
+    for key, sources in grouped.items():
+        lane, index, source = min(sources, key=lambda s: (priority[s[0]], s[1]))
+        row = deepcopy(source)
+        row["canonical_display_id"] = key
+        row["observed_lanes"] = list(dict.fromkeys(s[0] for s in sources))
+        row["source_reads"] = [{"lane": s[0], "row": deepcopy(s[2])} for s in sources]
+        row["action_disagreement"] = (
+            "buy_now" in row["observed_lanes"] and "reduce_avoid" in row["observed_lanes"]
+        )
+        # Move supporting tape/cycle observations onto the single primary card.
+        # Never overwrite that card's action, score, identity, or entry decision.
+        for field in ("organ_state", "organ_chip_en", "organ_chip_zh",
+                      "phase", "osc_slope", "pos", "rs_63d", "rs_rank"):
+            if row.get(field) is None:
+                for _, _, evidence in sources:
+                    if evidence.get(field) is not None:
+                        row[field] = deepcopy(evidence[field])
+                        break
+        projected[lane].append((index, row))
+    return {lane: [r for _, r in sorted(rows, key=lambda item: item[0])]
+            for lane, rows in projected.items()}
 
 
 # --------------------------------------------------------------------------- #
@@ -535,13 +587,15 @@ def assemble_act_now(
                     continue
             _row["href"] = _candidate
 
+    lanes = {
+        "buy_now": buy_now,
+        "wait_pullback": wait_pullback,
+        "bottoming_watch": bottoming_watch,
+        "reduce_avoid": reduce_avoid,
+    }
     return {
-        "lanes": {
-            "buy_now": buy_now,
-            "wait_pullback": wait_pullback,
-            "bottoming_watch": bottoming_watch,
-            "reduce_avoid": reduce_avoid,
-        },
+        "lanes": lanes,
+        "display_lanes": _display_lanes(lanes),
         "as_of": as_of,
         "notes": notes,
     }

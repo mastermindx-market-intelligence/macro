@@ -12,11 +12,13 @@ Tests:
 """
 from __future__ import annotations
 
+from copy import deepcopy
 import re
 import sys
 from pathlib import Path
 
 import pytest
+from jinja2 import Environment, FileSystemLoader
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -962,3 +964,116 @@ class TestRel5Field:
         r = assemble_act_now([], None, cycle)
         row = r["lanes"]["bottoming_watch"][0]
         assert row["rel5"] is None
+
+
+# Exact-entity display coherence (2026-09-21). Raw evidence remains unchanged.
+def _display_fixture(*, primary="add_on_pullback", reco="enter", organ="TURNING", cycle=True):
+    item = {"id": "cn_semis", "name": "Semiconductors", "name_zh": "半导体",
+            "score": 59, "action": reco, "action_en": reco.upper(), "action_zh": "观察"}
+    intel = {"as_of": "2026-09-18", "themes": [dict(item, reco=reco)],
+             "act_now": {primary: [item]} if primary else {}}
+    cycles = [{"id": "b-cn_semis", "name": "Semiconductors", "kind": "basket",
+               "phase": "Trough", "osc_slope": 1.2}] if cycle else []
+    # Match the accepted basket-turn artifact shape.
+    tape = {"baskets": {"cn_semis": {"state": organ}}} if organ else None
+    return assemble_act_now([], intel, cycles, basket_turn=tape)
+
+
+def display_rows(result):
+    return [row for rows in result["display_lanes"].values() for row in rows]
+
+
+def render(result):
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=True)
+    env.globals.update(t=lambda en, zh: en, tr=lambda text: text,
+                       help=lambda *args, **kwargs: "")
+    return env.get_template("_china_act_now_board.html.j2").render(act_now_v2=result)
+
+
+def test_semiconductor_duplicate_becomes_one_card_with_both_reads():
+    result = _display_fixture()
+    assert len(result["lanes"]["wait_pullback"]) == 1
+    assert len(result["lanes"]["bottoming_watch"]) == 1
+    assert len(display_rows(result)) == 1
+    row = result["display_lanes"]["wait_pullback"][0]
+    assert set(row["observed_lanes"]) == {"wait_pullback", "bottoming_watch"}
+    assert len(row["source_reads"]) == 2
+    assert row["osc_slope"] == 1.2
+    assert result["display_lanes"]["bottoming_watch"] == []
+
+
+@pytest.mark.parametrize("primary,lane", [("buy", "buy_now"),
+                                           ("add_on_pullback", "wait_pullback"),
+                                           ("reduce", "reduce_avoid")])
+def test_turn_evidence_never_overrides_existing_action(primary, lane):
+    result = _display_fixture(primary=primary, reco="avoid" if primary == "reduce" else "enter")
+    assert len(result["display_lanes"][lane]) == 1
+    assert len(display_rows(result)) == 1
+
+
+def test_projection_is_independent_of_raw_source_objects():
+    result = _display_fixture()
+    before = deepcopy(result["lanes"])
+    display_rows(result)[0]["source_reads"][0]["row"]["name"] = "changed copy"
+    display_rows(result)[0]["name"] = "changed copy"
+    assert result["lanes"] == before
+
+
+def test_equal_names_with_different_ids_are_not_falsely_merged():
+    sectors = [{"ticker": "512760.SS", "name": "Semiconductors",
+                "entry": {"urgency": "now", "tag": "BUY NOW"}}]
+    intel = {"act_now": {"add_on_pullback": [{"id": "cn_semis", "name": "Semiconductors"}]}}
+    result = assemble_act_now(sectors, intel, [])
+    assert len(display_rows(result)) == 2
+    assert len({r["canonical_display_id"] for r in display_rows(result)}) == 2
+
+
+def test_missing_ids_remain_separate():
+    intel = {"act_now": {"buy": [{"name": "A"}, {"name": "B"}]}}
+    assert len(display_rows(assemble_act_now([], intel, []))) == 2
+
+
+def test_parent_and_subtheme_remain_distinct():
+    intel = {"act_now": {"buy": [{"id": "cn_semis", "name": "Semiconductors"},
+                                 {"id": "cn_memory", "name": "Memory"}]}}
+    assert len(display_rows(assemble_act_now([], intel, []))) == 2
+
+
+def test_conflicting_action_sources_are_visible_and_not_promoted():
+    item = {"id": "cn_semis", "name": "Semiconductors"}
+    result = assemble_act_now([], {"act_now": {"buy": [item], "reduce": [item]}}, [])
+    assert result["display_lanes"]["buy_now"] == []
+    row = result["display_lanes"]["reduce_avoid"][0]
+    assert row["action_disagreement"] is True
+    assert len(row["source_reads"]) == 2
+
+
+def test_no_turn_only_buy_promotion():
+    result = _display_fixture(primary=None)
+    assert result["display_lanes"]["buy_now"] == []
+    assert len(result["display_lanes"]["bottoming_watch"]) == 1
+
+
+def test_render_has_one_semiconductor_card_and_no_false_has_run_claim():
+    html = render(_display_fixture())
+    assert html.count('class="anv2-name anv2-name-link"') == 1
+    assert "Entry pending" in html
+    assert "but it has run" not in html
+    assert "Still in favour — wait for a dip before adding" not in html
+
+
+def test_watch_card_does_not_print_enter_badge():
+    html = render(_display_fixture(primary=None, cycle=False))
+    assert '>ENTER<' not in html
+
+
+def test_buy_card_keeps_its_enter_badge():
+    html = render(_display_fixture(primary="buy"))
+    assert '>ENTER<' in html
+    assert "Entry pending" not in html
+
+
+def test_empty_projection():
+    result = assemble_act_now([], None, None)
+    assert all(not rows for rows in result["display_lanes"].values())

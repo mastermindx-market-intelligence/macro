@@ -1,0 +1,19 @@
+{
+  "proof_kind": "real-theme-and-tape-component; no sector/cycle fixture; not deployment",
+  "raw_counts": {
+    "buy_now": 0,
+    "wait_pullback": 1,
+    "bottoming_watch": 27,
+    "reduce_avoid": 13
+  },
+  "display_counts": {
+    "buy_now": 0,
+    "wait_pullback": 1,
+    "bottoming_watch": 26,
+    "reduce_avoid": 13
+  },
+  "semis_display_count": 1,
+  "desktop_overflow": false,
+  "mobile_overflow": false,
+  "browser_render": "passed"
+}
