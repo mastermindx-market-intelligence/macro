@@ -684,6 +684,10 @@ premium:
       # scripts/build_china_altdata.py read it off disk), so gating the URL closes
       # a direct-link leak without breaking anything.
       - /chinaspecialdata/special.json
+      # Prophet's full leader-observation roster. The public US page server-renders only
+      # the configured preview; paid rows hydrate through /premiumdata/us_stocks.json.
+      # Locking this raw ticker map prevents a direct-URL bypass of that same product wall.
+      - /anticipationdata/us_leader_pullback.json
     prefixes:
       - /premiumdata/
       # Canonical/public projection twins may be published for controlled

@@ -111,6 +111,60 @@ def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
         }
 
 
+def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
+    """Resolve the ``cash_runway.v1`` block for one ticker (packet B-F09-3
+    second slice). Mirrors the taxonomy of ``_resolve_debt_maturity``:
+      * "not_applicable" -- structural non-filer (crypto, ETF/macro).
+      * "unresolved" -- CIK lookup found nothing.
+      * "not_loaded" -- CIK resolved but no cache completed.
+      * "confirmed_no_filings" -- cache confirmed zero SEC filings.
+      * engine.cash_runway.extract_cash_runway's own statuses.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "cash_runway.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _cr_cik, _cr_facts, _cr_state = _dm_load(ticker)
+        from engine.cash_runway import extract_cash_runway as _cr_extract  # noqa: PLC0415
+        if _cr_state == "unresolved":
+            return {
+                "schema": "cash_runway.v1", "status": "unresolved", "cik": None,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "not_loaded":
+            return {
+                "schema": "cash_runway.v1", "status": "not_loaded", "cik": _cr_cik,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "confirmed_no_filings":
+            return _cr_extract(None, cik=_cr_cik, as_of=cr_asof, ladder=None)
+        return _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+    except Exception as _cr_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        print(
+            f"::warning title=stock-library cash-runway producer fault::{ticker} "
+            f"cash-runway lookup raised {type(_cr_exc).__name__}: {_cr_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "cash_runway.v1", "status": "not_loaded", "cik": None,
+            "cash_usd": None, "cash_display": None, "ocf_usd": None,
+            "capex_usd": None, "free_cash_flow_usd": None,
+            "monthly_burn_usd": None, "runway_months": None,
+            "runway_display": None, "near_term_cover_pct": None,
+            "period": None, "as_of": cr_asof.isoformat(),
+        }
+
+
 import json
 import math
 import logging
@@ -4096,6 +4150,13 @@ def main() -> int:
         # (module-level, round-3 review MAJOR-2) so they are directly
         # unit-testable against the real production code.
         rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
+        # ---- cash runway (packet B-F09-3 second slice) ----------------------------
+        # Top-level block in each stockdata JSON: engine.cash_runway.v1.
+        # Identity is CIK-only via the same build_debt_maturity producer.
+        # Taxonomy mirrors _resolve_debt_maturity above.
+        rec["cash_runway"] = _resolve_cash_runway(
+            ticker, sector, _dt.date.today(), rec["debt_maturity"]
+        )
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,

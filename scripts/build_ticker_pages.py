@@ -5839,6 +5839,7 @@ def build_page_context(
         "performance": performance,
         "financials": financials,
         "debt_maturity": (blob or {}).get("debt_maturity"),
+        "cash_runway": (blob or {}).get("cash_runway"),
         "valuation": valuation,
         "valuation_scenario": valuation_scenario,
         "earnings": earnings,
