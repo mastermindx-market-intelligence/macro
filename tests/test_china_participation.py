@@ -1041,3 +1041,10 @@ def test_context_input_frames_are_not_mutated():
     _price_context(prices,bench,names)
     pd.testing.assert_frame_equal(prices,original)
     pd.testing.assert_series_equal(bench,original_bench)
+
+
+def test_context_panel_absent_board_has_no_direction_word():
+    from bs4 import BeautifulSoup
+    html = _render_participation_context({})
+    text = BeautifulSoup(html,'html.parser').select_one('.cnx-part-data').get_text(' ',strip=True)
+    assert 'rose' not in text and '上涨' not in text

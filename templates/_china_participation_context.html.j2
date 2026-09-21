@@ -32,7 +32,7 @@
   <div class="cnx-part-grid">
     <div class="cnx-part-col">
       <div class="cnx-lbl">{{ bl('Latest board session','最近全板交易日') }}</div>
-      <div class="cnx-part-data">{{ pct(board.get('positive_pct')) }} <small>{{ bl('rose','上涨') }}</small></div>
+      <div class="cnx-part-data">{{ pct(board.get('positive_pct')) }}{% if board.get('positive_pct') is number %} <small>{{ bl('rose','上涨') }}</small>{% endif %}</div>
       <div class="cnx-part-sub">{{ board.get('asof') or '—' }}{% if board.get('status') == 'delayed' %} · {{ bl('Delayed','数据延迟') }}{% endif %}</div>
       {% if board.get('n') %}<div class="cnx-part-sub">{{ board.adv }} / {{ board.n }} {{ bl('traded Shanghai/Shenzhen stocks','只沪深有成交个股') }}</div>{% endif %}
       <div class="cnx-kv"><span class="k">{{ bl('Typical stock','典型个股') }}</span><span class="v">{{ pct(board.get('median_return_pct'),true) }}</span></div>
