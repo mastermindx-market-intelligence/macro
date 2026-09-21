@@ -61,10 +61,13 @@ wrong-generation and partial responses are refused. Desktop/mobile, light/dark, 
 component screenshots pass overflow checks. Authorization callback is simulated: no real
 production login, deployed-page proof or investment-performance validation is claimed.
 
-The initial broad local run has ten failures reproduced on the untouched base: eight old
-board-gate expectations and two old hydration expectations. The candidate does not disable
-or weaken them. Focused new-boundary tests and existing authority fences are separately
-recorded. Local passes do not replace full hosted CI or source-owner acceptance.
+The initial broad local run's ten inherited UI-contract failures are now reconciled against
+the actual current page. Final release-contract run: 183 passed, zero failed, seven skipped.
+The skips are only pre-existing shipped-artifact probes for baked files absent here; they
+are not deployment proof. Real plan fixtures and whole-page paid-row leak controls remain.
+Three RED same-session correction regressions now pass, and a production-assignment ->
+preview/protected-payload test verifies the corrected digest and protected company row.
+Local passes do not replace full hosted CI, independent acceptance or production proof.
 
 ## Accepted/rejected conclusions and preserved custody
 
@@ -103,3 +106,13 @@ is no autonomous wake or background CEO execution claim.
 Final focused validation: 37 passed, 128 deselected. Full baseline/candidate failure sets match exactly (10 signatures); none was hidden. Agent OS validation: 1,160 records, 0 errors, 286 warnings. Python compile and diff hygiene passed. Actual macro-mode dashboard render omits this stocks-only pool. Evidence refreshed after the fresh-board and exact-tail binding repairs.
 
 Additional verified frontier: the Sep18 archive is scan-only (1535 scan, 0 curated), versus Sep17's 2932 curated +1539 scan. Original daily run 35409650053 / engine job 105832792637 reported local Sep18 stamping but later cancelled with the general engine-output commit pending; the successful earlier plan checkpoint excludes the curated candidate archive. The later successful run skipped the engine. This is a publication/durability hypothesis with concrete source support, not proof that all local bytes survived or that the 76-name run reproduces the audited 66-name board. No candidate archive artifact exists in the original run inventory. Next source-owner action is producer-bound archival checkpoint/generation reconciliation through #7180; no retry or backfill occurred. See the two archive evidence JSON files.
+
+## Latest verified continuation unit
+
+Same #7572 carrier, no new worker/watcher/assignment. Code now refreshes the page and protected candidate payload when the same source session changes its candidate membership, reason, or availability; an identical view does not force a rerender. No rank formula, entry gate, cap, sizing, origination or historical archive changed. Evidence: research/prophet/cpu_leadership/evidence/release-continuation.json.
+
+Do not redo the China input repair: incumbent #6992 at a51bae222eedd4c53f4101998f3a3c4bc103f554 already owns it. Current-base isolated tree 57b7d4f665b4c733a249898913e3039fc683c088 independently passed 169 tests; The receipt was published on #6992 as comment 5755311774; no incumbent pickup or execution is inferred. Protected writer-gate receipt e8b34a893489bb442cdee12897776dad73f7a8a9f89da50d63ce5cc7892e3204 is TECHNICAL_WRITER_GATE_UNAVAILABLE / RULES_ABSENT, evidence only; procedural custody and full continuity/activation gates remain. No original writer or source was rehomed.
+
+MISSION_COMPLETE: false. The refreshed display/release-test unit is ready for exact-head CI and independent acceptance. Next unit crosses the original #7180 curated-archive publication or #6992 source-custody/controlled-activation boundary; preserve those carriers, recover only the needed fresh owner state, and never infer replay/activation permission from these tests. Existing #7567 China display repair remains separate and not deployed. No automatic Web continuation is claimed.
+
+Current record validation: `python3 scripts/agentos.py validate --quiet` checked 1,160 records with zero errors and 286 warnings. Python compilation and `git diff --check` passed. These are source/record checks, not production acceptance.

@@ -93,3 +93,56 @@ The original daily run `35409650053`, engine job `105832792637`, reported `us_co
 This is strong evidence of a durability/publication boundary rather than simply an absent input ticker. It does not prove byte-exact local archive contents: the run log is a producer claim and its reported candidate pool is 76 (60 on-list), not the 66/52 of the committed audit artifact. Recovering one would not automatically reproduce the other. The original run artifact inventory contains only an unrelated, expired capital-structure artifact, not a preserved candidate archive. No nightly retry or historical backfill was attempted.
 
 **Next data-owner action:** trace and seal the library-produced curated candidate snapshot under the existing producer/checkpoint/publication ownership before the long engine tail; establish full board-to-archive generation identity, and preserve existing keep-first/PIT rules. Do not merely add paths to the plan-only allowlist: that manifest belongs to a different producer and its pre/post-digests and source-race checks must remain meaningful. Reconcile with #7180 rather than creating a second checkpoint/control system or copying contemporary values into September 18. Exact run/job/step and artifact receipts are in `evidence/archive-runtime-reconciliation.json`.
+
+
+# Current continuation: release contracts and same-session corrections
+
+The US candidate-visibility implementation remains on #7572. This continuation does not
+change the eligible population, score formula, display caps, entry gates, portfolio size,
+plan origination, or any historical archive.
+
+A real render-path defect was reproduced: rebuilding candidate membership or an exclusion
+reason on the SAME market date, with unchanged freshness metadata, did not enter the
+existing refresh branch. A missing candidate_pool on an otherwise valid refreshed board
+also left the earlier view in place. Three production-predicate regressions failed; the
+identical-input control passed. The corrected branch compares the existing allowlisted
+candidate projection and reuses the fresh object for the view model and protected payload.
+This is not a new publication owner or a reconstruction of the missing September 18 archive.
+
+Release-contract repair is separate. The ten prior baseline failures were obsolete UI
+expectations: candidate and plan cards were conflated; a removed subtitle count and retired
+stage buttons were expected; the relocated theme tape was still expected on this page;
+the hydration check named the old target variable and the lane-heading regex disallowed
+new nonsemantic attributes. Tests now read the actual Candidates census/shelves and fresh
+grid, keep the real plan fixture, preserve whole-page paid-row leak controls, and retain
+standalone tape parity/count checks at its actual component. No failing test was skipped.
+
+China source repair #6992 already implements the exact four missing-input fallback. Do not
+build it again. Its immutable head a51bae222eedd4c53f4101998f3a3c4bc103f554 composes cleanly
+with main 2042b2f4ca5bcd84da47f0937f3b6a1e3d488b77 as tree
+57b7d4f665b4c733a249898913e3039fc683c088. An isolated integration commit
+7137a0cf3f0198a0974113f0f151e3aad9f01108 passed 169 existing tests with no skips.
+Receipt is on #6992 comment 5755311774. No original source branch was changed or writer
+released. Original raw-cache witnesses, official current continuity receipt, full current
+release acceptance, and controlled serving activation remain unproven. Restoring coverage
+can change the entire board order; these tests do not establish investment performance.
+
+Incumbent archive/source-clock #7180 is untouched. Its GitHub current head remains
+f83c3603f74591db8920b25c7a5b4b9d9b80b7bf and its complete 20-file API patch was inspected;
+its build_site changes concern source time and caller arguments, not this rerender predicate.
+The local shared repository is shallow, so no unsupported local #7180 ancestry/merge proof
+is claimed. Never widen the plan-only checkpoint or backdate today's values to replace the
+missing curated archive.
+
+Next phase: independent exact-head acceptance and production-page proof for the two display
+carriers; producer-owned curated snapshot durability with #7180; original source/effect and
+controlled-activation reconciliation for #6992. The broader leadership/entry-strategy
+mission remains incomplete. No worker/watcher or autonomous wake was started.
+
+## Verified results
+
+Final four-suite run: **183 passed, 0 failed, 7 skipped**. All seven skips are the existing shipped-page/premium-payload probes: those baked artifacts are not present in this isolated checkout. No production pass is inferred. The same-session predicate RED result is three intended failures plus one unchanged-input pass; the repaired focused branch checks pass five cases. A further actual-assignment -> preview/protected-payload test proves a same-session corrected company row reaches only the protected remainder, with both halves bound to its new digest and the original input unchanged.
+
+The current protected Source Continuity GET-only writer-gate adapter was actually executed for #6992. Receipt e8b34a893489bb442cdee12897776dad73f7a8a9f89da50d63ce5cc7892e3204 reports TECHNICAL_WRITER_GATE_UNAVAILABLE / RULES_ABSENT, exact branch head a51bae222eedd4c53f4101998f3a3c4bc103f554, and authority_effect NONE. Under the existing review law, absent technical fencing is not a new permission refusal or an automatic release blocker: custody remains procedural. This receipt does NOT authorize a writer release, receiver transfer, merge, or production activation. Official full source/effect continuity remains distinct and unverified.
+
+Evidence files: release-continuation.json, release-contract-tests.txt, release-shipped-skip-reasons.txt, same-session-refresh-{red,green}.txt, cn-6992-current-{integration.json,tests.txt}, cn-6992-writer-gate.json, source-continuity-adapter-manifest.json in the existing evidence directory. No source adapter was modified or reimplemented.

@@ -237,7 +237,9 @@ def test_a_keyless_heading_degrades_to_appending_not_to_collapsing(tmp_path, mer
 
 def test_the_shell_no_longer_blind_appends_the_payload_block():
     html = _gated_shell(_rows_with_stage(7))
-    assert "mergeBoardCards(grid, payload.cards_html)" in html
+    assert "mergeBoardCards(freshCand, payload.cards_html)" in html
+    assert "candGrid.parentNode.insertBefore(freshCand, candGrid)" in html
+    assert "candGrid.parentNode.removeChild(candGrid)" in html
     assert "insertAdjacentHTML('beforeend', payload.cards_html)" not in html, (
         "blind-appending the payload block is the defect — it re-draws every "
         "heading the shell already drew"
@@ -256,7 +258,7 @@ def test_the_lane_path_still_renders_its_heading_label():
     """data-lane is additive: the legacy heading must keep its bilingual label
     and count, or the attribute traded a duplicate heading for a blank one."""
     html = _gated_shell(_rows(7))
-    m = re.search(r'<div class="nb-lane-hd" data-lane="(\w+)">(.*?)</div>', html, re.S)
+    m = re.search(r'<div class="nb-lane-hd" data-lane="(\w+)"[^>]*>(.*?)</div>', html, re.S)
     assert m, "lane heading missing or lost its data-lane"
     assert "l-en" in m.group(2) and "l-zh" in m.group(2) and "·" in m.group(2)
 
