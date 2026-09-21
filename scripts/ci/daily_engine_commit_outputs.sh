@@ -32,12 +32,18 @@ GOLD_MATERIAL_PATHS=(
   templates/_china_gold_premium.html.j2
   templates/commodities.html.j2
 )
-GOLD_FOLLOWUP_PATHS=(
-  data/commodity/complex_latest.json
-  data/commodity/cycle_positions.json
+GOLD_CANONICAL_OUTPUT_PATHS=(
   data/commodity/latest.json
   data/quality/china_gold_premium.json
   site/commodities.html
+)
+GOLD_OPTIONAL_OUTPUT_PATHS=(
+  data/commodity/complex_latest.json
+  data/commodity/cycle_positions.json
+)
+GOLD_FOLLOWUP_PATHS=(
+  "${GOLD_CANONICAL_OUTPUT_PATHS[@]}"
+  "${GOLD_OPTIONAL_OUTPUT_PATHS[@]}"
 )
 gold_material_fingerprint() {
   local path
@@ -50,6 +56,33 @@ gold_material_fingerprint() {
       fi
     done
   } | git hash-object --stdin
+}
+gold_restore_origin_main_outputs() {
+  local path ref
+  # A failed post-rebase rebuild/audit must remain lane-local without shipping a
+  # Gold page or machine projection that claims different source artifacts.
+  # Restore the canonical Gold outputs from current origin/main, while discarding
+  # only optional side effects of the attempted second commodity build back to
+  # this candidate's already-committed HEAD. Write worktree bytes only; the
+  # existing follow-up staging/guard path remains the sole commit owner.
+  for path in "${GOLD_CANONICAL_OUTPUT_PATHS[@]}"; do
+    ref="origin/main:$path"
+    mkdir -p "$(dirname "$path")"
+    if git cat-file -e "$ref" 2>/dev/null; then
+      git show "$ref" > "$path"
+    else
+      rm -f -- "$path"
+    fi
+  done
+  for path in "${GOLD_OPTIONAL_OUTPUT_PATHS[@]}"; do
+    ref="HEAD:$path"
+    mkdir -p "$(dirname "$path")"
+    if git cat-file -e "$ref" 2>/dev/null; then
+      git show "$ref" > "$path"
+    else
+      rm -f -- "$path"
+    fi
+  done
 }
 # normalize the EXACT tree this always() commit stages (P0 2026-08-04,
 # 9a997e9da3f): the engine job hit its 200m cap at 04:28Z; the cancel skipped
@@ -262,10 +295,15 @@ while push_attempt; do
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
     gold_material_after_rebase=$(gold_material_fingerprint)
     gold_rebuilt_post_rebase=
+    gold_post_rebase_refresh_failed=
     if [ "$gold_material_before_rebase" != "$gold_material_after_rebase" ]; then
       echo "::notice title=China gold final-tree refresh::Gold material inputs moved during rebase; rebuilding the Commodity Vector against post-rebase source truth"
-      python -m scripts.build_commodities
       gold_rebuilt_post_rebase=1
+      if ! python -m scripts.build_commodities; then
+        echo "::error title=China gold post-rebase rebuild failed::serving the current origin/main Gold outputs rather than pushing a receipt/page bound to stale source artifacts"
+        gold_post_rebase_refresh_failed=1
+        gold_restore_origin_main_outputs
+      fi
     fi
     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can
     # resurrect this run's checkout-time template copies over a reword that merged
@@ -302,7 +340,7 @@ while push_attempt; do
     bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
     python3 scripts/check_conflict_markers.py --file site/start.html
     python3 scripts/check_start_runtime.py --heal-from origin/main
-    if [ -n "$gold_rebuilt_post_rebase" ]; then
+    if [ -n "$gold_rebuilt_post_rebase" ] && [ -z "$gold_post_rebase_refresh_failed" ]; then
       # The pre-stage audit cannot bind a source/config/code change inherited by
       # the later rebase. Re-audit the normalized post-rebase page and overwrite
       # the same receipt so artifact hashes, machine projection and HTML describe
@@ -313,8 +351,15 @@ while push_attempt; do
       gold_post_rebase_audit_rc=$?
       set -e
       if [ "$gold_post_rebase_audit_rc" -ne 0 ]; then
-        echo "::error title=China gold premium post-rebase audit::Gold material inputs moved during rebase and the rebuilt normalized panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
+        echo "::error title=China gold premium post-rebase audit::rebuilt panel disagrees with current source/engine truth; restoring current origin/main Gold outputs and continuing the unrelated nightly publication"
+        gold_post_rebase_refresh_failed=1
       fi
+    fi
+    # Build failure restoration above protects the generic normalizers from a
+    # partial page. Restore once more at the final pre-stage boundary so neither
+    # those normalizers nor a failed strict audit can leak changed Gold bytes.
+    if [ -n "$gold_post_rebase_refresh_failed" ]; then
+      gold_restore_origin_main_outputs
     fi
     if ! git diff --quiet -- site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"; then
       # push_staged_clean: never bake conflict markers into the follow-up
