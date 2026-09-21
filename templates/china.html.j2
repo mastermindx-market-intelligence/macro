@@ -1560,7 +1560,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
      one"). Never re-style the pills/links locally: change the partial so both
      boards move together. #}
   {% include "_stocks_header_css.html.j2" %}
-  <div class="panel span12" id="stocks-header">
+  <style>
+    .pv-live.cnpl-up{--plvc:var(--up)}
+    .pv-live.cnpl-down{--plvc:var(--down)}
+    .pv-live.cnpl-break{--plvc:var(--muted)}
+  </style>
+  <div class="panel span12" id="stocks-header" data-cn-session="{{ _cn_through or '' }}">
     {# Freshness pill — the CN analogue of the US board's staleness chip. It now DOES carry a
        session-count verdict: lib/cn_calendar.py supplies the A-share session calendar this
        comment used to say was missing, and build_china_library.compute_board_staleness turns
@@ -1711,30 +1716,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% endif %}
   </div>
 
-  {# CN Breathing Platform strip (CN-PR-3). Hidden until the live artifact
-     qualifies. data-cn-session is the SSR board's settled session — the client
-     feed floor refuses any older payload. #}
-  <style>
-    .cnpl{margin:10px 0 0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:11.5px;line-height:1.45;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
-    .cnpl[hidden]{display:none!important}
-    .cnpl-k{color:var(--muted);font-weight:600}
-    .cnpl.is-close{border-left:3px solid var(--prov, #62a0e8)}
-    .cnpl-banner{font-weight:700}
-    .pv-live.cnpl-up{--plvc:var(--up)}
-    .pv-live.cnpl-down{--plvc:var(--down)}
-    .pv-live.cnpl-break{--plvc:var(--muted)}
-  </style>
-  <div id="cn-prophet-live" class="cnpl" hidden data-cn-session="{{ _cn_through or '' }}">
-    <span class="cnpl-k"><span class="l-en">Intraday read</span><span class="l-zh">盘中暂读</span></span>
-    <span id="cnpl-phase"></span>
-    <span id="cnpl-cov"></span>
-    <span id="cnpl-asof" class="muted"></span>
-    <span id="cnpl-close" class="cnpl-banner" hidden>
-      <span class="l-en">Provisional close board — windows, not certainties.</span>
-      <span class="l-zh">收盘暂读看板 — 窗口，不是定论。</span>
-    </span>
-  </div>
-
   {% include "_china_act_now_board.html.j2" %}
   {% endif %}
 
@@ -1797,7 +1778,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             </filter>
           </defs>
           {# Track #}
-          <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="color-mix(in srgb, var(--text) 8%, transparent)" stroke-width="10" stroke-linecap="round" fill="none"/>
           {# Filled arc — dasharray baked by Jinja; CSS recolours via #mx5-gauge-arc-fill;
              live JS patches dasharray via data-gauge-arc-len #}
           <path id="mx5-gauge-arc-fill" class="cnx-gauge-fill"
@@ -1968,7 +1949,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <line x1="0" y1="{{ _y60 }}" x2="1000" y2="{{ _y60 }}" stroke="color-mix(in srgb, var(--up) 22%, transparent)" stroke-width="1" stroke-dasharray="2,5"/>
         <line x1="0" y1="{{ _y42 }}" x2="1000" y2="{{ _y42 }}" stroke="color-mix(in srgb, var(--down) 20%, transparent)" stroke-width="1" stroke-dasharray="2,5"/>
         {# Y gridlines at 0/25/50/75/100 #}
-        <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+        <g stroke="color-mix(in srgb, var(--text) 6%, transparent)" stroke-width="1">
           <line x1="{{ PX0 }}" y1="{{ _y100 }}" x2="988" y2="{{ _y100 }}"/>
           <line x1="{{ PX0 }}" y1="{{ _y75 }}"  x2="988" y2="{{ _y75 }}"/>
           <line x1="{{ PX0 }}" y1="{{ _y50 }}"  x2="988" y2="{{ _y50 }}" stroke-dasharray="4,5"/>
@@ -1977,11 +1958,11 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {# Area fill + line #}
         <path d="M{{ _ph_pts_line | join(' L') }} L{{ (PX0 + PXW) | round(2) }},{{ PYB }} L{{ PX0 }},{{ PYB }} Z" fill="url(#cnxPathAreaGrad)" stroke="none"/>
         <polyline points="{{ _ph_pts_line | join(' ') }}" fill="none" stroke="{{ _path_col }}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>
-        <line x1="{{ PX0 }}" y1="{{ PYB }}" x2="988" y2="{{ PYB }}" stroke="rgba(255,255,255,.16)" stroke-width="1"/>
+        <line x1="{{ PX0 }}" y1="{{ PYB }}" x2="988" y2="{{ PYB }}" stroke="color-mix(in srgb, var(--text) 16%, transparent)" stroke-width="1"/>
         <g>
         {% for _ti in _ph_tick_idx %}
           {% set _tx = (PX0 + (_ti / (_ph_n - 1) * PXW if _ph_n > 1 else PXW / 2)) | round(2) %}
-          <line x1="{{ _tx }}" y1="{{ PYB }}" x2="{{ _tx }}" y2="{{ (PYB + 4) | round(1) }}" stroke="rgba(255,255,255,.20)" stroke-width="1"/>
+          <line x1="{{ _tx }}" y1="{{ PYB }}" x2="{{ _tx }}" y2="{{ (PYB + 4) | round(1) }}" stroke="color-mix(in srgb, var(--text) 20%, transparent)" stroke-width="1"/>
         {% endfor %}
         </g>
         {% set _ph_last_x = (PX0 + PXW) | round(2) %}
@@ -2096,7 +2077,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-row"><span class="ic">{{ '+' if sign == '+' else ('−' if sign == '-' else 'ℹ') }}</span>
           <div class="tx"><span class="sub">{{ t(r_en, r_zh) }}</span></div></div>
         {% endfor %}
-        {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
+        {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}
       <div class="cnx-row"><span class="ic">◐</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
       {% endif %}
@@ -2209,7 +2190,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             <filter id="cnxDialGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
           {# Track #}
-          <path d="M 35 185 A 155 155 0 0 1 345 185" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="18" stroke-linecap="round"/>
+          <path d="M 35 185 A 155 155 0 0 1 345 185" fill="none" stroke="color-mix(in srgb, var(--text) 7%, transparent)" stroke-width="18" stroke-linecap="round"/>
           {# Gradient decorative track #}
           <path d="M 35 185 A 155 155 0 0 1 345 185" fill="none" stroke="url(#cnxSentGrad)" stroke-width="18" stroke-linecap="round" opacity=".55"/>
           {% if _sent_dial is not none %}
@@ -2219,7 +2200,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             <line class="fg-mark-s" x1="190" y1="185" x2="190" y2="30"
                   stroke-width="4" stroke-linecap="round"
                   transform="rotate({{ _sent_rot }}, 190, 185)"/>
-            <circle class="fg-mark-s" cx="190" cy="185" r="9"  fill="rgba(8,12,18,.8)" stroke-width="2.5"/>
+            <circle class="fg-mark-s" cx="190" cy="185" r="9"  fill="color-mix(in srgb, var(--bg) 80%, transparent)" stroke-width="2.5"/>
             <circle class="fg-mark-f" cx="190" cy="185" r="4"/>
           </g>
           {% endif %}

@@ -83,6 +83,9 @@ def test_merged_template_sections() -> None:
         assert anchor in s, f"merged page lost {anchor}"
     # legacy deep-link anchors survive
     assert 'id="rotmap-section"' in s
+    # S2 §1.4 demotion landings — nested span anchors, not new L1 sections
+    assert 'id="accumulation-section"' in s
+    assert 'id="theme-heat-section"' in s
     # live-quote scraper contract (FTR W2a): member-symbol registry must ship
     assert 'ftr-member-sym-registry' in s
     assert "basket_member_syms" in s
@@ -103,12 +106,14 @@ VIEW_MEMBERSHIP = {
     "map": ('id="rotmap-section"', 'id="si-map"', 'id="rvx-rmap"', 'id="rvx-board"',
             'id="sc-cyclemap"', 'id="sc-chart"', 'id="board"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
-               'id="desk-watch-mount"'),
+               'id="desk-watch-mount"', 'id="accumulation-section"',
+               "_accumulation_watch.html.j2"),
     "money": ('id="si-money"', 'id="internals-section"', 'id="sc-heatmap"',
               'id="heatmap-scorecard"', 'id="scc-leadership"'),
     "explore": ('id="explore-section"', 'id="table-section"', 'id="chart-section"',
                 'id="btable"', 'id="chart"', 'id="tm-mount"',
-                "_forming_narratives.html.j2", "ftr-member-sym-registry"),
+                "_forming_narratives.html.j2", "ftr-member-sym-registry",
+                'id="theme-heat-section"', "_theme_tape.html.j2"),
 }
 
 

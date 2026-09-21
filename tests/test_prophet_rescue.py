@@ -274,12 +274,93 @@ def test_the_top_level_asof_is_never_read():
             == verdicts(RESCUE.decide(state(main_index=restamped, **base))))
 
 
-def test_the_cohort_counts_per_plan_recorded_at_not_the_index_stamp():
+def test_the_cohort_uses_legacy_recorded_at_only_when_session_fields_are_absent():
     payload = index(source_asof=THU.isoformat(), cohort_date="2026-08-10",
                     cohort_n=25)
     assert RESCUE.cohort_size(payload, THU) == 0
     assert RESCUE.cohort_size(payload, date(2026, 8, 10)) == 25
     assert RESCUE.intake_eligible(payload) == 40
+
+
+def test_cohort_date_precedence_is_price_basis_then_entry_then_legacy_recorded_at():
+    payload = {
+        "plans": [
+            {
+                "id": "PRICE-BASIS-WINS",
+                "price_basis_date": THU.isoformat(),
+                "entry_date": WED.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "ENTRY-FALLBACK",
+                "entry_date": THU.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "LEGACY-RECORDED-AT",
+                "recorded_at": THU.isoformat(),
+            },
+        ],
+    }
+    assert RESCUE.cohort_size(payload, THU) == 3
+    assert RESCUE.cohort_size(payload, WED) == 0
+
+
+def _delayed_publication_payload() -> tuple[date, dict]:
+    friday = date(2026, 9, 11)
+    sunday = "2026-09-13"
+    return friday, {
+        "schema": "prophet.index/v1",
+        "asof": sunday,
+        "recorded_at": sunday,
+        "source_asof": friday.isoformat(),
+        "gate_go": False,
+        "plans": [
+            {
+                "id": f"P{i}",
+                "asset": "AAPL",
+                "recorded_at": sunday,
+                "entry_date": friday.isoformat(),
+                "price_basis_date": friday.isoformat(),
+            }
+            for i in range(20)
+        ],
+        "intake": {
+            "eligible_after_skips": 21,
+            "originated": 20,
+            "validation_failed": 1,
+            "unaccounted": 0,
+            "lossless": True,
+        },
+    }
+
+
+def test_delayed_publication_counts_the_source_session_cohort():
+    """A weekend catch-up keeps publication and market-session clocks separate."""
+    friday, payload = _delayed_publication_payload()
+    assert RESCUE.cohort_size(payload, friday) == 20
+
+
+def test_delayed_publication_does_not_emit_a_false_no_cohort_alert():
+    """Friday plans published Sunday remain Friday's cohort on Monday morning."""
+    friday, payload = _delayed_publication_payload()
+    monday_morning = datetime(2026, 9, 14, 13, 40, tzinfo=UTC)
+    snapshot = state(
+        now=monday_morning,
+        session=friday,
+        main_index=payload,
+        r2_health=index(source_asof=friday.isoformat()),
+        runs=[run_row(
+            created=datetime(2026, 9, 13, 13, 59, tzinfo=UTC),
+            conclusion="success",
+        )],
+    )
+
+    actions = RESCUE.decide(snapshot)
+    assert RESCUE.NO_COHORT not in verdicts(actions), actions
+    assert RESCUE.HEALTHY in verdicts(actions), actions
+    assert all("recorded_at=" not in action.message for action in actions)
+    assert any("assigned to that market session" in action.message for action in actions)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

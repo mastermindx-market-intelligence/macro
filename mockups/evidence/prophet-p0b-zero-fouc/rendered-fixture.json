@@ -62,7 +62,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
@@ -122,7 +122,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3"
+          "sha256": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -132,7 +132,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "a2ead084ec5feb4259c36423717a8a9b4273348c928e4b7b020b8c322e9cea43"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -401,7 +401,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
@@ -421,7 +421,7 @@
         {
           "path": "templates/_aibrief_body.html.j2",
           "role": "jinja_template",
-          "sha256": "f758be7fc256a9dad50ea07542ef6d75b1aa6694be58eabd5627a351b74bd7c5"
+          "sha256": "bde4c19d5f511f478bea3b725626d1fe6bc6e3054755504171fcd4fd3534eadd"
         },
         {
           "path": "templates/_aibrief_css.j2",
@@ -471,7 +471,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3"
+          "sha256": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -481,7 +481,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "a2ead084ec5feb4259c36423717a8a9b4273348c928e4b7b020b8c322e9cea43"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",

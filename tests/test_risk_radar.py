@@ -410,3 +410,160 @@ def test_deescalation_deescalated_empty_on_missing_drivers():
     """Old artifacts / missing trajectory degrade to an empty chip list, never a crash."""
     assert rr._deescalation(None, None, None, None)["deescalated"] == []
     assert rr._deescalation(None, None, {"phase": "peaking"}, None)["deescalated"] == []
+
+
+# Replay maturity: synthetic regression fixtures, never market/research evidence.
+def _maturity_replay_fixture(prices, horizon=21, lo=None):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range("2026-01-01", periods=len(prices))
+    spy = pd.Series(prices, index=idx, dtype=float)
+    subs = pd.DataFrame({"synthetic": 0.}, index=idx)
+    with patch.object(bt, "_spy", return_value=spy), \
+         patch.object(rr, "leading_signals", return_value=pd.DataFrame(index=idx)), \
+         patch.object(rr, "subscore_series", return_value=subs), \
+         patch.object(bt, "state_series", return_value=pd.Series("elevated", index=idx)):
+        return bt.state_accuracy({}, H=horizon, lo=lo)
+
+
+def test_replay_maturity_counts_only_complete_outcome_windows():
+    for n, h in [(30, 21), (30, 5), (3, 1)]:
+        result = _maturity_replay_fixture([100.] * n, h)
+        assert result["n_days"] == n - h
+        assert result["n_alert"] == n - h
+        assert result["n_unscored"] == h
+
+
+def test_replay_maturity_does_not_score_an_incomplete_positive_tail():
+    result = _maturity_replay_fixture([100.] * 29 + [90.])
+    assert result["n_days"] == 9 and result["n_alert"] == 9
+    assert result["precision"] == .111 and result["recall"] == 1.
+    assert result["f1"] == .2
+
+
+def test_replay_maturity_empty_evidence_is_not_zero_performance():
+    for prices, lo in [([100.] * 20, None), ([100.] * 30, "2027-01-01")]:
+        result = _maturity_replay_fixture(prices, lo=lo)
+        assert result["n_days"] == result["n_alert"] == 0
+        for metric in ("precision", "recall", "f1", "fire_rate"):
+            assert result[metric] is None
+
+
+def test_replay_maturity_rejects_invalid_horizons():
+    import pytest
+    for horizon in (0, -1, True, 1.5):
+        with pytest.raises(ValueError):
+            _maturity_replay_fixture([100.] * 30, horizon)
+
+
+def _maturity_comparison_fixture(scores):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    with patch.object(bt, "state_accuracy", side_effect=[{"f1": s} for s in scores]), \
+         patch.object(bt, "detect_events", return_value=[]), \
+         patch.object(bt, "gate_report", return_value={}):
+        return bt.compare_calib({"legs": {}}, base={"legs": {}})
+
+
+def test_replay_maturity_missing_comparison_never_passes_retune_gate():
+    for scores in [(None, None, .5, .5), (.2, None, .5, .5), (.2, .2, None, .5)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["improves"] is False and result["comparison_ready"] is False
+
+
+def test_replay_maturity_preserves_complete_comparison_rule():
+    for scores, expected in [((.2, .3, .4, .5), True),
+                             ((.2, .3, .2, .3), False),
+                             ((.2, .3, .1, .5), False),
+                             ((0., 0., .1, .1), True)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["comparison_ready"] is True
+        assert result["improves"] is expected
+
+
+def test_replay_maturity_invalid_scores_cannot_authorize_retuning():
+    for invalid in (float("inf"), float("nan"), True, -.1, 1.1, "0.8"):
+        result = _maturity_comparison_fixture((.2, .2, invalid, .5))
+        assert result["comparison_ready"] is False
+        assert result["improves"] is False
+
+
+# Comparability v2: faults in the evaluation population, not model-skill claims.
+def _comparability_fixture(prices, dates=None, H=1, dd=.05):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=len(prices))
+    dates = idx if dates is None else idx[dates]
+    spy = pd.Series(prices, index=idx, dtype=float)
+    subs = pd.DataFrame({'synthetic': 0.}, index=dates)
+    with patch.object(bt, '_spy', return_value=spy), \
+         patch.object(rr, 'leading_signals', return_value=subs), \
+         patch.object(rr, 'subscore_series', return_value=subs), \
+         patch.object(bt, 'state_series', return_value=pd.Series('elevated', index=dates)):
+        return bt.state_accuracy({}, H=H, dd=dd)
+
+
+def test_replay_comparability_uses_price_observations_not_forecast_spacing():
+    out = _comparability_fixture([100., 90., 100., 100., 100.], dates=[0, 2, 4])
+    assert out['n_days'] == 2 and out['precision'] == .5
+    assert out['evaluation']['n_events'] == 1
+    assert out['evaluation']['confusion'] == {'tp': 1, 'fp': 1, 'fn': 0, 'tn': 0}
+
+
+def test_replay_comparability_invalid_price_window_is_not_no_selloff():
+    for bad in (float('nan'), float('inf'), 0., -1.):
+        out = _comparability_fixture([100., bad, 90., 100.], H=2)
+        assert out['n_days'] == 0 and out['n_unscored'] == 4
+        assert out['f1'] is None
+
+
+
+
+
+
+
+
+
+
+
+
+def test_replay_comparability_invalid_target_is_rejected():
+    import pytest
+    for dd in (True, 0., -.05, 1., float('nan'), float('inf')):
+        with pytest.raises(ValueError):
+            _comparability_fixture([100.] * 6, dd=dd)
+
+
+
+
+def test_replay_comparability_digest_binds_outcomes_not_predictions():
+    one = _comparability_fixture([100., 90., 100., 100.])
+    two = _comparability_fixture([100., 100., 90., 100.])
+    assert one['n_days'] == two['n_days'] == 3
+    assert one['evaluation']['outcomes_sha256'] != two['evaluation']['outcomes_sha256']
+    assert len(one['evaluation']['outcomes_sha256']) == 64
+
+
+def test_replay_comparability_raw_reader_preserves_missing_observations():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=3)
+    frame = pd.DataFrame({'close': [100., float('nan'), 90.]}, index=idx)
+    with patch.object(bt.store, 'read', return_value=frame):
+        raw = bt._spy(drop_missing=False)
+        assert len(raw) == 3 and pd.isna(raw.iloc[1])
+        assert len(bt._spy()) == 2  # Legacy event/per-leg reader unchanged.
+
+
+def test_replay_comparability_invalid_observation_index_is_refused():
+    import pytest
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range('2026-01-01', periods=3)
+    for bad in (idx[[0, 0, 2]], idx[[2, 1, 0]]):
+        subs = pd.DataFrame({'synthetic': 0.}, index=bad)
+        with patch.object(bt, '_spy', return_value=pd.Series(100., index=idx)), \
+             patch.object(rr, 'leading_signals', return_value=subs), \
+             patch.object(rr, 'subscore_series', return_value=subs):
+            with pytest.raises(ValueError, match='unique ordered'):
+                bt.state_accuracy({}, H=1)

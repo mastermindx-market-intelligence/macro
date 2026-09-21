@@ -409,6 +409,31 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     assert "$RUNNER_TEMP/trusted-ci-control/scripts/monitor_ci_host_resources.py" in execute
 
 
+LEGACY_JOBS_MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+
+
+def _declared_code_gate_job_count() -> int:
+    """Count the manifest's ``gate: code`` jobs by reading the YAML directly.
+
+    The bundle test below asserts that the frozen control bundle validated
+    EVERY merge-gate job, not a subset — so it needs the expected count. That
+    count used to be a literal (132, pinned 2026-08-26 on #6351) and rotted
+    to a red every time a code-gated job was added to the manifest; nine
+    landed between the pin and 2026-09-15 (last: #7164) with nothing on a PR
+    to say so, because this suite's only home is the ``gate: data`` job
+    ``workflow-yaml``. The count is derived here from the manifest so the
+    assertion tracks the tree, and it is derived WITHOUT importing
+    ``scripts.run_ci_pack`` on purpose: reusing the module under test's own
+    ``load_legacy_jobs(gate="code")`` would make the check tautological. The
+    default mirrors ``run_ci_pack.py``'s documented rule — an absent ``gate``
+    is code, so nothing can leave the merge gate silently.
+    """
+    document = yaml.safe_load(LEGACY_JOBS_MANIFEST.read_text(encoding="utf-8"))
+    jobs = document["jobs"]
+    assert isinstance(jobs, dict) and jobs, "legacy manifest carries no jobs"
+    return sum(1 for job in jobs.values() if (job or {}).get("gate", "code") == "code")
+
+
 def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     tmp_path: Path,
 ) -> None:
@@ -456,7 +481,12 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "Validated 132 legacy jobs" in result.stdout
+    expected = _declared_code_gate_job_count()
+    assert expected > 0
+    assert f"Validated {expected} legacy jobs" in result.stdout, (
+        f"the frozen control bundle did not validate every gate: code job "
+        f"(expected {expected}); stdout was:\n{result.stdout}"
+    )
 
 
 def test_p3a_selfhosted_job_uses_the_selected_group_and_negotiated_cache() -> None:

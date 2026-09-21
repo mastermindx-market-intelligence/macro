@@ -24,3 +24,5 @@
 {"key":"XLB::2026-08-25","node":"XLB","asof":"2026-08-25","tape_onset_unconfirmed":true,"registered_at":"2026-08-27T10:18:37.688222+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
 {"key":"XLC::2026-08-25","node":"XLC","asof":"2026-08-25","tape_onset_unconfirmed":true,"registered_at":"2026-08-27T10:18:37.688222+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
 {"key":"XLU::2026-09-08","node":"XLU","asof":"2026-09-08","tape_onset_unconfirmed":true,"registered_at":"2026-09-10T10:07:49.197022+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
+{"key":"XLC::2026-09-14","node":"XLC","asof":"2026-09-14","tape_onset_unconfirmed":true,"registered_at":"2026-09-16T09:36:01.256426+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
+{"key":"XLC::2026-09-15","node":"XLC","asof":"2026-09-15","tape_onset_unconfirmed":true,"registered_at":"2026-09-17T09:43:06.658706+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}

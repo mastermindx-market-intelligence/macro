@@ -60,6 +60,26 @@ def test_paren_repair_does_not_move_the_published_slug():
         assert rp._slug(raw, _ITEM["id"], set()) == rp.slug_map([item])[_ITEM["id"]]
 
 
+def test_doubled_title_keeps_origin_main_slug_and_display_polishes():
+    item = {"id": "gs-abc123", "title": "GS Vol Views GS Vol Views 9 Sep 2026"}
+    assert rp.slug_map([item])["gs-abc123"] == "gs-vol-views-gs-vol-views-9-sep-2026-abc123"
+    assert rp._norm(item)["title"] == "GS Vol Views"
+
+
+def test_slug_matches_origin_main_clean_title_behavior():
+    """Hardcoded origin/main slugs — do not call old code, pin the old bytes."""
+    cases = [
+        ("GS Vol Views GS Vol Views 9 Sep 2026", "gs-vol-views-gs-vol-views-9-sep-2026-abc123"),
+        ("Oil Market Report Sep 9, 2026", "oil-market-report-sep-9-2026-abc123"),
+        ("Carrefour (CARR", "carrefour-carr-abc123"),
+        ("Report (final)(1)", "report-final-abc123"),
+        ("JPM US Market Intel | Morning Briefing", "jpm-us-market-intel-morning-briefing-abc123"),
+    ]
+    for raw, want in cases:
+        got = rp.slug_map([{"id": "x-abc123", "title": raw}])["x-abc123"]
+        assert got == want, (raw, got, want)
+
+
 def test_slug_map_unique_and_deterministic():
     items = [dict(_ITEM, id=f"x{i}-aaa{i:03d}", title="Same Title") for i in range(5)]
     a = rp.slug_map(items)
@@ -201,7 +221,8 @@ def test_page_has_canonical_and_funnel_cta():
     html = _norm_render(_ITEM)
     assert '<link rel="canonical"' in html
     assert f'?doc={_ITEM["id"]}' in html                   # deep-link back to the viewer
-    assert "J.P. Morgan" in html and "SELL" in html
+    assert "J.P. Morgan" in html and "Sell-side" in html
+    assert "SELL" not in html and "BUY" not in html
 
 
 # --- sitemap merge ---------------------------------------------------------

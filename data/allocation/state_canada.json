@@ -9,13 +9,14 @@
     "ca_insurers",
     "ca_oil_gas",
     "ca_pipelines",
+    "ca_rails_ind",
     "ca_silver_royalty"
   ],
   "held": [
     "ca_gold",
     "ca_oil_gas",
-    "ca_base_metals",
-    "ca_banks"
+    "ca_banks",
+    "ca_base_metals"
   ],
   "leader": "ca_gold",
   "names": {

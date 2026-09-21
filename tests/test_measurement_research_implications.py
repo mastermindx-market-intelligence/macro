@@ -169,14 +169,23 @@ def _expected_metric_value(metric: dict) -> str:
         return f"{value[0] * 100:.2f}% … {value[2] * 100:.2f}%"
     if unit in {"return_fraction", "fraction"}:
         return f"{value * 100:.3f}%"
-    if unit in {"months", "events", "episodes", "draws", "tickers"}:
-        return str(value)
     if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
+        floor = metric.get("display_floor")
+        draws = metric.get("draws")
+        if isinstance(floor, (int, float)) and not isinstance(floor, bool) and value < floor:
+            return f"&lt; {floor:.4f}"
+        if isinstance(draws, (int, float)) and not isinstance(draws, bool) and draws > 0 and value == 0:
+            floor = 1 / (draws + 1)
+            if floor < 0.0001:
+                return "below 0.0001"
+            return f"&lt; {floor:.4f}"
         if value < 0.0001:
             return "below 0.0001"
         if value > 0.9999:
             return "above 0.9999"
         return f"{value:.4f}"
+    if unit in {"months", "events", "episodes", "draws", "tickers"}:
+        return str(value)
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
     return str(value)
@@ -429,13 +438,13 @@ def test_all_five_authority_booleans_are_false_in_the_contract(contract):
 
 
 def test_authority_is_disclosed_as_withheld(contract, real_section):
-    """Zero authority is a claim the user must be able to read, not an omission."""
+    """Zero authority is a derived sentence, not a raw k=true/false dump."""
     for card in contract["cards"]:
         receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert "Authority: none — exploratory, not gated" in receipts
+        assert "权限：无——探索性，未经门控" in receipts
         for key in AUTHORITY_KEYS:
-            assert f"{key}=false" in receipts, (
-                f"{key} not disclosed as withheld in Receipts"
-            )
+            assert f"{key}=" not in receipts, f"raw authority dump leaked: {key}"
 
 
 def test_no_ranking_or_trade_language_in_section(real_section):
@@ -472,7 +481,8 @@ def test_null_effective_n_is_not_rendered_as_zero(contract, real_section):
     assert ">0<" not in card_html.replace(
         " ", ""
     ), "a null effective_n appears to have been rendered as 0"
-    assert "—" in card_html, "null not rendered with an explicit em-dash placeholder"
+    assert 'data-ric-null-code="effective_n"' in card_html
+    assert "Effective sample size" in card_html
 
 
 def test_null_reason_is_surfaced(contract, real_section):
@@ -556,7 +566,7 @@ def test_ordered_path_preserves_exploratory_and_sample_semantics(
     )
 
     assert "Exploratory — not gated" in es_html
-    assert "探索性 — 未门控" in es_html
+    assert "探索性 —— 未设门槛" in es_html
     assert path["evidence_status"] in _isolate_receipts(es_html)
     assert path["sample_basis"]["en"] in es_html
     assert path["comparison_note"]["en"] in es_html
@@ -777,7 +787,7 @@ def test_machine_codes_live_only_in_receipts(contract, real_section):
         assert card["quality"] not in header
         assert card["method_family"] not in header
         for key in AUTHORITY_KEYS:
-            assert f"{key}=false" in receipts
+            assert f"{key}=" not in receipts
             assert key not in header
 
 
@@ -1363,3 +1373,657 @@ def _plain_cutoff(iso: str) -> tuple[str, str]:
     en = f"{int(day)} {months[int(month) - 1]} {year}"
     zh = f"{year}年{int(month)}月{int(day)}日"
     return en, zh
+
+
+# ---------------------------------------------------------------------------
+# A-F10-1: preregistration status chip + nulls-printed (CIs)
+# ---------------------------------------------------------------------------
+
+
+def _cards_html(section: str) -> list[str]:
+    return re.findall(r"<article\b.*?</article>", section, flags=re.DOTALL)
+
+
+def test_every_card_prints_a_preregistration_status(contract, real_section):
+    cards_html = _cards_html(real_section)
+    assert cards_html, "expected at least one rendered card"
+    n_chips = real_section.count("data-ric-prereg=")
+    assert n_chips == len(cards_html) == len(contract["cards"])
+    values = re.findall(r'data-ric-prereg="([^"]+)"', real_section)
+    assert values and all(v in ("on-file", "absent") for v in values)
+
+
+def test_preregistration_status_is_derived_from_source_artifacts(contract, real_section):
+    for card in contract["cards"]:
+        has_prereg = any(
+            a.get("role") == "preregistration" for a in card.get("source_artifacts", [])
+        )
+        card_html = _isolate_card(real_section, card["method_family"])
+        expected = "on-file" if has_prereg else "absent"
+        assert f'data-ric-prereg="{expected}"' in card_html
+
+
+def test_absent_preregistration_is_disclosed_in_plain_words_both_languages(contract, real_section):
+    sc_cards = [c for c in contract["cards"] if c["method_family"] == "synthetic_control"]
+    assert sc_cards, "expected a synthetic_control card in the frozen contract"
+    card_html = _isolate_card(real_section, "synthetic_control")
+    m = re.search(r'<p class="ric-prereg-why">(.*?)</p>', card_html, flags=re.DOTALL)
+    assert m, "ric-prereg-why paragraph not found for the synthetic_control card"
+    para = m.group(0)
+    en = re.search(r'<span class="l-en">(.*?)</span>', para, flags=re.DOTALL)
+    zh = re.search(r'<span class="l-zh">(.*?)</span>', para, flags=re.DOTALL)
+    assert en and en.group(1).strip()
+    assert zh and zh.group(1).strip()
+    banned = ["falsified", "refuted", "\u8bc1\u4f2a", "prereg", "synthetic_control"]
+    copy_text = (en.group(1) + " " + zh.group(1)).lower()
+    for token in banned:
+        assert token.lower() not in copy_text, f"banned token {token!r} found in {copy_text!r}"
+
+
+def test_preregistration_chip_is_not_painted_as_pass_or_fail(real_section):
+    chip_markers = re.findall(r'<span class="ric-prereg[^"]*"[^>]*>', real_section)
+    assert chip_markers
+    for chip in chip_markers:
+        for banned_class in ("ok", "act", "warn", "fail"):
+            assert f'"{banned_class}"' not in chip and f" {banned_class} " not in chip
+
+    css = Path(__file__).resolve().parent.parent.joinpath(
+        "templates", "measurement.html.j2"
+    ).read_text(encoding="utf-8")
+    style = css[css.find("<style>") : css.find("</style>")]
+    rules = re.findall(r"([^{}]*\.ric-prereg[^{]*)\{([^}]*)\}", style)
+    assert len(rules) >= 3, f"expected base + theme rules, got {len(rules)}"
+    selectors = " ".join(sel for sel, _ in rules)
+    assert 'html[data-theme="dark"]' in selectors
+    assert 'html[data-theme="light"]' in selectors
+    for sel, body in rules:
+        assert "var(--ok)" not in body, f"{sel.strip()} paints the chip as pass"
+        assert "var(--act)" not in body, f"{sel.strip()} paints the chip as fail"
+
+
+def test_missing_confidence_interval_is_printed_for_synthetic_control(contract, real_section):
+    """BLOCKER 5: empty uncertainty[] must still print the typed CI null."""
+    sc = next(c for c in contract["cards"] if c["method_family"] == "synthetic_control")
+    assert sc.get("uncertainty") == []
+    ci_nulls = [nr for nr in sc.get("null_reasons", []) if nr.get("code") == "uncertainty_interval"]
+    assert ci_nulls, "fixture must carry uncertainty_interval null reason"
+
+    card_html = _isolate_card(real_section, "synthetic_control")
+    assert "Not available yet" in card_html
+    assert "置信区间" in card_html or "暂不可用" in card_html
+    # The extreme t/p glance figures must not be the only story — nulls block present.
+    assert 'data-ric-nulls' in card_html
+    assert 'data-ric-null-code="uncertainty_interval"' in card_html
+    assert 'data-ric-null-code="ticker_cluster_t"' in card_html
+    assert card_html.count("Confidence interval") == 1
+    glance = _glance_outside_details(card_html)
+    assert glance.count('data-ric-code="uncertainty_interval"') == 0
+
+
+def test_honest_zero_probability_is_printed_not_invented_floor(real_section):
+    """A stored 0 without display_floor/draws uses the parent floor, never 0.0000 or < 0.001."""
+    card_html = _isolate_card(real_section, "synthetic_control")
+    fig = re.search(
+        r'data-ric-code="monthly_newey_west_p".*?</div>',
+        card_html,
+        flags=re.DOTALL,
+    )
+    assert fig, "monthly_newey_west_p fig missing"
+    assert "below 0.0001" in fig.group(0)
+    assert "小于 0.0001" in fig.group(0)
+    assert "0.0000" not in fig.group(0)
+    assert "&lt; 0.001" not in fig.group(0)
+    assert "< 0.001" not in fig.group(0)
+
+
+def test_boolean_false_probability_does_not_claim_a_significance_floor():
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "false_p",
+                "label": {"en": "False p", "zh": "假 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": False,
+            }
+        ],
+    )
+    section = _section(_render(research_implications=_envelope([card])))
+    fig = _metric_markup(_isolate_card(section, "event_study"), "false_p")
+    assert "&lt; 0.001" not in fig
+    assert "< 0.001" not in fig
+    assert "0.0000" not in fig
+    value = re.search(r'class="ric-fig-v">(.*?)</span>\s*</div>', fig, flags=re.DOTALL)
+    assert value, "boolean fig is missing its value"
+    assert "False" not in value.group(1)
+    assert "True" not in value.group(1)
+    assert "No" in value.group(1)
+    assert "否" in value.group(1)
+
+
+def test_probability_floor_comes_from_contract_precision_or_draws():
+    floor_card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "analytic_p",
+                "label": {"en": "Analytic p", "zh": "解析 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "display_floor": 0.01,
+            }
+        ],
+    )
+    draws_card = _minimal_card(
+        family="synthetic_control",
+        quality="DIAGNOSTIC_FAILED",
+        outputs=[
+            {
+                "code": "resample_p",
+                "label": {"en": "Resample p", "zh": "重抽样 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "draws": 99,
+            }
+        ],
+    )
+    floor_html = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([floor_card]))),
+            "event_study",
+        ),
+        "analytic_p",
+    )
+    draws_html = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([draws_card]))),
+            "synthetic_control",
+        ),
+        "resample_p",
+    )
+    assert "&lt; 0.0100" in floor_html
+    assert "owner-supplied display floor" in floor_html
+    assert "所有者给出的显示下限" in floor_html
+    assert "&lt; 0.0100" in draws_html
+    assert "resampling floor 1/(draws+1)" in draws_html
+    assert "重抽样下限 1/(次数+1)" in draws_html
+    assert "&lt; 0.001" not in floor_html
+    assert "&lt; 0.001" not in draws_html
+
+
+def test_resampling_floor_below_display_floor_uses_below_wording():
+    """NIT (c): 1/(draws+1) < 0.0001 must not print < 0.0000."""
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "tiny_resample_p",
+                "label": {"en": "Tiny resample p", "zh": "极小重抽样 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "draws": 20000,
+            }
+        ],
+    )
+    fig = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        ),
+        "tiny_resample_p",
+    )
+    assert "below 0.0001" in fig
+    assert "小于 0.0001" in fig
+    assert "0.0000" not in fig
+    assert "resampling floor 1/(draws+1)" in fig
+
+
+def test_owner_display_floor_below_threshold_uses_below_wording():
+    """NIT ii: owner-supplied display_floor < 0.0001 must not print < 0.0000."""
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "tiny_owner_p",
+                "label": {"en": "Tiny owner p", "zh": "极小所有者 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "display_floor": 0.00005,
+            }
+        ],
+    )
+    fig = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        ),
+        "tiny_owner_p",
+    )
+    assert "below 0.0001" in fig
+    assert "小于 0.0001" in fig
+    assert "0.0000" not in fig
+    assert "owner-supplied display floor" in fig
+    assert "所有者给出的显示下限" in fig
+
+
+def test_hub_adapter_failure_emits_line_start_ric_adapter_warning(capsys, monkeypatch):
+    """MINOR A: adapter swallow is a line-start GitHub annotation, not a logger prefix."""
+    import engine.research_implication_card as ric
+    import scripts.build_intel_hub as bih
+
+    monkeypatch.setattr(
+        ric,
+        "build_research_implication_cards",
+        lambda _root: (_ for _ in ()).throw(RuntimeError("adapter down")),
+    )
+    envelope = bih.load_research_implications_for_hub(REPO)
+    assert envelope["cards"] == []
+    lines = [ln for ln in capsys.readouterr().out.splitlines() if ln.startswith("::")]
+    assert lines, "adapter failure produced no line-start annotation"
+    assert lines[0].startswith("::warning title=ric-adapter::")
+    assert "adapter down" in lines[0]
+
+
+def test_glance_header_uses_review_plain_word_labels(contract, real_section):
+    """MAJOR 3: glance header is the parent's one state chip; method/tier live in Receipts."""
+    family_rows = {
+        "synthetic_control": ("Method: synthetic control", "方法：合成对照"),
+        "event_study": ("Method: event study", "方法：事件研究"),
+    }
+    for card in contract["cards"]:
+        card_html = _isolate_card(real_section, card["method_family"])
+        header = _isolate_header(card_html)
+        receipts = _isolate_receipts(card_html)
+        glance = _glance_outside_details(card_html)
+        assert 'class="ric-state"' in header
+        assert "Evidence: diagnostic run" not in header
+        assert "证据：诊断性运行" not in header
+        assert "tier: DIAGNOSTIC" not in header
+        assert 'class="ric-tier"' not in header
+        assert 'class="ric-fam"' not in header
+        assert 'class="ric-state-code"' not in header
+        en, zh = family_rows[card["method_family"]]
+        assert en not in header
+        assert zh not in header
+        assert en in receipts
+        assert zh in receipts
+        assert "Evidence tier: diagnostic — not used for decisions" in receipts
+        assert "证据层级：诊断——不用于决策" in receipts
+        assert "Authority: none — exploratory, not gated" in receipts
+        assert "权限：无——探索性，未经门控" in receipts
+        assert card["quality"] in receipts
+        assert card["evidence_tier"] in receipts
+        assert card["method_family"] in receipts
+        assert "Watch — do not trade off this card." in glance
+        assert "观望 — 不要据此交易。" in glance
+        assert "forecast_authority=false" not in glance
+        assert "EXPLORATORY_NON_GATED" not in glance
+
+
+def test_machine_strings_stay_inside_receipts(real_section):
+    """Zero ric-state-code / ric-tier / _authority= strings outside .ric-receipts."""
+    without = re.sub(
+        r"<details\b[^>]*\bric-receipts\b[^>]*>.*?</details>",
+        "",
+        real_section,
+        flags=re.DOTALL,
+    )
+    assert "ric-state-code" not in without
+    assert 'class="ric-tier"' not in without
+    assert "_authority=" not in without
+    assert real_section.count("ric-receipts") >= 2
+
+
+def test_zero_result_filter_copy_is_not_the_showing_zero_line():
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    start = src.find("function apply(sel)")
+    assert start != -1
+    body = src[start : src.find("for (var k = 0", start)]
+    assert "shown === 0" in body
+    assert "No cards match this filter" in body
+    assert "没有符合此筛选的卡片" in body
+    zero_branch = body[body.find("shown === 0") : body.find("} else {", body.find("shown === 0"))]
+    assert "Showing " not in zero_branch
+    assert "显示 0" not in zero_branch
+
+
+def test_ric_null_code_class_is_not_dead_css():
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style = src[src.find("<style>") : src.find("</style>")]
+    assert ".ric-nulls .ric-null-code" not in style
+    assert 'class="ric-null-code"' not in src
+    assert "var(--fig)" not in style
+
+
+def test_hub_template_links_to_research_implications_anchor():
+    hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    hrefs = re.findall(r'href="measurement\.html#ric-section"', hub)
+    assert len(hrefs) == 1
+
+
+def _render_hub(research_implications=None) -> str:
+    """Render the hub template with a degrade-safe stub command view."""
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(
+        loader=FileSystemLoader(str(REPO / "templates")), autoescape=False
+    )
+    env.globals["region_for"] = lambda ticker: "us"
+    try:
+        from engine import i18n
+
+        env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    except Exception:
+        env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
+    hub = {
+        "schema": "intel-hub-v3",
+        "n_universe": 0,
+        "n_actionable": 0,
+        "n_emerging": 0,
+        "n_discovery": 0,
+        "command": [],
+        "emerging": [],
+        "discovery": [],
+        "exhausted": [],
+        "catalysts": [],
+        "desks": {
+            k: {"live": False}
+            for k in ("news", "alt_data", "radar", "standout", "policy", "special")
+        },
+        "sector_heat": [],
+        "macro_context": {},
+        "counts": {},
+        "disclaimer": "Context only.",
+        "as_of": "2026-08-31",
+        "track_record": {"n_snapshots": 0},
+        "desk_grader": {},
+    }
+    ctx = {
+        "hub": hub,
+        "built": "2026-08-31T00:00:00+00:00",
+        "mode": "intel_hub",
+        "qledger_chips": {},
+        "china": None,
+        "market_pulse_roster": [],
+    }
+    if research_implications is not None:
+        ctx["research_implications"] = research_implications
+    return env.get_template("intelligence_hub.html.j2").render(**ctx)
+
+
+def _visible_locale_text(html: str, cls: str) -> str:
+    parts = re.findall(rf'<span class="{cls}">(.*?)</span>', html, flags=re.DOTALL)
+    return re.sub(r"<[^>]+>", " ", " ".join(parts))
+
+
+def test_null_labels_appear_at_most_once_per_locale(contract, real_section):
+    """MINOR 1: each null datum is disclosed once — the ric-nulls panel is home."""
+    labels = (
+        ("Confidence interval", "置信区间"),
+        ("Effective sample size", "有效样本量"),
+        ("Ticker-clustered t statistic", "按标的聚类的 t 统计量"),
+    )
+    for card in contract["cards"]:
+        card_html = _isolate_card(real_section, card["method_family"])
+        figs = re.search(r'<div class="ric-figs">.*?</div>\s*(?:<div class="ric-nulls"|<div class="ric-path"|<div class="ric-gates"|<details)', card_html, flags=re.DOTALL)
+        nulls = re.search(r'<div class="ric-nulls"[^>]*>.*?</div>\s*(?:<div class="ric-path"|<div class="ric-gates"|<details|<div class="ric-auth")', card_html, flags=re.DOTALL)
+        surface = (figs.group(0) if figs else "") + (nulls.group(0) if nulls else "")
+        en = _visible_locale_text(surface, "l-en")
+        zh = _visible_locale_text(surface, "l-zh")
+        for en_label, zh_label in labels:
+            assert len(re.findall(rf"(?<![A-Za-z]){re.escape(en_label)} —", en)) <= 1
+            assert surface.count(f'<span class="l-en">{en_label}') <= 1
+            assert surface.count(f'<span class="l-zh">{zh_label}') <= 1
+        if card["effective_n"] is None:
+            assert 'data-ric-code="effective_n"' not in card_html
+            assert 'data-ric-null-code="effective_n"' in card_html
+        else:
+            assert 'data-ric-code="effective_n"' in card_html
+            assert 'data-ric-null-code="effective_n"' not in card_html
+        assert card_html.count('data-ric-null-code="uncertainty_interval"') <= 1
+        for chunk in re.findall(
+            r'<details class="ric-more">.*?</details>', card_html, flags=re.DOTALL
+        ):
+            if "ric-receipts" in chunk:
+                continue
+            assert "Not available yet —" not in chunk
+            assert "暂不可用 —" not in chunk
+
+
+def test_ric_stance_rule_is_body_weight_and_last_line(real_section):
+    """MINOR 2 / NIT i: full-width hairline on .ric-stance; text measure on .ric-copy."""
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style = src[src.find("<style>") : src.find("</style>")]
+    m = re.search(r"\.ric-stance\{([^}]+)\}", style)
+    assert m, "missing .ric-stance rule"
+    body = m.group(1)
+    assert "var(--line)" in body
+    assert "border-top" in body.replace(" ", "")
+    assert "max-width" not in body.replace(" ", "")
+    copy = re.search(r"\.ric-copy\{([^}]+)\}", style)
+    assert copy, "missing .ric-copy rule"
+    copy_body = copy.group(1).replace(" ", "")
+    assert "font-weight:600" in copy_body
+    assert "color:var(--text)" in copy_body
+    assert "font-size:1rem" in copy_body
+    assert "max-width:70ch" in copy_body
+    assert ".74rem" not in copy_body
+    assert "0.74rem" not in copy_body
+    assert 'html[data-theme="dark"] .ric-stance' in style
+    assert 'html[data-theme="light"] .ric-stance' in style
+    for card_html in _cards_html(real_section):
+        last = card_html.rfind('class="ric-stance"')
+        assert last != -1
+        assert card_html.rfind('class="ric-auth"') < last
+        assert 'class="ric-copy"' in card_html[last:]
+
+
+def test_hub_entry_count_matches_destination(contract, real_section):
+    """MINOR 3: hub title count is ric_cards|length, same data as the destination."""
+    dest_n = len(contract["cards"])
+    assert dest_n == real_section.count("<article")
+    hub_html = _render_hub(research_implications=contract)
+    m = re.search(
+        r'class="rid-t"><span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
+        hub_html,
+        flags=re.DOTALL,
+    )
+    assert m, "hub entry title missing"
+    en, zh = m.group(1), m.group(2)
+    assert f"what {dest_n} frozen" in en
+    assert ("study" in en and dest_n == 1) or ("studies" in en and dest_n != 1)
+    assert f"{dest_n} 项冻结研究的实际产出" in zh
+    one = _envelope([_minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY")])
+    one_html = _render_hub(research_implications=one)
+    assert "what 1 frozen study actually produced" in one_html
+    assert "1 项冻结研究的实际产出" in one_html
+
+
+def test_hub_entry_omitted_when_card_count_is_zero():
+    """MINOR A: zero cards print nothing — no dead #ric-section, no '0 frozen studies'."""
+    empty = _render_hub(
+        research_implications={
+            "schema": "mastermind.research_implication_cards/v1",
+            "cards": [],
+        }
+    )
+    assert "ric-section" not in empty
+    assert "0 frozen" not in empty
+    assert "0 项冻结" not in empty
+    two = _render_hub(
+        research_implications=_envelope(
+            [
+                _minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY"),
+                _minimal_card(family="synthetic_control", quality="DIAGNOSTIC_FAILED"),
+            ]
+        )
+    )
+    assert two.count('href="measurement.html#ric-section"') == 1
+    assert "what 2 frozen studies actually produced" in two
+    assert "2 项冻结研究的实际产出" in two
+
+
+def test_authority_receipt_names_a_set_flag_and_does_not_print_none():
+    """MINOR 4: a set authority flag is named; the none sentence is withheld."""
+    card = _minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY")
+    card["authority"]["forecast_authority"] = True
+    receipts = _isolate_receipts(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        )
+    )
+    assert "Authority: none" not in receipts
+    assert "权限：无" not in receipts
+    assert "Authority: forecast" in receipts
+    assert "权限：预测" in receipts
+    assert "forecast_authority=" not in receipts
+
+
+def test_path_status_is_its_own_receipts_row(contract, real_section):
+    """MINOR 4: Path status is a labelled dt/dd, not dissolved into Authority."""
+    for card in contract["cards"]:
+        path = card.get("ordered_effect_path") or {}
+        if not path.get("evidence_status"):
+            continue
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert "Path status" in receipts
+        assert "路径状态" in receipts
+
+
+def test_rendered_card_has_no_snake_case_slug(contract, real_section):
+    """MINOR 5: customer-visible locale copy never prints a raw field slug."""
+    slug = re.compile(r"[a-z]+_[a-z_]+")
+    for card in contract["cards"]:
+        glance = _glance_outside_details(_isolate_card(real_section, card["method_family"]))
+        for cls in ("l-en", "l-zh"):
+            text = _visible_locale_text(glance, cls)
+            hit = slug.search(text)
+            assert hit is None, f"{card['method_family']} {cls} leaked {hit.group(0)!r}"
+
+
+def test_hub_entry_is_bilingual_and_inside_track_record_band():
+    hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    m = re.search(r'<a class="card rid"[^>]*>(.*?)</a>', hub, flags=re.DOTALL)
+    assert m, "no .rid entry row found in the hub template"
+    row = m.group(1)
+    spans = re.findall(
+        r'class="(rid-k|rid-t|rid-d)">'
+        r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
+        row,
+        flags=re.DOTALL,
+    )
+    assert [cls for cls, _en, _zh in spans] == ["rid-k", "rid-t", "rid-d"]
+    for _cls, en, zh in spans:
+        assert en.strip()
+        assert re.search(r"[一-鿿]", zh), f"ZH span has no Chinese: {zh!r}"
+    tr = re.search(
+        r'<div class="band"[^>]*>.*?Track record.*?</div>(.*?)(?=<div class="band"|$)',
+        hub,
+        flags=re.DOTALL,
+    )
+    assert tr and 'class="card rid"' in tr.group(1)
+    rid_pos = hub.find('class="card rid"')
+    window = hub[hub.rfind('<div class="band"', 0, rid_pos) : rid_pos]
+    assert window.count('<div class="band"') == 1
+    assert "_site_nav.html.j2" in hub
+    assert "_public_nav" not in hub
+
+
+def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
+    """BLOCKER 1 / MAJOR 2: frames must be themed viewport shots, not crops."""
+    receipt = REPO / "mockups/evidence/f10a1-implication-entry/EVIDENCE.yml"
+    manifest_path = REPO / "mockups/evidence/f10a1-implication-entry/manifest.json"
+    assert receipt.is_file()
+    assert manifest_path.is_file()
+    import yaml
+
+    body = yaml.safe_load(receipt.read_text(encoding="utf-8"))
+    assert body["schema"] == "mastermind.page_evidence_receipt.v1"
+    assert "templates/measurement.html.j2" in body["changed_paths"]
+    assert "templates/intelligence_hub.html.j2" in body["changed_paths"]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    capture_sha = manifest.get("capture_sha") or (manifest.get("target") or {}).get(
+        "resolved_sha_or_none"
+    )
+    assert isinstance(capture_sha, str) and re.fullmatch(r"[0-9a-f]{40}", capture_sha), (
+        "manifest must bind frames to a committed code sha"
+    )
+    assert manifest.get("generated_at"), "manifest must record generated_at"
+    pages = {page["page_id"]: page for page in manifest["pages"]}
+    assert set(pages) == {"measurement.html", "intelligence_hub.html"}
+
+    def _mean_luma(path: Path) -> float:
+        from PIL import Image
+
+        img = Image.open(path).convert("RGB")
+        pixels = list(img.getdata())
+        assert pixels, f"{path} has no pixels"
+        return sum(0.2126 * r + 0.7152 * g + 0.0722 * b for r, g, b in pixels) / len(
+            pixels
+        )
+
+    for page_id, page in pages.items():
+        captured = [s for s in page["states"] if s.get("captured")]
+        assert len(captured) == 8, f"{page_id} missing REST cells: {len(captured)}"
+        for state in captured:
+            png = manifest_path.parent / state["file"]
+            assert png.is_file(), f"missing {png.name}"
+            assert state.get("applied_theme") == state["theme"]
+            assert state.get("applied_locale") == state["locale"]
+            header = png.read_bytes()[:24]
+            assert header[12:16] == b"IHDR"
+            ihdr_w = int.from_bytes(header[16:20], "big")
+            ihdr_h = int.from_bytes(header[20:24], "big")
+            assert state["width"] == ihdr_w, (
+                f"{png.name} manifest width {state['width']} != IHDR {ihdr_w}"
+            )
+            assert state["height"] == ihdr_h, (
+                f"{png.name} manifest height {state['height']} != IHDR {ihdr_h}"
+            )
+            if state["viewport"] == "desktop":
+                assert state["viewport_width"] == 1440
+                assert state["width"] >= 1400, (
+                    f"{page_id} {state['theme']} {state['locale']} is a crop "
+                    f"({state['width']}x{state['height']}), not a 1440 viewport"
+                )
+                assert state["height"] >= 800, (
+                    f"{page_id} {state['theme']} {state['locale']} height "
+                    f"{state['height']} is an element crop"
+                )
+            if state["viewport"] == "mobile":
+                assert state["viewport_width"] == 390
+                assert state["width"] >= 360
+                assert state["height"] >= 700
+                if state["width"] != 390:
+                    note = manifest.get("mobile_width_truth") or ""
+                    assert note and (
+                        "clip:" in note or str(state["width"]) in note
+                    )
+
+    meas = pages["measurement.html"]
+    dark = next(
+        s
+        for s in meas["states"]
+        if s["viewport"] == "desktop" and s["locale"] == "en" and s["theme"] == "dark"
+    )
+    light = next(
+        s
+        for s in meas["states"]
+        if s["viewport"] == "desktop" and s["locale"] == "en" and s["theme"] == "light"
+    )
+    dark_luma = _mean_luma(manifest_path.parent / dark["file"])
+    light_luma = _mean_luma(manifest_path.parent / light["file"])
+    assert light_luma - dark_luma >= 40, (
+        f"measurement dark/light frames are not theme-differentiated "
+        f"(dark={dark_luma:.1f} light={light_luma:.1f})"
+    )

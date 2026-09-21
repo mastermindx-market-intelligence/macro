@@ -1,37 +1,36 @@
 {
-  "date": "2026-09-02",
+  "date": "2026-09-17",
   "authority": {
     "tier": "context_only"
   },
-  "turnover_z20": -1.4503476490364553,
-  "turnover_z60": -1.533234711670475,
-  "margin_balance": 26609.90075385,
-  "margin_chg_5d": 0.29457404444712676,
-  "margin_to_mcap": 2.636338,
-  "southbound_net": 4093.27,
-  "southbound_z": 0.3829057414676801,
-  "etf_share_chg": 0.3206999623152428,
+  "turnover_z20": -0.43448963763407306,
+  "turnover_z60": -1.0739159242149816,
+  "margin_balance": 26390.97998052,
+  "margin_chg_5d": -0.27474737451662623,
+  "margin_to_mcap": 2.656197,
+  "southbound_net": 3363.15,
+  "southbound_z": 0.26628375621025147,
+  "etf_share_chg": -0.4472135954999579,
   "zt_breadth": null,
   "failed_seal_ratio": null,
-  "qvix": 18.56,
-  "qvix_z": -1.281997322411899,
-  "broker_rs": 0.06306790055792066,
+  "qvix": 17.0,
+  "qvix_z": -1.520306636041774,
+  "broker_rs": 0.04859435852643747,
   "regime": "unclear",
   "who_controls": "mixed",
   "risk": "normal",
   "evidence": [
-    "turnover_z20=-1.45",
-    "margin_chg_5d=0.29% (rising)",
-    "fin_pct_float=2.64%",
-    "broker_rs=0.0631 (positive, sector leading)",
-    "qvix_z=-1.28 (inverted-semantics: high=stress)"
+    "turnover_z20=-0.43",
+    "fin_pct_float=2.66%",
+    "broker_rs=0.0486 (positive, sector leading)",
+    "qvix_z=-1.52 (inverted-semantics: high=stress)"
   ],
   "contradictions": [],
   "data_gaps": [
-    "zt_breadth:null on 2026-09-02",
+    "zt_breadth:null on 2026-09-17",
     "northbound:DEAD post-2024-08-16 SLF-050",
-    "snapshot_staleness:published row 2026-09-02 is 13d behind tape tail 2026-09-15; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "snapshot_staleness:published row 2026-09-17 is 1d behind tape tail 2026-09-18; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ],
   "backfill": false,
-  "snapshot_note": "core legs null on 2026-09-15; publishing last fully-populated row (2026-09-02)"
+  "snapshot_note": "core legs null on 2026-09-18; publishing last fully-populated row (2026-09-17)"
 }
