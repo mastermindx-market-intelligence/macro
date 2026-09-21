@@ -7258,3 +7258,9 @@
 {"id":"ob-2026-09-21-cba390a7c9","from":"approved","to":"quarantined","at":"2026-09-21T18:48:18Z","actor":"publisher","note":"reads too technical / banned language: banned vocab: 'rsi'","receipt":null}
 {"id":"ob-2026-09-21-f73363a52c","from":"approved","to":"posting","at":"2026-09-21T18:48:24Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-21-f73363a52c","from":"posting","to":"posted","at":"2026-09-21T18:48:25Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab17bf9f76a2a6c82aa02ea","external_url":null,"at":"2026-09-21T18:48:07Z","booked_at":"2026-09-21T18:48:07Z"}}
+{"id":"ob-2026-09-21-102d8757fd","from":"queued","to":"approved","at":"2026-09-21T18:53:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-21-2e53b12e0a","from":"queued","to":"approved","at":"2026-09-21T18:53:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-21-b98309cba7","from":"queued","to":"approved","at":"2026-09-21T18:53:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-21-102d8757fd","from":"approved","to":"quarantined","at":"2026-09-21T18:53:48Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-21-2e53b12e0a","from":"approved","to":"quarantined","at":"2026-09-21T18:53:48Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-21-b98309cba7","from":"approved","to":"quarantined","at":"2026-09-21T18:53:48Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
