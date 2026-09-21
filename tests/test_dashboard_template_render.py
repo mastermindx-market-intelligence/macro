@@ -309,34 +309,123 @@ def test_stocks_mode_renders_without_exception():
 
 
 # --------------------------------------------------------------------------- #
-# UD-B1 hero include: macro mode mounts the hero (mode == 'macro'); the
-# hero MUST NOT appear in stocks mode. Pre-fix the include was gated
-# `mode != 'stocks'`, which technically worked but did not express the
-# intent — mode == 'macro' is the documented contract.
+# UD-B1 primary-route override (2026-09-20): keep the candidate component in
+# source, but do not stack it above the established macro decision surface.
 # --------------------------------------------------------------------------- #
 
-def test_macro_mode_includes_unified_dashboard_hero():
-    """mode == 'macro' MUST include the UD-B1 hero partial above legacy isles."""
+def test_macro_mode_keeps_unified_dashboard_candidate_off_primary_route():
+    """The primary macro route must open on the established regime radar."""
     html = _render("macro")
-    assert 'id="ud-hero"' in html, "macro mode must include #ud-hero"
-    # Hero precedes the legacy #regime-radar panel (per the include site).
-    hero_idx = html.find('id="ud-hero"')
-    radar_idx = html.find('id="regime-radar"')
-    assert hero_idx != -1 and radar_idx != -1, (
-        f"hero (#ud-hero) and regime-radar (#regime-radar) both must render in macro mode"
-    )
-    assert hero_idx < radar_idx, (
-        "UD-B1 hero must appear BEFORE the legacy #regime-radar panel"
-    )
-
-
-def test_stocks_mode_excludes_unified_dashboard_hero():
-    """mode == 'stocks' MUST NOT include the UD-B1 hero (it is macro-only)."""
-    html = _render("stocks")
     assert 'id="ud-hero"' not in html, (
-        "stocks mode must NOT include the UD-B1 hero — it is macro-only per "
-        "research/UNIFIED_DASHBOARD_DISPOSITION.md and the include condition"
+        "macro mode must not stack the held UD-B1 candidate above the current dashboard"
     )
+    assert 'id="regime-radar"' in html, (
+        "macro mode must retain the established #regime-radar decision surface"
+    )
+
+
+def test_stocks_mode_excludes_unified_dashboard_candidate():
+    """The held UD-B1 candidate is not part of the stocks route either."""
+    html = _render("stocks")
+    assert 'id="ud-hero"' not in html
+
+
+def _health_panel(html: str) -> str:
+    match = re.search(r'<details class="[^"]*health-strip[^"]*" id="health".*?</details>', html, re.S)
+    assert match, "macro render must contain the data-health panel"
+    return match.group(0)
+
+
+def test_macro_health_empty_is_unknown_not_green():
+    panel = _health_panel(_render("macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-unknown" in opening
+    assert "health-ok" not in opening
+    assert "health unavailable" in panel
+    assert "健康状态不可用" in panel
+    assert "Source health data is unavailable for this build." in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_nonempty_all_ok_is_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "ok", "rows": 12,
+        "last_date": "2026-07-04", "error": None,
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-ok" in opening
+    assert "health-unknown" not in opening
+    assert "health-neutral" not in opening
+    assert "all observed sources OK" in panel
+    assert "已观测数据源全部正常" in panel
+
+
+def test_macro_health_blocked_only_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Known limitation", "status": "blocked", "rows": 0,
+        "last_date": None, "error": "expected limitation",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "无活动故障" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_ok_plus_blocked_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [
+        {"name": "Primary feed", "status": "ok", "rows": 12,
+         "last_date": "2026-07-04", "error": None},
+        {"name": "Known limitation", "status": "blocked", "rows": 0,
+         "last_date": None, "error": "expected limitation"},
+    ]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_committed_macro_health_projection_carries_truth_state_contract():
+    page = ROOT / "site" / "macro.html"
+    html = page.read_text(encoding="utf-8")
+    linked_css = []
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css(?:\?[^"#]*)?)"', html):
+        rel = href.split("?", 1)[0]
+        if rel.startswith(("/", "http://", "https://")):
+            continue
+        css_path = page.parent / rel
+        if css_path.is_file():
+            linked_css.append(css_path.read_text(encoding="utf-8"))
+    projection = html + "\n" + "\n".join(linked_css)
+    assert "health-unknown" in projection
+    assert "health-neutral" in projection
+    assert "Observed health entries for data sources this dashboard depends on." in html
+    assert "No entries means health is unavailable, not healthy." in html
+    assert "Every data source this dashboard depends on. OK = fresh." not in html
+
+
+def test_macro_health_degraded_source_remains_attention_state():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "stale", "rows": 12,
+        "last_date": "2026-07-03", "error": "late",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-warn" in opening
+    assert "health-ok" not in opening
+    assert "1" in panel and "need attention" in panel
+    assert "需关注" in panel
 
 
 def test_us_track_record_filter_bar_stays_in_document_flow():

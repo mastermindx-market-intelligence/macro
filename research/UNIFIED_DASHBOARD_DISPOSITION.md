@@ -1,16 +1,49 @@
 # Unified Macro Dashboard — RIG capability disposition
 
-**Packet:** UD-B1 · Stage 1 of the Unified Macro Dashboard (binding, frozen spec).
+**Packet:** UD-B1 · retained design candidate; **not mounted on the primary route** as of 2026-09-20.
 **Source census:** `mockups/refs/unified-dashboard/census_macro_modules.md` (2026-09-19,
-55-module census of live `site/macro.html` rendered from `templates/dashboard.html.j2`
+55-module census of `site/macro.html` rendered from `templates/dashboard.html.j2`
 with `mode="macro"` by `scripts/build_site.py`).
-**Spec:** `mockups/refs/unified-dashboard/UNIFIED_DASHBOARD_SPEC.md`.
+**Historical design spec:** `mockups/refs/unified-dashboard/UNIFIED_DASHBOARD_SPEC.md`.
 
-The Unified Macro Dashboard is the **ratified next generation** of `site/macro.html`.
-ONE route, ONE dashboard — no parallel dashboard is ever created. The disposition below
-names where every census module lands in the new composition, the disposition class
-(`RETAIN / IMPROVE / RELOCATE / REMOVE / BLOCKED_DATA`), and a one-line rationale.
-**No module may be silently dropped.**
+## Primary-route override — 2026-09-20
+
+UD-B1's first production composition stacked a second, global/cross-market regime hero above the
+established US macro dashboard. The candidate is visually useful, but the shipped composition adds
+too much prose and vertical space, duplicates the existing regime decision surface, and exposes four
+of five cross-market spine rows as designed-null `BLOCKED_DATA`. More importantly, its top score and
+verdict are **not a global composite**: `_unified_dashboard_hero.html.j2` binds the default
+`market_state`, whose default tape is the US `SPY / QQQ / IWM` profile. A US-derived verdict must not
+be relabeled as a global market verdict. It therefore does **not** currently clear the replacement
+bar for decision speed, information density, or semantic truth.
+
+The primary `macro.html` route returns to the established `#regime-radar` composition. UD-B1 source,
+primitives, specs and evidence are retained for redesign; do not delete or rebuild them. B2+ may not
+resume a primary-route migration until a successor is compared against the current dashboard and
+proves a materially better glance path without stacking a parallel dashboard above it.
+
+Do **not** move this block wholesale to `intl.html`: that route owns the ex-US international-economies
+comparison. The repository's current global-cycle route is `markets.html`; any compact global-regime
+successor should be evaluated there (or through the existing route owner) before publication.
+
+### Current-main reconciliation — 2026-09-21
+
+Two B2 slices reached `main` after the first primary-route override and are reconciled rather than
+blindly reverted. **UD-B2-W1** improved the real US dashboard's existing `.mx5-sc-left` risk surface
+by folding volatility-weather chips into that surface; that useful US-route capability stays.
+**UD-B2-W2** added HK/CN market-state persistence plus truthful lighter-evidence caveats and bound
+those feeds inside the retained hero candidate. Its engines, persisted artifacts, component source,
+tests, and evidence stay; only the candidate's `#ud-hero` / five-market spine is kept **off**
+`macro.html`. Component-level tests prove the retained HK/CN bindings while the committed-page gate
+proves that the US route opens on `#regime-radar` with no stacked candidate.
+
+Relocation is therefore a recomposition, not a copy: reuse the strongest visual primitives and the
+now-real HK/CN bindings in the `markets.html` global-cycle owner, alongside that route's existing
+country-cycle/global-equity evidence. Do not label the default US `market_state` score as a global
+composite, and do not re-home the whole hero into `intl.html`.
+
+The disposition table below remains a design inventory for the retained candidate, not current
+primary-route deployment authority. **No module may be silently dropped.**
 
 ---
 
