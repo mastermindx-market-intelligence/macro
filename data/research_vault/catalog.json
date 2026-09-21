@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T16:18:02.805719+00:00",
-  "count": 2579,
+  "generated_at": "2026-09-21T16:33:05.529258+00:00",
+  "count": 2580,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -207,6 +207,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tz1xuvdbiew-6c5d5b",
+      "title": "GS Crook GS MORNING GCEM Symposium Key Quotes Trump Xi Summit Preview NBH Views Global FX Trader Dollar Drift and Week Ahead 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:08Z",
+      "summary_points": [
+        "Fed Policy & AI-Driven Volatility: Regime change in Fed policy (30-70% move meetings) elevates equilibrium rate (R) due to AI-driven investment/deficits, heightening volatility and upward yield/term premium.",
+        "Fiscal Debt Fragility: US fiscal expansion (6-8% annual) worsens debt-to-GDP ratio, signaling nominal economy fragility versus Japan’s 2022 trajectory (220%→180%).",
+        "Trump-Xi Summit & Geopolitical Shifts: Sept 23-25 summit with USDCNY <6.70 as stability signal; China’s oil mediation (US-Iran talks) is key market-moving factor beyond trade/AI.",
+        "CNY Policy Divergence: CNY strengthens against CFETS basket (diversified basket) vs.",
+        "USD (e.g., 2022), revealing active USD/CNY management and potential policy shift toward market-driven rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
