@@ -35,6 +35,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 EVIDENCE = Path(__file__).resolve().parent
 TEMPLATES = ROOT / "templates"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 VIEWPORTS = {
     "desktop": (1440, 900),
