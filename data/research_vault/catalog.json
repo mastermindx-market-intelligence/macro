@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T20:33:49.127091+00:00",
-  "count": 2592,
+  "generated_at": "2026-09-21T21:03:55.219739+00:00",
+  "count": 2593,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -289,6 +289,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-d9wlrptz1ig-fa2675",
+      "title": "GS Ranganath Share Repurchase Weekly Recap 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:31Z",
+      "summary_points": [
+        "Record Buyback Authorization: $1.134T authorized in 2026 (highest ever), driven by $9.6B new programs (14 programs), with Healthcare (55%) and Info Tech (39%) leading sector allocation.",
+        "Blackout Window Concentration: 64% of S&P 500 companies in blackout window as of 09/21/26, driving 79% 10b5-1 execution (vs 30% prior), critical for near-term liquidity and execution timing.",
+        "Q25 Execution Peak: Quarterly buyback executions peaked at $259B in Q25, signaling sustained corporate confidence and bullish market dynamics.",
+        "Institutional Flow Correlation: GS Trading Desk repurchase ADTV shows strong correlation with S&P 500 price movements (Jan-18 to Sep-26), highlighting institutional flow impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
