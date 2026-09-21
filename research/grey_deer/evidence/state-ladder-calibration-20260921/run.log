@@ -1,0 +1,170 @@
+{
+  "h5": {
+    "full": {
+      "base_rate": 0.0350748995250274,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.02147239263803681,
+        "watch": 0.013054830287206266,
+        "caution": 0.01949317738791423,
+        "elevated": 0.12169312169312169,
+        "risk-off": 0.15450121654501217
+      },
+      "configured": {
+        "calm": 0.02,
+        "watch": 0.02,
+        "caution": 0.03,
+        "elevated": 0.05,
+        "risk-off": 0.08
+      }
+    },
+    "y2006": {
+      "base_rate": 0.03765609990393852,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.015113350125944584,
+        "watch": 0.012658227848101266,
+        "caution": 0.01921989824759751,
+        "elevated": 0.11290322580645161,
+        "risk-off": 0.15178571428571427
+      },
+      "configured": {
+        "calm": 0.02,
+        "watch": 0.02,
+        "caution": 0.03,
+        "elevated": 0.05,
+        "risk-off": 0.08
+      }
+    },
+    "y2020": {
+      "base_rate": 0.0356718192627824,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.0,
+        "watch": 0.0,
+        "caution": 0.0210896309314587,
+        "elevated": 0.0,
+        "risk-off": 0.1506276150627615
+      },
+      "configured": {
+        "calm": 0.02,
+        "watch": 0.02,
+        "caution": 0.03,
+        "elevated": 0.05,
+        "risk-off": 0.08
+      }
+    }
+  },
+  "h10": {
+    "full": {
+      "base_rate": 0.0850597124055569,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.05828220858895705,
+        "watch": 0.05221932114882506,
+        "caution": 0.06282926829268293,
+        "elevated": 0.2222222222222222,
+        "risk-off": 0.26520681265206814
+      },
+      "configured": {
+        "calm": 0.06,
+        "watch": 0.06,
+        "caution": 0.08,
+        "elevated": 0.12,
+        "risk-off": 0.17
+      }
+    },
+    "y2006": {
+      "base_rate": 0.08423076923076923,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.037783375314861464,
+        "watch": 0.03375527426160337,
+        "caution": 0.057175205208038496,
+        "elevated": 0.22580645161290322,
+        "risk-off": 0.26339285714285715
+      },
+      "configured": {
+        "calm": 0.06,
+        "watch": 0.06,
+        "caution": 0.08,
+        "elevated": 0.12,
+        "risk-off": 0.17
+      }
+    },
+    "y2020": {
+      "base_rate": 0.08228980322003578,
+      "monotonic": true,
+      "rates": {
+        "calm": 0.0,
+        "watch": 0.0,
+        "caution": 0.06001765225066196,
+        "elevated": 0.08333333333333333,
+        "risk-off": 0.2803347280334728
+      },
+      "configured": {
+        "calm": 0.06,
+        "watch": 0.06,
+        "caution": 0.08,
+        "elevated": 0.12,
+        "risk-off": 0.17
+      }
+    }
+  },
+  "h21": {
+    "full": {
+      "base_rate": 0.17644905430140329,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.1218195836545875,
+        "watch": 0.10878112712975098,
+        "caution": 0.15417642466822795,
+        "elevated": 0.3915343915343915,
+        "risk-off": 0.4148418491484185
+      },
+      "configured": {
+        "calm": 0.13,
+        "watch": 0.13,
+        "caution": 0.16,
+        "elevated": 0.25,
+        "risk-off": 0.33
+      }
+    },
+    "y2006": {
+      "base_rate": 0.17498554634804395,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.07948717948717948,
+        "watch": 0.07643312101910828,
+        "caution": 0.14439411098527746,
+        "elevated": 0.4032258064516129,
+        "risk-off": 0.4181547619047619
+      },
+      "configured": {
+        "calm": 0.13,
+        "watch": 0.13,
+        "caution": 0.16,
+        "elevated": 0.25,
+        "risk-off": 0.33
+      }
+    },
+    "y2020": {
+      "base_rate": 0.17647058823529413,
+      "monotonic": false,
+      "rates": {
+        "calm": 0.0,
+        "watch": 0.03389830508474576,
+        "caution": 0.1607773851590106,
+        "elevated": 0.1111111111111111,
+        "risk-off": 0.4351464435146444
+      },
+      "configured": {
+        "calm": 0.13,
+        "watch": 0.13,
+        "caution": 0.16,
+        "elevated": 0.25,
+        "risk-off": 0.33
+      }
+    }
+  }
+}

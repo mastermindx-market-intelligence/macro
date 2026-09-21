@@ -1,0 +1,422 @@
+{
+  "schema": "mastermind.risk_radar_state_ladder_evidence.v1",
+  "protocol_commit": "22e779b1f4c7fbb27c1e204667d917c1d92727fa",
+  "method_commit": "0483307564891bbc9d2da3d6bae4446b5ed6cdc7",
+  "source_base": "e9c6210959520c90fb12ad98632465b7e93909d8",
+  "protected_skillpack": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "74b475545e179a3256bfebe6b5226f54231cf1cb",
+    "version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "authority": {
+    "status": "descriptive_only",
+    "live_model_changed": false,
+    "probability_changed": false,
+    "gate_changed": false,
+    "policy_changed": false
+  },
+  "method": {
+    "targets": {
+      "depth": 0.05,
+      "horizons": [
+        5,
+        10,
+        21
+      ]
+    },
+    "state_order": [
+      "calm",
+      "watch",
+      "caution",
+      "elevated",
+      "risk-off"
+    ],
+    "bootstrap": {
+      "draws": 1000,
+      "ci": 0.9,
+      "block_equals_horizon": true,
+      "seed_root": 260921
+    },
+    "threshold_sweep": false
+  },
+  "input_hashes": {
+    "data/yahoo/SPY.parquet": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "data/fred/BAMLH0A0HYM2.parquet": "dd60951fe1ef3e88b9202e4a0bef7c4a56d96382d6e2b28056fdf615786e4690",
+    "data/yahoo/HYG.parquet": "b89d528b2c8d7e3d3c2fa8f64b2b6992e95ca0f8b0d58933876730a4a9c1c8da",
+    "data/yahoo/TLT.parquet": "3d09f656e49ba4d3ee5f205fcd8a7c650c36e3f46d98295d2b29b9e3256bccd5",
+    "data/yahoo/_MOVE.parquet": "03bd5adfbf7c4ca75bed2584159621a3d20ed62387365c8a92ab745831dff125",
+    "data/fred/DFII10.parquet": "99984d0539e17de3e07aac6b7db7b80913ca43352084cfb701ff6ad9d2c7e2c2",
+    "data/yahoo/SMH.parquet": "d9b0aa2d02b4a480876002fbb640384ce49c00a0093488b4259bf09abeaff81b",
+    "data/yahoo/XLU.parquet": "60ba05b2d9b202e21eaaa788aba8540c46cabcd0f2b4d3b32e6ca40263aed2be",
+    "data/yahoo/XLP.parquet": "bcbe35e985ce39b120b9a93d9a26432c7aced21cb7d9b46315278049091a610c",
+    "data/yahoo/XLY.parquet": "48ba37b15e76c8a20c1bcb64350c72c86a852a1f0d24e18ad4190178dfbc3b27",
+    "data/yahoo/_VIX.parquet": "7899aa84d8b4cb5de1845df541f552dce2096af0b981fc91b2e655095b987b6c",
+    "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
+    "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07",
+    "data/cboe/putcall.parquet": "a53c2342ce72f7ff580213318ca307df7d753e70d7a97eee8defa1c6d9788e61",
+    "data/cboe/gex.parquet": "0bfb04b88db610c14b7fcbd74d0dfbbcb5ac4fa5509758ed1b12dd242a0b8c94",
+    "data/fred/DEXJPUS.parquet": "79704861e8c851c81b4bb1b35a0d849e2dbfb063ff92d47c02f4581411563003",
+    "data/breadth/breadth.parquet": "9abc810d386888665697bce850a4d05498dbad61658a076bceea328174d55855"
+  },
+  "missing_optional_inputs": [
+    "data/risk_radar/calibration.json"
+  ],
+  "selected_result": {
+    "h21_y2020": {
+      "from": "2020-01-02T00:00:00",
+      "through": "2026-08-19T00:00:00",
+      "n": 1666,
+      "events": 294,
+      "base_rate": 0.17647058823529413,
+      "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+      "states": {
+        "calm": {
+          "n": 141,
+          "events": 0,
+          "event_rate": 0.0,
+          "event_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "lift_vs_base": 0.0,
+          "configured_state_probability": 0.13,
+          "observed_minus_configured": -0.13,
+          "thin": false
+        },
+        "watch": {
+          "n": 118,
+          "events": 4,
+          "event_rate": 0.03389830508474576,
+          "event_rate_ci90": [
+            0.0,
+            0.1
+          ],
+          "lift_vs_base": 0.19209039548022597,
+          "configured_state_probability": 0.13,
+          "observed_minus_configured": -0.09610169491525425,
+          "thin": false
+        },
+        "caution": {
+          "n": 1132,
+          "events": 182,
+          "event_rate": 0.1607773851590106,
+          "event_rate_ci90": [
+            0.10603,
+            0.219244
+          ],
+          "lift_vs_base": 0.9110718492343933,
+          "configured_state_probability": 0.16,
+          "observed_minus_configured": 0.0007773851590106018,
+          "thin": false
+        },
+        "elevated": {
+          "n": 36,
+          "events": 4,
+          "event_rate": 0.1111111111111111,
+          "event_rate_ci90": [
+            0.0,
+            0.272727
+          ],
+          "lift_vs_base": 0.6296296296296295,
+          "configured_state_probability": 0.25,
+          "observed_minus_configured": -0.1388888888888889,
+          "thin": true
+        },
+        "risk-off": {
+          "n": 239,
+          "events": 104,
+          "event_rate": 0.4351464435146444,
+          "event_rate_ci90": [
+            0.271724,
+            0.595402
+          ],
+          "lift_vs_base": 2.4658298465829844,
+          "configured_state_probability": 0.33,
+          "observed_minus_configured": 0.10514644351464436,
+          "thin": false
+        }
+      },
+      "adjacent_differences": {
+        "calm->watch": {
+          "difference": 0.03389830508474576,
+          "difference_ci90": [
+            0.0,
+            0.1
+          ]
+        },
+        "watch->caution": {
+          "difference": 0.12687908007426485,
+          "difference_ci90": [
+            0.050246,
+            0.199975
+          ]
+        },
+        "caution->elevated": {
+          "difference": -0.0496662740478995,
+          "difference_ci90": [
+            -0.181965,
+            0.12979
+          ]
+        },
+        "elevated->risk-off": {
+          "difference": 0.32403533240353327,
+          "difference_ci90": [
+            0.163785,
+            0.50882
+          ]
+        }
+      },
+      "point_estimate_monotonic": false,
+      "bootstrap": {
+        "method": "circular_moving_block",
+        "block_observations": 21,
+        "draws": 1000,
+        "seed": 261133,
+        "ci": 0.9
+      }
+    },
+    "h21_y2006": {
+      "from": "2006-01-03T00:00:00",
+      "through": "2026-08-19T00:00:00",
+      "n": 5189,
+      "events": 908,
+      "base_rate": 0.17498554634804395,
+      "population_sha256": "61a0545c3ff8f1800cde6665b54a382901a10a2c3943f311cfb38c5166b29d65",
+      "states": {
+        "calm": {
+          "n": 390,
+          "events": 31,
+          "event_rate": 0.07948717948717948,
+          "event_rate_ci90": [
+            0.027565,
+            0.145409
+          ],
+          "lift_vs_base": 0.4542499717609849,
+          "configured_state_probability": 0.13,
+          "observed_minus_configured": -0.05051282051282052,
+          "thin": false
+        },
+        "watch": {
+          "n": 471,
+          "events": 36,
+          "event_rate": 0.07643312101910828,
+          "event_rate_ci90": [
+            0.042399,
+            0.110638
+          ],
+          "lift_vs_base": 0.4367967675860714,
+          "configured_state_probability": 0.13,
+          "observed_minus_configured": -0.05356687898089173,
+          "thin": false
+        },
+        "caution": {
+          "n": 3532,
+          "events": 510,
+          "event_rate": 0.14439411098527746,
+          "event_rate_ci90": [
+            0.117354,
+            0.17469
+          ],
+          "lift_vs_base": 0.8251773589235735,
+          "configured_state_probability": 0.16,
+          "observed_minus_configured": -0.01560588901472254,
+          "thin": false
+        },
+        "elevated": {
+          "n": 124,
+          "events": 50,
+          "event_rate": 0.4032258064516129,
+          "event_rate_ci90": [
+            0.247191,
+            0.552127
+          ],
+          "lift_vs_base": 2.304337785988347,
+          "configured_state_probability": 0.25,
+          "observed_minus_configured": 0.15322580645161288,
+          "thin": false
+        },
+        "risk-off": {
+          "n": 672,
+          "events": 281,
+          "event_rate": 0.4181547619047619,
+          "event_rate_ci90": [
+            0.326679,
+            0.508942
+          ],
+          "lift_vs_base": 2.3896531492552966,
+          "configured_state_probability": 0.33,
+          "observed_minus_configured": 0.0881547619047619,
+          "thin": false
+        }
+      },
+      "adjacent_differences": {
+        "calm->watch": {
+          "difference": -0.003054058468071205,
+          "difference_ci90": [
+            -0.064272,
+            0.049748
+          ]
+        },
+        "watch->caution": {
+          "difference": 0.06796098996616919,
+          "difference_ci90": [
+            0.034064,
+            0.104699
+          ]
+        },
+        "caution->elevated": {
+          "difference": 0.25883169546633544,
+          "difference_ci90": [
+            0.101457,
+            0.41041
+          ]
+        },
+        "elevated->risk-off": {
+          "difference": 0.01492895545314904,
+          "difference_ci90": [
+            -0.134332,
+            0.17554
+          ]
+        }
+      },
+      "point_estimate_monotonic": false,
+      "bootstrap": {
+        "method": "circular_moving_block",
+        "block_observations": 21,
+        "draws": 1000,
+        "seed": 261132,
+        "ci": 0.9
+      }
+    },
+    "h10_y2020": {
+      "from": "2020-01-02T00:00:00",
+      "through": "2026-09-03T00:00:00",
+      "n": 1677,
+      "events": 138,
+      "base_rate": 0.08228980322003578,
+      "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+      "states": {
+        "calm": {
+          "n": 148,
+          "events": 0,
+          "event_rate": 0.0,
+          "event_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "lift_vs_base": 0.0,
+          "configured_state_probability": 0.06,
+          "observed_minus_configured": -0.06,
+          "thin": false
+        },
+        "watch": {
+          "n": 121,
+          "events": 0,
+          "event_rate": 0.0,
+          "event_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "lift_vs_base": 0.0,
+          "configured_state_probability": 0.06,
+          "observed_minus_configured": -0.06,
+          "thin": false
+        },
+        "caution": {
+          "n": 1133,
+          "events": 68,
+          "event_rate": 0.06001765225066196,
+          "event_rate_ci90": [
+            0.037095,
+            0.084441
+          ],
+          "lift_vs_base": 0.7293449480026095,
+          "configured_state_probability": 0.08,
+          "observed_minus_configured": -0.01998234774933804,
+          "thin": false
+        },
+        "elevated": {
+          "n": 36,
+          "events": 3,
+          "event_rate": 0.08333333333333333,
+          "event_rate_ci90": [
+            0.0,
+            0.228571
+          ],
+          "lift_vs_base": 1.0126811594202898,
+          "configured_state_probability": 0.12,
+          "observed_minus_configured": -0.03666666666666667,
+          "thin": true
+        },
+        "risk-off": {
+          "n": 239,
+          "events": 67,
+          "event_rate": 0.2803347280334728,
+          "event_rate_ci90": [
+            0.172599,
+            0.384872
+          ],
+          "lift_vs_base": 3.4066763689285064,
+          "configured_state_probability": 0.17,
+          "observed_minus_configured": 0.1103347280334728,
+          "thin": false
+        }
+      },
+      "adjacent_differences": {
+        "calm->watch": {
+          "difference": 0.0,
+          "difference_ci90": [
+            0.0,
+            0.0
+          ]
+        },
+        "watch->caution": {
+          "difference": 0.06001765225066196,
+          "difference_ci90": [
+            0.037095,
+            0.084441
+          ]
+        },
+        "caution->elevated": {
+          "difference": 0.023315681082671368,
+          "difference_ci90": [
+            -0.068997,
+            0.169217
+          ]
+        },
+        "elevated->risk-off": {
+          "difference": 0.1970013947001395,
+          "difference_ci90": [
+            0.027253,
+            0.33699
+          ]
+        }
+      },
+      "point_estimate_monotonic": true,
+      "bootstrap": {
+        "method": "circular_moving_block",
+        "block_observations": 10,
+        "draws": 1000,
+        "seed": 261023,
+        "ci": 0.9
+      }
+    }
+  },
+  "verification": {
+    "focused_method_tests": "6 passed pre-outcome",
+    "owning_suites": "135 passed",
+    "py_compile": "pass",
+    "diff_check": "pass",
+    "agentos": "0 errors; inherited warnings only",
+    "result_sha256": "8347763fccb0a46b3afef73d909d8244ba475f8bbb2fa4adff5d87a013c35536",
+    "script_sha256": "19c0abc6e55e335d060708c39f49ada0a3a7ab37e2b32f0d3e611e8e97822105",
+    "test_file_sha256": "f304d9e2c00e294a1c5e873908f4bf72ac175242cb576be5271d0758fad0b686",
+    "run_log_sha256": "52b378e972f6cf096350de261a9d5ada273cff1ca939167448c08ec4353bff84",
+    "tests_log_sha256": "9fe37e9cc30599253ab0081e2550e21524b5e362086e2485732e360b7ff200c1",
+    "agentos_log_sha256": "b8da11d50907a3d20d924ed67b8843357733fc6485959e42efb40851c1d06d99",
+    "report_sha256": "2c415f0d70828a17cf82fd4aeb6d796242a0ef76d4567c5ebd50afdb004546ec",
+    "interpretation_sha256": "381acc44b8d323e6fa34bac8dd7d9426a04332dcd0cc236ad83a5b2f30f3142b"
+  },
+  "corrections": []
+}
