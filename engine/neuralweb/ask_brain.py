@@ -521,6 +521,25 @@ _RATES_DETAIL_PROFILE_TERMS = re.compile(
     r"2s10s|duration|term\s+premium|breakeven|real\s+yield|real\s+rates?)\b"
     r"|(?:收益率曲线|收益率曲線|期限溢价|期限溢價|实际利率|實際利率)",
 )
+_MIXED_MACRO_RATES_TERMS = re.compile(
+    r"(?i)\b(yields?|treasur\w+|bonds?|fed|fomc|rates|"
+    r"rate\s+(?:sell[ -]?off|shock|hike|cut|repric\w*|surge|spike))\b"
+    r"|(?:利率|收益率|美债|美債|降息|加息)",
+)
+
+
+def _macro_rates_discriminator(question: str, subject_ticker: str | None) -> str | None:
+    """Pick one dedicated macro/rates read for a mixed single-name question."""
+    probe = question
+    if subject_ticker:
+        probe = re.sub(rf"\b{re.escape(subject_ticker)}\b", " ", probe)
+    if _RATES_DETAIL_PROFILE_TERMS.search(probe) or _MIXED_MACRO_RATES_TERMS.search(probe):
+        return "get_curve_detail"
+    if _INFLATION_INTELLIGENCE_TRIGGER_TERMS.search(probe):
+        return "read_inflation_intelligence"
+    if _LIQUIDITY_PLUMBING_TRIGGER_TERMS.search(probe):
+        return "read_liquidity_plumbing"
+    return None
 
 
 def _merge_seed_tools(*groups: list[str] | tuple[str, ...]) -> tuple[str, ...]:
@@ -645,6 +664,17 @@ def _question_profile(question: str, context_ticker: str | None) -> _QuestionPro
             "self_contained_financial", _BUDGET_GENERAL, (), "self_contained"
         )
 
+    if (
+        _PORTFOLIO_TRIGGER_TERMS.search(question)
+        and _OPTIONS_TRIGGER_TERMS.search(question)
+    ):
+        return _QuestionProfile(
+            "portfolio_options",
+            _BUDGET_GENERAL,
+            ("get_portfolio_brief", "read_options_entry_state", "read_world_state"),
+            "ambiguous",
+        )
+
     if _PORTFOLIO_TRIGGER_TERMS.search(question):
         return _QuestionProfile(
             "portfolio_current",
@@ -677,6 +707,14 @@ def _question_profile(question: str, context_ticker: str | None) -> _QuestionPro
         )
 
     if subject_ticker and _CURRENT_SINGLE_NAME_MOVE_TERMS.search(question):
+        macro_read = _macro_rates_discriminator(question, subject_ticker)
+        if macro_read:
+            return _QuestionProfile(
+                "single_name_macro_rates",
+                _BUDGET_WHY_FIRED,
+                ("get_market_events", "get_symbol_context", macro_read),
+                "ambiguous",
+            )
         return _QuestionProfile(
             "single_name_current",
             _BUDGET_WHY_FIRED,

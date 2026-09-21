@@ -189,3 +189,22 @@ def test_plan_shows_at_most_three_tools(monkeypatch):
 def test_empty_message_never_raises():
     assert isinstance(gw._seed_tool_plan(""), str)
     assert isinstance(gw._seed_tool_plan(None), str)  # type: ignore[arg-type]
+
+
+# ── 7. Cross-domain Fast questions keep both evidence families ───────────────
+
+def test_single_name_plus_macro_rates_keeps_name_and_rates_in_visible_plan():
+    line = gw._seed_tool_plan("Why did NVDA move after CPI and the rate selloff?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert "get_market_events" in tools
+    assert "get_symbol_context" in tools
+    assert "get_curve_detail" in tools
+    assert "query_spine" not in tools
+
+
+def test_portfolio_plus_options_keeps_portfolio_and_options_in_visible_plan():
+    line = gw._seed_tool_plan("How are options skew and gamma affecting my portfolio exposure?")
+    tools = line.split("start with ")[1].split(";")[0].split(", ")
+    assert "get_portfolio_brief" in tools
+    assert "read_options_entry_state" in tools
+    assert len(tools) <= 3
