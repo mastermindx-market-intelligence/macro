@@ -215,6 +215,7 @@ def test_mobile_triage_reports_result_count_and_reset_state():
     assert "No stories match this filter" in html
     assert "Clear the filter to return to all active stories." in html
     assert "aria-pressed" in html
+    assert 'id="nxSeg" role="tablist"' not in html
     assert 'aria-label="<span' not in html
 
 
