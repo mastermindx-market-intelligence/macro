@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T12:02:37.697683+00:00",
-  "count": 2567,
+  "generated_at": "2026-09-21T12:32:28.828717+00:00",
+  "count": 2568,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -542,6 +542,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pywwk7uip0p-fd96c8",
+      "title": "FX View Fed, BOE and BoJ ahead, but an AI safety wobble to start the week",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:03:35Z",
+      "summary_points": [
+        "Document Missing: No source document provided for extraction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
