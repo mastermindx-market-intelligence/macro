@@ -523,8 +523,9 @@ def test_hero_template_inline_style_is_only_w2_caveat_scope():
     )
     css = blocks[0]
     assert ".mx-spine-caveat" in css
+    assert 'html[data-theme="light"] .mx-spine-caveat' in css
     assert "color-mix" not in css.lower()
-    assert not re.search(r"#[0-9a-f]{3,8}\b|rgba?\(", css, re.IGNORECASE), (
+    assert not re.search(r"#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(", css, re.IGNORECASE), (
         "B2-W2 local caveat CSS must remain token-only"
     )
 

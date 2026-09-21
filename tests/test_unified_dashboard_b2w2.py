@@ -625,6 +625,7 @@ def test_committed_macro_html_keeps_retained_spine_off_us_primary_route():
         pytest.skip("site/macro.html absent in this checkout; built-page gate N/A")
     assert 'id="ud-hero"' not in macro_html
     assert _committed_spine_slice(macro_html) is None
+    assert 'data-spec="ud-b1"' not in macro_html
     assert 'id="regime-radar"' in macro_html
 
 
