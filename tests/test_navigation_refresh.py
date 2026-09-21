@@ -575,7 +575,15 @@ def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
         assert ".nav-settings-btn:focus-visible{outline:2px solid currentColor;" in source
         assert ".settings-close{width:40px;height:40px;border-radius:var(--r-sm,10px)" in source
         assert ".settings-expand{margin-left:auto;width:40px;height:40px;border-radius:var(--r-sm,10px)" in source
-        assert source.count("touch-action:manipulation") >= 4
+        assert ".settings-pop .lang-toggle{display:inline-flex;align-items:center;position:relative;min-height:40px" in source
+        assert ".settings-pop .lang-toggle:focus-visible{outline:2px solid var(--link,var(--blue));" in source
+        assert ".set-seg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct .sa-btn{min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}" in source
+        assert ".settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;" in source
+        assert ".settings-acct-in .sr-main[role=\"button\"]:focus-visible{outline:2px solid" in source
+        assert "if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');" in source
+        assert source.count("touch-action:manipulation") >= 9
 
     mobile = REFRESH_CSS.split("@media (max-width: 560px)", 1)[1].split(
         "@media (min-width: 901px)", 1

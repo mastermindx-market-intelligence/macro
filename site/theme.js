@@ -4155,7 +4155,8 @@
     '.settings-pop .theme-switch .knob::before{content:"🌙"}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob{transform:translateX(29px);background:#285fff}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob::before{content:"☀️"}',
-    '.settings-pop .lang-toggle{display:inline-flex;position:relative;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;flex:none;cursor:pointer}',
+    '.settings-pop .lang-toggle{display:inline-flex;align-items:center;position:relative;min-height:40px;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:var(--r-pill,999px);padding:3px;flex:none;cursor:pointer;touch-action:manipulation}',
+    '.settings-pop .lang-toggle:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-pop .lang-toggle .pill{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);border-radius:999px;background:var(--link,var(--blue));transition:transform .34s cubic-bezier(.34,1.4,.5,1)}',
     'html[data-lang="zh"] .settings-pop .lang-toggle .pill{transform:translateX(100%)}',
     '.settings-pop .lang-toggle .opt{position:relative;z-index:1;min-width:30px;text-align:center;padding:3px 11px;font-size:11.5px;font-weight:600;color:var(--muted,var(--ink-3));transition:color .25s;user-select:none}',
@@ -4166,6 +4167,8 @@
     '.settings-acct .sa-d{font-size:11.5px;color:var(--muted,var(--ink-3));line-height:1.5;margin:0 0 9px}',
     '.settings-acct .sa-btns{display:flex;gap:8px}',
     '.settings-acct .sa-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:not-allowed;border:1px solid var(--line,var(--grid));font-family:inherit}',
+    '.settings-acct .sa-btn{min-height:40px;touch-action:manipulation}',
+    '.settings-acct .sa-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct .sa-btn .sr-ic{color:inherit}',
     '.settings-acct .sa-btn.ghost{background:transparent;color:var(--text,var(--ink))}',
     '.settings-acct .sa-btn.solid{background:var(--link,var(--blue));border-color:var(--link,var(--blue));color:#fff;opacity:.92}',
@@ -4176,15 +4179,19 @@
     '.settings-acct .sa-btn.solid:hover{filter:brightness(1.07);opacity:1}',
     '.settings-acct-in{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:var(--panel2,var(--card));border:1px solid var(--line,var(--grid))}',
     '.settings-acct-in .sa-avatar{flex:none;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--link,var(--blue,#4f8cff)),color-mix(in srgb,var(--link,var(--blue,#4f8cff)) 55%,#9b5cff))}',
-    '.settings-acct-in .sr-main{flex:1;min-width:0}',
+    '.settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;flex-direction:column;justify-content:center;border-radius:var(--r-sm,10px);touch-action:manipulation}',
+    '.settings-acct-in .sr-main[role="button"]:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sr-lbl{display:block;font-size:13px;font-weight:700;color:var(--text,var(--ink));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
     '.settings-acct-in .sr-desc{display:block;font-size:11px;color:var(--muted,var(--ink-3));margin-top:1px}',
     '.settings-acct-in .sa-signout{flex:none;padding:7px 11px;border-radius:9px;border:1px solid var(--line,var(--grid));background:transparent;color:var(--text,var(--ink));font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .18s,color .18s}',
+    '.settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}',
+    '.settings-acct-in .sa-signout:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sa-signout:hover{border-color:var(--down,#ff5c6c);color:var(--ink-down, var(--down,#ff5c6c))}',
     '@media (prefers-reduced-motion:reduce){.settings-pop{transition:opacity .14s ease,visibility 0s linear .14s}.settings-pop.open,.nav-settings:not(.settings-dismissed):hover .settings-pop,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] + .settings-pop{transition:opacity .14s ease}.nav-settings-btn:hover svg,.nav-settings-btn[aria-expanded="true"] svg,.nav-settings:not(.settings-dismissed):hover .nav-settings-btn svg,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] svg{transform:none}}',
     /* ---- three-way theme segment + on/off toggle (shared by fx and live-prices) */
     '.set-theme-seg{display:inline-flex;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;gap:2px;flex:none}',
     '.set-seg-btn{padding:3px 10px;border:none;border-radius:999px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted,var(--ink-3));transition:background .2s,color .2s;white-space:nowrap}',
+    '.set-seg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;touch-action:manipulation}',
     '.set-seg-btn.active{background:var(--link,var(--blue));color:#fff}',
     '.set-seg-btn:hover:not(.active){background:color-mix(in srgb,var(--text,#fff) 9%,transparent);color:var(--text,var(--ink))}',
     '.set-seg-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -5093,7 +5100,9 @@
       // Keyboard operability (WCAG 2.1 SC 2.1.1): make the lang-toggle reachable and
       // operable via keyboard without breaking existing CSS.
       if (!t.hasAttribute('tabindex')) t.setAttribute('tabindex', '0');
-      if (!t.getAttribute('role')) t.setAttribute('role', 'switch');
+      // The template historically labelled this as a group even though the whole pill
+      // is one two-state control. Override stale markup so aria-checked has valid switch semantics.
+      if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');
       // aria-checked reflects zh = true / en = false; synced on langchange + immediately
       function _syncLangAria() {
         var zh = (docEl.getAttribute('data-lang') || 'en') === 'zh';
