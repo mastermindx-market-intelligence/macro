@@ -105,3 +105,18 @@ def test_built_markets_page_contains_global_pulse_when_present():
         return
     html = BUILT.read_text(encoding="utf-8")
     assert html.count('id="global-regime-pulse"') == 1
+
+
+def test_built_markets_page_keeps_asset_stamps_and_defer_contract():
+    """The generated page must pass through optimize_assets before commit.
+
+    A raw template render silently drops cache-busting query stamps and the
+    defer contract on local scripts, which is a real publication regression.
+    """
+    if not BUILT.exists():
+        return
+    html = BUILT.read_text(encoding="utf-8")
+    assert re.search(r'href="theme\.css\?v=[0-9a-f]{8}"', html)
+    assert re.search(r'href="navigation-refresh\.css\?v=[0-9a-f]{8}"', html)
+    assert re.search(r'src="markets_app\.js\?v=[0-9a-f]{8}" defer', html)
+    assert re.search(r'src="theme\.js\?v=[0-9a-f]{8}" defer', html)
