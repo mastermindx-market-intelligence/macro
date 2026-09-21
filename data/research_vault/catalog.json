@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T03:46:38.405662+00:00",
-  "count": 2543,
+  "generated_at": "2026-09-21T04:17:46.138891+00:00",
+  "count": 2544,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-23hszonk8iu-92177d",
+      "title": "Asia Economics Analyst Korea – Tracking Corporate Cash and Financial market Flows",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:33Z",
+      "summary_points": [
+        "Semiconductor Cash Surge: Korean semiconductor firms to generate KRW150tn (4.9% GDP) net cash in 2026, rising to KRW300tn (9.3% GDP) in 2027, driven by 60% repatriation of foreign earnings (3% GDP in 2026 → 5.6% in 2027).",
+        "Regional Cash Flow Disparity: Korea’s semiconductor cash flow (11% GDP in 2026/27) is 50% larger than Taiwan’s (2.5%/4.2% GDP), with Korea’s tax/wage flows accruing to public sector/households, altering regional liquidity dynamics.",
+        "Household Leverage & Volatility: Household equity exposure rose 23% of GDP YoY (mid-2022 trend), while margin loans remain elevated (KRW33tn), amplifying KOSPI volatility (60-day realized volatility at 70% vs. 30% in Taiwan).",
+        "Corporate M2 & Money Market Dynamics: Non-financial corporates drive 80% of 6.3% YoY M2 growth (KRW130tn), fueling MMF AUM growth (12.7% YoY, KRW30tn), with household deposits declining since 2008."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gax2op1lx0w-39b0db",
       "title": "On Our Minds Midterms A Blue House, a Coin Flip Senate",
