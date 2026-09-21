@@ -479,7 +479,7 @@ def test_light_only_landing_isolated_from_lazy_auth_theme(rel: str) -> None:
     # Server preference sync in theme.js calls setTheme()/setThemeAuto(), which
     # dispatch themechange. The landing consumes that event without rewriting the
     # saved preference, so a signed-in dark-dashboard user cannot black out home.
-    assert 'window.addEventListener("themechange", restoreLightOnlyHostTheme);' in src
+    assert 'document.addEventListener("themechange", restoreLightOnlyHostTheme);' in src
     auth = _extract_fn(src, "ensureAuthBroker")
     assert 's.src = "theme.js"' in auth
     assert "restoreLightOnlyHostTheme();" in auth
@@ -495,3 +495,48 @@ def test_landing_onboard_reference_tracks_current_content_hash(path: str) -> Non
     expected = hashlib.sha256((ROOT / "templates" / "onboard.js").read_bytes()).hexdigest()[:8]
     html = (ROOT / path).read_text(encoding="utf-8")
     assert f'onboard.js?v={expected}' in html
+
+
+@needs_node
+@pytest.mark.parametrize("rel", REL_ONBOARD)
+@pytest.mark.parametrize("landing,themed", [(True, False), (True, True), (False, False)])
+def test_landing_handles_real_document_theme_event(rel: str, landing: bool, themed: bool) -> None:
+    """A document-dispatched, non-bubbling event must preserve the landing boundary.
+
+    Mutant killed: registering the guard on window instead of document. Execute
+    the shipping shared setTheme function, rather than inventing a theme event.
+    """
+    src = (ROOT / rel).read_text(encoding="utf-8")
+    theme = (ROOT / "templates/theme.js").read_text(encoding="utf-8")
+    start = src.index("  function lightOnlyHost()")
+    end = src.index("  // What the page ACTUALLY", start)
+    guard = _extract_fn(src, "hostThemed") + "\n" + src[start:end]
+    harness = r"""
+const storage = new Map(), classes = new Set(['soft-contrast']);
+const attrs = {'data-theme': 'dark'};
+const window = new EventTarget(), document = new EventTarget();
+const docEl = document.documentElement = {
+  classList: {remove: c => classes.delete(c)},
+  getAttribute: k => attrs[k], setAttribute: (k,v) => {attrs[k]=v;}
+};
+const localStorage = {setItem: (k,v)=>storage.set(k,v), removeItem:k=>storage.delete(k)};
+function themeCharts() {} function skyToggleFx() {} function _syncThemeSegment() {}
+document.querySelectorAll = () => [];
+"""
+    harness += "const landing = %s, themed = %s;\n" % (json.dumps(landing), json.dumps(themed))
+    harness += r"""
+document.querySelector = selector => selector.includes('landing.css') ? landing : themed;
+"""
+    program = harness + guard + "\n" + _extract_fn(theme, "setTheme") + r"""
+setTheme('dark');
+console.log(JSON.stringify({theme:attrs['data-theme'], saved:storage.get('theme'),
+                           soft:classes.has('soft-contrast')}));
+"""
+    result = subprocess.run(["node", "-e", program], capture_output=True, text=True, check=True)
+    actual = json.loads(result.stdout)
+    light_only = landing and not themed
+    assert actual == {
+        "theme": "light" if light_only else "dark",
+        "saved": "dark",
+        "soft": not light_only,
+    }

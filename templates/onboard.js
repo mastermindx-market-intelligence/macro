@@ -436,7 +436,7 @@
     root.classList.remove("soft-contrast");
     if (root.getAttribute("data-theme") !== "light") root.setAttribute("data-theme", "light");
   }
-  window.addEventListener("themechange", restoreLightOnlyHostTheme);
+  document.addEventListener("themechange", restoreLightOnlyHostTheme);
   restoreLightOnlyHostTheme();
   // What the page ACTUALLY looks like, not what it says it is: html[data-theme]
   // is the fast path, but a dark-by-default page carries no attribute until
