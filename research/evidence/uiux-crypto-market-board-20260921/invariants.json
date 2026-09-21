@@ -1,0 +1,10 @@
+{
+  "base": "ff90f9beacb5109e43848faf0a76e45060bd07f9",
+  "page_sha256": "d1cc472bb4f239459a73c4e1393c75b398c8de4dd0715a8db119c57b6819c513",
+  "css": "7d7253bb",
+  "market_rows": 20,
+  "all_row_values_order_quote_hooks_sparklines_unchanged": true,
+  "all_scripts_unchanged": true,
+  "other_sections_unchanged": true,
+  "long_desktop_symbol_no_longer_overlaps_name": true
+}
