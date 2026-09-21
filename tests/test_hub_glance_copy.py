@@ -109,6 +109,40 @@ def test_hub_html_calls_standout_labels_not_tickers() -> None:
     assert "_standout_tickers(_key)" not in src
 
 
+def _hub_css_rule(selector: str, *, containing: str | None = None) -> str:
+    rules = re.findall(re.escape(selector) + r"\{([^{}]*)\}", build_vector._GLOBE_HUB_CSS)
+    assert rules, f"missing hub CSS rule for {selector}"
+    if containing is None:
+        return rules[0]
+    matches = [rule for rule in rules if containing in rule]
+    assert matches, f"missing {selector} rule containing {containing!r}"
+    return matches[0]
+
+
+def test_mobile_hub_section_switch_keeps_real_40px_button_floor() -> None:
+    shell = _hub_css_rule(".hub-seg", containing="display:flex")
+    button = _hub_css_rule(".hub-seg-btn")
+    # Border-box shell: 40px buttons + 3px top/bottom padding + 1px borders.
+    assert "height:48px" in shell
+    assert "min-height:40px" in button
+
+
+def test_hub_history_standalone_actions_keep_40px_floor() -> None:
+    timeline = _hub_css_rule(".al-more")
+    toggle = _hub_css_rule(".ha-toggle")
+    assert "min-height:40px" in timeline
+    assert "min-height:40px" in toggle
+
+
+def test_mobile_globe_country_controls_keep_effective_40px_floor() -> None:
+    leg = _hub_css_rule(".gd-leg", containing="min-height:40px")
+    node_hit_slop = _hub_css_rule(".gd-isl .body::after", containing="inset:-10px")
+    assert "box-sizing:border-box" in leg
+    # The floating globe nodes deliberately keep their compact visual pill; the
+    # transparent mobile pseudo-element expands the actual pointer target instead.
+    assert "inset:-10px" in node_hit_slop
+
+
 _START_HTML = Path(__file__).resolve().parents[1] / "site" / "start.html"
 _SPARSE_START = pytest.mark.skipif(
     not _START_HTML.exists(),
