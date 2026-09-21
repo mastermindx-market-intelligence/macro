@@ -21,6 +21,12 @@ verified:
   - claim: The real stored-input page builds without live collection.
     command: RENDER_NO_DRIP=1 CHINA_FAST_RENDER=1 python -m scripts.build_china
     result: Full China page and incumbent auxiliary pages emitted; September18 input hashes and denominators recorded in CHINA_PARTICIPATION_REAL_INPUT_20260921.json.
+  - claim: Final actual-page and explicitly synthetic degraded-presentation browser cases pass.
+    command: python research/grey_deer/capture_china_participation_context.py
+    result: Eight full-page theme/locale/viewport captures plus eight native-detail interactions pass; source hash stable, no overflow or capture errors, temporary browser/server closed.
+  - claim: Focus styling has actual focus-state evidence rather than only resting screenshots.
+    command: python scripts/capture_page_evidence.py --force-state "disclosure-focus:focus(#cnx-participation summary)"
+    result: Existing capture owner via explicit Chrome driver recorded 16/16 rest/focus states; final visual-evidence guard passed after its initial missing-focus refusal.
 unverified:
   - claim: Current production deployment, fresh collection and release acceptance.
     what_would_verify: Later exact-source CI/integration, accepted release and real production page/input proof; Chairman explicitly deferred CI this turn.
@@ -55,3 +61,9 @@ No worker, watcher, collector, CI run or production deployment is claimed starte
 No source effect uncertainty is unresolved. CI is deferred, not waived. Parent mission remains incomplete.
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
+
+Final browser source 024ae725b32a100224e60331bfb9a46ab72452c4; page SHA256 9567eb67e6ada5a799f349025931bfbdb52ad4d432c247154814e27c293730bc.
+
+Current next-slice PR:7622, Draft/HOLD-FOR-SOL. CI is deferred, not waived.
+Final focus/readability proof:mockups/evidence/china-participation-context-20260921/focus-manifest.json.
+Next release integration must preserve both this additive panel and PR7592 fixes. No CI result or production acceptance is claimed.

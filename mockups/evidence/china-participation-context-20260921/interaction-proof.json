@@ -1,0 +1,111 @@
+{
+  "source_commit": "024ae725b32a100224e60331bfb9a46ab72452c4",
+  "page_sha256": "9567eb67e6ada5a799f349025931bfbdb52ad4d432c247154814e27c293730bc",
+  "page_bytes": 453771,
+  "input_receipt": "research/grey_deer/CHINA_PARTICIPATION_REAL_INPUT_20260921.json",
+  "kind": "actual no-network builder with stored inputs; no production deployment",
+  "assessment_asof": "2026-09-18",
+  "capture_cases": 8,
+  "interaction_cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    }
+  ],
+  "source_page_unchanged": true,
+  "server_closed": true,
+  "production": false,
+  "fresh_collection": false,
+  "focus_capture": {
+    "manifest": "focus-manifest.json",
+    "states": 16,
+    "focus_states": 8,
+    "page_sha256": "9567eb67e6ada5a799f349025931bfbdb52ad4d432c247154814e27c293730bc",
+    "server_closed": true,
+    "production": false
+  }
+}

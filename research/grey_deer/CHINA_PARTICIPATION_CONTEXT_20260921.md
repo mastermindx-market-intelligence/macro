@@ -55,3 +55,51 @@ the falling benchmark. Semiconductors:-0.362% absolute vs+1.732pp benchmark gap;
 Technology:-0.078% absolute vs+2.016pp. Relative strength is not an absolute gain.
 Next: build/capture the complete China route from this isolated source, not a
 static mockup. Hosted CI and release are intentionally deferred by current intent.
+
+## Final tested capability and phase boundary
+The final local regression is134 passed (42 new context cases). One additional
+negative case caught unavailable board data being followed by a directional word;
+missing data now carries no rising/falling wording.
+The final actual no-network builder and Chrome run passed8/8 full-page captures
+plus8/8 expanded-detail interactions across1440/390, EN/ZH and dark/light.
+Each interaction also exercised explicitly synthetic missing/delayed presentation,
+while deterministic tests independently cover those loader/data states.
+No console errors, failed capture responses or document overflow were observed.
+The source-page fingerprint stayed unchanged; the temporary server/browser closed.
+
+DARK TREATMENT: existing graphite cnx-card, restrained dividers, neutral data ink.
+LIGHT TREATMENT: existing white card/cool canvas, hairline sections, no dark glow.
+Both share hierarchy and data meaning; no color alone claims a buy/sell condition.
+Expanded dark-English desktop and light-Chinese mobile evidence was visually read:
+absolute losses and positive benchmark gaps are distinguishable, details fit the
+viewport, and the long technical explanations remain behind native disclosure.
+The ordinary deep dashboard and its original information remain present.
+
+Evidence:mockups/evidence/china-participation-context-20260921/manifest.json and
+interaction-proof.json. Source/head and page digest are exact in the latter.
+No production market collection, deployment or forecast acceptance is claimed.
+Hosted CI and source-current integration are intentionally deferred by Chairman
+instruction; PR7592's incumbent release is not touched. Next integrate this context
+through the same ordinary publication path after release qualification, then pursue
+matched-universe concentration and source-clock evidence, not another risk model.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+
+## Focus-proof gate closed
+The visual-evidence guard first refused REST-only screenshots for the new summary
+focus style. No guard was weakened. The existing capture owner then produced16/16
+rest/focus captures (eight theme/locale/viewport cells, each normal and focused),
+using --force-state disclosure-focus:focus(#cnx-participation summary).
+The exact preserved page bytes were served from a bounded local test server with
+the same committed assets. The manifest is focus-manifest.json; it truthfully marks
+forced focus as presentation evidence, not a simulated source-data result.
+The active focus ring in the desktop-light capture was visually confirmed.
+Visual-evidence guard now passes. Design enforce-added reported zero blocking
+findings; inline JavaScript and the one-page market-state coherence guard passed.
+Agent OS validation has zero errors with63 pre-existing warnings.
+
+New candidate: PR7622 (Draft/HOLD-FOR-SOL). CI/release deferred by Chairman intent.
+The final immutable head is supplied by the PR; source/build proof is bound in
+interaction-proof.json. Generated data/site side effects were restored only in this
+owned worktree after preserving the exact built page and receipt. No product source
+or foreign operation was reverted. PR7592 remains a separate incumbent release.

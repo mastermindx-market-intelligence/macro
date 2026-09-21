@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - templates/_china_participation_context.html.j2
+manifest: mockups/evidence/china-participation-context-20260921/focus-manifest.json
