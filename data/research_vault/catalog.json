@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T20:18:52.918823+00:00",
-  "count": 2591,
+  "generated_at": "2026-09-21T20:33:49.127091+00:00",
+  "count": 2592,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -447,6 +447,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ldpmm95uzrm-f305aa",
+      "title": "GS Fishman HUF thoughts into a critical MNB meeting 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:04Z",
+      "summary_points": [
+        "MNB Policy Shift: MNB expected to lower inflation target to 2.5% (from 3.0%), positive for HUF; September Inflation Report critical as June-August data below forecasts despite oil rises.",
+        "Energy Sensitivity: 20% Brent oil/gas decline correlates with 1.5% EUR/HUF drop; energy prices are critical EM performance driver for HUF.",
+        "Range-Bound Outlook: EUR/HUF likely range-bound due to mixed local (inflation, Euro adoption, EU funds) vs. global factors; strategy: pair HUF longs with PLN shorts to hedge energy/geopolitical shocks.",
+        "Global Drivers: EUR/HUF trend closely tracks global oil/natural gas prices and relative Hungary-Euro Area pricing, not local fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
