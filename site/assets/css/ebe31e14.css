@@ -375,7 +375,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
   .mx-chg-what{flex-basis:100%;order:3}
 }
 
-/* LIVE / as-of chips — same contract as theme.css .dtp-*, page-scoped because
+/* Snapshot / as-of chips — same contract as theme.css .dtp-*, page-scoped because
    bonds does not load that sheet. */
 .dtp-chip{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:11px;
   font-weight:700;letter-spacing:.035em;color:var(--muted);padding:4px 8px;
