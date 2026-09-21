@@ -83,7 +83,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
         'class="cnx-lens"',
-        'onclick="cnxToggleLens(this,event)"',
+        'data-tip-en="{{ face.tip_en | e }}"',
         "{% set _ev_pool = [] %}",
         "{{ t('Macro News','宏观新闻') }}",
         "{{ t('What changed ↓','最近变化 ↓') }}",
@@ -128,14 +128,16 @@ def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
     assert "cnx-dlg-playbook" in TPL
 
 
-def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
+def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert 'class="cnx-lens"' in TPL
-    assert 'aria-expanded="false"' in TPL
     assert 'aria-label="Why this read / 为什么"' in TPL
-    assert 'onclick="cnxToggleLens(this,event)"' in TPL
-    assert "{% if not face.empty %}<button type=\"button\" class=\"cnx-lens\"" in TPL
-    assert "window.cnxToggleLens=cnxToggleLens;" in TPL
-    assert "window.cnxCloseLenses=cnxCloseLenses;" in TPL
+    assert 'data-tip-en="{{ face.tip_en | e }}"' in TPL
+    assert 'data-tip-zh="{{ face.tip_zh | e }}"' in TPL
+    assert 'onclick="cnxToggleLens(this,event)"' not in TPL
+    assert "cnxToggleLens" not in TPL
+    assert "cnxCloseLenses" not in TPL
+    assert "cnx-tip-open" not in TPL
+    assert "document.querySelector('.lens-pop.open')" in TPL
     assert '.cnx-card[role="button"]' in TPL
     assert "e.preventDefault();card.click();" in TPL
 
