@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T21:03:55.219739+00:00",
-  "count": 2593,
+  "generated_at": "2026-09-21T21:20:14.648382+00:00",
+  "count": 2594,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -309,6 +309,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xrmnmape8zv-5335ca",
+      "title": "Global daily all the news that is not fit to price",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:46:17Z",
+      "summary_points": [
+        "Geopolitical escalation & NATO cohesion risks: Ukraine drone strike on Moscow refinery, US-Denmark Greenland military access deal, Macron’s Russian hybrid threats briefing, and Slovakia’s NATO conflict refusal signal fragmented alliances and heightened escalation risks.",
+        "Market flows & election-driven policy shifts: Contradictory price movements (European gas/Brent crude lower despite tensions; Asian stocks higher) amid European election results (AfD win, SPD/CDU slumps), indicating political fragmentation affecting security trade policies.",
+        "Critical data releases: US unemployment (4.5% expected), UK house prices (+0.7% MoM), durable goods orders (manufacturing investment), and Michigan Consumer Sentiment Index (September) drive near-term market positioning.",
+        "Regional policy impacts: German political shifts (CDU ousted, Die Linke 25.7% vote) and US-China monetary friction (Saudi exit from mBridge) intensify trade/rare earth dynamics and security policy trade-offs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
