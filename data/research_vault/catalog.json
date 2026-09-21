@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T22:49:08.457997+00:00",
-  "count": 2598,
+  "generated_at": "2026-09-21T23:04:09.965442+00:00",
+  "count": 2599,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -451,6 +451,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6qc9c9yig02-2de7db",
+      "title": "Novo Nordisk (NOVOb.CO) Initial thoughts on mid term ambitions operating margin suggest c.3 downside to cons. in 2030",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:59Z",
+      "summary_points": [
+        "Operating Margin Downside Risk: Stable margins (40.3% 2026, 41.6% 2030) imply ~3% lower consensus operating profit estimates for 2030, directly impacting earnings visibility.",
+        "Semaglutide LOE Commentary Gap: Critical omission of semaglutide LOE expectations in press release despite competitive headwinds, risking investor disappointment on key revenue driver.",
+        "Price Target vs Closing Price Discrepancy: Consistent target prices (e.g., NOVO.CO DKK285 vs closing 916.90 Dkr; NVO $44 vs $132.80) exceed current levels with 'BB'/'B' credit ratings, signaling mispricing or overvaluation risk.",
+        "Key Clinical & Manufacturing Risks: Downside driven by clinical failures (CagriSema/amycretin), Wegovy/Ozempic manufacturing delays, and sustained pricing pressure from competitors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
