@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T17:20:34.052244+00:00",
-  "count": 2582,
+  "generated_at": "2026-09-21T17:33:15.773531+00:00",
+  "count": 2583,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -110,6 +110,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rgegz18efcr-4be2b2",
+      "title": "GS Armbrust What Matters Today HF Pain Continues Muse 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:41Z",
+      "summary_points": [
+        "HF Performance Divergence: Fundamental L/S HFs underperformed Systematic HFs (-1.02% vs +1.28% weekly), with Fundamentals +12% YTD (Asian-driven) trailing Systematics +20% YTD.",
+        "Market Breadth Weakens: <30% of S&P 500 stocks above 50-day moving average, indicating broad market stress beyond headline indices.",
+        "SPX & Sentiment Deterioration: SPX at 7650.50 with GS Sentiment Indicator at -0.9 (lowest in 12 months), reflecting extreme bearish positioning.",
+        "AAII Survey Bearishness: Bearish sentiment at 53.3% (highest since May 2025), bullish at 28.8%, with negative bull-bear spread confirming extreme pessimism."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
