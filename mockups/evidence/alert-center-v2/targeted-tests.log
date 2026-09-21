@@ -1,43 +1,5 @@
-exact_head=30df1ba8b9cefa410368771745ede2463884aa9f
-PASS test_demand_ahead_gets_expectations_gap_brief_without_mutation
-PASS test_demand_ahead_discloses_age_and_revision_catchup_falsifier
-PASS test_demand_ahead_abstains_on_malformed_or_ticker_mismatched_shapes
-PASS test_forex_residual_shock_gets_unexplained_move_brief_without_false_attribution
-PASS test_forex_residual_shock_discloses_staleness_and_normalization_falsifier
-PASS test_forex_residual_shock_abstains_on_pair_direction_or_shape_mismatch
-PASS test_net_liquidity_flip_gets_source_bound_context_without_timing_claim
-PASS test_fresh_positive_net_liquidity_flip_is_watch_next_but_not_a_probability
-PASS test_net_liquidity_flip_abstains_when_detail_does_not_prove_a_sign_flip
-PASS test_oi_crowding_gets_leverage_context_without_becoming_a_crash_call
-PASS test_fresh_stretched_oi_crowding_is_watch_next_even_without_a_price
-PASS test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state
-PASS test_forex_momentum_gets_state_change_brief_without_directional_forecast
-PASS test_forex_momentum_fresh_bull_transition_keeps_context_attention
-PASS test_forex_momentum_abstains_on_pair_direction_or_shape_mismatch
-PASS test_forex_scenario_active_brief_preserves_threshold_without_claiming_intervention
-PASS test_forex_scenario_inactive_edge_is_supported_without_relaxing_risk_blindly
-PASS test_forex_scenario_abstains_on_impossible_threshold_or_name_mismatch
-PASS test_bonds_move_brief_does_not_equate_calm_with_market_safety
-PASS test_bonds_move_elevated_state_is_context_not_equity_direction_call
-PASS test_bonds_move_abstains_on_band_or_asset_mismatch
-PASS test_commodity_stabilizing_shock_supports_gold_silver_and_copper_source_units
-PASS test_commodity_stabilizing_shock_abstains_on_asset_or_unit_mismatch
-PASS test_bonds_curve_regime_brief_attributes_macro_interpretation_to_source
-PASS test_bonds_curve_regime_fresh_bull_steepener_is_watch_next_not_trade_call
-PASS test_bonds_curve_regime_abstains_on_detail_or_asset_mismatch
-PASS test_forex_smile_regime_gets_taxonomy_brief_without_macro_outcome_claims
-PASS test_fresh_forex_smile_regime_is_watch_next_and_has_input_falsifier
-PASS test_forex_smile_regime_abstains_on_zone_mismatch_or_nontransition
-PASS test_commodity_complex_regime_keeps_stagflation_as_source_taxonomy
-PASS test_fresh_commodity_complex_reflation_is_watch_next_with_input_falsifier
-PASS test_commodity_complex_regime_abstains_on_headline_asset_or_transition_mismatch
-PASS test_vector_momentum_trigger_keeps_old_bullish_transition_historical
-PASS test_fresh_vector_momentum_bearish_and_neutral_states_are_watch_next
-PASS test_vector_momentum_trigger_abstains_on_headline_asset_or_score_mismatch
-PASS test_vector_structure_shift_keeps_old_bullish_transition_historical
-PASS test_fresh_vector_structure_bearish_and_neutral_states_are_watch_next
-PASS test_vector_structure_shift_abstains_on_headline_asset_or_score_mismatch
-PASS test_forex_triple_red_active_keeps_forced_deleveraging_as_hypothesis
-PASS test_forex_triple_red_cleared_does_not_claim_system_safety
-PASS test_forex_triple_red_abstains_on_asset_headline_or_detail_mismatch
-summary=41/41 PASS
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+222 passed, 5 warnings in 12.00s
