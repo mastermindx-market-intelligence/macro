@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T11:02:18.609794+00:00",
-  "count": 2564,
+  "generated_at": "2026-09-21T11:19:49.583405+00:00",
+  "count": 2565,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -168,6 +168,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jrcwqf89m6z-57d8ca",
+      "title": "Global Week Ahead September 21 – September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:45Z",
+      "summary_points": [
+        "Taiwan IP & Colombia Trade: Out-of-consensus bullish deviations (IP: 28.0% vs 24.6% consensus; Trade: -2300M vs -2617.5M), signaling regional economic strength and potential volatility.",
+        "SA Rate Hike Divergence: GS forecasts 25bps hike (vs consensus 0bps), indicating unpriced EM policy shift with high portfolio impact.",
+        "Germany PMI & US Goods Shipments: Strong bearish signals (PMI: -3.5; Goods: -2.5), highlighting material weakness in Eurozone manufacturing and US trade-sensitive assets.",
+        "Australia Unemployment: GS forecast 4.4% (vs 4.5% consensus), stronger labor market implying elevated risk sentiment and currency pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
