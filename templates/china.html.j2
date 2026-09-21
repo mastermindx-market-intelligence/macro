@@ -2214,13 +2214,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-bigsub" style="color:{{ _rr_sev_col }}">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
       {% endif %}
       <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
-      <div class="cnx-kv"><span class="k">{{ t('Deep-drawdown gauge','深跌仪表') }}</span>
-        {# SAME recession score + 60/40 bands as the detail dialog (was label-based, which
-           could disagree with the dialog's score-based colour); direction pair per the
-           2026-07-21 ruling so the whole pullback family flips together in zh. #}
-        {% set _rr_rec_sc = (latest.conditions.recession.score if latest.conditions and latest.conditions.get('recession') and latest.conditions.recession else none) %}
-        <span class="v"><span style="font-weight:700;color:{{ 'var(--down)' if (_rr_rec_sc or 0) >= 60 else ('var(--warn)' if (_rr_rec_sc or 0) >= 40 else 'var(--up)') }}">{{ t('High','高危') if (_rr_rec_sc or 0) >= 60 else (t('Elevated','偏高') if (_rr_rec_sc or 0) >= 40 else t('Calm','平静')) }}</span></span></div>
-      <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
+      {# Economic context, not drawdown odds. Reuse the dialog producer's label;
+         missing inputs never become calm and no second threshold is computed. #}
+      {% set _rr_slow = radar_dlg.slowdown if radar_dlg is defined and radar_dlg and radar_dlg.slowdown is defined else none %}
+      <div class="cnx-kv"><span class="k">{{ t('Economic slowdown','经济放缓') }}</span>
+        <span class="v" style="color:{{ {'up':'var(--up)','warn':'var(--warn)','down':'var(--down)'}.get(_rr_slow.tone, 'var(--muted)') if _rr_slow else 'var(--muted)' }}">{{ t(_rr_slow.en|capitalize, _rr_slow.zh) if _rr_slow else t('Unavailable','暂不可用') }}</span></div>
+      <div class="cnx-foot">{{ t((_rr_do_en|trim) or 'Risk guidance unavailable — inspect the evidence.', (_rr_do_zh|trim) or '风险指引暂不可用——请查看依据。') }}</div>
     </div>
     {% else %}
     {# Top Stocks card — when radar is quiet #}

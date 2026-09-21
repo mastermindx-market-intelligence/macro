@@ -1,0 +1,15 @@
+{
+  "input_path": "data/china_regime/latest.json",
+  "input_sha256": "1cc278b3094771429b6a8de25efff6bff0f6a19c78324b70775bb3d57a7d0925",
+  "input_asof": "2026-09-18",
+  "raw_score": 58.5,
+  "raw_label": "high",
+  "glance_and_dialog_read": {
+    "score": 58.5,
+    "en": "weak",
+    "zh": "疲弱",
+    "tone": "down"
+  },
+  "same_interpretation": true,
+  "production": false
+}

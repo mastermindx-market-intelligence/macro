@@ -12,6 +12,9 @@ displayed as Unclear rather than guessed into an action lane.
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
+from math import isfinite
+from numbers import Real
 
 from engine.china_playbook import MARGIN_CROWDED_PCTILE
 
@@ -88,8 +91,12 @@ _FACE_MARGIN_WASHED = {
     "sign": "ℹ",
     "en": "Borrowed money in A-shares has washed out — positioning is lighter.",
     "zh": "A股杠杆资金已经出清——仓位更轻。",
-    "tip_en": _FACE_MARGIN_CROWDED["tip_en"],
-    "tip_zh": _FACE_MARGIN_CROWDED["tip_zh"],
+    "tip_en": (
+        "Borrowed money invested in A-shares, as a share of tradable market value. "
+        "The source marks positioning as washed out, not crowded. "
+        "This is positioning context, not an entry signal."
+    ),
+    "tip_zh": "两融余额占流通市值的比重。来源标记为杠杆出清，而非资金拥挤。这是仓位背景，不是入场信号。",
 }
 
 # Spec §9.12 worded empty — loading ≠ a frozen sentence.
@@ -500,6 +507,25 @@ def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
         return ("Playbook posture unavailable.", "策略姿态暂不可用。")
     lane_en, lane_zh = posture_lane(posture)
     return (f"Playbook posture: {lane_en}.", f"策略姿态：{lane_zh}。")
+
+
+_SLOWDOWN_READS = {
+    "low": ("calm", "平静", "up"),
+    "elevated": ("softening", "走弱", "warn"),
+    "high": ("weak", "疲弱", "down"),
+}
+
+
+def slowdown_face(recession: Mapping | None) -> dict:
+    """One display read of the producer's slowdown label; never recompute bands."""
+    record = recession if isinstance(recession, Mapping) else {}
+    score, label = record.get("score"), record.get("label")
+    if (isinstance(score, bool) or not isinstance(score, Real)
+            or not isfinite(score) or not 0 <= score <= 100
+            or not isinstance(label, str) or label not in _SLOWDOWN_READS):
+        return {"score": None, "en": "unavailable", "zh": "暂不可用", "tone": "muted"}
+    en, zh, tone = _SLOWDOWN_READS[label]
+    return {"score": float(score), "en": en, "zh": zh, "tone": tone}
 
 
 def plain_gross_band(gross: float | None) -> tuple[str, str]:
