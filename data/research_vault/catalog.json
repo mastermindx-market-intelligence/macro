@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T01:01:15.202566+00:00",
-  "count": 2535,
+  "generated_at": "2026-09-21T01:31:13.890605+00:00",
+  "count": 2536,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-dzz2fzgtcok-72cbfc",
+      "title": "Barclays Keches ORCL F1Q27 Results Momentum Builds as ATM Completed 10 Sep 2026",
+      "institution": "Barclays",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T00:42:21Z",
+      "summary_points": [
+        "Fundamentals & Execution: $20bn equity raise fully executed, $26bn \"good\" backlog added; management signals strong capital allocation despite margin step-down from large asset online - RPO Growth Without Funding Pressure: RPO surged to $664bn (+$209bn y/y) with no incremental funding, driven by customer prepayments; OpenAI contracts now ~45% of backlog - ORCL 6.70% 2056s Buy Recommendation: Spreads tightened ~40bp post-results (room for 5-10bp further tightening); October investor day as key catalyst for capex/FCF detail - Short Base & Rally Timing Risk: Aggregate short base >$5bn across tranches; rally delayed until October investor day due to technicals, with 5Y CDS hedging ecosystem exposure"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-rtccc6ot6nq-f2a50d",
       "title": "RBC Atkin Tracking the Gigawatts Datacenter Expansion Tracker July 2026 26 Jul 2026",
