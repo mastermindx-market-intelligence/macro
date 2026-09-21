@@ -562,6 +562,98 @@ def test_lazy_asset_load_failure_has_an_explicit_shell_state() -> None:
     assert "如已有权限请登录" in code
 
 
+def test_lazy_asset_error_executes_visible_degraded_state() -> None:
+    """Exercise the real router/inject error path: a missing lazy script cannot leave Map inert."""
+    import subprocess
+    import textwrap
+
+    node_script = textwrap.dedent(r"""
+        const fs = require('fs');
+        const vm = require('vm');
+        const src = fs.readFileSync('templates/si_workspace.js', 'utf8');
+        const scripts = [];
+        let loadState = null;
+
+        function classes() {
+          return { toggle: () => {}, add: () => {}, remove: () => {} };
+        }
+        const mapSec = {
+          firstChild: null,
+          offsetHeight: 100,
+          classList: classes(),
+          getAttribute: (k) => k === 'data-view' ? 'map' : null,
+          querySelector: (q) => q === '.si-load-state' ? loadState : null,
+          querySelectorAll: () => [],
+          insertBefore: (node) => { loadState = node; },
+          appendChild: (node) => { loadState = node; },
+        };
+        const mapBtn = {
+          classList: classes(),
+          getAttribute: (k) => k === 'data-view' ? 'map' : null,
+          setAttribute: () => {},
+          removeAttribute: () => {},
+        };
+        const document = {
+          documentElement: { getAttribute: () => null },
+          title: 'Sector',
+          querySelectorAll: (q) => q === '.si-view' ? [mapSec] : (q === '.si-view-btn' ? [mapBtn] : []),
+          querySelector: (q) => q === '.si-view[data-view="map"]' ? mapSec : null,
+          getElementById: () => null,
+          dispatchEvent: () => {},
+          addEventListener: () => {},
+          createElement: (tag) => {
+            const listeners = {};
+            const el = {
+              tagName: tag,
+              className: '',
+              innerHTML: '',
+              async: false,
+              src: '',
+              attrs: {},
+              addEventListener: (name, fn) => { listeners[name] = fn; },
+              setAttribute: (k, v) => { el.attrs[k] = String(v); },
+              getAttribute: (k) => el.attrs[k] || null,
+              hasAttribute: (k) => Object.prototype.hasOwnProperty.call(el.attrs, k),
+              _listeners: listeners,
+            };
+            return el;
+          },
+          head: { appendChild: (node) => { scripts.push(node); } },
+        };
+        const ctx = {
+          document,
+          history: { replaceState: () => {} },
+          location: { hash: '#map' },
+          console,
+          setTimeout, clearTimeout,
+          addEventListener: () => {},
+          dispatchEvent: () => {},
+          CustomEvent: function(type, init) { return {type, detail: init && init.detail}; },
+          Event: function(type) { return {type}; },
+        };
+        vm.createContext(ctx);
+        ctx.window = ctx;
+        vm.runInContext(src, ctx);
+
+        if (scripts.length !== 3) throw new Error('map-lazy-assets-not-injected');
+        if (!scripts[0]._listeners.error) throw new Error('missing-script-error-handler');
+        scripts[0]._listeners.error();
+
+        if (!loadState) throw new Error('no-visible-degraded-state');
+        if (loadState.className !== 'si-load-state panel pad muted sm') throw new Error('wrong-degraded-class');
+        if (loadState.attrs.role !== 'status' || loadState.attrs['aria-live'] !== 'polite') throw new Error('missing-live-status');
+        if (!loadState.innerHTML.includes('Some tools are unavailable in this view.')) throw new Error('missing-en-copy');
+        if (!loadState.innerHTML.includes('此视图的部分工具暂不可用。')) throw new Error('missing-zh-copy');
+    """)
+    out = subprocess.run(
+        ["node", "-e", node_script],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert out.returncode == 0, f"node lazy-error replay failed: {out.stderr}"
+
+
 def test_generated_router_stamp_matches_changed_asset() -> None:
     """Immutable CDN URL must move whenever the public router body moves."""
     import hashlib
