@@ -34,6 +34,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -591,6 +592,14 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
         (step.get("id"), step.get("module"), step.get("args"))
         for step in declared
     ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
     assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
 
 
