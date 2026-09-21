@@ -4226,6 +4226,7 @@ jobs:
       - "lib/filing_value_units.py"
       - "lib/finra_knowable.py"
       - "lib/forex_link.py"
+      - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
