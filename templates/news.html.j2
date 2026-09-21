@@ -526,7 +526,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
    by its structure: a time gutter, an arrival spine, and a node whose FORM
    encodes how well the item is sourced (doctrine §7: non-verbal encodings that
    need no vocabulary). Hidden until the client has something honest to show. */
-.nxw{ margin:0 0 18px; border-radius:var(--r-ctl); overflow:hidden;
+.nxw{ margin:0 0 18px; border-radius:var(--nx-radius); overflow:hidden;
   /* The page's --nx-hair is mixed off --line, which all but vanishes on the dark
      panel. The spine IS this panel, so it gets a --text-derived rule that holds
      its weight in both themes. */
@@ -1443,7 +1443,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
         stateEl.appendChild(el('p','',
           tx('Nothing to act on — choose another filter or wait for the next confirmed development.','无需操作——请选择其他筛选条件，或等待下一条已确认进展。')));
       }
-      if(resultCountEl) text(resultCountEl,zh()?('显示 '+filtered.length+' 条'):(filtered.length+' stories'));
+      if(resultCountEl) text(resultCountEl,zh()?('显示 '+shown.length+' / '+filtered.length+' 条'):(shown.length+' of '+filtered.length+' shown'));
       if(intelClear) intelClear.hidden=filter==='all';
       if(toolbarEl) toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){ x.setAttribute('aria-pressed',(x.getAttribute('data-intel-filter')||'all')===filter?'true':'false'); });
       if(moreEl){

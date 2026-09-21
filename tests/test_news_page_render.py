@@ -206,10 +206,17 @@ def test_mobile_triage_reports_result_count_and_reset_state():
     assert "shown+' of '+stories.length+' shown'" in html
     assert "'显示 '+shown+' / '+stories.length+' 条'" in html
     assert "clearBtn.hidden" in html
+    assert "shown.length+' of '+filtered.length+' shown'" in html
+    assert "'显示 '+shown.length+' / '+filtered.length+' 条'" in html
     assert "resultCountEl" in html
     assert "intelClear.hidden" in html
     assert "aria-pressed" in html
     assert 'aria-label="<span' not in html
+
+
+def test_mobile_triage_does_not_restyle_live_wire_panel():
+    html = _render_full()
+    assert '.nxw{ margin:0 0 18px; border-radius:var(--nx-radius); overflow:hidden;' in html
 
 
 def test_release_board_renders():
