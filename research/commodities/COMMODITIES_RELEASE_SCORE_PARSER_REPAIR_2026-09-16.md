@@ -60,3 +60,19 @@ its existing DRAFT/HOLD branch and independent-review request.
 
 Status: BUILT_NOT_PROVEN, not deployed. Do not weaken a release check or treat
 this code repair as the full commodities model or product upgrade.
+
+
+## Current-base continuation — 2026-09-21
+
+Protected procedure re-pin for this continuation: `mastermindx-market-intelligence/Mastermind@6a24ed038774afff0bbab2982f420ef0e66e5b5f` / Skillpack 1.0.1.
+
+The historical hosted red on parser head `31b025ddd9cdc3f67752f460338faf5a8863cb6d` was isolated to the stochastic shared `push-retry-policy::test_contention_backs_off_faster_than_a_real_conflict`; every other executed CI pack was green. That dependency is now repaired and merged through #7242 as main commit `3ec2bc74cec02ce54ce0fb6f1063d7ff949f8607`, with deterministic complete-jitter-support proof and green required checks.
+
+Independent source review of the parser head found no semantic blocker:
+- `scripts/check_ms_board_coherence.py` on current main remains the exact original preimage blob `00712a8fa5a7d0e82e70ce65f25207772df52764`;
+- the candidate parser blob remains `530e5e05b3ca7ea8a5a33f9008811ac4a71b2c6b`;
+- the attribute-tolerant score parser stays bounded to the same start tag and rules (a)–(h) remain unchanged.
+
+This records-only continuation changes no parser/runtime semantics. Its purpose is to bind the existing carrier to the now-true release dependency state and obtain fresh current-base hosted proof through the normal pull-request `synchronize` event. Do not treat the prior pre-#7242 CI failure as a parser defect, and do not create a second parser/retry carrier.
+
+Current state remains `BUILT_NOT_PROVEN`: fresh exact-head hosted CI/integration proof is still required before merge; publication/live page proof remains later.
