@@ -2441,6 +2441,7 @@ def test_lineage_open_family_photographs_restored_rows() -> None:
     pages = {c.get("file", "").split("-")[1] for c in cells}
     assert "macro_financial_conditions" in pages
     assert "macro_monetary_policy" in pages
+    from lib.macro_suite_disclosure import LINEAGE_NOTE_KIND_SENTENCES
     for state in cells:
         assert state.get("crop_selector") == "section.mq-lineage"
         assert state.get("openedBy") == "click"
@@ -2456,11 +2457,8 @@ def test_lineage_open_family_photographs_restored_rows() -> None:
         if locale == "zh":
             assert "已变更指纹" in text, (state.get("file"), text[:120])
             assert "滞回" in text, (state.get("file"), text[:120])
-            assert (
-                "同一参考期" in text
-                or "取代上一期" in text
-                or "首次发布" in text
-                or "更晚的参考期" in text
+            assert any(
+                pair["zh"] in text for pair in LINEAGE_NOTE_KIND_SENTENCES.values()
             ), (state.get("file"), text[:160])
             assert (
                 "滞回带" in text

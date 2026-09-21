@@ -3952,7 +3952,9 @@ _MQ_TABLE_CENSUS_JS = (
 )
 
 
-_MQ_TABLE_VISIBLE_TEXT_JS = """(el, locale) => {
+_MQ_TABLE_VISIBLE_TEXT_JS = """(el, arg) => {
+                const locale = (arg && arg.locale) ? arg.locale : arg;
+                const loose = Boolean(arg && arg.loose);
                 const other = locale === 'zh' ? 'l-en' : 'l-zh';
                 const cr = el.getBoundingClientRect();
                 const parts = [];
@@ -3980,7 +3982,9 @@ _MQ_TABLE_VISIBLE_TEXT_JS = """(el, locale) => {
                   if (sticky || firstCol) {
                     if (!vertIn || !horizOverlap) continue;
                   } else if (!fullyIn) {
-                    continue;
+                    // A mid stop can clip every cell. Overlap text is the
+                    // receipt for that frame only; start and end stay strict.
+                    if (!(loose && vertIn && horizOverlap)) continue;
                   }
                   const clone = cell.cloneNode(true);
                   clone.querySelectorAll('.' + other).forEach(n => n.remove());
@@ -4084,6 +4088,10 @@ def _photograph_mq_table_390(
         page.wait_for_timeout(80)
         vis_at_scroll = str(
             table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
+        if not vis_at_scroll and str(pos).startswith("mid"):
+            vis_at_scroll = str(table.evaluate(
+                _MQ_TABLE_VISIBLE_TEXT_JS,
+                {"locale": locale, "loose": True}) or "")
         visible_now = bool(table.evaluate(
             """el => {
                 const r = el.getBoundingClientRect();
