@@ -1,0 +1,27 @@
+{
+  "operation": "reference-rethink-20260921",
+  "boundary": "design and interaction prototype ready for independent review",
+  "mission_complete": false,
+  "production_changed": false,
+  "principal_judgment": "Preserve the validated reference registry; replace the text-first entry point with contextual help and a question-led visual guide. No worker delegation was needed for this bounded candidate.",
+  "source_pin": "ff90f9beacb5109e43848faf0a76e45060bd07f9",
+  "protected_authority_pin": "6f321cb42166e4224e5107ac3312a6f7cd01fffa",
+  "carrier": "claude/reference-rethink-20260921",
+  "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+  "candidate_artboards": 20,
+  "verification": "browser-test-receipt.json",
+  "prototype_sha256": "c688441a586d750251848b51e2bbbe40f2c8daae40187ea68220a6cf23e769c7",
+  "do_not_redo": [
+    "Do not replace the validated registry with a second editorial database.",
+    "Do not recreate the full glossary or alphabet rail as the default experience.",
+    "Do not rerun one-shot Paper composition scripts against frozen nodes.",
+    "Do not invent live scores, illustrative component values, thresholds or formulas."
+  ],
+  "next_action": "Independent design adjudication; reconcile macro#6792 and #7610 before a fresh production integration packet.",
+  "gaps": [
+    "Production integration and deployment not performed.",
+    "Full owner-anchor validation requires rendered site and was not run in this sparse design tree.",
+    "Coverage-exception alias recovery and complete per-instrument visual treatments remain.",
+    "Independent design, accessibility and real-dashboard integration review pending."
+  ]
+}
