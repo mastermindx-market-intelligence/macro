@@ -566,3 +566,21 @@ def test_all_basket_sort_artifacts_keep_semantics_and_static_styles():
         assert 'function holdSortHeader(' in html, p
         assert 'restoreHoldSortFocus(app,sortFocusKey);' in html, p
         assert 'th2=>th2.onclick=' not in html, p
+
+
+def test_basket_holdings_use_canonical_scroll_wrapper_before_late_load():
+    """Shared load setup must not reparent an already-focused sorting table."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    wrapper = '<div class="panel"><div class="ts tbl-scroll"><table id="hold">'
+    old = '<div class="panel"><div class="ts"><table id="hold">'
+    source = (root / "templates" / "basket_detail.html.j2").read_text(encoding="utf-8")
+    assert source.count(wrapper) == 1
+    assert old not in source
+    pages = [p for name in ("basket", "basket_china", "basket_hk", "basket_canada", "basket_intl")
+             for p in (root / "site" / name).glob("*.html")]
+    assert len(pages) >= 100
+    for page in pages:
+        text = page.read_text(encoding="utf-8")
+        assert text.count(wrapper) == 1, page
+        assert old not in text, page
