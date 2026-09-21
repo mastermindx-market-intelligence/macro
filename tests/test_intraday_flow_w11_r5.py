@@ -83,6 +83,27 @@ def test_light_tape_chips_are_ghost_hairline_in_post_stack():
     assert ".badge-blue { color:var(--ink-info, var(--info,#5b9bf0)); border-color:color-mix(in srgb,var(--info) 45%,transparent); background:color-mix(in srgb,var(--info) 10%,transparent); }" in dark
 
 
+def test_light_post_stack_uses_theme_tokens_not_color_functions():
+    """TOKENIZE-7070: added light post-stack lines must not carry color-mix/rgba/hex.
+
+    Fails on head f4f17de018db: the W11 light block still inlines 11 color-mix()
+    colour decisions (stamp mix, hairline mixes, skeleton wash, chip ink, tip
+    shadow). Passes once those lines bind existing theme.css tokens only.
+    """
+    src = _src()
+    light = src[src.index("post-stack: consolidate") : src.index("</style>")]
+    assert "color-mix(" not in light
+    assert re.search(r"\brgba?\s*\(", light) is None
+    assert re.search(r"#[0-9a-fA-F]{3,8}\b", light) is None
+    assert re.search(r"border-radius\s*:", light) is None
+    assert "color:var(--ink-link, var(--link))" in light
+    assert "color:var(--muted)" in light
+    assert "border-color:var(--line)" in light
+    assert "box-shadow:var(--card-shadow)" in light
+    assert "background:transparent" in light
+    assert "box-shadow:var(--popover-shadow)" in light or "box-shadow:none" in light
+
+
 def test_light_tape_chip_computed_style_probe():
     """Light chip is transparent/near-canvas with a hairline; dark stays filled."""
     from playwright.sync_api import sync_playwright
