@@ -145,9 +145,9 @@ def test_wh_banner_dismiss_control_meets_interaction_contract() -> None:
         assert ".whb-x{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;" in text
         assert "background:transparent;border:0;color:inherit;opacity:.6;" in text
         assert "border-radius:var(--r-sm,10px);touch-action:manipulation" in text
-        assert ".whb-x:hover{opacity:1;background:color-mix(in srgb,currentColor 8%,transparent)}" in text
+        assert ".whb-x:hover{opacity:1}" in text
         assert ".whb-x:focus-visible{outline:2px solid currentColor;" in text
-        assert ".whb-x:active{opacity:1;" in text
+        assert ".whb-x:active{opacity:.78}" in text
         assert 'function syncCloseLabel() {' in text
         assert '? "关闭市场提醒"' in text
         assert ': "Dismiss market alert"' in text

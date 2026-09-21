@@ -496,10 +496,9 @@
       "background:transparent;border:0;color:inherit;opacity:.6;",
       "font-size:21px;line-height:1;padding:0;cursor:pointer;align-self:center;",
       "border-radius:var(--r-sm,10px);touch-action:manipulation}",
-      ".whb-x:hover{opacity:1;background:color-mix(in srgb,currentColor 8%,transparent)}",
-      ".whb-x:focus-visible{outline:2px solid currentColor;outline-offset:-4px;opacity:1;",
-      "background:color-mix(in srgb,currentColor 8%,transparent)}",
-      ".whb-x:active{opacity:1;background:color-mix(in srgb,currentColor 14%,transparent)}",
+      ".whb-x:hover{opacity:1}",
+      ".whb-x:focus-visible{outline:2px solid currentColor;outline-offset:-4px;opacity:1}",
+      ".whb-x:active{opacity:.78}",
       "@media print{.whb{display:none}}",
     ].join("");
     var st = document.createElement("style");
