@@ -1535,16 +1535,22 @@ def test_chipmat_collision_same_bytes_same_dom_allowed() -> None:
         "analystBox": box, "siblingPillBox": box, "cropBox": box,
         "chipmatPairFits": True,
     }
-    # Cross-page pair listed in chipmat_identical_allowlist.yml.
+    # Observed ZH 390 group in chipmat_identical_allowlist.yml.
     probes_ok = {
         "chip_material_macro_business_activity_dark_zh_390": dict(cell),
         "chip_material_macro_financial_conditions_dark_zh_390": dict(cell),
+        "chip_material_macro_housing_real_estate_dark_zh_390": dict(cell),
     }
     files_ok = [
         "chipmat-macro_business_activity-dark-zh-390.png",
         "chipmat-macro_financial_conditions-dark-zh-390.png",
+        "chipmat-macro_housing_real_estate-dark-zh-390.png",
     ]
     assert _chipmat_collision_ratified(files_ok, probes_ok) is True
+    # A subset of the observed group is not itself an allowlist entry.
+    assert _chipmat_collision_ratified(files_ok[:2], {
+        key: probes_ok[key] for key in list(probes_ok)[:2]
+    }) is False
     # Cross-page pair NOT on the allowlist must fail.
     probes_bad = {
         "chip_material_macro_rates_curves_dark_en_390": dict(cell),
