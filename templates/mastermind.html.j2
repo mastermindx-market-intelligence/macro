@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>Mastermind — {{ as_of }}</title>
+<title>Mastermind — Portfolio Snapshot</title>
 {% set seo_title = "Mastermind Dashboard" %}{% set seo_desc = "The Mastermind macro regime and market cycle dashboard — live regime reads, signal boards and cycle intelligence across US and global markets." %}{% set seo_path = "mastermind.html" %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -53,6 +53,16 @@
   .mm-tab-btn:hover { color:var(--text); border-color:var(--muted); }
   .mm-tab-btn.active { background:var(--link); border-color:var(--link); color:#fff; }
   .mm-tab-btn .tl { font-weight:400; opacity:.8; margin-left:6px; font-size:11px; }
+  .mm-tab-btn .life { display:inline-block; margin-left:7px; padding:1px 6px; border-radius:999px;
+                      border:1px solid currentColor; font-size:10px; font-weight:600; opacity:.8; }
+  .mm-tab-btn .life.archived { opacity:.65; }
+  .mm-notice { border:1px solid var(--line); border-left:4px solid var(--up); border-radius:8px;
+               background:var(--panel); padding:9px 12px; margin:0 0 14px; color:var(--muted); }
+  .mm-notice strong { color:var(--text); }
+  .mm-notice-stale { border-left-color:var(--down); }
+  .mm-archive-note { border:1px solid var(--line); border-left:4px solid var(--muted); border-radius:8px;
+                     padding:8px 10px; margin:0 0 10px; color:var(--muted); font-size:12px; }
+  .mm-access .live-btn { margin-top:8px; }
   /* stat grid */
   .mm-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
   .mm-stat { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:9px 11px; }
@@ -87,13 +97,15 @@
 <div class="panel">
   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
     <h1><span class="product-icon product-icon-mastermind" aria-hidden="true"></span>{{ t('Mastermind', '操盘大脑') }}</h1>
-    <span class="muted">{{ t('AI paper-trading desk — a daily snapshot of the live book', 'AI 模拟交易台 — 实盘账本每日快照') }}</span>
-    <a class="live-btn" id="mm-live" href="http://localhost:8000" target="_blank" rel="noopener">↗ {{ t('Open live dashboard', '打开实时面板') }}</a>
+    <span class="muted">{{ t('AI paper-trading desk — governed point-in-time snapshot', 'AI 模拟交易台 — 受治理的时点快照') }}</span>
+    <a class="live-btn" id="mm-live" href="https://bot.mastermind-x.com" target="_blank" rel="noopener">↗ {{ t('Open live dashboard', '打开实时面板') }}</a>
   </div>
   <p class="muted sm" style="margin:10px 0 0">{{ t(
-    'Mastermind is an autonomous AI paper-trading agent that runs on a local server. This page is a STATIC SNAPSHOT of its dashboard, pushed twice a day. For the full interactive view — live marks, brain reasoning trace, research feed and order tickets — open the live dashboard (it runs on your local machine). Paper-only / display-only: accountability, not alpha. Not investment advice.',
-    'Mastermind 是运行在本地服务器上的自主 AI 模拟交易代理。本页为其面板的静态快照，每日推送两次。如需完整交互视图——实时报价、推理追踪、研究动态与下单——请打开实时面板（运行于你的本机）。仅纸面／仅展示：问责而非阿尔法。非投资建议。') }}</p>
+    'This page is a point-in-time snapshot from the live Portfolio system. Its generated timestamp and freshness banner show exactly when the published bytes were produced. For live marks, reasoning trace, research and paper-order details, open the secured Portfolio dashboard. Paper-only / display-only: accountability, not alpha. Not investment advice.',
+    '本页是实时 Portfolio 系统的时点快照。生成时间与新鲜度提示会明确显示这些已发布数据的时间。如需实时报价、推理追踪、研究与模拟订单详情，请打开受保护的 Portfolio 面板。仅纸面／仅展示：问责而非阿尔法。非投资建议。') }}</p>
 </div>
+
+<div id="mm-state" aria-live="polite"></div>
 
 <div class="mm-tabs" id="mm-tabs" role="tablist" aria-label="Book · 账本"></div>
 
@@ -103,8 +115,8 @@
 
 <div class="panel">
   <p class="muted" style="font-size:12px;margin:0" id="mm-foot">{{ t(
-    'Static snapshot of a local AI paper-trading desk — refreshed twice daily. Paper-only / display-only; not investment advice.',
-    '本地 AI 模拟交易台的静态快照 — 每日刷新两次。仅纸面／仅展示；非投资建议。') }}</p>
+    'Point-in-time Portfolio snapshot. Check the generated timestamp and freshness banner before use. Paper-only / display-only; not investment advice.',
+    'Portfolio 时点快照。使用前请检查生成时间与新鲜度提示。仅纸面／仅展示；非投资建议。') }}</p>
 </div>
 
 <script src="theme.js"></script>

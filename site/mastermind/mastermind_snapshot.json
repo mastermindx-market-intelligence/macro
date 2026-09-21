@@ -1,8 +1,8 @@
 {
   "schema": "mastermind_snapshot.v1",
   "generated_at": "2026-07-29T22:25:01Z",
-  "default_book": "flagship",
-  "live_url": "http://localhost:8000",
+  "default_book": "autonomous",
+  "live_url": "https://bot.mastermind-x.com",
   "books": [
     {
       "id": "flagship",
@@ -1117,7 +1117,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-19; flat until the live daily track accrues. SPY shown over the same window for comparison (real history)."
-      }
+      },
+      "active": false,
+      "status": "archived",
+      "archived": true,
+      "superseded_by": "autonomous",
+      "archived_reason": "retired after the US-board design audit; history remains read-only"
     },
     {
       "id": "heavyweight",
@@ -1772,7 +1777,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-21; flat until the live daily track accrues. SPY shown over the same window for comparison (real history)."
-      }
+      },
+      "active": false,
+      "status": "archived",
+      "archived": true,
+      "superseded_by": "autonomous",
+      "archived_reason": "redundant Flagship analogue; history remains read-only"
     },
     {
       "id": "autonomous",
@@ -2491,7 +2501,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-21; flat until the live daily track accrues. SPY shown over the same window for comparison (real history)."
-      }
+      },
+      "active": true,
+      "status": "active",
+      "archived": false,
+      "superseded_by": null,
+      "archived_reason": null
     },
     {
       "id": "etf",
@@ -3251,7 +3266,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-22; flat until the live daily track accrues. SPY shown over the same window for comparison (real history)."
-      }
+      },
+      "active": false,
+      "status": "archived",
+      "archived": true,
+      "superseded_by": "autonomous",
+      "archived_reason": "standalone ETF allocation mandate retired; history remains read-only"
     },
     {
       "id": "china",
@@ -3957,7 +3977,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-21; flat until the live daily track accrues. FXI shown over the same window for comparison (real history)."
-      }
+      },
+      "active": true,
+      "status": "active",
+      "archived": false,
+      "superseded_by": null,
+      "archived_reason": null
     },
     {
       "id": "hk",
@@ -4689,7 +4714,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-06-21; flat until the live daily track accrues. FXI shown over the same window for comparison (real history)."
-      }
+      },
+      "active": true,
+      "status": "active",
+      "archived": false,
+      "superseded_by": null,
+      "archived_reason": null
     },
     {
       "id": "self_directed",
@@ -5291,7 +5321,12 @@
           }
         ],
         "note": "Portfolio starts at $1,000,000 on 2026-07-29; flat until the live daily track accrues. SPY shown over the same window for comparison (real history)."
-      }
+      },
+      "active": true,
+      "status": "active",
+      "archived": false,
+      "superseded_by": null,
+      "archived_reason": null
     }
   ],
   "disclaimer": "Paper-only / display-only. Accountability, not alpha. Not investment advice.",
