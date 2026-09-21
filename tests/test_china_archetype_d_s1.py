@@ -142,6 +142,12 @@ def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert "e.preventDefault();card.click();" in TPL
 
 
+def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
+    assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
+    assert "watch →" in TPL
+    assert "预警 →" in TPL
+
+
 def test_four_driver_synthesis_reuses_the_existing_link_rail_and_deep_dialogs() -> None:
     assert 'class="cnx-links" data-cn-driver-rail' in TPL
     assert "{{ t('Why this regime','为什么这样判断') }}" in TPL
