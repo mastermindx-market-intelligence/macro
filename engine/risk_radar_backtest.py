@@ -11,15 +11,20 @@ within the next `fwd_bd` business days | elevated) / base rate. All leak-free.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+
 import numpy as np
 import pandas as pd
 
 from lib import store
 
 
-def _spy():
+def _spy(*, drop_missing: bool = True):
     df = store.read("yahoo", "SPY")
-    s = df["close"].dropna()
+    if df is None or "close" not in df:
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    s = df["close"].dropna() if drop_missing else df["close"].copy()
     s.index = pd.to_datetime(s.index)
     return s.sort_index()
 
@@ -166,40 +171,69 @@ def state_series(subs: pd.DataFrame, calib: dict) -> pd.Series:
 
 def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
                    alert_from: str = "elevated", lo=None) -> dict:
-    """Precision / recall / F1 / fire-rate of the ALERT state (>= alert_from) vs a forward
-    >= dd SPY drawdown within H bd, under `calib`. The do-no-harm objective for recalibration."""
+    """State-replay accuracy on complete native SPY observation windows.
+
+    The supplied price index is not an exchange-calendar completeness claim.
+    Different forecast coverage must not resample prices or erase intervening losses.
+    """
     if type(H) is not int or H <= 0:
         raise ValueError("H must be a positive integer number of future observations")
+    if type(dd) not in (int, float) or not np.isfinite(dd) or not 0 < dd < 1:
+        raise ValueError("dd must be a finite loss fraction strictly between zero and one")
+    if alert_from not in _ORDER:
+        raise ValueError("alert_from must name an existing Risk Radar state")
     from engine.risk_radar import subscore_series, leading_signals
     subs = subscore_series(leading_signals(), calib)
     if subs is None or subs.empty:
         return {"f1": None}
-    spy = _spy().reindex(subs.index).ffill()
-    fdd = pd.Series({d: (spy.iloc[i + 1:i + 1 + H].min() / spy.iloc[i] - 1.0)
-                     if i + H < len(spy) else np.nan
-                     for i, d in enumerate(spy.index)})
-    label = (fdd <= -dd)
-    state = state_series(subs, calib)
-    alert = state.map(lambda s: _ORDER.index(s) >= _ORDER.index(alert_from))
-    # Thresholding NaN creates False, not a missing label. Select complete
-    # outcomes BEFORE that conversion can turn the unfinished tail into evidence.
-    population = alert.index.intersection(fdd.index)
+    spy = _spy(drop_missing=False)
+    for index in (spy.index, subs.index):
+        if (not isinstance(index, pd.DatetimeIndex) or index.hasnans or
+                not index.is_unique or not index.is_monotonic_increasing):
+            raise ValueError("Replay inputs require unique ordered dated observations")
+    # Preserve missing prices: neither forward-fill nor skip invalid observations.
+    bools = spy.map(lambda value: isinstance(value, (bool, np.bool_)))
+    px = pd.to_numeric(spy, errors="coerce").where(~bools).to_numpy(dtype=float)
+    good = np.isfinite(px) & (px > 0)
+    losses, ends = {}, {}
+    for day, loc in zip(subs.index, spy.index.get_indexer(subs.index)):
+        if loc < 0 or loc + H >= len(px) or not good[loc:loc + H + 1].all():
+            continue
+        loss = float(px[loc + 1:loc + H + 1].min() / px[loc] - 1.)
+        if np.isfinite(loss):
+            losses[day], ends[day] = loss, spy.index[loc + H]
+    fdd = pd.Series(losses, dtype=float).reindex(subs.index)
+    state = state_series(subs, calib).reindex(subs.index)
+    known = state.isin(_ORDER) & subs.notna().any(axis=1)
+    alert = state.map(lambda value: value in _ORDER and
+                      _ORDER.index(value) >= _ORDER.index(alert_from))
+    population = subs.index
     if lo is not None:
         population = population[population >= pd.Timestamp(lo)]
-    common = population.intersection(fdd.dropna().index)
-    unscored = len(population) - len(common)
-    if not len(common):
-        return {"precision": None, "recall": None, "f1": None, "fire_rate": None,
-                "n_alert": 0, "n_days": 0, "n_unscored": int(unscored)}
-    a = alert.reindex(common).fillna(False); y = label.reindex(common).fillna(False)
-    tp = int((a & y).sum()); fp = int((a & ~y).sum()); fn = int((~a & y).sum())
-    prec = tp / (tp + fp) if (tp + fp) else None
-    rec = tp / (tp + fn) if (tp + fn) else None
-    f1 = (2 * prec * rec / (prec + rec)) if (prec and rec) else 0.0
+    common = population.intersection(fdd[known & fdd.notna()].index)
+    a, y = alert.reindex(common), (fdd.reindex(common) <= -dd)
+    tp, fp = int((a & y).sum()), int((a & ~y).sum())
+    fn, tn = int((~a & y).sum()), int((~a & ~y).sum())
+    rows = [[day.isoformat(), ends[day].isoformat(), float(fdd[day]).hex(), bool(y[day])]
+            for day in common]
+    evidence = {
+        "definition": "risk_radar_state_replay.v2", "horizon_observations": H,
+        "loss_threshold": float(dd), "alert_from": alert_from,
+        "outcomes_sha256": hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest(),
+        "from": common[0].isoformat() if len(common) else None,
+        "through": common[-1].isoformat() if len(common) else None,
+        "n_events": tp + fn, "n_nonevents": fp + tn,
+        "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
+    }
+    prec = tp / (tp + fp) if tp + fp else None
+    rec = tp / (tp + fn) if tp + fn else None
+    f1 = 2 * prec * rec / (prec + rec) if prec and rec else 0.
     return {"precision": None if prec is None else round(prec, 3),
             "recall": None if rec is None else round(rec, 3),
-            "f1": round(f1, 3), "fire_rate": round(float(a.mean()), 4),
-            "n_alert": int(a.sum()), "n_days": int(len(common)), "n_unscored": int(unscored)}
+            "f1": round(f1, 3) if len(common) else None,
+            "fire_rate": round(float(a.mean()), 4) if len(common) else None,
+            "n_alert": int(a.sum()), "n_days": int(len(common)),
+            "n_unscored": int(len(population) - len(common)), "evaluation": evidence}
 
 
 def compare_calib(proposed: dict, base: dict | None = None, *, dd: float = 0.05, H: int = 21) -> dict:

@@ -13,7 +13,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TPL = (ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
 
-
 def test_deep_dashboard_rows_are_the_published_macro_composition() -> None:
     for marker in (
         "ROW 1: What To Do + Upcoming Events",
@@ -67,6 +66,100 @@ def test_archetype_d_six_block_l1_is_not_the_published_default() -> None:
         "L1-6 · Go deeper",
     ):
         assert marker not in TPL
+
+
+def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe() -> None:
+    # Borrow the useful interpretation layer, not the destructive six-block shell.
+    for marker in (
+        "{% set _hero_clause = hero_clause(pb_obj, ms) %}",
+        "{% set _stance = posture_lane(_pd.posture if _pd else none) %}",
+        "{% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}",
+        "{% set _todo_actual = _todo_faces | rejectattr('empty') | list %}",
+        "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}",
+        "{% for face in _todo_shown %}",
+        'class="cnx-hero-meta"',
+        'class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_thesis or \'Market-state headline unavailable.\' }}',
+        'class="cnx-playbook-context"',
+        "{{ t('Model headline','模型原始标题') }}",
+        'class="cnx-row cnx-reason-row',
+        'class="cnx-lens"',
+        'onclick="cnxToggleLens(this,event)"',
+        "{% set _ev_pool = [] %}",
+        "{{ t('Macro News','宏观新闻') }}",
+        "{{ t('What changed ↓','最近变化 ↓') }}",
+        "{% set _chg_news_n = 1 if latest.alerts else 2 %}",
+        "{% for h in CN.news.headlines[:_chg_news_n] %}",
+        '<a class="cnx-change-row" href="china_news.html">',
+        '<a class="cnx-change-row cnx-change-alert" href="alerts.html">',
+        'href="china_policy_watch.html"',
+        'href="china_news.html"',
+        'href="alerts.html"',
+    ):
+        assert marker in TPL
+
+    # Market-state headline ownership stays with the producer/live patcher;
+    # playbook context is separately qualified and cannot become a second state owner.
+    assert 'class="cnx-hero-read"' not in TPL
+    assert 'class="cnx-live-freshness"' in TPL
+    assert 'class="cnx-stance' not in TPL
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
+
+    # The richer original information architecture remains the page skeleton.
+    for marker in (
+        "ROW 1: What To Do + Upcoming Events",
+        "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature",
+        "ROW 3: Policy Monitor + Connect Flows + Macro News",
+        "ROW 4: Property + AI Brief + Alerts Centre",
+    ):
+        assert marker in TPL
+
+
+def test_hero_freshness_only_spends_space_when_a_feed_is_degraded() -> None:
+    assert "{% set _health_n = health | length if health else 0 %}" in TPL
+    assert "{% set _health_ok = health | selectattr('status','equalto','ok') | list | length if health else 0 %}" in TPL
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
+
+
+def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
+    assert "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}" in TPL
+    assert "{{ t('What To Do','该怎么做') }}</div>" in TPL
+    assert '{{ t(\'What To Do\',\'该怎么做\') }} <span class="cnx-ctitle-note"' not in TPL
+    assert "Current posture" not in TPL
+    assert "cnx-dlg-playbook" in TPL
+
+
+def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
+    assert 'class="cnx-lens"' in TPL
+    assert 'aria-expanded="false"' in TPL
+    assert 'aria-label="Why this read / 为什么"' in TPL
+    assert 'onclick="cnxToggleLens(this,event)"' in TPL
+    assert "{% if not face.empty %}<button type=\"button\" class=\"cnx-lens\"" in TPL
+    assert "window.cnxToggleLens=cnxToggleLens;" in TPL
+    assert "window.cnxCloseLenses=cnxCloseLenses;" in TPL
+    assert '.cnx-card[role="button"]' in TPL
+    assert "e.preventDefault();card.click();" in TPL
+
+
+def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
+    assert "{% set _ev_pool = [] %}" in TPL
+    assert "if c.importance == 'high'" in TPL
+    assert "if c.importance != 'high'" in TPL
+    assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
+    assert "ROW 1: What To Do + Upcoming Events" in TPL
+
+
+def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
+    links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
+    assert 'href="china_policy_watch.html"' in links
+    assert 'href="china_news.html"' not in links
+    assert 'href="alerts.html"' not in links
+
+
+def test_live_only_index_tiles_show_loading_geometry_until_live_quote_arrives() -> None:
+    for symbol in ("000300.SS", "399006.SZ"):
+        assert f'class="mx5-mkt-price nb-px mx-skel" data-sym="{symbol}"' in TPL
+        assert f'class="mx5-mkt-delta nb-chg mx-skel" data-sym="{symbol}"' in TPL
+    assert 'aria-busy="true"' in TPL
 
 
 def test_index_face_and_deep_racks_remain() -> None:
@@ -149,3 +242,60 @@ def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
     monkeypatch.delenv("RENDER_NO_DRIP")
     monkeypatch.setenv("CHINA_FAST_RENDER", "1")
     assert china_news.enabled() is False
+
+
+def test_neutral_posture_and_growth_history_do_not_become_entry_advice() -> None:
+    from engine.china_tier1 import posture_lane, reason_faces
+
+    assert posture_lane("NEUTRAL") == ("Neutral", "中性")
+    assert posture_lane(None) == ("Unclear", "待确认")
+
+    face = reason_faces(
+        [("+", "Growth-scare contrarian bottom context", "增长恐慌是实测的历史背景")],
+        n=1,
+    )[0]
+    joined = " ".join((face["en"], face["zh"], face["tip_en"], face["tip_zh"])).lower()
+    for forbidden in ("buying window", "add quality", "re-drawn nightly", "每晚重新校准"):
+        assert forbidden.lower() not in joined
+    assert "not an entry signal" in face["en"]
+    assert "不是入场信号" in face["zh"]
+
+
+def test_playbook_context_never_fabricates_policy_breadth_or_combined_signal() -> None:
+    from engine.china_tier1 import hero_clause
+
+    missing_headline_pb = {
+        "dial": {"posture": "NEUTRAL"},
+        "progress": {"phase": "mid"},
+        "quad_meaning": {
+            "en": "Growth-scare — both growth and prices falling.",
+            "zh": "增长恐慌——增长与物价齐跌。",
+        },
+    }
+    assert hero_clause(missing_headline_pb, {"color": "red"}) == (
+        "Playbook posture: Neutral.",
+        "策略姿态：中性。",
+    )
+
+    bullish_playbook = {"dial": {"posture": "CONSTRUCTIVE"}}
+    assert hero_clause(
+        bullish_playbook,
+        {"color": "red", "headline_en": "Risk-off", "headline_zh": "避险"},
+    ) == ("Playbook posture: Constructive.", "策略姿态：积极。")
+
+    text = " ".join(hero_clause(missing_headline_pb, {"color": "red"})).lower()
+    for fabricated in ("policy stays easy", "falling broadly", "buy", "entry", "act on"):
+        assert fabricated not in text
+
+
+def test_market_headline_and_playbook_context_have_separate_dom_owners() -> None:
+    # Keep the producer-owned market-state headline on the incumbent .v-thesis
+    # node and render playbook posture as a separately qualified context node.
+    # This publication contract intentionally stays inside the China template
+    # closure; the existing live-plane suite owns live-script behavior.
+    assert '<p class="v-thesis cnx-thesis">' in TPL
+    assert "{{ _ms_thesis or 'Market-state headline unavailable.' }}" in TPL
+    assert "{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}" in TPL
+    assert '<div class="cnx-playbook-context">' in TPL
+    assert TPL.count("_hero_clause[0]") == 1
+    assert TPL.count("_hero_clause[1]") == 1
