@@ -322,8 +322,8 @@
     "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-09-17",
     "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "79ad9ef62170ec21138cd4c32c15fab1dbec6efc5fcf995eea8d8515c8d94cd7",
-    "generation_id": "monetary_policy-US-79ad9ef62170ec21",
+    "content_sha256": "a14b79f300801b05c13f608fdc6be61a5445c647d3c4c6269bc67e3ba119ae4b",
+    "generation_id": "monetary_policy-US-a14b79f300801b05",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -347,7 +347,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-16",
@@ -1318,7 +1320,9 @@
         "dx": null,
         "dy": null,
         "null_reason": "NOT_APPLICABLE",
-        "status": "ABSENT"
+        "status": "ABSENT",
+        "x_axis_id": null,
+        "y_axis_id": null
       },
       "prior_state": {
         "effective_date": "2026-09-15",

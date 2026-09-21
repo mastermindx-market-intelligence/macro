@@ -166,8 +166,8 @@
     "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-09-18T15:16:08.942294Z",
     "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "e4c941c8472543528d59b73d3fb2cab88aad4e984ebc232f73cfea3bd43ab6f0",
-    "generation_id": "capital_structure-US-e4c941c847254352",
+    "content_sha256": "11eb93f429ad34fb587c88d064dfd08260b67cf3720450099d184d4fec0e79f6",
+    "generation_id": "capital_structure-US-11eb93f429ad34fb",
     "producer": "engine.market_os.macro_workspaces.capital_structure",
     "rendered_at": null
   },
@@ -191,7 +191,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-15",
@@ -1532,7 +1534,9 @@
         "dx": null,
         "dy": null,
         "null_reason": "COMPUTATION_REFUSED",
-        "status": "ABSENT"
+        "status": "ABSENT",
+        "x_axis_id": null,
+        "y_axis_id": null
       },
       "prior_state": {
         "effective_date": "2026-09-14",

@@ -341,8 +341,8 @@
     "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-08-01",
     "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "470585957f0dce7dfd162a42707f3b64ca10616510094812bed2f0ebd3a6583e",
-    "generation_id": "trade_flows-US-470585957f0dce7d",
+    "content_sha256": "a444aad819dac80e967a26ed2d0aa673fe14839a1a9effebb4ec10d7c9dc4e63",
+    "generation_id": "trade_flows-US-a444aad819dac80e",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },
@@ -366,7 +366,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-07-01",
