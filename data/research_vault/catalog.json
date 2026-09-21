@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T19:33:43.388189+00:00",
-  "count": 2589,
+  "generated_at": "2026-09-21T20:03:43.136977+00:00",
+  "count": 2590,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-megf17hsiv1-847d35",
+      "title": "MS Reassessing the Fed’s Rate Path What the Shift Means for Markets",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:31:52Z",
+      "summary_points": [
+        "Market-Implied Demand Shock Risk: 77% probability of \"aggregate demand shock/animal spirits\" scenario vs.",
+        "<15% rapid disinflation, signaling dominant risk factor for portfolio positioning.",
+        "Energy-Driven EUR Rate Correlation: 2y EUR rates tightly linked to energy prices (R²=0.86), with intermediate energy forwards exceeding 2022-23 highs, critical for FX and rate-sensitive portfolios.",
+        "French Spreads Anomaly: French spreads exceed ratings/fiscal model (FR point above regression line), driven by oil/gas prices and S&P500 (regression: y = 58 - 0.01 Brent + 0.41 Nat. gas - 0.017 S&P), indicating idiosyncratic risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 34,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-hkwwlrogdln-f5e2cd",
       "title": "GS MidDay Color US Equities Mid Day Color 21 Sep 2026",
