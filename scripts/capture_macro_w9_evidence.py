@@ -771,6 +771,17 @@ def main() -> int:
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    # Receipt is a pointer at the manifest — overlay/totals/resolved_sha live
+    # in manifest.json (mastermind.p0_evidence.v2), never on EVIDENCE.yml.
+    (OUT_DIR / "EVIDENCE.yml").write_text(
+        "schema: mastermind.page_evidence_receipt.v1\n"
+        "changed_paths:\n"
+        "  - templates/dashboard.html.j2\n"
+        "  - tests/test_macro_w9_r1.py\n"
+        "  - scripts/capture_macro_w9_evidence.py\n"
+        "manifest: mockups/evidence/macro-w9/manifest.json\n",
+        encoding="utf-8",
+    )
     print(
         f"outcome={manifest['outcome']} "
         f"captured={manifest['totals']['states_captured']}/"
