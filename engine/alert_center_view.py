@@ -67,6 +67,26 @@ _COMMODITY_PRICE_SHOCK = re.compile(
     r'^(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl) '
     r'— the acute move is settling\.$'
 )
+_COMMODITY_MOMENTUM_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) momentum → (bull|bear)$'
+)
+_COMMODITY_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
+    r'(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl)\.$'
+)
+_COMMODITY_ALLOCATION_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) allocation → ([0-9]{1,3})%$'
+)
+_COMMODITY_ALLOCATION_DETAIL = re.compile(
+    r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% \(momentum × risk\)\.$'
+)
+_COMMODITY_VALUE_HEADLINE = re.compile(
+    r'^(Gold|Silver): gold/silver ratio (silver cheap|silver rich)$'
+)
+_COMMODITY_VALUE_DETAIL = re.compile(
+    r'^GSR at ([0-9]{1,3})(?:st|nd|rd|th) %ile \(3y\) — '
+    r'(silver cheap vs gold|silver rich vs gold)\.$'
+)
 _VECTOR_ALLOCATION_CHANGE = re.compile(
     r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
     r'\(momentum × risk grid\)\.$'
@@ -1719,6 +1739,185 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前商品时间线',
         })
         return brief
+
+    momentum_headline = _COMMODITY_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _COMMODITY_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'momentum' and momentum_headline and momentum_detail:
+        headline_label, headline_state = momentum_headline.groups()
+        previous, current, detail_label, price_text, unit = momentum_detail.groups()
+        asset = str(row.get('asset') or '')
+        expected_unit = {'gold': '$/oz', 'silver': '$/oz', 'copper': '$/lb', 'oil': '$/bbl'}.get(asset)
+        if (asset == detail_label.lower() == headline_label.lower() and
+                headline_state == current and previous != current and unit == expected_unit):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated transitions do not prove momentum persisted between observations.'
+                recurrence_limit_zh = ' 重复转换并不能证明动量状态在观测之间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.momentum',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source commodity model moved {detail_label} momentum from {previous} '
+                    f'to {current} near {price_text} {unit}; this is a current-state research cue '
+                    'to verify, not a directional forecast.'),
+                'implication_zh': (
+                    f'来源商品模型将 {detail_label} 动量从 {previous} 切换到 {current}，'
+                    f'当时价格约为 {price_text} {unit}；这是需要复核的当前状态线索，并非方向预测。'),
+                'limitation': (
+                    'The momentum label is descriptive model state, not a calibrated probability, '
+                    'standalone return forecast or trade instruction. Source conviction is documented, '
+                    'but this family is not separately backtested as a timing signal.' +
+                    age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '动量标签只是描述性模型状态，并非校准概率、独立收益预测或交易指令。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify {detail_label} momentum is still '
+                    f'{current}, compare the latest price with {price_text} {unit}, and check whether '
+                    'a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {detail_label} 动量仍为 {current}，将最新价格与 '
+                    f'{price_text} {unit} 对比，并检查是否已有更新转换取代该事件。'),
+                'next_action_label': f'Recheck {asset} momentum',
+                'next_action_label_zh': '复核商品动量',
+                'reassessment': (
+                    f'Change the read if {detail_label} momentum leaves {current}, returns to neutral, '
+                    'or a newer source transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若 {detail_label} 动量不再是 {current}、回到中性，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    commodity_allocation_headline = _COMMODITY_ALLOCATION_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    commodity_allocation_detail = _COMMODITY_ALLOCATION_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'allocation' and commodity_allocation_headline and commodity_allocation_detail:
+        label, headline_pct = commodity_allocation_headline.groups()
+        old_pct, new_pct = commodity_allocation_detail.groups()
+        asset = str(row.get('asset') or '')
+        if (asset == label.lower() and headline_pct == new_pct and old_pct != new_pct and
+                0 <= int(old_pct) <= 100 and 0 <= int(new_pct) <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current model allocation.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前模型配置。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated firings do not prove the model held that weight between observations.'
+                recurrence_limit_zh = ' 重复触发并不能证明模型在两次观测之间持续保持该权重。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.allocation',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source momentum × risk model changed its {label} allocation from '
+                    f'{old_pct}% to {new_pct}%, making the current model weight worth rechecking '
+                    'before using it as portfolio context.'),
+                'implication_zh': (
+                    f'来源的动量 × 风险模型将 {label} 配置从 {old_pct}% 调整为 {new_pct}%；'
+                    '在将其作为组合背景前，应先复核当前模型权重。'),
+                'limitation': (
+                    '“Optimal strategy” is the source model label, not proof that the weight is '
+                    'optimal for an investor, a personalized recommendation, calibrated return '
+                    'probability or guaranteed future outcome. This alert family is documented but '
+                    'not separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '“最优策略”只是来源模型标签，并不能证明该权重对投资者而言最优，也不是个性化建议、'
+                    '校准收益概率或未来结果保证。该警报族有记录，但未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify the {label} model allocation is '
+                    f'still {new_pct}%, then inspect the current momentum and risk inputs before '
+                    'changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {label} 模型配置仍为 {new_pct}%，并检查当前动量与风险输入，'
+                    '再调整敞口。'),
+                'next_action_label': f'Recheck {asset} allocation',
+                'next_action_label_zh': '复核商品配置',
+                'reassessment': (
+                    f'Change the read if the current {label} weight is no longer {new_pct}% or the '
+                    'momentum/risk inputs that produced it have changed.'),
+                'reassessment_zh': (
+                    f'若当前 {label} 权重不再是 {new_pct}%，或产生该权重的动量/风险输入已改变，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    value_headline = _COMMODITY_VALUE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    value_detail = _COMMODITY_VALUE_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'value' and value_headline and value_detail:
+        label, headline_state = value_headline.groups()
+        percentile_text, detail_state = value_detail.groups()
+        asset = str(row.get('asset') or '')
+        expected_detail_state = headline_state + ' vs gold'
+        percentile = int(percentile_text)
+        if (asset == label.lower() and detail_state == expected_detail_state and 0 <= percentile <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current gold/silver ratio.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前金银比。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated value-state events do not prove the relative-value state persisted.'
+                recurrence_limit_zh = ' 重复价值状态事件并不能证明相对价值状态持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.value',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places the three-year gold/silver-ratio percentile at {percentile}, '
+                    f'which it classifies as {headline_state}; this is a relative-value context cue '
+                    'to verify against the current ratio.'),
+                'implication_zh': (
+                    f'来源将 3 年金银比百分位定位在 {percentile}，并将其分类为 {headline_state}；'
+                    '这是需要结合当前比率复核的相对价值背景。'),
+                'limitation': (
+                    'The GSR percentile is a historical relative-rank statistic, not intrinsic fair '
+                    'value, expected return, a calibrated probability or a trade instruction. Source '
+                    'conviction is documented, but this family is not separately backtested as a '
+                    'timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '金银比百分位只是历史相对排名统计，并非内在公允价值、预期收益、校准概率或交易指令。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    'Open the current commodity timeline and verify the latest gold/silver-ratio '
+                    f'percentile and whether the source still classifies silver as {headline_state.split()[-1]} '
+                    'relative to gold before using the signal.'),
+                'next_action_zh': (
+                    '打开当前商品时间线，核对最新金银比百分位，并确认来源是否仍维持当前白银相对黄金分类，'
+                    '再使用该信号。'),
+                'next_action_label': 'Recheck gold/silver ratio',
+                'next_action_label_zh': '复核金银比',
+                'reassessment': (
+                    f'Change the read if the ratio leaves the source {headline_state} state, the '
+                    'three-year percentile normalizes, or a newer value-state event supersedes it.'),
+                'reassessment_zh': (
+                    '若金银比退出当前来源分类、3 年百分位恢复正常，或新的价值状态事件取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
 
     allocation = _VECTOR_ALLOCATION_CHANGE.fullmatch(detail)
     if source == 'vector' and type_ == 'allocation_change' and allocation:

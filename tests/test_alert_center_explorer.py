@@ -1374,6 +1374,155 @@ def test_commodity_stabilizing_shock_abstains_on_asset_or_unit_mismatch():
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
 
 
+def test_commodity_momentum_brief_keeps_state_change_descriptive():
+    row = signal('commodity-momentum', source='commodity', type_='momentum', asset='silver')
+    row.update({
+        'tier': 'context', 'age_days': 3,
+        'headline': 'Silver momentum → bear',
+        'detail': 'Momentum state neutral → bear. Silver 65.47 $/oz.',
+        'detail_zh': '动量状态 中性 → 看空。白银 65.47 美元/盎司。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.momentum'
+    assert brief['attention'] == 'for_awareness'
+    assert 'Silver momentum from neutral to bear' in brief['implication']
+    assert 'not a directional forecast' in brief['implication']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck silver momentum'
+    assert brief['evidence_label'] == 'Open current commodity timeline'
+
+
+def test_commodity_momentum_abstains_on_headline_asset_or_unit_mismatch():
+    rows = []
+    wrong_headline = signal('commodity-mom-head', source='commodity', type_='momentum', asset='gold')
+    wrong_headline.update({
+        'headline': 'Gold momentum → bull',
+        'detail': 'Momentum state neutral → bear. Gold 4,387.50 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_headline)
+    wrong_asset = signal('commodity-mom-asset', source='commodity', type_='momentum', asset='silver')
+    wrong_asset.update({
+        'headline': 'Gold momentum → bear',
+        'detail': 'Momentum state neutral → bear. Gold 4,387.50 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_asset)
+    wrong_unit = signal('commodity-mom-unit', source='commodity', type_='momentum', asset='copper')
+    wrong_unit.update({
+        'headline': 'Copper momentum → bull',
+        'detail': 'Momentum state neutral → bull. Copper 6.80 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_unit)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_allocation_brief_keeps_optimal_as_source_model_label():
+    row = signal('commodity-allocation', source='commodity', type_='allocation', asset='copper')
+    row.update({
+        'tier': 'context', 'age_days': 4,
+        'headline': 'Copper allocation → 0%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'detail_zh': '最优策略从 50% 调整为 0%（动量 × 风险）。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.allocation'
+    assert brief['attention'] == 'for_awareness'
+    assert 'changed its Copper allocation from 50% to 0%' in brief['implication']
+    assert '“Optimal strategy” is the source model label' in brief['limitation']
+    assert 'not proof that the weight is optimal for an investor' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '4 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck copper allocation'
+
+
+def test_commodity_allocation_abstains_on_headline_or_weight_mismatch():
+    mismatch = signal('commodity-alloc-mismatch', source='commodity', type_='allocation', asset='silver')
+    mismatch.update({
+        'headline': 'Silver allocation → 50%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('commodity-alloc-asset', source='commodity', type_='allocation', asset='gold')
+    wrong_asset.update({
+        'headline': 'Silver allocation → 0%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    impossible = signal('commodity-alloc-bad', source='commodity', type_='allocation', asset='oil')
+    impossible.update({
+        'headline': 'Oil allocation → 101%',
+        'detail': 'Optimal strategy moved 50% → 101% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, wrong_asset, impossible)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_value_brief_keeps_gsr_as_relative_rank_context():
+    for asset, label in (('gold', 'Gold'), ('silver', 'Silver')):
+        row = signal('commodity-value-' + asset, source='commodity', type_='value', asset=asset)
+        row.update({
+            'tier': 'context', 'age_days': 3,
+            'headline': f'{label}: gold/silver ratio silver rich',
+            'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+            'detail_zh': '金银比处于 3 年期第 18 百分位 — 白银相对黄金偏贵。',
+            'link': 'commodities.html#timeline',
+            'validation': {'verdict': 'documented'},
+        })
+        before = deepcopy(row)
+        brief = project([row])['briefs'][row['alert_id']]
+        assert row == before
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'commodity.value'
+        assert brief['attention'] == 'for_awareness'
+        assert 'three-year gold/silver-ratio percentile at 18' in brief['implication']
+        assert 'silver rich' in brief['implication']
+        assert 'not intrinsic fair value' in brief['limitation']
+        assert 'not separately backtested as a timing signal' in brief['limitation']
+        assert '3 days old' in brief['limitation']
+        assert brief['next_action_label'] == 'Recheck gold/silver ratio'
+
+
+def test_commodity_value_abstains_on_state_asset_or_percentile_mismatch():
+    mismatch = signal('commodity-value-state', source='commodity', type_='value', asset='gold')
+    mismatch.update({
+        'headline': 'Gold: gold/silver ratio silver cheap',
+        'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('commodity-value-asset', source='commodity', type_='value', asset='copper')
+    wrong_asset.update({
+        'headline': 'Gold: gold/silver ratio silver rich',
+        'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    impossible = signal('commodity-value-pct', source='commodity', type_='value', asset='silver')
+    impossible.update({
+        'headline': 'Silver: gold/silver ratio silver rich',
+        'detail': 'GSR at 108th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, wrong_asset, impossible)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
 def test_bonds_curve_regime_brief_attributes_macro_interpretation_to_source():
     row = signal('curve-bear-flat', source='bonds', type_='curve_regime', asset='curve')
     row.update({

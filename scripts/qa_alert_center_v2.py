@@ -324,6 +324,23 @@ def main():
             page.screenshot(path=str(out / 'desktop-silver-shock.png'))
             report['screenshots'].append('desktop-silver-shock.png')
             report['checks'].append('Commodity shock workflow now covers silver without turning stabilization into a direction call')
+            commodity_decision_families = {
+                'commodity.momentum': 'desktop-commodity-momentum.png',
+                'commodity.allocation': 'desktop-commodity-allocation.png',
+                'commodity.value': 'desktop-commodity-value.png',
+            }
+            for family, shot in commodity_decision_families.items():
+                decision_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                   if brief.get('family') == family)
+                decision_brief = payload['explorer']['briefs'][decision_id]
+                page.goto(url + '#view=explore&id=' + decision_id, wait_until='domcontentloaded')
+                decision_text = page.locator('#ac-detail').inner_text()
+                assert decision_brief['limitation'] in decision_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == decision_brief['next_action']
+                assert decision_brief['evidence_label'] in decision_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+            report['checks'].append('Commodity momentum, allocation and gold/silver value states expose source-bound verification without becoming forecasts or recommendations')
             sector_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
                              if brief.get('family') == 'macro.sector_rs_cross_low')
             sector_brief = payload['explorer']['briefs'][sector_id]
