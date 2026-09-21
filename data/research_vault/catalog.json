@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T00:46:09.950119+00:00",
-  "count": 2534,
+  "generated_at": "2026-09-21T01:01:15.202566+00:00",
+  "count": 2535,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-rtccc6ot6nq-f2a50d",
+      "title": "RBC Atkin Tracking the Gigawatts Datacenter Expansion Tracker July 2026 26 Jul 2026",
+      "institution": "RBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T00:39:37Z",
+      "summary_points": [
+        "Americas Dominance in Datacenter Expansion: Americas drive 52% of under-construction growth (18,932 MW) and 48% of planned growth (19,496 MW) in Q2 2026, with Texas (39.3 GW planned) and Northern Virginia (23.0 GW) as key hubs, signaling concentrated capital allocation for cloud infrastructure.",
+        "Hyperscaler Pipeline Imbalance: Top 4 hyperscalers (Amazon, Meta, Google, Microsoft) have 39.6 GW planned/potential capacity vs. 8 GW under construction, indicating accelerated infrastructure investment and potential supply chain strain for portfolio positioning.",
+        "Regulatory Cost-Shifting Risk: NY’s Executive Order 62 (July 2026) imposes 50MW+ permitting freeze and shifts grid upgrade costs to developers (vs. ratepayer model), with US-wide project withdrawals surging due to community opposition and ratepayer policies, directly impacting project economics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ot99l5cnz0h-efc9da",
       "title": "Deep in the Tranches",
