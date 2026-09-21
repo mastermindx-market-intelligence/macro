@@ -1,0 +1,54 @@
+{
+  "scope": "isolated full admin app, real assets, synthetic reader fixtures",
+  "production_proven": false,
+  "authenticated_production_access": false,
+  "browser": "153.0.8010.48",
+  "as_of": "2026-09-16",
+  "rows": [
+    {
+      "width": 1440,
+      "result_cards": 1,
+      "due_only_cards": 1,
+      "global_horizontal_overflow": false,
+      "header_geometry": {
+        "topbar_bottom": 52,
+        "meta_bottom": 38.796875,
+        "meta_top": 12.203125,
+        "topbar_top": 0,
+        "content_top": 52
+      },
+      "screenshot": "admin-experiments-1440.png",
+      "screenshot_sha256": "6a5f3fc48bdc0ccf2b6728c06e5cb04b0ce5f4c36b8055be08e5e16143fd68d6"
+    },
+    {
+      "width": 390,
+      "result_cards": 1,
+      "due_only_cards": 1,
+      "global_horizontal_overflow": false,
+      "header_geometry": {
+        "topbar_bottom": 782.359375,
+        "meta_bottom": 769.359375,
+        "meta_top": 636.984375,
+        "topbar_top": 624.984375,
+        "content_top": 782.359375
+      },
+      "screenshot": "admin-experiments-390.png",
+      "screenshot_sha256": "ec830cfede23fa00a0d53cc22c537cacb0f7a66a2c8b2f75907d84325d482d63"
+    }
+  ],
+  "counts": {
+    "result_ready_count": 1,
+    "review_due_count": 2,
+    "attention_count": 2
+  },
+  "errors": [],
+  "write_requests": 0,
+  "inherited_ui_limits": "Admin currently exposes English and dark styles only; no light/ZH capability is claimed.",
+  "source_sha256": {
+    "engine/experiment_followup.py": "60a5ca1948b18c01f302f21eca6d6ecd622165087433901dc9960426cac69f0c",
+    "engine/experiments_registry.py": "9e4e461f9373a97aa1e5b05f9a1f8d0131b63b4eb55fe33f46df75c71b7b088b",
+    "admin/experiments.py": "31227c5d9ada984ab12353b32f8226830ce68547ba6757f129268f4dccc2a64e",
+    "admin/static/app.js": "8ce2349c71bb5a10c0fcbdad243cf0d2d9258be7862162a93ea8893eee742887",
+    "admin/static/styles.css": "495d15c2fbdcffa7f054953b7243d9e330088e79f25e18b9f70954dd2345b053"
+  }
+}

@@ -6303,3 +6303,13 @@ button.obx-btn-reject:hover:not(:disabled) {
 /* Only ever matches a row that carries the cross-link this page added — no
    pre-existing .nw-hero-row holds a .spacer. */
 .nw-hero-row .spacer, .ios-out-top .spacer { margin-left: auto; }
+
+/* Experiment follow-up: wrapped metadata must stay inside its header. */
+@media (max-width: 640px) {
+  .shell-right:has(.exp-table) .topbar {
+    height: auto;
+    min-height: 52px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}

@@ -32,12 +32,13 @@ import logging
 from datetime import date, datetime, timezone
 
 from lib import config
+from engine.experiment_followup import SCHEMA as FOLLOWUP_SCHEMA, CONCLUDED, project_followup, followup_counts
 
 log = logging.getLogger(__name__)
 
 OUT = "marketdata/experiments.json"
 SEED = "data/experiments/registry_seed.json"
-_DONE = {"validated", "proven", "gate_open", "no_go"}  # already concluded — don't re-flag on come-back date
+_DONE = CONCLUDED  # shared reminder policy; never a scientific verdict owner
 _NO_AUTO_READY = {"parked_research"}           # never auto-matures a result on a date
 # Date the seed's hand-authored `state` strings were last grounded by a codebase audit.
 # Used when the seed itself carries no top-level `audited` key. Any state the build could
@@ -353,7 +354,7 @@ def _refresh_qledger_promotion(e: dict) -> dict:
     ex_abs = best.get("mean_abs_excess")
     ex_basis = best.get("excess_basis")
     horizon = best.get("_horizon", 5)
-    ready = bool(best.get("ready"))
+    ready = best.get("ready") is True  # malformed truthy strings are not evidence
     approaching = bool(best.get("approaching"))
     proj = best.get("projected_ready_date")
 
@@ -616,12 +617,19 @@ def compute() -> dict:
         }
         hook = _HOOKS.get(e.get("hook") or "")
         hook_out: dict = {}
+        reader_status = "unavailable" if hook else "unwired"
         if hook:
             try:
                 hook_out = {k: v for k, v in (hook(e) or {}).items() if v is not None}
                 rec.update(hook_out)
+                reader_status = "observed" if hook_out else "unavailable"
             except Exception as ex:  # noqa: BLE001 — one bad reader never aborts the manifest
+                reader_status = "error"
                 log.warning("experiments_registry: hook failed for %s: %s", e.get("id"), ex)
+        # Only this actual reader call can establish new-result readiness.
+        # Seed status, state_live and a calendar reminder cannot manufacture it.
+        rec.update(readiness_schema=FOLLOWUP_SCHEMA, reader_status=reader_status,
+                   result_ready=reader_status == "observed" and hook_out.get("ready") is True)
         # Provenance for the `state` line. A state no live reader produced is the seed's
         # hand-authored string, frozen at the last audit — say so, rather than letting a
         # month-old "n_matured=0" read as this morning's truth.
@@ -632,21 +640,10 @@ def compute() -> dict:
             rec["state_as_of"] = (hook_out.get("state_as_of") or today.isoformat()
                                   if rec["state_live"]
                                   else str(e.get("state_as_of") or audited)[:10])
-        try:
-            if rec.get("come_back_on"):
-                rec["days_until"] = (date.fromisoformat(str(rec["come_back_on"])[:10]) - today).days
-        except Exception:  # noqa: BLE001
-            pass
-        # comprehensive 'ready' = a track-record verdict advanced (set by the hook) OR the
-        # come-back date has arrived — but not for already-concluded / parked / on-demand items.
-        if not rec.get("ready"):
-            du = rec.get("days_until")
-            if (du is not None and du <= 0 and (rec.get("status") or "") not in _DONE
-                    and (rec.get("kind") or "") not in _NO_AUTO_READY):
-                rec["ready"] = True
+        rec = project_followup(rec, today)
         out.append(rec)
 
-    ready = sum(1 for r in out if r.get("ready"))
+    counts = followup_counts(out)
     by_status: dict[str, int] = {}
     by_kind: dict[str, int] = {}
     for r in out:
@@ -655,24 +652,27 @@ def compute() -> dict:
     return {
         "schema": "experiments_registry.v1",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "as_of": today.isoformat(), "n": len(out), "ready_count": ready,
+        "as_of": today.isoformat(), "n": len(out), **counts,
+        "readiness_schema": FOLLOWUP_SCHEMA,
         "seed_audited": audited,
         "state_live_count": sum(1 for r in out if r.get("state_live")),
         "by_status": by_status, "by_kind": by_kind, "experiments": out,
-        "note": ("Every running experiment & long-horizon data-collection accrual in the "
-                 "codebase, with the date to come back for each next step. Track-records grade "
+        "note": ("Tracked research and data-collection records, including concluded work, in the "
+                 "codebase. Review due is a reminder, not a new result or permission to trade. "
+                 "New results are reported only by live readers. Track-records grade "
                  "the read's own calls against realized forward returns; nothing here sizes a "
                  f"position. Seed: data/experiments/registry_seed.json (audited {audited}); a "
                  "state marked 'as of <date> (seed)' is that hand-authored line, not a live "
-                 "read — no reader is wired for it yet."),
+                 "reader-supplied state. Reader availability is shown separately."),
     }
 
 
 def _notify_newly_ready(prev_path, payload) -> None:
-    """One-shot push to the configured telegram/discord channel when an experiment BECOMES
-    ready (verdict advanced or come-back date arrived) that wasn't ready in the previous
-    manifest. Fires once per transition; a no-op if notify.experiments_alerts is off or no
-    channel/secret is configured (send_* self-skip). Never raises."""
+    """Notify a new reader result or newly due review, with distinct wording.
+
+    A date never establishes a scientific result. Each transition is diffed against
+    the prior manifest. Existing notification configuration/transport remain the owner.
+    """
     cfg = (config.load().get("notify") or {})
     if not cfg.get("experiments_alerts", True):
         return
@@ -681,12 +681,16 @@ def _notify_newly_ready(prev_path, payload) -> None:
     except Exception:  # noqa: BLE001
         prev = {}
     newly = [e for e in payload["experiments"]
-             if e.get("ready") and not (prev.get(e.get("id")) or {}).get("ready")]
+             if ((e.get("result_ready") is True and
+                  (prev.get(e.get("id")) or {}).get("result_ready") is not True)
+                 or (e.get("review_due") is True and
+                     (prev.get(e.get("id")) or {}).get("review_due") is not True))]
     if not newly:
         return
-    lines = ["🔔 <b>Experiment results ready</b> — come back for the next step:"]
+    lines = ["🔔 <b>Experiment follow-up</b> — review the next step:"]
     for e in newly[:8]:
-        lines.append(f"• <b>{e.get('name')}</b>" + (f" — {e['phase_hint']}" if e.get("phase_hint") else ""))
+        reason = "New reader result" if e.get("result_ready") is True else "Review due — no new result reported"
+        lines.append(f"• <b>{e.get('name')}</b> — {reason}" + (f" — {e['phase_hint']}" if e.get("phase_hint") else ""))
         if e.get("next_step"):
             lines.append(f"   {str(e['next_step'])[:220]}")
     lines.append("→ admin Experiments tab: https://admin.mastermind-x.com")
