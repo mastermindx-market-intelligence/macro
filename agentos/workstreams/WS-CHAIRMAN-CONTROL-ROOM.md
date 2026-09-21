@@ -70,6 +70,19 @@ waves:
       continuation before re-running only the exact no-effect host gate. PF-1 A/B, INSTALL1, PF-1
       C15-C18 and intended-seat foreground proof remain ordered downstream gates; #355 remains
       architecture/semantic-readiness work only, with no implementation start or account ceremony child.
+  - id: SC1
+    title: Sessionless Sol continuity — durable checkpoint, orphan recovery and fresh-chat resume
+    status: in_progress
+    depends_on: [H0]
+    next_action: >
+      Converge the existing continuity carriers without creating another session or memory plane. Preserve
+      merged Mastermind #868 as the protected checkpoint-first procedure. Release #647 only after its
+      outstanding independent exact-head semantic review; release #651 only after exact-head review and
+      repeat the live Agent OS consumption proof after this workstream frontier is protected. Keep #836 on
+      its incumbent carrier and repair the reviewed durable semantic-ACK provenance gap before installation
+      or live canary. Then project R8 recovery plus the bounded continuation packet into the existing Control
+      Room and complete successor creation/bootstrap through the existing Web-Sol, RuntimeBinding and Capacity
+      owners. A chat or account is a temporary execution surface, never the durable owner of the responsibility.
   - id: ASD-F0
     title: Active-Session Dialogue architecture and authority freeze
     status: done
@@ -121,6 +134,7 @@ discoveries:
   - DSC:ASD-MODEL-VISIBLE-SETTINGS-CAN-EXPOSE-LIVE-CREDENTIALS
   - DSC:CCR-SECURITY-CLI-PROMPT-TRUNCATES-LONG-MULTILOGIN-TOKEN
   - DSC:CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY
+  - DSC:CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER
 artifacts:
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-ACTIVE-SESSION-DIALOGUE-F0-ACCEPTED.md
@@ -130,6 +144,7 @@ artifacts:
   - agentos/discoveries/DSC-ASD-MODEL-VISIBLE-SETTINGS-CAN-EXPOSE-LIVE-CREDENTIALS.md
   - agentos/discoveries/DSC-CCR-SECURITY-CLI-PROMPT-TRUNCATES-LONG-MULTILOGIN-TOKEN.md
   - agentos/discoveries/DSC-CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY.md
+  - agentos/discoveries/DSC-CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-sol-architecture.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-h0-release.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-22-active-session-dialogue-f0.md
@@ -193,21 +208,17 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Keep the exact #359 host child at PRE_START / WAITING_SOURCE_REPAIR_432 / effect=NONE while the
-  sole #432 source repair remains blocked by the exact-head
-  LIVE_CENSUS_COMPLETENESS_REQUIRES_PATH_WIDENING hold. The current five-path Draft PR #435 checkpoint
-  is a GitHub receipt, not a Slack worker result, and green hosted checks do not make it protectable.
-  The next upstream action is a Sol path-ceiling ruling for the same #432 task, branch and Draft PR #435
-  to add at least integrations/mastermind_slack_app/chatgpt.py; this exact-two-record Macro PR must not
-  carry that source change. Do not recreate a host child, revive #431, rerun the attended ceremony, or
-  start a host gate from a source-only checkpoint. Only after the path-widened source repair has
-  independent exact-head review and protected-master readback may one fresh same-root Sol continuation
-  re-read protected source and run the packet's no-effect HOST_PROFILE_GATE. Only a later
-  PROFILE_B_PROVEN return can release the separate non-sensitive account ceremony: the Chairman then
-  makes one closed choice between an eligible existing dedicated account and one explicitly approved
-  free account; no account child or paid-plan authority exists now. PF-1, INSTALL1 and real-seat proof
-  remain separate ordered gates, while #355 remains architecture-only and ASD-A2/A3 remain independent
-  lanes.
+  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD as independent
+  lanes. Mastermind #868 is already merged/protected and is DO_NOT_REDO. Mastermind #647 has clean
+  current-base composition plus green exact-head CI but still requires independent exact-head semantic
+  review. Mastermind #651 has green exact-head CI and a live canonical Agent OS read proving a 7,791-byte
+  continuation packet, but its semantic-sufficiency canary exposed this workstream's stale frontier;
+  repeat that canary only after this Agent OS correction is protected. Mastermind #836 remains the sole
+  Web-Sol/RuntimeBinding continuation carrier and must repair the reviewed durable semantic-ACK provenance
+  gap on that same carrier before install/live proof. After those gates, project recovery and resume into
+  the existing Control Room and complete closed successor creation/bootstrap through the existing Web-Sol,
+  RuntimeBinding and Capacity owners. Do not create a Session OS, transcript store, second recovery DB,
+  alternate RuntimeBinding writer, or account-specific project ownership.
 ---
 
 ## Capability state
