@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T07:03:06.829617+00:00",
+  "generated_at": "2026-09-21T10:37:55.412862+00:00",
   "ok": false,
   "fail_reasons": [
     "CHAINS STALE: latest chain file is 2026-08-13 (25 NYSE session(s) behind last_session=2026-09-18); threshold=1 \u2014 OI snapshot may have been missed",
