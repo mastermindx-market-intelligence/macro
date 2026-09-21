@@ -1,0 +1,242 @@
+[
+  {
+    "cell": "macro.html|desktop|en|light|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|desktop|en|light|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|desktop|en|dark|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|desktop|en|dark|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|desktop|zh|light|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|desktop|zh|light|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|desktop|zh|dark|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|desktop|zh|dark|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 900,
+    "viewport_width": 1440,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|tablet|en|light|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|tablet|en|light|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|tablet|en|dark|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|tablet|en|dark|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|tablet|zh|light|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|tablet|zh|light|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|tablet|zh|dark|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|tablet|zh|dark|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 788,
+    "viewport_width": 820,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|mobile|en|light|anonymous|radar_open",
+    "context_height": 182.8125,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|mobile|en|light|anonymous|radar_focus",
+    "context_height": 182.8125,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|mobile|en|dark|anonymous|radar_open",
+    "context_height": 182.8125,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|mobile|en|dark|anonymous|radar_focus",
+    "context_height": 182.8125,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|mobile|zh|light|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|mobile|zh|light|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  },
+  {
+    "cell": "macro.html|mobile|zh|dark|anonymous|radar_open",
+    "context_height": 164.6875,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": false
+  },
+  {
+    "cell": "macro.html|mobile|zh|dark|anonymous|radar_focus",
+    "context_height": 164.6875,
+    "dialog_width": 358,
+    "viewport_width": 390,
+    "page_overflow": false,
+    "inside_radar": true,
+    "evidence_open": false,
+    "focused_summary": true
+  }
+]
