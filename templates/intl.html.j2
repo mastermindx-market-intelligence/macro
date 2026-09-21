@@ -467,7 +467,7 @@
   @keyframes tblGrow { to { transform:scaleX(1); } }
 </style>
 </head>
-<body class="{{ 'page-intl-stocks' if mode == 'stocks' else 'page-intl' }}">
+<body{% if mode != 'stocks' %} class="page-intl"{% endif %}>
 <div class="intl-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
 
 {% include "_site_nav.html.j2" %}

@@ -64,6 +64,9 @@ def test_stock_boards_do_not_inherit_global_regime():
         global_regime_html='<section id="ud-hero">GLOBAL_REGIME_SENTINEL</section>',
     )
     assert 'id="ud-hero"' not in html
+    # Destination work must not restyle or otherwise mutate the stock-board route.
+    assert '<body>' in html
+    assert 'page-intl' not in html
 
 
 def test_international_hero_labels_us_reference_and_snapshot():
@@ -115,7 +118,10 @@ def test_committed_intl_projection_contains_exact_shared_fragment():
     assert 'data-source-status="unavailable"' not in fragment
     assert fragment in html
     assert html.count('id="ud-hero"') == 1
-    assert 'id="ud-hero"' not in (site / "intl_stocks.html").read_text()
+    stocks = (site / "intl_stocks.html").read_text()
+    assert 'id="ud-hero"' not in stocks
+    assert '<body>' in stocks
+    assert 'page-intl' not in stocks
 
 
 def test_both_builders_keep_the_shared_presentation_handoff():
