@@ -172,6 +172,44 @@ def test_lane_and_search_data_attributes_present():
     assert 'id="nxSeg"' in html and 'id="nxSearch"' in html
 
 
+def _css_rule(html: str, selector: str) -> str:
+    matches = re.findall(re.escape(selector) + r"\{([^}]*)\}", html, re.S)
+    assert matches, f"missing CSS rule for {selector}"
+    return "\n".join(matches)
+
+
+def test_mobile_triage_has_early_access_and_explicit_recovery():
+    html = _render_full()
+    assert 'id="nxTriageJump"' in html
+    assert 'href="#nxControls"' in html
+    assert 'id="nxControls"' in html
+    assert 'id="nxClear"' in html
+    assert 'id="nxIntelCount"' in html
+    assert 'id="nxIntelClear"' in html
+    assert "clearBtn.addEventListener('click'" in html
+    assert "intelClear.addEventListener('click'" in html
+
+
+def test_mobile_triage_standalone_controls_meet_product_floor():
+    html = _render_full()
+    for selector in (
+        '.nx-triage-jump', '.seg-btn', '.nx-search input', '.nx-clear',
+        '.nx-more', '.nxi-filter', '.nxi-clear', '.nxi-showmore',
+    ):
+        rule = _css_rule(html, selector)
+        match = re.search(r"min-height:\s*(\d+)px", rule)
+        assert match and int(match.group(1)) >= 40, (selector, rule)
+
+
+def test_mobile_triage_reports_result_count_and_reset_state():
+    html = _render_full()
+    assert "stories.length" in html
+    assert "clearBtn.hidden" in html
+    assert "resultCountEl" in html
+    assert "intelClear.hidden" in html
+    assert "aria-pressed" in html
+
+
 def test_release_board_renders():
     html = _render_full()
     assert "Nonfarm Payrolls" in html

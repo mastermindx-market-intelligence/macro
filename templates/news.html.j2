@@ -207,19 +207,28 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 
 /* ---- CONTROLS ---- */
 .nx-controls{ display:flex; gap:12px; align-items:center; margin-bottom:6px; flex-wrap:wrap;
-  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); }
-.seg{ display:inline-flex; gap:2px; }
+  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); scroll-margin-top:12px; }
+.seg{ display:inline-flex; gap:2px; flex-wrap:wrap; }
 .seg-btn{ appearance:none; border:0; background:transparent; color:var(--muted); font-family:inherit;
   font-size:12px; font-weight:700; letter-spacing:.04em; padding:6px 11px; border-radius:4px; cursor:pointer;
   transition:color .16s, background .16s; white-space:nowrap; }
+.seg-btn{ min-height:40px; }
 .seg-btn:hover{ color:var(--text); background:color-mix(in srgb,var(--text) 6%,transparent); }
 .seg-btn.on{ background:var(--text); color:var(--nx-paper); }
 .nx-search{ flex:1; min-width:170px; max-width:300px; position:relative; margin-left:auto; }
 .nx-search input{ width:100%; font-family:inherit; font-size:12.5px; color:var(--text); padding:7px 10px 7px 29px;
   border-radius:4px; background:transparent; border:1px solid var(--nx-hair); outline:none; transition:border-color .16s; }
+.nx-search input{ min-height:40px; }
 .nx-search input:focus{ border-color:var(--nx-rule); }
 .nx-search svg{ position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.5; }
 .nx-count{ font-size:11px; color:var(--muted); font-family:var(--num); flex:0 0 auto; }
+.nx-filter-status{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-left:auto; }
+.nx-clear{ appearance:none; min-height:40px; padding:7px 10px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl);
+  background:transparent; color:var(--muted); font:700 11px/1.2 var(--font-ui); cursor:pointer; }
+.nx-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
+.nx-triage-jump{ display:inline-flex; min-height:40px; align-items:center; gap:6px; margin-top:8px; padding:6px 10px;
+  border:1px solid var(--nx-hair); border-radius:var(--r-ctl); color:var(--text); font-size:11.5px; font-weight:700; }
+.nx-triage-jump:hover{ border-color:var(--nx-rule); background:var(--nx-card2); }
 
 /* ---- FEED — a story list, not a stack of cards ---- */
 .nx-feed{ display:flex; flex-direction:column; }
@@ -235,7 +244,7 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 .nx-tk{ font-family:var(--num); font-size:10.5px; font-weight:700; color:var(--muted);
   border:1px solid var(--nx-hair); padding:0 5px; border-radius:3px; }
 a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
-.nx-more{ margin:20px auto 4px; display:block; }
+.nx-more{ margin:20px auto 4px; display:block; min-height:40px; }
 .nx-empty{ text-align:center; color:var(--muted); font-size:13px; padding:34px; }
 
 /* ---- the one label a story carries ----
@@ -355,9 +364,14 @@ html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); bord
 .nxi-toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:12px 16px 4px; }
 .nxi-filter{ appearance:none; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
   border-radius:100px; padding:5px 10px; font:600 11px/1.2 inherit; cursor:pointer; }
+.nxi-filter{ min-height:40px; }
 .nxi-filter:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-filter.on{ color:var(--text); background:color-mix(in srgb,var(--nxi-accent) 12%,transparent);
   border-color:color-mix(in srgb,var(--nxi-accent) 36%,transparent); }
+.nxi-result-count{ color:var(--muted); font:600 10.5px/1.2 var(--num); white-space:nowrap; }
+.nxi-clear{ appearance:none; min-height:40px; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
+  border-radius:var(--r-ctl); padding:6px 10px; font:700 10.5px/1.2 var(--font-ui); cursor:pointer; }
+.nxi-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-toolbar-note{ margin-left:auto; color:var(--muted); font-size:10.5px; }
 .nxi-list{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:10px 16px 16px; }
 .nxi-story{ min-width:0; border:1px solid var(--nx-hair); border-radius:14px; overflow:hidden;
@@ -487,6 +501,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   border-top:1px solid var(--nx-hair); color:var(--muted); font-size:10.5px; }
 .nxi-showmore{ appearance:none; border:0; background:transparent; color:var(--nxi-accent);
   font:700 11px/1 inherit; cursor:pointer; }
+.nxi-showmore{ min-height:40px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl); padding:7px 10px; }
 @media(max-width:760px){
   .nxi-head{ grid-template-columns:1fr; } .nxi-health{ min-width:0; }
   .nxi-list{ grid-template-columns:1fr; }
@@ -511,7 +526,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
    by its structure: a time gutter, an arrival spine, and a node whose FORM
    encodes how well the item is sourced (doctrine §7: non-verbal encodings that
    need no vocabulary). Hidden until the client has something honest to show. */
-.nxw{ margin:0 0 18px; border-radius:var(--nx-radius); overflow:hidden;
+.nxw{ margin:0 0 18px; border-radius:var(--r-ctl); overflow:hidden;
   /* The page's --nx-hair is mixed off --line, which all but vanishes on the dark
      panel. The spine IS this panel, so it gets a --text-derived rule that holds
      its weight in both themes. */
@@ -650,8 +665,15 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   .nx-head{ padding-top:4px; margin-bottom:18px; }
   .nx-lead-title{ overflow-wrap:anywhere; }
   .nx-story-title{ font-size:17px; }
-  .nx-controls{ gap:8px; }
-  .nx-search{ order:3; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-controls{ gap:8px; align-items:stretch; }
+  .seg{ order:1; flex-basis:100%; width:100%; gap:4px; }
+  .seg-btn{ flex:0 1 auto; }
+  .nx-search{ order:2; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-filter-status{ order:3; flex-basis:100%; margin-left:0; justify-content:space-between; }
+  .nxi-toolbar{ align-items:stretch; }
+  .nxi-filter{ flex:1 1 auto; }
+  .nxi-result-count{ align-self:center; }
+  .nxi-toolbar-note{ flex-basis:100%; }
   .nx-pulse-sent{ margin-left:0; flex-basis:100%; }
 }
 /* Motion: there is none left to gate on this page. The aurora's 12s opacity loop
@@ -672,6 +694,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   <p class="nx-sub">{{ t('The market-moving business and macro news that matters now — importance-ranked, fresh, and de-noised.','此刻真正影响市场的商业与宏观新闻——按重要性排序、保持新鲜、去除噪音。') }}</p>
   <div class="nx-updated">{{ t('Updated','更新于') }} <span class="rel-time num" data-ts="{{ macro_news.fetched_at if macro_news else '' }}"></span>
     {% if FEED %}· <span class="num">{{ FEED|length }}</span> {{ t('stories ranked','条已排序') }}{% endif %}</div>
+  {% if FEED %}<a class="nx-triage-jump" id="nxTriageJump" href="#nxControls">{{ t('Find & filter stories','查找并筛选新闻') }} <span aria-hidden="true">↓</span></a>{% endif %}
 </header>
 
 {# ============================ HERO ============================ #}
@@ -737,19 +760,22 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 
 {# ============================ CONTROLS + FEED ============================ #}
 {% if FEED %}
-<div class="nx-controls">
-  <div class="seg" id="nxSeg" role="tablist">
-    <button class="seg-btn on" data-lane="all">{{ t('All','全部') }}</button>
-    <button class="seg-btn" data-lane="markets">{{ t('Markets','市场') }}</button>
-    <button class="seg-btn" data-lane="macro">{{ t('Macro','宏观') }}</button>
-    <button class="seg-btn" data-lane="fed">{{ t('Fed','美联储') }}</button>
-    <button class="seg-btn" data-lane="companies">{{ t('Companies','公司') }}</button>
+<div class="nx-controls" id="nxControls">
+  <div class="seg" id="nxSeg" role="tablist" aria-label="{{ t('News lanes','新闻分类') }}">
+    <button class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
+    <button class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
+    <button class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
+    <button class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
+    <button class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
   </div>
   <div class="nx-search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
     <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" placeholder="Search headlines, tickers…" aria-label="Search news">
   </div>
-  <span class="nx-count" id="nxCount"></span>
+  <div class="nx-filter-status">
+    <span class="nx-count" id="nxCount" aria-live="polite"></span>
+    <button type="button" class="nx-clear" id="nxClear" hidden>{{ t('Clear filters','清除筛选') }}</button>
+  </div>
 </div>
 {% endif %}
 
@@ -775,10 +801,12 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     <div class="nxi-metric"><b id="nxiSources">—</b><span>{{ t('Sources in view','当前来源') }}</span></div>
   </div>
   <div class="nxi-toolbar" id="nxIntelToolbar" hidden>
-    <button class="nxi-filter on" data-intel-filter="all">{{ t('All stories','全部事件') }}</button>
-    <button class="nxi-filter" data-intel-filter="high_impact">{{ t('High impact','高影响') }}</button>
-    <button class="nxi-filter" data-intel-filter="confirmed">{{ t('Confirmed','已确认') }}</button>
-    <button class="nxi-filter" data-intel-filter="draft">{{ t('Draft ready','草稿就绪') }}</button>
+    <button class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All stories','全部事件') }}</button>
+    <button class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false">{{ t('High impact','高影响') }}</button>
+    <button class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false">{{ t('Confirmed','已确认') }}</button>
+    <button class="nxi-filter" data-intel-filter="draft" aria-pressed="false">{{ t('Draft ready','草稿就绪') }}</button>
+    <span class="nxi-result-count" id="nxIntelCount" aria-live="polite"></span>
+    <button type="button" class="nxi-clear" id="nxIntelClear" hidden>{{ t('Clear filter','清除筛选') }}</button>
     <span class="nxi-toolbar-note">{{ t('Outbound posting is separate and remains review-gated.','对外发布为独立流程，仍需人工审核。') }}</span>
   </div>
   <div class="nxi-list" id="nxIntelList" hidden></div>
@@ -915,7 +943,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     </div>
   </article>
   {% endfor %}
-  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match — try another lane or clear the search.','没有匹配的新闻——换个分类或清空搜索。') }}</div>
+  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match these filters. Use Clear filters above to recover the full ranked list.','没有新闻匹配当前筛选。使用上方“清除筛选”可恢复完整排序列表。') }}</div>
 </section>
 {% if FEED|length > 24 %}<button class="gbtn nx-more" id="nxMore">{{ t('Show more','显示更多') }} <span class="num">(+{{ FEED|length - 24 }})</span></button>{% endif %}
 {% else %}
@@ -1046,7 +1074,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var stories=[].slice.call(feed.querySelectorAll('.nx-story'));
     var seg=document.getElementById('nxSeg'), search=document.getElementById('nxSearch');
     var countEl=document.getElementById('nxCount'), emptyEl=document.getElementById('nxEmpty');
-    var moreBtn=document.getElementById('nxMore');
+    var moreBtn=document.getElementById('nxMore'), clearBtn=document.getElementById('nxClear');
     var lane='all', q='', expanded=false, CAP=24;
     function apply(){
       var shown=0;
@@ -1063,9 +1091,14 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
         var okLane=lane==='all'||el.getAttribute('data-lane')===lane;
         var okQ=!q||(el.getAttribute('data-search')||'').indexOf(q)>=0; return okLane&&okQ;
       }).length;
-      if(countEl) countEl.textContent = total+(document.documentElement.getAttribute('data-lang')==='zh'?' 条':' shown');
+      if(countEl){
+        var isZh=document.documentElement.getAttribute('data-lang')==='zh';
+        countEl.textContent = isZh ? ('显示 '+total+' / '+stories.length+' 条') : (total+' of '+stories.length+' shown');
+      }
       if(emptyEl) emptyEl.style.display = total? 'none':'block';
       if(moreBtn) moreBtn.style.display = (!expanded && !q && lane==='all' && total>CAP)? '':'none';
+      if(clearBtn) clearBtn.hidden = lane==='all' && !q;
+      if(seg) seg.querySelectorAll('.seg-btn').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-lane')===lane ? 'true':'false'); });
     }
     if(seg) seg.addEventListener('click', function(e){
       var b=e.target.closest('.seg-btn'); if(!b) return;
@@ -1073,6 +1106,13 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       b.classList.add('on'); lane=b.getAttribute('data-lane'); apply();
     });
     if(search) search.addEventListener('input', function(){ q=this.value.trim().toLowerCase(); apply(); });
+    if(clearBtn) clearBtn.addEventListener('click', function(){
+      lane='all'; q=''; expanded=false;
+      if(search) search.value='';
+      if(seg) seg.querySelectorAll('.seg-btn').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-lane')==='all'); });
+      apply();
+      if(search) search.focus();
+    });
     if(moreBtn) moreBtn.addEventListener('click', function(){ expanded=true; apply(); });
     window.addEventListener('langchange', apply);
     apply();
@@ -1091,6 +1131,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var toolbarEl=document.getElementById('nxIntelToolbar');
     var footerEl=document.getElementById('nxIntelFooter');
     var moreEl=document.getElementById('nxIntelMore');
+    var resultCountEl=document.getElementById('nxIntelCount'), intelClear=document.getElementById('nxIntelClear');
     var healthEl=document.getElementById('nxIntelHealth');
     var updatedEl=document.getElementById('nxIntelUpdated');
     if(!listEl || !stateEl) return;
@@ -1402,9 +1443,12 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
         stateEl.appendChild(el('p','',
           tx('Nothing to act on — choose another filter or wait for the next confirmed development.','无需操作——请选择其他筛选条件，或等待下一条已确认进展。')));
       }
+      if(resultCountEl) text(resultCountEl,zh()?('显示 '+filtered.length+' 条'):(filtered.length+' stories'));
+      if(intelClear) intelClear.hidden=filter==='all';
+      if(toolbarEl) toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){ x.setAttribute('aria-pressed',(x.getAttribute('data-intel-filter')||'all')===filter?'true':'false'); });
       if(moreEl){
         moreEl.hidden=expanded||filtered.length<=CAP;
-        text(moreEl,tx('Show '+(filtered.length-CAP)+' more','再显示 '+(filtered.length-CAP)+' 条'));
+        text(moreEl,tx('Show '+Math.max(0,filtered.length-CAP)+' more','再显示 '+Math.max(0,filtered.length-CAP)+' 条'));
       }
       if(footerEl) footerEl.hidden=false;
     }
@@ -1475,6 +1519,12 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       var b=e.target.closest&&e.target.closest('.nxi-filter'); if(!b)return;
       toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.remove('on');});
       b.classList.add('on'); filter=b.getAttribute('data-intel-filter')||'all'; expanded=false; render();
+    });
+    if(intelClear) intelClear.addEventListener('click',function(){
+      filter='all'; expanded=false;
+      if(toolbarEl) toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.toggle('on',(x.getAttribute('data-intel-filter')||'all')==='all');});
+      render();
+      if(toolbarEl){var allBtn=toolbarEl.querySelector('[data-intel-filter="all"]'); if(allBtn) allBtn.focus();}
     });
     if(moreEl) moreEl.addEventListener('click',function(){expanded=true;render();});
     window.addEventListener('langchange',function(){
