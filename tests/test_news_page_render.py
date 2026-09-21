@@ -182,6 +182,8 @@ def test_mobile_triage_has_early_access_and_explicit_recovery():
     html = _render_full()
     assert 'id="nxTriageJump"' in html
     assert 'href="#nxControls"' in html
+    assert '.nx-triage-jump{ display:none;' in html
+    assert '.nx-triage-jump{ display:inline-flex; }' in html
     assert 'id="nxControls"' in html
     assert 'id="nxClear"' in html
     assert 'id="nxIntelCount"' in html
