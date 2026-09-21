@@ -148,6 +148,15 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_macro_news_card_keeps_incumbent_click_without_hijacking_nested_links() -> None:
+    assert (
+        '<div class="cnx-card" role="button" tabindex="0" '
+        'onclick="if(!event.target.closest(\'a,button\'))cnxOpenDlg(\'cnx-dlg-news\')">'
+    ) in TPL
+    assert '<a class="cnx-change-row" href="china_news.html">' in TPL
+    assert '<a class="cnx-change-row cnx-change-alert" href="alerts.html">' in TPL
+
+
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
     assert 'href="china_policy_watch.html"' in links
