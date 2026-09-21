@@ -220,3 +220,24 @@ def test_fed_by_phrase_does_not_force_macro_curve_plan():
     line = gw._seed_tool_plan("Why did NVDA move after demand was fed by AI spending?")
     tools = line.split("start with ")[1].split(";")[0].split(", ")
     assert tools == ["get_market_events", "get_symbol_context", "get_quote"]
+
+
+def test_adjective_first_rates_and_yields_keep_macro_curve_plan():
+    for question in (
+        "Why did NVDA move as rising rates hit growth stocks?",
+        "Why did NVDA move with higher rates pressuring duration?",
+        "Why did NVDA move as falling yields changed the tape?",
+    ):
+        line = gw._seed_tool_plan(question)
+        tools = line.split("start with ")[1].split(";")[0].split(", ")
+        assert "get_curve_detail" in tools, (question, tools)
+
+
+def test_inflected_fed_actions_keep_macro_curve_plan():
+    for question in (
+        "Why did NVDA move after the Fed hiked rates?",
+        "Why did NVDA move after the Fed raised rates?",
+    ):
+        line = gw._seed_tool_plan(question)
+        tools = line.split("start with ")[1].split(";")[0].split(", ")
+        assert "get_curve_detail" in tools, (question, tools)
