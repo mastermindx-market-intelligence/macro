@@ -8,6 +8,9 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
+import pandas as pd
+
 from engine import risk_radar_review as rev
 from engine.risk_radar import _calib
 
@@ -90,3 +93,82 @@ def test_no_proposal_degrades(tmp_path):
                   call=lambda s, u: "not json", compare=lambda p: {"improves": True})
     assert out["applied"] is False
     assert out["degraded_reason"] == "no_usable_proposal"
+
+
+
+def test_state_ladder_native_labels_preserve_invalid_price_windows():
+    from scripts.research import risk_radar_state_ladder_calibration as sl
+
+    idx = pd.bdate_range("2026-01-01", periods=6)
+    spy = pd.Series([100., np.nan, 94., 100., 100., 100.], index=idx)
+    out = sl.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[2] in out.index
+    assert bool(out.loc[idx[2], "event"]) is False
+
+
+def test_state_ladder_block_sampler_is_deterministic():
+    from scripts.research import risk_radar_state_ladder_calibration as sl
+
+    a = sl._moving_block_indices(17, 5, np.random.default_rng(123))
+    b = sl._moving_block_indices(17, 5, np.random.default_rng(123))
+    assert np.array_equal(a, b)
+    assert len(a) == 17
+    assert ((a >= 0) & (a < 17)).all()
+
+
+
+def _state_ladder_fixture(event_rates):
+    from scripts.research import risk_radar_state_ladder_calibration as sl
+
+    idx = pd.bdate_range("2026-01-01", periods=100)
+    states = []
+    events = []
+    for name, rate in zip(sl._ORDER, event_rates):
+        states.extend([name] * 20)
+        hits = int(round(rate * 20))
+        events.extend([True] * hits + [False] * (20 - hits))
+    state = pd.Series(states, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06 if e else -.01 for e in events],
+        "event": events,
+    }, index=idx)
+    configured = {name: .10 + i * .05 for i, name in enumerate(sl._ORDER)}
+    return sl, state, labels, configured
+
+
+def test_state_ladder_summary_reports_monotonic_order_and_deltas():
+    sl, state, labels, configured = _state_ladder_fixture([.05, .10, .20, .30, .40])
+    out = sl.summarize_window(state, labels, configured, block=5, seed=7)
+    assert out["point_estimate_monotonic"] is True
+    assert out["states"]["risk-off"]["event_rate"] == .4
+    assert out["states"]["caution"]["configured_state_probability"] == .2
+    assert out["adjacent_differences"]["watch->caution"]["difference"] == .1
+
+
+
+def test_state_ladder_summary_exposes_nonmonotonic_step():
+    sl, state, labels, configured = _state_ladder_fixture([.05, .20, .10, .30, .40])
+    out = sl.summarize_window(state, labels, configured, block=5, seed=11)
+    assert out["point_estimate_monotonic"] is False
+    assert out["adjacent_differences"]["watch->caution"]["difference"] == -.1
+
+
+def test_state_ladder_thin_cells_are_disclosed():
+    sl, state, labels, configured = _state_ladder_fixture([.05, .10, .20, .30, .40])
+    out = sl.summarize_window(state, labels, configured, block=5, seed=13)
+    assert all(out["states"][name]["thin"] for name in sl._ORDER)
+
+
+def test_state_ladder_population_fingerprint_binds_outcomes():
+    from scripts.research import risk_radar_state_ladder_calibration as sl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    a = pd.DataFrame({"end": idx, "loss": [-.01, -.06, -.01],
+                      "event": [False, True, False]}, index=idx)
+    b = a.copy()
+    b.loc[idx[2], "loss"] = -.07
+    b.loc[idx[2], "event"] = True
+    assert sl._fingerprint(a) != sl._fingerprint(b)
