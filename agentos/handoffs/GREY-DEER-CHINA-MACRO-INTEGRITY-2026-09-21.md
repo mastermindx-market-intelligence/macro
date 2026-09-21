@@ -52,7 +52,7 @@ verified:
   result: 58.5 / high stays numerically unchanged; weak / 疲弱 in both consumers. Not a deployment proof.
 unverified:
 - claim: Exact-new-head hosted CI, merge, publication and real production collector/page proof.
-  what_would_verify: Concluded checks after the incumbent PR7578 evidence repair, normal release and actual production
+  what_would_verify: Concluded exact-head checks on PR7592, current-base integration, normal release and actual production
     run/status/output/browser receipts. Remaining independent review is Chairman-waived, never approved.
 - claim: The 94 screenshot value or its predictive calibration is corrected.
   what_would_verify: Reconcile PR 6989, its original custody, same-input source clocks, current consumer compatibility
@@ -62,15 +62,16 @@ unresolved:
   calendar or certify current data from a build timestamp.
 - Shared radar arithmetic/calibration repairs remain on PR 6989 at d775a6c40c9f12c8411cd87100ac7dbfcd664870, Draft/HOLD;
   this branch is not a replacement.
-- PR7578 remains the shared P0B evidence writer; its full repair is eighteen manifest bindings. Do not duplicate
-  it.
+- PR7597 merged as 4183c5d564853d4796798bf19270f906adb5c9b5 and now owns the accepted HK/Canada P0B
+  evidence heal (two receipt bindings plus sixteen screenshots). The earlier PR7578 18-binding rebind instruction is
+  superseded / DO_NOT_REDO; PR7578 may retain only its still-unique render/dead-route delta.
 - PR7485 merged via c4267cdc18d995f4b4d5a2f0c868fd520ba5481d; this candidate repairs its remaining interpretation/null
   findings on current main.
 - The blocked revised native review result remains unread. The Chairman waived it rather than granting alternate
   inspection or duplicate review.
 next_actions:
-- Consume current exact PR7592 CI and incumbent PR7578 repair; refresh integration only when materially required,
-  then complete the existing release/publication path.
+- Consume current exact PR7592 CI; #7597 already closed the inherited P0B evidence drift. Refresh integration only
+  on material protected-main movement, then complete the existing release/publication path.
 - Verify the real production collection status, saved breadth and China page, including unavailable-state wording
   and headline refresh.
 - Continue the original PR6989 custody/calibration and participation/dispersion programme without repeating its
@@ -91,8 +92,8 @@ danger_areas:
 - The inherited breadth calculation can drop partial newest rows; checking fetch coverage alone is insufficient.
 - Current quotes without enough valid history cannot support a representative moving-average breadth denominator.
 - This is curated large-cap breadth, not all A-shares; no all-boats inference follows.
-- Current 403-PR census identified PR7578 as the shared P0B evidence writer; some large PR file lists were truncated,
-  so exhaustive path clearance is not claimed.
+- The earlier 403-PR census identified PR7578 as the P0B evidence writer, but protected main later merged PR7597
+  with the complete self-binding heal; that later accepted source supersedes the old repair instruction.
 prs:
 - 7592
 decisions:

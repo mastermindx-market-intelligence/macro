@@ -72,9 +72,12 @@ PR7592 remains the single repair carrier. #7485's merged useful composition is
 preserved. Older overlapping #7481 was visibly held/disarmed rather than allowed
 to replay its earlier synthesis. #7383's restoration hold remains unchanged.
 
-#7578 owns the current shared P0B evidence failure and its 18-binding manifest
-repair; do not duplicate that writer or waive the failing CI gate. #6989 retains
-the shared radar/calibration candidate and its separate custody/install gates.
+Merged #7597 (4183c5d564853d4796798bf19270f906adb5c9b5) owns the accepted
+HK/Canada P0B evidence heal and is self-binding across the two browser receipts
+plus sixteen screenshots. The older #7578 18-binding manifest-rebind instruction
+is superseded / DO_NOT_REDO; #7578 may retain only its still-unique render/dead-route
+delta. #6989 retains the shared radar/calibration candidate and its separate
+custody/install gates.
 The blocked native rereview result remains unread; the Chairman's exception
 waives review rather than permitting a bypass or another reviewer.
 
