@@ -2078,10 +2078,6 @@ on:
       - "scripts/build_flow_velocity.py"
       - "lib/desk_guard.py"
       - "collectors/china_tushare.py"
-      # The adapter consumes this client's structured auth/transport latches. A
-      # client-only change must run the same outage guard rather than relying on
-      # another touched file to start CI (#3488 subject→guard closure).
-      - "collectors/tushare_client.py"
       - "tests/test_flow_velocity.py"
       - "tests/test_flow_desk_staleness.py"
       # Flow Observatory V2 (W1, PR #6780): the v2 contract package and its suite —
