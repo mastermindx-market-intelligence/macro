@@ -18,6 +18,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 from engine import risk_radar_scorecard as sc
 
@@ -638,3 +639,93 @@ def test_probability_denominators_account_for_every_parsed_row():
         assert h["n"] + h["excluded_n"] == len(rows)
         assert h["paired_n"] + h["missing_baseline_n"] == h["n"]
         assert sum(b["n"] for b in h["bins"]) == h["n"]
+
+
+
+def test_caution_persistence_requires_five_known_consecutive_sessions():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=8)
+    caution = pd.Series([1, 1, 1, 1, 1, 1, 1, 1], index=idx, dtype=bool)
+    known = pd.Series([1, 1, 1, 1, 1, 1, 0, 1], index=idx, dtype=bool)
+    persistent, eligible = cp.persistent_caution(caution, known, 5)
+    assert persistent.iloc[4] and persistent.iloc[5]
+    assert not eligible.iloc[6] and not eligible.iloc[7]
+    assert not persistent.iloc[6] and not persistent.iloc[7]
+
+
+def test_caution_persistence_rejects_invalid_streak_length():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    s = pd.Series(True, index=idx)
+    for bad in (0, -1, True, 1.5):
+        with pytest.raises(ValueError):
+            cp.persistent_caution(s, s, bad)
+
+
+
+def test_caution_persistence_daily_result_uses_one_population():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=8)
+    state = pd.Series(
+        ["calm", "caution", "caution", "caution", "caution", "caution", "caution", "calm"],
+        index=idx,
+    )
+    known = pd.Series(True, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.01, -.01, -.01, -.01, -.06, -.06, -.06, -.01],
+        "event": [False, False, False, False, True, True, True, False],
+    }, index=idx)
+    out = cp.daily_result(state, known, labels)
+    assert out["n"] == 4  # only dates with a complete 5-session state history
+    assert out["events"] == 3
+    assert out["caution_plus"]["confusion"] == {"tp": 3, "fp": 0, "fn": 0, "tn": 1}
+    assert out["persistent_caution_5"]["confusion"] == {"tp": 2, "fp": 0, "fn": 1, "tn": 1}
+    assert out["caution_plus"]["n"] == out["persistent_caution_5"]["n"] == 4
+
+
+
+def test_caution_persistence_native_labels_refuse_missing_price_window():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=6)
+    spy = pd.Series([100., 99., float("nan"), 94., 100., 100.], index=idx)
+    out = cp.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[3] in out.index
+
+
+def test_caution_persistence_event_view_records_pre_breach_persistence(monkeypatch):
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    spy = pd.Series(100., index=idx)
+    spy.iloc[29:] = 94.
+    state = pd.Series("calm", index=idx)
+    state.iloc[17:27] = "caution"
+    known = pd.Series(True, index=idx)
+    monkeypatch.setattr(cp, "detect_events", lambda *a, **k: [anchor])
+    out = cp.event_result(spy, idx, state, known)
+    row = out["rows"][0]
+    assert row["persistent_offset"] == -4
+    assert row["persistent_before_breach"] is True
+    assert out["persistent_by_t0"] == 1
+
+
+
+def test_caution_persistence_event_view_marks_left_censored_window(monkeypatch):
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    spy = pd.Series(100., index=idx)
+    spy.iloc[29:] = 94.
+    state = pd.Series("caution", index=idx)
+    known = pd.Series(True, index=idx)
+    monkeypatch.setattr(cp, "detect_events", lambda *a, **k: [anchor])
+    out = cp.event_result(spy, idx, state, known)
+    row = out["rows"][0]
+    assert row["persistent_offset"] == -21
+    assert row["persistent_left_censored"] is True
+    assert out["persistent_left_censored_n"] == 1
+    assert out["persistent_exact_lead_n"] == 0
+    assert out["persistent_median_lead_uncensored_sessions"] is None
