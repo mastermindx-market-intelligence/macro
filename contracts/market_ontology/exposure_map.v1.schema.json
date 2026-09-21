@@ -5,10 +5,11 @@
   "description": "Pure read-only shock -> theme -> company GMI exposure projection. authority_ceiling is always research_display_only: no score, rank, confidence, weight, ordering-by-magnitude, gate, size or trade semantic is representable here.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "asof", "authority_ceiling", "display_only", "shock", "themes", "unavailable", "provenance"],
+  "required": ["schema", "asof", "knowledge_cutoff", "authority_ceiling", "display_only", "shock", "themes", "unavailable", "provenance"],
   "properties": {
     "schema": {"const": "market_ontology.exposure_map/v1"},
     "asof": {"type": "string", "format": "date"},
+    "knowledge_cutoff": {"type": "string", "format": "date", "description": "Latest belief date the caller permits; defaults to asof."},
     "authority_ceiling": {"const": "research_display_only"},
     "display_only": {"const": true},
     "shock": {"$ref": "#/$defs/shock"},
@@ -24,7 +25,7 @@
         "chain_reader": {"const": "engine.transmission_chains.load_chains()"},
         "store_meta": {"anyOf": [{"type": "null"}, {"type": "object"}]},
         "engine_version": {"const": "market_ontology.exposure_map.v1"},
-        "belief_collapse": {"const": "max belief_time <= asof per edge_id (null belief_time never eligible); ties on computed_at then src then dst"}
+        "belief_collapse": {"const": "max belief_time <= knowledge_cutoff per edge_id (null belief_time never eligible); ties on computed_at then src then dst; then valid_from <= asof < valid_to"}
       }
     }
   },
@@ -44,7 +45,7 @@
           "enum": [
             "SHOCK_UNKNOWN", "NO_THEMES_DECLARED", "NO_THEME_EDGES", "NO_MEMBERSHIP_YET",
             "RIGHTS_SUPPRESSED", "IDENTITY_UNRESOLVED", "STORE_UNAVAILABLE", "NO_ETF_EDGES",
-            "BELIEF_AFTER_ASOF", "IDENTITY_COLLISION", "UNKNOWN_RIGHTS_FAMILY",
+            "BELIEF_AFTER_ASOF", "BELIEF_AFTER_KNOWLEDGE_CUTOFF", "IDENTITY_COLLISION", "UNKNOWN_RIGHTS_FAMILY",
             "BELIEF_TIME_UNKNOWN", "EDGE_ID_MISSING"
           ]
         },

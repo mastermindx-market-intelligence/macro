@@ -1,6 +1,7 @@
-"""Pure user-adjustable valuation assumptions (B-F07-2).
+"""User-adjustable valuation assumptions (B-F07-2).
 
-No IO, no network, no clock. Reads a valuation_scenario.v1 blob and emits
+No network and no clock. Reads a valuation_scenario.v1 blob and the local
+issuer event spines through their existing readers, then emits
 valuation_scenario_controls.v1 for the sandbox panel. The three V1 server
 cards stay the authority; this module only names the three free parameters
 and evaluates the same closed-form per-share identity at caller-supplied
@@ -27,6 +28,7 @@ from __future__ import annotations
 import logging
 import math
 
+from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
 
 log = logging.getLogger(__name__)
@@ -47,6 +49,64 @@ _MARGIN_BASE_FLOOR = 0.01
 # without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
 # verbatim copy, not MISSING_LABELS["margin_too_thin"].
 _V1_MISSING_LABELS = MISSING_LABELS
+
+
+def latest_issuer_spine_event_class(ticker: object) -> str | None:
+    """Read the latest non-null issuer class from the local event spines.
+
+    Chronicle JSONL and the capital-structure parquet ledger are read through
+    their engine-owned readers. Collector modules are not imported.
+    """
+    if not isinstance(ticker, str) or not ticker.strip():
+        return None
+    wanted = ticker.strip().upper()
+    try:
+        return _select_latest_classified_event_class(wanted)
+    except Exception as exc:
+        log.warning("valuation: issuer event lookup failed: %s", exc)
+        return None
+
+
+def _select_latest_classified_event_class(wanted: str) -> str | None:
+    from engine.chronicle import spine as chronicle_spine
+    from engine.capital_structure.event_versions_io import iter_classified_spine_events
+    from engine.capital_structure.spine_paths import chronicle_events_path
+
+    events = list(chronicle_spine.load_events_jsonl(chronicle_events_path()))
+    for event in iter_classified_spine_events(wanted):
+        events.append({
+            "id": event["event_id"],
+            "tickers": [event["issuer"]["ticker"]],
+            "kind": event["event"]["subtype"],
+            "ts": event["point_in_time"]["available_at"],
+        })
+    latest_key = None
+    latest_event = None
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        tickers = event.get("tickers")
+        if not isinstance(tickers, list) or wanted not in {
+            str(item).strip().upper() for item in tickers
+        }:
+            continue
+        event_class = str(event.get("kind") or "").strip()
+        if not event_class or _veb.bridge_for_issuer(event_class) is None:
+            continue
+        available = event.get("ts") or event.get("date")
+        if not available:
+            continue
+        key = (str(available), str(event.get("id") or ""))
+        if latest_key is None or key > latest_key:
+            latest_key = key
+            latest_event = event
+    if latest_event is None:
+        return None
+    return str(latest_event["kind"]).strip()
+
+
+def _issuer_event_class(v1_blob: dict) -> str | None:
+    return latest_issuer_spine_event_class(v1_blob.get("ticker"))
 
 
 def round2(v):
@@ -153,6 +213,7 @@ def controls_blob(v1_blob):
     if fy is None or not period_end:
         return None
 
+    latest_event_class = _issuer_event_class(v1_blob)
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
         return {
             "schema": "valuation_scenario_controls.v1",
@@ -169,6 +230,7 @@ def controls_blob(v1_blob):
                 "net_margin_base": net_margin_base,
             },
             "margin_base_floor": _MARGIN_BASE_FLOOR,
+            "latest_event_bridge": _veb.bridge_for_issuer(latest_event_class),
         }
 
     scenarios = v1_blob.get("scenarios") or []
@@ -211,6 +273,10 @@ def controls_blob(v1_blob):
             "earnings_multiple": mult_s,
         }
 
+    # The durable capital-structure spine is read directly; no new collector
+    # and no network access are introduced.
+    _latest_event_bridge = _veb.bridge_for_issuer(latest_event_class)
+
     return {
         "schema": "valuation_scenario_controls.v1",
         "ticker": ticker,
@@ -233,4 +299,5 @@ def controls_blob(v1_blob):
             "earnings_multiple": mult,
             "per_share": default_ps,
         },
+        "latest_event_bridge": _latest_event_bridge,
     }
