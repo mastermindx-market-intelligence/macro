@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T15:32:57.430411+00:00",
-  "count": 2577,
+  "generated_at": "2026-09-21T17:33:15.773531+00:00",
+  "count": 2583,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,66 @@
   ],
   "items": [
     {
+      "id": "marketdesk-qis7gidmnxv-bf0219",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T16:23:27Z",
+      "summary_points": [
+        "Fed Hawkish Shift: Goolsbee's speech signals market underprices rate hikes through YE27; Fed now forecasts inflation target until 2029, altering policy expectations.",
+        "Geopolitical Oil Risk: WTI up 19.1% over two weeks amid Houthi attacks on Riyadh and US travel warnings; inventory floor at 7,000 mb signals supply stress and price volatility.",
+        "JPM Data Revisions: Retail Sales beat (1.4% MoM vs 0.5% est) lifts 26Q3 GDP forecast to 3.5% (vs 2.75%); PCE core deflator maintained at +3.3% YoY.",
+        "Corporate Earnings Pressure: Tariffs, soaring energy costs, and higher rates directly compress US margins, threatening equity valuations and earnings growth.",
+        "Quant Resilience: Quant strategies outperform (+1.5% MTD vs global HF -0.6%); US crowding shows potential trough (60d return near 5yr lows)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rgegz18efcr-4be2b2",
+      "title": "GS Armbrust What Matters Today HF Pain Continues Muse 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:41Z",
+      "summary_points": [
+        "HF Performance Divergence: Fundamental L/S HFs underperformed Systematic HFs (-1.02% vs +1.28% weekly), with Fundamentals +12% YTD (Asian-driven) trailing Systematics +20% YTD.",
+        "Market Breadth Weakens: <30% of S&P 500 stocks above 50-day moving average, indicating broad market stress beyond headline indices.",
+        "SPX & Sentiment Deterioration: SPX at 7650.50 with GS Sentiment Indicator at -0.9 (lowest in 12 months), reflecting extreme bearish positioning.",
+        "AAII Survey Bearishness: Bearish sentiment at 53.3% (highest since May 2025), bullish at 28.8%, with negative bull-bear spread confirming extreme pessimism."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-genoeiwk8qt-09599b",
+      "title": "GS Callahan US TMT weekly + charts 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:35Z",
+      "summary_points": [
+        "Semis P/E at multi-year lows amid oil correlation: SOX P/E near 18.2998 correlates with inverted oil prices (rising oil = falling SOX P/E), indicating macro-driven valuation pressure, not AI-specific issues.",
+        "Macro risk dominates sector dynamics: Oil price trends directly influence Semis/AI valuations, signaling vulnerability to broader economic conditions over AI narrative-driven risks.",
+        "Valuation compression in key names: AMAT’s PE/SPX ratio (1.2559) below 1.4126 threshold confirms valuation compression amid market de-rating, with technical bounce off 200-dma supporting near-term resilience."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-pwjqbzqafk4-8855ee",
       "title": "Turkiye TCMB Reserves US$9bn Lower",
       "institution": "Goldman Sachs",
@@ -110,6 +170,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kufg2vdek5f-1a7522",
+      "title": "India Monthly Activity Chartbook Investment activity remains resilient in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:49Z",
+      "summary_points": [
+        "Investment Resilience: Electricity consumption at 12.8% yoy (two-year high), bank credit growth at 19.1% yoy (two-year high), industrial indicators (auto/steel/cement) robust in Aug-26.",
+        "Geopolitical & Weather Risks: Middle East conflict escalation, Brent crude >$100/bbl, El Niño-linked rainfall below average in key rice/wheat states threatening crop yields.",
+        "Urban Consumption Moderation: Urban demand indicators (light vehicles, aviation, petrol) show YoY declines in Aug-26; composite score at 88.9 (3m avg), signaling slowing activity.",
+        "Agricultural Supply Threats: Rainfall below long-term average in rice states (Exhibit 7), wheat reservoir levels at three-year lows (Exhibit 9), risking food security and inflation.",
+        "FX Reserves Surge: RBI FX reserves increased $45bn (Aug-Sept), reflecting robust dollar inflows and policy support for currency stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
@@ -152,6 +233,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mcbhhiqiyzi-f65f1b",
+      "title": "GS Privorotsky GS Basics Muse & CPUs Europe Breadth Impaired 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:14Z",
+      "summary_points": [
+        "Rates Volatility Decoupled from Energy: WTI down 1.6% while 2s sold off 4.74%, signaling rates disconnection from energy fundamentals and heightened macro risk.",
+        "MOVE Index at 80.6 Confirms Rate Shock Risk: Rebid to 80.6 validates imminent volatility surge, cementing rate shock as the primary macro concern for portfolios.",
+        "Geopolitical Pathways Remain Uncertain: Trump-Xi meeting and Iran talks offer potential deal avenues but lack concrete outcomes, failing to offset core rate volatility risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-r4nsqixlmi5-8f5433",
       "title": "GS Johnstone GS TMT SPEC SALES AI & Semis Security debate Classified names make a comeback Consumer Agents ACN & Anthropic 21 Sep 2026",
       "institution": "S&T",
@@ -167,6 +267,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tz1xuvdbiew-6c5d5b",
+      "title": "GS Crook GS MORNING GCEM Symposium Key Quotes Trump Xi Summit Preview NBH Views Global FX Trader Dollar Drift and Week Ahead 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:08Z",
+      "summary_points": [
+        "Fed Policy & AI-Driven Volatility: Regime change in Fed policy (30-70% move meetings) elevates equilibrium rate (R) due to AI-driven investment/deficits, heightening volatility and upward yield/term premium.",
+        "Fiscal Debt Fragility: US fiscal expansion (6-8% annual) worsens debt-to-GDP ratio, signaling nominal economy fragility versus Japan’s 2022 trajectory (220%→180%).",
+        "Trump-Xi Summit & Geopolitical Shifts: Sept 23-25 summit with USDCNY <6.70 as stability signal; China’s oil mediation (US-Iran talks) is key market-moving factor beyond trade/AI.",
+        "CNY Policy Divergence: CNY strengthens against CFETS basket (diversified basket) vs.",
+        "USD (e.g., 2022), revealing active USD/CNY management and potential policy shift toward market-driven rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
