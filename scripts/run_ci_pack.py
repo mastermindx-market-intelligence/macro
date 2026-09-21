@@ -2955,21 +2955,50 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--prune",
-            "--tags",
-            "--depth=2147483647",
-            "origin",
-            "+refs/heads/*:refs/remotes/origin/*",
-        ],
-        cwd=root,
-        env=_trusted_git_environment(root),
-        check=True,
-    )
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--prune",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/*:refs/remotes/origin/*",
+            ],
+            cwd=root,
+            env=_trusted_git_environment(root),
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        # One broken sibling ref must not fail every fetch-depth-0 job. On
+        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
+        # missing blob object ..." / "error: remote did not send all
+        # necessary objects" — a ref whose objects the server could not
+        # serve — and every design-governance run after it red as
+        # "infrastructure unknown". The checks behind this contract diff
+        # against main and the PR's own refs (already present in the
+        # workspace), so full main history is the part that must succeed.
+        print(
+            "::warning title=run-ci-pack::all-branches deepen failed; "
+            "retrying with refs/heads/main only",
+            flush=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/main:refs/remotes/origin/main",
+            ],
+            cwd=root,
+            env=_trusted_git_environment(root),
+            check=True,
+        )
 
 
 def _run_job(
