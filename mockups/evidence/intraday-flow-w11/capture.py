@@ -546,6 +546,31 @@ def _plan() -> list[dict]:
                     "action": action,
                     "payload": payload,
                 })
+    # Light post-stack owns :hover/:focus-visible on .ift-see-all. REST shots
+    # cannot prove those states; capture desktop/en in both themes.
+    for theme in ("dark", "light"):
+        for interaction, action in (
+            ("see-all-hover", "hover-see-all"),
+            ("see-all-focus", "focus-see-all"),
+        ):
+            cells.append({
+                "id": f"{interaction}-{theme}-en-1440",
+                "kind": "state",
+                "state": interaction,
+                "page": "open.html",
+                "theme": theme,
+                "locale": "en",
+                "viewport": "desktop",
+                "hours": "live",
+                "quotes": True,
+                "pulse": True,
+                "flow": True,
+                "hold": False,
+                "open_tip": False,
+                "action": action,
+                "payload": "open",
+                "force_name": interaction,
+            })
     return cells
 
 
@@ -592,6 +617,16 @@ def _do_action(page, action: str | None, locale: str) -> None:
         exp.first.click()
         page.wait_for_timeout(200)
         page.locator('tr.detail-row[data-detail="NVDA"]').first.scroll_into_view_if_needed()
+        return
+    if action == "hover-see-all":
+        _scroll_board(page)
+        page.locator("#ift-see-all").first.hover()
+        page.wait_for_timeout(200)
+        return
+    if action == "focus-see-all":
+        _scroll_board(page)
+        page.locator("#ift-see-all").first.focus()
+        page.wait_for_timeout(200)
         return
     if action == "scroll-noread":
         page.evaluate(
@@ -733,6 +768,7 @@ def capture() -> int:
                     "has_see_all": ("See all" in at_rest["text"]) or ("查看全部" in at_rest["text"]),
                     "has_act": ("Buy now" in at_rest["text"]) or ("现在买入" in at_rest["text"]),
                     "fixture_n": FIXTURE_N,
+                    "force_name": spec.get("force_name"),
                 }
                 shots.append(cell)
                 print(f"{spec['id']}: {dest.name} overlay_clean={cell['overlay_clean']} tip={tip_open}", flush=True)
@@ -764,14 +800,15 @@ def capture() -> int:
         ]
 
         def _state_entry(s: dict, force: str | None) -> dict:
-            return {
+            name = s.get("force_name") or force
+            entry = {
                 "access": "anonymous",
                 "applied_locale": s["applied_locale"],
                 "applied_theme": s["applied_theme"],
                 "bytes": s["bytes"],
                 "captured": True,
                 "file": s["file"],
-                "force_state": force,
+                "force_state": name,
                 "height": s["viewport_height"],
                 "locale": s["locale"],
                 "sha256": s["sha256"],
@@ -782,6 +819,9 @@ def capture() -> int:
                 "width": s["viewport_width"],
                 "overlay_clean": s["overlay_clean"],
             }
+            if s.get("force_name"):
+                entry["applied_force_state"] = s["force_name"]
+            return entry
 
         pages = [{
             "page_id": "intraday_flow.html",
@@ -833,7 +873,22 @@ def capture() -> int:
                 "locales": ["en", "zh"],
                 "themes": ["dark", "light"],
                 "access": ["anonymous"],
-                "force_states": [],
+                "force_states": [
+                    {
+                        "name": "see-all-hover",
+                        "kind": "hover",
+                        "value": ".ift-see-all",
+                        "attribute": None,
+                        "spec": "see-all-hover:hover(.ift-see-all)",
+                    },
+                    {
+                        "name": "see-all-focus",
+                        "kind": "focus",
+                        "value": ".ift-see-all",
+                        "attribute": None,
+                        "spec": "see-all-focus:focus(.ift-see-all)",
+                    },
+                ],
             },
             "excluded": [],
             "outcome": "captured",
