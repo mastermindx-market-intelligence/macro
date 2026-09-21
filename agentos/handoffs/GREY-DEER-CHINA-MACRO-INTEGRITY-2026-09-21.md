@@ -147,3 +147,27 @@ remains a separate obligation; this checkpoint does not claim it is satisfied.
 
 ## Sealed real-builder continuation
 Current procedure: Mastermind@c5e1b86a0a9e46cef17096a45406f1e3067edeeb; loaded companion blobs unchanged. The original local screenshot set was rejected after generated output was restored during parallel continuation. The valid proof now uses an immutable export and before/after page digest, under mockups/evidence/china-frozen-real-build-7592. REAL_BUILD_PROOF.md describes provenance, limits and the prepared primary-page publication artifact. No temporary data/ledger derivatives or secondary pages are shipped. Offline mode does not prove fresh quotes/news. Review remains Chairman-waived; original blocked review output remains unread. No source custody is transferred. Mission remains incomplete.
+
+## Publication-format reconciliation after public-render movement
+
+Current procedure:Mastermind@74b475545e179a3256bfebe6b5226f54231cf1cb.
+A real one-file conflict against main3aab373c9f6bbcff3c890a5035362dc7828fb3ae
+was resolved with the existing post-render injection/externalization/asset-stamp
+owners. China source/input movement was absent in the checked dependency set.
+The original443300-byte raw artifact remains historical proof; the release HTML
+is now259001 bytes, SHA2569ef807c46f503da0a7f125a4ce7cfa4c5d20335cddfe49acd15ed071f41d3451,
+with one generated CSS asset. No numeric/risk/ledger change or asset prune occurred.
+247 normalization/China tests pass, with five disclosed warnings. Eight final-page
+browser cases pass with stable artifact hash and no console/response/overflow
+errors. See NORMALIZED_RELEASE.md and china-normalized-release-7592 evidence.
+
+The original source carrier is retained. Release may be armed only through the
+existing merge-on-green owner; its CI/proof gates stay mandatory. A ready/label
+readback and HOLD-RELEASED GitHub receipt establish the actual arming effect.
+No new review is required under the bounded Chairman waiver; the unread review
+result stays unread. No duplicate reviewer, CI run or publisher is created.
+Next:consume the exact new-head CI/controller result, resolve genuine failures,
+then verify the existing VPS publisher and public China page against the new hash.
+The parent dispersion, per-input freshness and held shared-radar programme remain
+incomplete. Do not reopen superseded7578 or repeat accepted7597/7603 repairs.
+MISSION_COMPLETE:false.
