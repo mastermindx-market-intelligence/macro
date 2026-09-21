@@ -921,6 +921,7 @@ POOL_ALLOWLIST = frozenset({
     "engine/us_candidate_lanes.py",
     "engine/us_context_vector.py",
     "scripts/build_stock_library.py",
+    "scripts/build_site.py",  # display-only, protected consumer; no scoring or admission
 })
 
 #: Modules that DECIDE things.  If any of them ever learns the pool exists, the fence is
@@ -1141,3 +1142,126 @@ class TestNoAuthorityLeak:
 
         for row in board["buy"]:
             assert pb.refusal_codes(row) == pb._refusal_codes(row)
+
+
+# Chairman CPU audit: the existing full pool must reach a truthful browser view.
+def _visibility_board():
+    return {
+        "as_of": "2026-09-18", "buy": [{"ticker": "AAA"}],
+        "candidate_pool": {"pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18",
+            "eligible": 2, "rows": [
+                {"ticker": "AAA", "name": "First company", "sector": "Technology",
+                 "pool_rank": 1, "in_buy_lane": True, "lane": "forming",
+                 "headline_reason": "conviction_low", "lane_reasons": ["conviction_low"],
+                 "prophet": {"score": 42.0}, "prophet_score_basis": "buy_lane_pool"},
+                {"ticker": "AMD", "name": "Advanced Micro Devices", "sector": "Information Technology",
+                 "pool_rank": 26, "in_buy_lane": False, "lane": "more_actionable",
+                 "tier_cascade": "T1", "headline_reason": "sector_cap_overflow",
+                 "lane_reasons": ["sector_cap_overflow"], "prophet": None,
+                 "prophet_score_basis": None}]}}
+
+
+def test_visibility_preserves_amd_without_manufacturing_score_or_entry():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    before = deepcopy(board)
+    view = project_candidate_visibility(board)
+    assert view["status"] == "ready"
+    assert view["counts"] == {"eligible": 2, "in_buy_lane": 1, "off_buy_lane": 1,
+                              "scored": 1, "unscored": 1}
+    assert [r["ticker"] for r in view["rows"]] == ["AAA", "AMD"]
+    amd = view["rows"][1]
+    assert amd["prophet"] is None
+    assert amd["in_buy_lane"] is False
+    assert amd["headline_reason"] == "sector_cap_overflow"
+    assert amd["admission_class"] is None
+    assert board == before
+    amd["lane_reasons"].append("changed copy")
+    assert board == before
+
+
+def test_visibility_stale_pool_never_looks_current():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["as_of"] = "2026-09-17"
+    result = project_candidate_visibility(board)
+    assert result["status"] == "unavailable"
+    assert result["reason"] == "pool_board_session_mismatch"
+    assert result["rows"] == []
+    assert result["counts"]["eligible"] is None
+
+
+def test_visibility_unknown_is_not_empty_or_zero():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for board in (None, {}, {"as_of": "2026-09-18"}):
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable"
+        assert result["counts"]["eligible"] is None
+    board = {"as_of": "2026-09-18", "candidate_pool": {
+        "as_of": "2026-09-18", "pool_definition": "us_candidate_pool_v1", "eligible": 0, "rows": []}}
+    assert project_candidate_visibility(board)["status"] == "empty"
+
+
+def test_visibility_refuses_incomplete_duplicate_and_malformed_pool():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for mutation in ("count", "duplicate", "malformed", "missing_identity", "definition"):
+        board = deepcopy(_visibility_board())
+        pool = board["candidate_pool"]
+        if mutation == "count": pool["eligible"] = 3
+        elif mutation == "duplicate": pool["rows"][1]["ticker"] = "AAA"
+        elif mutation == "malformed": pool["rows"][1] = "not a row"
+        elif mutation == "definition": pool["pool_definition"] = "unknown_v2"
+        else: pool["rows"][1]["ticker"] = ""
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable", mutation
+        assert result["rows"] == [], mutation
+
+
+def test_visibility_cannot_publish_untrusted_fields_or_reinterpret_inclusion():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["rows"][1].update(secret="never publish", in_buy_lane="false")
+    result = project_candidate_visibility(board)
+    assert result["status"] == "unavailable"
+    board["candidate_pool"]["rows"][1]["in_buy_lane"] = False
+    result = project_candidate_visibility(board)
+    assert "secret" not in result["rows"][1]
+    assert result["rows"][1]["prophet_score_basis"] is None
+
+
+def test_visibility_generation_changes_with_source_rows_not_unrelated_board_fields():
+    from copy import deepcopy
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    first = project_candidate_visibility(board)
+    board["unrelated_render_note"] = "new text"
+    assert project_candidate_visibility(board)["source_digest"] == first["source_digest"]
+    board["candidate_pool"]["rows"][1]["headline_reason"] = "event_blackout"
+    assert project_candidate_visibility(board)["source_digest"] != first["source_digest"]
+    assert project_candidate_visibility(deepcopy(board)) == project_candidate_visibility(board)
+
+
+def test_visibility_preserves_real_zero_without_promoting_off_cohort_score():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    board = _visibility_board()
+    board["candidate_pool"]["rows"][0]["prophet"]["score"] = 0.0
+    off = board["candidate_pool"]["rows"][1]
+    off["prophet"] = {"score": 100.0}
+    off["prophet_score_basis"] = "buy_lane_pool"
+    result = project_candidate_visibility(board)
+    assert result["rows"][0]["prophet"] == {"score": 0.0}
+    assert result["rows"][1]["prophet"] is None
+    assert result["rows"][1]["prophet_score_basis"] is None
+
+
+def test_visibility_rejects_non_json_metadata_without_throwing():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    for key, value in (("pool_rank", float("nan")), ("lane_reasons", "sector_cap_overflow"),
+                       ("name", {"unexpected": "nested"}), ("ticker", 123)):
+        board = _visibility_board()
+        board["candidate_pool"]["rows"][1][key] = value
+        result = project_candidate_visibility(board)
+        assert result["status"] == "unavailable"
+        assert result["rows"] == []

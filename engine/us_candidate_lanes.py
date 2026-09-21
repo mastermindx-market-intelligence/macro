@@ -896,3 +896,94 @@ def graduation_fields(
             "window_months_back": months_back,
         }
     return out
+
+
+# Browser projection of the EXISTING pool; not a new ranking or admission owner.
+def project_candidate_visibility(board: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Expose every eligible receipt without changing its cohort, order or authority.
+
+    A cap-only exclusion is visible with its actual null final score. Neither the
+    pre-cap screen position nor a T1 marker becomes entry permission. Source clocks
+    and lossless population invariants are checked before a view is called current.
+    Only a small allowlist crosses into the renderer; raw/secret additions cannot
+    become public merely by appearing in an upstream record.
+    """
+    from datetime import date
+    import hashlib
+
+    counts = dict.fromkeys(("eligible", "in_buy_lane", "off_buy_lane", "scored", "unscored"))
+    result: dict[str, Any] = {
+        "status": "unavailable", "reason": "candidate_pool_absent",
+        "as_of": None, "counts": counts, "rows": [], "display_only": True, "source_digest": None,
+    }
+    if not isinstance(board, Mapping):
+        return result
+    pool = board.get("candidate_pool")
+    if not isinstance(pool, Mapping):
+        return result
+    as_of = _text(pool.get("as_of"))
+    result["as_of"] = as_of
+    try:
+        valid_date = date.fromisoformat(as_of or "").isoformat() == as_of
+    except ValueError:
+        valid_date = False
+    if not valid_date or as_of != _text(board.get("as_of")):
+        result["reason"] = "pool_board_session_mismatch"
+        return result
+    if pool.get("pool_definition") != POOL_DEFINITION:
+        result["reason"] = "pool_definition_unknown"
+        return result
+    raw = pool.get("rows")
+    expected = pool.get("eligible")
+    if (not isinstance(raw, list) or type(expected) is not int
+            or expected < 0 or len(raw) != expected):
+        result["reason"] = "pool_population_mismatch"
+        return result
+    fields = ("ticker", "name", "sector", "pool_rank", "in_buy_lane", "lane",
+              "headline_reason", "lane_reasons", "tier_cascade", "admission_class",
+              "prophet_score_basis")
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for source in raw:
+        if not isinstance(source, Mapping):
+            result["reason"] = "pool_row_malformed"
+            return result
+        ticker = _text(source.get("ticker"))
+        metadata_ok = all(source.get(field) is None or isinstance(source.get(field), str)
+                          for field in fields if field not in ("pool_rank", "in_buy_lane", "lane_reasons"))
+        reasons = source.get("lane_reasons")
+        rank = source.get("pool_rank")
+        if (not metadata_ok or not ticker or ticker.upper() in seen
+                or type(source.get("in_buy_lane")) is not bool
+                or (reasons is not None and (not isinstance(reasons, list)
+                    or not all(isinstance(reason, str) for reason in reasons)))
+                or (rank is not None and (isinstance(rank, bool) or _finite(rank) is None
+                    or _finite(rank) < 1 or not float(rank).is_integer()))):
+            result["reason"] = "pool_row_malformed"
+            return result
+        seen.add(ticker.upper())
+        row = {field: deepcopy(source.get(field)) for field in fields}
+        row["ticker"] = ticker
+        score_block = _mapping(source.get("prophet"))
+        score = _finite(score_block.get("score"))
+        # Never invent a score off the cohort on which the canonical scorer ran.
+        scored = (source["in_buy_lane"] is True and source.get("prophet_score_basis") == "buy_lane_pool"
+                  and type(score_block.get("score")) is not bool
+                  and score is not None and 0 <= score <= 100)
+        row["prophet"] = {"score": score} if scored else None
+        if not scored:
+            row["prophet_score_basis"] = None
+        rows.append(row)
+    in_buy = sum(row["in_buy_lane"] for row in rows)
+    scored_n = sum(row["prophet"] is not None for row in rows)
+    # Bind the anonymous preview and protected remainder to the same exact object.
+    # The digest is provenance, not an admission or authorization decision.
+    digest = hashlib.sha256(json.dumps(
+        {"as_of": as_of, "pool_definition": POOL_DEFINITION, "rows": rows},
+        sort_keys=True, ensure_ascii=True, separators=(",", ":"), allow_nan=False,
+    ).encode()).hexdigest()
+    result.update(status="ready" if rows else "empty", reason=None, rows=rows, source_digest=digest,
+                  counts={"eligible": len(rows), "in_buy_lane": in_buy,
+                          "off_buy_lane": len(rows) - in_buy, "scored": scored_n,
+                          "unscored": len(rows) - scored_n})
+    return result

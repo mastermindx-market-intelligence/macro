@@ -864,3 +864,125 @@ def test_tier_preview_leaves_a_server_collapsed_tape_list_alone():
         # ...and it has to come BEFORE the stash, or the restore path still fires.
         assert fn.index('if (!list.querySelector(".tt-n")) return;') < \
                fn.index('list.setAttribute("data-mx-old-html"'), path
+
+
+# Lossless candidate visibility must use the existing protected payload boundary.
+def _candidate_visibility_vm():
+    from tests.test_us_candidate_lanes import _visibility_board
+    from engine.us_candidate_lanes import project_candidate_visibility
+    return {"us_candidate_visibility": project_candidate_visibility(_visibility_board())}
+
+
+def test_candidate_pool_split_keeps_withheld_identity_out_of_shell():
+    from copy import deepcopy
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    before = deepcopy(vm)
+    overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=overrides["us_candidate_visibility"], pgate=gate)
+    payload = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert vm == before
+    assert 'data-ticker="AAA"' in html
+    assert 'data-ticker="AMD"' not in html
+    assert "Advanced Micro Devices" not in html
+    assert 'data-ticker="AMD"' in payload["candidate_pool_html"]
+    assert "Sector display limit reached" in payload["candidate_pool_html"]
+    assert "Not scored" in payload["candidate_pool_html"]
+    assert gate["candidate_pool"] == {"preview": 1, "locked": 1, "total": 2}
+
+
+def test_candidate_pool_payload_writer_uses_same_auth_contract(tmp_path):
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    _, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    bs._write_us_payload(_env(), tmp_path, None, locked_rows=[], us_standouts=None,
+                         top_setups=None, built="2026-09-18", pgate=gate, panel_blocks=blocks)
+    data = json.loads((tmp_path / bs.US_PAYLOAD_DIR / bs.US_PAYLOAD_NAME).read_text())
+    assert data["schema"] == "tier_payload.v1"
+    assert data["panels"]["candidate_pool"]["locked"] == 1
+    assert 'data-ticker="AMD"' in data["candidate_pool_html"]
+
+
+def test_candidate_visibility_empty_and_unavailable_are_distinct():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    env = _env()
+    absent = env.get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=project_candidate_visibility(None), pgate=None)
+    assert "coverage cannot be verified" in absent
+    assert "No eligible candidates in this snapshot" not in absent
+    board = {"as_of": "2026-09-18", "candidate_pool": {
+        "pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18", "eligible": 0, "rows": []}}
+    empty = env.get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=project_candidate_visibility(board), pgate=None)
+    assert "No eligible candidates in this snapshot" in empty
+
+
+def test_candidate_visibility_full_render_equals_split_plus_tail():
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    env = _env()
+    template = env.get_template("_us_candidate_pool_rows.html.j2")
+    full = template.render(rows=vm["us_candidate_visibility"]["rows"])
+    shell = template.render(rows=overrides["us_candidate_visibility"]["rows"])
+    tail = bs._render_us_panel_payload(env, gate, locked, vm)["candidate_pool_html"]
+    pattern = r'<div class="ucp-row".*?(?=<div class="ucp-row"|\Z)'
+    normalize = lambda text: [" ".join(x.split()) for x in re.findall(pattern, text, re.S)]
+    assert normalize(full) == normalize(shell) + normalize(tail)
+
+
+def test_candidate_visibility_untrusted_labels_are_escaped():
+    vm = _candidate_visibility_vm()
+    row = vm["us_candidate_visibility"]["rows"][1]
+    row["name"] = '<img src=x onerror="alert(1)">'
+    row["ticker"] = '\"><script>alert(2)</script>'
+    html = _env().get_template("_us_candidate_pool_rows.html.j2").render(rows=[row])
+    assert '<img src=x' not in html
+    assert '<script>alert(2)' not in html
+    assert '&lt;img' in html
+
+
+def test_real_dashboard_consumes_candidate_projection():
+    vm = _base_vm()
+    vm.update(_candidate_visibility_vm())
+    vm["pgate"] = None
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    assert 'id="us-candidate-pool"' in html
+    assert 'data-ticker="AMD"' in html
+
+
+def test_candidate_hydration_is_not_a_new_data_or_permission_path():
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    fragment = (ROOT / "templates" / "_us_candidate_pool.html.j2").read_text()
+    assert "hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source)" in source
+    assert "root.dataset.poolHydrated === 'true'" in source
+    assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
+    assert "fetch(" not in fragment
+    assert "candidate_pool" not in fragment.split('<script>', 1)[1].split('</script>', 1)[0]
+
+
+def test_candidate_visibility_follows_the_fresh_board_rerender():
+    import ast
+    from scripts import build_site as bs
+    from engine.us_candidate_lanes import project_candidate_visibility
+    from tests.test_us_candidate_lanes import _visibility_board
+    old = _visibility_board()
+    fresh = _visibility_board()
+    fresh["as_of"] = fresh["candidate_pool"]["as_of"] = "2026-09-21"
+    vm = {"us_standouts": old, "us_candidate_visibility": project_candidate_visibility(old)}
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    updates = [n for n in ast.walk(main) if isinstance(n, ast.Assign)
+               and any(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name)
+                       and t.value.id == "vm" and isinstance(t.slice, ast.Constant)
+                       and t.slice.value == "us_candidate_visibility" for t in n.targets)]
+    assert len(updates) == 1, "fresh-board rerender must refresh the pool view exactly once"
+    namespace = {"vm": vm, "_fresh_su": fresh, "project_candidate_visibility": project_candidate_visibility}
+    exec(compile(ast.Module(body=updates, type_ignores=[]), "<actual-rerender-assignment>", "exec"), namespace)
+    override, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert override["us_candidate_visibility"]["as_of"] == "2026-09-21"
+    assert blocks["candidate_pool_source"]["as_of"] == "2026-09-21"
+    assert blocks["candidate_pool_source"]["digest"] == vm["us_candidate_visibility"]["source_digest"]

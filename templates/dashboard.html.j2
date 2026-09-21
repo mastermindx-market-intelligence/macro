@@ -16307,6 +16307,7 @@ html[data-theme="light"] :is(
         {% endif %}
       </section>
       {% endif %}
+      {% include "_us_candidate_pool.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -20078,7 +20079,10 @@ if (document.readyState === 'loading') {
   }
   function dropNotes(scope){
     var notes = (scope || document).querySelectorAll('.pg-more');
-    for (var i = 0; i < notes.length; i++) notes[i].remove();
+    for (var i = 0; i < notes.length; i++) {
+      // Candidate counts are honest even when the protected row render failed.
+      if (!notes[i].classList.contains('ucp-more')) notes[i].remove();
+    }
   }
 
   function hydrateLeaderObservations(html){
@@ -20097,7 +20101,37 @@ if (document.readyState === 'loading') {
     if (window.initShowMore) window.initShowMore();
   }
 
+  function hydrateCandidatePool(html, source){
+    if (!html || !source) return;
+    var root = document.getElementById('us-candidate-pool');
+    if (!root || root.dataset.poolHydrated === 'true') return;
+    if (!root.dataset.sourceDigest || source.digest !== root.dataset.sourceDigest ||
+        source.as_of !== root.dataset.asOf || source.total !== Number(root.dataset.total)) return;
+    var list = root.querySelector('.ucp-list');
+    if (!list) return;
+    // Validate the whole remainder before mutating the visible list.
+    var fragment = document.createElement('template');
+    fragment.innerHTML = html;
+    var current = list.querySelectorAll('.ucp-row'), incoming = fragment.content.querySelectorAll('.ucp-row');
+    if (current.length + incoming.length !== source.total) return;
+    var identities = new Set();
+    for (var i = 0; i < current.length; i++) identities.add(current[i].dataset.ticker);
+    for (var j = 0; j < incoming.length; j++) {
+      var ticker = incoming[j].dataset.ticker;
+      if (!ticker || identities.has(ticker)) return;
+      identities.add(ticker);
+    }
+    list.appendChild(fragment.content);
+    root.dataset.poolHydrated = 'true';
+    if (list.querySelectorAll('.ucp-row').length === Number(root.dataset.total)) {
+      var note = root.querySelector('.ucp-more');
+      if (note) note.remove();
+    }
+    root.dispatchEvent(new Event('candidate-pool-hydrated'));
+  }
+
   function hydratePanels(payload){
+    hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
