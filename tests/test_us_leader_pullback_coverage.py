@@ -22,6 +22,8 @@ import json
 import sys
 from pathlib import Path
 
+import yaml
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -526,7 +528,59 @@ class TestDisclosure:
 
 
 # =========================================================================== #
-# 5. END TO END — the publisher licenses a real origination                    #
+# 5. Nightly durability + dependency order                                     #
+# =========================================================================== #
+class TestNightlyDurability:
+    PUBLISH_STEP = "Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)"
+    CHECKPOINT_STEP = "checkpoint leader-pullback source to main (durable before engine tail)"
+    DASHBOARD_STEP = "run regime engine + build dashboard + daily brief (resilient)"
+
+    @staticmethod
+    def _steps() -> list[dict]:
+        doc = yaml.safe_load((ROOT / ".github/workflows/daily.yml").read_text(encoding="utf-8"))
+        return doc["jobs"]["engine"]["steps"]
+
+    def test_fresh_source_is_published_and_checkpointed_BEFORE_the_dashboard_reads_it(self):
+        """The 2026-09-18 natural run computed truthful Sep-18 leader coverage but the
+        300-minute engine tail died before the broad commit.  The next build therefore
+        rendered the prior Sep-17 artifact.  Source production and its narrow durability
+        checkpoint must both happen before build_site reads the source, not after it."""
+        steps = self._steps()
+        names = [step.get("name") for step in steps]
+        publish_i = names.index(self.PUBLISH_STEP)
+        checkpoint_i = names.index(self.CHECKPOINT_STEP)
+        dashboard_i = names.index(self.DASHBOARD_STEP)
+        assert checkpoint_i == publish_i + 1
+        assert publish_i < dashboard_i and checkpoint_i < dashboard_i
+        assert steps[publish_i].get("continue-on-error") is True
+        assert steps[checkpoint_i].get("continue-on-error") is True
+        assert "daily_engine_leader_checkpoint.sh" in steps[checkpoint_i]["run"]
+
+    def test_narrow_checkpoint_can_only_publish_the_existing_leader_source(self):
+        path = ROOT / "scripts/ci/daily_engine_leader_checkpoint.sh"
+        source = path.read_text(encoding="utf-8")
+        assert 'LEADER_PATH="site/anticipationdata/us_leader_pullback.json"' in source
+        assert 'us_turn_watch.source_contract.v1' in source
+        assert 'contract.get("pass") is True' in source
+        assert 'coverage.get("publishable") is True' in source
+        assert 'SOURCE_BRANCH' in source and 'refs/heads/main' in source
+        assert 'same-path race' in source
+        assert 'git add -- "$LEADER_PATH"' in source
+        for forbidden in ("git add data/", "git add site/", "site/prophet", "data/prophet"):
+            assert forbidden not in source
+
+    def test_broad_engine_commit_cannot_bypass_a_refused_narrow_checkpoint(self):
+        source = (ROOT / "scripts/ci/daily_engine_commit_outputs.sh").read_text(encoding="utf-8")
+        path = "site/anticipationdata/us_leader_pullback.json"
+        assert path in source
+        restore = source.index('git checkout HEAD -- "$LEADER_SOURCE_PATH"')
+        unstage = source.index('git reset -q -- "$LEADER_SOURCE_PATH"', restore)
+        broad_add = source.index("git add data/ site/ reports/")
+        assert broad_add < restore < unstage
+
+
+# =========================================================================== #
+# 6. END TO END — the publisher licenses a real origination                    #
 # =========================================================================== #
 class TestEndToEnd:
     def test_the_published_artifact_licenses_an_EARLY_TURN_starter(
