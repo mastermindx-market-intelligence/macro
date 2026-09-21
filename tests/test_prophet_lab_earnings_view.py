@@ -564,6 +564,8 @@ def test_pinned_research_view_projects_b3_from_same_b1_snapshot_without_b4(monke
     }
     assert not any(state["authority"].values())
     assert body["episode_ref"]["generation_id"] == state["candidate_generation_id"]
+    assert body["candidate_state_context"]["state"] == "AVAILABLE"
+    assert body["candidate_state_context"]["reason"] is None
     assert body["candidate_state_context"]["candidate_generation_id"] == snapshot.generation_id
     assert body["candidate_state_context"]["projection_id"].startswith("pcs:")
 
@@ -582,3 +584,117 @@ def test_pinned_research_view_does_not_depend_on_a_second_candidate_state_store(
     assert response.status_code == 200
     assert response.json()["candidate_state"]["candidate_generation_id"] == snapshot.generation_id
     assert "DO_NOT_READ_FROM_SECOND_STORE" not in response.text
+
+
+def _assert_b3_unavailable_preserves_d5(
+    response, *, expected_view, generation_id,
+):
+    assert response.status_code == 200
+    private(response)
+    body = response.json()
+    assert "candidate_state" not in body
+    d5_only = dict(body)
+    d5_only.pop("candidate_state_context")
+    assert d5_only == expected_view
+    context = body["candidate_state_context"]
+    assert context["state"] == "UNAVAILABLE_DATA"
+    assert context["reason"] == "B3_PROJECTION_UNAVAILABLE"
+    assert context["candidate_generation_id"] == generation_id
+    assert context["projection_id"] is None
+    assert context["market_session"] is None
+    assert context["generated_at"] is None
+    assert context["definition_era"] is None
+    assert context["emergence_degraded_reasons"] == [
+        "B3_PROJECTION_UNAVAILABLE",
+    ]
+    assert set(context["authority"]) == {
+        "can_rank", "can_gate", "can_size", "can_originate_signal",
+        "can_change_entry_open", "can_change_execution",
+    }
+    assert not any(context["authority"].values())
+
+
+def test_b3_projection_failure_does_not_erase_valid_d5(
+    monkeypatch, client,
+):
+    c, _ = client
+    snapshot = _b3_snapshot()
+    monkeypatch.setattr(
+        api, "load_candidate_episode_store_snapshot", lambda _root: snapshot,
+    )
+    source = c.get(url().replace("research-view", "intelligence"))
+    assert source.status_code == 200
+
+    def fail_b3(*_args, **_kwargs):
+        raise RuntimeError("PRIVATE B3 FAILURE MUST NOT LEAK")
+
+    monkeypatch.setattr(api, "_candidate_state_for_snapshot", fail_b3)
+    response = c.get(
+        url(), params={"expected_generation": snapshot.generation_id},
+    )
+
+    _assert_b3_unavailable_preserves_d5(
+        response,
+        expected_view=view_module().build_earnings_view(source.json()),
+        generation_id=snapshot.generation_id,
+    )
+    assert "PRIVATE B3 FAILURE" not in response.text
+
+
+def test_malformed_optional_radar_does_not_erase_valid_d5(
+    monkeypatch, client, tmp_path,
+):
+    import pandas as pd
+
+    c, _ = client
+    snapshot = _b3_snapshot()
+    monkeypatch.setattr(
+        api, "load_candidate_episode_store_snapshot", lambda _root: snapshot,
+    )
+    radar_path = tmp_path / "malformed-radar.parquet"
+    pd.DataFrame([{"ticker": "AAPL", "state": "TRIGGERED"}]).to_parquet(
+        radar_path, index=False,
+    )
+    monkeypatch.setenv(
+        "PROPHET_LAB_ENTRY_RADAR_FORWARD_PATH", str(radar_path),
+    )
+    source = c.get(url().replace("research-view", "intelligence"))
+    assert source.status_code == 200
+
+    response = c.get(
+        url(), params={"expected_generation": snapshot.generation_id},
+    )
+    _assert_b3_unavailable_preserves_d5(
+        response,
+        expected_view=view_module().build_earnings_view(source.json()),
+        generation_id=snapshot.generation_id,
+    )
+
+
+def test_html_research_view_does_not_invoke_json_only_b3(
+    monkeypatch, client,
+):
+    c, _ = client
+    snapshot = _b3_snapshot()
+    monkeypatch.setattr(
+        api, "load_candidate_episode_store_snapshot", lambda _root: snapshot,
+    )
+    calls = []
+
+    def forbidden_b3(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("HTML entered optional B3 composition")
+
+    monkeypatch.setattr(api, "_candidate_state_for_snapshot", forbidden_b3)
+    response = c.get(
+        url(),
+        params={
+            "format": "html",
+            "expected_generation": snapshot.generation_id,
+        },
+    )
+
+    assert response.status_code == 200
+    private(response)
+    assert "text/html" in response.headers["content-type"]
+    assert calls == []

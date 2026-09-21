@@ -434,6 +434,8 @@ def _candidate_state_for_snapshot(snapshot: Any, episode_id: str) -> tuple[dict[
     if len(matches) != 1:
         raise IntelligenceVectorContractError("B3 projection did not resolve exact B1 episode")
     context = {
+        "state": "AVAILABLE",
+        "reason": None,
         "candidate_generation_id": projection["candidate_generation_id"],
         "projection_id": projection["projection_id"],
         "market_session": projection["market_session"],
@@ -510,16 +512,41 @@ def episode_research_view_v1(
         if (expected_generation is not None and
                 payload["episode_ref"]["generation_id"] != expected_generation):
             return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
-        candidate_state = candidate_state_context = None
-        if snapshot is not None:
-            candidate_state, candidate_state_context = _candidate_state_for_snapshot(
-                snapshot, episode_id
-            )
         if format == "json":
             view = build_earnings_view(payload, language=language)
-            if candidate_state is not None:
-                view["candidate_state"] = candidate_state
-                view["candidate_state_context"] = candidate_state_context
+            if snapshot is not None:
+                try:
+                    candidate_state, candidate_state_context = (
+                        _candidate_state_for_snapshot(snapshot, episode_id)
+                    )
+                except Exception as exc:  # noqa: BLE001 - B3 is additive to valid D5
+                    log.warning(
+                        "prophet_lab candidate state unavailable (%s)",
+                        type(exc).__name__,
+                    )
+                    view["candidate_state_context"] = {
+                        "state": "UNAVAILABLE_DATA",
+                        "reason": "B3_PROJECTION_UNAVAILABLE",
+                        "candidate_generation_id": snapshot.generation_id,
+                        "projection_id": None,
+                        "market_session": None,
+                        "generated_at": None,
+                        "definition_era": None,
+                        "emergence_degraded_reasons": [
+                            "B3_PROJECTION_UNAVAILABLE",
+                        ],
+                        "authority": {
+                            "can_rank": False,
+                            "can_gate": False,
+                            "can_size": False,
+                            "can_originate_signal": False,
+                            "can_change_entry_open": False,
+                            "can_change_execution": False,
+                        },
+                    }
+                else:
+                    view["candidate_state"] = candidate_state
+                    view["candidate_state_context"] = candidate_state_context
             return _response(view)
         style_hash = b64encode(sha256(STYLE.encode("utf-8")).digest()).decode("ascii")
         headers = dict(_PRIVATE_HEADERS)
