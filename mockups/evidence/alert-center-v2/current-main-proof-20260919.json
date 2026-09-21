@@ -1,27 +1,33 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v11",
+  "schema": "mastermind.alert_center.current_main_proof.v12",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-21T07:28:49Z",
-  "skillpack_commit": "3e66e43258f34db240d5bff76f54148c7af84ee4",
-  "macro_origin_main_observed": "fe06492ddf544ebbbdea77dd057f2ad861970a26",
-  "candidate_source_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
-  "current_merge_tree": "5ddfc2c502ae0520ca16d87ae85eb3bbbff10797",
+  "verified_at": "2026-09-21T11:45:11Z",
+  "skillpack_commit": "412deca03631f9768158205bc2802b032aa0a1cc",
+  "macro_origin_main_observed": "4eafb563cecb5747c9b5414a70a7281a33bdb6e2",
+  "candidate_source_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+  "current_merge_tree": "911970a301f13411df168be1172ef1ee9acc850f",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
     "full_alert_regression": {
-      "tested_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
-      "passed": 241,
+      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+      "passed": 243,
       "warnings": 5,
       "failures": 0,
       "log": "mockups/evidence/alert-center-v2/full-alert-regression.log"
     },
     "complete_source_bound_snapshot": {
-      "tested_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
+      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
       "shared_signals": 634,
       "supported_rows": 634,
       "fallback_rows": 0,
       "family_count": 49,
+      "failures": 0
+    },
+    "interaction_floor_repair": {
+      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+      "surface_tests_passed": 10,
+      "targeted_surface_and_explorer_passed": 116,
       "failures": 0
     }
   },
@@ -97,9 +103,24 @@
   },
   "browser": {
     "interaction_checks": 40,
-    "named_screenshots": 40,
+    "named_screenshots": 48,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
+    "matrix": [
+      "320x568",
+      "390x844",
+      "430x932",
+      "1440x900"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "standalone_control_floor_px": 40,
     "page_errors": 0,
     "horizontal_overflow": false,
     "production_acceptance": false
@@ -112,30 +133,31 @@
     "reuse_basis": "Prior 17-field exact legacy parity remains applicable: current semantic expansion is additive explorer brief projection and tests preserve canonical signal rows without mutation."
   },
   "guards": {
-    "full_alert_regression": "pass: 241 passed, 5 warnings, 0 failures",
+    "full_alert_regression": "pass: 243 passed, 5 warnings, 0 failures",
     "complete_source_bound_snapshot": "pass: 634/634 supported, 0 fallback, 49 families",
-    "design_system": "REVIEW_REUSE_ALLOWED — no template/CSS/JS source changed in the source-family completion wave",
-    "runtime_style": "REVIEW_REUSE_ALLOWED — no runtime-style source changed",
-    "visual_evidence": "pass: 40 browser interaction checks / 40 screenshots; 14 adversarial cases / 10 screenshots",
-    "diff_check": "pass on committed source/evidence snapshot",
-    "latest_base_merge_tree": "pass: conflict-free integrated tree 5ddfc2c502ae0520ca16d87ae85eb3bbbff10797",
-    "latest_base_ci_wiring": "pass: integrated tree retains engine/alert_center_view.py closure, tests/test_alert_center_explorer.py + tests/test_alert_center_surface.py, and current-main tests/test_unified_dashboard_b1.py ownership",
-    "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED — local recheck was stopped after prolonged git read-tree materialization; the prior unified-dashboard missing-owner defect is fixed on current main."
+    "design_system": "pass: R0 enforce-added 0 blocking findings on exact repair diff; alert_center.css contains no color-mix()",
+    "runtime_style": "pass: runtime style injection guard OK",
+    "visual_evidence": "pass: 320/390/430/1440 × dark/light × EN/ZH; Reset/Browse >=40px and quick filters >=40px",
+    "diff_check": "pass",
+    "latest_base_merge_tree": "pass: conflict-free integrated tree 911970a301f13411df168be1172ef1ee9acc850f",
+    "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED_AFTER_REPAIR — prior head 8277e787fa3 passed 0 introduced / 0 inherited"
   },
   "source_sha256": {
     "engine/alert_center_view.py": "b50a0c6e9b6c64411235c503c13b339494f6ffa71dd15d9f731b30e6b4378161",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
-    "templates/alert_center.css": "0ff5c733bd43364a188e5231bd5931edc3601837d567e5e4fba5b92dcac978a3",
+    "templates/alert_center.css": "3eca3d06ced400e4f3de543955fd14fc016e969184a67570ffce4b7ab93a53e6",
     "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
-    "scripts/qa_alert_center_v2.py": "34a47b5e9340141436638b1914ec674d395825e290bdf9d5c6bfa9b8d72c2e5d"
+    "scripts/qa_alert_center_v2.py": "9a349d96e83a5297969c711324d2f2ad382e8b8452f28ceaedf9fdec4a544af0",
+    "tests/test_alert_center_surface.py": "e69b707c9831ba8e69bd0fefb5ee769a0b16c89af2d00f9cc1348115887e4872"
   },
   "evidence_sha256": {
-    "browser-proof.json": "ac3019ebc3c5683d67152015d0d98b4d9be98e57cfb82729adf725c4065b33c8",
+    "browser-proof.json": "574008701ee010039acb316a7bd84a5a18954fecf5701865d24c5bc194eeb15a",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "a00dd436614d20881d0762da820ea901307c149a1843af59e9c3e579590a12a8",
-    "full-alert-regression.log": "d89380fd8fec9b7b79704c1fd7aa1416d2f11a353c887d938390be81b56b875d",
-    "targeted-tests.log": "d89380fd8fec9b7b79704c1fd7aa1416d2f11a353c887d938390be81b56b875d"
+    "input-manifest.json": "63bce5ef07783e587354871dbbe32d628c233e0b074a1d3367017e74db0b6476",
+    "full-alert-regression.log": "039cbf9b38aa2530b5303d87ce3a25e7cdcdbbe5672f2676aa3c31ae8c052650",
+    "targeted-tests.log": "039cbf9b38aa2530b5303d87ce3a25e7cdcdbbe5672f2676aa3c31ae8c052650",
+    "guard-results.json": "df0b2cac62ae33f243cd0369dd01beac9f0ec3fd70c28d12eb3af5595a753c50"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
@@ -143,7 +165,7 @@
     "runtime_authority": false,
     "modified_this_turn": false
   },
-  "review_state": "FULL_REREVIEW_REQUIRED",
+  "review_state": "REPAIR_APPLIED_REREVIEW_REQUIRED",
   "release_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
   "what_this_does_not_prove": [
     "deployment",
@@ -151,7 +173,7 @@
     "customer acceptance",
     "trading edge"
   ],
-  "candidate_evidence_commit": "00f13b153f0bed71ce371dfdc17ff9082f8daf52",
+  "candidate_evidence_commit": "9f319ccea63e6930cb7d185f2c4d67894d59031b",
   "rotation_source_bound_total": {
     "supported_rows": 313,
     "families": {
@@ -170,11 +192,11 @@
     }
   },
   "production_observation": {
+    "observed_at": "2026-09-21T11:45:11Z",
     "bytes": 337228,
-    "sha256": "c17dd2cecab994aa9874960c6f1c18925fb906a38d6b258a4d4ad6bdb88e6fc0",
+    "sha256": "c0abc2ea3c29fd944aaabee6e2b0aec23f7f9ccdbd67556cd0845021d28d2148",
     "market_changes_desk_present": false,
-    "old_alert_command_center_present": true,
-    "observed_at": "2026-09-21T07:22:32Z"
+    "old_alert_command_center_present": true
   },
   "complete_source_bound_snapshot": {
     "source_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
@@ -183,5 +205,17 @@
     "total_rows": 634,
     "fallback_rows": 0,
     "family_count": 49
+  },
+  "review_return": {
+    "reviewer": "mastermindx-2",
+    "reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
+    "state": "CHANGES_REQUESTED",
+    "repair_head": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "repaired_findings": [
+      "#ac-reset >=40px standalone floor",
+      "#ac-browse-all >=40px standalone floor",
+      "desktop quick filters >=40px"
+    ],
+    "rereview_required": true
   }
 }

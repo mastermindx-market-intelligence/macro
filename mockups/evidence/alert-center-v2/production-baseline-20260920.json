@@ -1,12 +1,12 @@
 {
   "schema": "mastermind.alert_center.production_baseline.v2",
-  "observed_at": "2026-09-21T07:22:32Z",
+  "observed_at": "2026-09-21T11:45:11Z",
   "route": "https://www.mastermind-x.com/alerts.html",
   "http_status": 200,
-  "html_sha256": "c17dd2cecab994aa9874960c6f1c18925fb906a38d6b258a4d4ad6bdb88e6fc0",
+  "html_sha256": "c0abc2ea3c29fd944aaabee6e2b0aec23f7f9ccdbd67556cd0845021d28d2148",
   "html_bytes": 337228,
-  "etag": "\"dlk625fczxpk787g\"",
-  "last_modified": "Sun, 20 Sep 2026 13:09:31 GMT",
+  "etag": "\"dlkxhsxey2pv787g\"",
+  "last_modified": "Mon, 21 Sep 2026 10:39:28 GMT",
   "live_markers": {
     "old_alert_command_center": true,
     "market_changes_desk": false,
@@ -18,12 +18,19 @@
     "preserved_screenshot_sha256": "3d15b8d8bacb3e9f2e0ce8dbb8aee76d8803b7accb47e9fb01884f78fabe66d9"
   },
   "candidate_comparison": {
-    "candidate_source_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
+    "candidate_source_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
     "desktop_document_height_px": 2191,
     "mobile_document_height_px": 2620,
     "visible_word_count": 718,
     "interaction_checks": 40,
-    "related_context_proven": true
+    "related_context_proven": true,
+    "viewport_matrix": [
+      "320x568",
+      "390x844",
+      "430x932",
+      "1440x900"
+    ],
+    "standalone_control_floor_px": 40
   },
   "capability_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
   "acceptance_rule": "HTTP 200, workflow success or a render commit is insufficient; the live route must expose the exact action-led journey and exact markers."

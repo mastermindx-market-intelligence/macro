@@ -1,25 +1,30 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v6",
-  "observed_at": "2026-09-21T07:28:49Z",
-  "candidate_source_head": "292dedb32d350b1064bad46a7145c7d00a21a804",
-  "latest_protected_main": "fe06492ddf544ebbbdea77dd057f2ad861970a26",
-  "latest_merge_tree": "5ddfc2c502ae0520ca16d87ae85eb3bbbff10797",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v7",
+  "observed_at": "2026-09-21T11:45:11Z",
+  "candidate_source_head": "799b5dd935504844d096f96aecc7cdd40692c924",
+  "latest_protected_main": "4eafb563cecb5747c9b5414a70a7281a33bdb6e2",
+  "latest_merge_tree": "911970a301f13411df168be1172ef1ee9acc850f",
   "merge_conflicts": [],
   "material_movement": {
-    "candidate_owned_alert_paths_changed_on_main": [
+    "candidate_semantic_paths_changed_on_main": [],
+    "candidate_release_path_changed_on_main": [
       ".github/ci/legacy-jobs.yml"
     ],
-    "candidate_semantic_paths_changed_on_main": [],
-    "integration_result": "Conflict-free integrated tree retains both current-main unified-dashboard ownership and Alert Center source/test closure."
+    "repair_paths": [
+      "templates/alert_center.css",
+      "scripts/qa_alert_center_v2.py",
+      "tests/test_alert_center_surface.py"
+    ],
+    "integration_result": "conflict-free"
   },
-  "skillpack_commit": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "skillpack_commit": "412deca03631f9768158205bc2802b032aa0a1cc",
   "classification": "FULL_REREVIEW_REQUIRED",
-  "reason": "The immutable source head now completes source-bound decision briefs across the entire 634-row shared snapshot (49 families, zero fallback), strengthening capability beyond the prior review. Current protected-main movement does not change candidate semantic paths; the latest integrated tree is conflict-free and preserves both CI ownership sets.",
+  "reason": "The prior exact-head reviewer requested three bounded interaction-floor repairs. The repair changes Alert Center CSS, QA and surface tests, so exact-head rereview is required. Protected-main movement does not change candidate semantic/UI paths; latest integration is conflict-free.",
   "production_acceptance": false,
-  "candidate_evidence_head": "00f13b153f0bed71ce371dfdc17ff9082f8daf52",
+  "candidate_evidence_head": "9f319ccea63e6930cb7d185f2c4d67894d59031b",
   "release_blockers": [
-    "independent exact-head review has not returned",
-    "hosted exact-head CI/contract-delta must pass after push",
+    "independent exact-head rereview must accept the bounded interaction-floor repair",
+    "hosted exact-head CI/contract-delta must rerun after push",
     "production still serves the old Alert Command Center"
   ]
 }
