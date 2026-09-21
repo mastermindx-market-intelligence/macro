@@ -377,6 +377,18 @@ body.imd-lock{overflow:hidden}
     </div>
   </section>
 
+  {% if europe_news %}
+  <section class="imd-section" id="europe-news">
+    <div class="imd-section-head"><h2>{{ t('Europe official press','欧洲官方新闻') }}</h2><p>{{ t('Public official and central bank press wires, CC BY 4.0 / OGL v3.','公共官方与央行新闻稿，CC BY 4.0 / OGL v3。') }}</p></div>
+    <div class="imd-card" style="padding:0;overflow:hidden">
+      <table class="imd-table" style="min-width:0">
+        <thead><tr><th>{{ t('Date','日期') }}</th><th>{{ t('Source','来源') }}</th><th>{{ t('Headline','标题') }}</th><th>{{ t('Jurisdiction','司法管辖区') }}</th></tr></thead>
+        <tbody>{% for item in europe_news_items %}<tr><td style="white-space:nowrap">{{ item.seendate[:10] }}</td><td style="white-space:nowrap"><span class="l-en">{{ item.source }}</span><span class="l-zh">{{ item.source_zh }}</span></td><td>{% if item.url %}<a href="{{ item.url }}" target="_blank" rel="noopener">{{ t(item.title,item.title) }}</a>{% else %}{{ t(item.title,item.title) }}{% endif %}</td><td style="white-space:nowrap"><span class="l-en">{{ item.jurisdiction_en }}</span><span class="l-zh">{{ item.jurisdiction_zh }}</span></td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
   <section class="imd-section">
     <div class="imd-section-head"><h2>{{ t('Source health & data contract','数据健康与数据契约') }}</h2><p>{{ t('Official where practical; every fallback and gap remains visible.','尽可能采用官方源；每项备用源与缺口均保持可见。') }}</p></div>
     <div class="imd-card imd-health">

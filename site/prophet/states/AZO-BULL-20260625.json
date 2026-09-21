@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AZO-BULL-20260625",
-  "asof": "2026-09-18",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.4,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.6,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-09-19",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.6,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.4,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 0.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.066,
+    "dist_to_stop_r": 0.036,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 153.3,
-    "p1": -0.7109,
-    "p2": -0.3555,
+    "horizon_pct_used": 155.6,
+    "p1": -0.6425,
+    "p2": -0.3212,
     "p3": null,
-    "move_r": -1.066,
+    "move_r": -0.964,
     "mfe_r": 0.359,
     "mae_r": -1.066
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-11",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 69,
-  "tau": 1.5333
+  "days_elapsed": 70,
+  "tau": 1.5556
 }

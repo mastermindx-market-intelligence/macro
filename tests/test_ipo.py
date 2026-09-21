@@ -973,3 +973,218 @@ def test_light_cw_band_tint_is_raised_into_legible_range():
     assert 16 <= pct <= 20
     # the hairline boundary edge must survive the tint raise, not be removed.
     assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 (B-F09-2 audit) — Tier-1 spread fractions in bi.CW_READ["spread_range"]
+# must mirror engine.credit_window.RANGE_OPEN_PCT (33) and RANGE_SHUT_PCT (66),
+# and rates_vol fractions must mirror MOVE_OPEN_PCT (40) and MOVE_SHUT_PCT (75).
+# The pre-fix wording said "four in five days" against thresholds of 33/66, which
+# is factually inverted for the open/shut cells; this pins both the constants
+# to their canonical fractions and the copy to those fractions so the two cannot
+# silently drift apart again.
+# --------------------------------------------------------------------------- #
+def test_cw_read_percentile_fractions_match_engine_thresholds():
+    import engine.credit_window as cw
+
+    # canonical mapping from the engine's thresholds to their "N in M" fractions:
+    #   RANGE 33/66  -> "two in three"   (~67% / ~66% of trailing days)
+    #   MOVE  40     -> "three in five"  (60% = 3/5)
+    #   MOVE  75     -> "three in four"  (75% = 3/4)
+    # ZH fraction form is "<denominator>分之<numerator>": 三分之二 / 五分之三 / 四分之三.
+    expected = {
+        ("spread_range", "open"):  ("two",   "three", "三", "二"),
+        ("spread_range", "shut"):  ("two",   "three", "三", "二"),
+        ("rates_vol",    "open"):  ("three", "five",  "五", "三"),
+        ("rates_vol",    "shut"):  ("three", "four",  "四", "三"),
+    }
+
+    # the four canonical fractions must still hold against the current constants —
+    # a constant drift (e.g. RANGE_OPEN_PCT moving to 45) must NOT pass silently.
+    assert abs((100.0 - cw.RANGE_OPEN_PCT) - (2 / 3) * 100) < 5  # ~67
+    assert abs(cw.RANGE_SHUT_PCT - (2 / 3) * 100) < 5            # ~66
+    assert abs((100.0 - cw.MOVE_OPEN_PCT) - (3 / 5) * 100) < 5   # 60
+    assert abs(cw.MOVE_SHUT_PCT - (3 / 4) * 100) < 5             # 75
+
+    for (key, state), (n_en, m_en, zh_den, zh_num) in expected.items():
+        en, zh = bi.CW_READ[(key, state)]
+        assert f"{n_en} in {m_en} days" in en, (
+            f"CW_READ[({key!r}, {state!r})] EN must contain {n_en!r} in {m_en!r} "
+            f"days of the past year (per {key} thresholds); got {en!r}"
+        )
+        assert f"{zh_den}分之{zh_num}" in zh, (
+            f"CW_READ[({key!r}, {state!r})] ZH must contain {zh_den!r}分之"
+            f"{zh_num!r} (per {key} thresholds); got {zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 (B-F09-2 audit) — the engine's `not_evaluable` state key (and any other
+# multi-word snake_case state key) must never reach user copy in its
+# title-cased form. Repo convention is the plain display name "No read" /
+# "暂无读数" (templates/transmission.html.j2:522, templates/foresight.html.j2:25,
+# templates/_risk_envelope_band.html.j2:171).
+# Single-word state keys ("open", "neutral", "shut") have a title-cased
+# rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
+# display label — those are NOT a leak, so this test only pins the multi-word
+# snake_case case the audit actually flagged.
+# The earlier round compared EN against `key.replace("_"," ").title()` =
+# "Not Evaluable" but the pre-fix value was sentence-cased "Not evaluable"
+# (the title-cased assertion was therefore happy on the old head). Pin the
+# exact fixed values explicitly so a regression to ANY form of the engine
+# token — title-cased, sentence-cased, or any other rendering — fails.
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_keys_do_not_leak_engine_token():
+    # 1. the EXACT fixed display values for the audit-flagged key — fails on the
+    #    pre-fix sentence-cased "Not evaluable / 无法评估" (H2's actual leak).
+    expected_state = {
+        "not_evaluable": ("No read", "暂无读数"),
+    }
+    for key, (en_want, zh_want) in expected_state.items():
+        assert key in bi.CW_STATE, (
+            f"CW_STATE must carry the engine key {key!r}; engine state "
+            f"otherwise can't be localised."
+        )
+        en_got, zh_got = bi.CW_STATE[key]
+        assert en_got == en_want, (
+            f"CW_STATE[{key!r}].EN must be {en_want!r} (repo plain-word "
+            f"convention); got {en_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+        assert zh_got == zh_want, (
+            f"CW_STATE[{key!r}].ZH must be {zh_want!r} (repo plain-word "
+            f"convention); got {zh_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+
+    # 2. no title-cased form of any multi-word snake_case engine state key
+    #    anywhere in CW_STATE / CW_CLAUSE (defensive — a future key the audit
+    #    didn't flag must still trip this).
+    for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
+        for key, (en, _zh) in lexicon.items():
+            if "_" not in key:
+                continue
+            title_form = key.replace("_", " ").title()
+            assert en != title_form, (
+                f"{name}[{key!r}] EN is the title-cased engine key: {en!r} — "
+                f"must not equal {title_form!r}; use a plain display name "
+                f"('No read' for `not_evaluable`, etc.) so the engine token "
+                f"never reaches user copy."
+            )
+
+    # 3. the template carries no leak of the engine token in user copy —
+    #    case-insensitive for EN (catches "Not evaluable", "NOT EVALUABLE",
+    #    "not-evaluable") but NOT the snake_case key name itself (a regex
+    #    with `_` matches the snake_case key in source comments), exact for
+    #    ZH (the pre-fix leak was the literal "无法评估").
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    assert re.search(r"not[ -]evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' / 'not-evaluable' — the engine token belongs in "
+        "CW_STATE only, never in user copy; use 'No read' / '暂无读数' instead "
+        "(see repo convention)."
+    )
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# h_7128 — exercise the full production Jinja render with both credit states.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("has_data", [False, True], ids=["missing-data", "with-data"])
+def test_cw_force_hook_fallback_nodes_and_css_are_emitted(monkeypatch, tmp_path, has_data):
+    """The builder emits real fallback nodes and opposite normal rails in both states.
+
+    _render_ipo_html calls bi.build(), including its FileSystemLoader, autoescape=True,
+    i18n globals and complete fixture context. DOM selectors cannot be satisfied by
+    class names in CSS or comments. Capture fallbacks intentionally exist in BOTH
+    states; only the normal, server-selected null/data rail changes with the input.
+    """
+    from bs4 import BeautifulSoup
+
+    seg = _seg("open" if has_data else "not_evaluable")
+    if not has_data:
+        seg.update(rail=None, inputs=[], n_inputs=0, low_confidence=True)
+    raw = {
+        "segments": [seg], "as_of": "2026-09-01",
+        "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"},
+    }
+    monkeypatch.setattr(bi.cwn, "window_state", lambda: raw)
+    rendered = _render_ipo_html(monkeypatch, tmp_path)
+    doc = BeautifulSoup(rendered, "html.parser")
+    cards = doc.select(".tcard.cw")
+    assert len(cards) == 1
+    card = cards[0]
+
+    fallback_rails = card.select(".cw-rail.is-null.cw-rail-fb")
+    fallback_scales = card.select(".cw-scale.cw-scale-fb")
+    assert len(fallback_rails) == 1, "Rendered capture fallback rail is missing"
+    assert len(fallback_scales) == 1, "Rendered capture fallback scale is missing"
+    assert fallback_rails[0]["aria-hidden"] == "true"
+    assert fallback_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+    assert fallback_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    # The normal branch is opposite with/without data. The hidden capture-only
+    # fallback above stays available in either case, as required by the ruling.
+    null_rails = card.select(".cw-rail.is-null:not(.cw-rail-fb)")
+    null_scales = card.select(".cw-scale:not(.cw-scale-data):not(.cw-scale-fb)")
+    assert len(null_rails) == (0 if has_data else 1)
+    assert len(null_scales) == (0 if has_data else 1)
+    assert len(card.select(".cw-rail-data")) == (1 if has_data else 0)
+    assert len(card.select(".cw-scale-data")) == (1 if has_data else 0)
+    if has_data:
+        assert "left:10.0%" in card.select_one(".cw-mark")["style"]
+        assert "width:33.0%" in card.select_one(".cw-band")["style"]
+    else:
+        assert null_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+        assert null_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
+
+    expected_state = ("Open", "开着") if has_data else ("No read", "暂无读数")
+    assert card.select_one(".tc-state .l-en").get_text() == expected_state[0]
+    assert card.select_one(".tc-state .l-zh").get_text() == expected_state[1]
+    assert not doc.body.has_attr("data-credit"), "Normal renders must not force capture state"
+
+    css = "".join(style.get_text() for style in doc.select("style"))
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    css = re.sub(r"\s+", " ", css)
+    assert '.cw-rail-fb,.cw-scale-fb{display:none}' in css
+    # Exact descendant selectors — whitespace is load-bearing; a compound
+    # [data-credit="null"].cw-rail-fb (no space) would be wrong.
+    assert '[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}' in css
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in css
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in css
+    assert not re.search(r'\[data-credit="null"\][^{}]*\.tc-state', css)
+
+
+def test_cw_force_hook_comment_names_body_not_html():
+    """The hook comment must name <body> as the element the capture script sets
+    [data-credit="null"] on — not <html> (which the pre-fix comment stated).
+    Both the CSS /* */ comment (~185-189) and the Jinja {# #} comment (~459-462)
+    must be checked; a regression in either would not be caught by scanning one."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    import re
+    css_comments = re.findall(r'/\*.*?\*/', src, re.DOTALL)
+    jinja_comments = re.findall(r'\{#.*?#\}', src, re.DOTALL)
+
+    hook_comments = [
+        b for b in css_comments
+        if 'data-credit' in b and 'force-state hook' in b
+    ] + [
+        b for b in jinja_comments
+        if 'data-credit' in b and 'Capture-only' in b
+    ]
+    assert hook_comments, "Force-state hook comment not found in CSS /* */ or Jinja {# #}"
+
+    for hook_comment in hook_comments:
+        assert "<body>" in hook_comment, (
+            "Hook comment must name <body> as the element [data-credit='null'] is set on "
+            "(capture_page_evidence.py sets it on <body>, not <html>)"
+        )
+        assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
+            "Hook comment must not say [data-credit='null'] is set on <html> — "
+            "capture_page_evidence.py sets it on <body>"
+        )
