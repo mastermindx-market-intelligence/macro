@@ -1335,12 +1335,13 @@ def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
         s for s in _design_governance_steps()
         if "merge-base" in (s.get("run") or "")
     ]
-    # Both TP-0 diff-scoped gates depend on the base: the forward-only design
-    # ratchet and the visual-evidence gate. Deleting one to satisfy the
-    # per-step assertions below fails here instead.
-    assert len(base_dependent) == 2, (
-        "expected exactly 2 base-dependent design-governance steps "
-        f"(forward-only ratchet + visual evidence), found {len(base_dependent)}")
+    # The diff-scoped gates depend on the base: the forward-only design
+    # ratchet, the visual-evidence gate, and the p0b receipt-closure gate.
+    # Deleting one to satisfy the per-step assertions below fails here instead.
+    assert len(base_dependent) == 3, (
+        "expected exactly 3 base-dependent design-governance steps "
+        "(forward-only ratchet + visual evidence + p0b receipt-closure), "
+        f"found {len(base_dependent)}")
 
     for step in base_dependent:
         run = step["run"]
