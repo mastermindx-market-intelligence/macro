@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T10:47:34.978707+00:00",
-  "count": 2563,
+  "generated_at": "2026-09-21T11:02:18.609794+00:00",
+  "count": 2564,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -382,6 +382,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ngamcw0xo3y-80c10c",
+      "title": "Bernstein Americas Oil The drone attacks on Russian refineries are stunning",
+      "institution": "Bernstein",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:19:53Z",
+      "summary_points": [
+        "Ukrainian drone strikes on Russian refineries: ~90% of Russia’s refining capacity (2 mln bpd) offline, representing ~80% of 2026 capacity, driving sustained global supply tightness and elevated crack spreads.",
+        "Russia’s refined product export ban: Export ban until Jan 2027 (Reuters) tightening global supply, directly benefiting refiners/integrated oil companies (ExxonMobil, Chevron) through 2027.",
+        "Crack spreads near record highs: Persistently widening despite moderate oil prices, reflecting acute supply constraints from Russian refining disruptions.",
+        "Multiple refinery fire risks: Satellite evidence (NASA FIRMS) confirms fire risks at Omsk (430k bpd), Volgograd (300k bpd), Yaroslavl (280k bpd), and others, threatening supply chain stability.",
+        "Geographic clustering vulnerability: Western Russia’s concentrated refinery infrastructure heightens geopolitical risk exposure and supply chain fragility amid sanctions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 41,
       "language": "en",
       "needs_metadata": false
     },
