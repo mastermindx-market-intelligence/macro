@@ -330,6 +330,85 @@ def test_stocks_mode_excludes_unified_dashboard_candidate():
     assert 'id="ud-hero"' not in html
 
 
+def _health_panel(html: str) -> str:
+    match = re.search(r'<details class="[^"]*health-strip[^"]*" id="health".*?</details>', html, re.S)
+    assert match, "macro render must contain the data-health panel"
+    return match.group(0)
+
+
+def test_macro_health_empty_is_unknown_not_green():
+    panel = _health_panel(_render("macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-unknown" in opening
+    assert "health-ok" not in opening
+    assert "health unavailable" in panel
+    assert "健康状态不可用" in panel
+    assert "Source health data is unavailable for this build." in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_nonempty_all_ok_is_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "ok", "rows": 12,
+        "last_date": "2026-07-04", "error": None,
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-ok" in opening
+    assert "health-unknown" not in opening
+    assert "health-neutral" not in opening
+    assert "all observed sources OK" in panel
+    assert "已观测数据源全部正常" in panel
+
+
+def test_macro_health_blocked_only_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Known limitation", "status": "blocked", "rows": 0,
+        "last_date": None, "error": "expected limitation",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "无活动故障" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_ok_plus_blocked_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [
+        {"name": "Primary feed", "status": "ok", "rows": 12,
+         "last_date": "2026-07-04", "error": None},
+        {"name": "Known limitation", "status": "blocked", "rows": 0,
+         "last_date": None, "error": "expected limitation"},
+    ]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_degraded_source_remains_attention_state():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "stale", "rows": 12,
+        "last_date": "2026-07-03", "error": "late",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-warn" in opening
+    assert "health-ok" not in opening
+    assert "1" in panel and "need attention" in panel
+    assert "需关注" in panel
+
+
 def test_us_track_record_filter_bar_stays_in_document_flow():
     """The dense US ledger filters must scroll away instead of covering rows."""
     vm = _base_vm()

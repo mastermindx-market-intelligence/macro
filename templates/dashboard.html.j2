@@ -2131,12 +2131,14 @@
   body.page-macro details.fold > summary::-webkit-details-marker { display: none; }
   body.page-macro details.fold > summary::before { content: ""; flex: none; width: 3px; height: 14px;
     border-radius: 1.5px; background: var(--link); }
-  /* Wave E — Data health: status dot reflecting live health (green OK / amber attention) */
+  /* Wave E — Data health: green observed-OK / amber attention / gray neutral or unavailable. */
   body.page-macro details.fold.health-strip > summary::before { width: 9px; height: 9px; border-radius: 50%; }
   body.page-macro details.fold.health-ok > summary::before { background: var(--up, #22d97a);
     box-shadow: 0 0 7px color-mix(in srgb, var(--up, #22d97a) 55%, transparent); }
   body.page-macro details.fold.health-warn > summary::before { background: var(--warn, #f59e0b);
     box-shadow: 0 0 7px color-mix(in srgb, var(--warn, #f59e0b) 55%, transparent); }
+  body.page-macro details.fold.health-unknown > summary::before,
+  body.page-macro details.fold.health-neutral > summary::before { background: var(--ink-3); box-shadow: none; }
   body.page-macro details.fold > summary .fold-stat { font-weight: 500; color: var(--ink-2);
     font-size: 12.5px; }
   body.page-macro details.fold > summary .fold-caret { margin-left: auto; flex: none; font-size: 11px;
@@ -17736,15 +17738,21 @@ html[data-theme="light"] :is(
 
   <!-- ======================= HEALTH ======================= -->
   {% set _health_bad = health|rejectattr('status','equalto','ok')|rejectattr('status','equalto','blocked')|list %}
-  <details class="panel span12 fold health-strip{{ ' health-warn' if _health_bad else ' health-ok' }}" id="health" style="position:relative">
+  {% set _health_ok = health|selectattr('status','equalto','ok')|list %}
+  {% set _health_unknown = health|length == 0 %}
+  {% set _health_all_ok = (not _health_unknown) and (_health_ok|length == health|length) %}
+  <details class="panel span12 fold health-strip{{ ' health-unknown' if _health_unknown else (' health-warn' if _health_bad else (' health-ok' if _health_all_ok else ' health-neutral')) }}" id="health" style="position:relative">
     <summary>{{ t('Data health', '数据健康度') }}
-      {{ help("Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today's fetch broke (yesterday's data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.", "本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。") }}
+      {{ help("Observed health entries for data sources this dashboard depends on. No entries means health is unavailable, not healthy. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today's fetch broke (yesterday's data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.", "本仪表盘依赖数据源的已观测健康记录。没有记录表示健康状态不可用，并不代表正常。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。") }}
       {% set _bad = _health_bad %}
-      <span class="fold-stat">{% if _bad %}{{ _bad|length }} {{ t('need attention', '需关注') }}{% else %}{{ t('all sources OK', '全部正常') }}{% endif %} · {{ health|length }} {{ t('sources', '数据源') }}</span>
+      <span class="fold-stat">{% if _health_unknown %}{{ t('health unavailable', '健康状态不可用') }}{% elif _bad %}{{ _bad|length }} {{ t('need attention', '需关注') }}{% elif _health_all_ok %}{{ t('all observed sources OK', '已观测数据源全部正常') }}{% else %}{{ t('no active failures', '无活动故障') }}{% endif %} · {{ health|length }} {{ t('sources', '数据源') }}</span>
       <span class="fold-caret">▾</span>
     </summary>
     <table>
       <tr><th class="l">{{ t('source', '数据源') }}</th><th class="l">{{ t('status', '状态') }}</th><th>{{ t('rows', '行数') }}</th><th>{{ t('last data', '最新数据') }}</th><th class="l">{{ t('note', '备注') }}</th></tr>
+      {% if _health_unknown %}
+      <tr><td colspan="5" class="l muted">{{ t('Source health data is unavailable for this build.', '本次构建的数据源健康状态不可用。') }}</td></tr>
+      {% endif %}
       {% for s in health %}
       <tr>
         <td class="l">{{ s.name }}</td>
