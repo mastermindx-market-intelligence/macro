@@ -175,6 +175,22 @@ async function readJson(r) {
   return { ok: false, error: describeNonJson(r, raw) };
 }
 
+/* Bound reads, never auto-retry or abort an operator write: a timed-out write
+   may already have executed. Include body parsing in the read deadline. */
+const ADMIN_READ_TIMEOUT_MS = 30000;
+async function readAdminResponse(path, opts) {
+  const method = String((opts && opts.method) || "GET").toUpperCase();
+  const controller = method === "GET" && !(opts && opts.signal) ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), ADMIN_READ_TIMEOUT_MS) : null;
+  try {
+    const response = await fetch(path, controller ? { ...opts, signal: controller.signal } : opts);
+    return { response, value: await readJson(response) };
+  } catch (error) {
+    if (controller && controller.signal.aborted) throw new Error("The admin server took too long to respond. Try again.");
+    throw error;
+  } finally { if (timer !== null) clearTimeout(timer); }
+}
+
 async function api(path, opts) {
   const cacheable = apiCacheable(path, opts);
   if (cacheable) {
@@ -190,13 +206,12 @@ async function api(path, opts) {
 
   const generation = API_CACHE_GENERATION;
   const request = (async () => {
-    const r = await fetch(path, opts);
+    const { response: r, value } = await readAdminResponse(path, opts);
     if (r.status === 401) {
       clearApiCache();
       showLogin();
       throw new Error("auth required");
     }
-    const value = await readJson(r);
     if (cacheable && generation === API_CACHE_GENERATION) {
       if (r.ok) apiCacheStore(path, { value, expiresAt: Date.now() + apiCacheTtl(path) });
       else API_CACHE.delete(path);
@@ -321,23 +336,15 @@ const ICONS = {
      because it counts what is on it. */
   intelligence_os:       NAV_ICO('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8.5h6M7 12h6M7 15.5h4"/><circle cx="17" cy="8.5" r="1.1"/><circle cx="17" cy="12" r="1.1"/><circle cx="17" cy="15.5" r="1.1"/>'),
 };
+/* One inventory, organized by operator task. Specialist tools stay searchable
+   and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "", items: [["overview", "Overview"]] },
-  { label: "Neural Web", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"]] },
-  { label: "Research", items: [["research_tools", "Research Tools"]] },
-  /* Marketing was one flat 19-item list — "SUPER messy" (operator, 2026-07-29).
-     Split along the operator's actual loops: the nightly production line he
-     walks first, the lanes that feed it, the engine room he opens when a number
-     looks wrong, and the strategy surfaces he reads occasionally. Floor leads
-     because it is the only page that answers "is it working" without clicking. */
-  { label: "Marketing · Floor", items: [["marketing_floor", "Floor"], ["marketing_content", "Content Studio"], ["marketing_outbox", "Outbox"], ["marketing_sentinel", "Sentinel"], ["marketing_publish", "Publisher"]] },
-  { label: "Marketing · Lanes", items: [["marketing_lanes", "X Lanes"], ["marketing_radar", "Radar"], ["marketing_reply_queue", "Reply Deck"], ["marketing_seo", "SEO"]] },
-  { label: "Marketing · Engine room", items: [["marketing_models", "Model Desk"], ["marketing_health", "Desk Health"], ["marketing_learning", "Learning"], ["marketing_lab", "Lab"], ["marketing_lobes", "Engines"]] },
-  { label: "Marketing · Strategy", items: [["marketing_overview", "CMO Office"], ["marketing_departments", "Departments"], ["marketing_campaigns", "Campaigns"], ["marketing_channels", "Channels & Desks"], ["personas", "Persona Roster"], ["marketing_allies", "Allies"], ["marketing_ads", "Ad Central"], ["marketing_experiments", "Experiments"]] },
-  { label: "Growth", items: [["analytics", "Analytics"], ["users", "Users"], ["revenue", "Revenue"], ["experiments", "Experiments"], ["site_gate", "Site Access"]] },
-  { label: "Support", items: [["support_tickets", "Support Tickets"], ["email_center", "Email Center"]] },
-  { label: "System", items: [["control_room", "Control Room"], ["system", "System"], ["health", "Health"], ["deploy", "Build & Deploy"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Content"]] },
-  { label: "Config", items: [["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
+  { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
+  { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
+  { label: "Publishing tools", items: [["marketing_sentinel", "Sentinel"], ["marketing_lanes", "X Lanes"], ["marketing_radar", "Radar"], ["marketing_reply_queue", "Reply Deck"], ["marketing_seo", "SEO"], ["marketing_models", "Model Desk"], ["marketing_health", "Desk Health"], ["marketing_learning", "Learning"], ["marketing_lab", "Lab"], ["marketing_lobes", "Engines"], ["marketing_overview", "CMO Office"], ["marketing_departments", "Departments"], ["marketing_campaigns", "Campaigns"], ["marketing_channels", "Channels & Desks"], ["personas", "Persona Roster"], ["marketing_allies", "Allies"], ["marketing_ads", "Ad Central"], ["marketing_experiments", "Marketing experiments"]] },
+  { label: "Platform & settings", items: [["control_room", "Control Room"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Site inventory"], ["site_gate", "Site Access"], ["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
 ];
 const TAB_LABELS = Object.fromEntries(NAV_GROUPS.flatMap(g => g.items));
 const TAB_PREFETCH_PATHS = {
@@ -603,44 +610,64 @@ function tickLoopElapsed() {
 }
 
 function renderSidebar() {
-  const nav = $("#sidenav"); if (!nav) return; nav.innerHTML = "";
-  const finder = h(`<label class="nav-finder"><input type="search" id="navSearch" placeholder="Find an admin page…" autocomplete="off" aria-label="Find an admin page"></label>`);
-  const empty = h(`<div class="nav-empty" id="navEmpty">No matching pages</div>`);
-  nav.appendChild(finder);
+  const nav = $("#sidenav"); if (!nav) return;
+  nav.innerHTML = `<div class="nav-search"><label class="admin-sr-only" for="navSearch">Find an admin page</label><input id="navSearch" type="search" placeholder="Find an admin page…" autocomplete="off"></div>`;
   NAV_GROUPS.forEach(g => {
-    const grp = h(`<div class="nav-group" data-nav-group></div>`);
-    if (g.label) grp.appendChild(h(`<div class="eyebrow">${esc(g.label)}</div>`));
+    const grp = h(g.primary
+      ? `<div class="nav-group" data-nav-group><div class="eyebrow">${esc(g.label)}</div></div>`
+      : `<details class="nav-group nav-specialist" data-nav-group><summary>${esc(g.label)}<span class="nav-count">${g.items.length}</span></summary></details>`);
+    if (!g.primary && g.items.some(([id]) => id === CURRENT)) grp.open = true;
     g.items.forEach(([id, label]) => {
-      const it = h(`<div class="nav-item" data-tab="${id}" data-nav-label="${esc(label.toLowerCase())}" tabindex="0" role="button">${ICONS[id] || ""}<span>${esc(label)}</span></div>`);
-      if (id === CURRENT) it.classList.add("active");
+      const it = h(`<button type="button" class="nav-item" data-tab="${id}" data-nav-label="${esc((label + " " + id.replaceAll("_", " ") + " " + g.label).toLowerCase())}">${ICONS[id] || ""}<span>${esc(label)}</span></button>`);
       it.addEventListener("pointerenter", () => scheduleTabPrefetch(id), { passive: true });
       it.addEventListener("pointerleave", cancelTabPrefetch, { passive: true });
       it.addEventListener("focusin", () => prefetchTab(id));
       it.onclick = () => go(id);
-      it.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(id); } };
       grp.appendChild(it);
     });
     nav.appendChild(grp);
   });
+  const empty = h(`<div class="nav-empty" role="status" hidden>No matching pages. Try another name.</div>`);
   nav.appendChild(empty);
   const input = $("#navSearch");
-  if (input) input.addEventListener("input", () => {
+  let searching = false;
+  input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase(); let visible = 0;
     nav.querySelectorAll("[data-nav-group]").forEach(grp => {
+      if (grp.tagName === "DETAILS" && q && !searching) grp.dataset.beforeSearch = String(grp.open);
       let n = 0;
       grp.querySelectorAll(".nav-item").forEach(item => {
         const match = !q || (item.dataset.navLabel || "").includes(q);
-        item.style.display = match ? "" : "none";
+        item.hidden = !match;
         if (match) { visible++; n++; }
       });
-      grp.style.display = n ? "" : "none";
+      grp.hidden = n === 0;
+      if (grp.tagName === "DETAILS") {
+        if (q) grp.open = n > 0;
+        else if (searching) grp.open = grp.dataset.beforeSearch === "true";
+      }
     });
-    empty.style.display = visible ? "none" : "block";
+    searching = !!q;
+    empty.hidden = visible > 0;
+    if (!q) setActiveNav(CURRENT);
   });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Escape" && input.value) {
+      e.stopPropagation(); input.value = ""; input.dispatchEvent(new Event("input"));
+    }
+  });
+  setActiveNav(CURRENT);
 }
 function setActiveNav(id) {
   const nav = $("#sidenav"); if (!nav) return;
-  nav.querySelectorAll(".nav-item").forEach(el => el.classList.toggle("active", el.dataset.tab === id));
+  nav.querySelectorAll(".nav-item").forEach(el => {
+    const active = el.dataset.tab === id;
+    el.classList.toggle("active", active);
+    if (active) {
+      el.setAttribute("aria-current", "page");
+      const group = el.closest("details"); if (group) group.open = true;
+    } else el.removeAttribute("aria-current");
+  });
 }
 
 /* Paint a small pending-count dot on a nav item (or clear it when n<=0). Used to
@@ -682,25 +709,67 @@ async function refreshSupportNavDot() {
 }
 function setTopbarTitle(t) { const el = $("#topbar-title"); if (el) el.textContent = t; }
 
+let ADMIN_DRAWER_WIRED = false;
 function setSidebarOpen(open) {
   const sidebar = $("#sidebar"), scrim = $("#sidebarScrim"), toggle = $("#sidebarToggle");
   if (!sidebar || !scrim || !toggle) return;
-  const next = !!open;
+  const mobile = window.matchMedia("(max-width: 900px)").matches;
+  const wasOpen = sidebar.classList.contains("open");
+  const next = mobile && !!open;
   sidebar.classList.toggle("open", next); scrim.classList.toggle("show", next);
   document.body.classList.toggle("nav-open", next);
   toggle.setAttribute("aria-expanded", next ? "true" : "false");
   toggle.setAttribute("aria-label", next ? "Close navigation" : "Open navigation");
+  if (!next && wasOpen && sidebar.contains(document.activeElement)) toggle.focus();
+  sidebar.inert = mobile && !next;
+  if (mobile && !next) sidebar.setAttribute("aria-hidden", "true");
+  else sidebar.removeAttribute("aria-hidden");
+  if (next && !wasOpen) { const search = $("#navSearch"); if (search) search.focus(); }
 }
 function wireSidebarDrawer() {
+  setSidebarOpen(false);
+  if (ADMIN_DRAWER_WIRED) return;
+  ADMIN_DRAWER_WIRED = true;
   const toggle = $("#sidebarToggle"), scrim = $("#sidebarScrim");
   if (toggle) toggle.onclick = () => setSidebarOpen(!$("#sidebar").classList.contains("open"));
   if (scrim) scrim.onclick = () => setSidebarOpen(false);
-  document.addEventListener("keydown", e => { if (e.key === "Escape") setSidebarOpen(false); });
-  window.matchMedia("(min-width: 901px)").addEventListener("change", e => { if (e.matches) setSidebarOpen(false); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") setSidebarOpen(false);
+    if (e.key !== "Tab" || !$("#sidebar").classList.contains("open")) return;
+    const focusable = [toggle, ...$("#sidebar").querySelectorAll("button,input,summary,a[href]")]
+      .filter(el => el && !el.disabled && el.getClientRects().length);
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  window.matchMedia("(min-width: 901px)").addEventListener("change", () => setSidebarOpen(false));
 }
 
+let ADMIN_RENDER_EPOCH = 0;
+function adminPageFailure(id, error, retry) {
+  if ($("#login").classList.contains("show")) return;
+  const view = $("#view");
+  view.innerHTML = `<section class="card admin-page-error" role="alert"><h2>This page could not be loaded</h2><p class="sub">Check your connection, then try again. You can still open another admin page.</p><div class="admin-error-actions"><button type="button" class="btn primary" id="adminRetry">Try again</button><button type="button" class="btn" id="adminBackHome">Open overview</button></div><details class="tech-details"><summary>Technical details</summary>${esc(error && error.message || "Page unavailable")}</details></section>`;
+  $("#adminRetry").onclick = () => { clearApiCache(); retry(); };
+  $("#adminBackHome").onclick = () => go("overview");
+}
+function runAdminRender(id, render) {
+  const epoch = ++ADMIN_RENDER_EPOCH;
+  return Promise.resolve().then(render).catch(error => {
+    if (epoch === ADMIN_RENDER_EPOCH) adminPageFailure(id, error, () => route());
+  });
+}
 function go(id) {
-  if (currentLobeId() || currentEngineId() || currentMktDept() || currentAnalyticsDetail() || currentTicketId()) history.replaceState(null, "", location.pathname + location.search);
+  if (!Object.prototype.hasOwnProperty.call(RENDER, id) || typeof RENDER[id] !== "function") {
+    ++ADMIN_RENDER_EPOCH;
+    adminPageFailure("overview", new Error("This admin page does not exist."), () => go("overview"));
+    return Promise.resolve();
+  }
+  const hash = "#/page/" + encodeURIComponent(id);
+  if (location.hash !== hash) {
+    const method = location.hash ? "pushState" : "replaceState";
+    history[method](null, "", location.pathname + location.search + hash);
+  }
   CURRENT = id;
   if (RT_TIMER)   { clearInterval(RT_TIMER);   RT_TIMER   = null; }
   if (LOOP_TIMER) { clearInterval(LOOP_TIMER); LOOP_TIMER = null; }
@@ -709,7 +778,7 @@ function go(id) {
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
   if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
-  RENDER[id]();
+  return runAdminRender(id, RENDER[id]);
 }
 
 /* hash router — lobe detail "pages" live at #/lobe/<id> */
@@ -759,17 +828,25 @@ function backToTickets() {
 }
 
 function route() {
-  const id = currentLobeId();
-  if (id) { renderLobeDetail(id); return; }
-  const engineId = currentEngineId();
-  if (engineId) { renderEngineDetail(engineId); return; }
-  const deptId = currentMktDept();
-  if (deptId) { renderMktDept(deptId); return; }
-  const det = currentAnalyticsDetail();
-  if (det) { (det.kind === "session" ? renderSessionDetail : renderVisitorDetail)(det.id); return; }
-  const tid = currentTicketId();
-  if (tid) { renderTicketDetail(tid); return; }
-  go(CURRENT || "overview");
+  try {
+    const page = location.hash.match(/^#\/page\/([^/]+)$/);
+    if (page) return go(decodeURIComponent(page[1]));
+    const id = currentLobeId();
+    if (id) return runAdminRender("neural_web", () => renderLobeDetail(id));
+    const engineId = currentEngineId();
+    if (engineId) return runAdminRender("intelligence_os", () => renderEngineDetail(engineId));
+    const deptId = currentMktDept();
+    if (deptId) return runAdminRender("marketing_departments", () => renderMktDept(deptId));
+    const det = currentAnalyticsDetail();
+    if (det) return runAdminRender("analytics", () => (det.kind === "session" ? renderSessionDetail : renderVisitorDetail)(det.id));
+    const tid = currentTicketId();
+    if (tid) return runAdminRender("support_tickets", () => renderTicketDetail(tid));
+    if (location.hash && location.hash !== "#") throw new Error("This admin page address is not recognized.");
+    return go(CURRENT || "overview");
+  } catch (error) {
+    ++ADMIN_RENDER_EPOCH;
+    adminPageFailure("overview", error, () => go("overview"));
+  }
 }
 window.addEventListener("hashchange", route);
 
@@ -778,26 +855,22 @@ function renderHeader() {
   const m = SUMMARY.meta || {};
   const hh = SUMMARY.health || {};
   const sv = SUMMARY.services || {};
-  const allOk = hh.healthy && (!sv.available || sv.healthy);
+  const { healthKnown, serviceKnown } = adminOverviewModel(SUMMARY);
+  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy;
+  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy);
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
   const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy)) ? "bad" : "warn");
   const el = $("#hmeta"); el.innerHTML = "";
-  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : "Attention"}</span>`));
-  const ex = SUMMARY.experiments || {};
-  if (ex.available && ex.ready_count > 0) {
-    const p = h(`<span class="pill ready" title="experiment results are ready — open the Experiments tab">🔔 ${ex.ready_count} result${ex.ready_count > 1 ? "s" : ""} ready</span>`);
-    p.style.cursor = "pointer"; p.onclick = () => go("experiments");
-    el.appendChild(p);
-  }
+  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
   const sysMeta = [
     m.deployed ? "deployed" : "local",
     `repo ${m.repo || "unknown"}`,
-    m.has_token ? "GitHub actions enabled" : "GitHub read-only",
+    m.has_token ? "GitHub configured" : "GitHub read-only",
   ].join(" · ");
-  const sysPill = h(`<span class="pill" title="${esc(sysMeta)}">System</span>`);
+  const sysPill = h(`<button type="button" class="pill" title="${esc(sysMeta)}">System</button>`);
   sysPill.style.cursor = "pointer"; sysPill.onclick = () => go("system"); el.appendChild(sysPill);
   if (m.site_url) el.appendChild(h(`<a href="${esc(m.site_url)}" target="_blank" rel="noopener">Open site ↗</a>`));
-  if (SESSION.auth_enabled) { const lo = h(`<span class="logout">log out</span>`); lo.onclick = logout; el.appendChild(lo); }
+  if (SESSION.auth_enabled) { const lo = h(`<button type="button" class="logout">Log out</button>`); lo.onclick = logout; el.appendChild(lo); }
 }
 
 function renderBanner() {
@@ -820,8 +893,11 @@ async function doCommit(push) {
 }
 
 async function refresh() {
-  SUMMARY = await api("/api/summary");
-  if (SUMMARY.error) { toast(SUMMARY.error, true); return; }
+  const next = await api("/api/summary");
+  if (!next || next.error || next.ok === false || !next.meta || !next.health) {
+    throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+  }
+  SUMMARY = next; // keep the last good snapshot when a refresh fails
   renderHeader(); renderBanner();
 }
 
@@ -1133,36 +1209,66 @@ function wireProgramWatch(pw) {
 }
 
 /* ---- OVERVIEW ----------------------------------------------------------- */
+/* Operational status is not interchangeable with integration configuration.
+   Unknown stays unknown; historical research records never become site incidents. */
+function adminOverviewModel(s) {
+  const hh = s.health || {}, sv = s.services || {}, sys = s.system || {}, cost = s.cost || {};
+  const healthKnown = typeof hh.healthy === "boolean" && Number.isFinite(hh.age_hours) && hh.age_hours >= 0;
+  const serviceKnown = sv.available === true && typeof sv.healthy === "boolean";
+  const notices = [];
+  if (!healthKnown) notices.push({ page: "health", title: "Pipeline status unavailable", detail: "Open data health to inspect the latest report.", tone: "warn" });
+  else if (!hh.healthy) notices.push({ page: "health", title: "Data pipeline needs attention", detail: "Review the latest pipeline report before rebuilding.", tone: "warn" });
+  if (sv.available && sv.healthy === false) notices.push({ page: "system", title: "Background services need attention", detail: "Check service failures in System status.", tone: "bad" });
+  return { hh, sv, sys, cost, healthKnown, serviceKnown, notices };
+}
+function adminOverviewMetric(page, label, value, detail, tone = "") {
+  return `<button type="button" class="card admin-metric" data-admin-go="${page}"><span class="eyebrow">${esc(label)}</span><strong class="admin-metric-value ${tone ? "admin-tone-" + tone : ""}">${esc(value)}</strong><span class="sub">${esc(detail)}</span><span class="admin-metric-link">Open ${esc(TAB_LABELS[page])} →</span></button>`;
+}
 RENDER.overview = async () => {
   const v = $("#view"), s = SUMMARY;
-  const hh = s.health || {}, c = s.cost || {}, sys = s.system || {}, sv = s.services || {}, m = s.meta || {};
-  const flagsOn = Object.values((s.flags && s.flags.groups) || {}).flat().filter(f => f.value === true).length;
-  const mem = sys.memory || {}, disk = sys.disk || {};
-  v.innerHTML = `
-    <div class="grid">
-      ${card("Pipeline", `<div class="big" style="color:${hh.healthy ? "var(--ok)" : "var(--warn)"}">${hh.healthy ? "Healthy" : "Attention"}</div>
-        <div class="sub">last run ${fmtAge(hh.age_hours)} ago · ${(hh.sources || {}).ok || 0}/${(hh.sources || {}).total || 0} sources</div>`)}
-      ${card("Background jobs", sv.available ? `<div class="big" style="color:${sv.healthy ? "var(--ok)" : "var(--bad)"}">${sv.ok_count}/${sv.total}</div><div class="sub">running normally</div>` : `<div class="big">—</div><div class="sub">status unavailable</div>`)}
-      ${card("Server", sys.available ? `<div class="big">${mem.used_pct != null ? mem.used_pct + "%" : "—"}<span class="sub"> memory</span></div><div class="sub">disk ${disk.used_pct != null ? disk.used_pct + "%" : "—"} · load ${sys.cpu && sys.cpu.load1 != null ? sys.cpu.load1.toFixed(2) : "—"}</div>` : `<div class="big">—</div><div class="sub">server only</div>`)}
-      ${card("Est. AI cost", `<div class="big">${fmtUSD(c.monthly_usd)}<span class="sub"> /mo</span></div><div class="sub">${fmtUSD(c.effective_daily_usd)}/day</div>`)}
-      ${card("Features", `<div class="big">${flagsOn}</div><div class="sub">enabled</div>`)}
-      ${card("Analytics", `<div class="big" style="color:var(--ok);font-size:18px">Live</div><div class="sub">${m.integrations && m.integrations.umami ? "connected" : "tracking enabled"}</div>`)}
-      ${card("Experiments", `<div class="big" style="color:${(s.experiments && s.experiments.ready_count) ? "var(--ok)" : "var(--text)"}">${(s.experiments && s.experiments.ready_count) || 0}<span class="sub"> ready</span></div><div class="sub">${s.experiments && s.experiments.soonest && s.experiments.soonest.days_until > 0 ? "next in " + s.experiments.soonest.days_until + "d" : (s.experiments && s.experiments.n ? s.experiments.n + " tracked" : "—")}</div>`)}
+  const { hh, sv, sys, cost, healthKnown, serviceKnown, notices } = adminOverviewModel(s);
+  const mem = sys.memory || {}, disk = sys.disk || {}, meta = s.meta || {};
+  const sources = hh.sources || {};
+  const sourceDetail = Number.isFinite(sources.ok) && Number.isFinite(sources.total)
+    ? `${sources.ok}/${sources.total} sources · last run ${fmtAge(hh.age_hours)} ago`
+    : "No current source report";
+  const serviceCounts = Number.isFinite(sv.ok_count) && Number.isFinite(sv.total);
+  const serviceValue = !sv.available || typeof sv.healthy !== "boolean" ? "Unavailable"
+    : sv.healthy ? "Running normally" : "Needs attention";
+  const serverValue = sys.available && Number.isFinite(mem.used_pct) ? `${mem.used_pct}% memory` : "Unavailable";
+  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used` : "Host metrics are not available in this environment";
+  const costValue = Number.isFinite(cost.monthly_usd) ? `${fmtUSD(cost.monthly_usd)} /mo` : "Unavailable";
+  const costDetail = Number.isFinite(cost.effective_daily_usd) ? `${fmtUSD(cost.effective_daily_usd)} /day · estimate, not billed spend` : "No current cost estimate";
+  const alerts = s.key_alerts && Array.isArray(s.key_alerts.items) ? s.key_alerts.items.length : null;
+  v.innerHTML = `<section class="admin-home" aria-labelledby="admin-home-title">
+    <header class="admin-home-header"><div><div class="eyebrow">Operations workspace</div><h1 id="admin-home-title">Admin overview</h1><p class="sub">Check the system, handle customer work, and review publishing.</p></div><button type="button" class="btn" id="adminRefresh">Refresh status</button></header>
+    <div class="admin-status-grid">
+      ${adminOverviewMetric("health", "Data pipeline", !healthKnown ? "Unavailable" : hh.healthy ? "Healthy" : "Needs attention", sourceDetail, !healthKnown || !hh.healthy ? "warn" : "ok")}
+      ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} services running` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
+      ${adminOverviewMetric("system", "Server resources", serverValue, serverDetail)}
+      ${adminOverviewMetric("cost", "Estimated AI cost", costValue, costDetail)}
     </div>
-    ${renderKeyAlerts(s.key_alerts)}
-    ${renderProgramWatch(s.program_watch)}
-    <div class="section">Quick actions</div>
-    <div id="qa"></div>`;
+    <section class="admin-attention" aria-labelledby="admin-attention-title"><h2 id="admin-attention-title">Operational attention</h2>
+      ${notices.length ? notices.map(n => `<button type="button" class="admin-notice" data-admin-go="${n.page}"><span class="led ${n.tone}"></span><span><strong>${esc(n.title)}</strong><span class="sub">${esc(n.detail)}</span></span><span aria-hidden="true">→</span></button>`).join("") : `<div class="admin-notice"><span class="led ok"></span><span>No issues reported by the available pipeline and service checks.</span></div>`}
+      ${!serviceKnown ? `<p class="sub admin-coverage-note">Service monitoring is unavailable; this is not a complete system health check.</p>` : ""}
+    </section>
+    <section aria-labelledby="admin-actions-title"><div class="admin-section-heading"><h2 id="admin-actions-title">Daily work</h2><span class="sub">Open the queue or control you need.</span></div><div class="admin-work-grid">
+      <button type="button" class="admin-work-link" data-admin-go="support_tickets">${ICONS.support_tickets}<span><strong>Customer support</strong><span class="sub">Review tickets and reply to customers.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="marketing_outbox">${ICONS.marketing_outbox || ICONS.content}<span><strong>Publishing queue</strong><span class="sub">Review content before it is published.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="users">${ICONS.users}<span><strong>Users & access</strong><span class="sub">Find accounts and manage customer access.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="deploy">${ICONS.deploy}<span><strong>Builds & releases</strong><span class="sub">Inspect runs before triggering a deployment.</span></span><span aria-hidden="true">→</span></button>
+    </div>${!meta.has_token ? `<p class="sub admin-coverage-note">Deploy actions are unavailable. Run history remains in Build &amp; Deploy.</p>` : ""}</section>
+    <details class="admin-secondary"><summary>Research alerts &amp; program watches<span class="sub">${alerts === null ? "Status unavailable" : `${alerts} alert records`} · not site incidents</span></summary><p class="sub">These are research records, separate from site operations. Check each record's date before acting.</p><button type="button" class="btn" data-admin-go="experiments">Review experiments</button>${renderKeyAlerts(s.key_alerts)}${renderProgramWatch(s.program_watch)}</details>
+  </section>`;
+  v.querySelectorAll("[data-admin-go]").forEach(button => { button.onclick = () => go(button.dataset.adminGo); });
+  $("#adminRefresh").onclick = async () => {
+    const button = $("#adminRefresh"); button.disabled = true; button.textContent = "Refreshing…";
+    try { clearApiCache(); await refresh(); if (CURRENT === "overview") await RENDER.overview(); }
+    catch (_) { toast("Status could not be refreshed. The previous snapshot is still shown.", true); }
+    finally { if (button.isConnected) { button.disabled = false; button.textContent = "Refresh status"; } }
+  };
   wireKeyAlertCopies(s.key_alerts);
   wireProgramWatch(s.program_watch);
-  const qa = $("#qa");
-  const rebuild = h(`<button class="btn primary">▶ Rebuild &amp; deploy now</button>`);
-  rebuild.onclick = () => dispatch("daily.yml"); rebuild.disabled = !m.has_token; qa.appendChild(rebuild);
-  const redeploy = h(`<button class="btn" style="margin-left:8px">⟳ Redeploy site only</button>`);
-  redeploy.onclick = () => dispatch("pages.yml"); redeploy.disabled = !m.has_token; qa.appendChild(redeploy);
-  const probe = h(`<button class="btn" style="margin-left:8px">◎ Check all sites are up</button>`);
-  probe.onclick = () => go("system"); qa.appendChild(probe);
-  if (!m.has_token) qa.appendChild(h(`<div class="sub" style="margin-top:8px">Deploy actions are unavailable. <details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> on the server with Actions write permission.</details></div>`));
 };
 
 /* ---- RESEARCH TOOLS ----------------------------------------------------- */
@@ -15995,9 +16101,11 @@ async function boot() {
   renderSidebar();
   wireSidebarDrawer();
   startTableObserver();
-  await refresh();
-  route();
-  schedulePostBootAdvisories();
+  try {
+    await refresh();
+    await route();
+    schedulePostBootAdvisories();
+  } catch (error) { adminPageFailure("overview", error, () => boot()); }
 }
 (async function init() {
   /* The landing snapshot is the one fetch the first paint genuinely blocks on (every
@@ -16008,7 +16116,14 @@ async function boot() {
      On a logged-out load it 401s harmlessly: api() routes that to showLogin(), which is
      where the session probe was about to send us anyway. */
   const summaryWarm = api("/api/summary").catch(() => {});
-  SESSION = await fetch("/api/session").then(r => r.json()).catch(() => ({ auth_enabled: false, authenticated: true }));
+  try {
+    SESSION = await api("/api/session");
+    if (!SESSION || typeof SESSION.auth_enabled !== "boolean" || typeof SESSION.authenticated !== "boolean") throw new Error("Invalid session response");
+  } catch (_) {
+    showLogin();
+    $("#loginErr").textContent = "Unable to verify your session. Check your connection and reload this page.";
+    return; // a failed session probe is not an authenticated local session
+  }
   if (SESSION.auth_enabled && !SESSION.authenticated) { showLogin(); return; }
   hideLogin();
   void summaryWarm;   // already in flight; refresh() below joins it via the in-flight map
