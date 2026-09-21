@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T23:27:58.860549+00:00",
-  "count": 2600,
+  "generated_at": "2026-09-21T23:49:16.416800+00:00",
+  "count": 2601,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -492,6 +492,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4irugouq8zk-c455ca",
+      "title": "Europe Paper & Forest Products US Paper Update Containerboard Up $70 t",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:41Z",
+      "summary_points": [
+        "Containerboard Price Hike Confirmed: US containerboard prices rose $70/t (Kraftliner/Testliner) in September, totaling $170/t YTD; mill backlogs at 5–6 weeks signal strong demand/supply balance countering investor concerns.",
+        "North American Containerboard Dependency: Smurfit Westrock has 60% EBITDA from North America, with ~70% of that tied to containerboard—critical for US market sensitivity to pricing trends.",
+        "Valuation Premium & Target: Goldman Sachs’ $53 target consistently exceeds current price ($44.26), reflecting bullish confidence; 9.0x EV/DAF multiple for 2027/28 implies premium valuation.",
+        "Tariff Margin Disappointment: Tariffs failing to drive higher margins (unlike steel sector) undermines US paper price forecasts and earnings estimates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
