@@ -422,9 +422,9 @@
       <p>{{ t('Nearest boundary', '最近分界') }} / {{ t('Score points to', '距下列坐标轴分界') }}</p>
       <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
       {%- if not head.vector.present and not head.vector.incomplete %}
-      <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+      <p>{{ t("We can't show the move yet — there is nothing comparable to measure it against.", '暂时无法显示变化 — 没有可对比的历史读数。') }}</p>
       {%- elif head.vector.incomplete %}
-      <p>{{ t('The vector is not drawn: one of its two components is missing this cycle.', '不绘制向量：本周期缺少其中一个分量。') }}</p>
+      <p>{{ t("We can't show the move yet — one of the two readings this cycle is missing.", '暂时无法显示变化 — 本周期缺少其中一个读数。') }}</p>
       {%- endif %}
     {% endcall %}
   </div>
@@ -559,9 +559,9 @@
     <p>{{ t('Nearest boundary', '最近分界') }} / {{ t('Score points to', '距下列坐标轴分界') }}</p>
     <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
     {%- if not view.headline.vector.present and not view.headline.vector.incomplete %}
-    <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+    <p>{{ t("We can't show the move yet — there is nothing comparable to measure it against.", '暂时无法显示变化 — 没有可对比的历史读数。') }}</p>
     {%- elif view.headline.vector.incomplete %}
-    <p>{{ t('The vector is not drawn: one of its two components is missing this cycle.', '不绘制向量：本周期缺少其中一个分量。') }}</p>
+    <p>{{ t("We can't show the move yet — one of the two readings this cycle is missing.", '暂时无法显示变化 — 本周期缺少其中一个读数。') }}</p>
     {%- endif %}
   {% endcall %}
 

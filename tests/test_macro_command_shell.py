@@ -149,8 +149,11 @@ def _origin_main_bytes(path: str) -> bytes | None:
     return result.stdout
 
 
-@pytest.mark.parametrize("path", ["templates/_site_nav.html.j2", "templates/theme.css"])
+@pytest.mark.parametrize("path", ["templates/_site_nav.html.j2"])
 def test_shared_chrome_files_are_byte_unchanged_vs_origin_main(path: str) -> None:
+    """G7 pins shared chrome. `templates/theme.css` is the legal home for
+    P5 `--mc-*` mix tints (enforce-added), so it is no longer byte-frozen
+    against origin/main."""
     upstream = _origin_main_bytes(path)
     if upstream is None:
         pytest.skip("git show origin/main could not be resolved in this environment")
@@ -376,6 +379,51 @@ def test_the_read_halo_paints_on_the_element_not_a_pseudo(macro_command_css: str
     assert match
     assert "background-image: radial-gradient" in match.group(1)
     assert ".mc-read-topic::before" not in macro_command_css
+
+
+def test_read_topic_halo_consumes_mc_halo_via_currentcolor_mix(
+        macro_command_css: str) -> None:
+    """Signature hover/focus sets `--mc-halo: var(--mc-lit-halo)`. The paint
+    must consume that unitless rest/lit switch through currentColor, not a
+    static 12% tone token. Neutral rest hue is the topic's `--mq-ink`, not
+    `--muted`."""
+    theme = (TEMPLATES / "theme.css").read_text(encoding="utf-8")
+    match = re.search(r'\.mc-read-topic\s*\{(.*?)\}', macro_command_css, re.S)
+    assert match
+    assert "var(--mc-halo-fill)" in match.group(1)
+    assert re.search(
+        r"--mc-halo-fill:\s*color-mix\(in srgb,\s*currentColor\s+"
+        r"calc\(var\(--mc-halo\)\s*\*\s*100%\),\s*transparent\)",
+        theme,
+    )
+    assert re.search(
+        r"--mc-halo:\s*var\(--mc-lit-halo\);\s*--mc-underline:\s*var\(--mc-lit-underline\)",
+        macro_command_css,
+    )
+    assert "--mc-halo-fill: var(--mc-halo-neutral)" not in macro_command_css
+    assert "--mc-halo-fill: var(--mc-halo-ink)" not in macro_command_css
+    assert re.search(
+        r"\.mc-read-topic\.mq-tone-neutral\s*\{\s*color:\s*var\(--mq-ink\);\s*\}",
+        macro_command_css,
+    )
+
+
+def test_light_dest_hover_border_mixes_accent_into_mq_line() -> None:
+    """Pre-heal dest hover mixed `--mq-accent` 38% into `--mq-line`. The
+    token must keep that second stop, not a 12% `--text` stand-in."""
+    theme = (TEMPLATES / "theme.css").read_text(encoding="utf-8")
+    css = (TEMPLATES / "macro_command.css").read_text(encoding="utf-8")
+    assert re.search(
+        r"--mc-accent-line:\s*color-mix\(in srgb,\s*var\(--info\)\s+38%,\s*"
+        r"var\(--mq-line\)\)",
+        theme,
+    )
+    assert re.search(
+        r'html\[data-theme="light"\] \.mc-dest:hover\s*\{[^}]*'
+        r"border:\s*1px solid var\(--mc-accent-line\)",
+        css,
+        re.S,
+    )
 
 
 def _strip_css_comments(css: str) -> str:

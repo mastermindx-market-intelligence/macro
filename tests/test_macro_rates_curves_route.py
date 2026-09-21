@@ -1537,14 +1537,19 @@ def test_axis_method_and_metric_none_fields_render_em_dash_not_token() -> None:
     _assert_no_standalone_none_in_page(html)
 
 
-_NO_PRIOR_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_EN = (
     "No vector is drawn: there is no method-comparable prior print to move from."
 )
-_NO_PRIOR_VECTOR_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
-_INCOMPLETE_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
+_INCOMPLETE_VECTOR_JARGON_EN = (
     "The vector is not drawn: one of its two components is missing this cycle."
 )
-_INCOMPLETE_VECTOR_ZH = "不绘制向量：本周期缺少其中一个分量。"
+_INCOMPLETE_VECTOR_JARGON_ZH = "不绘制向量：本周期缺少其中一个分量。"
+# Autoescape turns the apostrophe in "can't" into &#39;; pin the unique tail.
+_INCOMPLETE_VECTOR_PLAIN_EN = (
+    "one of the two readings this cycle is missing."
+)
+_INCOMPLETE_VECTOR_PLAIN_ZH = "本周期缺少其中一个读数。"
 
 
 def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> None:
@@ -1552,6 +1557,10 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     machine token, must not claim there is no prior print, and must take
     the typed incomplete-vector branch. Defensive: no producer emits a
     half-vector today; this is a synthetic fixture.
+
+    User-openable ``mc-details`` is still user-facing, so the incomplete
+    sentence is the same plain pair as the reading path — not the jargon
+    "vector / components" line.
     """
     snap = _snapshot()
     snap["headline"]["one_month_vector"] = {
@@ -1559,10 +1568,12 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     }
     html = _render_rates_page(snap)
     _assert_no_standalone_none_in_page(html)
-    assert _NO_PRIOR_VECTOR_EN not in html
-    assert _NO_PRIOR_VECTOR_ZH not in html
-    assert _INCOMPLETE_VECTOR_EN in html
-    assert _INCOMPLETE_VECTOR_ZH in html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in html
+    assert _NO_PRIOR_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in html
+    assert _INCOMPLETE_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN in html
+    assert _INCOMPLETE_VECTOR_PLAIN_ZH in html
     vec = _view(snap)["headline"]["vector"]
     assert vec["incomplete"] is True
     assert vec["present"] is False
@@ -1576,8 +1587,9 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     control_vec = _view(control)["headline"]["vector"]
     assert control_vec["incomplete"] is False
     assert control_vec["present"] is True
-    assert _INCOMPLETE_VECTOR_EN not in control_html
-    assert _NO_PRIOR_VECTOR_EN not in control_html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN not in control_html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in control_html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in control_html
 
 
 _NONE_TOKEN = re.compile(r"\bNone\b")

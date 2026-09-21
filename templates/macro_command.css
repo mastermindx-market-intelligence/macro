@@ -23,7 +23,6 @@ body.mc-page {
   --mc-rail-active-shadow: none;
   --mc-stance-wash: 0%;     /* D3: a PERCENTAGE, never `transparent` — see the note below */
   --mc-halo: 0.12;          /* radial wash behind a Read topic word — dark only */
-  --mc-halo-fill: var(--mc-halo-ink);
   --mc-stance-fill: var(--mc-stance-neutral);
   --mc-read-lh: 1.42;
   --mc-focus-inner: 0 0 0 0 transparent;
@@ -170,10 +169,7 @@ body:not(.mq-suite-page) .mc-analyst:hover { border-color: var(--mq-accent); col
   transition: border-bottom-width 160ms ease, background-image 160ms ease;
 }
 html[data-theme="light"] .mc-read-topic { border-bottom-width: 2px; }
-.mc-read-topic.mq-tone-neutral { color: var(--mq-ink); --mc-halo-fill: var(--mc-halo-neutral); }
-.mc-read-topic.mq-tone-ok { --mc-halo-fill: var(--mc-halo-ok); }
-.mc-read-topic.mq-tone-warn { --mc-halo-fill: var(--mc-halo-warn); }
-.mc-read-topic.mq-tone-bad { --mc-halo-fill: var(--mc-halo-bad); }
+.mc-read-topic.mq-tone-neutral { color: var(--mq-ink); }
 /* F-10: the gap between a topic word and its predicate is CSS, never
    template whitespace. EN needs a word space; ZH must not have one. */
 .mc-read-topic { margin-inline-end: 0; }
@@ -824,8 +820,10 @@ html[data-lang="zh"] .mc-dest-answers { letter-spacing: 0; line-height: 1.5; }
 }
 
 /* Notes the builder must not "clean up":
-   - Stance wash and Read halo tints are theme.css tokens (`--mc-stance-*`,
-     `--mc-halo-*`); this file only aliases them. Do not re-inline a mix.
+   - Stance wash tints are theme.css tokens (`--mc-stance-*`); this file
+     only aliases them. Do not re-inline a mix. `--mc-halo-fill` is the
+     deferred currentColor mix in theme.css; `--mc-halo` (unitless rest/lit)
+     is the consumer the signature :has() rules raise.
    - The Read's halo is a `background-image` on the anchor itself, not a
      `z-index:-1` pseudo-element (D4).
    - `--mc-halo` stays a derived token (unitless). The Read underline width

@@ -349,7 +349,11 @@ def test_shell_null_vector_slot_prints_no_earlier_reading_both_locales() -> None
     assert _NO_EARLIER_ZH in html
     assert "Δx 0.0" not in html and "Δx +0" not in html
     assert "None" not in html
-    assert "No vector is drawn: there is no method-comparable prior print to move from." in html
+    assert "there is nothing comparable to measure it against." in html
+    assert (
+        "No vector is drawn: there is no method-comparable prior print to move from."
+        not in html
+    )
 
 
 def _artifact() -> dict:
