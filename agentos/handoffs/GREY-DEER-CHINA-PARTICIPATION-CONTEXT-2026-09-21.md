@@ -67,3 +67,24 @@ Final browser source 024ae725b32a100224e60331bfb9a46ab72452c4; page SHA256 9567e
 Current next-slice PR:7622, Draft/HOLD-FOR-SOL. CI is deferred, not waived.
 Final focus/readability proof:mockups/evidence/china-participation-context-20260921/focus-manifest.json.
 Next release integration must preserve both this additive panel and PR7592 fixes. No CI result or production acceptance is claimed.
+
+## Active frontier — index-member comparison and frozen clock repair
+Procedure:Mastermind@a3bcfdbb4d99f6af7c3a86a7fed730cbd0184465; same compatible laws.
+Current source changes retain PR7622's original branch/worktree; no CI polling or
+source changes to PR7592. No worker or process has inherited the blocked operation.
+The clock implementation command was platform-refused; same-carrier source readback
+and AST comparison prove the existing timing-related functions unchanged / NO_EFFECT.
+Fifteen failing clock acceptance cases survive in the explicitly pending research
+file china_participation_clock_pending_tests.py. Do not bypass or re-run that refused
+implementation. The15 pending failures are not included in passing-suite counts.
+
+Independent completed source delta: compare all300 stored CSI300 snapshot members
+with the ETF over identical observed-price windows. Require300 distinct dated members,
+reject incomplete/mixed/future membership, expose per-window price coverage, never use
+placeholder/end-date market caps as index weights. No official contribution claim.
+Current154-test active regression passes (20 added cohort/consumer cases). Stored
+membership dateSeptember15 / pricesSeptember18: five-session member median-0.665%,
+ETF+0.0655%,116/300 rose; twenty-session member median-1.231%,ETF-2.094%,104/300 rose.
+This is retrospective snapshot evidence, not historical reconstitution or live data.
+Next:seal new actual-builder/browser evidence; preserve generated-data custody;
+push/read back the same draft PR. Current clock and weighted-attribution gaps remain.

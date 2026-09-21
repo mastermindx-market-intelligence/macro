@@ -1104,3 +1104,80 @@ def sector_breadth_context(prices: dict, benchmark: pd.Series, *, names: dict, a
     return {'declared':len(names),'eligible':len(available),
             'rising':sum(r['return_pct']>0 for r in available),
             'rows':rows,'authority':'context_only'}
+
+
+def index_member_breadth_context(membership, closes, benchmark, *, asof: str) -> dict:
+    """Describe a stored CSI300 membership snapshot, never weighted attribution.
+
+    The member list is applied retrospectively, not certified as the members at
+    either return-window start. Require all300 names for each published return.
+    Do not read market-cap placeholders or pretend the ETF is the cash index.
+    """
+    from collectors.china_universe import _INDEX_EXPECTED_SIZE
+    import re
+    expected = _INDEX_EXPECTED_SIZE['000300']
+    result = {'authority':'context_only', 'symbol':'000300', 'status':'unavailable',
+              'assessment_asof':str(asof), 'expected_members':expected,
+              'member_count':0, 'membership_observed':None, 'price_asof':None,
+              'membership_age_days_at_assessment':None, 'historical_membership':False,
+              'contribution_status':'unavailable_no_official_start_weights',
+              'windows':{}, 'data_gaps':[]}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        if not isinstance(membership,pd.DataFrame) or membership.columns.has_duplicates:
+            raise ValueError('invalid membership table')
+        if not {'symbol','ticker','fetched_date'}.issubset(membership.columns):
+            raise ValueError('membership snapshot fields unavailable')
+        part = membership.loc[membership['symbol'].astype(str)=='000300']
+        names = part['ticker'].tolist()
+        result['member_count'] = len(names)
+        pattern = r'(?:6[08]\d{4}\.SS|(?:00|30)\d{4}\.SZ)'
+        if len(names)!=expected or len(set(names))!=expected:
+            raise ValueError('CSI300 snapshot must contain300 distinct members')
+        if any(not isinstance(n,str) or not re.fullmatch(pattern,n) for n in names):
+            raise ValueError('invalid mainland member ticker')
+        stamps = pd.DatetimeIndex(pd.to_datetime(part['fetched_date'],errors='raise'))
+        if stamps.hasnans or stamps.tz is not None or not stamps.equals(stamps.normalize()):
+            raise ValueError('invalid membership observation dates')
+        if len(stamps.unique())!=1 or stamps[0]>when:
+            raise ValueError('mixed or future membership snapshot')
+        observed = stamps[0]
+        result.update(membership_observed=str(observed.date()),
+                      membership_age_days_at_assessment=(when-observed).days)
+        snapshot = price_breadth_context(closes,benchmark,members=names,
+                                        asof=asof,min_coverage=1.0)
+        result.update(price_asof=snapshot['asof'], windows=snapshot['windows'])
+        result['data_gaps'].extend(snapshot['data_gaps'])
+        for w in result['windows'].values():
+            w['membership_observed_after_start'] = bool(w['start'] and observed>pd.Timestamp(w['start']))
+        if snapshot['status']=='unavailable':
+            return result
+        if not any(w['status']=='ok' for w in result['windows'].values()):
+            result['status']='insufficient_coverage'
+        else:
+            result['status']='delayed' if snapshot['status']=='delayed' else 'available'
+    except (ValueError,TypeError,AttributeError,IndexError,OverflowError) as exc:
+        result.update(status='unavailable',windows={})
+        result['data_gaps'].append(str(exc))
+    return result
+
+
+def load_index_member_breadth_context(*, asof: str) -> dict:
+    """Read the existing single-snapshot cache and prices; no fetch or writes."""
+    from lib import store
+    errors = []
+    def read(group,name):
+        try:
+            data = store.read(group,name)
+            return data if isinstance(data,pd.DataFrame) else pd.DataFrame()
+        except Exception as exc:
+            errors.append(f'{group}/{name}: {type(exc).__name__}')
+            return pd.DataFrame()
+    membership = read('china_search','index_cons')
+    closes = read('china_search','closes')
+    benchmark = read('china','510300.SS').get('close',pd.Series(dtype=float))
+    result = index_member_breadth_context(membership,closes,benchmark,asof=asof)
+    result['data_gaps'].extend(errors)
+    return result

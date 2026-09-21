@@ -62,6 +62,22 @@
     <div class="cnx-kv"><span class="k">{{ bl('Sample mean return','样本平均收益') }}</span><span class="v">{{ pct(w.get('mean_return_pct'),true) }}</span></div>
     <div class="cnx-kv"><span class="k">{{ bl('Middle 80% of stock returns','中间80%个股收益范围') }}</span><span class="v">{{ pct(w.get('p10_return_pct'),true) }} → {{ pct(w.get('p90_return_pct'),true) }}</span></div>
     {% endfor %}
+    {% set cohort = ctx.get('index_members') or {} %}
+    <div class="cnx-index-members">
+      <div class="cnx-lbl">{{ bl('CSI 300 members · dated snapshot','沪深300成分股 · 日期快照') }}</div>
+      {% if cohort.get('windows') %}
+      <p class="cnx-part-note">{{ bl('Membership observed','成员观察日期') }} {{ cohort.get('membership_observed') or '—' }} · {{ bl('Prices through','价格截至') }} {{ cohort.get('price_asof') or '—' }}{% if cohort.get('status') == 'delayed' %} · {{ bl('Behind assessment','落后于评估日期') }}{% endif %}</p>
+      {% for key, w in cohort.windows.items() %}
+      <div class="cnx-lbl">{{ w.sessions }} {{ bl('observed benchmark sessions','个已观测基准交易日') }} · {{ w.get('start') or '—' }} → {{ w.get('end') or '—' }}</div>
+      <div class="cnx-kv"><span class="k">{{ bl('Typical snapshot member','快照中典型成分股') }}</span><span class="v">{{ pct(w.get('median_return_pct'),true) }}</span></div>
+      <div class="cnx-kv"><span class="k">{{ bl('CSI 300 ETF','沪深300 ETF') }}</span><span class="v">{{ pct(w.get('benchmark_return_pct'),true) }}</span></div>
+      <div class="cnx-kv"><span class="k">{{ bl('Snapshot members rising','快照成分股上涨比例') }}</span><span class="v">{{ pct(w.get('positive_pct')) }}</span></div>
+      <div class="cnx-part-sub">{{ w.get('eligible',0) }} / {{ cohort.expected_members }} {{ bl('eligible; full snapshot required for a return','只符合要求；收益计算须覆盖完整快照') }}</div>
+      {% endfor %}
+      {% else %}<p class="cnx-part-note">{{ bl('Constituent comparison unavailable — check membership and price coverage.','成分股对比暂不可用，请核对成员名单与价格覆盖。') }}</p>{% endif %}
+      <p class="cnx-part-note">{{ bl('One observed snapshot, not a historical membership archive. Applying these names to earlier returns does not reconstruct past index membership. The comparator is an ETF, not a reconstruction of the cash index.','单次观察快照，并非历史成分股档案。将这些成员用于较早的收益计算，不代表重建历史指数成员。比较对象是ETF，而非重建的现货指数。') }}</p>
+      <p class="cnx-part-note">{{ bl('Starting index weights unavailable in this view — no weighted attribution. Market-cap placeholders and end-date capitalization cannot substitute for official starting weights.','本视图未提供期初指数权重，不进行加权归因。市值占位值与期末市值均不可替代官方期初权重。') }}</p>
+    </div>
     {% if sector.get('rows') %}
     <div class="cnx-lbl">{{ bl('Sector ETFs · absolute returns','行业ETF · 绝对收益') }} · {{ ctx.get('assessment_asof') or sample.get('requested_asof') or '—' }}</div>
     <p class="cnx-part-note">{% if sector.eligible %}{{ sector.rising }} / {{ sector.eligible }} {{ bl('current eligible sector proxies rose over 20 sessions;','只当期有效行业代理在20个交易日内上涨；') }} {{ sector.declared }} {{ bl('configured. Outperforming a falling benchmark can still mean losing money.','只已配置。跑赢下跌的基准，仍可能是负收益。') }}{% else %}{{ bl('Sector participation unavailable.','行业参与度暂不可用。') }}{% endif %}</p>

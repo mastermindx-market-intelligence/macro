@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as capture
-OUT = ROOT / 'mockups/evidence/china-participation-context-20260921'
+OUT = ROOT / 'mockups/evidence/china-index-cohort-20260921'
 OUT.mkdir(parents=True, exist_ok=True)
 PAGE = ROOT / 'site/china.html'
 BEFORE = hashlib.sha256(PAGE.read_bytes()).hexdigest()
@@ -35,11 +35,12 @@ code = capture.main([
     '--smells', str(OUT / 'smells.json'), '--viewports', 'desktop,mobile',
     '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
     '--settle-ms', '1400',
+    '--force-state', 'disclosure-focus:focus(#cnx-participation summary)',
 ], driver_factory=driver_factory)
 assert code == 0, f'capture failed: {code}'
 manifest = json.loads((OUT / 'manifest.json').read_text())
 page_receipt = manifest['pages'][0]
-assert len(page_receipt['states']) == 8
+assert len(page_receipt['states']) == 16
 assert all(s['captured'] for s in page_receipt['states'])
 assert not page_receipt['console_errors'] and not page_receipt['failed_responses']
 assert all(not v['horizontal_overflow'] for v in page_receipt['metrics']['by_viewport'].values())
@@ -81,6 +82,12 @@ try:
                             panel.locator('summary').click()
                             assert panel.locator('details').get_attribute('open') is not None
                             assert panel.locator('tbody tr').count() == 16
+                            cohort = panel.locator('.cnx-index-members')
+                            assert '300 / 300' in cohort.text_content()
+                            assert '-0.67%' in cohort.text_content() and '+0.07%' in cohort.text_content()
+                            assert '2026-09-15' in cohort.text_content() and '2026-09-18' in cohort.text_content()
+                            assert 'not a historical membership archive' in cohort.text_content()
+                            assert 'Starting index weights unavailable' in cohort.text_content()
                             semi = panel.locator('tbody tr').filter(has_text='Semiconductors')
                             assert semi.count() == 1
                             assert '-0.36%' in semi.text_content() and '+1.73' in semi.text_content()
@@ -101,7 +108,7 @@ try:
                             assert 'Recent rebound' not in delayed.text_content()
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             cases.append({'width':width, 'theme':theme, 'locale':lang,
-                                'details_open':True, 'sectors':16, 'negative_absolute_positive_gap':True,
+                                'details_open':True, 'sectors':16, 'negative_absolute_positive_gap':True, 'index_cohort_checked':True,
                                 'synthetic_missing_and_delayed_presentation':True,
                                 'page_errors':errors, 'horizontal_overflow':False})
                         finally:
@@ -116,11 +123,11 @@ assert not thread.is_alive()
 assert hashlib.sha256(PAGE.read_bytes()).hexdigest() == BEFORE
 receipt = {'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
            'page_sha256':BEFORE, 'page_bytes':PAGE.stat().st_size,
-           'input_receipt':'research/grey_deer/CHINA_PARTICIPATION_REAL_INPUT_20260921.json',
+           'input_receipt':'research/grey_deer/CHINA_INDEX_COHORT_REAL_INPUT_20260921.json',
            'kind':'actual no-network builder with stored inputs; no production deployment',
-           'assessment_asof':'2026-09-18', 'capture_cases':8,
+           'assessment_asof':'2026-09-18', 'capture_cases':16,
            'interaction_cases':cases, 'source_page_unchanged':True,
            'server_closed':True, 'production':False, 'fresh_collection':False}
 (OUT / 'interaction-proof.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
-print(json.dumps({'capture_cases':8,'interaction_cases':len(cases),
+print(json.dumps({'capture_cases':16,'interaction_cases':len(cases),
                   'page_sha256':BEFORE,'production':False,'server_closed':True}))

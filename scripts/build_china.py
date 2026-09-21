@@ -921,8 +921,10 @@ def _rd_word(value, bands):
 
 def _participation_context(asof: str) -> dict:
     """Read-only breadth evidence; no classifier or publication ownership change."""
-    from engine.china_participation import load_breadth_context
-    return load_breadth_context(asof=asof, sector_universe=config.load()["china"]["yahoo"].get("sector_etfs", {}))
+    from engine.china_participation import load_breadth_context, load_index_member_breadth_context
+    context = dict(load_breadth_context(asof=asof, sector_universe=config.load()["china"]["yahoo"].get("sector_etfs", {})))
+    context["index_members"] = load_index_member_breadth_context(asof=asof)
+    return context
 
 
 def _radar_dlg_vm(vm: dict, latest: dict) -> dict:

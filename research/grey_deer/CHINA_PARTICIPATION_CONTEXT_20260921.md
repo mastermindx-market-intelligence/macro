@@ -103,3 +103,48 @@ The final immutable head is supplied by the PR; source/build proof is bound in
 interaction-proof.json. Generated data/site side effects were restored only in this
 owned worktree after preserving the exact built page and receipt. No product source
 or foreign operation was reverted. PR7592 remains a separate incumbent release.
+
+## Source-clock continuation (same PR7622 carrier)
+Current Chairman continuation preserves the instruction to advance capability and defer CI.
+Protected procedure: Mastermind@a3bcfdbb4d99f6af7c3a86a7fed730cbd0184465;
+required skills fetched at this revision and byte-identical to the prior compatible pin.
+Source at start:8ec7f8236d07f2b4911e2a9b26d313176fddfd21; clean owned worktree.
+Direct execution: PRINCIPAL_JUDGMENT for date/eligibility contracts, then
+LOWER_TOTAL_OVERHEAD for the coupled existing-loader/template change. No child started.
+
+Reproduced defect: at an explicit September21 12:00 UTC check, the existing
+CN calendar expects September21, but a September18 assessment and all three
+September18 stores return sample/board status current and16 current sectors.
+Matching old dates is not current data. No production data was collected or changed.
+
+Bounded repair: project the existing lib.cn_calendar settled-session clock through
+the current read-only participation loader. Keep requested/used/observed dates
+separate, cap calculations at settled sessions, expose source/coverage mismatches,
+and suppress current-recovery language when clock or data cannot support it.
+Preserve dated historical numbers, matched cohorts and all sample caveats.
+Calendar rules are conservative estimates, not a new official calendar or proof
+of source release/collection time. No new calendar, scheduler, ledger or risk policy.
+PR7592/CI/release and held shared-radar work remain untouched.
+
+### Clock lane stopped; independent cohort lane advanced
+The exact clock implementation command was refused by the platform's safety-status
+check. Same-carrier readback proves NO_EFFECT: the original price, board and main
+loader function bodies remain byte-equivalent in AST; the new clock helper is absent.
+Do not reroute or retry that refused implementation. The15 failing acceptance cases
+are preserved as research/grey_deer/china_participation_clock_pending_tests.py,
+explicitly pending rather than counted in the active suite's passing results.
+
+Independent capability: a dated CSI300 membership-cohort comparison, implemented
+without modifying the blocked clock functions. Reuses china_search/index_cons and
+existing unfilled price arithmetic, with the collector's expected300-member count.
+Incomplete, duplicate, future/mixed-date or malformed memberships refuse; all300
+prices must qualify for each returned window. Extra symbols cannot substitute.
+Snapshot membership is retrospective evidence, never historical reconstitution.
+
+The source collector explicitly adds some library members with30-yi placeholder
+market caps. Those fields and end-date valuations are not official starting index
+weights and are never consumed by this lens. Weighted index contributions remain
+unavailable. No rank, score, classifier, tape or trade authority changes.
+Sixteen cohort cases were RED then passed; four consumer cases were RED then passed.
+Combined participation/publication/whole-board regression:154 passed. This excludes
+the15 known-failing pending clock tests; freshness is NOT represented as repaired.

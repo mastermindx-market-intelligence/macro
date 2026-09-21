@@ -1048,3 +1048,160 @@ def test_context_panel_absent_board_has_no_direction_word():
     html = _render_participation_context({})
     text = BeautifulSoup(html,'html.parser').select_one('.cnx-part-data').get_text(' ',strip=True)
     assert 'rose' not in text and '上涨' not in text
+
+
+# CSI 300 single-snapshot constituent lens. No historical/index-weight claims.
+def _index_member_fixture():
+    dates = pd.bdate_range(end="2026-09-18", periods=205)
+    names = [f"{600000+i:06d}.SS" for i in range(300)]
+    membership = pd.DataFrame({"symbol": ["000300"]*300, "ticker": names,
+                               "fetched_date": ["2026-09-15"]*300})
+    prices = pd.DataFrame(100.0, index=dates, columns=names)
+    prices.iloc[-1,:200] = 99.0
+    prices.iloc[-1,200:] = 104.0
+    benchmark = pd.Series(100.0,index=dates)
+    benchmark.iloc[-1] = 100.1
+    return membership, prices, benchmark
+
+
+def _index_member_context(membership, prices, benchmark):
+    from engine.china_participation import index_member_breadth_context
+    return index_member_breadth_context(membership,prices,benchmark,asof="2026-09-18")
+
+
+def test_index_member_lens_separates_etf_gain_from_its_typical_constituent():
+    m,p,b = _index_member_fixture()
+    r = _index_member_context(m,p,b)
+    assert r["status"] == "available"
+    assert r["member_count"] == r["expected_members"] == 300
+    assert r["membership_observed"] == "2026-09-15"
+    w = r["windows"]["5"]
+    assert w["eligible"] == 300 and w["median_return_pct"] == pytest.approx(-1)
+    assert w["benchmark_return_pct"] == pytest.approx(.1)
+    assert w["comparison"] == "index_up_sample_down"
+    assert r["contribution_status"] == "unavailable_no_official_start_weights"
+    assert r["historical_membership"] is False
+
+
+@pytest.mark.parametrize("change", ["short", "duplicate", "mixed_dates", "future", "missing_date", "bad_ticker", "bad_date", "duplicate_columns"])
+def test_index_member_lens_refuses_invalid_membership_without_shrinking(change):
+    m,p,b = _index_member_fixture()
+    if change == "short": m=m.iloc[:-1]
+    elif change == "duplicate": m.loc[299,"ticker"]=m.loc[0,"ticker"]
+    elif change == "mixed_dates": m.loc[299,"fetched_date"]="2026-09-14"
+    elif change == "future": m["fetched_date"]="2026-09-19"
+    elif change == "missing_date": m=m.drop(columns="fetched_date")
+    elif change == "bad_ticker": m.loc[0,"ticker"]="0700.HK"
+    elif change == "bad_date": m["fetched_date"]="not-a-date"
+    else: m=pd.concat([m,m[["ticker"]]],axis=1)
+    r = _index_member_context(m,p,b)
+    assert r["status"] == "unavailable"
+    assert r["windows"] == {} and r["data_gaps"]
+    assert r["expected_members"] == 300
+
+
+def test_index_member_lens_ignores_other_indices_and_extra_stocks():
+    m,p,b = _index_member_fixture()
+    extra=m.iloc[:1].copy();extra["symbol"]="000852";extra["ticker"]="300999.SZ"
+    m=pd.concat([m,extra],ignore_index=True)
+    p["300999.SZ"] = 1e10
+    r=_index_member_context(m,p,b)
+    assert r["member_count"] == 300
+    assert r["windows"]["20"]["median_return_pct"] == pytest.approx(-1)
+
+
+def test_index_member_lens_does_not_replace_missing_member_with_extra():
+    m,p,b = _index_member_fixture()
+    p=p.drop(columns=p.columns[0]);p["300999.SZ"]=100.0
+    r=_index_member_context(m,p,b)
+    assert r["status"] == "insufficient_coverage"
+    assert r["windows"]["20"]["eligible"] == 299
+    assert r["windows"]["20"]["median_return_pct"] is None
+
+
+def test_index_member_lens_never_uses_market_cap_placeholders_as_weights():
+    m,p,b=_index_member_fixture()
+    original=_index_member_context(m,p,b)
+    m["mktcap_yi"]=30.0;m.loc[0,"mktcap_yi"]=1e99
+    assert _index_member_context(m,p,b) == original
+    assert "weighted_return" not in original and "contributions" not in original
+
+
+def test_index_member_lens_declares_snapshot_applied_retrospectively():
+    m,p,b=_index_member_fixture()
+    r=_index_member_context(m,p,b)
+    assert r["windows"]["20"]["membership_observed_after_start"] is True
+    assert r["windows"]["5"]["membership_observed_after_start"] is True
+    assert r["membership_age_days_at_assessment"] == 3
+
+
+def test_index_member_lens_delayed_prices_keep_their_own_date():
+    m,p,b=_index_member_fixture()
+    r=_index_member_context(m,p.iloc[:-1],b)
+    assert r["status"] == "delayed" and r["price_asof"] == "2026-09-17"
+    assert r["membership_observed"] == "2026-09-15"
+
+
+def test_index_member_loader_reads_only_existing_membership_and_closes(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    m,p,b=_index_member_fixture()
+    fixtures={("china_search","index_cons"):m,("china_search","closes"):p,
+              ("china","510300.SS"):b.to_frame("close")}
+    reads=[]
+    def read(g,n):
+        reads.append((g,n));return fixtures[(g,n)]
+    monkeypatch.setattr(store,"read",read)
+    result=pc.load_index_member_breadth_context(asof="2026-09-18")
+    assert result["status"] == "available" and set(reads)==set(fixtures)
+
+
+def test_index_member_loader_read_error_is_explicit_not_empty_confirmation(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    def read(g,n): raise OSError("source unavailable")
+    monkeypatch.setattr(store,"read",read)
+    result=pc.load_index_member_breadth_context(asof="2026-09-18")
+    assert result["status"] == "unavailable" and result["data_gaps"]
+
+
+def test_index_member_panel_shows_dated_cohort_not_weighted_contribution():
+    m,p,b = _index_member_fixture()
+    r = _index_member_context(m,p,b)
+    html = _render_participation_context({'index_members':r})
+    assert 'CSI 300 members' in html and '沪深300成分股' in html
+    assert '2026-09-15' in html and '2026-09-18' in html
+    assert '-1.00%' in html and '+0.10%' in html
+    assert 'not a historical membership archive' in html
+    assert 'Starting index weights unavailable' in html
+
+
+def test_index_member_panel_missing_membership_does_not_invent_index_attribution():
+    m,p,b = _index_member_fixture()
+    html = _render_participation_context({'index_members':_index_member_context(m.iloc[:20],p,b)})
+    assert 'Constituent comparison unavailable' in html
+    assert '成分股对比暂不可用' in html
+    assert 'Weighted contribution' not in html
+
+
+def test_index_member_panel_preserves_incomplete_price_denominator():
+    m,p,b = _index_member_fixture()
+    html = _render_participation_context({'index_members':_index_member_context(m,p.iloc[:,:299],b)})
+    assert '299 / 300' in html
+    assert 'All 300' not in html
+
+
+def test_index_member_builder_adds_cohort_without_mutating_original_context(monkeypatch):
+    from scripts import build_china
+    from engine import china_participation as pc
+    original = {'assessment_asof':'2026-09-18', 'sample':{'status':'delayed'}}
+    member = {'membership_observed':'2026-09-15','status':'available'}
+    monkeypatch.setattr(pc,'load_breadth_context',lambda **_kw: original)
+    def loader(*, asof):
+        assert asof=='2026-09-18'
+        return member
+    monkeypatch.setattr(pc,'load_index_member_breadth_context',loader)
+    r = build_china._participation_context('2026-09-18')
+    assert r['index_members'] == member
+    assert 'index_members' not in original
+    assert r['sample']['status'] == 'delayed'
