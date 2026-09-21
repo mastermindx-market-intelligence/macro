@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T03:36:59.760927+00:00",
-  "count": 2542,
+  "generated_at": "2026-09-21T03:46:38.405662+00:00",
+  "count": 2543,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gax2op1lx0w-39b0db",
+      "title": "On Our Minds Midterms A Blue House, a Coin Flip Senate",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:05:48Z",
+      "summary_points": [
+        "SG Model Senate Control: 54% GOP Senate control probability (vs. 88% Democratic House), with Texas and Alaska pivotal battlegrounds amid energy prices, tariffs, and AI policy debates driving outcomes.",
+        "Divided Congress Dominance: 43% chance of divided Congress (Dem House, GOP Senate) dominates policy risks, intensifying appropriations friction, shutdown likelihood, and judicial confirmation delays.",
+        "Critical Battleground Volatility: Texas (Paxton vs.",
+        "Talarico, Trump unpopularity with Hispanics) and Alaska (Sullivan/Peltola polling divergence, ranked-choice uncertainty) exhibit high volatility impacting Senate control."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-xsbsqrhheld-fdef0b",
       "title": "Morning Briefing Dovish BoJ hike restores Yen carry appeal",
