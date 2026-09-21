@@ -12279,6 +12279,9 @@ jobs:
       - "site/leaderradar/**"
       - "site/marketdata/**"
       - "site/master_brief.json"
+      # dashboard.html.j2 rendered-contract tests read the committed macro projection.
+      # PR #7503 made that dependency explicit; exclusive scope must cover it.
+      - "site/macro.html"
       # Claimed for tests/test_prophet_overtime_horizon_reconciliation.py, wired
       # into this job with the other prophet board surfaces: its population check
       # reads the COMMITTED payload — site/prophet/index.json AND the
