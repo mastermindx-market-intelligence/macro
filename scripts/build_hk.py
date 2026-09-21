@@ -653,7 +653,7 @@ def _tile_move(chg: float, pct: float, *, is_rate: bool, chg_dec: int) -> dict:
     """Glance-tier move. Rate tiles keep percentage POINTS and drop the relative %."""
     out = {"chg": f"{chg:+.{chg_dec}f}", "chg_raw": chg}
     if is_rate:
-        out["chg_unit_en"] = "pp"
+        out["chg_unit_en"] = "percentage points"
         out["chg_unit_zh"] = "百分点"
     else:
         out["pct"] = f"{pct:+.1f}%"

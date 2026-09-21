@@ -67,6 +67,8 @@ TILE_COPY: dict[str, dict[str, str]] = {
         "tag_en": "HK overnight rate", "tag_zh": "港元隔夜利率",
         "meaning_en": "what HK banks charge each other overnight",
         "meaning_zh": "香港银行间隔夜拆借成本",
+        "chg_unit_en": "percentage points",
+        "chg_unit_zh": "百分点",
     },
     "USD/oz": {
         "tag_en": "Gold", "tag_zh": "黄金",

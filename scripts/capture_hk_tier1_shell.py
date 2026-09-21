@@ -23,6 +23,8 @@ _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 sys.path.insert(0, str(_ROOT))
 
+from scripts.capture_page_evidence import _apply_interaction_force, parse_force_state
+
 OUT_DIR = _ROOT / "mockups" / "evidence" / "hk-tier1-shell"
 REGIONS = (
     ("hero", "#hkx-hero-card"),
@@ -32,6 +34,17 @@ REGIONS = (
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
 LOCALES = ("en", "zh")
 THEMES = ("dark", "light")
+# Token-sharing :hover / :focus-visible live on .hkx-hbtn (hero). REST cells
+# cannot prove those presentations; the visual-evidence gate requires both
+# kinds applied on desktop/en dark and light.
+FORCE_STATES = (
+    parse_force_state("btn-hover:hover(.hkx-hbtn)"),
+    parse_force_state("btn-focus:focus(.hkx-hbtn)"),
+)
+FORCE_STATE_REGION = "hero"
+FORCE_STATE_VIEWPORTS = ("desktop",)
+FORCE_STATE_LOCALES = ("en",)
+FORCE_STATE_THEMES = THEMES
 
 _STATE_SEED_SCRIPT = """
 (state) => {
@@ -79,8 +92,32 @@ def _write_scratch(scratch: Path) -> None:
     (scratch / "data_base.js").write_text("/* capture stub */\n")
 
 
-def main() -> int:
+def _prepare_page(page, base: str, state: dict) -> dict:
+    response = page.goto(base, wait_until="load", timeout=30000)
+    if response is None or not response.ok:
+        raise RuntimeError(f"HTTP {getattr(response, 'status', 'none')}")
+    page.wait_for_timeout(250)
+    applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+    # setTheme fires skyToggleFx (~1100ms sun/moon overlay). It is a
+    # toggle flourish, not page content; a 150ms wait used to shoot
+    # the crescent mid-animation on 390-dark (M3). Prefer-reduced-motion
+    # skips the mount; stripping .sky-fx is the fail-closed remainder.
+    page.evaluate(
+        "() => document.querySelectorAll('.sky-fx').forEach(n => n.remove())"
+    )
+    page.wait_for_timeout(150)
+    return applied
+
+
+def _shoot_region(page, selector: str, out_dir):
     from scripts.capture_debt_maturity_evidence import content_address_png
+    loc = page.locator(selector).first
+    loc.wait_for(state="visible", timeout=8000)
+    png = loc.screenshot(type="png")
+    return content_address_png(png, out_dir) + (len(png),)
+
+
+def main() -> int:
     from scripts.capture_page_evidence import CaptureUnavailable, _git_head_sha, serve_site_dir
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -138,25 +175,10 @@ def main() -> int:
                                 "force_state": None,
                             }
                             try:
-                                response = page.goto(base, wait_until="load", timeout=30000)
-                                if response is None or not response.ok:
-                                    raise RuntimeError(
-                                        f"HTTP {getattr(response, 'status', 'none')}"
-                                    )
-                                page.wait_for_timeout(250)
-                                applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
-                                # setTheme fires skyToggleFx (~1100ms sun/moon overlay). It is a
-                                # toggle flourish, not page content; a 150ms wait used to shoot
-                                # the crescent mid-animation on 390-dark (M3). Prefer-reduced-motion
-                                # skips the mount; stripping .sky-fx is the fail-closed remainder.
-                                page.evaluate(
-                                    "() => document.querySelectorAll('.sky-fx').forEach(n => n.remove())"
+                                applied = _prepare_page(page, base, state)
+                                name, digest, pw, ph, nbytes = _shoot_region(
+                                    page, selector, OUT_DIR
                                 )
-                                page.wait_for_timeout(150)
-                                loc = page.locator(selector).first
-                                loc.wait_for(state="visible", timeout=8000)
-                                png = loc.screenshot(type="png")
-                                name, digest, pw, ph = content_address_png(png, OUT_DIR)
                                 crop_list.append(
                                     f"{region}/{viewport}/{locale}/{theme} -> {name}"
                                 )
@@ -164,7 +186,7 @@ def main() -> int:
                                     "captured": True,
                                     "file": name,
                                     "sha256": digest,
-                                    "bytes": len(png),
+                                    "bytes": nbytes,
                                     "width": pw,
                                     "height": ph,
                                     "applied_theme": applied.get("theme"),
@@ -178,6 +200,64 @@ def main() -> int:
                             finally:
                                 context.close()
                             states.append(entry)
+                if region == FORCE_STATE_REGION:
+                    for force in FORCE_STATES:
+                        for viewport in FORCE_STATE_VIEWPORTS:
+                            width, height = VIEWPORTS[viewport]
+                            for locale in FORCE_STATE_LOCALES:
+                                for theme in FORCE_STATE_THEMES:
+                                    state = {"theme": theme, "locale": locale}
+                                    context = browser.new_context(
+                                        viewport={"width": width, "height": height},
+                                        locale="zh-CN" if locale == "zh" else "en-US",
+                                        color_scheme=theme,
+                                        device_scale_factor=1,
+                                        reduced_motion="reduce",
+                                    )
+                                    context.add_init_script(
+                                        f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
+                                    )
+                                    page = context.new_page()
+                                    entry = {
+                                        "viewport": viewport,
+                                        "locale": locale,
+                                        "theme": theme,
+                                        "access": "anonymous",
+                                        "viewport_width": width,
+                                        "viewport_height": height,
+                                        "force_state": force.name,
+                                    }
+                                    try:
+                                        applied = _prepare_page(page, base, state)
+                                        applied_force = _apply_interaction_force(
+                                            page, force
+                                        )
+                                        name, digest, pw, ph, nbytes = _shoot_region(
+                                            page, selector, OUT_DIR
+                                        )
+                                        crop_list.append(
+                                            f"{region}/{viewport}/{locale}/{theme}/"
+                                            f"{force.name} -> {name}"
+                                        )
+                                        entry.update({
+                                            "captured": True,
+                                            "file": name,
+                                            "sha256": digest,
+                                            "bytes": nbytes,
+                                            "width": pw,
+                                            "height": ph,
+                                            "applied_theme": applied.get("theme"),
+                                            "applied_locale": applied.get("locale"),
+                                            "applied_force_state": applied_force,
+                                        })
+                                    except Exception as exc:
+                                        entry.update({
+                                            "captured": False,
+                                            "reason": f"{type(exc).__name__}: {exc}",
+                                        })
+                                    finally:
+                                        context.close()
+                                    states.append(entry)
                 captured_n = sum(1 for s in states if s.get("captured"))
                 pages.append({
                     "page_id": f"hk-tier1-{region}",
@@ -213,7 +293,8 @@ def main() -> int:
                 "with the tests/test_hk_tier1_shell.py fixture VM + theme.css. "
                 "Sparse tree: no live data/ or site/ bake. Context prefers-reduced-motion "
                 "and strips .sky-fx after setTheme so the ~1100ms theme-toggle flourish "
-                "cannot occlude a crop (M3)."
+                "cannot occlude a crop (M3). Hero additionally captures real "
+                "hover(.hkx-hbtn) and focus(.hkx-hbtn) on desktop/en dark and light."
             ),
         },
         "target": {
@@ -227,7 +308,7 @@ def main() -> int:
             "locales": list(LOCALES),
             "themes": list(THEMES),
             "access": ["anonymous"],
-            "force_states": [],
+            "force_states": [force.as_payload() for force in FORCE_STATES],
         },
         "selection": {
             "mode": "explicit_regions",
@@ -248,6 +329,12 @@ def main() -> int:
                 "Growth-scare) are the packet exemplars, not tonight's tape. "
                 "Strip tiles use DISTINCT per-kind fixture values (peg negative, "
                 "yuan-quote negative, overnight rate as points-only)."
+            ),
+            "force_states": (
+                "a forced state is a real browser hover/focus applied to "
+                ".hkx-hbtn before the hero crop; it shows that state's "
+                "presentation, not data the page returned; metrics are "
+                "measured on the rest cells only"
             ),
         },
         "pages": pages,
@@ -302,7 +389,10 @@ def _write_readme(outcome: str, captured: int, attempted: int,
         "Matrix: dark + light × EN + ZH × desktop 1440 × mobile 390, for "
         "the hero (`#hkx-hero-card`), the cross-market strip "
         "(`.hkx-cas-strip`), and one What To Do signal row "
-        "(`.hkx-rack2 .hkx-row`) showing the monoline icons.",
+        "(`.hkx-rack2 .hkx-row`) showing the monoline icons. Hero also "
+        "captures `--force-state` hover(`.hkx-hbtn`) and focus(`.hkx-hbtn`) "
+        "on desktop/en dark and light — REST shots cannot prove those "
+        "presentations.",
         "",
         "Harness note (M3): `window.setTheme()` fires `skyToggleFx()` — a "
         "~1100ms crescent-moon (dark) / sun (light) overlay at z-index "

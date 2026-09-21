@@ -69,7 +69,25 @@ def test_growth_axis_and_dual_liquidity_are_not_glance_legs():
     assert by_key["growth"]["label_en"] == "Growth axis"
     assert by_key["liquidity"]["label_en"] == "Dual liquidity"
     assert by_key["regime"]["glance"] is True
-    assert by_key["peg"]["glance"] is True
+
+
+def test_peg_and_roro_are_not_glance_legs_and_labels_are_plain():
+    """HKD peg / Risk appetite (RORO) were machine labels on the What To Do glance.
+
+    Fails on the previous head: peg/roro still have glance=True and the raw
+    machine labels (HKD peg, Risk appetite (RORO)).
+    """
+    ss = build_hk_signal_stack(_GROWTH_SCARE_LATEST)
+    by_key = {leg["key"]: leg for leg in ss["legs"]}
+    assert by_key["peg"]["glance"] is False
+    assert by_key["roro"]["glance"] is False
+    assert by_key["peg"]["label_en"] == "HK dollar peg"
+    assert by_key["peg"]["label_zh"] == "港元联汇"
+    assert by_key["roro"]["label_en"] == "Risk appetite"
+    assert by_key["roro"]["label_zh"] == "风险偏好"
+    assert "HKD" not in by_key["peg"]["label_en"]
+    assert "RORO" not in by_key["roro"]["label_en"]
+    assert "RORO" not in by_key["roro"]["label_zh"]
 
 
 def test_peg_face_drops_weak_side_jargon():
@@ -217,8 +235,9 @@ def test_inverted_tiles_disclose_quote_orientation():
 def test_rate_tile_keeps_points_unit_and_drops_relative_pct():
     move = _tile_move(0.10, 200.0, is_rate=True, chg_dec=2)
     assert move["chg"] == "+0.10"
-    assert move["chg_unit_en"] == "pp"
+    assert move["chg_unit_en"] == "percentage points"
     assert move["chg_unit_zh"] == "百分点"
+    assert move["chg_unit_en"] != "pp"
     assert "pct" not in move
     equity = _tile_move(18.4, 0.5, is_rate=False, chg_dec=1)
     assert equity["chg"] == "+18.4"
@@ -504,8 +523,9 @@ def test_render_rate_tile_is_points_only():
     rate = _tile_chunk(glance, "HK overnight rate")
     assert "0.15%" in rate
     assert "+0.10" in rate
-    assert 'class="l-en">pp</span>' in rate
+    assert 'class="l-en">percentage points</span>' in rate
     assert 'class="l-zh">百分点</span>' in rate
+    assert 'class="l-en">pp</span>' not in rate
     assert "+200" not in rate
     assert not re.search(r'\+0\.10(?: pp)?\s+\+', rate)
 
@@ -543,7 +563,8 @@ def test_render_moved_jargon_absent_at_rest_present_in_dialogs():
     html = _render()
     glance = _glance(html)
     for banned in ("Growth axis", "Dual liquidity", "weak-side (outflow)", "HIBOR 1m",
-                   "HIBOR 1月", "BUY ZONE", "UNCONFIRMED TURN", "UPTREND"):
+                   "HIBOR 1月", "BUY ZONE", "UNCONFIRMED TURN", "UPTREND",
+                   "HKD peg", "Risk appetite (RORO)"):
         assert banned not in glance, f"{banned!r} still on the glance face"
     assert "🔴" not in glance
     assert "🟢" not in glance
@@ -553,6 +574,10 @@ def test_render_moved_jargon_absent_at_rest_present_in_dialogs():
     assert "Growth axis" in playbook
     assert "Dual liquidity" in playbook
     assert "weak-side (outflow)" in playbook
+    assert "HK dollar peg" in playbook
+    assert "Risk appetite" in playbook
+    assert "HKD peg" not in playbook
+    assert "RORO" not in playbook
     policy = html[html.find('id="hkx-dlg-policy"'):html.find('id="hkx-dlg-flows"')]
     assert "HIBOR 1-month" in policy or "1月HIBOR" in policy
 
@@ -606,6 +631,22 @@ def test_popover_keeps_thresholds_when_components_empty():
     assert "now 48/100" in pop
     assert "16/100" in pop
     assert "Building…" not in pop
+
+
+def test_capture_script_declares_hover_and_focus_force_states():
+    """Owning receipt must recapture hover/focus; REST cells cannot prove them.
+
+    Fails on the previous head: capture_hk_tier1_shell.py axes.force_states is [].
+    """
+    from scripts.capture_hk_tier1_shell import FORCE_STATES
+    kinds = {fs.kind for fs in FORCE_STATES}
+    names = {fs.name for fs in FORCE_STATES}
+    assert "hover" in kinds
+    assert "focus" in kinds
+    assert any(fs.value == ".hkx-hbtn" and fs.kind == "hover" for fs in FORCE_STATES)
+    assert any(fs.value == ".hkx-hbtn" and fs.kind == "focus" for fs in FORCE_STATES)
+    assert "btn-hover" in names
+    assert "btn-focus" in names
 
 
 def test_popover_building_state_is_honest_when_thresholds_absent():

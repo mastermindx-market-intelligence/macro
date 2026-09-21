@@ -28,9 +28,10 @@ _WORD_ZH = {BULL: "积极", FLAT: "中性", BEAR: "谨慎"}
 _QUAD_ZH = {"Goldilocks": "理想增长", "Reflation": "再通胀", "Stagflation": "滞胀",
             "Growth scare": "增长恐慌", "Growth Scare": "增长恐慌",
             "Growth-scare": "增长恐慌", "Growth-scare/Deflation": "增长恐慌／通缩"}
-# Growth axis / Dual liquidity are scored legs but their names are jargon — they
-# live on the What To Do dialog, not the glance face (H2 Tier-1 shell pass).
-_GLANCE_OFF = frozenset({"growth", "liquidity"})
+# Growth axis / Dual liquidity / HKD peg / RORO are scored or context legs whose
+# names are jargon — they live on the What To Do dialog, not the glance face
+# (H2 Tier-1 shell pass).
+_GLANCE_OFF = frozenset({"growth", "liquidity", "peg", "roro"})
 _LIQ = {"expanding": ("easing", "宽松"), "neutral": ("neutral", "中性"),
         "contracting": ("tightening", "收紧"),
         "easy": ("easing", "宽松"), "tight": ("tightening", "收紧")}
@@ -120,7 +121,7 @@ def build_hk_signal_stack(latest: dict) -> dict | None:
         zh = ("强方（流入）" if "strong" in peg else
               ("弱方（流出）" if "weak" in peg else ("区间中" if "mid" in peg else peg)))
         face_en, face_zh = peg_face(peg)
-        legs.append(_leg("peg", "HKD peg", "港元联汇", peg, zh, d, "context",
+        legs.append(_leg("peg", "HK dollar peg", "港元联汇", peg, zh, d, "context",
                          state_face_en=face_en, state_face_zh=face_zh))
 
     # 6. RORO cross-asset composite (CONTEXT) — risk-on/off.
@@ -128,7 +129,7 @@ def build_hk_signal_stack(latest: dict) -> dict | None:
     if rs:
         se, sz = _RORO.get(rs, (rs, rs))
         d = {"risk-on": BULL, "risk-off": BEAR}.get(rs, FLAT)
-        legs.append(_leg("roro", "Risk appetite (RORO)", "风险偏好（RORO）", se, sz, d, "context"))
+        legs.append(_leg("roro", "Risk appetite", "风险偏好", se, sz, d, "context"))
 
     # 7. Slowdown gauge (CONTEXT) — high = more slowdown-ward (display-only).
     if rec.get("label"):
