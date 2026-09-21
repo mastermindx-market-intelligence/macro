@@ -1556,6 +1556,23 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=CN_PROFILE)
+            # Persist the CN_PROFILE snapshot to its OWN file
+            # (data/china_market_state/latest.json) so the macro spine can ingest it as
+            # a ratified 0-100 source without ever overwriting the US latest.json.
+            # The no-regress guard travels with the engine (market_key="cn"). The
+            # NYSE freshness stamp is suppressed for CN (its own session calendar
+            # governs CN staleness; the macro spine reads caveat_en / caveat_zh on
+            # the row instead). Fast-render dev rerenders skip the write just like
+            # the score-log append. Off the heavy render path: a single json.dump
+            # beside existing parquet writes.
+            try:
+                import os as _osenv_p_cn  # noqa: PLC0415
+                if _osenv_p_cn.environ.get("CHINA_FAST_RENDER"):
+                    pass                  # dev re-render: read-only
+                else:
+                    _ms.persist(vm.get("market_state"), market_key="cn")
+            except Exception as _pc_e:  # noqa: BLE001 — additive, never fatal
+                log.warning("cn market_state persist failed (%s); skipping", _pc_e)
             # Attach contagion block to the post-transform radar dict so rd.contagion
             # resolves in _risk_radar_card.html.j2 (build_site.py idiom, CGL W1).
             # FIX 2: disclose staleness when the CGL artifact predates the page's as_of.

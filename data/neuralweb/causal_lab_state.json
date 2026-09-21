@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.causal_lab_state.v1",
-  "asof": "2026-09-19T22:13:47Z",
+  "asof": "2026-09-20T09:39:24Z",
   "heartbeat": {
     "program": "CHF",
     "wave": "W3",

@@ -4,6 +4,11 @@
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
     "score": 60.9
   },
+  "30d6be22a97c": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
+    "score": 66.2
+  },
   "84179773b315": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
@@ -18,10 +23,5 @@
     "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Consumer Cyclical",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Consumer Cyclical",
     "score": 61.5
-  },
-  "f223cbb977ff": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 72.3
   }
 }
