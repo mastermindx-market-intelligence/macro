@@ -2927,6 +2927,7 @@ jobs:
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
+          tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_red_first_proof.py
           tests/test_missing_tape.py tests/test_price_basis_flip.py
           tests/test_risk_lead_lag.py tests/test_anticipation.py
@@ -9643,12 +9644,14 @@ jobs:
       - "site/leaderradar/**"
       - "site/neuralwebdata/**"
       - "site/options.html"
+      - "site/market_structure.html"
       - "site/options_intel_brief.json"
       - "site/prophet/index.json"
       - "templates/market_structure.html.j2"
       - "templates/options.html.j2"
       - "tests/test_build_flow_leaders.py"
       - "tests/test_build_market_structure_page.py"
+      - "tests/test_market_structure_glance_copy.py"
       - "tests/test_build_options_command.py"
       - "tests/test_build_options_screener.py"
       - "tests/test_flow_leaders.py"
@@ -9672,7 +9675,7 @@ jobs:
       - name: flow-leaders engine + builder suites (washout-flip pins, pick-lab flow books)
         run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py -q
       - name: market-structure engine + nw-context + page suites (week_map emission pins)
-        run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py -q
+        run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py -q
       # P1 unrun backfill 2026-08-14: tests/test_options_gap_discipline.py joins the
       # options-screener step.  It was named by no `run:` step in any workflow, so the
       # GAP DISCIPLINE law — what the screener and flow-leaders builders may publish
@@ -11128,7 +11131,7 @@ jobs:
       - name: china_intel_hub institutional-visit dossier block (P1)
         run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
-        run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_ticker_shape.py -q
+        run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_intelligence_hub_glance_copy.py tests/test_ticker_shape.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
       # jinja2 + pandas closure scripts.build_intel_hub already pulls in this
       # job) plus the route-scoped controller's node-executed contract.
