@@ -533,7 +533,9 @@ class TestDisclosure:
 class TestNightlyDurability:
     PUBLISH_STEP = "Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)"
     CHECKPOINT_STEP = "checkpoint leader-pullback source to main (durable before engine tail)"
+    ACCEPTED_SOURCE_STEP = "restore accepted leader source for downstream consumers"
     DASHBOARD_STEP = "run regime engine + build dashboard + daily brief (resilient)"
+    PROPHET_STEP = "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)"
 
     @staticmethod
     def _steps() -> list[dict]:
@@ -555,6 +557,39 @@ class TestNightlyDurability:
         assert steps[publish_i].get("continue-on-error") is True
         assert steps[checkpoint_i].get("continue-on-error") is True
         assert "daily_engine_leader_checkpoint.sh" in steps[checkpoint_i]["run"]
+
+    def test_refused_checkpoint_cannot_feed_runner_local_leader_bytes_downstream(self):
+        """A non-fatal checkpoint may refuse or lose a same-path race.  Downstream
+        consumers must then rehydrate the one leader source from accepted origin/main
+        rather than deriving dashboard/Prophet output from uncommitted runner-local bytes.
+        """
+        steps = self._steps()
+        names = [step.get("name") for step in steps]
+        checkpoint_i = names.index(self.CHECKPOINT_STEP)
+        restore_i = names.index(self.ACCEPTED_SOURCE_STEP)
+        dashboard_i = names.index(self.DASHBOARD_STEP)
+        prophet_i = names.index(self.PROPHET_STEP)
+        assert restore_i == checkpoint_i + 1
+        assert checkpoint_i < restore_i < dashboard_i < prophet_i
+
+        restore = steps[restore_i]
+        assert restore.get("id") == "leader_accepted_source"
+        assert restore.get("if") == "always()"
+        assert restore.get("continue-on-error") is True
+        script = restore["run"]
+        path = "site/anticipationdata/us_leader_pullback.json"
+        assert 'git fetch origin +refs/heads/main:refs/remotes/origin/main' in script
+        assert 'ACCEPTED_LEADER_SHA="$(git rev-parse origin/main)"' in script
+        assert 'git checkout "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"' in script
+        assert path in script
+        assert 'git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"' in script
+        assert 'echo "ready=true" >> "$GITHUB_OUTPUT"' in script
+
+        required = "steps.leader_accepted_source.outputs.ready == 'true'"
+        assert steps[dashboard_i].get("if") == required
+        assert steps[prophet_i].get("if") == required
+        acceptance = next(step for step in steps if step.get("id") == "prophet_board_acceptance")
+        assert acceptance.get("if") == required
 
     def test_narrow_checkpoint_can_only_publish_the_existing_leader_source(self):
         path = ROOT / "scripts/ci/daily_engine_leader_checkpoint.sh"
