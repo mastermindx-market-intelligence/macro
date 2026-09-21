@@ -120,6 +120,7 @@ import pandas as pd
 from engine import confluence_tiers as ct
 from engine import grading
 from engine import name_score_grader as nsg
+from engine import prophet_subtheme_funnel as psf
 from engine import signal_gate as sg
 from engine.confluence_tiers import (
     BUY_RSI_MAX, CONF_W, FRESH_TICKS, OB, OS,
@@ -1809,6 +1810,7 @@ def build_audit(root: Path = ROOT, *, top63_n: int = TOP63_N, top21_n: int = TOP
     rotation = _read_json(root, ROTATION_JSON, degraded,
                           "theme representation unavailable")
     themes = theme_representation(root, standouts, rotation, degraded)
+    subtheme_funnel = psf.build(root, standouts, rotation, degraded)
     basket_block = (basket_misses(root, standouts, degraded, price_through)
                     if with_baskets else
                     {"tier": "ops_telemetry", "available": False, "misses": [],
@@ -1854,6 +1856,12 @@ def build_audit(root: Path = ROOT, *, top63_n: int = TOP63_N, top21_n: int = TOP
                             if basket_block.get("available") else None),
         "basket_scored_n": (basket_block.get("n_scored")
                             if basket_block.get("available") else None),
+        "subtheme_emerging_n": (subtheme_funnel.get("n_emerging")
+                                if subtheme_funnel.get("available") else None),
+        "subtheme_leadership_gaps_n": (subtheme_funnel.get("n_gaps")
+                                      if subtheme_funnel.get("available") else None),
+        "subtheme_featured_coverage_pct": (subtheme_funnel.get("featured_coverage_pct")
+                                           if subtheme_funnel.get("available") else None),
     }
 
     doc = {
@@ -1867,6 +1875,9 @@ def build_audit(root: Path = ROOT, *, top63_n: int = TOP63_N, top21_n: int = TOP
                 f"dated membership — the basket machinery's own store and construction, "
                 f"NOT the breadth caches above (they are S&P-1500 and cannot see the "
                 f"off-index members the ignited baskets are full of)."),
+            "subtheme_funnel": "existing subsector_rotation.highlights.emerging producer "
+                               "classification joined to current-only Finviz membership and "
+                               "the existing lossless Prophet candidate_pool; measurement only.",
             "runner_eligibility": "engine.confluence_tiers.tier_stream (completed buckets, "
                                   "raw-3D-cross T1 fallback) — last row = eligible_today, "
                                   "tail(63) = days_eligible/first_eligible. One basis for both "
@@ -1899,6 +1910,7 @@ def build_audit(root: Path = ROOT, *, top63_n: int = TOP63_N, top21_n: int = TOP
             _hist([e["sector"] for e in cascade_elig]) if cascade_elig is not None else None),
         "conversion": conversion,
         "themes": themes,
+        "subtheme_funnel": subtheme_funnel,
         "basket_misses": basket_block,
         "name_score_scorecard": name_score,
         "scan_tier": scan_tier,
@@ -2160,6 +2172,13 @@ def summary_row(doc: dict) -> dict:
         "basket_misses_n": doc["summary"].get("basket_misses_n"),
         "basket_misses": [r["basket_id"] for r in
                           ((doc.get("basket_misses") or {}).get("misses") or [])],
+        "subtheme_emerging_n": s.get("subtheme_emerging_n"),
+        "subtheme_leadership_gaps_n": s.get("subtheme_leadership_gaps_n"),
+        "subtheme_featured_coverage_pct": s.get("subtheme_featured_coverage_pct"),
+        "subtheme_leadership_gaps": [
+            r.get("key") for r in ((doc.get("subtheme_funnel") or {}).get("gaps") or [])
+            if r.get("key")
+        ],
         **name_score_row_fields(doc),
         **scan_tier_row_fields(doc),
         **priority_score_row_fields(doc),
