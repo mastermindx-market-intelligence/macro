@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T19:03:27.183026+00:00",
-  "count": 2587,
+  "generated_at": "2026-09-21T19:18:45.971223+00:00",
+  "count": 2588,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-f4gxuf5mmau-53a7ed",
+      "title": "Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T19:00:53Z",
+      "summary_points": [
+        "Institutional AI Buying Stalling: Institutional call ratios for Mag 7/SOXX AI complex stalled post-bullish positioning, signaling reduced buying pace amid slowing momentum.",
+        "CRWD Drives Retail AI Trend: CRWD dominates 53% of retail call activity (1M calls at 97th percentile), with retail buying underlying stock + calls, indicating new AI-themed retail trend.",
+        "NVDA Retail Dominance & Selectivity: NVDA accounts for 63% of SOXX retail inflows; retail selective (not indiscriminate), with 19/30 semis showing positive buying (Intel/Broadcom-led dips).",
+        "Fed/Geopolitics Constrain Broad Index Moves: Broader index buying requires Fed policy normalization and geopolitical tension fade; current retail flows remain bottom-up and selective."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pww9eod4fgq-febf19",
       "title": "Vanda Research Retail Waiting For Macro Risks To Clear 21Sep2026",
