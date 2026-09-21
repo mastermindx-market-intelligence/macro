@@ -316,13 +316,14 @@ def main() -> int:
                                 # 390 swipe hides cards 2–3. Stack the live
                                 # tiles and element-crop the W3 surfaces so
                                 # leadership + sentiment + the AI chip appear.
+                                # [data-driver="leadership"] is a leg of
+                                # [data-driver="mtf"]; cropping mtf depicts it.
                                 page.evaluate(_STACK_DRIVERS_JS)
                                 page.wait_for_timeout(80)
                                 crops: list[bytes] = []
                                 for crop_sel in (
                                     ".ud-drivers .mx-sec",
                                     '[data-driver="mtf"]',
-                                    '[data-driver="leadership"]',
                                     '[data-driver="fear_greed"]',
                                 ):
                                     loc = page.locator(crop_sel).first
