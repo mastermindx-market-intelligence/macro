@@ -120,6 +120,11 @@ def test_sector_interactive_shell_code_is_public_but_payloads_stay_gated():
         "/sector_cycles_data.js",
         "/mm_charts.js",
         "/sector_cycles.js",
+        "/basketdata/narrative_emergence.json",
+        "/chinabasketdata/narrative_emergence.json",
+        "/hkbasketdata/narrative_emergence.json",
+        "/canadabasketdata/narrative_emergence.json",
+        "/intlbasketdata/narrative_emergence.json",
     }
     public_exact = set(POLICY["public"]["exact"])
 
