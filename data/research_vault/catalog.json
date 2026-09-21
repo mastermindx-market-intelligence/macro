@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T02:46:28.840893+00:00",
-  "count": 2540,
+  "generated_at": "2026-09-21T03:16:32.220816+00:00",
+  "count": 2541,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -256,6 +256,25 @@
         "EU Policy Shift: Von der Leyen’s banking policy moving deposits to riskier assets, combined with AI safety concerns, could accelerate global financial repression amid AI catastrophe risks (policy, risk factor).",
         "Bond Market Turn: Slowing economy, high rates, and short bond positioning signal imminent yield decline as market sentiment shifts (technical, fundamentals, flows).",
         "Japan Recession Data: Lone Star forecasts 9-15% GDP deficit and 10-20% debt surge in 12 months, driving sustained cash stockpiling since 2022 (fundamentals, risk factor)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ikzib0pewfh-63a32e",
+      "title": "One River Peters wknd notes 20 Sep 2026",
+      "institution": "One River",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T15:16:57Z",
+      "summary_points": [
+        "Geopolitical Yield Drivers: Ukraine’s attack on Russian refining and Strait congestion drive 10yr/30yr yields to 5%/5.33%, critical for bond technicals and risk assessment.",
+        "Fiscal Deficit Threshold: Chronic deficit spending risking 13% GDP (vs. recession trigger) poses severe debt sustainability threat monitored by bond vigilantes.",
+        "Rate Misalignment: Geopolitical pivot reversing globalization creates sector-specific rate risks (hyperscalers, minerals, military) amid strong productivity and capital investment."
       ],
       "tags": [],
       "tickers": [],
