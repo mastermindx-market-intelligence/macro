@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pandas as pd
 
 from collectors.breadth import BreadthAdapter
@@ -46,6 +47,17 @@ class ChinaBreadthAdapter(BreadthAdapter):
             raise ValueError(f"china constituents list suspicious: {len(members)} rows")
         return members
 
+    @staticmethod
+    def _usable_closes(closes: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
+        """Keep actual configured price observations; never count synthetic columns."""
+        if closes.empty:
+            raise RuntimeError("china_breadth latest coverage unavailable: empty closes")
+        if closes.index.has_duplicates or closes.columns.has_duplicates:
+            raise RuntimeError("china_breadth coverage has duplicate dates or symbols")
+        closes = closes.reindex(columns=tickers).sort_index()
+        closes = closes.apply(pd.to_numeric, errors="coerce")
+        return closes.where(np.isfinite(closes) & (closes > 0)).dropna(axis=1, how="all")
+
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         members = self.constituents_checked(self.constituents())
         tickers = members["symbol"].tolist()
@@ -56,27 +68,57 @@ class ChinaBreadthAdapter(BreadthAdapter):
             closes = None
             if self.cache_path.exists():
                 cached = pd.read_parquet(self.cache_path)
-                age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
+                age = (pd.Timestamp.now(tz="UTC").tz_localize(None) - cached.index.max()).days
                 if age <= 14:
-                    fresh = self._download_closes(tickers, "1mo")
+                    fresh = self._usable_closes(self._download_closes(tickers, "1mo"), tickers)
+                    if fresh.index[-1] < cached.index.max():
+                        raise RuntimeError("china_breadth fresh coverage predates cached latest observation")
                     closes = self._merge_refreshed(fresh, cached)  # split-seam repair
+                    # Preserve valid seam-repaired prices, but a same-day cache
+                    # cannot manufacture a quote the current pull did not return.
+                    current = fresh.iloc[-1].notna().reindex(closes.columns, fill_value=False)
+                    closes.loc[fresh.index[-1]] = closes.loc[fresh.index[-1]].where(current)
             if closes is None:
                 days = self.cfg["lookback_days_live"]
                 closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+            if closes.empty:
+                raise RuntimeError("china_breadth latest coverage unavailable: empty closes")
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
-        live_cols = closes.dropna(axis=1, how="all").shape[1]
+        # Coverage belongs to this observation and the configured universe, not
+        # to any historical quote. Never let a stale column or an extra symbol
+        # turn a partial download into a successful China breadth publication.
+        closes = self._usable_closes(closes, tickers)
+        if closes.empty:
+            raise RuntimeError("china_breadth latest coverage unavailable: empty closes")
+        live_cols = int(closes.iloc[-1].notna().sum())
         coverage = live_cols / len(tickers)
-        log.info("china_breadth coverage: %d/%d curated names resolved (%.0f%%)",
+        log.info("china_breadth latest coverage: %d/%d curated names resolved (%.0f%%)",
                  live_cols, len(tickers), 100 * coverage)
         if coverage < self.cfg["min_coverage"]:
-            raise RuntimeError(f"china_breadth closes too sparse: {live_cols}/{len(tickers)} "
+            raise RuntimeError(f"china_breadth latest coverage too sparse: {live_cols}/{len(tickers)} "
                                f"(< {self.cfg['min_coverage']:.0%})")
+
+        # A quote today is not an eligible moving-average observation without
+        # its required history. Apply the configured MA eligibility floor; do
+        # not publish an apparently full panel whose MA denominator is tiny.
+        for window in self.cfg["ma_windows"]:
+            usable = (int(closes.tail(window).notna().all().sum())
+                      if len(closes) >= window else 0)
+            if usable / len(tickers) < self.cfg["min_coverage"]:
+                raise RuntimeError(
+                    f"china_breadth latest {window}-session MA coverage too sparse: "
+                    f"{usable}/{len(tickers)}")
+        # The inherited 80%-of-recent-panel floor also applies; rejection must
+        # remain visible rather than silently publishing an older successful row.
+        breadth = self.compute(closes)
+        if breadth.empty or breadth.index[-1] != closes.index[-1]:
+            raise RuntimeError("china_breadth latest coverage rejected by breadth computation")
 
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
         members.set_index("symbol").to_parquet(self.cache_path.parent / "constituents.parquet")
 
-        return {"breadth": self.compute(closes)}
+        return {"breadth": breadth}

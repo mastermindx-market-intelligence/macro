@@ -1213,9 +1213,7 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     # Read-words come from the ENGINE's own band label (`recession.label` on _REC_BANDS
     # 26/45, `drawdown_risk.band` on 50/75/90), not from thresholds invented here — the
     # old 60/40 cut points contradicted the gauge's own history-anchored bands.
-    _REC_READ = {"low": ("calm", "平静", "up"),
-                 "elevated": ("softening", "走弱", "warn"),
-                 "high": ("weak", "疲弱", "down")}
+    from engine.china_tier1 import slowdown_face
     _DD_READ = {"low": ("calm", "平静", "up"),
                 "elevated": ("building", "升温", "warn"),
                 "high": ("high", "偏高", "down"),
@@ -1224,9 +1222,11 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
         cond = latest.get("conditions") or {}
         gauges = []
         rec = cond.get("recession") or {}
-        rec_sc = rec.get("score")
+        read = slowdown_face(rec)
+        ctx["slowdown"] = read  # same producer interpretation for glance and dialog
+        rec_sc = read["score"]
         if rec_sc is not None or cond.get("recession_html"):
-            w = _REC_READ.get(rec.get("label"), (None, None, "muted"))
+            w = (read["en"], read["zh"], read["tone"])
             gauges.append({
                 "label_en": "Slowdown gauge", "label_zh": "放缓仪表",
                 "score": round(rec_sc) if rec_sc is not None else None,

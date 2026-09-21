@@ -299,3 +299,101 @@ def test_market_headline_and_playbook_context_have_separate_dom_owners() -> None
     assert '<div class="cnx-playbook-context">' in TPL
     assert TPL.count("_hero_clause[0]") == 1
     assert TPL.count("_hero_clause[1]") == 1
+
+
+# Execute the actual published page and its existing dialog view-model, not a
+# hand-written copy of the card. All fixtures are synthetic, never live proof.
+def _render_china_risk_case(recession, action_en="", action_zh=""):
+    from jinja2 import ChainableUndefined, Environment, FileSystemLoader
+    from engine import china_tier1, i18n
+    from scripts.build_china import _radar_dlg_vm
+
+    radar = dict(state="caution", top_score=82, label_en="Sample stress",
+                 label_zh="样本压力", state_zh="谨慎", do_en=action_en,
+                 do_zh=action_zh, gross=0.8, dd5=None, dd10=None, dd21=None,
+                 dd_lift=None, dd_base={}, is_loud=True, scares=[],
+                 forward_log=None, cycle=None, counterread=None, amp=0,
+                 amp_flags_en=[], amp_flags_zh=[], recovery=None, track=None)
+    latest = dict(date="2026-09-18", quad_name="Growth-scare", cycle_tag="mid",
+                  confidence=0.6, risk_radar={"state": "caution"}, conditions={"recession": recession},
+                  alerts=[])
+    market_state = dict(color="yellow", score=46, label_en="Mixed", label_zh="混合",
+                        headline_en="Fixture headline", headline_zh="样本标题", radar=radar)
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=False, undefined=ChainableUndefined)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t,
+                       **{k: getattr(china_tier1, k, None) for k in
+                          ("posture_lane", "posture_tone", "reason_faces", "hero_clause", "slowdown_face")})
+    ctx = _radar_dlg_vm({"market_state": market_state}, latest)
+    return env.get_template("china.html.j2").render(
+        mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx)
+
+
+def _risk_card(html):
+    from bs4 import BeautifulSoup
+    card = BeautifulSoup(html, "html.parser").find(
+        "div", attrs={"class": "cnx-card", "onclick": "cnxOpenDlg('cnx-dlg-risk')"})
+    assert card is not None
+    return card
+
+
+def test_washed_out_margin_receipt_does_not_claim_crowding():
+    from engine.china_tier1 import reason_faces
+    low = reason_faces([("+", "Margin leverage capitulated", "融资杠杆已出清")], n=1)[0]
+    high = reason_faces([("-", "Margin leverage crowded", "融资杠杆拥挤")], n=1)[0]
+    assert "top" not in low["tip_en"].lower()
+    assert "最高" not in low["tip_zh"]
+    assert low["tip_en"] != high["tip_en"]
+    assert low["tip_zh"] != high["tip_zh"]
+
+
+def test_missing_risk_guidance_never_manufactures_sizing_advice():
+    card = _risk_card(_render_china_risk_case(None))
+    footer = card.select_one(".cnx-foot").get_text(" ", strip=True)
+    assert "High pullback risk" not in footer
+    assert "size down" not in footer and "缩仓" not in footer
+    assert "unavailable" in footer.lower() and "暂不可用" in footer
+
+
+import pytest
+
+
+@pytest.mark.parametrize("record", [None, {}, {"score": None, "label": "low"},
+    {"score": True, "label": "low"}, {"score": "20", "label": "low"},
+    {"score": float("nan"), "label": "low"}, {"score": float("inf"), "label": "low"},
+    {"score": -1, "label": "low"}, {"score": 101, "label": "low"},
+    {"score": 20, "label": "unknown"}])
+def test_missing_or_invalid_slowdown_never_becomes_calm(record):
+    card = _risk_card(_render_china_risk_case(record))
+    text = card.get_text(" ", strip=True)
+    assert "Economic slowdown" in text and "经济放缓" in text
+    assert "Deep-drawdown" not in text and "深跌仪表" not in text
+    row = next(r for r in card.select(".cnx-kv") if "Economic slowdown" in r.get_text())
+    value = row.select_one(".v").get_text(" ", strip=True)
+    assert "unavailable" in value.lower() and "暂不可用" in value
+    assert "Calm" not in value and "平静" not in value
+
+
+@pytest.mark.parametrize("score,label,en,zh", [
+    (0, "low", "calm", "平静"), (30, "elevated", "softening", "走弱"),
+    (45, "high", "weak", "疲弱"), (70, "low", "calm", "平静")])
+def test_slowdown_glance_uses_the_same_producer_label_as_dialog(score, label, en, zh):
+    html = _render_china_risk_case({"score": score, "label": label})
+    card = _risk_card(html)
+    row = next((r for r in card.select(".cnx-kv") if "Economic slowdown" in r.get_text()), None)
+    assert row is not None, "the economic gauge must be named for its actual input"
+    assert en in row.select_one(".v").get_text().lower() and zh in row.get_text()
+    from bs4 import BeautifulSoup
+    dialog = BeautifulSoup(html, "html.parser").find(id="cnx-dlg-risk")
+    assert en in dialog.get_text().lower() and zh in dialog.get_text()
+
+
+@pytest.mark.parametrize("en,zh", [("Owner guidance", "来源指引"),
+                                   ("Owner guidance", ""), ("", "来源指引"), ("  ", "  ")])
+def test_risk_guidance_preserves_available_language_without_inventing_the_other(en, zh):
+    card = _risk_card(_render_china_risk_case({"score": 0, "label": "low"}, en, zh))
+    footer = card.select_one(".cnx-foot")
+    english = footer.select_one(".l-en").get_text(strip=True)
+    chinese = footer.select_one(".l-zh").get_text(strip=True)
+    assert english == (en.strip() or "Risk guidance unavailable — inspect the evidence.")
+    assert chinese == (zh.strip() or "风险指引暂不可用——请查看依据。")
