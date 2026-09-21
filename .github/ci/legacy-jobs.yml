@@ -3906,9 +3906,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow requests pyyaml
+        run: pip install pytest pandas numpy pyarrow requests pyyaml "yfinance>=0.2.50"
       - name: whole-board breadth collector + heatmap payload contract
-        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py -q
+        run: python -m pytest tests/test_china_board_breadth.py tests/test_china_breadth_coverage.py tests/test_market_heatmap.py -q
 
   china-search-universe:
     if: ${{ false }}

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pandas as pd
 
 from collectors.breadth import BreadthAdapter
@@ -63,20 +64,45 @@ class ChinaBreadthAdapter(BreadthAdapter):
             if closes is None:
                 days = self.cfg["lookback_days_live"]
                 closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+            if closes.empty:
+                raise RuntimeError("china_breadth latest coverage unavailable: empty closes")
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
-        live_cols = closes.dropna(axis=1, how="all").shape[1]
+        # Coverage belongs to this observation and the configured universe, not
+        # to any historical quote. Never let a stale column or an extra symbol
+        # turn a partial download into a successful China breadth publication.
+        if closes.index.has_duplicates or closes.columns.has_duplicates:
+            raise RuntimeError("china_breadth coverage has duplicate dates or symbols")
+        closes = closes.reindex(columns=tickers).sort_index()
+        closes = closes.where(np.isfinite(closes) & (closes > 0))
+        if closes.empty:
+            raise RuntimeError("china_breadth latest coverage unavailable: empty closes")
+        live_cols = int(closes.iloc[-1].notna().sum())
         coverage = live_cols / len(tickers)
-        log.info("china_breadth coverage: %d/%d curated names resolved (%.0f%%)",
+        log.info("china_breadth latest coverage: %d/%d curated names resolved (%.0f%%)",
                  live_cols, len(tickers), 100 * coverage)
         if coverage < self.cfg["min_coverage"]:
-            raise RuntimeError(f"china_breadth closes too sparse: {live_cols}/{len(tickers)} "
+            raise RuntimeError(f"china_breadth latest coverage too sparse: {live_cols}/{len(tickers)} "
                                f"(< {self.cfg['min_coverage']:.0%})")
+
+        # A quote today is not an eligible moving-average observation without
+        # its required history. Keep the existing minimum-coverage policy; do
+        # not publish an apparently full panel whose MA denominator is tiny.
+        for window in self.cfg["ma_windows"]:
+            usable = (int(closes.tail(window).notna().all().sum())
+                      if len(closes) >= window else 0)
+            if usable / len(tickers) < self.cfg["min_coverage"]:
+                raise RuntimeError(
+                    f"china_breadth latest {window}-session MA coverage too sparse: "
+                    f"{usable}/{len(tickers)}")
+        breadth = self.compute(closes)
+        if breadth.empty or breadth.index[-1] != closes.index[-1]:
+            raise RuntimeError("china_breadth latest coverage rejected by breadth computation")
 
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
         members.set_index("symbol").to_parquet(self.cache_path.parent / "constituents.parquet")
 
-        return {"breadth": self.compute(closes)}
+        return {"breadth": breadth}
