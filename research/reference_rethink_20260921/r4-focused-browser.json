@@ -1,0 +1,152 @@
+{
+  "scope": "Source-backed R4 focused browser verification, not production or full matrix",
+  "subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
+  "browser": "151.0.7922.34",
+  "html_sha256": "d95c0afa8f9dac317d64b963cbb2cf0cc1611e26d438f48ece152e62b2475685",
+  "six_ingredient_links": 6,
+  "hidden_catalog_rows_at_rest": 0,
+  "keyboard_sequence": [
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Mixed"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Higher"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Open full guide →"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Back to where I was"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "×"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Mixed"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Higher"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Open full guide →"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Back to where I was"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "×"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Mixed"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "×"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Back to where I was"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Open full guide →"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Higher"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Mixed"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "×"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Back to where I was"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Open full guide →"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Higher"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Mixed"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "Lower"
+    },
+    {
+      "inside": true,
+      "focused": true,
+      "text": "×"
+    }
+  ],
+  "escape_focus_restored": true,
+  "errors": []
+}
