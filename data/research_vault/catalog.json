@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T14:51:00.458423+00:00",
-  "count": 2645,
+  "generated_at": "2026-09-22T15:06:01.968649+00:00",
+  "count": 2646,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -152,6 +152,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2nb7moy3tki-2c809b",
+      "title": "Germany Federal Spending Above Expectations in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:25Z",
+      "summary_points": [
+        "Fiscal Expansion Confirmed: Actual August federal spending EUR 50.0bn (vs. forecast EUR 45.7bn), widening fiscal balance by EUR 7.1bn, upgrading 2026 fiscal impulse to 0.7pp GDP impact.",
+        "Deficit Widens Significantly: Main budget deficit EUR -15.7bn (vs. 11.1bn expected), total fiscal deficit through August EUR -19.7bn (0.4% GDP), exceeding forecasts and driving fiscal impulse upgrade.",
+        "Military Spending Risk: Military fund spending EUR 2.2bn (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
