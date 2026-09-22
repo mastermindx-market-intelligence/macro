@@ -20,8 +20,9 @@ from engine.risk_radar import _PROB_CAL, _calib, leading_signals, subscore_serie
 from engine.risk_radar_backtest import _ORDER, _spy, state_accuracy, state_series
 
 OUT = ROOT / "research/grey_deer/evidence/state-ladder-calibration-20260921"
-PROTOCOL_COMMIT = "22e779b1f4c7fbb27c1e204667d917c1d92727fa"
-SOURCE_BASE = "e9c6210959520c90fb12ad98632465b7e93909d8"
+PROTOCOL_COMMIT = "e9ff3d234df1f50137bfa38a50995a70f06c1164"
+ORIGINAL_PROTOCOL_COMMIT = "22e779b1f4c7fbb27c1e204667d917c1d92727fa"
+SOURCE_BASE = "7c6e35163c9f67087ffe174a7ab3810f47ce6a45"
 HORIZONS = (5, 10, 21)
 WINDOWS = (("full", None), ("y2006", "2006-01-01"), ("y2020", "2020-01-01"))
 BOOT_DRAWS = 1000
