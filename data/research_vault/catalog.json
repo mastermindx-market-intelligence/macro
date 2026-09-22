@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T11:05:35.355240+00:00",
-  "count": 2634,
+  "generated_at": "2026-09-22T11:20:38.912957+00:00",
+  "count": 2635,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -680,6 +680,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sym3ybek6wn-e9f7ef",
+      "title": "Shopify Sep 21",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T22:36:36Z",
+      "summary_points": [
+        "Infrastructure Validation: Muse Partnership confirms AI platforms embedding Shopify’s core infrastructure (product data, merchant connectivity, Shop Pay), countering disintermediation risks and reinforcing commerce dominance.",
+        "Consistent Buy Momentum: All 12 Deutsche Bank recommendations (Dec 2023–Aug 2026) are \"Buy\" with price targets rising from $85 to $185, indicating sustained bullish sentiment and significant upside potential.",
+        "MiFID Sell Surge Risk: MiFID services correlate with extreme sell pressure (DBSI: 67% Sell vs 0% Covered; Global: 91% Sell vs 2% Covered), contrasting sharply with banking relationships (DBSI: 0% Sell; Global: 27% Sell), making MiFID a critical risk factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
