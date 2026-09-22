@@ -184,3 +184,51 @@ class TestSiteInventoryLinkCache:
         assert second["broken"] == [
             {"page": "index.html", "link": "/absent.html"}
         ]
+
+
+def test_http_200_semantic_failure_does_not_poison_client_cache() -> None:
+    _require_node()
+    helper = _real_helper_source()
+    harness = helper + r'''
+function showLogin() {}
+let fetchCalls = 0;
+global.fetch = async function(path) {
+  fetchCalls += 1;
+  const body = fetchCalls === 1
+    ? '{"ok":false,"error":"transient upstream timeout"}'
+    : '{"ok":true,"recovered":true}';
+  return {
+    status: 200,
+    statusText: "OK",
+    ok: true,
+    headers: { get: () => "application/json" },
+    text: async () => body
+  };
+};
+(async () => {
+  const firstValue = await api("/api/health");
+  const secondValue = await api("/api/health");
+  const thirdValue = await api("/api/health");
+  process.stdout.write(JSON.stringify({
+    firstValue,
+    secondValue,
+    thirdValue,
+    fetchCalls,
+    cached: API_CACHE.has("/api/health")
+  }));
+})().catch(e => { console.error(e); process.exit(1); });
+'''
+    proc = subprocess.run(
+        ["node", "-e", harness],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert proc.returncode == 0, f"node failed:\n{proc.stderr}\n{proc.stdout}"
+    result = json.loads(proc.stdout)
+    assert result["firstValue"]["ok"] is False
+    assert result["secondValue"] == {"ok": True, "recovered": True}
+    assert result["thirdValue"] == {"ok": True, "recovered": True}
+    assert result["fetchCalls"] == 2
+    assert result["cached"] is True

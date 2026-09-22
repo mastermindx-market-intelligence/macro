@@ -284,6 +284,48 @@ def test_natural_nightly_opens_once_and_publishes_exact_derived_targets(tmp_path
     assert len(logical_json) == 1
 
 
+def test_generation_payload_orders_subsecond_clocks_by_instant_without_rewriting_bytes():
+    """The durable writer must share B1 instant order while preserving accepted timestamp text."""
+    events = [
+        {
+            "known_at": "2026-11-27T20:00:00.100000Z",
+            "source_system": "test_source",
+            "source_event_id": "b-equivalent-instant",
+            "recorded_at": RECORDED_AT,
+            "marker": "fraction-long",
+        },
+        {
+            "known_at": "2026-11-27T20:00:00Z",
+            "source_system": "test_source",
+            "source_event_id": "whole-second",
+            "recorded_at": RECORDED_AT,
+            "marker": "whole",
+        },
+        {
+            "known_at": "2026-11-27T20:00:00.1Z",
+            "source_system": "test_source",
+            "source_event_id": "a-equivalent-instant",
+            "recorded_at": RECORDED_AT,
+            "marker": "fraction-short",
+        },
+    ]
+
+    payloads = writer._generation_payloads({}, {}, events, [], b"")
+    rows = [
+        json.loads(line)
+        for line in payloads["events/2026-11.jsonl"].decode("utf-8").splitlines()
+    ]
+
+    assert [row["marker"] for row in rows] == [
+        "whole", "fraction-short", "fraction-long",
+    ]
+    assert [row["known_at"] for row in rows] == [
+        "2026-11-27T20:00:00Z",
+        "2026-11-27T20:00:00.1Z",
+        "2026-11-27T20:00:00.100000Z",
+    ]
+
+
 def test_identical_nightly_is_content_addressed_and_rewrites_zero_bytes(tmp_path: Path, monkeypatch):
     """Using run time or old-count drift in a receipt would make a no-op rewrite bytes."""
     _seed_sources(tmp_path)
