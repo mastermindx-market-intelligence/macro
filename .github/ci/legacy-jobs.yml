@@ -13686,6 +13686,15 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "site/theme_opportunity_card.css"
+      - "site/theme_opportunity_card.js"
+      - "templates/_theme_opportunity_card.html.j2"
+      - "templates/theme_opportunity_card.css"
+      - "templates/theme_opportunity_card.js"
+      - "tests/fixtures/theme_opportunity_owner_envelopes.json"
+      - "tests/test_theme_opportunity_card.py"
+      - "tests/test_theme_opportunity_current_base.py"
+      - "tests/test_theme_opportunity_owner_adapters.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -13720,6 +13729,8 @@ jobs:
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_build_subsector_closed_session_leadership.py tests/test_subsector_closed_session_leadership.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
         run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+      - name: Theme Intelligence opportunity card — owner-contract presentation
+        run: python -m pytest tests/test_theme_opportunity_card.py tests/test_theme_opportunity_current_base.py tests/test_theme_opportunity_owner_adapters.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across

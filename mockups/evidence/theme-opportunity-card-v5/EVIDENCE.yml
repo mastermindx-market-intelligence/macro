@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme_opportunity_card.css
+manifest: mockups/evidence/theme-opportunity-card-v5/manifest.json
