@@ -422,7 +422,7 @@ jobs:
         # design; the `||` guard covers an import/interpreter failure it cannot catch.
         timeout-minutes: 12
         run: |
-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \
+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \
             || echo "::warning::yahoo universe backfill failed (non-fatal) — hub price coverage does not advance tonight"
       - name: audit massive_stock_day store (content tripwire — loud, never blocks the night)
         # This lane runs --exclude-group asia, and scripts/collect.py skips the WHOLE

@@ -27,6 +27,20 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  yahoo-daily-archive-refresh:
+    if: ${{ false }}
+    gate: code
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install existing archive-writer test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance
+      - name: daily scope through canonical archive writer and consumer
+        run: python -m pytest tests/test_yahoo_universe_backfill.py -q
+
   inline-js:
     if: ${{ false }}
     gate: data
