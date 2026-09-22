@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T14:51:00.458423+00:00",
-  "count": 2645,
+  "generated_at": "2026-09-22T15:36:07.349892+00:00",
+  "count": 2647,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -152,6 +152,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2nb7moy3tki-2c809b",
+      "title": "Germany Federal Spending Above Expectations in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:25Z",
+      "summary_points": [
+        "Fiscal Expansion Confirmed: Actual August federal spending EUR 50.0bn (vs. forecast EUR 45.7bn), widening fiscal balance by EUR 7.1bn, upgrading 2026 fiscal impulse to 0.7pp GDP impact.",
+        "Deficit Widens Significantly: Main budget deficit EUR -15.7bn (vs. 11.1bn expected), total fiscal deficit through August EUR -19.7bn (0.4% GDP), exceeding forecasts and driving fiscal impulse upgrade.",
+        "Military Spending Risk: Military fund spending EUR 2.2bn (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gl6r64rsfiu-5014e0",
+      "title": "Alibaba Group (BABA) Alibaba Cloud APSARA Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:08Z",
+      "summary_points": [
+        "AI Cloud Revenue & Margin Target: $100bn AI cloud revenue by 2030 (20% EBITA margin), driven by Qwen models, custom T-head silicon, and 20GW power capacity (2023 target), with $20-25bn capex funded by core businesses.",
+        "Structural AI Inference Shift: Inference to exceed training in global AI compute spend (59% vs 41% by 2027), accelerating cloud infrastructure demand for deployment-focused applications.",
+        "MaaS ARR Acceleration: MaaS ARR surging from Rmb8bn to Rmb20bn in 3 months (approaching Rmb30bn target), supported by global expansion (31 countries, 3,200+ Edge Nodes) and Qwen 3.8 Max driving 8.5x revenue growth.",
+        "Valuation Upside & EPS Recovery: 52.9% upside to $177 (BABA) and 52.8% to HK$172 (9988.HK), with P/E compression (36.5x → 10.7x) and +58%/+27% yoy EPS growth (FY27E/FY28E).",
+        "Key Risk Factors: Lower GMV growth (macro/competition), slower China retail monetization, cloud growth deceleration, and execution risks impacting near-term trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
