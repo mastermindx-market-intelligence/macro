@@ -2171,7 +2171,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-rack2">
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-playbook" onclick="cnxOpenDlg('cnx-dlg-playbook')">
       <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }}</div>
       {% if pb_obj %}
         <div class="cnx-row cnx-action-lead"><span class="ic" aria-hidden="true">→</span>
@@ -2188,7 +2188,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% endif %}
     </div>
     {# Upcoming Events card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-events" onclick="cnxOpenDlg('cnx-dlg-events')">
       <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('NEXT 14 DAYS','未来14天') }}</span></div>
       {% set _high_ev = [] %}
       {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
@@ -2244,7 +2244,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% set _rr_sev_bord = 'rgba(224,160,48,.35)' if _risk_state == 'caution' else 'color-mix(in srgb,var(--down) 35%,transparent)' %}
     {% set _rr_sev_en   = 'HIGH' if _risk_state == 'risk-off' else ('ELEVATED' if _risk_state == 'elevated' else 'CAUTION') %}
     {% set _rr_sev_zh   = '高' if _risk_state == 'risk-off' else ('偏高' if _risk_state == 'elevated' else '谨慎') %}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-risk')" style="border-color:{{ _rr_sev_bord }}">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk')" style="border-color:{{ _rr_sev_bord }}">
       <div class="cnx-ctitle">{{ t('Pullback Risk','回撤风险') }} <span class="cnx-alert-pill" style="background:{{ _rr_sev_bg }};color:{{ _rr_sev_col }}">{{ t(_rr_sev_en, _rr_sev_zh) }}</span></div>
       {% if _rr_score is not none %}
       <div class="cnx-bignum" style="color:{{ _rr_sev_col }}">{{ _rr_score }}<span style="font-size:14px;color:var(--muted)"> /100</span></div>
@@ -2289,7 +2289,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% set _sent_dial = (_fe_score | float) if _fe_score is not none else _to_pct %}
     {% set _sent_zone = ('fg-greed' if _sent_dial > 60 else ('fg-fear' if _sent_dial < 40 else 'fg-neutral')) if _sent_dial is not none else 'fg-neutral' %}
     {% set _sent_rot = ((_sent_dial / 100 * 180 - 90) | round(1)) if _sent_dial is not none else 0 %}
-    <div class="cnx-card {{ _sent_zone }}" role="button" tabindex="0" aria-haspopup="dialog" onclick="cnxOpenDlg('cnx-dlg-sentiment')"
+    <div class="cnx-card {{ _sent_zone }}" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-sentiment" onclick="cnxOpenDlg('cnx-dlg-sentiment')"
          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-sentiment');}">
       <div class="cnx-ctitle">{{ t('Market Sentiment','市场情绪') }}</div>
       {% if I.margin or I.turnover %}
@@ -2350,7 +2350,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
 
     {# Sector Temperature card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-sector')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-sector" onclick="cnxOpenDlg('cnx-dlg-sector')">
       <div class="cnx-ctitle">{{ t('Sector Temperature','板块温度') }}</div>
       {% if pb_obj and pb_obj.leaders %}
       <div class="cnx-lbl">{{ t('Hot','热门') }}</div>
@@ -2380,7 +2380,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
   <div class="cnx-rack3">
     {# Policy Monitor card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy')">
       <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
       {% if I.pboc %}
       <div class="cnx-kv"><span class="k">{{ t('PBoC stance','央行立场') }}</span><span class="v"><span class="cnx-stword ok">{{ t(I.pboc.bias, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'')) }}</span></span></div>
@@ -2398,7 +2398,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
 
     {# Connect Flows card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows')">
       <div class="cnx-ctitle">{{ t('Connect Flows','互联通资金') }}</div>
       {% if I.southbound %}
       <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</div>
@@ -2447,7 +2447,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
   <div class="cnx-rack3">
     {# Property card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property')">
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
       {% if P %}
       {% set R = P.regime %}
@@ -2464,7 +2464,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
     {# AI Brief card — v2 teaser: lead with the first key reading + the plain-word
        gist line (falls back to summary on v1 payloads). No raw slugs (doctrine Law 2). #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-aibrief')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-aibrief" onclick="cnxOpenDlg('cnx-dlg-aibrief')">
       <div class="cnx-ctitle">{{ t('AI Brief','AI 简报') }}</div>
       {% if china_brief %}
       {% set _cb = china_brief %}
@@ -2501,7 +2501,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
 
     {# Alerts Centre card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-alerts')">
+    <div class="cnx-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="cnx-dlg-alerts" onclick="cnxOpenDlg('cnx-dlg-alerts')">
       <div class="cnx-ctitle">{{ t('Alerts Centre','警报中心') }}
         {% if latest.alerts %}<span class="cnx-alert-pill">{{ latest.alerts | length }} {{ t('FIRED','已触发') }}</span>{% endif %}</div>
       {% for a in (latest.alerts or [])[:2] %}
