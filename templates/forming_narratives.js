@@ -182,7 +182,8 @@
     shellState(sec, 'loading', 'Loading forming narratives…', '正在加载成形叙事…', true);
     fetch(base + 'narrative_emergence.json', { cache: 'no-store' })
       .then(r => {
-        if (r.status === 401 || r.status === 403) return { kind: 'denied' };
+        if (r.status === 401) return { kind: 'signin' };
+        if (r.status === 403) return { kind: 'forbidden' };
         if (r.status === 404) return { kind: 'absent' };
         if (!r.ok) return { kind: 'error' };
         return r.json().then(d => ({ kind: 'data', data: d }));
@@ -193,10 +194,16 @@
             '成形叙事加载失败，请稍后重试。', false);
           return;
         }
-        if (result.kind === 'denied') {
-          shellState(sec, 'entitled-unavailable',
-            'Forming narratives data is unavailable in this session. Sign in if your plan includes access.',
-            '本次会话无法访问成形叙事数据。如套餐包含此权限，请登录。', false);
+        if (result.kind === 'signin') {
+          shellState(sec, 'signin-required',
+            'Sign in to view forming narratives.',
+            '登录后查看成形叙事。', false);
+          return;
+        }
+        if (result.kind === 'forbidden') {
+          shellState(sec, 'entitlement-unavailable',
+            'Forming narratives are not included in your current access.',
+            '当前权限不包含成形叙事数据。', false);
           return;
         }
         if (result.kind === 'absent') { emptyState(sec); return; }

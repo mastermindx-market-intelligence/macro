@@ -212,8 +212,12 @@ def test_forming_narratives_data_failure_is_not_empty_success() -> None:
     renderer = _read(TPL / "forming_narratives.js")
     assert "shellState(sec, 'loading'" in renderer
     assert "aria-busy" in renderer
-    assert "r.status === 401 || r.status === 403" in renderer
-    assert "'entitled-unavailable'" in renderer
+    assert "r.status === 401" in renderer
+    assert "r.status === 403" in renderer
+    assert "'signin-required'" in renderer
+    assert "'entitlement-unavailable'" in renderer
+    assert "Sign in to view forming narratives." in renderer
+    assert "not included in your current access" in renderer
     assert "r.status === 404" in renderer
     assert "emptyState(sec)" in renderer
     assert ".catch(() => shellState(sec, 'unavailable'" in renderer
@@ -247,7 +251,14 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   if (sec.attrs['data-render-state'] !== 'loading' || sec.attrs['aria-busy'] !== 'true') throw new Error('delayed-not-loading');
   resolveFetch({ status: 401, ok: false });
   await flush(); await flush();
-  if (sec.attrs['data-render-state'] !== 'entitled-unavailable' || sec.attrs['aria-busy']) throw new Error('denied-not-visible');
+  if (sec.attrs['data-render-state'] !== 'signin-required' || sec.attrs['aria-busy']) throw new Error('signin-not-visible');
+  if (!sec.innerHTML.includes('Sign in to view forming narratives.')) throw new Error('signin-copy-wrong');
+
+  global.fetch = () => Promise.resolve({ status: 403, ok: false });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'entitlement-unavailable' || sec.attrs['aria-busy']) throw new Error('forbidden-not-visible');
+  if (!sec.innerHTML.includes('not included in your current access')) throw new Error('forbidden-copy-wrong');
 
   global.fetch = () => Promise.reject(new Error('offline'));
   window.renderFormingNarratives({ base: 'fixture/' });
