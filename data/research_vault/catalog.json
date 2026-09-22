@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T13:35:48.655560+00:00",
-  "count": 2641,
+  "generated_at": "2026-09-22T13:50:52.263873+00:00",
+  "count": 2642,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -175,6 +175,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rhdcclisqiz-5702e6",
+      "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:51Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
