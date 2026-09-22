@@ -278,3 +278,8 @@
     .rc-search{ flex:1 1 100%; order:-1; }
   }
 
+  /* Native archive controls share the existing material and focus language. */
+  #tagBar .chip, #repSearch, #repSort, #repClear, #repClear2, #covBars .rc-cov-row{min-height:40px;touch-action:manipulation}
+  #tagBar button.chip{min-width:44px;font-family:var(--font-ui)}
+  #tagBar .chip:focus-visible, #repSearch:focus-visible, #repSort:focus-visible, #repClear:focus-visible, #repClear2:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+

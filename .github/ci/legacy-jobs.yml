@@ -1285,6 +1285,10 @@ jobs:
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/guidance_gap.py"
       - "collectors/federal_register.py"
       - "engine/activist.py"
       - "engine/capital_structure/event_spine.py"
@@ -1362,6 +1366,8 @@ jobs:
       - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "tests/test_valuation_event_bridge.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "tests/test_valuation_event_proposal.py"
       # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
       # W7A_7054_A_CURE round 1, C2) — same china partial as
       # test_china_special_situations_gate, gate:code HTML structure/copy pin.
@@ -1852,12 +1858,13 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
-      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
+      - name: valuation scenario V1 + assumptions + event->AssumptionChange (B-F07-1/2/3/4)
         run: >
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py
           tests/test_valuation_event_bridge.py
+          tests/test_valuation_event_proposal.py
           tests/test_china_archetype_d_s1.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
@@ -2170,6 +2177,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/guidance_gap.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -7676,6 +7687,8 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -8293,6 +8306,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/guidance_gap.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -11672,6 +11689,8 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -13805,6 +13824,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/valuation_event_proposal.py"
+      # B-F07-4 closure widening 2026-09-22 (contract-delta)
+      - "engine/guidance_gap.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
