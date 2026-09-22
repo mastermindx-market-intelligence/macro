@@ -1,0 +1,251 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "tool": {
+    "module_ref": "/tmp/w4a_capture.py",
+    "user_agent": "w4a-census/1.0",
+    "version": "1.0.0"
+  },
+  "selection": {
+    "explicit_routes": [
+      "/markets.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "registry": null,
+    "selected": 1,
+    "note": "W4-A census: markets.html from site/ at capture_sha; HTTP served from worktree root"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "target": {
+    "kind": "site_dir",
+    "site_dir": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/wt/mo-ext-fix-ud_b2_w4a_census-34e2bb8b424b/site",
+    "resolved_gitdir_or_none": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/wt/mo-ext-fix-ud_b2_w4a_census-34e2bb8b424b/.git",
+    "resolved_sha_or_none": "ea194c5d215c64158a828abdc676f47bb7723374",
+    "resolved_sha_source": "git rev-parse HEAD at capture time; tracked porcelain was empty (PASS)",
+    "base_url": "http://127.0.0.1:63611/markets.html"
+  },
+  "pages": [
+    {
+      "page_id": "macro:markets_cycle_family",
+      "registry_route": "/markets.html",
+      "route": "/markets.html",
+      "route_kind": "page",
+      "metrics": {
+        "document_height_px_by_viewport": {
+          "desktop": {
+            "doc": 3238,
+            "head": 325.90625,
+            "stage": 1267.21875,
+            "stage_hero": 621,
+            "mkt_grid": 530.28125,
+            "mkt_snap": 357,
+            "mkt_scatter": 360,
+            "cyc_cards": 863.96875,
+            "docW": 1440
+          },
+          "mobile": {
+            "doc": 4902,
+            "head": 522.1875,
+            "stage": 609,
+            "stage_hero": 609,
+            "mkt_grid": 1149.921875,
+            "mkt_snap": 357,
+            "mkt_scatter": 360,
+            "cyc_cards": 2242.6875,
+            "docW": 390
+          }
+        },
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark"
+        }
+      },
+      "gaps": [],
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "prefers_reduced_motion": true,
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "force_state": null,
+          "file": "markets-desktop-dark-en.png",
+          "bytes": 1139261,
+          "sha256": "dd0cf2df389fa9f747c77ba5f78fe9e09240aa6c8637e612382558196f20f697",
+          "captured": true,
+          "width": 1440,
+          "height": 3238
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "prefers_reduced_motion": true,
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "force_state": null,
+          "file": "markets-desktop-dark-zh.png",
+          "bytes": 1135031,
+          "sha256": "31ebc71a5f798e2ccde651c6c41c6971ee73eee2316ecaa2303b361f7663789f",
+          "captured": true,
+          "width": 1440,
+          "height": 3238
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "prefers_reduced_motion": true,
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "force_state": null,
+          "file": "markets-desktop-light-en.png",
+          "bytes": 1130887,
+          "sha256": "62a5e94bb3673173eca88b6af2697c8f5b7d2eaea3b358312765081304d9bfff",
+          "captured": true,
+          "width": 1440,
+          "height": 3238
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "prefers_reduced_motion": true,
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "force_state": null,
+          "file": "markets-desktop-light-zh.png",
+          "bytes": 1130977,
+          "sha256": "838448dd7c1fdf8c3588e7bbdcfa67b8a2c312b28144040b09b112fb0dac0853",
+          "captured": true,
+          "width": 1440,
+          "height": 3238
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "prefers_reduced_motion": true,
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "force_state": null,
+          "file": "markets-mobile-dark-en.png",
+          "bytes": 580753,
+          "sha256": "c341ec6ad558b673f4f8c1642bbc1a263cacc921d1e87f2ff98fabb802397e43",
+          "captured": true,
+          "width": 390,
+          "height": 4902
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "prefers_reduced_motion": true,
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "force_state": null,
+          "file": "markets-mobile-dark-zh.png",
+          "bytes": 568261,
+          "sha256": "f8c0aa269af246263aa7d28f33ef39e12f82643c27e3165a14bde08dd8089bf3",
+          "captured": true,
+          "width": 390,
+          "height": 4902
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "prefers_reduced_motion": true,
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "force_state": null,
+          "file": "markets-mobile-light-en.png",
+          "bytes": 571760,
+          "sha256": "011c3c413a40e6dc6d6eedd815d44b109752670e9ca46c6d6b89b05daab625df",
+          "captured": true,
+          "width": 390,
+          "height": 4902
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "prefers_reduced_motion": true,
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "force_state": null,
+          "file": "markets-mobile-light-zh.png",
+          "bytes": 566518,
+          "sha256": "371c2d074c69950f389077aae2671ad4c15502a0336e7be1bd0e35591f299aee",
+          "captured": true,
+          "width": 390,
+          "height": 4902
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  },
+  "honesty": {
+    "access": "anonymous markets.html served from worktree site/ — pre-build committed artifacts, not the live VPS",
+    "authority": "this capture measures DOM dimensions and pixels; it scores, ranks, and judges nothing",
+    "gaps": "DOM measurements taken only on the dark/en render per viewport — page layout does not depend on theme/lang so a single sample is sufficient and reproducible."
+  },
+  "excluded": [],
+  "generated_at": "2026-09-22T06:49:13Z",
+  "capture_sha": "ea194c5d215c64158a828abdc676f47bb7723374",
+  "porcelain_clean_at_capture": true,
+  "outcome": "captured"
+}
