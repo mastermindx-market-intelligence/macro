@@ -38,7 +38,7 @@
     "Passive sector-ETF residual flow stays distinct from discretionary manager conviction and stock recommendations",
     "Situation context links related observations without claiming independent confirmation",
     "Browser back and malformed legacy hash values do not crash",
-    "320/390/430/1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls",
+    "320/390/430 portrait + 844×390 landscape + 1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls",
     "History selection retains the actual firing clock in its permalink"
   ],
   "screenshots": [
@@ -77,6 +77,10 @@
     "desktop-dark-zh.png",
     "desktop-light-en.png",
     "desktop-light-zh.png",
+    "mobile-landscape-dark-en.png",
+    "mobile-landscape-dark-zh.png",
+    "mobile-landscape-light-en.png",
+    "mobile-landscape-light-zh.png",
     "mobile-430-dark-en.png",
     "mobile-430-dark-zh.png",
     "mobile-430-light-en.png",
@@ -144,6 +148,62 @@
         "x": 171,
         "y": 652.5,
         "width": 1098,
+        "height": 139.3125
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-dark-en.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 25,
+        "y": 691.5,
+        "width": 794,
+        "height": 155.25
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-dark-zh.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 25,
+        "y": 691.5,
+        "width": 794,
+        "height": 139.3125
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-light-en.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 25,
+        "y": 691.5,
+        "width": 794,
+        "height": 155.25
+      },
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-light-zh.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 25,
+        "y": 691.5,
+        "width": 794,
         "height": 139.3125
       },
       "browse_height": 40,

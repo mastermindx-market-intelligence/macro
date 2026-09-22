@@ -1,77 +1,69 @@
 [
   {
     "check": "full-alert-regression",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
     "output": "243 passed, 5 warnings, 0 failures"
   },
   {
     "check": "complete-source-bound-snapshot",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
     "output": "634/634 supported, 0 fallback, 49 families"
   },
   {
     "check": "browser-proof",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
-    "output": "40/40 checks PASS; 48 screenshots; 0 page errors; 320/390/430/1440 × dark/light × EN/ZH interaction-floor matrix"
+    "output": "40/40 checks PASS; 52 screenshots; 0 page errors; 320/390/430 portrait + 844x390 landscape + 1440 across dark/light EN/ZH"
   },
   {
     "check": "trust-browser-proof",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
     "output": "14/14 adversarial cases PASS; 10 screenshots"
   },
   {
-    "check": "review-return",
-    "reviewer": "mastermindx-2",
-    "review_state": "CHANGES_REQUESTED",
-    "reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
-    "repair_head": "799b5dd935504844d096f96aecc7cdd40692c924",
-    "findings_repaired": [
-      "#ac-reset standalone interaction floor >=40px",
-      "#ac-browse-all standalone interaction floor >=40px",
-      "desktop quick filters >=40px"
-    ],
-    "output": "bounded Session D mobile-triage repair applied; exact-head rereview required"
+    "check": "session-d-review-addendum",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "exit_code": 0,
+    "output": "adds the missing 844x390 landscape proof; Earlier priority uses muted/line subordinate tokens; Watch next uses info; next action uses shared line/panel2 tokens; Reset/Browse/quick filters stay >=40px"
   },
   {
     "check": "design-system",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
-    "output": "R0 enforce-added: 0 blocking findings on exact repair diff; Alert Center CSS contains no color-mix()"
+    "output": "R0 enforce-added: 0 blocking findings on exact UI delta; alert_center.css contains no color-mix()"
   },
   {
     "check": "runtime-style",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
     "exit_code": 0,
     "output": "runtime style injection guard OK"
   },
   {
-    "check": "visual-evidence",
-    "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
-    "exit_code": 0,
-    "output": "post-repair browser matrix proves >=40px Reset/Browse controls and >=40px quick filters at 320/390/430/1440 across dark/light EN/ZH"
+    "check": "prior-current-base-ci",
+    "tested_commit": "6f870e020964fbe67956ea3ba7cf769af39ea4fc",
+    "status": "SUCCESS",
+    "workflow_run": 35604374983,
+    "output": "full CI epoch passed, including ci-pack-3, ci-pack-11, ci-gate; contract-delta 0 introduced / 1 inherited"
   },
   {
-    "check": "latest-base-merge-tree",
-    "base_commit": "4eafb563cecb5747c9b5414a70a7281a33bdb6e2",
-    "merge_tree": "04398a69b73e5715a21b66d02be0e0ef37aa63cd",
-    "exit_code": 0,
-    "output": "conflict-free; protected movement intersects only shared CI wiring, not Alert Center semantic/UI paths"
+    "check": "latest-base-overlap",
+    "observed_main": "912feaa2b13959a6cca4d3f1472188b4a4d702bb",
+    "status": "RELEASE_BLOCKED_CURRENT_BASE_RECONCILIATION",
+    "output": "since prior green CI base, protected main overlaps the PR only at .github/ci/legacy-jobs.yml; repeated pre-review reconciliation was stopped as NO_DELTA_LOOP. Reconcile this shared CI file once after independent semantic review, immediately before release."
   },
   {
     "check": "contract-delta",
     "status": "HOSTED_EXACT_HEAD_REQUIRED",
-    "prior_hosted_pass_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
-    "prior_output": "0 introduced, 0 inherited",
-    "output": "repair head changes CSS/QA/tests; exact-head hosted contract-delta must rerun after push"
+    "prior_hosted_pass_head": "6f870e020964fbe67956ea3ba7cf769af39ea4fc",
+    "prior_output": "0 introduced, 1 inherited",
+    "output": "source/QA/test head changed to 30976378622; exact-head hosted contract-delta must rerun after final current-base reconciliation push"
   },
   {
     "check": "production-route",
     "status": "BUILT_NOT_PROVEN_IN_PRODUCTION",
-    "observed_sha256": "c0abc2ea3c29fd944aaabee6e2b0aec23f7f9ccdbd67556cd0845021d28d2148",
-    "output": "live /alerts.html still contains old Alert Command Center and not MARKET CHANGES DESK"
+    "output": "live /alerts.html still requires post-merge render and real browser acceptance"
   }
 ]
