@@ -1,0 +1,227 @@
+{
+  "source_head": "4d09333dfa534291ad436a17e7051f108608cdbf",
+  "summary_commit": "017d758b33dfab8bb3e5e1ea4e48817ae67b1df7",
+  "same_producer_source": {
+    "engine/china_inputs.py": true,
+    "engine/china_conditions.py": true,
+    "engine/china_market_drivers.py": true,
+    "engine/china_run.py": true
+  },
+  "summary_date": "2026-09-21",
+  "leaf_differences": [
+    {
+      "path": ".conditions.charts.fear_euphoria.vals.785",
+      "before": 78.5,
+      "after": 81.3
+    },
+    {
+      "path": ".conditions.charts.roro.vals.785",
+      "before": 0.175,
+      "after": 0.217
+    },
+    {
+      "path": ".conditions.roro.china_roro_copper_gold",
+      "before": 1.263,
+      "after": 1.648
+    },
+    {
+      "path": ".conditions.roro.legs.0.value",
+      "before": 1.263,
+      "after": 1.648
+    },
+    {
+      "path": ".conditions.roro.roro",
+      "before": 0.175,
+      "after": 0.217
+    },
+    {
+      "path": ".conditions.roro.roro_raw",
+      "before": 0.177,
+      "after": 0.22
+    },
+    {
+      "path": ".fear_euphoria.fe_score",
+      "before": 78,
+      "after": 81
+    },
+    {
+      "path": ".fear_euphoria.legs.0.pct",
+      "before": 93,
+      "after": 96
+    },
+    {
+      "path": ".fear_euphoria.legs.0.value",
+      "before": 1.263,
+      "after": 1.648
+    },
+    {
+      "path": ".fear_euphoria.roro",
+      "before": 0.175,
+      "after": 0.217
+    },
+    {
+      "path": ".market_drivers.dominance_ratio",
+      "before": 1.0,
+      "after": 1.07
+    },
+    {
+      "path": ".market_drivers.evidence.1",
+      "before": "copper +1.7σ",
+      "after": "copper +2.1σ"
+    },
+    {
+      "path": ".market_drivers.evidence_legs.1.z",
+      "before": 1.7,
+      "after": 2.1
+    },
+    {
+      "path": ".market_drivers.headline",
+      "before": "Mixed — Stimulus tape + AI / semis leadership jointly leading (real estate +2.9σ, copper +1.7σ, CSI 300 +0.6σ); no single dominant driver.",
+      "after": "Mixed — Stimulus tape + AI / semis leadership jointly leading (real estate +2.9σ, copper +2.1σ, CSI 300 +0.6σ); no single dominant driver."
+    },
+    {
+      "path": ".market_drivers.scores.0.projection",
+      "before": 0.94,
+      "after": 1.0
+    },
+    {
+      "path": ".market_drivers.scores.0.strength",
+      "before": 0.94,
+      "after": 1.0
+    },
+    {
+      "path": ".market_drivers.scores.7.projection",
+      "before": 0.03,
+      "after": 0.07
+    },
+    {
+      "path": ".market_drivers.scores.7.strength",
+      "before": 0.03,
+      "after": 0.07
+    },
+    {
+      "path": ".market_drivers.strength",
+      "before": 0.94,
+      "after": 1.0
+    }
+  ],
+  "ablations": [
+    {
+      "restored_inputs": [
+        "HG=F"
+      ],
+      "remaining_leaf_differences": 4,
+      "remaining_paths": [
+        ".market_drivers.scores.4.projection",
+        ".market_drivers.scores.4.strength",
+        ".market_drivers.scores.7.projection",
+        ".market_drivers.scores.7.strength"
+      ]
+    },
+    {
+      "restored_inputs": [
+        "GC=F"
+      ],
+      "remaining_leaf_differences": 9,
+      "remaining_paths": [
+        ".market_drivers.dominance_ratio",
+        ".market_drivers.evidence.1",
+        ".market_drivers.evidence_legs.1.z",
+        ".market_drivers.headline",
+        ".market_drivers.scores.0.projection",
+        ".market_drivers.scores.0.strength",
+        ".market_drivers.scores.7.projection",
+        ".market_drivers.scores.7.strength",
+        ".market_drivers.strength"
+      ]
+    },
+    {
+      "restored_inputs": [
+        "HG=F",
+        "GC=F"
+      ],
+      "remaining_leaf_differences": 4,
+      "remaining_paths": [
+        ".market_drivers.scores.4.projection",
+        ".market_drivers.scores.4.strength",
+        ".market_drivers.scores.7.projection",
+        ".market_drivers.scores.7.strength"
+      ]
+    },
+    {
+      "restored_all_changed_inputs": [
+        "data/yahoo/HG_F.parquet",
+        "data/yahoo/GC_F.parquet",
+        "data/yahoo/CL_F.parquet",
+        "data/yahoo/DX-Y.NYB.parquet"
+      ],
+      "remaining_leaf_differences": 0,
+      "remaining_paths": []
+    }
+  ],
+  "input_sha256": {
+    "data/china/000001.SS.parquet": "a90d60881f2339305a26cfa749952144d37cb4890ef9597475327af5c913beeb",
+    "data/china/399001.SZ.parquet": "81a9387fa2ecad3e7e4072933e71defde2a3ec5f28cb8f84f09015213f6173d3",
+    "data/china/510300.SS.parquet": "9d3119a02d68d633af7e050828b04df1f9e7b88d697e86efa904bb902ed62f28",
+    "data/china/510050.SS.parquet": "3339c442781b763e5d41129db76f048742843ee834dc91b094d95db7f50d5901",
+    "data/china/510500.SS.parquet": "ff0188d93c03b3b2790676b423a310ab362d0bbf152e72d39a03a31360e7d622",
+    "data/china/159915.SZ.parquet": "bda9048b0b8142434e1ae2759f8a08b4a4247350b771831c93018e73a3977733",
+    "data/china/588000.SS.parquet": "422d69ff35b91238feaf62b8ce076aed672133f4f993893f6b7015f13ca349b0",
+    "data/china/512800.SS.parquet": "821b331a543efbfd22d28de8faaaa01aab68b9f5641d022894753bf38d4c2844",
+    "data/china/512880.SS.parquet": "f0aa1243a4e96887b0c85ea1d54942aeea4b89ff7ab6bbb6bb533cb8eac1e86a",
+    "data/china/512690.SS.parquet": "f3adc7f34082c0b5969467440bde5615d6abf9c1bdf59d932211ffbbfcfeeec2",
+    "data/china/159928.SZ.parquet": "440c69b81e6b3d5306e3a70c00f85959459940efd5fb68acae33f36fba7112cf",
+    "data/china/512170.SS.parquet": "d62482b6eedf720bc808d6d8aac2696931060dc3a30293c35023f8026413b372",
+    "data/china/159992.SZ.parquet": "f08457c42ff2fcbf9c6961cbb90a43e2b6417d7cdb6e5d1083e81d8b6b882e77",
+    "data/china/512760.SS.parquet": "dd7f8e4c0ab6d33052ceac6755518edcec98a62eaf6e6a13215534e862de0113",
+    "data/china/515000.SS.parquet": "4b6eb19175b9f59149680e080c60619187a5eb2d25aa777354ad356f2bb72e2a",
+    "data/china/515030.SS.parquet": "a6fdd659e44a9aa44383c35b6df2810705d2363281bfbbe78dc06610d81f0fa8",
+    "data/china/515790.SS.parquet": "73f67a5aac7783300c6294d6afdd3f0636f53d595f1220ca662ac1302c3e96fa",
+    "data/china/512660.SS.parquet": "40986cb6ef40a9ec4143a27c1106985e82225a7535eeac9b439e3f5df0d85fef",
+    "data/china/512400.SS.parquet": "e0b6171c80aad643a8cf366caa88504394c26da25acb2fc332ca2a0f4c4b93cf",
+    "data/china/515220.SS.parquet": "b9556bba5a8992d541cccd3f39d5f5d27a791d5f2d0f0bfcab0aac6c9d83f1a9",
+    "data/china/512200.SS.parquet": "2afb83718a7b8b38089c0829842e40cf537dd5f3f0c30f434daee0b65394668d",
+    "data/china/515250.SS.parquet": "5e651ee27f146eeb78aa6de65f7b29973a0fbf2af0d45d2bab224422201b32fe",
+    "data/china/512980.SS.parquet": "f474753d41742637ac456f31890d88caaa3004b4cdc960448aa89308c015705a",
+    "data/china/CNY_X.parquet": "d17c2424bea2bb8601de94ed558565826dfc91db2bc01231445990406bf82e3f",
+    "data/china/CNH_F.parquet": "3ffaa45c21515aaaa7bc973201bda5cb10c3fec06cbd6b9defaa151245e2742a",
+    "data/china_macro/pmi.parquet": "1530f2cb5189bae67b9663affebe686f7b2679f2b18ddc451a82e3fcaf022c47",
+    "data/china_macro/cpi.parquet": "7ff848db23d30c5328e32edd43565f029df4bb0065f0de5e7284d07bea8dbe09",
+    "data/china_macro/ppi.parquet": "e9b48cc8ba3e5d2228b295db74625ff7f6f9364121986c2654fc67e88e1c4f9b",
+    "data/china_macro/money_supply.parquet": "72e3481ce5884c2eaf689eb83cb1764fce567eb24979c2ca590972458de1c511",
+    "data/china_macro/indpro.parquet": "0a7c41083836d8d540dc5d0600ca06ff7be72210b6009273dc590ea2a3356af2",
+    "data/china_macro/rates.parquet": "06f06b597e38d4c13e3c4b9ac409e09786ca6e24c1cf15b2d73c412670bb7368",
+    "data/china_macro/gdp.parquet": "67ed18a617b83c8a2fff3b57fe89992d83ff756a80792c2f23dc5c08e6646a9f",
+    "data/china_macro/lpr_rate.parquet": "1be9cd7b4b0ca16a83226c638df364926a02a619611b918d396170dd690ede23",
+    "data/china_breadth/breadth.parquet": "98fdc3548016e2585107c2f486f7599d06356bcec964f80d4b210acd8c904ab7",
+    "data/china_connect/southbound.parquet": "97026b613fdcb6f4a662b9ba840246dcaa8b4ddff82fd809b2eb74ce45be12aa",
+    "data/china_connect/northbound.parquet": "92c063596a41c48d8957d02052edc8c9e3aca84580414a69a066e7d57e7a2237",
+    "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+    "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+    "data/china_margin/daily_trade.parquet": "891316a67e1a3f8a6d757e8ae374038078c04d6aa861fed6099801165bed54b6",
+    "data/china_qvix/qvix300.parquet": "e9f718d16dbc2a1faadceb2bd79ae1dd1d62e20975ec32c13aa8a78519de0f07",
+    "data/china_margin/balance.parquet": "12a4c3be964c75d38121c2e779180d9460d44efd7833dc61bfce5af1d2eafdb9",
+    "data/china_flows/ah_premium.parquet": "f2e2382c67fa63f6bc45a4c4c33c6b5cf08793a0531a49a269205dcb43c51a94",
+    "data/china_credit/tsf.parquet": "77bd44f3d39e03087af634abf22e2e8b618537f0e66efc7c0f1ac26ad43ca0ab",
+    "data/china_property/home_price.parquet": "fc993ca9e180e2c55b24a6bdf3021feafc0a5f8f8db158155ba76eed616ea059",
+    "data/china_property/cgb.parquet": "3017655f20236a5c464c673f9c9a7b2de63adbc20aeb61eed547399e0fe6182d",
+    "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+    "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12",
+    "data/china_property/rebar.parquet": "9acdcd0b2f7361d65157d240e0bc6e264f34fb8ba555150e8e88181c9e3ee0b5",
+    "data/china_property/iron_ore.parquet": "6db91a077bcb0a3fe58194ef920235f9d81286ad31a813a7713d56f7cbd4e618"
+  },
+  "all_observed_inputs_unchanged_during_probe": true,
+  "data_writes": false,
+  "collector_run": false,
+  "production": false,
+  "procedure": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "tests": "394 passed",
+  "new_cases": 21,
+  "red": "20 snapshot failures; separate score-history refusal test failed",
+  "candidate_sha256": {
+    "scripts/build_china.py": "1929cb2e601d3639fbf4e50ec97137dd765d876e1bbcc0b8a06ba34c29d6be99",
+    "tests/test_china_archetype_d_s1.py": "676c7de1ff833af15f868af09997face688db60eb37bbae67caed234fa32c4b2"
+  },
+  "clock_pending_excluded": 15,
+  "browser_proof": false
+}

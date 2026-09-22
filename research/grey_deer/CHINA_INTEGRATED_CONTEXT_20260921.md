@@ -189,3 +189,35 @@ or call a successful process exit an accepted analytical output.
 FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false.
 The source-copy repair is preserved; generated-page and full accuracy acceptance
 remain open at this context-heavy, evidence-qualified continuation boundary.
+
+## September22 analytical-vintage root cause and rendering boundary
+Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f; same PR7622.
+Starting source4d09333dfa534291ad436a17e7051f108608cdbf. No CI/release action.
+The prior19 changed leaves are now fully reproduced and explained, not attributed
+to copy edits. Saved summary commit017d758b33df preceded the later shared input
+collection. The China input, conditions, driver and run source files are byte-identical
+between that summary's commit and this candidate. Of49 read input artifacts, four
+changed: HG_F,GC_F,CL_F and DX-Y.NYB. Restoring all four through a read-only store
+ablation reproduces the saved conditions/fear-euphoria/driver payloads exactly:
+zero remaining leaf differences. No source data or ledger is rewritten by this probe.
+Restoring only copper and gold leaves four driver differences: the other two
+inputs matter and are not omitted from the explanation.
+
+The incumbent build_china page-only flags now select the persisted China assessment,
+not engine.china_run.run(). Missing/corrupt/invalid saved assessment stops that page
+with the existing explicit logged failure; it never silently recalculates instead.
+The ordinary analytical invocation still calls the original producer exactly once.
+No new pipeline, schema, refresh schedule, calibrated value or source-clock rule.
+This is a publication/assessment-vintage boundary, NOT a claim that old data are fresh.
+Twenty new tests were RED before implementation; the first owning-suite GREEN143.
+The registered owning tests cover both flags, absent/malformed inputs, immutable
+repeated reads, actual-main early refusal, and the normal analytical control.
+The separate score-history guard is being aligned to the same existing page-only
+predicate; prior clock/weight-supply/browser refusals remain frozen and untouched.
+
+Final four-suite source regression:394 passed,21 new cases. The score-history
+render-only test was RED before reusing the existing common predicate. Both
+page-only flags now withhold the history append; the normal producer is unchanged.
+Next proof invokes the actual builder with the analytical publisher forbidden,
+checks the saved three payloads and eight input/history fingerprints, then validates
+the emitted copy. This is not the held post-Lens browser invocation.

@@ -127,34 +127,23 @@ prs:
 # Current cumulative continuation
 Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
 Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f, compatible1.0.1/bootstrap1.
-Chairman continues accuracy work; CI/release deferred, Draft/HOLD unchanged.
-DO_NOT_REDO:combined7592 integrity, participation/cohort/optional weight consumers,
-missing-member explanation, source-current72bb integration and incumbent6860.
-
-New source:e91a7313dc4635b013e162affbf049984c2dbc61 changes16 text literals only in
-china_playbook. Four quadrant definitions separate model directions from economic
-levels; four bilingual regime reasons no longer certify a bottom, hit rate or entry.
-373 tests pass across4 owning suites;50 new cases, including12 RED before repair.
-405 synthetic old/new scenarios preserve numeric/posture outputs and non-regime
-reasons. Non-string AST identical. The actual full-page Jinja dialog is covered.
-Evidence:research/grey_deer/CHINA_REGIME_COPY_20260922.json; current research section
-in research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md.
-
-The normal offline builder returned0 but recomputed derived latest.json:19 leaves
-changed under conditions/fear_euphoria/market_drivers. The input assertion caught
-this, so its refreshed page was NOT accepted/published. Its artifact/diff remain
-operation-local;27 owned generated files were restored. Six pinned input/ledger
-files and the existing page a7b1ea68... are byte-identical to their original state.
-Do not claim the changed analytical readings were caused by text or validated.
-
-Frozen gates:post-Lens browser refusal; original clock edit/15 pending cases;
-protective automatic-weight-supply append; prior7029 review; weight name/residual
-augmentation. This turn's distinct macro-detail/latest-payload read was refused;
-it was not rerouted. Later reads reconciled the actual builder effect on its own carrier.
-No effect uncertainty, worker, watcher, fresh collection, policy or deployment.
-
-Next:qualify the raw-input/derived-summary vintage difference before accepting a
-new rendered page, then exact original platform gates and normal release proof.
-Intended resume:fresh conversation, this current same-PR checkpoint plus fresh INDEX.
-CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false. Context-heavy source-and-artifact
-phase preserved; source custody is retained, not transferred or automatically awakened.
+Chairman continues accuracy delivery; hosted CI/release remain deferred, Draft/HOLD.
+The prior19-leaf render drift is fully attributed to four later shared input files:
+HG_F,GC_F,CL_F,DX-Y.NYB. Same producer source;49 input artifacts frozen; restoring
+those four historical inputs reproduces the saved summary with zero differences.
+The saved summary is not numerically wrong merely because its raw inputs later moved.
+New source:existing page-only builder flags reuse the persisted China assessment
+instead of invoking the analytical publisher; invalid snapshot keeps prior page.
+Both page-only flags withhold score-log writes. Normal analytical invocation unchanged.
+394 tests pass including21 new cases, with RED failures observed. Model, calibration,
+clock functions, weight supply and permission boundaries remain unchanged.
+Next:actual-builder proof with engine.run forbidden, eight preserved data/history
+hashes and page-copy checks; then existing artifact normalization and source readback.
+No browser retry, worker, watcher, collection or deployment is part of this action.
+Prior post-Lens/source-clock/weight-refresh/7029/other refusals stay frozen at their
+exact operations.15 pending clock cases excluded; official weight feed still absent.
+DO_NOT_REDO:all earlier participation/cohort/weight analysis,7592/6860 integrations,
+regime-copy numeric equivalence, and this completed drift ablation.
+Evidence:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json plus existing
+CHINA_INTEGRATED_CONTEXT_20260921.md. Prior generated page remains unchanged for now.
+MISSION_COMPLETE:false. Source-tested; actual-build proof remains next, not complete.

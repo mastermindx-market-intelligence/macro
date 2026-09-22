@@ -1,7 +1,8 @@
 """Build the China A-share dashboard -> site/china.html.
 
 Standalone, like scripts/build_vector.py — shares only the parquet store with the
-other pipelines. Recomputes the China regime (so live == backtest), runs the cycle
+other pipelines. The analytical lane recomputes the China regime; page-only flags
+reuse the persisted assessment without rewriting it. Runs the cycle
 engine over each sector ETF for the rotation board + MTF cards, and renders the
 dark, bilingual templates/china.html.j2. Returns 0 on ANY engine error so it can
 never break the macro / vector site builds.
@@ -110,6 +111,32 @@ def _no_network_render() -> bool:
         os.environ.get("RENDER_NO_DRIP") == "1"
         or os.environ.get("CHINA_FAST_RENDER") == "1"
     )
+
+
+
+def _regime_for_page() -> dict:
+    """Keep page-only rebakes on the persisted assessment's analytical vintage.
+
+    Newer raw commodity/FX bars are not a request to recalculate an older China
+    assessment. The ordinary analytical lane still owns run() and its writes.
+    This validates shape, not freshness, point-in-time availability or calibration.
+    """
+    if not _no_network_render():
+        from engine.china_run import run
+        return run()
+    latest = _load_json(config.data_dir() / "china_regime" / "latest.json")
+    if not isinstance(latest, dict):
+        raise RuntimeError("saved China assessment missing or unreadable; retain prior page")
+    from datetime import date
+    stamp = latest.get("date")
+    try:
+        valid_date = isinstance(stamp, str) and date.fromisoformat(stamp).isoformat() == stamp
+    except (TypeError, ValueError):
+        valid_date = False
+    if not valid_date or latest.get("quad") not in ("Q1", "Q2", "Q3", "Q4"):
+        raise RuntimeError("saved China assessment has invalid date or quadrant; retain prior page")
+    log.info("china page-only render: reusing saved assessment dated %s; no regime recompute", stamp)
+    return latest
 
 
 def _build_china_library_for_page(alpha: dict | None) -> dict | None:
@@ -1365,8 +1392,7 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
 
 def main() -> int:
     try:
-        from engine.china_run import run
-        latest = run()
+        latest = _regime_for_page()
     except Exception as e:  # noqa: BLE001 — never break the site build
         log.error("china engine failed (%s); skipping china page", e)
         return 0
@@ -1973,8 +1999,8 @@ def main() -> int:
             _score_log_path = config.data_dir() / "china_market_state" / "score_log.parquet"
             _ms_snap = vm.get("market_state")
             _ms_sc = _ms_snap.get("score") if _ms_snap else None
-            if _osenv.environ.get("CHINA_FAST_RENDER"):
-                pass                       # dev re-render: read-only, never append
+            if _no_network_render():
+                pass                       # both page-only lanes: read, never append
             elif _ms_sc is None:
                 log.warning("china score_log: market_state score unavailable — no append "
                             "(path renders from the committed log)")

@@ -611,3 +611,105 @@ def test_regime_inflation_direction_is_not_the_price_level(earlier, latest, dire
     # is not an increasing price level. The producer keeps these meanings apart.
     en, zh = QUAD_MEANING_CN["Q4" if direction < 0 else "Q2"]
     assert "not price levels" in en and "不是价格水平" in zh
+
+
+# A page-only rebake consumes the saved assessment, not newly arrived raw inputs.
+@pytest.fixture
+def saved_regime_render(tmp_path, monkeypatch):
+    from scripts import build_china as bc
+    from engine import china_run
+    import json
+    monkeypatch.delenv('RENDER_NO_DRIP', raising=False)
+    monkeypatch.delenv('CHINA_FAST_RENDER', raising=False)
+    monkeypatch.setattr(bc.config, 'data_dir', lambda: tmp_path)
+    path = tmp_path / 'china_regime' / 'latest.json'
+    path.parent.mkdir()
+    document = {'date': '2026-09-21', 'quad': 'Q4', 'growth_score': -.143,
+                'conditions': {'roro': {'roro': .175}},
+                'fear_euphoria': {'fe_score': 78},
+                'market_drivers': {'evidence': ['copper +1.7σ']}}
+    path.write_text(json.dumps(document))
+    def forbidden():
+        pytest.fail('render-only path invoked the analytical publisher')
+    monkeypatch.setattr(china_run, 'run', forbidden)
+    return bc, path, document
+
+
+@pytest.mark.parametrize('flag', ['RENDER_NO_DRIP', 'CHINA_FAST_RENDER'])
+def test_render_snapshot_reuses_saved_values_without_recalculation(saved_regime_render, monkeypatch, flag):
+    bc, path, document = saved_regime_render
+    monkeypatch.setenv(flag, '1')
+    before = path.read_bytes()
+    loaded = bc._regime_for_page()
+    assert loaded == document
+    loaded['conditions']['roro']['roro'] = 999
+    assert bc._regime_for_page() == document
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize('flag', ['RENDER_NO_DRIP', 'CHINA_FAST_RENDER'])
+@pytest.mark.parametrize('bad', ['absent', 'broken_json', 'list', 'bad_date', 'missing_date', 'bad_quad'])
+def test_render_snapshot_rejects_bad_cache_without_engine_fallback(saved_regime_render, monkeypatch, flag, bad):
+    import json
+    bc, path, document = saved_regime_render
+    monkeypatch.setenv(flag, '1')
+    if bad == 'absent': path.unlink()
+    elif bad == 'broken_json': path.write_text('{')
+    elif bad == 'list': path.write_text('[]')
+    else:
+        if bad == 'bad_date': document['date'] = '2026-02-30'
+        elif bad == 'missing_date': document.pop('date')
+        else: document['quad'] = 'not-a-quadrant'
+        path.write_text(json.dumps(document))
+    before = path.read_bytes() if path.exists() else None
+    with pytest.raises(RuntimeError, match='saved China assessment'):
+        bc._regime_for_page()
+    assert (path.read_bytes() if path.exists() else None) == before
+
+
+@pytest.mark.parametrize('flag', ['RENDER_NO_DRIP', 'CHINA_FAST_RENDER'])
+def test_render_snapshot_actual_main_keeps_prior_page_when_cache_missing(saved_regime_render, monkeypatch, caplog, flag):
+    bc, path, _ = saved_regime_render
+    monkeypatch.setenv(flag, '1'); path.unlink()
+    def no_page_write(*args, **kwargs):
+        pytest.fail('invalid saved snapshot must not publish a replacement page')
+    monkeypatch.setattr(bc, 'write_page', no_page_write)
+    assert bc.main() == 0  # incumbent per-page fail-soft contract, with error log
+    assert 'saved China assessment' in caplog.text
+    assert not path.exists()
+
+
+@pytest.mark.parametrize('flag_value', [None, '', '0'])
+def test_render_snapshot_normal_lane_retains_analytical_owner(saved_regime_render, monkeypatch, flag_value):
+    from engine import china_run
+    bc, path, _ = saved_regime_render
+    path.unlink()
+    if flag_value is not None:
+        monkeypatch.setenv('RENDER_NO_DRIP', flag_value)
+        monkeypatch.setenv('CHINA_FAST_RENDER', flag_value)
+    calls = []
+    produced = {'date': '2026-09-22', 'quad': 'Q1'}
+    def run():
+        calls.append(True)
+        return produced
+    monkeypatch.setattr(china_run, 'run', run)
+    assert bc._regime_for_page() is produced
+    assert calls == [True]
+
+
+def test_render_snapshot_real_main_uses_the_qualified_loader():
+    import inspect
+    from scripts import build_china as bc
+    assert 'latest = _regime_for_page()' in inspect.getsource(bc.main)
+
+
+def test_render_snapshot_both_render_modes_block_score_history_writes():
+    import inspect
+    from scripts import build_china as bc
+    source = inspect.getsource(bc.main)
+    start = source.index('_ms_sc = _ms_snap.get("score")')
+    end = source.index('# Expose last 11 rows', start)
+    history_writer = source[start:end]
+    assert 'if _no_network_render():' in history_writer
+    assert 'environ.get("CHINA_FAST_RENDER")' not in history_writer
+    assert 'elif _ms_sc is None:' in history_writer
