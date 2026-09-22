@@ -308,12 +308,15 @@ def test_overview_bounds_bot_classification_to_requested_window(monkeypatch):
     seen = _capture(monkeypatch)
     a.overview(minutes=1440)
     sqls = seen["all"]
-    assert len(sqls) == 6
+    # One shared core query owns all live-window projections; the only second query
+    # is the exact-but-optional all-time human summary.
+    assert len(sqls) == 2
     focused = [sql for sql in sqls if "focus_visitors as (" in sql]
-    # Every windowed Overview leg must scope the expensive bot classifier; only the
-    # explicitly all-time summary remains historically unbounded.
-    assert len(focused) == 5
-    assert all("created_at > now() - interval '1440 minutes'" in sql for sql in focused)
+    assert len(focused) == 1
+    core = focused[0]
+    assert "created_at > now() - interval '1440 minutes'" in core
+    assert "he as (" in core and "vb as (" in core
+    assert "json_build_object" in core
     unbounded = [sql for sql in sqls if "focus_visitors as (" not in sql]
     assert len(unbounded) == 1
     assert "select count(*)::int as events" in unbounded[0]
@@ -417,3 +420,27 @@ def test_request_budget_stays_under_the_edge_origin_pull_timeout():
     """
     assert a._REQUEST_BUDGET_S <= 12.0
     assert a._QUERY_TIMEOUT_S <= a._REQUEST_BUDGET_S
+
+def test_all_windowed_analytics_surfaces_bound_bot_history(monkeypatch):
+    cases = [
+        ("pages", lambda: a.pages(minutes=1440)),
+        ("geo", lambda: a.geo(minutes=1440)),
+        ("visitors", lambda: a.visitors(minutes=1440)),
+        ("flow", lambda: a.flow(minutes=1440)),
+        ("realtime", lambda: a.realtime()),
+    ]
+    for name, call in cases:
+        seen = _capture(monkeypatch)
+        call()
+        joined = " ".join(seen["all"])
+        assert "focus_visitors as (" in joined, name
+        expected = "15 minutes" if name == "realtime" else "1440 minutes"
+        assert expected in joined, name
+
+def test_terminal_bot_focus_includes_current_search_visitors(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.terminal(minutes=1440)
+    joined = " ".join(seen["all"])
+    assert "focus_visitors as (" in joined
+    assert "select distinct anon_id as visitor_id from public.search_events" in joined
+    assert "created_at > now() - interval '1440 minutes'" in joined
