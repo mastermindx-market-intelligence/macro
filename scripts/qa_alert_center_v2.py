@@ -163,18 +163,21 @@ def main():
             page.screenshot(path=str(out / 'desktop-vector-market-mode.png'))
             report['screenshots'].append('desktop-vector-market-mode.png')
             report['checks'].append('Vector market mode exposes trend-efficiency/risk state without becoming a directional trade call')
-            vector_momentum_id = next(
+            vector_momentum_id = next((
                 id_ for id_, brief in payload['explorer']['briefs'].items()
-                if brief.get('family') == 'vector.momentum_trigger')
-            vector_momentum_brief = payload['explorer']['briefs'][vector_momentum_id]
-            page.goto(url + '#view=explore&id=' + vector_momentum_id, wait_until='domcontentloaded')
-            vector_momentum_text = page.locator('#ac-detail').inner_text()
-            assert vector_momentum_brief['limitation'] in vector_momentum_text
-            assert page.locator('#ac-detail .acx-next-action').inner_text() == vector_momentum_brief['next_action']
-            assert vector_momentum_brief['evidence_label'] in vector_momentum_text
-            page.screenshot(path=str(out / 'desktop-vector-momentum-trigger.png'))
-            report['screenshots'].append('desktop-vector-momentum-trigger.png')
-            report['checks'].append('Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call')
+                if brief.get('family') == 'vector.momentum_trigger'), None)
+            if vector_momentum_id is None:
+                report['checks'].append('Current real snapshot has no Vector momentum-trigger observation; browser proof does not synthesize one')
+            else:
+                vector_momentum_brief = payload['explorer']['briefs'][vector_momentum_id]
+                page.goto(url + '#view=explore&id=' + vector_momentum_id, wait_until='domcontentloaded')
+                vector_momentum_text = page.locator('#ac-detail').inner_text()
+                assert vector_momentum_brief['limitation'] in vector_momentum_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == vector_momentum_brief['next_action']
+                assert vector_momentum_brief['evidence_label'] in vector_momentum_text
+                page.screenshot(path=str(out / 'desktop-vector-momentum-trigger.png'))
+                report['screenshots'].append('desktop-vector-momentum-trigger.png')
+                report['checks'].append('Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call')
             structure_id = next((
                 id_ for id_, brief in payload['explorer']['briefs'].items()
                 if brief.get('family') == 'vector.structure_shift'), None)
