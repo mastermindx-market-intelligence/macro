@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T09:52:35.770578+00:00",
-  "count": 2631,
+  "generated_at": "2026-09-22T10:14:41.499769+00:00",
+  "count": 2632,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -96,6 +96,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-q6hjtis6mvq-695c1a",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:42:48Z",
+      "summary_points": [
+        "Tech Leadership & Geopolitical Pricing: Agentic AI (Meta Muse, CPU-linked stocks) drove Tech rally despite oil weakness; geopolitical optimism (Trump-Xi Summit, UN GA) priced in, but Tech bounce fading in APAC.",
+        "U.S.",
+        "AI Capital Advantage: U.S.",
+        "hyperscaler capex exceeds $800B (vs China’s $144B), generating >$65B revenue run-rate for flagship models—critical for tech valuation and competitive positioning.",
+        "Energy Security Shift: VLCC hiring costs surged to $1.1M/day (vs $50k–$100k earlier) amid Iran war, signaling acute shipping cost volatility impacting energy logistics and global trade."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-cbbyroymeyc-ce2dcf",
       "title": "Europe Equity Research | Today’s Morning Meeting",
