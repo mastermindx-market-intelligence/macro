@@ -15,9 +15,11 @@
     3. runs the W2-1b accrue command to append today's per-underlying skew
        to data/options_skew/snapshots.parquet (canonical-wins source-stamped
        upsert from W2-1b);
-    4. publishes data/options_skew to R2 via the publish_r2 options_skew
-       dir with the no-manifest flag (first run only; subsequent runs go
-       full).
+    4. verifies the ledger has actually grown under the accrue (BLOCKER-2
+       fix — refuses a no-op accrue on a pre-populated bootstrap);
+    5. publishes data/options_skew to R2 via the publish_r2 options_skew
+       dir. Every publish writes a real manifest (no no-manifest flag) so
+       bulk consumers (fetch_r2 / audit_r2) read the freshness anchor.
 
   This lane is OFF by default — the seat installs the plist per the runbook
   (research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md).
