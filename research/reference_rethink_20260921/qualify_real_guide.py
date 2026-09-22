@@ -125,7 +125,8 @@ with sync_playwright() as p:
             for theme in ['light', 'dark']:
                 for state in ['', 'market-state-score', 'risk-radar', 'regime-quadrant', 'transition-state', 'help']:
                     page.goto(url + query + ('#' + state if state and state != 'help' else ''))
-                    if theme == 'dark':
+                    # Fragment navigation may retain the existing theme. Select the target, do not blindly toggle.
+                    if page.locator('html').get_attribute('data-theme') != theme:
                         page.locator('#theme').click()
                     assert page.locator('html').get_attribute('data-theme') == theme
                     if state == 'help':
