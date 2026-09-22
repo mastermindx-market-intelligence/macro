@@ -4217,6 +4217,7 @@ jobs:
       - "lib/__init__.py"
       - "lib/ai_costs.py"
       - "lib/board_state.py"
+      - "lib/sector_desk_view.py"
       - "lib/chat_allowance.py"
       - "lib/closes_panel.py"
       - "lib/cn_calendar.py"
