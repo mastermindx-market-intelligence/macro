@@ -156,7 +156,20 @@ waves:
     status: todo
     depends_on: [RF1, HF1]
     next_action: >
-      Add exactly one reviewed provider/harness vertical, with Claude as the preferred first real
+      CURRENT OVERRIDE (2026-09-19): authoritative native PF1 source is retained branch
+      `claude/ssd-pf1-native-claude-worker-adapter@5b461fb217e6f0fba5080a12eb98df82b396e6c7`,
+      BUILT/UNMERGED/UNARMED. R90 remains `HOLD_SAME_OWNER_AND_SOURCE / NO_RETRY / NO_SUCCESSION`;
+      do not create a replacement native writer. Mastermind #759 launch-attestation law and #586 R8
+      (`4948e271e0b7dfa7e8653a6a01bcd1399d113dae`) are protected/DO_NOT_REDO. #762@495e4668 is
+      `SOURCE_CUSTODY_BLOCKED / CANDIDATE_FOLD_ONLY`, not a successor, and still carries a current-D8
+      red plus an unresolved pre-request exact-model policy seam. Exact-model admission must consume
+      a generation-bound effective managed/org policy observation from the existing Family-B realm/config
+      owner; `/status` alone is insufficient. After lawful R90 same-owner resume: re-pin protected
+      Mastermind+Skillpack, reconcile 5b461fb2, selectively fold only still-needed #762 deltas, close
+      D8 + exact-model admission, then fresh current-base tests and genuine non-author review. Reuse the
+      protected native preflight; only then may one bounded real Executive child Job run. The historical
+      paragraph below is superseded as live instruction and retained only as chronology.
+      HISTORICAL (superseded): Add exactly one reviewed provider/harness vertical, with Claude as the preferred first real
       non-Codex proof, and prove one bounded Executive child Job through the real adapter before
       making that provider generally routable. Cursor/Grok and other provider verticals remain V1.x
       expansion and may be researched in parallel, but do not block the first V1 operating proof.
@@ -294,21 +307,28 @@ do_not_redo:
   - "Do not treat the merged Mastermind #581 (27a5d893ca28f7006c1007dffa51e677c9c7a4ab) as native Anthropic capacity or as PF1 progress, and never treat a #581 merge as native readiness (Sol R21)."
   - "Do not build a native Claude worker, adapter or carrier outside PF1. Native ownership is PF1 `claude-code` / `ClaudeCodeWorkerAdapter`; PF1-F0 custody is PR #455 and it stays held. A second native writer for one operation is the error, not a shortcut around a slow one."
 next_action: >
-  VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
-  C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
-  sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance
-  ruling on that root. (1) Macro PR #7280, branch claude/provider-production-modes-20260918, head
-  284bd893f5fb2085d597611d065017494f3275db — production API usage modes. (2) Mastermind PR #804, branch
-  claude/executive-service-principal-20260918, head 3b5182e2545cab671f2da2db6735b51c926baf18 — tier A1
-  executive service principal, which reports NOT_YET_ADMITTED by design because the intent sink refuses a
-  typed schema, a provenance key and constraints.task_kind. A2 (actor-aware CEO gate in
-  executive_runtime.py) and B (OpenCode native Worker) are NOT started: they collide with open PR #699
-  and PR #762/#590 respectively. Read DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY — the CEO provenance
-  gate is schema-only, so an actor-aware CEO branch is a security prerequisite before any non-CEO
-  principal is armed beyond READ/RESEARCH — and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md
-  before touching either vertical. Protected Mastermind master is now
-  320f586126b7c82c843ef17612f12d40d20a42e0; executive generation 8b231e82 is installed but
-  UNARMED/STOPPED and the next gate is HUMAN_AUTH/CREDENTIAL_READINESS.
+  VPS economical-provider track checkpoint 2 (14:00Z, seat Claude6 5fae71cf, Fable; Sol
+  rulings 1789717894.450799 / 1789719708.985309 / 1789716959.813089 fold into this workstream, not a
+  new pricing programme): TWO repaired verticals plus Sol #7289 sit DRAFT and HELD and may not be
+  readied, merged or auto-merged without an explicit Sol acceptance ruling. (1) Macro PR #7280, branch
+  claude/provider-production-modes-20260918, immutable repaired head
+  957927b81926c602b130acdc262fc7b6178fa090 — production API usage modes (Sol B1–B8; R4 APPROVE; 159
+  tests; hosted ci 35330143652 in progress, not claimed green). (2) Mastermind PR #804, branch
+  claude/executive-service-principal-20260918, immutable repaired head
+  4c4139b2d30f78a3884c777b144aadf32bfc69ec — A1–A3 plus A2 service-intent schema
+  mastermind.executive_service_intent.v1 on the existing sink
+  (DEC:EXECUTIVE-SERVICE-INTENT-SCHEMA-ON-EXISTING-SINK); A1 head a2acae36 APPROVE + hosted CI
+  35328140960 SUCCESS; A2 hosted CI 35331412994 in progress, not claimed green. Economics contract
+  Sol #7289 head c95cb6a0b154e1b30e1ed07f012da3d59da3566a is DRAFT/HOLD, BUILT_NOT_PROVEN
+  (lib.ai_costs stays the sole cost owner). Mastermind #600 return-reader finding is linked here
+  only — no new program; intake owner = the reader's lawful source lane when available. Consumer
+  composition (extend shared engine/llm_auth.build_providers) is NOT started — depends on #7179
+  remote-complete release by its writer. DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY is qualified:
+  the schema-only CEO branch still admits RAW v1 stamps; service stamps use a schema that branch
+  refuses; residual is CEO-origin v1 and stays owned by executive_runtime.py/#699. Read
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md Checkpoint 2 before touching any of these
+  carriers. Executive generation 8b231e82 is UNARMED/STOPPED. Seat continuation: REPAIR_INTAKE
+  1789722379.535409, A2 START 1789723475.083089; cron b438623c hourly; C088–C092 exist in no repo.
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
   Protected Mastermind master at the 2026-09-16 record repair was 7642aea155d2817219135b24246b55c1d7611c66
   (`git -C /Users/chriswong/Documents/Cluade/Mastermind rev-parse origin/master`, 2026-09-16), the pin
