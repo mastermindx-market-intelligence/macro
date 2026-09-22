@@ -82,7 +82,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'class="cnx-playbook-context"',
         "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
-        'class="cnx-lens"',
+        'class="cnx-lens lens-q"',
         'data-tip-en="{{ face.tip_en | e }}"',
         "{% set _ev_pool = [] %}",
         "{{ t('Macro News','宏观新闻') }}",
@@ -129,7 +129,7 @@ def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
 
 
 def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
-    assert 'class="cnx-lens"' in TPL
+    assert 'class="cnx-lens lens-q"' in TPL
     assert 'aria-label="Why this read / 为什么"' in TPL
     assert 'data-tip-en="{{ face.tip_en | e }}"' in TPL
     assert 'data-tip-zh="{{ face.tip_zh | e }}"' in TPL
@@ -142,6 +142,32 @@ def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert "e.preventDefault();card.click();" in TPL
 
 
+def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
+    assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
+    assert "watch →" in TPL
+    assert "预警 →" in TPL
+
+
+def test_four_driver_synthesis_reuses_the_existing_link_rail_and_deep_dialogs() -> None:
+    assert 'class="cnx-links" data-cn-driver-rail' in TPL
+    assert "{{ t('Why this regime','为什么这样判断') }}" in TPL
+    assert "cnx-driver-band" not in TPL
+    assert "cnx-driver-rail" not in TPL
+    assert "cny_yi_pair" not in TPL
+    assert "{{ t('bn','亿') }}" in TPL
+    for dialog in ("cnx-dlg-policy", "cnx-dlg-flows", "cnx-dlg-risk", "cnx-dlg-property"):
+        assert f'href="#{dialog}"' in TPL
+        assert f"cnxOpenDlg('{dialog}')" in TPL
+
+    # The synthesis is a glance layer only; the accepted deep module rows remain.
+    for marker in (
+        "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature",
+        "ROW 3: Policy Monitor + Connect Flows + Macro News",
+        "ROW 4: Property + AI Brief + Alerts Centre",
+    ):
+        assert marker in TPL
+
+
 def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
     assert "{% set _ev_pool = [] %}" in TPL
     assert "if c.importance == 'high'" in TPL
@@ -151,8 +177,10 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
 
 
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
+    assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
     assert 'href="china_policy_watch.html"' in links
+    assert 'href="flow_velocity.html"' in links
     assert 'href="china_news.html"' not in links
     assert 'href="alerts.html"' not in links
 

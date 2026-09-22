@@ -524,8 +524,8 @@
     "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-09-18",
     "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "80c2c6a3be919fa9644da44bf9668a53f9699100785cc248fc8b1e0e0f589d4a",
-    "generation_id": "inflation_system-US-80c2c6a3be919fa9",
+    "content_sha256": "73f52d1d325b5dc363c1e37679f7dc86e1de318526b450cf699fecdfdab7c51f",
+    "generation_id": "inflation_system-US-73f52d1d325b5dc3",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
@@ -549,7 +549,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "inflation_impulse",
+      "y_axis_id": "persistence_breadth"
     },
     "prior_state": {
       "effective_date": "2026-09-17",
@@ -1096,7 +1098,9 @@
         "dx": 0.0,
         "dy": 0.0,
         "null_reason": null,
-        "status": "PRESENT"
+        "status": "PRESENT",
+        "x_axis_id": "inflation_impulse",
+        "y_axis_id": "persistence_breadth"
       },
       "prior_state": {
         "effective_date": "2026-09-16",
