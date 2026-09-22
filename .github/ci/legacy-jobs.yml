@@ -2069,6 +2069,8 @@ jobs:
       - "engine/stock_identity/fingerprint.py"
       - "engine/stock_identity/plane.py"
       - "engine/us_candidate_episode.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       # W1-B wires Brain's native-fact serve to the frozen W1-A runtime. This
       # job's own app/neuralweb import closure now reaches those packages, so
       # its curated scope must retain their real dependency ownership.
@@ -7418,6 +7420,8 @@ jobs:
       - "engine/stock_identity/fingerprint.py"
       - "engine/stock_identity/plane.py"
       - "engine/us_candidate_episode.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       # W1-B wires Brain's native-fact serve to the frozen W1-A runtime. This
       # job's own app/neuralweb import closure now reaches those packages, so
       # its curated scope must retain their real dependency ownership.
@@ -8017,6 +8021,8 @@ jobs:
       - "engine/stock_identity/fingerprint.py"
       - "engine/stock_identity/plane.py"
       - "engine/us_candidate_episode.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       # W1-B wires Brain's native-fact serve to the frozen W1-A runtime. This
       # job's own app/neuralweb import closure now reaches those packages, so
       # its curated scope must retain their real dependency ownership.
@@ -13349,6 +13355,8 @@ jobs:
       - "engine/stock_identity/fingerprint.py"
       - "engine/stock_identity/plane.py"
       - "engine/us_candidate_episode.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       # W1-B wires Brain's native-fact serve to the frozen W1-A runtime. This
       # job's own app/neuralweb import closure now reaches those packages, so
       # its curated scope must retain their real dependency ownership.
