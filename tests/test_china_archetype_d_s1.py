@@ -215,6 +215,18 @@ def test_mobile_section_index_improves_scanability_without_collapsing_depth() ->
     assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
 
 
+def test_mobile_deep_rows_become_swipeable_without_removing_cards() -> None:
+    assert "body.page-china .cnx-wrap > .cnx-rack3{display:flex;overflow-x:auto" in TPL
+    assert "body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px)" in TPL
+    assert "scroll-snap-type:x mandatory" in TPL
+    assert "scroll-snap-align:start" in TPL
+
+    # Desktop/deep structure remains authored once; mobile only changes layout.
+    assert "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature" in TPL
+    assert "ROW 3: Policy Monitor + Connect Flows + Macro News" in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
     assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
