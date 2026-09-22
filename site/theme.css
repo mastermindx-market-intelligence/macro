@@ -3262,3 +3262,127 @@ html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:colo
   background:var(--muted);border:2px solid var(--panel);
   box-shadow:0 1px 3px rgba(0,0,0,.35);
 }
+
+/* ── markets.html risk-regime strip (.mrs) ──────────────────────────────────
+   Compact three-row read between the cycle overlay and today's positions.
+   Reuses .mx-stance--{ok,warn,down,muted}. No new token family.
+   Dark: a lifted panel and a 1px inset edge (luminance, no outer glow).
+   Light: the white card, a hairline, and the card shadow (shadow, not glow). */
+.mrs{
+  margin:var(--sp-4,16px) 0;
+  padding:var(--sp-4,16px);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  background:var(--panel);
+  color:var(--text);
+}
+html[data-theme="dark"] .mrs{
+  background:color-mix(in srgb, var(--panel) 86%, var(--text));
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+}
+html[data-theme="light"] .mrs{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+.mrs-hd{ margin:0 0 var(--sp-3,12px); }
+.mrs-title{
+  margin:0;
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  letter-spacing:0;
+  color:var(--text);
+}
+.mrs-sub{
+  margin:var(--sp-1,4px) 0 0;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.45;
+  color:var(--muted);
+}
+.mrs-rows{ display:flex; flex-direction:column; }
+.mrs-row{
+  display:grid;
+  grid-template-columns:minmax(8rem,12rem) auto minmax(0,1fr) auto;
+  gap:var(--sp-3,12px);
+  align-items:center;
+  padding:var(--sp-3,12px) 0;
+  border-top:1px solid var(--line);
+}
+.mrs-row:first-child{ border-top:0; padding-top:0; }
+.mrs-name{
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  color:var(--text);
+}
+.mrs-state,.mrs-do{ margin:0; }
+.mrs-caveat{ position:relative; justify-self:end; }
+.mrs-caveat-btn{
+  font:inherit;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.3;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:var(--r-pill,999px);
+  padding:4px 10px;
+  cursor:pointer;
+}
+html[data-theme="dark"] .mrs-caveat-btn{
+  background:color-mix(in srgb, var(--panel2) 70%, transparent);
+  color:var(--ink-2,var(--muted));
+}
+html[data-theme="light"] .mrs-caveat-btn{
+  background:var(--panel);
+  color:var(--muted);
+  box-shadow:none;
+}
+/* Tier-2 caveat: clipped out of the glance until hover or keyboard focus.
+   Kept in the tree so aria-describedby can point at it. Not a title= tooltip. */
+.mrs-pop{
+  position:absolute;
+  z-index:3;
+  right:0;
+  top:calc(100% + 6px);
+  box-sizing:border-box;
+  padding:var(--sp-3,12px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+  font-size:var(--fs-sm,12.5px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:left;
+  white-space:normal;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  height:1px;
+  width:1px;
+  overflow:hidden;
+}
+html[data-theme="dark"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:none;
+}
+html[data-theme="light"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:var(--popover-shadow);
+}
+.mrs-caveat:hover .mrs-pop,
+.mrs-caveat:focus-within .mrs-pop{
+  clip:auto;
+  clip-path:none;
+  height:auto;
+  width:min(36rem,80vw);
+  overflow:visible;
+}
+@media (max-width:640px){
+  .mrs{ padding:var(--sp-3,12px); }
+  .mrs-row{
+    grid-template-columns:1fr;
+    gap:var(--sp-2,8px);
+    align-items:start;
+  }
+  .mrs-caveat{ justify-self:start; }
+  .mrs-pop{ left:0; right:auto; }
+}
