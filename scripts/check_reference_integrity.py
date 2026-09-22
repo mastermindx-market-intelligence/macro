@@ -135,6 +135,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import io
 import json
 import re
@@ -185,9 +186,13 @@ NAMESPACE_EXEMPT = CLOSED_PRE_RIG_REFERENCES | {"specimen.html"}
 CLOSED_PRE_RIG_PACKETS = frozenset({"MP-1-prophet-board.md"})
 
 # The same one historical packet predates the 2026-09-20 editable-source contract.
-# Keep that debt explicit and closed rather than making a later checker retroactively
-# invalidate an accepted historical packet. New packets get no wildcard exemption.
-CLOSED_PRE_EDITABLE_SOURCE_PACKETS = frozenset({"MP-1-prophet-board.md"})
+# Keep that exact pre-contract artifact explicit and closed rather than making a later
+# checker retroactively invalidate it. The content hash is load-bearing: once the packet
+# is amended again it is current work and must satisfy 3A/3B/3C like every new packet.
+# New packets get no wildcard or filename-only exemption.
+CLOSED_PRE_EDITABLE_SOURCE_PACKETS = {
+    "MP-1-prophet-board.md": "ca9b46d2455ef749aff1a1e96376a229dc7e18f223f0f087d2f6ac7d5fb3aaac",
+}
 
 # ── Vocabularies (RIG §1-§7).  Unknown ENUMS fail; unknown top-level KEYS are
 # tolerated on purpose, so a later schema revision can add fields without a flag day. ──
@@ -328,6 +333,13 @@ _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
     ),
 )
 _PACKET_PLACEHOLDER_PREFIXES = ("required", "todo", "tbd")
+
+
+def _is_closed_pre_editable_source_packet(name: str, body: str) -> bool:
+    expected = CLOSED_PRE_EDITABLE_SOURCE_PACKETS.get(name)
+    if expected is None:
+        return False
+    return hashlib.sha256(body.encode("utf-8")).hexdigest() == expected
 
 
 def _packet_field_payload(body: str, marker: re.Pattern[str]) -> str:
@@ -1587,7 +1599,7 @@ def rule_l8(repo_root: Path, status_by_id: dict[str, str]) -> list[Finding]:
         except (OSError, UnicodeDecodeError) as exc:
             out.append(Finding("packet-without-rig-receipt", rel, f"unreadable: {exc}"))
             continue
-        if packet.name not in CLOSED_PRE_EDITABLE_SOURCE_PACKETS:
+        if not _is_closed_pre_editable_source_packet(packet.name, body):
             for code, label, marker in _EDITABLE_PACKET_FIELD_SPECS:
                 if not _packet_field_payload(body, marker):
                     out.append(Finding(
