@@ -43,8 +43,15 @@ No FPS, whole-page latency improvement or production deployment is inferred from
 
 ## Continuation and non-duplication
 
-The cache correction is BUILT_NOT_PROVEN in Terminal PR 705. Current protected procedure
-for this continuation is Mastermind@6f321cb42166e4224e5107ac3312a6f7cd01fffa.
+The cache correction merged as `5fee4ab7517095c04a1fbab17c6b273826fd6446` and was deployed
+through the existing exact-target build owner. Production acceptance is Terminal PR 705
+comment 5769817029: live marker and source hash match the accepted release, fresh public
+chart checks passed at all three viewports, and desktop completed NVDA → AAPL → NVDA
+without reload, page errors or horizontal overflow. The rare obsolete-absence race is
+proven by the exact-source regression above; the production browser run proves normal
+chart behavior and the deployed identity, not a naturally observed 404 race or an FPS gain.
+The release is DO_NOT_REDO. Current protected procedure for the continuing chart programme
+is Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f.
 The related chart settings upgrade, PR 701, is independently deployed and browser-proven
 at e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55; receipt is Terminal PR 701 comment 5768037719.
 Clock optimization PR 702 remains held on a mobile marker-tooltip failure. Its exact
