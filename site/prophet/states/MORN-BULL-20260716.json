@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MORN-BULL-20260716",
-  "asof": "2026-09-19",
+  "asof": "2026-09-22",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 48.8,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 47.3,
-    "pace": 8.7,
+    "pace": 4.7,
     "retention": 67.9,
     "overlay": 67.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.925,
     "dist_to_t1_r": 0.575,
     "dist_to_t2_r": 2.075,
-    "horizon_pct_used": 135.6,
+    "horizon_pct_used": 142.2,
     "p1": 0.6166,
     "p2": 0.3083,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 61,
-  "tau": 1.3556
+  "days_elapsed": 64,
+  "tau": 1.4222
 }
