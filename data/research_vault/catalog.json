@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T12:05:43.195046+00:00",
-  "count": 2637,
+  "generated_at": "2026-09-22T13:05:45.297322+00:00",
+  "count": 2640,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,67 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-exsysnswyle-8b6574",
+      "title": "GS Crook GS MORNING NBH Preview US Inflation Path US Equities Update Brandon Brown Views and KRW Update 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:31Z",
+      "summary_points": [
+        "Hungarian Central Bank Meeting: MNB expected to hold rates and revise inflation target to 2.5% (from 3%), signaling dovish surprise vs hawkish expectations; key data release for FX positioning.",
+        "Geopolitical Inflation Risks: Russia threat and Iran War (Oct-25) cited as offshore inflation drivers, triggering PCE spike and policy tightening risk; critical for FX volatility (e.g., EUR/HUF).",
+        "Samsung/Hynix Concentration Risk: Combined MSCI Korea weight at 64% (vs 67% peak); each 1% concentration rise triggers $2bn rebalancing outflow, amplifying equity flow volatility.",
+        "US Equity Breadth Weakness: Only 31% of S&P stocks above 50-day MA (vs 80%+ peak), signaling severe breadth deterioration and short-term correction risk despite YTD gains.",
+        "Korean FX Policy Triggers: USDKRW range (1350-1400) sensitive to KOSPI momentum and BOK reserve actions; break above 1400 on KOSPI rally/gov't USD conversion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tdu9auuayaf-e90682",
+      "title": "GS Quinn MSCI EM Futures Widespread Selling in Mid September 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:05Z",
+      "summary_points": [
+        "EM Positioning Surge: MSCI EM non-dealer net positioning surged from ~$30B (Oct 2024) to >$50B (Sep 2026), driven by accelerating institutional inflows, particularly in late 2025–2026.",
+        "EM Funding Liquidity Shock: Sharp 85-point drop in MSCI EM funding (Mar 2026, ~95→~10) signals acute liquidity stress, with persistent pressure (Jul–Sep 2026 decline to ~25) raising debt sustainability and currency risk concerns.",
+        "Funding Recovery Reversal: Temporary post-Mar 2026 recovery to ~80 (Jun 2026) reversed sharply to ~25 by Sep 2026, indicating deteriorating conditions despite short-term relief."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7p4af43rjrt-f17192",
+      "title": "GS Garber GS Global Equities Call 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:01Z",
+      "summary_points": [
+        "Geopolitical Oil Volatility: Iran's Hormuz reopening offer, Saudi pipeline restart, WTI down 2.6% ($93.30), Gulf diplomacy, and Trump's UN speech driving Treasury yield declines (2yr-3bps, 10yr-2.5bps).",
+        "Fed Hawkish Drivers: Strong GDP (3.3% Q3), payrolls (162k Aug), core PCE at 0.27%—data releases fueling 25bp Fed hike expectation in October amid bifurcated economy (softening consumer spending).",
+        "Inflation Upside Risk: Oil peak $120+ in 2027H1 could surge PCE Energy Inflation to 25%+, adding 3-5bp to core PCE through 2024 (critical hedging risk).",
+        "S&P Rebalance Flows: $1.6tn decline from S&P rebalance, Q3 2026 trading volume surge (27.9bn vs 17.3bn avg), driving rebalance-driven technical flows.",
+        "Energy Cost Inflation: Refined products down 10% (2024), energy costs boosting core PCE by 3-5bp through end 2024, contributing to 15% energy inflation before falling to 3% in March."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-4zyqktnbhxh-4e9797",
       "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",

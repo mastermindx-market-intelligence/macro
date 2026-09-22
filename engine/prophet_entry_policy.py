@@ -19,6 +19,7 @@ from collections.abc import Mapping
 from datetime import date, datetime, time
 from hashlib import sha256
 import json
+import math
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -33,6 +34,11 @@ SCHEMA = "prophet.entry_policy_fact/v1"
 SESSION_POLICY_VERSION = "early-leadership-sector-rotation-session-rth-v2"
 SESSION_POLICY_ERA = "NYSE_RTH_2026"
 GATE = "session_eligibility"
+
+RISK_POLICY_VERSION = "early-leadership-sector-rotation-risk-atr-v1"
+RISK_POLICY_ERA = "B4_RISK_ATR_2_0_2026_09_22"
+RISK_GATE = "risk_ceiling"
+RISK_ATR_CEILING = 2.0
 
 ET = ZoneInfo("America/New_York")
 _RTH_OPEN_ET = time(9, 30)
@@ -204,6 +210,100 @@ def evaluate_session_eligibility(
         "reason": reason,
         "policy_receipt": policy_receipt,
         "session_receipt": session_receipt,
+    }
+    payload["fact_receipt"] = (
+        "pepf:" + sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+    )
+    return payload
+
+
+def _finite_positive_number(value: object, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise EntryPolicyContractError(f"{field} must be numeric")
+    number = float(value)
+    if not math.isfinite(number) or number <= 0:
+        raise EntryPolicyContractError(f"{field} must be finite and > 0")
+    return number
+
+
+def _risk_policy_material(strategy_definition_id: str) -> dict[str, object]:
+    return {
+        "schema": SCHEMA,
+        "gate": RISK_GATE,
+        "strategy_id": STRATEGY_ID,
+        "strategy_definition_id": strategy_definition_id,
+        "entry_policy_version": ENTRY_POLICY_VERSION,
+        "horizon": "2_15_SESSIONS",
+        "horizon_role": "new_entry",
+        "scientific_status": "CONTROL_ONLY",
+        "authority_tier": "SHADOW_ONLY",
+        "risk_policy_version": RISK_POLICY_VERSION,
+        "risk_policy_era": RISK_POLICY_ERA,
+        "method": "STRUCTURAL_INVALIDATION_DISTANCE_ATR",
+        "risk_atr_ceiling": RISK_ATR_CEILING,
+        "threshold_status": "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED",
+        "calibration_requirement": "PROSPECTIVE_OR_OOS_SAME_TAPE_WITH_COSTS",
+        "geometry_owner": "incumbent_entry_owner_invalidation",
+        "volatility_input": "owner_supplied_atr",
+        "universal_percent_ceiling": None,
+        "authority": {
+            "can_rank": False,
+            "can_admit_candidate": False,
+            "can_size": False,
+            "can_execute": False,
+            "can_trade": False,
+        },
+    }
+
+
+def evaluate_risk_ceiling(
+    *,
+    strategy_definition: Mapping[str, Any],
+    current_price: float,
+    invalidation_price: float,
+    atr: float,
+) -> dict[str, object]:
+    """Return the shadow/control B4 ``risk_ceiling`` owner fact.
+
+    The policy deliberately avoids a universal percent-of-price stop rule.  It
+    measures the incumbent structural invalidation distance in ATR units and
+    applies one era-stamped operation constant.  The constant is not a calibrated
+    optimum and cannot establish promotion, sizing, execution or trade authority.
+    """
+
+    validate_strategy_definition(strategy_definition)
+    strategy_definition_id = str(strategy_definition["strategy_definition_id"])
+    price = _finite_positive_number(current_price, "current_price")
+    invalidation = _finite_positive_number(invalidation_price, "invalidation_price")
+    atr_value = _finite_positive_number(atr, "atr")
+
+    risk_distance = price - invalidation
+    risk_atr_raw = risk_distance / atr_value
+    risk_pct_raw = 100.0 * risk_distance / price
+
+    if risk_distance <= 0:
+        verdict = "FAIL"
+        reason = "STRUCTURAL_INVALIDATION_NOT_BELOW_PRICE"
+    elif risk_atr_raw <= RISK_ATR_CEILING:
+        verdict = "PASS"
+        reason = "STRUCTURAL_RISK_WITHIN_ATR_CEILING"
+    else:
+        verdict = "FAIL"
+        reason = "STRUCTURAL_RISK_ABOVE_ATR_CEILING"
+
+    policy_material = _risk_policy_material(strategy_definition_id)
+    policy_receipt = "pep:" + sha256(_canonical_json(policy_material).encode("utf-8")).hexdigest()
+
+    payload = {
+        **policy_material,
+        "current_price": price,
+        "invalidation_price": invalidation,
+        "atr": atr_value,
+        "risk_to_invalidation_atr": round(risk_atr_raw, 6),
+        "risk_to_invalidation_pct": round(risk_pct_raw, 6),
+        "verdict": verdict,
+        "reason": reason,
+        "policy_receipt": policy_receipt,
     }
     payload["fact_receipt"] = (
         "pepf:" + sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
