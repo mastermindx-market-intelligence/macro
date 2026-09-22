@@ -300,3 +300,80 @@ Lane C remains exact head fdd731f18a7634c57cdc83fc80cbe13811ec745e and has forma
 A proof-only composition of those exact A+C heads produced conflict-free merge tree 83a75b67320c00a73f16b7b4f6e3f57be4882025. The environment refused a synthetic commit object and Lane F did not retry that effect. Read-only extracted-tree execution passed A semantics 125/0 with one repository-global deselection, C subsector 106/0, and C ThemeState/leadership/builder 55/0. The combined tree contains the three Lane C suites and Lane A existing-owner CI registration plus Foresight scope. This closes the A+C source/CI composition uncertainty as proof, not release.
 
 Lane B and Lane E still have dirty local worktrees but no pushed immutable branch/PR return. They remain NOT_YET_PROVEN and their active writer custody is preserved.
+
+## 2026-09-22 checkpoint — fresh-session continuation
+
+**FINALIZATION_CLASSIFICATION:** `CHECKPOINTED_CONTINUATION`  
+**MISSION_COMPLETE:** `false`
+
+### Fresh canonical frontier
+
+- Protected procedure: `mastermindx-market-intelligence/Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1`.
+- Skillpack: `mastermind.sol_skillpack.v1` / `1.0.1` / bootstrap-major `1`.
+- Loaded from that exact pin: `INDEX.md`, `COLD_START.md`, `ACTIVE_EXECUTION.md`, `RECONCILE_STATE.md`, and `CLOSEOUT.md`.
+- Macro `main` observed at checkpoint: `1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee` / tree `74ea252ed3183558104de2b43b2f5b28b06e02e6`.
+- Lane F carrier before this checkpoint commit: Macro PR **#7453** at `5944f777348168da8a2625c0091364e57508c42f` / tree `cc399b306d08c213f94c37bae109e44007345b63`, Draft/HOLD, unmerged.
+
+### Accepted capability / DO NOT REDO
+
+- Lane F evaluator v2 hardening is accepted as bounded evaluation capability: real Medical Devices path, source-native clocks, stale/null preservation, mixed-generation refusal, and **11/11** false-green mutations. Do not rebuild this harness merely because the session changed.
+- Lane A PR **#7526** is now **MERGED** at merge `597bedad6cf1240150a5804522b1b75fe3baa2f3`. Do not reopen the completed WATCH/PRECIPICE/clock/transition/evidence-identity repair absent a material invalidator.
+- Lane C PR **#7455** remains Draft/HOLD at `fdd731f18a7634c57cdc83fc80cbe13811ec745e` / tree `364800eb95db9c33255a41acaa76fef10b2564e9`; bounded semantic/source review is **APPROVED** by review `5261931678`.
+- The immutable Lane A + Lane C composition proof is **PASS** at merge tree `83a75b67320c00a73f16b7b4f6e3f57be4882025`. It proves the existing-owner CI registration against the actual Lane C suites with authority unchanged. **DO NOT REDO** unless source/dependency/contract movement materially invalidates it.
+- Lane D PR **#7508** exact current head `a24458aa90eeaffb6230d3da414bff3256a9ab9d` has hosted fences **SUCCESS** (`35553278837`), hosted CI **SUCCESS** (`35553279095`), and exact-head source/integration **APPROVED** by review `5262765409`. Its source contract is released for Lane A consumption; this is not independent merge/deploy authority.
+- Held research #7064/#7095 remains DO_NOT_REDO. Lane F still does not edit A–E production source or create replacement ThemeState/evaluation/publication/control planes.
+
+### Material new return — Lane E
+
+Lane E now has an immutable GitHub carrier and is no longer `NOT_YET_PROVEN` merely for lack of a return:
+
+- Macro PR **#7664** — `feat(theme): integrate unified opportunity card v5`.
+- Actual current head: `a82e98f23589a4f0eda0f326d980505fb3b86755`.
+- GitHub metadata: open, **Ready** (`draft=false`), unmerged, mergeable.
+- Exact-head fences `35680798060`: **SUCCESS**.
+- Exact-head CI `35680798231`: **SUCCESS**.
+- Submitted GitHub reviews at checkpoint: **none**.
+- PR prose still describes earlier candidate `abbba224e65019e43610aa1259bd2de2f44deb56` and says the carrier is intentionally Draft. Treat that body as stale on exact-head/release state until reconciled.
+- The presentation contract claims composition of merged Lane A plus released Lane D, keeps all rank/gate/size/escalate/trade authority false, and deliberately leaves route-owner mounting/publication to incumbent owners. Fixture browser evidence is not deployed-browser proof.
+
+This exact Lane E return is the **highest-leverage next Lane F acceptance target**.
+
+### Lane B
+
+An exact GitHub PR search for operation `theme-intelligence-b-economic-evidence-20260919-sol-001` found no immutable PR return at this checkpoint. Lane B remains `NOT_YET_PROVEN`; do not infer a return from similarly named or unrelated PRs.
+
+### Lane F hosted / review truth
+
+For the last semantic Lane F head `5944f777348168da8a2625c0091364e57508c42f`:
+
+- fences: **SUCCESS**;
+- all twelve semantic `ci-pack-*` jobs: **SUCCESS**;
+- semantic verdict enforcement: **SUCCESS**;
+- `contract-delta`: **FAIL** solely because `tests/test_unified_dashboard_b1.py` is an unwired new pytest suite (`1 introduced / 0 inherited`);
+- final `ci-gate`: **FAIL** only at contract-delta enforcement;
+- submitted GitHub reviews on PR #7453: **none**.
+
+Do not attribute the unrelated `test_unified_dashboard_b1.py` ownership defect to Lane F product semantics. It remains an external CI-admission issue, not product acceptance.
+
+### Effects, proof, and gates
+
+- `EFFECT_UNKNOWN`: **none known** at this checkpoint.
+- Lane F merge: **not performed**.
+- Theme Intelligence package deployment/publication: **not proven by Lane F**.
+- Deployed-byte/browser acceptance: **not proven**.
+- Prospective outcome maturity / predictive edge: **not proven**.
+- No durable watcher or autonomous wake is claimed.
+- The parent Theme Intelligence convergence mission remains incomplete.
+
+### Exact next action
+
+A fresh Lane F session should:
+
+1. Re-pin protected Skillpack and PR #7453, then read this cumulative checkpoint.
+2. Re-pin **PR #7664 actual head `a82e98f23589a4f0eda0f326d980505fb3b86755`**, not the stale candidate SHA in its body.
+3. Perform exact-head independent Lane E acceptance over the real A + D presentation composition: preserve owner provenance/evidence identity; test stale/partial/unavailable and member-vs-group qualification boundaries; prove all authority remains false; verify route-owner files were not silently taken over; distinguish fixture/browser evidence from deployed-browser proof.
+4. Submit a GitHub **PASS** or **REQUEST_CHANGES** bound to that exact Lane E head and return the result to Lane A through the accepted carriers.
+5. Only after the Lane E exact-head disposition, recover a Lane B immutable return if one now exists and finish package-level release-readiness synthesis.
+
+**Intended resume surface:** Lane F stays on Macro PR **#7453**; first review target is Macro PR **#7664**. A fresh chat does not transfer source custody or waive any release gate.
+
