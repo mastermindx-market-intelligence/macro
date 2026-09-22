@@ -38,9 +38,11 @@
       "mutation": "false_queue_admission"
     }
   ],
+  "owner_basket_binding_gaps": 2,
   "preview_origin": "UNPUBLISHED_DRAFT_OVERLAY_NOT_CANONICAL_QUEUE",
   "production_source_changed": false,
   "proposal_drafts": 2,
+  "raw_source_membership_receipt_sets": 8,
   "review_accepted": false,
   "reviewed_gap_concepts": 5,
   "schema_valid_exports": 16,

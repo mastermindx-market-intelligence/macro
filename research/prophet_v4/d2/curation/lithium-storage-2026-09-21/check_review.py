@@ -32,6 +32,19 @@ def validate_bundle(f,r,ds):
     assert rels[0] in left['relations'] and rels[1] in right['relations']
    observed.append(p['company_node_id'])
   assert sorted(set(observed))==n['company_node_ids'] and len(set(observed))==n['recorded_company_count']
+ receipts={x['source_code']:x for x in f['source_membership_receipts']};assert set(receipts)=={'300733','307822'}
+ concept_map=json.loads((W/'data/baskets_china_ths/concept_map.json').read_text());membership=json.loads((W/'data/baskets_china_ths/membership.json').read_text())
+ tracked={str(v.get('ths_concept')).strip():str(k) for k,v in (membership.get('baskets') or {}).items() if isinstance(v,dict) and str(v.get('ths_concept') or '').strip()}
+ for code,label in [('300733','锂电池概念'),('307822','动力电池回收')]:
+  rr=receipts[code];assert rr['label_zh']==label and rr['node_id']=='ltheme:ths:'+code
+  assert concept_map['asof']=='2026-09-05' and concept_map['map'][label]==code
+  assert label not in tracked and rr['current_owner_binding']['basket_id'] is None and rr['current_owner_binding']['state']=='OWNER_BASKET_NOT_BOUND'
+  assert rr['graph_membership_state']=='NO_RECORDED_MEMBER_PATH' and rr['source_shape']=='ths_concept_dump'
+  assert len(rr['snapshots'])==4
+  for snap in rr['snapshots']:
+   raw=(W/snap['path']).read_bytes();assert hashlib.sha256(raw).hexdigest()==snap['sha256']
+   doc=json.loads(raw);members=doc[label];tickers=sorted({str(x.get('ticker') or x.get('code')) for x in members if isinstance(x,dict) and (x.get('ticker') or x.get('code'))})
+   assert len(tickers)==snap['member_count'] and hashlib.sha256('\n'.join(tickers).encode()).hexdigest()==snap['member_set_sha256']
  for c in f['comparisons']:
   a,b=byid[c['node_id']],byid[c['control_node_id']];present=bool(a['membership_paths']) and bool(b['membership_paths'])
   assert c['semantic_mapping_proven'] is False and c['scope']=='EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME'
@@ -50,7 +63,7 @@ def validate_bundle(f,r,ds):
   assert d['canonical_queue_status_before']==d['canonical_queue_status_after']=='NO_PROPOSAL'
   assert not d['adjudication_applied']
   assert d['draft_proposal_id'] is None or d['draft_proposal_id'] in ids
- assert r['closed_counts']=={'reviewed_gap_concepts':5,'source_membership_required':2,'draft_mapping_scope_reviews':2,'application_scope_holds':1,'canonical_proposals_added':0,'ratifications':0,'new_graph_mappings':0}
+ assert r['closed_counts']=={'reviewed_gap_concepts':5,'source_membership_receipts_present_owner_binding_required':2,'draft_mapping_scope_reviews':2,'application_scope_holds':1,'canonical_proposals_added':0,'ratifications':0,'new_graph_mappings':0}
 validate_bundle(facts,review,drafts)
 mutations=[]
 for label in ['missing_becomes_zero','inflate_overlap','scope_laundering','invent_member','forged_proposal_subject','ratified_without_authority','false_queue_admission']:
@@ -75,5 +88,5 @@ for item in items:
  assert result['relation']['state']=='RELATION_ABSENT' and result['proposal']['status']=='proposed'
 assert json.loads((E/'draft-worklist-preview.json').read_text())['document']==wl
 assert len(canonical)==234 and all(hashlib.sha256((W/p).read_bytes()).hexdigest()==h for p,h in facts['canonical_inputs'].items())
-result={'source_head':facts['source_head'],'actual_cli_exports':len(facts['commands']),'all_cli_exit_zero':all(x['exit_code']==0 for x in facts['commands']),'schema_valid_exports':len(facts['exports']),'reviewed_gap_concepts':5,'mapped_controls':3,'proposal_drafts':2,'canonical_queue_rows':234,'detached_worklist_to_review_roundtrips':2,'preview_origin':'UNPUBLISHED_DRAFT_OVERLAY_NOT_CANONICAL_QUEUE','mutations':mutations,'canonical_input_hashes_unchanged':11,'graph_or_queue_writes':0,'production_source_changed':False,'ci_polled':False,'external_primary_sources':len(review['primary_sources']),'review_accepted':False}
+result={'source_head':facts['source_head'],'actual_cli_exports':len(facts['commands']),'all_cli_exit_zero':all(x['exit_code']==0 for x in facts['commands']),'schema_valid_exports':len(facts['exports']),'reviewed_gap_concepts':5,'mapped_controls':3,'proposal_drafts':2,'canonical_queue_rows':234,'detached_worklist_to_review_roundtrips':2,'preview_origin':'UNPUBLISHED_DRAFT_OVERLAY_NOT_CANONICAL_QUEUE','mutations':mutations,'canonical_input_hashes_unchanged':11,'graph_or_queue_writes':0,'production_source_changed':False,'ci_polled':False,'external_primary_sources':len(review['primary_sources']),'raw_source_membership_receipt_sets':sum(len(x['snapshots']) for x in facts['source_membership_receipts']),'owner_basket_binding_gaps':2,'review_accepted':False}
 assert result==json.loads((E/'verification.json').read_text());print(json.dumps(result,indent=2))

@@ -2,7 +2,7 @@
 
 ## Outcome and authority
 
-Five previously unmapped, no-proposal local concepts now have source-code-bound evidence-review dispositions: **two nonexclusive `EXPRESSES` candidates, one application-scope hold, and two source-membership gaps**. Two standard proposal drafts can be inspected through the existing worklist and proposal-review consumers. **No draft was added to the canonical queue, no proposal was ratified, and no graph mapping changed.** This packet is research evidence, not a second curation ledger or approval system.
+Five previously unmapped, no-proposal local concepts now have source-code-bound evidence-review dispositions: **two nonexclusive `EXPRESSES` candidates, one application-scope hold, and two source-membership receipts with unresolved owner-basket binding**. Two standard proposal drafts can be inspected through the existing worklist and proposal-review consumers. **No draft was added to the canonical queue, no proposal was ratified, and no graph mapping changed.** This packet is research evidence, not a second curation ledger or approval system.
 
 The active operation remains `gmi-theme-ontology-d2d-20260827-sol-001`, macro PR #7462. The source reader commit is `d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3`; governing procedure is protected Mastermind `ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e`. Sol retains source/release custody. The Chairman prioritized build-forward work over waiting for CI; release checks remain deferred, not waived.
 
@@ -14,15 +14,15 @@ Both requested graph clocks are 2026-09-21. The stored graph was generated at **
 
 | Exact local concept | Source label | Recorded member paths | Shared with storage control | Research disposition |
 | --- | --- | --- | --- | --- |
-| `ltheme:ths:300733` | 锂电池概念 | No recorded member path | Not comparable | Source membership required; do not fabricate a mapping from “lithium.” |
-| `ltheme:ths:307822` | 动力电池回收 | No recorded member path | Not comparable | Source membership and scope required; recycling is not automatically extraction or grid storage. |
+| `ltheme:ths:300733` | 锂电池概念 | No recorded graph member path | Not comparable | Raw source membership receipts exist; stable owner `basket_id` is absent. Do not fabricate a graph or canonical mapping. |
+| `ltheme:ths:307822` | 动力电池回收 | No recorded graph member path | Not comparable | Raw source membership receipts exist; stable owner `basket_id` is absent. Recycling is not automatically extraction or grid storage. |
 | `ltheme:ths:308294` | 固态电池 | 12 distinct graph companies | 5 of the 15-member control | **Application-scope hold**; exact THS definition does not establish grid-specific use, so overlap cannot promote it to a candidate. |
 | `ltheme:ths:301096` | 钠离子电池 | 20 distinct graph companies | 2 of the 15-member control | **Nonexclusive `EXPRESSES` candidate**; exact THS definition explicitly spans grid/renewable storage and electric transport. |
 | `ltheme:ths:301174` | 钒电池 | 16 distinct graph companies | 1 of the 15-member control | **Nonexclusive `EXPRESSES` candidate**; exact THS definition places vanadium redox-flow batteries in long-duration storage context. |
 
 “Recorded member paths” counts distinct graph-company IDs reached through the existing `MEMBER_OF → EXPRESSES` path. It does not imply a complete vendor universe, unified issuer/security coverage or direct local-theme membership. Both edge receipts, their clocks, rights and intermediate basket IDs are retained in `facts.json`. No fuzzy ticker or label join was performed.
 
-The two missing-path concepts exist in the source-code map, but no corresponding member path was found in the stored graph. Their comparisons are **null/not comparable**, not zero-overlap findings. The same source membership document has no lithium-battery or recycling basket under those source labels; no similarly named basket was substituted.
+The two missing-path concepts exist in the source-code map, but no corresponding member path was found in the stored graph. Their comparisons are **null/not comparable**, not zero-overlap findings. The current `membership.json` has no lithium-battery or recycling `ths_concept` basket binding; no similarly named basket was substituted. Separate raw THS snapshots do contain label-keyed memberships, documented below, but D2C correctly refuses `ths_concept_dump` rows as graph membership because their concept→basket resolution is current-basis.
 
 ## Controls and why they matter
 
@@ -42,7 +42,15 @@ All three existing mapped controls remain untouched. Shared-name counts are desc
 
 **Solid-state:** the exact THS definition for source code `308294` / displayed index `886032` defines the battery technology but does **not** establish grid-specific application scope [S7]. ORNL lists vehicle, grid, portable-electronics and aerospace applications for its described technology [S4]. The five shared storage-control names therefore remain descriptive and cannot substitute for the missing semantic scope. **Disposition: application-scope hold; no proposal draft is retained.**
 
-The five THS pages are exact source-code-bound definition receipts [S5–S9]. They establish board-definition scope only: they are not dated membership receipts, issuer exposure measurements, current market forecasts, or redistribution permission. In particular, the lithium-battery and recycling definitions [S5–S6] do not fill the two stored membership gaps.
+The five THS pages are exact source-code-bound definition receipts [S5–S9]. They establish board-definition scope only; the definition pages themselves are not dated membership receipts, issuer exposure measurements, current market forecasts, or redistribution permission. Dated membership evidence comes separately from the stored raw THS snapshots below and still does not create a stable owner basket binding.
+
+## Source-native membership receipts — evidence present, owner binding absent
+
+The stored THS raw concept snapshots provide genuine point-in-time **label-keyed** member sets for both missing graph concepts. For `锂电池概念`, counts are 10 on 2026-06-30 and 50 on each of 2026-08-22, 2026-08-29 and 2026-09-05. For `动力电池回收`, counts are 20, 50, 50 and 50 on those same dates. `facts.json` records each snapshot path, file SHA256, member count and normalized member-set SHA256.
+
+This closes the narrow claim “no source membership receipt exists,” but **does not close graph admission**. The raw snapshot shape is `ths_concept_dump`; `engine/basket_membership_pit.py` states that its members are point-in-time while concept→basket resolution is current-basis. Current `data/baskets_china_ths/membership.json` tracks 237 THS concepts and binds neither of these labels to a `basket_id`. The current `concept_map.json` binds the labels to source codes `300733` and `307822` only as of **2026-09-05**.
+
+D2C therefore intentionally excludes all `ths_concept_dump` rows from theme-graph `MEMBER_OF` truth: admitting them would backdate a mapping not historically possessed. The correct remaining gate is a curated stable owner-basket binding under the existing THS source owner, followed by the owner's lawful forward-only process. This packet does **not** create that binding and does not write graph or queue state.
 
 ## Drafts and the existing consumer path
 
@@ -73,7 +81,7 @@ No production reader, graph, crosswalk, identity owner or queue implementation c
 
 ## Remaining decisions and exact next action
 
-Before any queue admission or curated ratification, independently review the **two retained nonexclusive candidates**. Keep solid-state on **application-scope hold** unless new exact evidence resolves grid relevance. For the two missing-path concepts, use the existing THS source owner to obtain lawful dated membership evidence; never populate the graph from a near-name match. A source-backed abstention is a valid outcome.
+Before any queue admission or curated ratification, independently review the **two retained nonexclusive candidates**. Keep solid-state on **application-scope hold** unless new exact evidence resolves grid relevance. For the two missing-path concepts, the raw dated source receipts are now present. The remaining gate is independent source-owner curation of a stable exact `basket_id` binding; never import the raw dump directly, backdate that binding, or populate the graph from a near-name match. A source-backed abstention remains a valid outcome.
 
 The previous code-review request did not yield approval: the native reviewer failed to resolve the published d9734be ref (comment 5761538658). That is a reviewer ref-resolution failure, not proof the source was absent from GitHub and not a passing review. Reconcile on the same PR before a changed-head review request. Latest-base integration, applicable CI and required independent acceptance still gate release.
 

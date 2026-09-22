@@ -8,7 +8,7 @@
     "new_graph_mappings": 0,
     "ratifications": 0,
     "reviewed_gap_concepts": 5,
-    "source_membership_required": 2
+    "source_membership_receipts_present_owner_binding_required": 2
   },
   "coverage_unchanged": true,
   "decisions": [
@@ -27,14 +27,15 @@
       "draft_proposal_id": null,
       "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
       "label_zh": "锂电池概念",
-      "next_action": "Obtain a source-code-bound dated membership receipt through the existing THS producer; retain null/not-comparable membership analysis meanwhile.",
+      "next_action": "Independent curation/source-owner review must decide whether and how this exact concept receives a stable basket_id under the existing THS owner. Do not import raw snapshot rows directly into graph truth, backdate a current concept-to-basket binding, or infer a canonical theme mapping from membership alone.",
       "node_id": "ltheme:ths:300733",
       "primary_source_ids": [
         "THS_DEF_300733"
       ],
-      "rationale": "The exact THS definition confirms a lithium-battery concept and automotive-electrification context, but the stored graph still has no direct or basket-to-local membership path. Definition scope is not a substitute for dated local membership evidence and does not establish Critical Minerals or Grid expression.",
-      "research_disposition": "SOURCE_MEMBERSHIP_REQUIRED",
-      "source_code": "300733"
+      "rationale": "Exact THS definition confirms the lithium-battery concept. Four stored raw THS snapshots (2026-06-30, 2026-08-22, 2026-08-29, 2026-09-05) contain label-keyed source memberships, but current membership.json does not bind 锂电池概念 to any basket_id. D2C correctly excludes ths_concept_dump rows from graph membership because their concept-to-basket resolution is current-basis. Source evidence is now present; stable owner binding and graph admission remain absent.",
+      "research_disposition": "SOURCE_MEMBERSHIP_RECEIPTS_PRESENT_OWNER_BINDING_REQUIRED",
+      "source_code": "300733",
+      "source_membership_receipt_id": "THS_RAW_PIT_300733"
     },
     {
       "adjudication_applied": false,
@@ -102,14 +103,15 @@
       "draft_proposal_id": null,
       "falsifier": "An exact source-scope receipt or independently accepted owner curation with matching node/code, relation meaning and clocks changes the relevant evidence; label similarity or a larger overlap alone does not.",
       "label_zh": "动力电池回收",
-      "next_action": "Obtain the exact source-board dated membership receipt through the existing THS producer; do not substitute a similarly named basket.",
+      "next_action": "Independent curation/source-owner review must decide whether and how this exact concept receives a stable basket_id under the existing THS owner. Do not import raw snapshot rows directly into graph truth, backdate a current concept-to-basket binding, or infer a canonical theme mapping from membership alone.",
       "node_id": "ltheme:ths:307822",
       "primary_source_ids": [
         "THS_DEF_307822"
       ],
-      "rationale": "The exact THS definition confirms power-battery recycling, traceability and echelon-use policy scope. The stored graph still has no recorded member path, and recycling must not be inferred to equal raw-material extraction or stationary storage.",
-      "research_disposition": "SOURCE_MEMBERSHIP_REQUIRED",
-      "source_code": "307822"
+      "rationale": "Exact THS definition confirms power-battery recycling. Four stored raw THS snapshots (2026-06-30, 2026-08-22, 2026-08-29, 2026-09-05) contain label-keyed source memberships, but current membership.json does not bind 动力电池回收 to any basket_id. D2C correctly excludes ths_concept_dump rows from graph membership because their concept-to-basket resolution is current-basis. Source evidence is now present; stable owner binding and graph admission remain absent.",
+      "research_disposition": "SOURCE_MEMBERSHIP_RECEIPTS_PRESENT_OWNER_BINDING_REQUIRED",
+      "source_code": "307822",
+      "source_membership_receipt_id": "THS_RAW_PIT_307822"
     },
     {
       "adjudication_applied": false,
@@ -145,7 +147,7 @@
     "review_previews": 2,
     "rows_written_to_queue": 0
   },
-  "external_source_boundary": "Exact public THS definition receipts are source-code-bound scope evidence only. They do not supply dated local membership receipts, authorize redistribution, admit proposals, ratify mappings, or write graph truth.",
+  "external_source_boundary": "Exact public THS definition receipts are source-code-bound scope evidence only. Stored THS raw snapshots additionally provide label-keyed PIT membership receipts, but they do not create the missing stable owner basket_id, authorize redistribution, admit proposals, ratify mappings, or write graph truth.",
   "primary_sources": [
     {
       "boundary": "A historical grid application; does not define THS board 301174 or verify its individual issuers.",
@@ -244,8 +246,8 @@
       "url": "https://q.10jqka.com.cn/gn/detail/code/301174/"
     }
   ],
-  "procedure_pin": "ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e",
+  "procedure_pin": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
   "proposal_draft_count": 2,
-  "scope": "Research synthesis for five exact gaps plus controls: two nonexclusive EXPRESSES candidates, one application-scope hold, and two source-membership gaps; not an exhaustive classifier, approved curation act, queue, or new workflow authority.",
+  "scope": "Research synthesis for five exact gaps plus controls: two nonexclusive EXPRESSES candidates, one application-scope hold, and two source-membership receipts whose stable owner basket binding is absent; not an exhaustive classifier, approved curation act, queue, or new workflow authority.",
   "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
 }

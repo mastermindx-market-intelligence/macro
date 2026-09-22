@@ -437,6 +437,7 @@
     "Overlap does not establish equivalence, cause, mapping permission or trading authority.",
     "No graph, queue, crosswalk, identity, rank, size or trade writes."
   ],
+  "membership_receipt_observed_at_head": "ccf8115bcea2de6992173edfa14a89096cce78f4",
   "procedure_pin": "6f321cb42166e4224e5107ac3312a6f7cd01fffa",
   "records": [
     {
@@ -7759,5 +7760,108 @@
       ]
     }
   ],
-  "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+  "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3",
+  "source_membership_receipt_boundary": "Eight label-keyed THS raw snapshot member sets exist for the two missing graph concepts, but both lack a current membership-owner basket_id. They resolve the source-evidence gap, not the owner-binding or graph-admission gap.",
+  "source_membership_receipts": [
+    {
+      "boundary": "Source-native label-keyed memberships are point-in-time snapshots. The exact code binding is observed in the 2026-09-05 concept map, while the current membership owner has no basket_id for this concept. Raw rows must not be imported directly into graph truth or used to backdate a current concept-to-basket mapping.",
+      "concept_code_binding": {
+        "asof": "2026-09-05",
+        "code": "300733",
+        "source": "data/baskets_china_ths/concept_map.json"
+      },
+      "current_owner_binding": {
+        "basket_id": null,
+        "source": "data/baskets_china_ths/membership.json",
+        "state": "OWNER_BASKET_NOT_BOUND",
+        "tracked_ths_concept": false
+      },
+      "graph_membership_state": "NO_RECORDED_MEMBER_PATH",
+      "label_zh": "锂电池概念",
+      "node_id": "ltheme:ths:300733",
+      "receipt_id": "THS_RAW_PIT_300733",
+      "snapshots": [
+        {
+          "member_count": 10,
+          "member_set_sha256": "03ac0746647f94a8f500ed849a6bf265b5afa6e30c17cc960a5ffb293c78473a",
+          "path": "data/baskets_china_ths/snapshots/2026-06-30.json",
+          "sha256": "884b9813d97a4457e898579d27230a26b9cf3a690f5b7916b136b1b94662ae86",
+          "snapshot_date": "2026-06-30"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "213bd39c2060d3aa38eb0263e13e59bd4ca6ad5c5d76bfc369769bfb24d56ee1",
+          "path": "data/baskets_china_ths/snapshots/2026-08-22.json",
+          "sha256": "c7a7fa83f4d71ef4f22a210df84b7c17df79d413f722ab85e6889320cca074cc",
+          "snapshot_date": "2026-08-22"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "d16dfcc5db65f601342da9da4799c3922d0f22cbe09c955bbc21464ab9aa37f4",
+          "path": "data/baskets_china_ths/snapshots/2026-08-29.json",
+          "sha256": "e3248d19d2fa1a00e63d5a459d725521f1253d6b67e8f7af058db81a8cae40ba",
+          "snapshot_date": "2026-08-29"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "8acf874aa372a8cc9e5d176592e6cc093aa863654b3acd6fd9c60557adead7d1",
+          "path": "data/baskets_china_ths/snapshots/2026-09-05.json",
+          "sha256": "38e178175d2f7f55e9dccf0846b91eeb39d5d41f891e381e5430ee362cf61082",
+          "snapshot_date": "2026-09-05"
+        }
+      ],
+      "source_code": "300733",
+      "source_shape": "ths_concept_dump"
+    },
+    {
+      "boundary": "Source-native label-keyed memberships are point-in-time snapshots. The exact code binding is observed in the 2026-09-05 concept map, while the current membership owner has no basket_id for this concept. Raw rows must not be imported directly into graph truth or used to backdate a current concept-to-basket mapping.",
+      "concept_code_binding": {
+        "asof": "2026-09-05",
+        "code": "307822",
+        "source": "data/baskets_china_ths/concept_map.json"
+      },
+      "current_owner_binding": {
+        "basket_id": null,
+        "source": "data/baskets_china_ths/membership.json",
+        "state": "OWNER_BASKET_NOT_BOUND",
+        "tracked_ths_concept": false
+      },
+      "graph_membership_state": "NO_RECORDED_MEMBER_PATH",
+      "label_zh": "动力电池回收",
+      "node_id": "ltheme:ths:307822",
+      "receipt_id": "THS_RAW_PIT_307822",
+      "snapshots": [
+        {
+          "member_count": 20,
+          "member_set_sha256": "bef431be44a469b4e54e0e42f26c7d105bc564f98b016cc92a2cfd4c5f62751d",
+          "path": "data/baskets_china_ths/snapshots/2026-06-30.json",
+          "sha256": "884b9813d97a4457e898579d27230a26b9cf3a690f5b7916b136b1b94662ae86",
+          "snapshot_date": "2026-06-30"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "875622fa2e16328a7391970d89eef38470538758888421859af5787919b32240",
+          "path": "data/baskets_china_ths/snapshots/2026-08-22.json",
+          "sha256": "c7a7fa83f4d71ef4f22a210df84b7c17df79d413f722ab85e6889320cca074cc",
+          "snapshot_date": "2026-08-22"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "3ff800a9aec44ba7dab86218913e896a799c0f6d17b51318ec410d2a85acd90e",
+          "path": "data/baskets_china_ths/snapshots/2026-08-29.json",
+          "sha256": "e3248d19d2fa1a00e63d5a459d725521f1253d6b67e8f7af058db81a8cae40ba",
+          "snapshot_date": "2026-08-29"
+        },
+        {
+          "member_count": 50,
+          "member_set_sha256": "496e28767fab248aaa55ad369fc9503a9ac0987835d37358432fd73ad6d6a7d5",
+          "path": "data/baskets_china_ths/snapshots/2026-09-05.json",
+          "sha256": "38e178175d2f7f55e9dccf0846b91eeb39d5d41f891e381e5430ee362cf61082",
+          "snapshot_date": "2026-09-05"
+        }
+      ],
+      "source_code": "307822",
+      "source_shape": "ths_concept_dump"
+    }
+  ]
 }

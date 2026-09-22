@@ -32,7 +32,7 @@ changed:
   what: Add 32 integrity/structural/boundary cases; repair raw-reader fixture IDs using the owner generator
     without removing cutoff, filtering or round-trip assertions.
 - path: research/prophet_v4/d2/curation/lithium-storage-2026-09-21/
-  what: Preserve the incumbent 24-file research packet while binding five exact THS definition receipts; final synthesis is two nonexclusive EXPRESSES candidates (sodium-ion, vanadium), one solid-state application-scope hold, and two source-membership gaps (lithium batteries, power-battery recycling). No canonical admission, ratification or graph write.
+  what: Preserve the incumbent 24-file research packet while binding five exact THS definition receipts and eight label-keyed raw PIT membership receipt sets. Final synthesis is two nonexclusive EXPRESSES candidates (sodium-ion, vanadium), one solid-state application-scope hold, and two owner-basket binding gaps (lithium batteries, power-battery recycling). No canonical admission, ratification or graph write.
 verified:
 - claim: Input integrity failures reproduce and are repaired.
   command: structural-navigation-20260921/red.log, integrity-green.log, parent-family-red.log and owner-final.log
@@ -52,7 +52,7 @@ verified:
     open and return member queries.
 - claim: Updated lithium/storage packet remains reproducible through the existing portable verifier.
   command: PYTHONDONTWRITEBYTECODE=1 python3 research/prophet_v4/d2/curation/lithium-storage-2026-09-21/check_review.py
-  result: 16 preserved schema-valid exports; 2 retained proposal drafts; 2 detached worklist-to-review round trips; 7 mutation traps detected; 11 canonical input hashes unchanged; 234 canonical queue rows; 9 attributed external sources; zero graph/queue writes; review_accepted false.
+  result: 16 preserved schema-valid exports; 2 retained proposal drafts; 2 detached worklist-to-review round trips; 7 mutation traps detected; 11 canonical input hashes unchanged; 234 canonical queue rows; 9 attributed external sources; 8 raw THS membership receipt sets verified; 2 owner-basket binding gaps preserved; zero graph/queue writes; review_accepted false.
 unverified:
 - claim: Current candidate independent acceptance, latest-base integration and release.
   what_would_verify: Independent exact-head review, applicable concluded CI and immutable integration proof
@@ -68,9 +68,9 @@ unresolved:
 - Four prior identity-owner baseline failures remain unwaived.
 - Stored THS map has 375 codes versus 376 graph nodes; graph-only ltheme:ths:309263 remains preserved.
 - The prior source-update refusal was reconciled after the Chairman changed the session to Extra High: the same Remote Desktop Commander carrier executed the authorized source update with no ambiguous effect. Broader industry owner discovery remains unqualified.
-- Exact THS definitions do not supply dated local memberships; lithium-battery and power-battery-recycling remain membership gaps. Solid-state remains an application-scope hold.
+- Lithium-battery and power-battery-recycling now have four raw THS label-keyed PIT membership receipt sets each (2026-06-30, 2026-08-22, 2026-08-29, 2026-09-05), but current membership.json binds neither label to a basket_id. D2C intentionally excludes ths_concept_dump rows because current-basis concept→basket resolution cannot be backdated. These are owner-binding gaps, not source-evidence gaps. Solid-state remains an application-scope hold.
 next_actions:
-- Independently curate the two retained nonexclusive EXPRESSES candidates (sodium-ion and vanadium); keep solid-state on hold unless exact application evidence resolves grid relevance, and obtain lawful dated membership receipts for lithium-battery/recycling before any membership inference. Do not auto-admit, ratify or force mapping.
+- Independently curate the two retained nonexclusive EXPRESSES candidates (sodium-ion and vanadium). In parallel, source-owner curation must decide whether lithium-battery/recycling receive stable exact basket_id bindings; raw ths_concept_dump rows must not be imported directly or used to backdate current mappings. Keep solid-state held. Do not auto-admit, ratify or force mapping.
 - Consume actual new-head independent review and qualify latest-base integration and applicable checks before
   release.
 do_not_redo:
@@ -92,8 +92,7 @@ prs:
 ---
 
 MISSION_COMPLETE: false. Sol retains gmi-theme-ontology-d2d-20260827-sol-001, WS:GMI-THEME-GRAPH,
-original workspace/branch and macro PR7462. Protected pin ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e;
-compatible Skillpack1.0.1/bootstrap1. INDEX, COLD_START, ACTIVE_EXECUTION, RECONCILE_STATE and CLOSEOUT were fetched from that same protected commit before the source-bound update. Direct owner-seam adjudication was PRINCIPAL_JUDGMENT;
+original workspace/branch and macro PR7462. Current continuation procedure pin is protected Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1; compatible Skillpack1.0.1/bootstrap1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, RECONCILE_STATE, CLOSEOUT and the universal dialogue/routing laws were loaded from that same commit before this evidence refinement. Direct owner-seam adjudication was PRINCIPAL_JUDGMENT;
 the bounded repair/build stayed on the incumbent source carrier with LOWER_TOTAL_OVERHEAD.
 
 Evidence root: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/structural-navigation-20260921/.
@@ -109,6 +108,6 @@ sector-leg conventions and unregistered prefixes cannot originate a classificati
 references stay source-local, with original membership evidence/rights and no new parent graph node.
 Missing industry/subindustry binding is explicit OWNER_NOT_BOUND, not an invented classification.
 
-Stored graph generation remains2026-09-18T17:42:29Z. The lithium/storage packet now records exact THS definition receipts for 300733/885710, 307822/885944, 308294/886032, 301096/885928 and 301174/886003. Sodium-ion and vanadium remain research-only nonexclusive EXPRESSES candidates; solid-state is held; lithium/recycling still require dated source membership. No graph-data or crosswalk write, producer, curation act, queue admission, ratification, force mapping, public display or downstream ThemeState/cohort wave was invoked.
+Stored graph generation remains2026-09-18T17:42:29Z. The lithium/storage packet records exact THS definition receipts for 300733/885710, 307822/885944, 308294/886032, 301096/885928 and 301174/886003. It now also records eight raw label-keyed PIT member-set receipts for lithium/recycling across four THS snapshots. Current membership.json tracks 237 THS concepts but has no basket_id binding for either label, and D2C correctly excludes ths_concept_dump from graph MEMBER_OF truth. Sodium-ion and vanadium remain research-only nonexclusive EXPRESSES candidates; solid-state is held. No graph-data or crosswalk write, producer, curation act, queue admission, ratification, force mapping, public display or downstream ThemeState/cohort wave was invoked.
 The existing portable verifier passes on the updated packet. CI was not polled or rerun; release gates remain owed and Draft/HOLD remains until their normal acceptance path completes.
 Resume from the current PR/checkpoint state and fresh protected procedure, not chat history.
