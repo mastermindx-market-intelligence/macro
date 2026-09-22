@@ -10953,6 +10953,10 @@ jobs:
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
+      # 2026-09-22 contract-delta: current projection closure also reaches
+      # guidance-gap and valuation-event proposal logic.
+      - "engine/guidance_gap.py"
+      - "engine/valuation_event_proposal.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
