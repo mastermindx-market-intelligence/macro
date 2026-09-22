@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T12:50:42.127689+00:00",
-  "count": 2639,
+  "generated_at": "2026-09-22T13:05:45.297322+00:00",
+  "count": 2640,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -134,6 +134,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7p4af43rjrt-f17192",
+      "title": "GS Garber GS Global Equities Call 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:01Z",
+      "summary_points": [
+        "Geopolitical Oil Volatility: Iran's Hormuz reopening offer, Saudi pipeline restart, WTI down 2.6% ($93.30), Gulf diplomacy, and Trump's UN speech driving Treasury yield declines (2yr-3bps, 10yr-2.5bps).",
+        "Fed Hawkish Drivers: Strong GDP (3.3% Q3), payrolls (162k Aug), core PCE at 0.27%—data releases fueling 25bp Fed hike expectation in October amid bifurcated economy (softening consumer spending).",
+        "Inflation Upside Risk: Oil peak $120+ in 2027H1 could surge PCE Energy Inflation to 25%+, adding 3-5bp to core PCE through 2024 (critical hedging risk).",
+        "S&P Rebalance Flows: $1.6tn decline from S&P rebalance, Q3 2026 trading volume surge (27.9bn vs 17.3bn avg), driving rebalance-driven technical flows.",
+        "Energy Cost Inflation: Refined products down 10% (2024), energy costs boosting core PCE by 3-5bp through end 2024, contributing to 15% energy inflation before falling to 3% in March."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
