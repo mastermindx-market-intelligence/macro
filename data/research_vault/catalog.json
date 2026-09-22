@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T21:22:01.497046+00:00",
-  "count": 2664,
+  "generated_at": "2026-09-22T22:37:37.352617+00:00",
+  "count": 2668,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-tizdevlqjtq-9a0ceb",
+      "title": "GS Equities Color US EQUITIES COLOR CONSUMER INERTIA 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T21:50:37Z",
+      "summary_points": [
+        "Geopolitical Oil Relief: Iran Strait of Hormuz negotiations driving WTI down 124bps, with Trump's UN remarks on Iran deal amplifying near-term oil market relief.",
+        "Agentic AI Sector Pressure: \"Consumer Inertia\" basket (GSXUSWCH) down 2.58% as Agentic AI impacts PLNT (-9.45%) and NYT (-7.16%), signaling sector-specific risk.",
+        "NDX Record Divergence: NDX at record high (30,732) while SPX flat, VIX at 14.27, indicating tech outperformance amid mixed broader market technicals.",
+        "Hedge Fund Flow Shift: $953mm net sell by hedge funds in comms/consumer discretionary/financials vs. health care, reflecting sector rotation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-7keplmv3s4b-371985",
       "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
       "institution": "S&T",
@@ -138,6 +158,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-uw3dozsfktm-d8c8dd",
+      "title": "AutoZone Inc. (AZO) First Take 4Q SSS were much softer than expected; EPS beat driven by tariff refunds",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:33Z",
+      "summary_points": [
+        "EPS Beat Distorted by Tariff Refunds: Reported 4Q EPS $56.05 (beat $54.11) driven by tariff refunds; excluding refunds, EPS ~$51.46 vs. estimate $54.11.",
+        "Margin Inflation from Refunds: Gross margin 53.3% (beat 51.3%) and EBIT margin 20.0% (beat 19.5%) inflated by tariff refunds; excluding refunds, gross margin ~51.9% and EBIT margin ~18.5%.",
+        "Robust Capital Allocation: $698mn share repurchase (vs.",
+        "GS $500mn) and strong EBIT margin (20.0%) signal disciplined capital allocation amid inventory growth +10% y/y."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4td7o6oqoil-9942ad",
       "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
       "institution": "Goldman Sachs",
@@ -154,6 +194,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-myupfoq2jra-432a53",
+      "title": "CATL (300750.SZ) ESS Open Day Takeaways Deepening Moat in the System Integration Transition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:09Z",
+      "summary_points": [
+        "System Integration Moat: CATL’s shift to full-stack system intelligence (chemistry, thermal management, BMS/EMS, grid simulation) creates defensible differentiation beyond cell quality, validated by 3,000+ BESS projects and 10,000+ annual cell tests, reducing system-level risk.",
+        "Sodium-Ion as Strategic Catalyst: CATL’s RMB 10bn sodium-ion investment targets low-maintenance, long-duration ESS via resource self-sufficiency (25-year wind PPA win), addressing lithium volatility and enabling grid-forming tech for AIDC load volatility (50-100% fluctuations).",
+        "IRR Impact from Performance Metrics: 5ppt outperformance across key metrics (e.g., 0-100% DoD vs industry 5-95%) delivers 47ppt IRR uplift, directly linking technical differentiation to portfolio returns.",
+        "Policy-Driven Volatility Risk: Battery tax negotiations cause near-term demand timing volatility despite 40-50% global ESS growth (2027), with finalized projects facing implementation hurdles.",
+        "ESVL Framework for Reliability: CATL’s empirical validation (ESVL) enables 20-year BESS reliability via full-system stress-testing, de-risking projects and shifting ESS from demonstration to predictable returns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -212,6 +273,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-stru6ycbnaa-2d5181",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:26Z",
+      "summary_points": [
+        "Regional Valuation Discount: Korea (iPE 5.2) and Indonesia (iPE 8.7) trade at significant discounts vs.",
+        "Australia (iPE 18.1) and Singapore (iPE 17.6), driving divergent return expectations and potential re-rating catalysts.",
+        "Extreme Performance Divergence: Korea (101% YTD) and Taiwan (69% YTD) outperform sharply vs.",
+        "Indonesia (-40% YTD) and Philippines (-4% YTD), highlighting concentrated risk in emerging markets and sector-specific opportunities.",
+        "Equity-Bond Yield Gap: MXAPJ’s 440bp gap (-0.25 s.d.) signals mid-cycle valuations; stabilization could trigger re-rating, while Japan’s 150bp gap (-1.8s.d.) indicates overvaluation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
