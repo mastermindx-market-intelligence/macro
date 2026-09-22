@@ -6,7 +6,7 @@
 
 **Hold state:** DO NOT MERGE / HOLD-FOR-SOL — every merge path (manual, sweeper, `--admin`, `merge-on-green`) is bound by this hold per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`.
 
-**Head SHA:** `589726c5ce96dc9c1d3e10a08c1a8e1f8c2a7b3d` (W2-2 packet deliverable head — round 4/N refresh: BLOCKER 1/2 + MAJOR 3/4 + MINOR 1/2/3 fixes re-applied; DEC evidence aligned; plist XML well-formedness; 68 tests pass)
+**Head SHA:** `729d20d4c3b4022799581e0397aa2ddaab838573` (W2-2 packet deliverable head — round 5/N refresh: PR body Head SHA refreshed to current head; HOLD-FOR-SOL fields re-framed with Sol Authority/Release per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`; quote-block banner removed so it no longer shadows the Release condition field; 68 tests pass)
 **Base:** `origin/main` @ `2b427027a821dfc16407cc794eab15f83ae6874e` (current GitHub base ref OID)
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
 
