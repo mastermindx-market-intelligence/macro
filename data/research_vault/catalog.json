@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T12:21:11.565870+00:00",
-  "count": 2638,
+  "generated_at": "2026-09-22T12:50:42.127689+00:00",
+  "count": 2639,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-exsysnswyle-8b6574",
+      "title": "GS Crook GS MORNING NBH Preview US Inflation Path US Equities Update Brandon Brown Views and KRW Update 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:31Z",
+      "summary_points": [
+        "Hungarian Central Bank Meeting: MNB expected to hold rates and revise inflation target to 2.5% (from 3%), signaling dovish surprise vs hawkish expectations; key data release for FX positioning.",
+        "Geopolitical Inflation Risks: Russia threat and Iran War (Oct-25) cited as offshore inflation drivers, triggering PCE spike and policy tightening risk; critical for FX volatility (e.g., EUR/HUF).",
+        "Samsung/Hynix Concentration Risk: Combined MSCI Korea weight at 64% (vs 67% peak); each 1% concentration rise triggers $2bn rebalancing outflow, amplifying equity flow volatility.",
+        "US Equity Breadth Weakness: Only 31% of S&P stocks above 50-day MA (vs 80%+ peak), signaling severe breadth deterioration and short-term correction risk despite YTD gains.",
+        "Korean FX Policy Triggers: USDKRW range (1350-1400) sensitive to KOSPI momentum and BOK reserve actions; break above 1400 on KOSPI rally/gov't USD conversion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-tdu9auuayaf-e90682",
       "title": "GS Quinn MSCI EM Futures Widespread Selling in Mid September 22 Sep 2026",
