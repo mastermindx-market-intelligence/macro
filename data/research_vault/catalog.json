@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T01:34:29.187412+00:00",
-  "count": 2606,
+  "generated_at": "2026-09-22T01:49:53.780987+00:00",
+  "count": 2607,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -131,6 +131,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-npncdqqzhjh-0261fc",
+      "title": "Amundi ETF weekly pulse Europe equities",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:32:22Z",
+      "summary_points": [
+        "Central banks & oil spike: Fed/BoJ rate hikes (first since 2023) + oil >$100/bbl drive inflation fears; flows favor US large-cap equities and USD debt.",
+        "European equity rally: Strategic autonomy agenda (defense/energy/tech sovereignty) fuels Tech (+52.1% YTD) and Energy (+58.5% YTD) outperformance; risk premium (350bps vs US) offers compelling valuation.",
+        "EU Strategic Autonomy Index: 10 thematic sectors (e.g., Semiconductors, Energy) with ≥50% revenue threshold; theme capping ensures diversification; 43.52% weight in top 10 holdings reduces single-market risk.",
+        "Flow dynamics: European equities attract inflows due to asymmetric valuation (Europe +2.95% earnings yield vs Bund); euro area GDP surprise correlates with Stox Europe 600 performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
