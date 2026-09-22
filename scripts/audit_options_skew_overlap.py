@@ -160,42 +160,61 @@ def _select_legacy_rows(ledger: "object") -> "object":
     return ledger[ledger["source"].astype(str) == LEGACY_SOURCE]
 
 
-def _delta_stats(deltas: list[float]) -> dict[str, float | None]:
-    """p50/p90/max of |delta skew|, plus the count and sign-flip rate.
+def _delta_stats(pairs: list[tuple[float, float]]) -> dict[str, float | None]:
+    """p50/p90/max of |delta skew|, sign-flip / zero / match buckets.
 
-    Returns NaN-safe values (None when the input is empty). The sign-flip
-    count is `delta < 0` (legacy - new flipped relative to a non-zero
-    delta — i.e. the two paths disagree on direction). Zero/zero pairs
-    (delta == 0 exactly) are counted separately and reported as
-    n_zero_delta so the audit's narrative can distinguish "they agree on
-    no skew" from "they agree on the same sign".
+    Input: a list of (legacy_skew, new_skew) PAIRS — the legacy value
+    written by the pre-W2-1b engine path and the recomputed value from
+    the ThetaData chain provider. We need BOTH values, not just
+    delta = legacy - new, because a single delta does not encode sign
+    information: legacy=0.05, new=0.15 (both positive, same sign)
+    yields delta=-0.10, while legacy=-0.05, new=0.05 (opposite signs)
+    yields the same delta=-0.10. A model that classifies by `delta < 0`
+    cannot tell these apart, and the earlier
+    `n_sign_flip = sum(1 for d in deltas if d * d < 0)` was tautologically
+    zero (d * d is never negative for any real d). The product test
+    `legacy * new < 0` is the only correct way to detect a sign flip:
+    the two paths disagree on direction ONLY when the two values have
+    strictly opposite signs.
 
-    The earlier `n_sign_flip = sum(1 for d in deltas if d * d < 0)` was
-    tautologically zero (d * d is never negative for any real d) — a
-    genuine bug, not a stylistic typo. The current implementation
-    classifies each delta into one of three buckets:
-      - n_sign_flip    — legacy and new have OPPOSITE signs.
-      - n_zero_delta   — legacy == new exactly (delta == 0).
-      - n_sign_match   — legacy and new share a non-zero sign.
-    `n_sign_flip + n_zero_delta + n_sign_match == n` always.
+    Bucket definitions:
+      - n_sign_flip    — `legacy * new < 0` (strictly opposite non-zero signs)
+      - n_zero_delta   — `legacy == new` (delta == 0 exactly; agreement on no skew)
+      - n_sign_match   — `legacy * new > 0` (same non-zero sign)
+
+    Returns NaN-safe values (None when the input is empty).
+    sign_agreement_rate = (n_sign_match + n_zero_delta) / n — both are
+    "the two paths agree"; the (one-zero, other-nonzero) case is
+    deliberately excluded because it is ambiguous (one path has no
+    direction to agree on) and is surfaced separately in the receipt
+    via `n_skipped` (it never appears in the three buckets above).
     """
-    if not deltas:
+    if not pairs:
         return {"n": 0, "p50": None, "p90": None, "max": None,
                 "sign_agreement_rate": None, "n_sign_flip": 0,
                 "n_zero_delta": 0, "n_sign_match": 0}
+    deltas = [l - n for l, n in pairs]
     abs_d = [abs(d) for d in deltas]
     s = sorted(abs_d)
     # Nearest-rank percentile; OK for an audit sample, not a published series.
     def _pct(p: float) -> float:
         idx = max(0, min(len(s) - 1, int(round(p * (len(s) - 1)))))
         return s[idx]
-    n_zero_delta = sum(1 for d in deltas if d == 0)
-    n_sign_flip = sum(1 for d in deltas if d < 0)
-    n_sign_match = sum(1 for d in deltas if d > 0)
-    # Sign-agreement rate: same sign on legacy skew and recomputed skew.
-    same = sum(1 for d in deltas if d >= 0)  # delta == legacy - new; >=0 means same/non-negative-newer
-    sign_agreement = same / len(deltas)
-    return {"n": len(deltas),
+    # Bucket definitions (mutually exclusive; sum == n):
+    #   n_zero_delta — both paths report exactly 0 skew (l == 0 AND n == 0).
+    #                  This is the "they agree there is no skew" bucket.
+    #   n_sign_flip  — strictly opposite non-zero signs (l * n < 0). A
+    #                  pair where one side is 0 and the other is non-zero
+    #                  falls in NEITHER bucket — it is reported separately
+    #                  via `n_skipped` (no direction to flip).
+    #   n_sign_match — same non-zero sign (l * n > 0). Magnitude equality
+    #                  like (0.05, 0.05) lands here: both are positive,
+    #                  same sign, the bucket is about direction agreement.
+    n_zero_delta = sum(1 for l, n in pairs if l == 0 and n == 0)
+    n_sign_flip = sum(1 for l, n in pairs if l * n < 0)
+    n_sign_match = sum(1 for l, n in pairs if l * n > 0)
+    sign_agreement = (n_zero_delta + n_sign_match) / len(pairs)
+    return {"n": len(pairs),
             "p50": round(_pct(0.50), 6),
             "p90": round(_pct(0.90), 6),
             "max": round(s[-1], 6),
@@ -271,7 +290,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit:
         keys = keys[: args.limit]
 
-    deltas: list[float] = []
+    pairs: list[tuple[float, float]] = []
     records: list[dict] = []
     skipped: list[dict] = []
     for d_iso, underlying in keys:
@@ -286,6 +305,27 @@ def main(argv: list[str] | None = None) -> int:
         if recomputed is None or "skew" not in recomputed:
             skipped.append({"date": d_iso, "underlying": underlying,
                             "reason": "compute_skew returned None"})
+            continue
+        # MAJOR-4: verify the recomputed verdict actually answers for the
+        # requested (date, underlying) — a chain provider that returns the
+        # wrong root's row would otherwise be counted under the requested
+        # key, masking a mis-resolution. We accept the recomputed answer
+        # only when both its `underlying` and `asof` round-trip the
+        # requested key. The asof check tolerates the legacy/pre-W2-1b
+        # case where the ledger's `asof` is a date string and the
+        # recomputed one is identical.
+        rec_underlying = recomputed.get("underlying")
+        rec_asof = recomputed.get("asof")
+        if rec_underlying is None or str(rec_underlying).upper() != str(underlying).upper():
+            skipped.append({"date": d_iso, "underlying": underlying,
+                            "reason": f"recomputed underlying mismatch "
+                                       f"(got {rec_underlying!r})"})
+            continue
+        rec_asof_iso = str(rec_asof)[:10] if rec_asof is not None else ""
+        if rec_asof_iso != d_iso[:10]:
+            skipped.append({"date": d_iso, "underlying": underlying,
+                            "reason": f"recomputed asof mismatch "
+                                       f"(got {rec_asof!r})"})
             continue
         # The ledger's legacy skew lives on the same row under the column
         # 'skew' (engine.options_skew.snapshot writes that field directly).
@@ -307,13 +347,13 @@ def main(argv: list[str] | None = None) -> int:
                             "reason": "non-finite skew"})
             continue
         delta = legacy_skew - new_skew
-        deltas.append(delta)
+        pairs.append((legacy_skew, new_skew))
         records.append({"date": d_iso, "underlying": underlying,
                         "legacy_skew": round(legacy_skew, 6),
                         "new_skew": round(new_skew, 6),
                         "delta_skew": round(delta, 6)})
 
-    stats = _delta_stats(deltas)
+    stats = _delta_stats(pairs)
     worst = _worst_keys(records, 10)
 
     summary = {

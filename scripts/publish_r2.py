@@ -149,16 +149,24 @@ _DATA_DIRS = {
                   # explicitly (--dirs index_gex_history), never the nightly render.
     "options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
                   # producer ledger (data/options_skew/snapshots.parquet,
-                  # gitignored). ONE writer: the M1 store-host launchd job
-                  # `com.macro.skewaccrual` (ops/launchd/com.macro.skewaccrual.plist
-                  # + ops/launchd/run_skew_accrual.sh) which appends today's per-
-                  # underlying IV skew via `python -m scripts.build_options_skew --accrue`
-                  # (W2-1b-owned source-stamped canonical-wins upsert). Consumer =
-                  # W2-3 render cutover: `python -m scripts.fetch_r2 --dirs options_skew`
-                  # restores the ledger into render hosts' data/options_skew/, where
-                  # `--emit` writes site/options_skew/latest.json. Not in DEFAULT_DIRS:
-                  # the dedicated skewaccrual ops lane publishes it explicitly
-                  # (--dirs options_skew), never the nightly render.
+                  # TRACKED on origin/main — bootstrap = 238,595 bytes /
+                  # 12,375 rows / 34 dates / 417 underlyings, sourced from
+                  # the pre-W2-1b engine run; the comment's earlier
+                  # "gitignored" model was wrong). ONE writer: the M1
+                  # store-host launchd job `com.macro.skewaccrual`
+                  # (ops/launchd/com.macro.skewaccrual.plist +
+                  # ops/launchd/run_skew_accrual.sh) which appends
+                  # today's per-underlying IV skew via
+                  # `python -m scripts.build_options_skew --accrue`
+                  # (W2-1b-owned source-stamped canonical-wins upsert).
+                  # Consumer = W2-3 render cutover:
+                  # `python -m scripts.fetch_r2 --dirs options_skew`
+                  # restores the ledger into render hosts'
+                  # data/options_skew/, where `--emit` writes
+                  # site/options_skew/latest.json. Not in DEFAULT_DIRS:
+                  # the dedicated skewaccrual ops lane publishes it
+                  # explicitly (--dirs options_skew), never the nightly
+                  # render.
 }
 # A data-dir tree with fewer files than this is a PARTIAL CHECKOUT (the parquets are
 # gitignored — a CI runner checkout holds just the committed _manifest.json +
@@ -223,19 +231,24 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
 _APPEND_ONLY_DIRS = {"attention", "index_gex_history"}
 _DATA_DIR_MIN_BYTES = {"attention": 15_000_000, "index_gex_history": 600_000,
                        "price_pressure": 4_000_000,
-                       # MO-PAID-013 W2-2: a fresh-store options_skew tree on a
-                       # sparse-CI checkout is JUST the tracked ~700-byte
-                       # validation_gate.json sidecar (parquet is gitignored).
-                       # A real ledger on the M1 ops host is multi-KB once a
-                       # single session's ~380 roots have accrued. 10 KB is
-                       # safely above the sidecars-only size AND below one
-                       # session of real accruals — refuses a bare checkout
+                       # MO-PAID-013 W2-2: measured against the bootstrap
+                       # ledger committed on origin/main at 238,595 bytes /
+                       # 12,375 rows / 34 dates / 417 underlyings. A bare
+                       # sparse-CI checkout of data/options_skew carries
+                       # just the tracked validation_gate.json sidecar
+                       # (~700 bytes). A real ledger post-accrue is hundreds
+                       # of KB once the bootstrap + one session's ~380
+                       # roots land. 10 KB sits safely above the bare
+                       # sidecars size AND well below one session of real
+                       # accruals — refuses a sparse-CI sidecars-only tree
                        # without blocking the first legitimate nightly run.
-                       # Not in _APPEND_ONLY_DIRS: snapshots.parquet is
-                       # rewritten whole on every accrue (dedup + concat), so
-                       # a per-file shrink refusal would block honest nights;
-                       # snapshot()'s idempotent key-set is the append-only
-                       # contract.
+                       # The bootstrap is 238,595 bytes; 10 KB is a 23×
+                       # margin that any first-run store clears. Not in
+                       # _APPEND_ONLY_DIRS: snapshots.parquet is rewritten
+                       # whole on every accrue (dedup + concat), so a
+                       # per-file shrink refusal would block honest
+                       # nights; snapshot()'s idempotent key-set is the
+                       # append-only contract.
                        "options_skew": 10_000}
 _CT = {".json": "application/json", ".js": "application/javascript",
        ".html": "text/html; charset=utf-8", ".csv": "text/csv"}

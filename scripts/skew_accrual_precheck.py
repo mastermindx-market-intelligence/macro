@@ -107,14 +107,6 @@ def main(argv: list[str] | None = None) -> int:
         description=("Detect whether scripts.build_options_skew exposes --accrue "
                      "(W2-1b's source-stamped ledger upsert). Exit 0=ok, 4=missing.")
     )
-    return_source = []  # noqa: F841 — documented below
-
-    def _emit(value: str) -> None:
-        # First line on stdout is the status word (the runner captures it);
-        # verbose info goes to stderr so the runner can log line-by-line
-        # without polluting the status word capture.
-        pass
-
     ap.add_argument("--repo", required=True,
                     help="Repo checkout carrying scripts/build_options_skew.py")
     args = ap.parse_args(argv)
