@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T16:21:12.820574+00:00",
-  "count": 2650,
+  "generated_at": "2026-09-22T17:21:32.842721+00:00",
+  "count": 2653,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -364,6 +364,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zmtv5zbgvjn-b3af34",
+      "title": "GS Banovic GS Credit What You Need to Know 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:43Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -1091,6 +1106,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-f2nj8caehtc-9aef6a",
+      "title": "BofA Quant View of Global Themes AI Intact",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:23:22Z",
+      "summary_points": [
+        "Photonics sustained outperformance: Dominated YTD (36% vs.",
+        "Global’s -17%) and 12-month (173% vs.",
+        "Global’s -20%), signaling structural momentum for long-term allocation.",
+        "AI Compute/Photonics/Data Centers momentum: All five sectors in top quintile Triple Momentum (green line above threshold), confirming tech-driven growth as critical portfolio priority.",
+        "AI Platforms underperformance risk: Microsoft’s $-40.7B equity outflow, Tencent/Baidu’s -32%/-17% returns, and low TM Rank (19) indicate aggressive selling and China regulatory risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 116,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zeihs5chw4x-3736ec",
       "title": "Wolfe Research The Wolfe Power Trip",
       "institution": "Nuclear",
@@ -1330,6 +1366,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-whv21ahuhak-233505",
+      "title": "FedEx Freight Holding (FDXF) Shifting to Calendar Year",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:12Z",
+      "summary_points": [
+        "Calendar Model Shift & Price Target: Goldman Sachs updates FDXF model to calendar year (vs fiscal), lowers price target to $171 (42.3% upside), reiterates Buy on strong operational execution, stable profit trajectory, and unchanged 2029 targets despite short-term noise.",
+        "Minimal Leverage & Cash Flow Strength: Net debt/EBITDA at 0.0, $1,760.8mn operating cash flow, and $4.83 free cash flow/share signal robust financial health with negligible leverage risk.",
+        "Revenue Quality & Margin Expansion: Targets 4-6% revenue CAGR via higher-margin segments (SMB, healthcare, grocery), with revenue per shipment growth outpacing cost per shipment, driving margin expansion and 85% OR by 2029.",
+        "Outperformance & EPS Trajectory: 27.71% 3-month absolute return vs S&P 500; revised EPS to $4.10/$4.65/$5.85/$7.10 (2026-2029) with 13-26% annual growth, exceeding 4-6% revenue target.",
+        "Key Near-Term Risks: $130m transition costs, TSA cost drag (50bp headwind), OR seasonality (300-400bps Q4→Q1 improvement), and potential delays in TSA offload impacting 2027 margin timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
