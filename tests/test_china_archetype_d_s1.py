@@ -184,9 +184,12 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "{% set _ev_pool = [] %}" in TPL
     assert "if c.importance == 'high'" in TPL
     assert "if c.importance != 'high'" in TPL
+    assert "{% set _next_watch = _ev_pool[0] if _ev_pool else none %}" in TPL
     assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
-    assert "{{ t(\"What we're watching\",'我们在盯什么') }}" in TPL
-    assert "{{ t('UPCOMING MACRO · NEXT 14 DAYS','近期宏观 · 未来14天') }}" in TPL
+    assert "{{ t('Upcoming Events','近期数据') }}" in TPL
+    assert "Watching · {{ (_next_watch.name_en or '')|truncate(20, true, '…') }}" in TPL
+    assert "关注 · {{ (_next_watch.name_zh or _next_watch.name_en or '')|truncate(20, true, '…') }}" in TPL
+    assert "{{ t('NEXT 14 DAYS','未来14天') }}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
