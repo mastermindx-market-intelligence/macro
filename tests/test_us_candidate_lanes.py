@@ -1616,3 +1616,61 @@ def test_conversion_duplicate_flags_and_naive_cutoff_fail_closed():
         _trace_case([flag, flag])
     with pytest.raises(ValueError):
         _trace_case([flag], as_of='2026-09-21T11:00:00')
+
+
+def test_rs_threshold_study_matches_live_clean_entry_at_point75():
+    import numpy as np
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import (
+        assert_incumbent_parity,
+    )
+
+    idx = pd.bdate_range("2025-01-02", periods=220)
+    values = np.linspace(80.0, 120.0, len(idx))
+    values[-6:] = [121.0, 120.7, 120.3, 119.8, 119.2, 118.8]
+    lvl = pd.Series(values, index=idx)
+    cases = [
+        ({"accel_z": 0.6, "rs_pctile": 0.74}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": 0.75}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": -0.7, "rs_pctile": 0.4}, {"pct50": 0.7, "nh": 4, "nl": 1}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": 0.4}, {"pct50": 0.3, "nh": 1, "nl": 4}, 58.0),
+        ({"accel_z": 0.6, "rs_pctile": None}, {"pct50": 0.7, "nh": 4, "nl": 1}, None),
+    ]
+    for fp, breadth, rsi in cases:
+        assert_incumbent_parity(lvl, fp, breadth, rsi)
+
+
+def test_rs_threshold_study_uses_exact_frozen_bands():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import _cohort_states
+
+    otherwise = pd.Series([True] * 6)
+    rs = pd.Series([0.7499, 0.75, 0.8499, 0.85, 1.0, float("nan")])
+    states = _cohort_states(otherwise, rs)
+    assert states["allowed_lt075"].tolist() == [True, False, False, False, False, False]
+    assert states["incremental_075_085"].tolist() == [False, True, True, False, False, False]
+    assert states["blocked_both_ge085"].tolist() == [False, False, False, True, True, False]
+
+
+def test_rs_threshold_study_counts_contiguous_runs_once():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import episode_onsets
+
+    state = pd.Series([False, True, True, True, False, True, True, False, True])
+    assert episode_onsets(state).tolist() == [
+        False, True, False, False, False, True, False, False, True,
+    ]
+
+
+def test_rs_threshold_release_requires_other_evidence_to_stay_clean():
+    import numpy as np
+    from research.prophet.cpu_leadership.entry_rs_threshold_study import (
+        first_threshold_release,
+    )
+
+    rs = np.array([0.81, 0.80, 0.74, 0.73], dtype=float)
+    clean = np.array([True, True, True, True], dtype=bool)
+    assert first_threshold_release(clean, rs, 0, 0.75) == 2
+
+    deteriorated = np.array([True, True, False, False], dtype=bool)
+    assert first_threshold_release(deteriorated, rs, 0, 0.75) is None
