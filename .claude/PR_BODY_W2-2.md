@@ -1,3 +1,5 @@
+> **HOLD-FOR-SOL / DO NOT MERGE** — META-CEO A seat directive (packet A-F03-W2-2, 2026-09-22): never label / ready / merge / RATIFIED comments. This is a merge-barrier hold per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`. Release condition: explicit META-CEO A instruction to remove the hold and squash-merge. Every merge path (manual, sweeper, `--admin`, `merge-on-green`) is bound by this hold.
+
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
 **Head SHA:** `589726c5ce96dc9c1d3e10a08c1a8e1f8c2a7b3d` (W2-2 packet deliverable head — round 4/N refresh: BLOCKER 1/2 + MAJOR 3/4 + MINOR 1/2/3 fixes re-applied; DEC evidence aligned; plist XML well-formedness; 68 tests pass)
