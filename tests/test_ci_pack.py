@@ -3649,6 +3649,24 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-22 main-red repair. Six jobs entered the broad
+    # templates/index.html probe after the 64f8c248 calibration even though
+    # none owns that page; market-ontology-f09-usgs-mcs separately entered the
+    # build_free_content probe through a bounded subprocess/git-grep edge; and
+    # unrun-government-revenue-candidate-projection entered the Prophet probe
+    # through an opaque engine/** edge despite no plan-book file in its named
+    # closure. Their declarations retain the measured full import closure plus
+    # dynamic files read by the tests/builders. This restores 131/129/125
+    # selections without raising the existing ratchet or allowing unrelated
+    # fallback smear.
+    "am-edition-producer",
+    "covenant-headroom",
+    "cycle-consistency",
+    "ftr-tape-surfaces",
+    "market-ontology-f09-usgs-mcs",
+    "research-screener",
+    "sanctions-map-page",
+    "unrun-government-revenue-candidate-projection",
     # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
     # hermetic PR owner for one recovered package and its root lineage test,
     # and declared both exact path surfaces — but omitted `scope: exclusive`.
