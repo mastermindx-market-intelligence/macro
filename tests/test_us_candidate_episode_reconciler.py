@@ -193,7 +193,7 @@ def test_durable_gate_refuses_before_any_source_or_ledger_read(tmp_path: Path, m
         "load_identity_spine",
         "turn_watch_observations",
         "candidate_observations",
-        "door_observations",
+        "_door_backlog_intake",
         "radar_observations",
         "_load_existing_ledgers",
     ):
@@ -1511,5 +1511,60 @@ def test_door_backlog_resource_limit_is_explicit_and_nonmutating(tmp_path, monke
     _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
     monkeypatch.setattr(writer, bound, 1)
     with pytest.raises(EpisodeContractError, match="limit"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+def test_door_backlog_preserves_legacy_recorded_knowledge(tmp_path, monkeypatch):
+    from engine.us_candidate_episode_intake import door_observations
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    _write_doors(tmp_path, [_door_flag("2026-11-27")])
+    with monkeypatch.context() as legacy:
+        legacy.setattr(writer, "_door_backlog_intake", lambda path, spine, **kw: door_observations(path, spine))
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T18:10:00Z")
+    prior = _door_owned(tmp_path)
+    assert len(prior) == 1 and prior[0]["known_at"] == "2026-11-27T18:00:00Z"
+    old_events = _event_rows(tmp_path)
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _event_rows(tmp_path) == old_events
+    assert _door_owned(tmp_path) == prior
+
+
+def test_door_backlog_reads_one_file_snapshot(tmp_path, monkeypatch):
+    from engine.us_candidate_episode_intake import load_identity_spine
+    _seed_sources(tmp_path)
+    source = _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    original = source.read_bytes()
+    open_method = Path.open
+    reads = []
+    def once(path, *args, **kwargs):
+        if path == source:
+            reads.append(args)
+            assert len(reads) == 1, "the source receipt must bind the one consumed read"
+        return open_method(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "open", once)
+    batch = writer._door_backlog_intake(
+        source, load_identity_spine(tmp_path / "data"), recorded_at="2026-11-30T21:05:00Z",
+        existing_events=[], existing_suppressions=[])
+    assert len(reads) == 1
+    assert batch.source_receipts[0]["files"][0]["sha256"] == "sha256:" + sha256(original).hexdigest()
+    assert len(batch.observations) + len(batch.suppressions) == 2
+
+
+def test_door_backlog_future_identity_failure_stays_pending_not_suppressed(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", ticker="UNRESOLVED",
+        observed_at="2026-11-30T22:00:00Z")])
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _door_owned(tmp_path) == []
+    assert receipt["source_counts"]["doors"]["input"] == 0
+
+
+@pytest.mark.parametrize("value", [True, 123, "bad-clock", "2026-11-27T18:00:00"])
+def test_door_backlog_invalid_explicit_clock_cannot_gain_default_close(tmp_path, monkeypatch, value):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", observed_at=value)])
+    with pytest.raises(EpisodeContractError, match="clock"):
         _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
     assert not (_episode_root(tmp_path) / "HEAD.json").exists()
