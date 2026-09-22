@@ -518,7 +518,10 @@ jobs:
               brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
               brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
               brun flow_desk "flow desk (build_flow_desk)" scripts.build_flow_desk
+              # A-F03-W2-1b (2026-09-22): explicit legacy source until the M1 ThetaData accrual lane (W2-2) lands; W2-3 cutover removes this line and switches to --emit
+              export OPTIONS_SKEW_LEGACY_CHAIN=1
               brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+              unset OPTIONS_SKEW_LEGACY_CHAIN
               brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               brun options_dislocation "options dislocation" scripts.build_options_dislocation
               # OIP E8 (note above): AFTER skew/ivspread, inside cl_gex — not a sibling.
@@ -648,7 +651,10 @@ jobs:
               run_py "index vol-regime (build_vol_regime)"      scripts.build_vol_regime
               run_py "options flow desk (build_options_flow)"   scripts.build_options_flow
               run_py "flow desk (build_flow_desk)" scripts.build_flow_desk
+              # A-F03-W2-1b (2026-09-22): explicit legacy source until the M1 ThetaData accrual lane (W2-2) lands; W2-3 cutover removes this line and switches to --emit
+              export OPTIONS_SKEW_LEGACY_CHAIN=1
               run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew
+              unset OPTIONS_SKEW_LEGACY_CHAIN
               run_py "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               run_py "options dislocation" scripts.build_options_dislocation
               run_py "US options screener page (build_options_screener)" scripts.build_options_screener

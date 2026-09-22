@@ -78,7 +78,10 @@ cl_gex() {
   brun darkpool     "dark pool desk (build_darkpool_desk)"        scripts.build_darkpool_desk
   brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
   brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
+  # A-F03-W2-1b (2026-09-22): explicit legacy source until the M1 ThetaData accrual lane (W2-2) lands; W2-3 cutover removes this line and switches to --emit
+  export OPTIONS_SKEW_LEGACY_CHAIN=1
   brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+  unset OPTIONS_SKEW_LEGACY_CHAIN
   brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
   # AFTER skew+ivspread: it joins both ledgers into the neutralised feature panel.
   brun options_dislocation "options information-dislocation panel (build_options_dislocation)" scripts.build_options_dislocation

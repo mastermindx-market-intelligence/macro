@@ -26,6 +26,30 @@
 .va-event-bridge{margin:6px 0 0;font-size:11px;line-height:1.5;color:var(--muted);}
 .va-event-bridge .va-event-target{color:var(--muted);}
 .va-event-bridge .va-event-null{font-style:normal;}
+/* F07 event -> AssumptionChange proposal. A quiet aside, never louder than the
+   server-computed figure above it: no accent fill, no glow, one hairline rule
+   to mark it as a separate voice (the filing's, not the page's). The guard
+   sentence is deliberately the same size as the claim it qualifies.
+   Two art directions: dark leans on a recessed panel and a hairline; light
+   uses white material with a soft shadow and no fill, per the theme law. */
+.va-event-proposal{margin:14px 0 0;padding:12px 14px;border:1px solid var(--hair);
+  border-left:2px solid color-mix(in srgb,var(--muted) 55%,transparent);
+  border-radius:var(--r-card,13px);
+  background:color-mix(in srgb,var(--panel2) 45%,transparent);}
+[data-theme="light"] .va-event-proposal{background:var(--panel);
+  border-left:2px solid color-mix(in srgb,var(--text) 22%,transparent);
+  box-shadow:0 6px 18px -14px color-mix(in srgb,var(--text) 20%,transparent);}
+.va-event-proposal-head{margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text);
+  text-transform:uppercase;letter-spacing:.06em;}
+[data-lang="zh"] .va-event-proposal-head{letter-spacing:0;text-transform:none;}
+.va-event-proposal-body,.va-event-proposal-move,.va-event-proposal-guard,
+.va-event-proposal-source{margin:0 0 6px;font-size:12px;line-height:1.55;color:var(--muted);
+  max-width:62ch;}
+.va-event-proposal-move{color:var(--text);font-variant-numeric:tabular-nums;}
+.va-event-proposal-guard{color:var(--muted);}
+.va-event-proposal-source{margin-bottom:0;}
+.va-event-proposal-source a{color:var(--link);text-decoration:underline;
+  text-underline-offset:2px;}
 @media(max-width:390px){
   .va-ctl{grid-template-columns:1fr;gap:4px;}
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}

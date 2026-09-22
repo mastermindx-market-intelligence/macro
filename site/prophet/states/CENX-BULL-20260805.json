@@ -17,16 +17,16 @@
     "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.099,
+    "dist_to_stop_r": -0.108,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 95.6,
-    "p1": -0.7326,
-    "p2": -0.3663,
+    "p1": -0.7386,
+    "p2": -0.3693,
     "p3": null,
-    "move_r": -1.099,
+    "move_r": -1.108,
     "mfe_r": 0.0,
-    "mae_r": -1.107
+    "mae_r": -1.108
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.0681152318170462e-06,
-  "_mae": -12.8700016784668,
+  "_mae": -12.885001068115237,
   "_max_p1": 6.122758565875874e-08,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
