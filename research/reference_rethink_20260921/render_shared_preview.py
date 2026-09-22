@@ -43,7 +43,7 @@ def render_html(manifest: dict, *, fixture_only: bool = False) -> str:
 <div class="guide-scope-note" data-fixture-only="{str(fixture_only).lower()}">{banner}</div>
 <main><div id="app" hidden></div><section class="fallback"><h1>Market Guide / 市场指南</h1><p>Definitions, not live values. / 定义说明，非实时读数。</p>{''.join(fallback)}</section></main>
 <dialog id="help" aria-labelledby="help-title"></dialog><script id="guide-manifest" type="application/json">{script_json(manifest)}</script>
-<script>{scripts}\ntry {{ globalThis.guideApp=MastermindGuideView.mount({{host:document.getElementById('app'),dialog:document.getElementById('help'),manifest:JSON.parse(document.getElementById('guide-manifest').textContent),ownerOrigin:location.origin}}); }} catch(error) {{ document.getElementById('app').hidden=false;document.getElementById('app').textContent='Interactive guide unavailable. Read the definitions below. / 交互指南暂不可用，请阅读下方说明。'; }}</script></body></html>'''
+<script>{scripts}\ntry {{ globalThis.guideApp=MastermindGuideView.mount({{host:document.getElementById('app'),dialog:document.getElementById('help'),manifest:JSON.parse(document.getElementById('guide-manifest').textContent),ownerOrigin:location.protocol==='file:'?'https://www.mastermind-x.com':location.origin}}); }} catch(error) {{ document.getElementById('app').hidden=false;document.getElementById('app').textContent='Interactive guide unavailable. Read the definitions below. / 交互指南暂不可用，请阅读下方说明。'; }}</script></body></html>'''
 
 
 def compile_from_canonical_source() -> dict:
