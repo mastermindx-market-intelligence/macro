@@ -1365,3 +1365,151 @@ def test_downstream_fixture_consumes_only_the_canonical_reader(tmp_path: Path, m
         "security_id": "SEC:US-XNAS-ALFA",
         "episode_state": "ACTIVE",
     }]
+
+
+# Lossless Door intake: the canonical writer must account for missed older rows.
+def _door_flag(day="2026-11-25", *, ticker="ALFA", door="T", **extras):
+    return {"schema": "prophet_doors/v1", "date": day, "ticker": ticker,
+            "door": door, "features": {"theme": "Test theme"}, **extras}
+
+
+def _write_doors(root, rows):
+    path = root / "data" / "prophet_doors" / "flags.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(canonical_json(row) for row in rows) + "\n")
+    return path
+
+
+def _door_owned(root):
+    return [r for r in _event_rows(root) + _suppression_rows(root)
+            if r["source_system"] == "doors"]
+
+
+def test_door_backlog_older_sighting_survives_newer_ledger_date(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    flags = [_door_flag(), _door_flag("2026-11-27")]
+    source = _write_doors(tmp_path, flags)
+    original = source.read_bytes()
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {
+        "doors:2026-11-25:T:ALFA", "doors:2026-11-27:T:ALFA"}
+    assert receipt["source_counts"]["doors"]["input"] == 2
+    assert source.read_bytes() == original
+    for row in _door_owned(tmp_path):
+        assert row["known_at"] == "2026-11-30T21:05:00Z"
+        assert row["event_type"] == "OBSERVED", "unanchored Doors never originate an episode"
+        flag = next(f for f in flags if f["date"] in row["source_event_id"])
+        assert row["source_receipt"] == "sha256:" + sha256(canonical_json(flag).encode()).hexdigest()
+    assert len(load_candidate_episode_store(_episode_root(tmp_path))) == 1
+
+
+def test_door_backlog_retry_preserves_first_knowledge_and_generation(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    original_head, original_store = _head(tmp_path), _snapshot(_episode_root(tmp_path))
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _head(tmp_path) == original_head
+    assert _snapshot(_episode_root(tmp_path)) == original_store
+    assert len(_door_owned(tmp_path)) == 2
+
+
+def test_door_backlog_same_key_changed_old_bytes_refuse_before_write(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    flags = [_door_flag(), _door_flag("2026-11-27")]
+    _write_doors(tmp_path, flags)
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    old = _snapshot(_episode_root(tmp_path))
+    flags[0]["features"]["theme"] = "Changed evidence"
+    _write_doors(tmp_path, flags)
+    with pytest.raises(EpisodeContractError, match="[Ss]ource|receipt|committed"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == old
+
+
+def test_door_backlog_preclose_and_future_rows_wait_without_loss(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _turn_path(tmp_path).unlink()  # Isolate Door clocks, not a future TURN WATCH fixture.
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27"),
+                            _door_flag("2026-11-30")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T17:59:59Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {"doors:2026-11-25:T:ALFA"}
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T18:05:00Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {
+        "doors:2026-11-25:T:ALFA", "doors:2026-11-27:T:ALFA"}
+    later = next(r for r in _door_owned(tmp_path) if "2026-11-27" in r["source_event_id"])
+    assert later["observation_session"] == "2026-11-27"
+    assert later["reason"] == "MISSING_STRUCTURAL_ANCHOR"
+    # It is already consumed at 18:05 UTC, proving the early close was not treated as 21:00.
+
+
+@pytest.mark.parametrize("field", ["signal_ts", "signal_known_ts", "observed_at"])
+def test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now(tmp_path, monkeypatch, field):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", **{field: "2026-11-30T22:00:00Z"})])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _door_owned(tmp_path) == []
+
+
+@pytest.mark.parametrize("day", ["2026-11-26", "2026-11-28", "2026-11-29", "not-a-date"])
+def test_door_backlog_non_session_is_not_a_canonical_observation(tmp_path, monkeypatch, day):
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    old = _snapshot(_episode_root(tmp_path))
+    _write_doors(tmp_path, [_door_flag(day)])
+    with pytest.raises(EpisodeContractError, match="session"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == old
+
+
+def test_door_backlog_missing_anchor_remains_explicit_and_never_rearms(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    turn_path = _turn_path(tmp_path)
+    turn = json.loads(turn_path.read_text())
+    turn["rows"] = []
+    turn_path.write_text(canonical_json(_rehash_turn_watch(turn)) + "\n")
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    owned = _door_owned(tmp_path)
+    assert len(owned) == 2 and {r["reason"] for r in owned} == {"MISSING_STRUCTURAL_ANCHOR"}
+    assert load_candidate_episode_store(_episode_root(tmp_path)) == []
+    before = _snapshot(_episode_root(tmp_path))
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == before
+
+
+def test_door_backlog_duplicate_rows_do_not_multiply_events(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag(), _door_flag("2026-11-27")])
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert len(_door_owned(tmp_path)) == 2
+    assert receipt["source_counts"]["doors"]["input"] == 2
+
+
+def test_door_backlog_duplicate_identity_with_changed_payload_refuses(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag(features={"different": True})])
+    with pytest.raises(EpisodeContractError, match="conflict|changed|receipt|committed"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+def test_door_backlog_report_never_publishes_or_edits_source(tmp_path):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    old = _snapshot(tmp_path)
+    receipt = writer.reconcile(repo_root=tmp_path, nightly=False, replay=False,
+                               recorded_at="2026-11-30T21:05:00Z", correction_path=None)
+    assert receipt["source_counts"]["doors"]["input"] == 2
+    assert receipt["durable_write"] is False
+    assert _snapshot(tmp_path) == old
+
+
+@pytest.mark.parametrize("bound", ["_DOOR_LEDGER_MAX_BYTES", "_DOOR_LEDGER_MAX_ROWS"])
+def test_door_backlog_resource_limit_is_explicit_and_nonmutating(tmp_path, monkeypatch, bound):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    monkeypatch.setattr(writer, bound, 1)
+    with pytest.raises(EpisodeContractError, match="limit"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
