@@ -613,3 +613,34 @@ def test_content_chart_read_remains_behind_existing_session_guard(monkeypatch):
         assert called == []
     finally:
         httpd.shutdown(); httpd.server_close(); _clear_response_cache()
+
+
+def test_semantic_failure_response_is_not_cached(monkeypatch):
+    from admin import server
+
+    calls = 0
+
+    def flaky_health():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return {"ok": False, "error": "transient upstream timeout"}
+        return {"ok": True, "healthy": True, "call": calls}
+
+    monkeypatch.setattr(server.health, "summary", flaky_health)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, first, first_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, second, second_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, third, third_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        assert json.loads(first)["ok"] is False
+        assert json.loads(second)["call"] == 2
+        assert json.loads(third)["call"] == 2
+        assert calls == 2
+        assert "X-Admin-Cache" not in first_headers
+        assert second_headers["X-Admin-Cache"] == "MISS"
+        assert third_headers["X-Admin-Cache"] == "HIT"
+    finally:
+        _clear_response_cache()
+        httpd.shutdown(); httpd.server_close()

@@ -213,8 +213,13 @@ async function api(path, opts) {
       throw new Error("auth required");
     }
     if (cacheable && generation === API_CACHE_GENERATION) {
-      if (r.ok) apiCacheStore(path, { value, expiresAt: Date.now() + apiCacheTtl(path) });
-      else API_CACHE.delete(path);
+      const semanticFailure = value && typeof value === "object" &&
+        (value.ok === false || Boolean(value.error));
+      if (r.ok && !semanticFailure) {
+        apiCacheStore(path, { value, expiresAt: Date.now() + apiCacheTtl(path) });
+      } else {
+        API_CACHE.delete(path);
+      }
     }
     return value;
   })();
@@ -1921,7 +1926,7 @@ function anNotReady(d) {
   const steps = isSetup
     ? `<ol class="steps" style="margin-top:10px">${(d.setup_steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol>`
     : `<div class="sub" style="margin-top:10px">The tracker and tables are configured — this is a
-       failed request, not a setup gap. A shorter time window is the usual fix.</div>`;
+       failed request, not a setup gap. Failures are not cached; try the panel again, and narrow the time window only if the upstream keeps timing out.</div>`;
   return `<div class="card"><h3>${esc(title)}</h3>
     <div class="sub">${esc(detail)}</div>
     ${steps}</div>`;

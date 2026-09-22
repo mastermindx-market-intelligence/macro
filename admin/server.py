@@ -491,7 +491,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
             key, generation, ttl = cache_key
             _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
