@@ -1018,12 +1018,15 @@ def _annotate_queue_health_runs(
                 continue
 
             run["_queue_child_statuses"] = sorted(set(statuses))
-            if "in_progress" in statuses:
+            # A genuinely queued child stays actionable even when a sibling is
+            # already running.  Prioritizing active_children first would hide a
+            # real queue wait behind unrelated in-progress work.
+            if "queued" in statuses:
+                run["_queue_projection_state"] = "queued_children"
+            elif "in_progress" in statuses:
                 run["_queue_projection_state"] = "active_children"
             elif all(status == "completed" for status in statuses):
                 run["_queue_projection_state"] = "terminal_children"
-            elif "queued" in statuses:
-                run["_queue_projection_state"] = "queued_children"
             # Any unknown mixed status is deliberately left without a state:
             # the pure detector will keep treating it conservatively.
 
