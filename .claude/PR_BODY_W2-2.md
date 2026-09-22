@@ -1,7 +1,7 @@
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
-**Head SHA:** `f10a2da7ac411aed690e3210f59f1af769aca440` (W2-2 packet deliverable head)
-**Base:** `origin/main` @ `0ae0e6b43e7a809986f52d263ffd60c28020d460` (branch ahead 7 / behind 7 at push time)
+**Head SHA:** `33b8a9135411fb42c88898df5ddf96d7b2cd0997` (W2-2 packet deliverable head — round 2/3 refresh)
+**Base:** `origin/main` @ `6ea475723e85480b4411d53f4b4c1e3fdf3d7039`
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
 
 ## What & why
@@ -21,6 +21,7 @@ The lane adds files, tests, and an `options_skew` data-dir registration in `scri
 ## Files changed (true list — scoped diff vs `origin/main`)
 
 ```
+.claude/PR_BODY_W2-2.md                                            | 116 +++++++
 agentos/decisions/DEC-SKEW-ACCRUAL-ON-THE-STORE-HOST.md          | 135 ++++++++
 config/unrun_test_waivers.yml                                    |  45 +++   (waivers for the 3 new test suites — see "Contract delta" below)
 ops/launchd/com.macro.skewaccrual.plist                          | 189 +++++++++++
@@ -32,7 +33,7 @@ scripts/skew_accrual_gate.py                                     | 201 +++++++++
 tests/test_audit_options_skew_overlap.py                         | 360 +++++++++++++++++++++
 tests/test_skew_accrual_gate.py                                  | 221 +++++++++++++
 tests/test_skew_accrual_launchd.py                               | 210 ++++++++++++
-11 files changed, 2288 insertions(+), 2 deletions(-)
+12 files changed, 2404 insertions(+), 2 deletions(-)
 ```
 
 ## Install runbook
@@ -66,7 +67,7 @@ agentos: 1193 records (69 workstreams, 338 decisions, 297 discoveries, 489 hando
 ### `python3 scripts/check_contract_delta.py --base origin/main`
 ```
 ::notice title=contract-delta::tests/test_render_dead_ref_targets.py is already unwired on this PR's base — pre-existing, not introduced by this PR
-contract-delta: 0 introduced, 1 inherited (base 780b8091675a)
+contract-delta: 0 introduced, 1 inherited (base 6ea475723e85)
 ```
 
 ### `sh -n ops/launchd/run_skew_accrual.sh`
