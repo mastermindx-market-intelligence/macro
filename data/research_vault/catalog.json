@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T17:51:31.877925+00:00",
-  "count": 2654,
+  "generated_at": "2026-09-22T19:36:45.746337+00:00",
+  "count": 2659,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,84 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7keplmv3s4b-371985",
+      "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:57:31Z",
+      "summary_points": [
+        "Macro & Rate Hike Catalysts: August core CPI above expectations raised September FOMC rate hike probability to 85% (GIR), with market pricing 25bp hike driven by Fed's desire to avoid surprise markets, not inflation shift.",
+        "Crypto Policy & Performance Divergence: CLARITY Act procedural vote (15 Sept) boosted passage odds to 32% (Polymarket); ETH ETFs attracted $216m inflows vs BTC’s $463m outflows, with ETH outperforming BTC intraday (2.56% vs 2.72% drop).",
+        "Funding Rate Dynamics: Aggregated 8H funding rate remains positive since Feb 2026, indicating sustained long positioning and liquidity flow into BTC/USD, contrasting prior bearish sentiment.",
+        "ETH Delta Risk Reversal Spike: Late 2026 spike in 25 delta risk reversals across tenors signals heightened volatility skew, potential directional moves, or liquidation pressure in ETH derivatives."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4td7o6oqoil-9942ad",
+      "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:29Z",
+      "summary_points": [
+        "Brent Price Revisions: Goldman Sachs raises 2027 Brent estimate to $80/b (2028: $75/b, $5/b Brent-WTI spread) and crack spreads to $29/b in 2028, citing tight refining fundamentals (low inventory, supply disruptions, resilient demand).",
+        "XOM/CVX Valuation Catalysts: XOM target $169 (9.0x EV/DCF, 6.5% FCF yield) and CVX target $228 (8.0x EV/DAF, 7.5% FCF yield) driven by Middle East/Russia-Ukraine supply disruptions boosting refining margins.",
+        "COP Growth Projects: COP Buy rating with $146 target fueled by NFE/NFS/Willow projects, $1bn cost reductions, and 20-25% CAGR, though exposed to Qatar LNG delays and Middle East geopolitics.",
+        "Core Risk Factors: Persistent commodity price volatility, refining margin pressure, operational execution risks across all majors, and geopolitical shocks (West Qurna 2/Nasriyah, Qatar LNG) remain critical portfolio vulnerabilities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eyw3d7vi5sw-7c4a46",
+      "title": "Caris Life Sciences Inc. (CAI) CMS Releases Preliminary 2027 CLFS Rates; Positive Revision for CAI",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:04Z",
+      "summary_points": [
+        "Reimbursement Surge: +44% reimbursement for Caris Assure (blood) to $5,250, driving $15–20M annual revenue upside and eliminating reimbursement risk for blood-based portfolio.",
+        "Policy Catalyst: CMS revision directly addresses prior reimbursement uncertainty, a critical structural risk for oncology diagnostics revenue streams.",
+        "Key Risk Exposure: Therapy competition, MCEC trial execution, FDA approval uncertainty, and multi-channel sales challenges remain top near-term threats to valuation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vdofpcc0nwp-d84556",
+      "title": "South Korea Banks The sweet spot widens amid favorable macro; Ug IBK and BNK to Buy from Sell",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:00Z",
+      "summary_points": [
+        "Macro Tailwinds Drive Bank Fundamentals: BoK’s 2026 GDP forecast revised up to 3.3%, current account surplus widening, chip exports fueling trade growth, and rising property prices outweigh near-term delinquency concerns.",
+        "ROE Expansion as Core Value Driver: Banks’ ROE trajectory (recovery to 9.1% by 2028) is value-creative, not destructive; narrowing ROE discount to 20% (vs. 40% prior) and improved asset quality justify valuation upside.",
+        "IBK & BNK Upgraded to Buy: IBK (83% SME loan exposure vs. 46% sector avg) and BNK (57% SME loans) upgraded due to SME credit deterioration normalization, adding 4-5% to net profit vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-1c6ij86icrc-10d4e0",
       "title": "Mexico Weak Jul Retail Sales",
@@ -232,6 +310,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-byxbajnfkdi-8bc450",
+      "title": "Global Economics Analyst Where in the World Is There Still an Inflation Problem",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:16Z",
+      "summary_points": [
+        "US Inflation Drivers: US core goods inflation elevated temporarily by tariffs (2.4pp, fading H2 2024) and mismeasured AI (1pp, fading 2027), while global peers face persistent services inflation; US is less severe outlier than perceived.",
+        "China Trade Impact: Stronger Chinese exports lower global goods prices by 0.6-0.8% (non-US DMs/EMs), offsetting energy spillovers and creating structural disinflationary tailwinds.",
+        "Rental Inflation Dynamics: US rental inflation below DMs/EMs ex-China due to immigration slowdown; positive correlation (R²=0.46) between migration declines and rent reduction, highlighting policy sensitivity.",
+        "Global Inflation Divergence: Unit labor costs elevated outside US (sustained inflation risk), while US labor costs near pre-pandemic average; non-shelter services inflation overshooting target globally except US (harmonized basis)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
