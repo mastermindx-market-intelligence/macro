@@ -3,6 +3,60 @@
   "note": "Candidates land in `pending` automatically. A numbered `versions` entry is minted ONLY by exemplar_store.promote_pending(), and the writer reads ONLY the version pinned at config/marketing.yml intel.exemplar_store.active_version.",
   "pending": [
     {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "unusual_whales",
+      "created_at": "Thu Sep 17 19:38:00 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.06488986,
+        "likes": 14397,
+        "replies": 116,
+        "retweets": 1259,
+        "views": 243058
+      },
+      "post_id": "2100670625027158525",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "\"McConnell would never be allowed to drive a car, babysit young children, or file his own taxes. Why, then, should a cognitively incapacitated 82-year-old retain one of the most important positions of power within the national government,\" per PublicNotice",
+      "text_key": "27f24b9d7250bade",
+      "url": "https://x.com/unusual_whales/status/2100670625027158525"
+    },
+    {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "unusual_whales",
+      "created_at": "Fri Sep 18 18:38:00 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.04252599,
+        "likes": 17524,
+        "replies": 237,
+        "retweets": 2498,
+        "views": 476391
+      },
+      "post_id": "2101017913289511278",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "BREAKING: UnitedHealth uses an AI model with 90% error rate to deny care, a lawsuit alleges per Arstechnica.",
+      "text_key": "e7b8229b63e44d1c",
+      "url": "https://x.com/unusual_whales/status/2101017913289511278"
+    },
+    {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "unusual_whales",
+      "created_at": "Fri Sep 18 19:44:29 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.0411914,
+        "likes": 9562,
+        "replies": 211,
+        "retweets": 1151,
+        "views": 265201
+      },
+      "post_id": "2101034645949468761",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "BREAKING: More American service members have died in the Middle East during the ongoing Iran war than the Pentagon has disclosed publicly, per WaPo",
+      "text_key": "c3bca93f20d30374",
+      "url": "https://x.com/unusual_whales/status/2101034645949468761"
+    },
+    {
       "added": "2026-09-13T23:47:40Z",
       "author": "unusual_whales",
       "created_at": "Sun Sep 13 16:01:00 +0000 2026",
@@ -129,6 +183,24 @@
       "url": "https://x.com/unusual_whales/status/2083296140183892104"
     },
     {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "Barchart",
+      "created_at": "Mon Sep 14 20:28:03 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02636995,
+        "likes": 1232,
+        "replies": 34,
+        "retweets": 105,
+        "views": 51991
+      },
+      "post_id": "2099596059819262173",
+      "register": "aggregator",
+      "shape": "caption",
+      "text": "https://t.co/QATtsjMYrO",
+      "text_key": "27ae0c4b5c2aecc3",
+      "url": "https://x.com/Barchart/status/2099596059819262173"
+    },
+    {
       "added": "2026-08-31T00:03:02Z",
       "author": "Barchart",
       "created_at": "Mon Aug 24 05:44:08 +0000 2026",
@@ -219,6 +291,24 @@
       "url": "https://x.com/RyanDetrick/status/2086462777749651549"
     },
     {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "Barchart",
+      "created_at": "Tue Sep 15 01:55:01 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02450493,
+        "likes": 1354,
+        "replies": 35,
+        "retweets": 138,
+        "views": 62314
+      },
+      "post_id": "2099678340076450230",
+      "register": "aggregator",
+      "shape": "one_liner",
+      "text": "JUST IN 🚨: U.S. 10-Year Treasury Yield jumps back up to 5% https://t.co/08N7rDhTOb",
+      "text_key": "3bed9096d77fcd86",
+      "url": "https://x.com/Barchart/status/2099678340076450230"
+    },
+    {
       "added": "2026-08-23T22:12:06Z",
       "author": "Barchart",
       "created_at": "Wed Aug 19 20:04:25 +0000 2026",
@@ -289,6 +379,24 @@
       "text": "January 2025: \"Don't worry about the $2 trillion deficit and rising national debt. We are going to grow our way out of it with 5% Real GDP.\"\n\nToday: \"Wait till next year.\" https://t.co/ESegJF6bPv",
       "text_key": "1f934ad10f4c8b3e",
       "url": "https://x.com/charliebilello/status/2082842541003612279"
+    },
+    {
+      "added": "2026-09-20T23:43:14Z",
+      "author": "Barchart",
+      "created_at": "Wed Sep 16 19:41:03 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.0232147,
+        "likes": 1865,
+        "replies": 64,
+        "retweets": 251,
+        "views": 93906
+      },
+      "post_id": "2100309007533580713",
+      "register": "aggregator",
+      "shape": "one_liner",
+      "text": "JUST IN 🚨: Extreme Fear hits stock market for the first time since June 👻 😱 📉 https://t.co/jNEN2O4k1N",
+      "text_key": "1a92ec322f5f8bd6",
+      "url": "https://x.com/Barchart/status/2100309007533580713"
     },
     {
       "added": "2026-08-23T22:12:06Z",
@@ -613,117 +721,9 @@
       "text": "BREAKING: The number of U.S. service members reported wounded or killed in the Iran war has jumped to 774, per WaPo",
       "text_key": "775aca53732f551a",
       "url": "https://x.com/unusual_whales/status/2091347823052861715"
-    },
-    {
-      "added": "2026-07-31T23:47:24Z",
-      "author": "RyanDetrick",
-      "created_at": "Fri Jul 31 13:37:54 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01899881,
-        "likes": 468,
-        "replies": 29,
-        "retweets": 48,
-        "views": 28686
-      },
-      "post_id": "2083185386499575890",
-      "register": "commentary",
-      "shape": "stack",
-      "text": "In 2007, banks were the warning, as they peaked early that year, even as the overall market didn't peak until October.\n\nWell, now we have banks breaking out after years of basing, once again sending a warning. \n\nOnly this warning is this bull is alive and well.\n\nNice chart from @JC_ParetsX here.",
-      "text_key": "32aab812688e3c08",
-      "url": "https://x.com/RyanDetrick/status/2083185386499575890"
-    },
-    {
-      "added": "2026-08-23T22:12:06Z",
-      "author": "unusual_whales",
-      "created_at": "Thu Aug 13 16:57:00 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01892818,
-        "likes": 3075,
-        "replies": 177,
-        "retweets": 334,
-        "views": 189453
-      },
-      "post_id": "2087946532775428585",
-      "register": "wire",
-      "shape": "one_liner",
-      "text": "\"Canadians spent more on taxes than basic necessities in 2025,\" per Toronto Sun",
-      "text_key": "04844bf0f766cc79",
-      "url": "https://x.com/unusual_whales/status/2087946532775428585"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "RyanDetrick",
-      "created_at": "Sun Aug 09 16:17:23 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01885503,
-        "likes": 238,
-        "replies": 16,
-        "retweets": 22,
-        "views": 14638
-      },
-      "post_id": "2086487010550685771",
-      "register": "commentary",
-      "shape": "one_liner",
-      "text": "Another week, more jumps in 2026 and 2027 earnings estimates. https://t.co/knG8Z1WqfJ",
-      "text_key": "838ea1e7e454acde",
-      "url": "https://x.com/RyanDetrick/status/2086487010550685771"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "Barchart",
-      "created_at": "Tue Aug 04 18:22:59 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01882093,
-        "likes": 848,
-        "replies": 35,
-        "retweets": 107,
-        "views": 52601
-      },
-      "post_id": "2084706682567880942",
-      "register": "aggregator",
-      "shape": "one_liner",
-      "text": "Greed returns to the Stock Market for the first time in more than 2 months 📈 🥳 https://t.co/BUI6ZMGCos",
-      "text_key": "8078ee83a5bf2e4f",
-      "url": "https://x.com/Barchart/status/2084706682567880942"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "Barchart",
-      "created_at": "Tue Aug 04 05:57:12 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01851326,
-        "likes": 1292,
-        "replies": 37,
-        "retweets": 105,
-        "views": 77458
-      },
-      "post_id": "2084518997614108987",
-      "register": "aggregator",
-      "shape": "caption",
-      "text": "😂😂 https://t.co/b7ZrpFBMKH",
-      "text_key": "2b0abfa1e65b6955",
-      "url": "https://x.com/Barchart/status/2084518997614108987"
-    },
-    {
-      "added": "2026-09-13T23:47:40Z",
-      "author": "markminervini",
-      "created_at": "Thu Sep 03 14:00:06 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.0184748,
-        "likes": 1809,
-        "replies": null,
-        "retweets": 116,
-        "views": 104196
-      },
-      "post_id": "2095512158981296179",
-      "register": "trader",
-      "shape": "one_liner",
-      "text": "When the best setups don't work, you don't go to the worst setups... you go to cash.",
-      "text_key": "241254fad5c5fd29",
-      "url": "https://x.com/markminervini/status/2095512158981296179"
     }
   ],
   "schema": "marketing.x_exemplar_store/v1",
-  "updated_at": "2026-09-13T23:47:40Z",
+  "updated_at": "2026-09-20T23:43:14Z",
   "versions": []
 }

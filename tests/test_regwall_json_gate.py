@@ -148,3 +148,27 @@ def test_html_documents_are_served_open_not_registration_gated():
         assert wall not in open_handler, f"@open_html routes pages through {wall}"
     # Payloads: the asset wall is untouched and still fail-closed.
     assert "rewrite /api/regwall/check" in _extract_block(text, "handle @reg_asset")
+
+
+def test_prophet_leader_observation_source_is_early_paid_and_pricing_disclosed():
+    """The tier-preview wall is honest only when the raw ticker map cannot bypass it."""
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    source = "/anticipationdata/us_leader_pullback.json"
+
+    assert source in policy["premium"]["enforced_early"]["exact"]
+    assert source not in policy["public"]["exact"]
+    assert source not in policy["free_registered"]["exact"]
+    assert not any(
+        source.startswith(prefix)
+        for section in ("public", "free_registered")
+        for prefix in policy[section]["prefixes"]
+    )
+
+    plans = (REPO_ROOT / "templates" / "plans.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "leaders waiting for entry" in plans
+    assert "领涨股" in plans
+    assert "1 before signup" in plans
+    assert "3 / list / day" in plans
+    assert "Full book" in plans
