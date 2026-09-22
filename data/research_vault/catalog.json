@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T16:21:12.820574+00:00",
-  "count": 2650,
+  "generated_at": "2026-09-22T16:51:26.249545+00:00",
+  "count": 2651,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -364,6 +364,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zmtv5zbgvjn-b3af34",
+      "title": "GS Banovic GS Credit What You Need to Know 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:43Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
