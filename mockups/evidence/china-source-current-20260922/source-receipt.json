@@ -1,0 +1,289 @@
+{
+  "source_commit": "42edefed5d28a29d8b0f22d02b670a9152fd9bd3",
+  "integrated_main": "72bb997548453c8954c09306d8944b458c7e8088",
+  "source_sha256": {
+    "engine/china_participation.py": "4d02f6f609f13a6c0de608e2cb20b7a7fffdbffeff8d4457affd6f664e02d5ac",
+    "templates/_china_participation_context.html.j2": "c79626f394b6fddccef206232aec0d5feb71688381d03c31023486914a8474b0",
+    "templates/china.html.j2": "0244f40c545d6870c3ba2e61d8490a6c98d05c5ac8a8dc13ddebbd5b60af3df8",
+    "scripts/build_china.py": "2e5e7fc1bdfd5f6e536d877b11266bd2978d58c673298234d69ff0ded394995a",
+    "research/grey_deer/capture_china_risk_reading.py": "ca99ed79490c80ee1f48d32f738f1904d3385e607593958bd4aa3f620af7b264"
+  },
+  "test_summary": "477 passed, 10 inherited warnings",
+  "new_tests": 14,
+  "initial_new_failures": 12,
+  "clock_tests_pending_excluded": 15,
+  "proof_inputs": {
+    "assessment_asof": "2026-09-21",
+    "radar": {
+      "state": "risk-off",
+      "top_score": 94,
+      "dd21": 0.5,
+      "label_en": "Weak large-cap participation",
+      "label_zh": "\u5927\u76d8\u80a1\u53c2\u4e0e\u504f\u5f31"
+    },
+    "slowdown": {
+      "score": 58.5,
+      "en": "weak",
+      "zh": "\u75b2\u5f31",
+      "tone": "down"
+    },
+    "sample": {
+      "configured": 1817,
+      "eligible": 1695,
+      "asof": "2026-09-21",
+      "median20": 0.9302390913331626
+    },
+    "cohort": {
+      "asof": "2026-09-21",
+      "membership_observed": "2026-09-15",
+      "members": 300,
+      "five": {
+        "sessions": 5,
+        "status": "insufficient_coverage",
+        "eligible": 297,
+        "coverage_pct": 99.0,
+        "start": "2026-09-14",
+        "end": "2026-09-21",
+        "up": null,
+        "down": null,
+        "flat": null,
+        "positive_pct": null,
+        "median_return_pct": null,
+        "mean_return_pct": null,
+        "p10_return_pct": null,
+        "p90_return_pct": null,
+        "dispersion_pp": null,
+        "benchmark_return_pct": null,
+        "comparison": null,
+        "membership_observed_after_start": true,
+        "coverage_detail": {
+          "status": "incomplete",
+          "excluded_count": 3,
+          "members": [
+            {
+              "ticker": "601059.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            },
+            {
+              "ticker": "601238.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            },
+            {
+              "ticker": "601995.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            }
+          ]
+        }
+      },
+      "twenty": {
+        "sessions": 20,
+        "status": "insufficient_coverage",
+        "eligible": 297,
+        "coverage_pct": 99.0,
+        "start": "2026-08-24",
+        "end": "2026-09-21",
+        "up": null,
+        "down": null,
+        "flat": null,
+        "positive_pct": null,
+        "median_return_pct": null,
+        "mean_return_pct": null,
+        "p10_return_pct": null,
+        "p90_return_pct": null,
+        "dispersion_pp": null,
+        "benchmark_return_pct": null,
+        "comparison": null,
+        "membership_observed_after_start": true,
+        "coverage_detail": {
+          "status": "incomplete",
+          "excluded_count": 3,
+          "members": [
+            {
+              "ticker": "601059.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            },
+            {
+              "ticker": "601238.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            },
+            {
+              "ticker": "601995.SS",
+              "missing_observations": 1,
+              "first_missing": "2026-09-21",
+              "last_missing": "2026-09-21",
+              "latest_quote_missing": true,
+              "reason": "missing_or_invalid_price"
+            }
+          ]
+        }
+      }
+    },
+    "sector_rows": 16,
+    "weights_status": "unavailable",
+    "vm_sha256": "235ef760921a0c2beb4821048df88bf6daf88b3cf9330f0998ece59ebb373f87",
+    "source_head": "40845b5ddb2e91a7777868d1b218d1ea6c63e51e",
+    "integration_parent": "72bb997548453c8954c09306d8944b458c7e8088",
+    "fresh_collection": false,
+    "weight_injection": false
+  },
+  "custody": {
+    "restored_to_integrated_index": [
+      "data/china_regime/latest.json",
+      "data/china_regime/regime_history.parquet",
+      "data/risk_radar/scorecard.json",
+      "site/china_allocation.html",
+      "site/china_history.html",
+      "site/china_lookup.html",
+      "site/china_news.html",
+      "site/china_stocks.html",
+      "site/factordata/china_reversal.json",
+      "site/riskdata/scorecard.json",
+      "site/sectors/159928.SZ.html",
+      "site/sectors/159992.SZ.html",
+      "site/sectors/512170.SS.html",
+      "site/sectors/512200.SS.html",
+      "site/sectors/512400.SS.html",
+      "site/sectors/512660.SS.html",
+      "site/sectors/512690.SS.html",
+      "site/sectors/512760.SS.html",
+      "site/sectors/512800.SS.html",
+      "site/sectors/512880.SS.html",
+      "site/sectors/512980.SS.html",
+      "site/sectors/515000.SS.html",
+      "site/sectors/515030.SS.html",
+      "site/sectors/515220.SS.html",
+      "site/sectors/515250.SS.html",
+      "site/sectors/515790.SS.html"
+    ],
+    "preserved_input_hashes": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_search/closes.parquet": "3404730851aab46aa3314eb7e7d9376bfca776b18814b9c2fcce3b00b732030d",
+      "data/china_search/index_cons.parquet": "d95f79e71e0307a28c57209e9e7ee97d35e00ff94589b44cede640ce24d65af1",
+      "data/china/510300.SS.parquet": "9d3119a02d68d633af7e050828b04df1f9e7b88d697e86efa904bb902ed62f28",
+      "data/china_board_breadth/breadth.parquet": "382d2494fda65b35246140684aa197d351aeba3aacf8f59116951a7af255b40e",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac"
+    },
+    "frozen_clock_functions_unchanged": [
+      "_context_daily_frame",
+      "_context_prices",
+      "price_breadth_context",
+      "board_breadth_context",
+      "load_breadth_context"
+    ],
+    "weight_supply_connected": false,
+    "production": false
+  },
+  "normalization": {
+    "raw_source_head": "40845b5ddb2e91a7777868d1b218d1ea6c63e51e",
+    "integrated_parents": [
+      "40845b5ddb2e91a7777868d1b218d1ea6c63e51e",
+      "72bb997548453c8954c09306d8944b458c7e8088"
+    ],
+    "raw_sha256": "1f74bcb89779f8540ff98191f963da75e3f879742f47f7caf885b8c412b11908",
+    "raw_bytes": 462002,
+    "normalized_bytes": 277173,
+    "normalized_sha256": "d1b129eda4ab500cbb4fb5cca726394bdd219d9f24de736bf4d30cecd280de69",
+    "created_assets": [],
+    "pipeline": [
+      "lib.pages.inject_text",
+      "lib.pages.externalize_css_text",
+      "lib.pages.externalize_js_text",
+      "scripts.optimize_assets.make_optimizer"
+    ],
+    "pruned_assets": false,
+    "production": false
+  },
+  "assets": [
+    {
+      "path": "site/assets/css/be207544.css",
+      "sha256": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab"
+    },
+    {
+      "path": "site/assets/css/f7e9b02b.css",
+      "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+    },
+    {
+      "path": "site/assets/css/fd2baf90.css",
+      "sha256": "fd2baf9010faca160d76e78f2b5b6480e6ab522d98c3d3cb4f5b0b648e73aab9"
+    },
+    {
+      "path": "site/chart_i18n.js",
+      "sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315"
+    },
+    {
+      "path": "site/china_risk_state_live.js",
+      "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1"
+    },
+    {
+      "path": "site/illus.css",
+      "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+    },
+    {
+      "path": "site/illus.js",
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+    },
+    {
+      "path": "site/live.js",
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    {
+      "path": "site/live_config.js",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    {
+      "path": "site/logo_config.js",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    {
+      "path": "site/mtf.js",
+      "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0"
+    },
+    {
+      "path": "site/navigation-refresh.css",
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    {
+      "path": "site/product-nav-icons.css",
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    {
+      "path": "site/stock-logos.js",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    {
+      "path": "site/tablesort.js",
+      "sha256": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78"
+    },
+    {
+      "path": "site/theme.css",
+      "sha256": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7"
+    },
+    {
+      "path": "site/theme.js",
+      "sha256": "c907a6b8d51a22e49a9cdbe101380e04ea3c23542ac547d8399a69a402c53b41"
+    }
+  ],
+  "no_weight_injection": true,
+  "production": false,
+  "fresh_collection": false
+}

@@ -113,3 +113,33 @@ An unsubscribe test also required the repository-declared FastAPI package in thi
 isolated test environment; missing dependency is not counted as a product defect.
 The registered Lens tests and unchanged actual first-click assertion remain owed
 on the integrated revision; touch and genuine second-gesture dismissal were added.
+
+### Current-source completion boundary and exact proof limit
+Final source9c6bef3f37f98454a8d5fc4f347593bd164407ac includes the source-current
+merge, missing-member explanation and original6860 shared-Lens repair ancestry.
+Twelve-suite regression:544 passed,10 inherited warnings. Fourteen new coverage
+cases preserve existing return arithmetic and the full300-member requirement.
+The paired Lens regions agree; public-config/emitted overlay bytes are preserved.
+The unsubscribe and China pages changed only their shared theme version stamp
+when6860 was integrated. Seventeen explicit JS/CSS version stamps match the
+actual files. Both theme scripts and China inline scripts parse; coherence passes.
+Final committed page277173bytes SHA256
+a7b1ea685ecf48f697527ab742606c32a9636e071a269c1826552f70f8d25a34.
+Six pinned source-input/ledger files remain unchanged after the offline work.
+
+Browser honesty:the earlier source42edefed5d28 produced16/16 rest/focus captures,
+with no capture console errors or failed responses, but its interactive journey
+FAILED at the actual reason-Lens first click. The unchanged first-click assertion
+plus touch/second-gesture checks was invoked after6860; OpenAI refused the tool
+call because it could not determine the request's safety status. Same-carrier
+readback confirms no new output log or interaction receipt. No PASS is inferred,
+no second browser invocation or alternate carrier was used, and no worker remains.
+Historical captures retain their own pre-Lens source/page provenance.
+
+Evidence:mockups/evidence/china-source-current-20260922/final-source-receipt.json.
+This turn resolves current-source composition and explains an actual missing-price
+case; it does not close the original clock/weight-supply refusals or release gates.
+CI remains deferred. Final browser/production acceptance remains false.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false; context-heavy source integration and dependency repair
+are persisted at this exact incomplete boundary, not represented as delivery.

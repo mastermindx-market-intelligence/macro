@@ -1,0 +1,170 @@
+{
+  "source_commit": "9c6bef3f37f98454a8d5fc4f347593bd164407ac",
+  "integrated_main": "72bb997548453c8954c09306d8944b458c7e8088",
+  "lens_dependency": "03b21b1a9e0f1b5b517a9a92545bc02824411ced",
+  "page_sha256": "a7b1ea685ecf48f697527ab742606c32a9636e071a269c1826552f70f8d25a34",
+  "page_bytes": 277173,
+  "tests": "544 passed, 10 inherited warnings",
+  "test_suites": 12,
+  "clock_tests_pending_excluded": 15,
+  "new_coverage_cases": 14,
+  "source_inputs_preserved": {
+    "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+    "data/china_search/closes.parquet": "3404730851aab46aa3314eb7e7d9376bfca776b18814b9c2fcce3b00b732030d",
+    "data/china_search/index_cons.parquet": "d95f79e71e0307a28c57209e9e7ee97d35e00ff94589b44cede640ce24d65af1",
+    "data/china/510300.SS.parquet": "9d3119a02d68d633af7e050828b04df1f9e7b88d697e86efa904bb902ed62f28",
+    "data/china_board_breadth/breadth.parquet": "382d2494fda65b35246140684aa197d351aeba3aacf8f59116951a7af255b40e",
+    "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac"
+  },
+  "asset_receipts": [
+    {
+      "path": "site/assets/css/be207544.css",
+      "sha256": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/assets/css/f7e9b02b.css",
+      "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/assets/css/fd2baf90.css",
+      "sha256": "fd2baf9010faca160d76e78f2b5b6480e6ab522d98c3d3cb4f5b0b648e73aab9",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/chart_i18n.js",
+      "sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/china_risk_state_live.js",
+      "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/illus.css",
+      "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/illus.js",
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/live.js",
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/live_config.js",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/logo_config.js",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/mtf.js",
+      "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/navigation-refresh.css",
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/product-nav-icons.css",
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/stock-logos.js",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/tablesort.js",
+      "sha256": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/theme.css",
+      "sha256": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
+      "version_stamp_matches": true
+    },
+    {
+      "path": "site/theme.js",
+      "sha256": "2c4b0b13621042d6ef9102626112b8f500b8884e09df2c55946450a03e6b40ec",
+      "version_stamp_matches": true
+    }
+  ],
+  "lens_stamp_integration": {
+    "source_before": "42edefed5d28a29d8b0f22d02b670a9152fd9bd3",
+    "dependency": "03b21b1a9e0f1b5b517a9a92545bc02824411ced",
+    "lens_core_copies_equal": true,
+    "all_nonlens_source_bytes_preserved": true,
+    "emitted_theme_sha256": "2c4b0b13621042d6ef9102626112b8f500b8884e09df2c55946450a03e6b40ec",
+    "changes": [
+      {
+        "path": "site/unsubscribe.html",
+        "before_sha256": "00283d5f241e4ba1ca46577ff04d6e4c00fd697ab71329e38bd6e38f15122607",
+        "after_sha256": "1b735eb954a5613d51e8b889ed429ac7de1e0ac6864e0b81f365643ad3a9491c",
+        "changed_lines": [
+          "-<script src=\"theme.js?v=c907a6b8\" defer></script>",
+          "+<script src=\"theme.js?v=2c4b0b13\" defer></script>"
+        ]
+      },
+      {
+        "path": "site/china.html",
+        "before_sha256": "d1b129eda4ab500cbb4fb5cca726394bdd219d9f24de736bf4d30cecd280de69",
+        "after_sha256": "a7b1ea685ecf48f697527ab742606c32a9636e071a269c1826552f70f8d25a34",
+        "changed_lines": [
+          "-<script src=\"theme.js?v=c907a6b8\" defer></script>",
+          "+<script src=\"theme.js?v=2c4b0b13\" defer></script>"
+        ]
+      }
+    ],
+    "publisher": "existing scripts.optimize_assets.make_optimizer",
+    "production": false
+  },
+  "browser": {
+    "pre_lens_source": "42edefed5d28a29d8b0f22d02b670a9152fd9bd3",
+    "pre_lens_page_sha256": "d1b129eda4ab500cbb4fb5cca726394bdd219d9f24de736bf4d30cecd280de69",
+    "rest_focus_captures": 16,
+    "interactive_result": "FAIL first reason Lens click self-dismissed",
+    "post_lens_run": "PLATFORM_REFUSED",
+    "refusal": "could not determine safety status",
+    "new_process_log_absent": true,
+    "new_interaction_receipt_absent": true,
+    "final_browser_acceptance": false
+  },
+  "ci_deferred": true,
+  "fresh_collection": false,
+  "weight_supply_connected": false,
+  "production": false,
+  "test_files": [
+    "tests/test_china_participation.py",
+    "tests/test_china_archetype_d_s1.py",
+    "tests/test_china_board_breadth.py",
+    "tests/test_china_breadth_coverage.py",
+    "tests/test_china_universe_index_constituents.py",
+    "tests/test_risk_radar_dlg_country_wiring.py",
+    "tests/test_risk_radar_dlg_partial.py",
+    "tests/test_breadth_constituents_repair.py",
+    "tests/test_breadth_split_seam.py",
+    "tests/test_market_heatmap.py",
+    "tests/test_lens_nested_control_taps.py",
+    "tests/test_unsubscribe_page.py"
+  ],
+  "test_command": "python -m pytest tests/test_china_participation.py tests/test_china_archetype_d_s1.py tests/test_china_board_breadth.py tests/test_china_breadth_coverage.py tests/test_china_universe_index_constituents.py tests/test_risk_radar_dlg_country_wiring.py tests/test_risk_radar_dlg_partial.py tests/test_breadth_constituents_repair.py tests/test_breadth_split_seam.py tests/test_market_heatmap.py tests/test_lens_nested_control_taps.py tests/test_unsubscribe_page.py -q --tb=short",
+  "agentos": {
+    "records": 1177,
+    "errors": 0,
+    "warnings": 64
+  }
+}

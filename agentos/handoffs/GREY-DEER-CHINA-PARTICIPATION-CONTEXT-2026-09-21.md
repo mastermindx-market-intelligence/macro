@@ -59,6 +59,14 @@ verified:
   result: 8 captures and8 interactions passed. Page27296118..., source90e9e9eae2c6.
     Source table not written;27 generated outputs restored after evidence preservation;
     no production claim.
+- claim: Current-source missing-member coverage explanation and incumbent shared Lens
+    integration preserve existing semantics.
+  command: python -m pytest [12 owning suites recorded in source-current evidence];
+    node --check templates/theme.js; node --check site/theme.js; actual source/input/asset
+    hash comparisons
+  result: 544 passed,10 inherited warnings;14 new coverage cases;17 JS/CSS stamps
+    match; six pinned input/ledger files unchanged. Final browser acceptance remains
+    false.
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -75,6 +83,10 @@ unverified:
   what_would_verify: Resolve the exact protective refresh-test append refusal, then
     implement and verify the existing-source refresh without bypass. The current reader
     has explicit absent-state behavior.
+- claim: Post-6860 actual first-click/touch browser acceptance on source9c6bef3f37f9.
+  what_would_verify: Resolve exact OpenAI safety-status refusal before any lawful
+    same-carrier run of the preserved current-source browser command; no reroute/retry
+    by another actor.
 unresolved:
 - Hosted CI, source-current-main qualification and release remain intentionally deferred;
   PR7592 retains its unchanged external release carrier.
@@ -83,12 +95,12 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Resolve the exact official-weight supply verification gate on its original carrier;
-  do not recreate the blocked test or refresh through another actor.
-- Preserve the15 pending clock cases and the separately refused7029 comparison; resume
-  those exact lanes only under a lawful changed gate.
-- When release work resumes, reconcile current main and prove CI/publication/live
-  behavior; preserve the combined accuracy page and all existing source owners.
+- Resolve the exact post-Lens browser proof gate without bypass; source9c6bef3f37f9,
+  expected-input receipt and unchanged failed first-click assertion are preserved.
+- Resolve existing source-clock and automatic-weight-supply gates;15 pending clock
+  tests remain excluded; do not reimplement refused operations through another actor.
+- When release work resumes, qualify then-current source/CI and accepted production
+  publication; do not restart or overwrite PR7592/6860 owners.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -107,51 +119,46 @@ danger_areas:
 - Offline builds can alter local generated files; preserve proof and restore only
   this operation's generated artifacts before committing source.
 prs:
-- 7622
+- 6860
 - 7592
+- 7622
 ---
 
-
-
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001; same PR7622 carrier, Sol custody.
-Procedure:Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1; compatible1.0.1/bootstrap1.
-Chairman continues capability work; hosted CI/release remain deferred. No worker/watcher.
-Starting candidate40845b5ddb2e91a7777868d1b218d1ea6c63e51e integrates main72bb997548453c8954c09306d8944b458c7e8088.
-This is a real generated-page conflict and accepted shared-Lens dependency update,
-not an ancestry-only refresh. Earlier combined page and official-weight research remain DO_NOT_REDO.
-PR7592 and recovery#7029 source/controller were not modified or restarted.
+Operation:china-participation-context-20260921-sol-001. Sol retains PR7622 source custody.
+Procedure:Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1, compatible1.0.1/bootstrap1.
+Chairman continues capability work; hosted CI/release deferred; Draft/HOLD remains.
+Latest semantic source9c6bef3f37f98454a8d5fc4f347593bd164407ac composes current-main
+72bb997548453c8954c09306d8944b458c7e8088 and incumbent shared-Lens6860
+03b21b1a9e0f1b5b517a9a92545bc02824411ced. Neither dependency branch/controller changed.
 
-New observed case:September21 data have297/300 complete CSI300 members;601059.SS,
-601238.SS and601995.SS lack September21 stored closes. No cause is inferred.
-The full300 return remains withheld. Per-window coverage diagnostics name the
-excluded members and missing observations without changing any original metric.
-Visible rows are bounded to5 with the full excluded count retained.
-Twelve cases RED; final477 tests/10 inherited warnings across11 suites, including14
-new cases. One fixture frequency mistake was repaired by comparing after setup;
-no product threshold was loosened. Pending clock cases remain outside this count.
+DO_NOT_REDO:earlier participation, risk interpretation, combined7592 integrity and
+dated-weight research remain preserved. New actual September21 case is297/300
+complete CSI300 members;601059.SS,601238.SS,601995.SS lack Sep21 stored closes.
+The new bounded per-window explanation names missing observations without filling
+prices, substituting names, altering eligibility or claiming suspension/vendor failure.
+Final544 tests/10 inherited warnings;14 added coverage tests. Exact page a7b1ea68...
+is277173bytes, committed;17 JS/CSS stamps match. Accepted main's shared Lens replaces
+the earlier local tooltip;6860 fixes the first-click self-dismiss mechanism.
 
-Actual builder now uses committed September21 inputs; no new collector or weight
-injection. Source-current normalization and browser proof are recorded next under
-mockups/evidence/china-source-current-20260922; do not claim browser PASS yet.
-Current worktree MERGE_HEAD is the exact main pin until the integration commit.
-No ambiguous modifying effect is unresolved; do not create another branch/carrier.
+Browser boundary:pre-Lens42edefed5d28 had16 rest/focus captures but FAILED its
+actual first-click journey. Post-Lens browser call was platform-refused; metadata
+readback proves no new log/interaction receipt. Do not run it via another actor,
+selector/tactic workaround or carrier. The first-click assertion was not weakened.
+No final browser acceptance, no worker/watcher or background continuation exists.
 
-Frozen gates:participation clock implementation, protective weight-refresh runner
-append, old#7029 compound review, optional weight English-name/residual augmentation.
-Do not retry or delegate those refused operations. Weight supply remains absent;
-no score/probability/force/sizing or historical ledger change is authorized here.
-15 pending clock cases are not included among477 passing tests.
-Next:commit this tested same-carrier source/page, complete actual current-source
-browser acceptance including shared Lens and real missing-member UI, preserve/read
-back evidence, then retain Draft until normal CI/release and exact gates are cleared.
+Frozen older gates:clock edit/15 pending cases; protective weight-refresh runner
+append; prior7029 compound review; optional weight name/residual augmentation.
+No repeated attempt or delegated bypass. No weight artifact written, no fresh
+collection, model calibration, score/probability/force/sizing change or deployment.
+
+Current source/evidence:research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md,
+mockups/evidence/china-source-current-20260922/final-source-receipt.json.
+Next:exact post-Lens proof gate resolution, then original source-supply/clock gates;
+normal release qualification remains separate. Resume from this record and minimum
+fresh canonical state, not tool history. Same branch/operation and effects retained.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE:false
-
-Current-source browser outcome is FAILED at the unchanged first-click Lens check,
-not PASS. Existing dependency6860@03b21b1a9e0f1b5b517a9a92545bc02824411ced
-is now composed by ancestry on this carrier. Its source/controller is unchanged.
-The only unsubscribe conflict was its generated theme stamp; preserve current
-content and emitted Terminal-overlay/public-config transformations. Lens regions
-match and non-Lens bytes are unchanged. Both pages only change theme version
-stamps in this step. Exact89 Lens/unsubscribe tests pass after isolated FastAPI
-installation. Full current-source click/touch browser proof remains next.
+Boundary:context-heavy current-source, new observed-input defect and incumbent
+dependency integration completed at tested-source level; required real interaction
+proof is explicitly refused, not manufactured. No custody transfer or automatic wake.

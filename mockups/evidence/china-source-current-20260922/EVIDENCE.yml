@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - templates/_china_participation_context.html.j2
+  - site/china.html
+manifest: mockups/evidence/china-source-current-20260922/manifest.json
