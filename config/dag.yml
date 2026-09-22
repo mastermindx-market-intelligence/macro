@@ -865,6 +865,9 @@ lanes:
         cluster:
           cl_markets:
             - scripts.build_commodities
+            # China physical-premium source→VM→render receipt; runs immediately
+            # after the commodity page and writes only the existing quality plane.
+            - scripts.audit_china_gold_premium --strict-render
             - scripts.build_spr
             - scripts.build_forex
             - scripts.build_bonds
@@ -1006,6 +1009,33 @@ lanes:
             # emits a ::notice per fired tripwire; it never blocks the nightly.
             - scripts.build_program_watch
       # serial post-band
+      # Early durable core publication checkpoint. The incumbent
+      # daily_engine_commit_outputs.sh performs the same two normalization passes
+      # as the final publisher: once before its first commit attempt and once after
+      # a successful rebase before push. Declare both invocations here so the DAG
+      # contract tracks the new pre-tail publisher without creating a second
+      # publication implementation.
+      - id: checkpoint_core_precommit_inject_data_base
+        module: scripts.inject_data_base
+      - id: checkpoint_core_precommit_externalize_css
+        module: scripts.externalize_css
+      - id: checkpoint_core_precommit_optimize_assets
+        module: scripts.optimize_assets
+      - id: checkpoint_core_precommit_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: checkpoint_core_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+      - id: checkpoint_core_postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: checkpoint_core_postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: checkpoint_core_postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: checkpoint_core_postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
       - id: check_builder_failstreaks
         module: scripts.check_builder_failstreaks
         note: >
@@ -1817,6 +1847,13 @@ lanes:
   - workflow: .github/workflows/daily.yml
     job: stock_briefs
     steps:
+      - id: fetch_r2_stockdata
+        module: scripts.fetch_r2
+        args: [--dirs, stockdata]
+        note: >
+          Restore the existing R2-only stockdata context before stock-brief
+          generation. Input materialization only; no ranking, admission,
+          publication, or trade authority originates here.
       - id: build_stock_briefs
         module: scripts.build_stock_briefs
       - id: publish_r2_stockdata

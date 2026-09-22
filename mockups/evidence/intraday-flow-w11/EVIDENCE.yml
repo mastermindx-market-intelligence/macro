@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intraday_flow.html.j2
+manifest: mockups/evidence/intraday-flow-w11/manifest.json
