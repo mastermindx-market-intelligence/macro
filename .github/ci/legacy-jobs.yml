@@ -15356,7 +15356,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: install suite-page test dependencies
-        run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
+        # pillow/numpy (r6, 2026-09-22): the R12/R15 pixel-scan tests in
+        # tests/test_macro_command_panels.py + tests/test_macro_command_p4_copy.py
+        # and the copy-law stitched-band check import PIL.Image / numpy at call
+        # time — same rule as the K1 legs: a real import is declared here, never
+        # importorskip'd (a skip in CI would un-gate the pixel law on Linux).
+        run: pip install pytest jinja2 pyyaml jsonschema==4.26.0 pillow numpy
       - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
         run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
