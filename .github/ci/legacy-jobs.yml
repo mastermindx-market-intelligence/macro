@@ -4096,6 +4096,7 @@ jobs:
       - "site/cycle.css"
       - "site/cycle.html"
       - "site/cycle_app.js"
+      - "site/cycle_data.js"
       - "site/cycle_i18n.js"
       - "site/cycledata/**"
       - "site/marketsdata/markets_engine.js"
