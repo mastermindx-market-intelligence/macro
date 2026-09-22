@@ -1,11 +1,11 @@
 {
   "operation": "reference-rethink-20260921",
-  "boundary": "design and interaction prototype ready for independent review",
+  "boundary": "real-source qualification and current shared-help integration preparation",
   "mission_complete": false,
   "production_changed": false,
-  "principal_judgment": "Preserve the validated reference registry; replace the text-first entry point with contextual help and a question-led visual guide. No worker delegation was needed for this bounded candidate.",
+  "principal_judgment": "PRINCIPAL_JUDGMENT: reconcile source and restore the frozen design in the shared consumer before independent visual acceptance. No eligible Executive submit tool found; no worker START or effect unknown.",
   "source_pin": "ff90f9beacb5109e43848faf0a76e45060bd07f9",
-  "protected_authority_pin": "6f321cb42166e4224e5107ac3312a6f7cd01fffa",
+  "protected_authority_pin": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
   "carrier": "claude/reference-rethink-20260921",
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
@@ -17,11 +17,27 @@
     "Do not rerun one-shot Paper composition scripts against frozen nodes.",
     "Do not invent live scores, illustrative component values, thresholds or formulas."
   ],
-  "next_action": "Independent design adjudication; reconcile macro#6792 and #7610 before a fresh production integration packet.",
+  "next_action": "Integrate material main changes on this same carrier, wire the new suites into existing CI, qualify the new reader and embedded help using source-backed real-browser tests, preserve independent design/release gates.",
   "gaps": [
-    "Production integration and deployment not performed.",
-    "Full owner-anchor validation requires rendered site and was not run in this sparse design tree.",
-    "Coverage-exception alias recovery and complete per-instrument visual treatments remain.",
-    "Independent design, accessibility and real-dashboard integration review pending."
-  ]
+    "Independent design/code adjudication pending.",
+    "Production wiring/merge/deploy/live proof owed.",
+    "Latest-base input compatibility and full real-browser matrix in progress."
+  ],
+  "current_subject": "e3f4b2e0834387f9e6a7c723403060c281fa81cc",
+  "current_main_observed": "259477158b3363aee5a704946b9b46a1309708dc",
+  "source_qualification": {
+    "entries": 46,
+    "fixture_only": false,
+    "content_revision": "3986cc832462d070ff26ce142d2e412a0dd839b96aacd4b483a7b2b069fd5495",
+    "owner_pages": "materialized from the current carrier; newer main must be qualified after integration"
+  },
+  "capability_recovery": {
+    "studio_process": "read and source fast-forward succeeded",
+    "studio_browser": "Chromium 151.0.7922.34 loaded the exact file preview with no page error; no browser or policy settings changed"
+  },
+  "adjacent_work": {
+    "6792": "OPEN at 7853ffeaca41d4d8f33995b1453db2be134ce8a3; retain all route and evidence obligations",
+    "7610": "MERGED 2026-09-22T02:31:47Z; consume current main rather than reimplement shared help"
+  },
+  "ci_defect": "contract-delta correctly reports two new pytest modules absent from existing CI enrollment; repair enrollment, never waive tests"
 }
