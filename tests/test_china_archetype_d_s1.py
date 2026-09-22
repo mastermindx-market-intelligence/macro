@@ -154,6 +154,14 @@ def test_driver_rail_suppresses_missing_driver_noise() -> None:
     assert "暂不可用" not in driver
 
 
+def test_score_path_surfaces_prior_session_delta_without_new_scoring() -> None:
+    assert "{% set _mx5_delta =" in TPL
+    assert "_mx5_hist[-1].score" in TPL
+    assert "_mx5_hist[-2].score" in TPL
+    assert "Score vs time{% if _mx5_delta is not none %} · Δ" in TPL
+    assert "综合评分 · 时序{% if _mx5_delta is not none %} · 较前日" in TPL
+
+
 def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
     assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
     assert "watch →" in TPL
