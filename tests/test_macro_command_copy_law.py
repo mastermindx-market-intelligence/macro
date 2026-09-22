@@ -3059,7 +3059,6 @@ def test_png_dimensions_equal_raw_box() -> None:
 def test_no_stitched_keys_and_no_repeated_band() -> None:
     """E-B1/C-M4: no stitched keys; tall PNGs have no duplicated 200px band."""
     import json
-    import numpy as np
     from pathlib import Path
     try:
         from PIL import Image
@@ -3081,22 +3080,29 @@ def test_no_stitched_keys_and_no_repeated_band() -> None:
             im = Image.open(path).convert("RGB")
             if im.height <= 900:
                 continue
-            arr = np.asarray(im)
+            # PIL-only band compare (r7): raw RGB bytes of rows y..y+band — the same
+            # exact-equality test the numpy slice compare made; numpy is barred
+            # from this job's install line by test_macro_rates_curves_route.py.
+            height, width = im.height, im.width
             band = 200
             coinc = 0
             compared = 0
-            for y0 in range(0, arr.shape[0] - 2 * band, band):
-                a = arr[y0:y0 + band]
-                for y1 in range(y0 + band, arr.shape[0] - band + 1, band):
-                    b = arr[y1:y1 + band]
+
+            def _band(y: int) -> bytes:
+                return im.crop((0, y, width, y + band)).tobytes()
+
+            for y0 in range(0, height - 2 * band, band):
+                a = _band(y0)
+                for y1 in range(y0 + band, height - band + 1, band):
+                    b = _band(y1)
                     compared += 1
-                    if a.shape == b.shape and np.array_equal(a, b):
+                    if a == b:
                         coinc += band
                         repeated.append((path.name, y0, y1))
                         break
                 if repeated and repeated[-1][0] == path.name:
                     break
-            if compared and coinc > 0.01 * arr.shape[0]:
+            if compared and coinc > 0.01 * height:
                 pass  # already recorded in repeated
     assert not stitch_keys, stitch_keys[:10]
     assert not repeated, repeated[:5]
