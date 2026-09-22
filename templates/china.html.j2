@@ -1788,7 +1788,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _ms_flip = (ms.flip_en if ms else '') %}
   {% set _ms_flip_zh = (ms.flip_zh if ms else '') %}
   {% set _comps = (ms.components if ms else []) %}
-  {% set _rr = (ms.radar if ms else {}) %}
+  {% set _risk_reading = risk_reading if risk_reading is defined and risk_reading is mapping else {} %}
+  {% set _risk_basis = _risk_reading.get('basis') %}
+  {% set _rr = _risk_reading.get('radar') if _risk_basis else (ms.radar if ms else {}) %}
   {% set I = internals or {} %}
   {% set P = property %}
   {% set pb_obj = pb %}
@@ -1911,6 +1913,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
         {% set _rr_sub_en = ('~%d%% chance of a ≥5%% pullback within a month'|format((_rr_p21*100)|round|int) ~ (' · %.1f× the usual odds'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_en or ms.posture_en or '') %}
         {% set _rr_sub_zh = ('未来一个月内出现≥5%%回撤的概率约%d%%'|format((_rr_p21*100)|round|int) ~ (' · 约为平时的%.1f倍'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_zh or ms.posture_zh or '') %}
+        {% if _risk_basis and _rr_p21 is not none %}
+        {% set _rr_sub_en = 'Shanghai ≥5%% pullback · 21 trading sessions: %d%% · state-based estimate'|format((_rr_p21*100)|round|int) %}
+        {% set _rr_sub_zh = '上证≥5%%回撤 · 21个交易日：%d%% · 状态分组估计'|format((_rr_p21*100)|round|int) %}
+        {% endif %}
         <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
           <span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span>{% if _rr_score is not none %} · <span class="n" style="color:var(--ink-down, var(--down))">{{ _rr_score }}</span>{% endif %} ▾</button>
 
@@ -1934,6 +1940,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <div class="cnx-pop-h">{{ t('Pullback risk radar', '回撤风险雷达') }}</div>
           {% if _rr_score is not none %}
           <div class="cnx-pop-big"><span class="n">{{ _rr_score }}</span><span class="t">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</span></div>
+          {% if _risk_basis %}<div class="cnx-pop-sub" data-risk-score-basis>{{ t(_risk_basis.caption_en, _risk_basis.caption_zh) }}</div>{% endif %}
           <div class="cnx-pop-sub">{{ t(_rr_sub_en, _rr_sub_zh) }}</div>
           {% for leg in (_rr.scares or [])[:3] %}
           <div class="cnx-pop-row">
@@ -2214,9 +2221,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-ctitle">{{ t('Pullback Risk','回撤风险') }} <span class="cnx-alert-pill" style="background:{{ _rr_sev_bg }};color:{{ _rr_sev_col }}">{{ t(_rr_sev_en, _rr_sev_zh) }}</span></div>
       {% if _rr_score is not none %}
       <div class="cnx-bignum" style="color:{{ _rr_sev_col }}">{{ _rr_score }}<span style="font-size:14px;color:var(--muted)"> /100</span></div>
+      {% if _risk_basis %}<div class="cnx-lbl" data-risk-score-basis>{{ t(_risk_basis.caption_en, _risk_basis.caption_zh) }}</div>{% endif %}
       <div class="cnx-bigsub" style="color:{{ _rr_sev_col }}">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
       {% endif %}
-      <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
+      <div class="cnx-kv"><span class="k">{{ t('Shanghai ≥5% · 21 sessions','上证≥5%回撤 · 21个交易日') if _risk_basis else t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
       <div class="cnx-kv"><span class="k">{{ t('Deep-drawdown gauge','深跌仪表') }}</span>
         {# SAME recession score + 60/40 bands as the detail dialog (was label-based, which
            could disagree with the dialog's score-based colour); direction pair per the

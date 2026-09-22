@@ -142,3 +142,16 @@ Canonical source is this same PR7622 branch. New evidence is under
 mockups/evidence/china-index-cohort-20260921; old proof is historical/DO_NOT_REDO.
 Parent ownership stays Sol; no worker, watcher, CI run or background continuation
 is claimed. Resume from this record plus fresh compatible procedure, not tool history.
+
+## Active risk-reading scope repair
+Current procedure: Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f.
+Same PR7622 source carrier; prior clock-edit refusal remains NO_EFFECT/frozen.
+The China-only legacy rendering view now identifies the historical stress rank,
+separate Shanghai 21-session estimate and curated large-cap breadth scope.
+No score, odds, state, policy, source payload, model or ledger is modified.
+Other markets, unknown constructions and explicit composition metadata remain
+outside this interpretation; shared radar/card/dialog source is untouched.
+269 active tests passed across four affected suites, including26 added display
+cases. Source design/evidence: CHINA_RISK_READING_SCOPE_20260921.md in the existing
+research/grey_deer directory. Next: real-builder/interactive browser proof, then
+same-carrier evidence publication. No CI, fresh collection or release claimed.

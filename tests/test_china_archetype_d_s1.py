@@ -299,3 +299,127 @@ def test_market_headline_and_playbook_context_have_separate_dom_owners() -> None
     assert '<div class="cnx-playbook-context">' in TPL
     assert TPL.count("_hero_clause[0]") == 1
     assert TPL.count("_hero_clause[1]") == 1
+
+
+# Legacy CN presentation must not turn a sampled stress percentile into all-market odds.
+import copy
+import pytest
+
+
+def _risk_reading_fixture():
+    from tests.test_risk_radar_dlg_partial import _RD
+    raw = {'schema': 'risk_radar_intl.v1', 'market': 'cn', 'state': 'risk-off',
+           'asof': '2026-09-18', 'top_score': 94, 'dominant_scare': 'breadth',
+           'dominant_label_en': 'Breadth breakdown (all-boats)',
+           'dominant_label_zh': '广度普跌（普跌）'}
+    rd = copy.deepcopy(_RD)
+    rd.update(state='risk-off', top_score=94, dd21=.5, gross=.62,
+              label_en=raw['dominant_label_en'], label_zh=raw['dominant_label_zh'])
+    rd['scares'] = [{'scare': 'breadth', 'label_en': raw['dominant_label_en'],
+                     'label_zh': raw['dominant_label_zh'], 'score': 98.2,
+                     'tier': 'A', 'band': 'risk-off', 'firing_legs': []}]
+    raw['scares'] = copy.deepcopy(rd['scares'])
+    return raw, rd
+
+
+def test_risk_reading_names_sampled_breadth_not_all_market_collapse():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    view = _china_risk_reading(raw, rd)
+    assert view['radar']['label_en'] == 'Weak large-cap participation'
+    assert view['radar']['label_zh'] == '大盘股参与偏弱'
+    assert view['radar']['scares'][0]['label_en'] == view['radar']['label_en']
+
+
+def test_risk_reading_preserves_every_nonlabel_field_and_both_inputs():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    before = copy.deepcopy((raw, rd))
+    view = _china_risk_reading(raw, rd)
+    expected = copy.deepcopy(rd)
+    for obj in [expected, expected['scares'][0]]:
+        obj.update(label_en='Weak large-cap participation', label_zh='大盘股参与偏弱')
+    assert view['radar'] == expected
+    assert (raw, rd) == before
+    view['radar']['scares'][0]['firing_legs'].append({'extra': 1})
+    assert (raw, rd) == before
+    assert view['basis']['source_label_en'] == 'Breadth breakdown (all-boats)'
+
+
+@pytest.mark.parametrize('field,value', [('schema','unknown'), ('market','hk'),
+    ('composition',None), ('composition',{}), ('state','calm'), ('top_score',12)])
+def test_risk_reading_unknown_construction_or_mismatched_snapshot_not_reinterpreted(field,value):
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    raw[field] = value
+    view = _china_risk_reading(raw, rd)
+    assert view['basis'] is None and view['radar'] == rd
+
+
+@pytest.mark.parametrize('raw,rd', [(None,None), ({},{}), ([],[]), ('bad','bad')])
+def test_risk_reading_absence_cannot_create_an_interpretation(raw,rd):
+    from scripts.build_china import _china_risk_reading
+    assert _china_risk_reading(raw,rd)['basis'] is None
+
+
+def test_risk_reading_calm_or_other_driver_keeps_original_headline():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    raw.update(state='calm', dominant_label_en='No elevated driver')
+    rd.update(state='calm', label_en='No elevated driver')
+    assert _china_risk_reading(raw,rd)['radar']['label_en'] == 'No elevated driver'
+    raw, rd = _risk_reading_fixture()
+    raw.update(dominant_scare='rate_shock', dominant_label_en='US rate shock')
+    rd['label_en'] = 'US rate shock'
+    assert _china_risk_reading(raw,rd)['radar']['label_en'] == 'US rate shock'
+
+
+def test_risk_reading_explains_percentile_and_scoped_horizon_without_new_odds():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    basis = _china_risk_reading(raw,rd)['basis']
+    assert basis['score_kind'] == 'historical_stress_percentile'
+    assert basis['benchmark_en'] == 'Shanghai Composite'
+    assert basis['horizon_sessions'] == 21
+    assert 'not a pullback probability' in basis['explanation_en']
+    assert 'curated large-cap sample' in basis['explanation_en']
+    assert '并非回撤概率' in basis['explanation_zh']
+    assert 'state-based' in basis['probability_note_en']
+    assert 'current' not in basis['explanation_en'].lower()
+
+
+def test_risk_reading_actual_shared_dialog_uses_the_scoped_copy():
+    from scripts.build_china import _china_risk_reading, _radar_dlg_vm
+    from tests.test_risk_radar_dlg_partial import _render
+    raw, rd = _risk_reading_fixture()
+    view = _china_risk_reading(raw,rd)
+    vm = {'market_state': {'radar': rd}, 'risk_reading': view}
+    ctx = _radar_dlg_vm(vm, {'date': '2026-09-18', 'risk_radar': raw})
+    html = _render(rd=view['radar'], scares=view['radar']['scares'], ctx=ctx)
+    assert 'Weak large-cap participation' in html and '大盘股参与偏弱' in html
+    assert 'all-boats' not in html and '广度普跌（普跌）' not in html
+    assert 'not a pullback probability' in html and 'state-based' in html
+    assert rd['top_score'] == 94 and rd['dd21'] == .5
+
+
+@pytest.mark.parametrize('bad', [None, '', '94', True, float('nan'), float('inf'), -1, 101, 10**400])
+def test_risk_reading_invalid_score_cannot_gain_numeric_interpretation(bad):
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    raw['top_score'] = bad
+    assert _china_risk_reading(raw, rd)['basis'] is None
+
+
+def test_risk_reading_display_composition_is_also_out_of_scope():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    rd['composition'] = {'status': 'reviewed'}
+    assert _china_risk_reading(raw, rd)['basis'] is None
+
+
+def test_risk_reading_same_value_other_driver_is_not_breadth_attribution():
+    from scripts.build_china import _china_risk_reading
+    raw, rd = _risk_reading_fixture()
+    raw['dominant_scare'] = 'capital_flow'
+    rd.update(label_en='Capital outflow / FX', label_zh='资本外流／汇率')
+    assert _china_risk_reading(raw,rd)['radar']['label_en'] == rd['label_en']
