@@ -42,6 +42,12 @@ import sys
 from datetime import date as _date, timedelta
 from pathlib import Path
 
+# Repo-root pin so `lib.nyse_calendar` resolves under both `python -m` and bare
+# invocation from the runner. Mirrors the strong-pin idiom enforced by
+# `tests/test_check_script_import_pinning.py` for every scripts/** entry.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 # Exit codes are part of the contract — the runner's retry loop reads them.
 EXIT_OK = 0
 EXIT_STALE = 1
