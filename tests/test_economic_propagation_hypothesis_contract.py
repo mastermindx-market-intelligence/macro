@@ -1698,3 +1698,86 @@ def test_r015_gate_names_the_blocking_side():
             similarity_evidence=[_g2_leg()],
         ))
     assert "source_event.source_identity is UNRESOLVED" in str(source_exc.value)
+
+
+# ---------------------------------------------------------------------------
+# K3D_R015 validator parity with the target-side gate.
+#
+# The 2026-09-03 repair (f0dcefab) moved the source-identity gate ahead of
+# derivation in compose_hypothesis, but left validate_hypothesis consulting the
+# source identity ONLY through the `abstained is not True` headline escape. That
+# escape is copied from the target gate -- except the target gate is backed by
+# K3D_R011/K3D_R012, which fire regardless of `abstained` and force the four
+# evidence arrays empty and the mechanism un-hypothesized. The source side had no
+# such clause, so a record could self-declare `abstained: true` and still publish
+# a SUPPORTED Graph-1 leg built on an event whose own identity was never
+# resolved. `abstained: true` is a self-report; it is not evidence that the
+# evidence is absent. The composer already refuses exactly this input, so a
+# validator that accepts it is composer/validator drift on the one axis the
+# controlling review ordered closed ("zero semantic legs/mechanism").
+# ---------------------------------------------------------------------------
+
+
+def _abstained_source_unresolved_record(state="UNRESOLVED", reason="unresolved_identity"):
+    """A golden SUPPORTED record repainted as an abstention, evidence retained."""
+    rec = copy.deepcopy(_build_golden_supported_hypothesis())
+    rec["source_event"]["source_identity"] = _identity(state=state, issuer=None, security=None)
+    rec["abstention"] = {"abstained": True, "reasons": [reason]}
+    rec["hypothesis_state"] = "abstained"
+    return _rehash(rec)
+
+
+def test_r015_abstained_self_report_cannot_retain_semantic_evidence():
+    record = _abstained_source_unresolved_record()
+    # Precondition: the evidence really is still on the record.
+    assert record["graph_states"]["graph_1"] == "supported"
+    assert record["relationship_paths"] and record["generator_admissions"]
+    findings = validate_hypothesis(record)
+    assert "K3D_R015" in _codes(findings), (
+        "an abstained self-report retaining supported Graph-1 evidence off an "
+        "unresolved source event must not validate clean"
+    )
+    paths = {f.path for f in findings if f.code == "K3D_R015"}
+    assert "$.generator_admissions" in paths
+    assert "$.relationship_paths" in paths
+
+
+def test_r015_abstained_self_report_cannot_carry_hypothesized_mechanism():
+    record = _abstained_source_unresolved_record()
+    assert record["mechanism"]["state"] == "hypothesized"
+    findings = validate_hypothesis(record)
+    assert "$.mechanism.state" in {f.path for f in findings if f.code == "K3D_R015"}
+
+
+def test_r015_evidence_clause_fires_for_every_non_resolved_source_state():
+    for state, reason in (
+        ("UNRESOLVED", "unresolved_identity"),
+        ("NOT_IN_MASTER", "unresolved_identity"),
+        ("UNSUPPORTED_MARKET", "unresolved_identity"),
+        ("DEFERRED_IDENTITY_EXCEPTION", "unresolved_identity"),
+        ("CONFLICTING", "conflicting_identity"),
+        ("ENTITY_TYPE_CONFLICT", "conflicting_identity"),
+    ):
+        findings = validate_hypothesis(_abstained_source_unresolved_record(state, reason))
+        assert "K3D_R015" in _codes(findings), state
+
+
+def test_r015_mirrors_the_target_side_gate_clause_for_clause():
+    # Parity discriminator: the same mutation applied to the target identity is
+    # caught by K3D_R011/K3D_R012, so the source side must be caught too. Without
+    # this the two gates can drift apart again silently.
+    target_side = copy.deepcopy(_build_golden_supported_hypothesis())
+    target_side["target"]["resolution"] = _identity(state="UNRESOLVED", issuer=None, security=None)
+    target_side["abstention"] = {"abstained": True, "reasons": ["unresolved_identity"]}
+    target_side["hypothesis_state"] = "abstained"
+    target_codes = _codes(validate_hypothesis(_rehash(target_side)))
+    assert "K3D_R011" in target_codes and "K3D_R012" in target_codes
+    assert "K3D_R015" in _codes(validate_hypothesis(_abstained_source_unresolved_record()))
+
+
+def test_r015_honest_zero_evidence_abstention_still_validates_clean():
+    # The guard must not over-fire: a genuinely honest abstention carries no
+    # evidence and must stay clean, which is what makes the receipt honest.
+    record = compose_hypothesis(**_source_unresolved_kwargs())
+    assert validate_hypothesis(record) == []
+    assert "K3D_R015" not in _codes(validate_hypothesis(record))

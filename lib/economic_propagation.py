@@ -524,16 +524,51 @@ def validate_hypothesis(record: Any) -> list[Finding]:
         else {}
     )
     source_identity_state = source_identity_for_gate.get("resolution_state")
-    if source_identity_state != "RESOLVED" and abstention.get("abstained") is not True:
-        findings.append(
-            _f(
-                "K3D_R015",
-                "$.source_event.source_identity.resolution_state",
-                f"source_event.source_identity.resolution_state={source_identity_state!r}: a source "
-                "event whose own identity is not RESOLVED cannot support anything but a typed "
-                "abstention — mirrors the target-side identity gate (K3D_R010)",
+    # The source event's OWN identity gates inference exactly as the target's does,
+    # so this block mirrors the target gate below clause for clause. Only the
+    # HEADLINE claim may consult ``abstained``: the evidence-emptiness and mechanism
+    # clauses fire regardless of it, because ``abstained: true`` is a self-report,
+    # not evidence that the evidence is absent. Without them a record could declare
+    # itself abstained and still publish a SUPPORTED Graph-1 leg built on an event
+    # whose own identity was never resolved — precisely what compose_hypothesis
+    # refuses at its gate, and what K3D_R011/K3D_R012 already refuse target-side.
+    # A validator that accepts what the composer refuses is drift, so both sides
+    # stay pinned by test_r015_mirrors_the_target_side_gate_clause_for_clause.
+    if source_identity_state != "RESOLVED":
+        if abstention.get("abstained") is not True:
+            findings.append(
+                _f(
+                    "K3D_R015",
+                    "$.source_event.source_identity.resolution_state",
+                    f"source_event.source_identity.resolution_state={source_identity_state!r}: a source "
+                    "event whose own identity is not RESOLVED cannot support anything but a typed "
+                    "abstention — mirrors the target-side identity gate (K3D_R010)",
+                )
             )
-        )
+        for _name, _legs in (
+            ("generator_admissions", admissions),
+            ("relationship_paths", g1_legs),
+            ("similarity_evidence", g2_legs),
+            ("market_evidence", g3_legs),
+        ):
+            if _legs:
+                findings.append(
+                    _f(
+                        "K3D_R015",
+                        f"$.{_name}",
+                        f"source_event.source_identity.resolution_state={source_identity_state!r}: "
+                        f"abstention precedes semantic inference, so {_name} must be empty",
+                    )
+                )
+        if mechanism.get("state") == "hypothesized":
+            findings.append(
+                _f(
+                    "K3D_R015",
+                    "$.mechanism.state",
+                    "a source event whose own identity is not RESOLVED cannot carry a hypothesized "
+                    "mechanism — mirrors the target-side K3D_R012",
+                )
+            )
 
     # --- K3D_R010: exact-identity gate precedes every semantic inference.
     if resolution_state != "RESOLVED":
