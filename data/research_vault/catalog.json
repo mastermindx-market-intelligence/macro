@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T09:20:29.093538+00:00",
-  "count": 2629,
+  "generated_at": "2026-09-22T09:52:35.770578+00:00",
+  "count": 2631,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -96,6 +96,43 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-cbbyroymeyc-ce2dcf",
+      "title": "Europe Equity Research | Today’s Morning Meeting",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:28:14Z",
+      "summary_points": [
+        "Wolters Kluwer Upgrade: AI-driven value expansion (40% upside), 50% discount from 18-month price, moat disruption via automation - Atalaya Mining Initiation: 10%+ CAGR copper growth in Spain (tier 1), £13.30/sh PT (30% upside), low capital intensity vs. peers - Givaudan Q326 Growth Forecast: Organic sales growth strengthening to +6.7% (fundamental sales outlook) - EU Earnings Outlook: Critical assessment of H2'26 earnings expectations ahead of reporting season - Hurricane Season Risk: Negative sector impact on European Building Materials & Reinsurance (quietest Atlantic start since 1960) - EPS Revisions Highlight Risk: Forvia next-period EPS down 43.1% (severe deterioration risk), Givaudan up 1.7% (positive momentum)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i3rahu5kzsj-919baa",
+      "title": "UK & EUROPEAN RESEARCH AT A GLANCE",
+      "institution": "RBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:27:15Z",
+      "summary_points": [
+        "Luxury Sector Downgrades & Macro Risks: LVMH (downgraded to SP, EPS cut 10% to €23.03) and Burberry (downgraded to SP, FY28-29 EPS reduced 6-8%) signal sector-wide growth moderation due to Middle East conflict, oil prices, central bank tightening, and softening China/US demand, with RBC noting consensus overoptimism and creative renewal risks.",
+        "RBC Luxury Datawatch Catalyst: Downgrades LVMH, Burberry, Kering, Hermes, Swatch due to macro demand softening (China/US), consensus overoptimism, and EPS revisions (FY27E below consensus by -9% to -2%), risking earnings revisions despite low valuations.",
+        "Hermes & LVMH Valuation Pressure: Hermes de-rated to 28x FY27E P/E (vs sector 20x) with PT cut to €1,600; LVMH PT reduced to €475 amid muted growth outlook, reflecting heightened sensitivity to geopolitical and macro headwinds.",
+        "Preferred Holdings Shift: Ferrari and Richemont (Luxury) favored over beaten-down peers (LVMH, Burberry) as preferred holdings amid sector-wide earnings risks and valuation dislocations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-rl8okinfetg-a70482",
       "title": "GS Saboureault Positioning Mondays Week 38 21Sep2026",
