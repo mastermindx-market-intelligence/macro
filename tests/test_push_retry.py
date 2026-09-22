@@ -34,6 +34,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -208,17 +209,45 @@ def _backoff_samples(cls: str, attempt: int, n: int = 30) -> list[int]:
     return [int(l.split()[1]) for l in r.stdout.splitlines() if l.startswith("SLEPT")]
 
 
-def test_contention_backs_off_faster_than_a_real_conflict():
-    """The core policy split: a lost ref race wants to retry INTO main's next gap; a
-    conflict wants main to settle first.
+def _backoff_complete_jitter_cycle(cls: str, attempt: int, period: int) -> list[int]:
+    """Exercise every residue in the declared jitter support, not a lucky sample.
 
-    Compared on the mean, not the extremes — the ladders are fully jittered, so their
-    ranges are allowed to overlap at the tails. What must hold is that spending ten
-    attempts on contention is far cheaper in wall-clock than spending ten on conflicts.
+    RANDOM is made an ordinary variable only in this disposable test subprocess.
+    The production policy is sourced unmodified. A fixed test clock prevents the
+    independent deadline cap from censoring the distribution under test.
     """
-    for attempt in (1, 3, 5, 8):
-        contention = _backoff_samples("contention", attempt, n=60)
-        conflict = _backoff_samples("rebase-conflict", attempt, n=60)
+    r = run_sh(
+        f"""
+        sleep() {{ echo "SLEPT $1"; }}
+        date() {{ echo 100; }}
+        unset RANDOM
+        for ((draw=0; draw<{period}; draw++)); do
+          RANDOM=$draw
+          push_retry_init "complete-jitter-cycle"
+          PUSH_ATTEMPT={attempt}
+          PUSH_FAIL_CLASS={cls}
+          push_backoff
+        done
+        """
+    )
+    assert r.returncode == 0, r.stderr
+    samples = [int(line.split()[1]) for line in r.stdout.splitlines() if line.startswith("SLEPT")]
+    assert len(samples) == period, r.stdout
+    return samples
+
+
+def test_contention_backs_off_faster_than_a_real_conflict():
+    """Compare complete jitter-support means; runtime jitter remains enabled.
+
+    Sixty independent random samples can violate this expectation inequality on
+    a correct policy (actual Bash seeds 57/7976 give sums 308/462 at attempt 1).
+    Enumerating the complete residues makes the same 1.5x policy test decisive
+    without retrying until green or weakening its threshold. The support sizes
+    below pin the intended uncapped/capped ladders; endpoint tests verify them.
+    """
+    for attempt, contention_period, conflict_period in ((1, 6, 9), (3, 12, 25), (5, 18, 41), (8, 21, 61)):
+        contention = _backoff_complete_jitter_cycle("contention", attempt, contention_period)
+        conflict = _backoff_complete_jitter_cycle("rebase-conflict", attempt, conflict_period)
         mean_c = sum(contention) / len(contention)
         mean_x = sum(conflict) / len(conflict)
         assert mean_c * 1.5 < mean_x, (
@@ -472,6 +501,106 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     # source so these assertions keep reading what the step actually runs.
     step["run"] = resolve_run_source(step["run"], REPO_ROOT)
     return doc, step
+
+
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
@@ -2407,3 +2536,23 @@ def test_backfill_lane_block_fails_the_job_when_the_push_never_lands(tmp_path):
     assert r.returncode == 1, f"a backfill that published nothing concluded green:\n{combined}"
     assert "::error title=backfill NOT pushed" in combined
     assert "data/symbol_directory" not in _git_output(bare, "show", "--stat", "main")
+
+@pytest.mark.parametrize("kind,attempt,period,lo,hi", [
+    ("contention", 1, 6, 2, 7), ("rebase-conflict", 1, 9, 4, 12),
+    ("contention", 3, 12, 5, 16), ("rebase-conflict", 3, 25, 12, 36),
+    ("contention", 5, 18, 8, 25), ("rebase-conflict", 5, 41, 20, 60),
+    ("contention", 8, 21, 10, 30), ("rebase-conflict", 8, 61, 30, 90),
+])
+def test_complete_jitter_cycle_covers_policy_support(kind, attempt, period, lo, hi):
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    samples = _backoff_complete_jitter_cycle(kind, attempt, period)
+    assert samples == list(range(lo, hi + 1))
+    assert len(samples) == period
+
+
+def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter():
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    first = _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert len(set(first)) == 6
+

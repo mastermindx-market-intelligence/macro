@@ -567,3 +567,260 @@ def test_replay_comparability_invalid_observation_index_is_refused():
              patch.object(rr, 'subscore_series', return_value=subs):
             with pytest.raises(ValueError, match='unique ordered'):
                 bt.state_accuracy({}, H=1)
+
+
+
+def test_gate_latency_pre_gate_state_matches_production_when_gate_open():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    sigs = pd.DataFrame({
+        "credit_oas_roc": [0.20, 0.60, 0.95, 0.95, 0.20],
+        "rates_move": [0.20, 0.20, 0.60, 0.70, 0.20],
+        "vol_term": [0.20, 0.20, 0.20, 0.80, 0.20],
+    }, index=idx)
+    calib = {
+        "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
+        "legs": {
+            "credit_oas_roc": {"lift_2020": 1.5, "thr_pct": 0.90},
+            "rates_move": {"lift_2020": 0.0, "thr_pct": 0.90},
+            "vol_term": {"lift_2020": 0.0, "thr_pct": 0.90},
+        },
+        "scares": {
+            "credit": {"tier": "A", "legs": [("credit_oas_roc", 1.0)]},
+            "rates": {"tier": "A", "legs": [("rates_move", 1.0)]},
+            "vol": {"tier": "B", "legs": [("vol_term", 1.0)]},
+        },
+    }
+    subs = rr.subscore_series(sigs, calib)
+    with patch.object(rr, "context_gate_series", return_value=pd.Series(True, index=idx)):
+        production = bt.state_series(subs, calib, sigs=sigs)
+    assert gl.pre_gate_state_series(subs, calib, sigs=sigs).equals(production)
+
+
+def test_gate_latency_gate_components_preserve_unknown_breadth():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=220)
+    spy = pd.DataFrame({"close": range(100, 320)}, index=idx)
+    def fake_read(group, name):
+        if (group, name) == ("yahoo", "SPY"):
+            return spy
+        if (group, name) == ("breadth", "breadth"):
+            return None
+        raise AssertionError((group, name))
+    with patch.object(gl.store, "read", side_effect=fake_read):
+        gate = gl.gate_components(idx)
+    assert gate["gate_open"].isna().all()
+    assert gate["breadth_weak"].isna().all()
+
+
+def test_gate_latency_native_labels_refuse_missing_price_windows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    spy = pd.Series([100., float("nan"), 94., 100., 100.], index=idx)
+    out = gl.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[2] in out.index and not bool(out.loc[idx[2], "event"])
+
+
+
+def test_gate_latency_daily_tradeoff_counts_suppression():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=4)
+    raw_state = pd.Series(["elevated", "elevated", "elevated", "calm"], index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, False, False, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([True, False, True, True], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, True, False, True], index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06, -.06, -.01, -.01],
+        "event": [True, True, False, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["confusion"] == {"tp": 2, "fp": 1, "fn": 0, "tn": 1}
+    assert out["gated"]["confusion"] == {"tp": 1, "fp": 0, "fn": 1, "tn": 2}
+    assert out["FP_removed"] == 1 and out["TP_lost"] == 1
+    assert out["FP_removed_per_TP_lost"] == 1.0
+
+
+
+def test_gate_latency_event_timing_after_t0_before_breach():
+    from unittest.mock import patch
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    prices = pd.Series(100., index=idx)
+    prices.iloc[28:] = 94.
+    raw_state = pd.Series("calm", index=idx)
+    raw_state.iloc[20:31] = "elevated"
+    gate_open = pd.Series(False, index=idx, dtype="boolean")
+    gate_open.iloc[26:31] = True
+    gate = pd.DataFrame({
+        "gate_open": gate_open,
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    with patch.object(gl, "detect_events", return_value=[anchor]):
+        out = gl.event_latency_result(prices, idx, raw_state, gate)
+    row = out["rows"][0]
+    assert row["timing"] == "after_t0_before_breach"
+    assert row["raw_offset"] == -5
+    assert row["gated_offset"] == 1
+    assert row["latency"] == 6
+    assert out["timing_counts_among_raw_pre_t0"]["after_t0_before_breach"] == 1
+
+
+def test_gate_latency_suppression_attributes_binding_leg():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw = pd.Series(["elevated"] * 3, index=idx)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([False, False, False], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series([False, True, False], index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series([True, False, False], index=idx, dtype="boolean"),
+    }, index=idx)
+    out = gl.suppression_attribution(raw, gate)
+    assert out["price_only"] == out["breadth_only"] == out["both_closed"] == 1
+
+
+
+def test_gate_latency_daily_tradeoff_excludes_unknown_state_rows():
+    from scripts.research import risk_radar_gate_latency as gl
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    raw_state = pd.Series([None, "elevated", "calm"], index=idx, dtype=object)
+    gate = pd.DataFrame({
+        "gate_open": pd.Series([True, True, True], index=idx, dtype="boolean"),
+        "price_below_200": pd.Series(True, index=idx, dtype="boolean"),
+        "breadth_weak": pd.Series(True, index=idx, dtype="boolean"),
+    }, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.10, -.10, -.01],
+        "event": [True, True, False],
+    }, index=idx)
+    out = gl.daily_result(raw_state, gate, labels)
+    assert out["raw"]["n"] == out["gated"]["n"] == 2
+    assert out["raw"]["confusion"] == {"tp": 1, "fp": 0, "fn": 0, "tn": 1}
+
+def test_episode_warning_path_uses_exact_frozen_anchor():
+    import pytest
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2020-02-17", periods=5))
+    assert atlas._fixed_anchor(idx, "2020-02-19") == pd.Timestamp("2020-02-19")
+    with pytest.raises(ValueError, match="fixed episode anchor"):
+        atlas._fixed_anchor(idx, "2020-02-22")
+
+
+def test_episode_warning_path_persistence_is_about_near_peak_state():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=8))
+    states = pd.Series(
+        ["calm", "watch", "caution", "caution", "elevated", "caution", "calm", "calm"],
+        index=idx,
+    )
+    known = pd.Series(True, index=idx)
+    out = atlas._warning_persistence(states, known, idx, idx[5], -5)
+    assert out["sessions_known"] == 6
+    assert out["warning_sessions"] == 4
+    assert out["loud_sessions"] == 1
+    assert out["warning_fraction"] == round(4 / 6, 4)
+    assert out["consecutive_warning_to_t0"] == 4
+
+
+
+def test_episode_warning_path_preserves_unknown_gate():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    assert atlas._gate_label(pd.NA) == "unknown"
+    assert atlas._gate_label(True) == "open"
+    assert atlas._gate_label(False) == "closed"
+
+
+def test_episode_warning_path_forward_outcomes_use_canonical_grader():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=30))
+    spy = pd.Series([100., 99., 94., 96., 97.] + [100.] * 25, index=idx)
+    out = atlas._forward_outcomes(idx[0], spy, "caution")
+    assert out is not None
+    assert out["base_px"] == 100.
+    assert out["fwd_dd"]["h5"] == -.06
+    assert out["hit"]["h5"]["dd5"] is True
+    assert "graded_at" not in out
+
+
+
+def _replay_parity_calib(*, credit_weights=(1.0,), credit_validated=False,
+                         include_rates=True, include_vol=False):
+    legs = {
+        "credit_oas_roc": {"lift_2020": 1.5 if credit_validated else 0.0, "thr_pct": 0.90},
+    }
+    credit_legs = [("credit_oas_roc", credit_weights[0])]
+    if len(credit_weights) > 1:
+        legs["credit_hyg_tlt"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        credit_legs.append(("credit_hyg_tlt", credit_weights[1]))
+    scares = {"credit": {"tier": "A", "legs": credit_legs}}
+    if include_rates:
+        legs["rates_move"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["rates"] = {"tier": "A", "legs": [("rates_move", 1.0)]}
+    if include_vol:
+        legs["vol_term"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["vol"] = {"tier": "B", "legs": [("vol_term", 1.0)]}
+    return {"bands": dict(rr._DEFAULT_BANDS), "legs": legs, "scares": scares,
+            "alert_from": "elevated"}
+
+
+
+def test_replay_matches_live_when_two_hot_scares_have_no_validated_arm():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib()
+    sigs = _sigs(credit_oas_roc=0.70, rates_move=0.70)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "caution" and live["conjunction"] is False
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_armed_confirm_when_second_scare_is_only_watch():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(credit_weights=(0.2, 0.8), credit_validated=True)
+    sigs = _sigs(credit_oas_roc=0.95, credit_hyg_tlt=0.62, rates_move=0.60)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "elevated" and live["conjunction"] is True
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_when_tierb_only_has_measured_zero_leg():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(include_rates=False, include_vol=True)
+    sigs = _sigs(credit_oas_roc=0.60, vol_term=0.80)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "watch"
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
