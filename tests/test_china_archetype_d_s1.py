@@ -188,6 +188,17 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_data_health_affordance_discloses_source_identity_and_dates() -> None:
+    assert '<details class="cnx-dh">' in TPL
+    assert "<summary>" in TPL
+    assert "{{ t('Sources & data health','数据来源与健康度') }}" in TPL
+    assert 'class="cnx-dh-rows"' in TPL
+    assert "{{ t(h.en, h.zh) }}" in TPL
+    assert "{{ t('Last date','最近日期') }}" in TPL
+    assert '<time datetime="{{ h.last }}">{{ h.last }}</time>' in TPL
+    assert "{{ t('Current','当前') if h.status == 'ok' else t('Check freshness','检查新鲜度') }}" in TPL
+
+
 def test_hero_exposes_explicit_as_of_semantics() -> None:
     assert '<span class="l-en">As of </span>' in TPL
     assert '<span class="l-zh">截至 </span>' in TPL
