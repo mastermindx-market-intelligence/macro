@@ -4,6 +4,12 @@ import json
 
 import pytest
 
+from engine.prophet_entry_policy import (
+    EntryPolicyContractError,
+    SESSION_POLICY_VERSION,
+    evaluate_session_eligibility,
+)
+
 from engine.prophet_strategy_definition import (
     ENTRY_POLICY_VERSION,
     SCHEMA,
@@ -392,3 +398,77 @@ def test_b4_validator_rejects_rehashed_strategy_identity_mutation(field, value):
         match=f"availability {field} diverges from accepted strategy definition",
     ):
         validate_entry_availability(tampered)
+
+
+def _session_policy(decision_at: str, market_session: str):
+    return evaluate_session_eligibility(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        decision_at=decision_at,
+        market_session=market_session,
+    )
+
+
+def test_b4_session_policy_passes_only_inside_actual_rth_window():
+    out = _session_policy("2026-09-22T14:00:00Z", "2026-09-22")  # 10:00 ET
+    assert out["verdict"] == "PASS"
+    assert out["session_phase"] == "RTH"
+    assert out["reason"] == "INSIDE_ACTUAL_RTH_WINDOW"
+    assert out["session_open"].endswith("09:30:00-04:00")
+    assert out["session_close"].endswith("16:00:00-04:00")
+    assert out["extended_hours_eligible"] is False
+    assert out["session_policy_version"] == SESSION_POLICY_VERSION
+    assert out["policy_receipt"].startswith("pep:")
+    assert out["session_receipt"].startswith("pes:")
+    assert out["fact_receipt"].startswith("pepf:")
+    assert out == _session_policy("2026-09-22T14:00:00Z", "2026-09-22")
+
+
+def test_b4_session_policy_fails_closed_before_and_at_after_rth():
+    pre = _session_policy("2026-09-22T13:29:59Z", "2026-09-22")
+    assert (pre["verdict"], pre["session_phase"], pre["reason"]) == (
+        "FAIL", "PREMARKET", "PREMARKET_NOT_ELIGIBLE_V1"
+    )
+
+    close = _session_policy("2026-09-22T20:00:00Z", "2026-09-22")
+    assert (close["verdict"], close["session_phase"], close["reason"]) == (
+        "FAIL", "AFTER_HOURS", "POST_RTH_NOT_ELIGIBLE_V1"
+    )
+
+
+def test_b4_session_policy_uses_actual_early_close_not_a_hardcoded_1600():
+    # 2026-11-27 is the Friday after Thanksgiving: actual close is 13:00 ET.
+    before = _session_policy("2026-11-27T17:59:59Z", "2026-11-27")
+    assert before["verdict"] == "PASS"
+    assert before["session_close"].endswith("13:00:00-05:00")
+
+    at_close = _session_policy("2026-11-27T18:00:00Z", "2026-11-27")
+    assert at_close["verdict"] == "FAIL"
+    assert at_close["session_phase"] == "AFTER_HOURS"
+
+
+def test_b4_session_policy_rejects_non_session_and_wrong_session_clocks():
+    holiday = _session_policy("2026-11-26T15:00:00Z", "2026-11-26")
+    assert (holiday["verdict"], holiday["session_phase"], holiday["reason"]) == (
+        "FAIL", "NON_SESSION", "NON_SESSION_DATE"
+    )
+    assert holiday["session_open"] is None
+    assert holiday["session_close"] is None
+
+    wrong = _session_policy("2026-09-22T14:00:00Z", "2026-09-23")
+    assert (wrong["verdict"], wrong["session_phase"], wrong["reason"]) == (
+        "FAIL", "WRONG_SESSION", "DECISION_NOT_IN_MARKET_SESSION_DATE"
+    )
+
+
+def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition():
+    with pytest.raises(EntryPolicyContractError, match="offset-aware"):
+        _session_policy("2026-09-22T10:00:00", "2026-09-22")
+
+    mutated = build_early_leadership_sector_rotation_definition()
+    mutated["strategy_definition_id"] = "psd:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_session_eligibility(
+            strategy_definition=mutated,
+            decision_at="2026-09-22T14:00:00Z",
+            market_session="2026-09-22",
+        )
