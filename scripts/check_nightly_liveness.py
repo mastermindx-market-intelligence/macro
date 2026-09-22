@@ -408,6 +408,41 @@ MARKET_BOARDS: tuple[dict, ...] = (
         "max_sessions_behind": 3,   # 1 + the +2 weekday-approximation tolerance
         "min_calendar_days": None,
     },
+    # ── Sector Intelligence semantic generation ─────────────────────────────────────
+    # These three artifacts are written by different producers and can each be
+    # individually fresh while the composed overview is a mixed generation. The
+    # per-row checks grade ordinary NYSE-session staleness; the paired check below
+    # separately enforces exact date agreement.
+    {
+        "market": "si_baskets",
+        "label": "Sector Intelligence baskets",
+        "path": "site/basketdata/baskets.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
+        "min_calendar_days": None,
+    },
+    {
+        "market": "si_action",
+        "label": "Sector Intelligence action board",
+        "path": "site/basketdata/action_board.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
+        "min_calendar_days": None,
+    },
+    {
+        "market": "si_sector",
+        "label": "Sector Intelligence sector payload",
+        "path": "site/sectordata/sector_central.json",
+        "stamp_known_absent": False,
+        "field": "as_of",
+        "calendar": "nyse",
+        "max_sessions_behind": 1,
+        "min_calendar_days": None,
+    },
     # ── GD-4A.1 ledger-freshness entries ────────────────────────────────────────────
     # A SEPARATE risk plane from the five boards above: the CN/HK risk-radar forward
     # ledgers (data/risk_radar_intl/{cn,hk}_forward_log.jsonl) that the settled
@@ -861,6 +896,29 @@ def evaluate_market_boards(
                 f"as_of={free_asof.isoformat()}. Not a paid-tier freeze — the direction "
                 "that harms a subscriber — so it does not page here; the US row above "
                 "grades whether the free board has fallen behind."
+            )
+
+    # Sector Intelligence is a three-producer composition. Each artifact can sit
+    # inside the same one-session freshness budget and still describe a different
+    # session. Only exact agreement makes the overview coherent. Missing or malformed
+    # stamps are already reported by the per-row checks above, so this paired check
+    # remains silent unless all three dates are positively known.
+    si_dates = {
+        market: _parse_date((states.get(market) or {}).get("as_of"))
+        for market in ("si_baskets", "si_action", "si_sector")
+    }
+    if all(value is not None for value in si_dates.values()):
+        unique_si_dates = set(si_dates.values())
+        if len(unique_si_dates) != 1:
+            detail = ", ".join(
+                f"{market}={value.isoformat()}"
+                for market, value in si_dates.items()
+                if value is not None
+            )
+            fail.append(
+                "SECTOR INTELLIGENCE VINTAGE SPLIT: "
+                f"{detail}. The basket, action-board, and sector payloads are each "
+                "individually readable but do not describe one market session."
             )
 
     return fail, warn, facts
@@ -1620,9 +1678,10 @@ def _selftest() -> int:
                  boards={"us": None, "cn": None, "hk": None,
                          "ca": {"as_of": "2026-08-17"}, "intl": {"as_of": None}})
     _check("D/blind-markets-never-breach", r["ok"], True)
-    # 5 board-level blind markets (us, us_premium, cn, hk, intl) + 2 ledger entries
-    # absent from this fixture's ``boards`` dict entirely (cn_ledger, hk_ledger) = 7.
-    assert len([w for w in r["warnings"] if "INDETERMINATE [" in w]) == 7, r
+    # Canada is the one positively fresh row in this fixture. Every other registered
+    # board/ledger — including the three Sector Intelligence generation artifacts —
+    # is independently blind and must remain visible as INDETERMINATE.
+    assert len([w for w in r["warnings"] if "INDETERMINATE [" in w]) == len(MARKET_BOARDS) - 1, r
     assert r["facts"]["boards"]["ca"]["behind"] == 0, r
 
     # ...but an artifact we CAN read that publishes no stamp is a producer regression,
