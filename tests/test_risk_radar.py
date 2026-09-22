@@ -572,24 +572,32 @@ def test_replay_comparability_invalid_observation_index_is_refused():
 
 def test_gate_latency_pre_gate_state_matches_production_when_gate_open():
     from unittest.mock import patch
-    from engine import risk_radar as rr
     from engine import risk_radar_backtest as bt
     from scripts.research import risk_radar_gate_latency as gl
 
     idx = pd.bdate_range("2026-01-01", periods=5)
-    subs = pd.DataFrame({
-        "credit": [20., 60., 70., 80., 90.],
-        "rates": [20., 20., 70., 20., 20.],
-        "vol": [20., 20., 20., 70., 20.],
+    sigs = pd.DataFrame({
+        "credit_oas_roc": [0.20, 0.60, 0.95, 0.95, 0.20],
+        "rates_move": [0.20, 0.20, 0.60, 0.70, 0.20],
+        "vol_term": [0.20, 0.20, 0.20, 0.80, 0.20],
     }, index=idx)
     calib = {
         "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
-        "scares": {"credit": {"tier": "A"}, "rates": {"tier": "A"}, "vol": {"tier": "B"}},
+        "legs": {
+            "credit_oas_roc": {"lift_2020": 1.5, "thr_pct": 0.90},
+            "rates_move": {"lift_2020": 0.0, "thr_pct": 0.90},
+            "vol_term": {"lift_2020": 0.0, "thr_pct": 0.90},
+        },
+        "scares": {
+            "credit": {"tier": "A", "legs": [("credit_oas_roc", 1.0)]},
+            "rates": {"tier": "A", "legs": [("rates_move", 1.0)]},
+            "vol": {"tier": "B", "legs": [("vol_term", 1.0)]},
+        },
     }
+    subs = rr.subscore_series(sigs, calib)
     with patch.object(rr, "context_gate_series", return_value=pd.Series(True, index=idx)):
-        production = bt.state_series(subs, calib)
-    assert gl.pre_gate_state_series(subs, calib).equals(production)
-
+        production = bt.state_series(subs, calib, sigs=sigs)
+    assert gl.pre_gate_state_series(subs, calib, sigs=sigs).equals(production)
 
 
 def test_gate_latency_gate_components_preserve_unknown_breadth():
@@ -749,3 +757,70 @@ def test_episode_warning_path_forward_outcomes_use_canonical_grader():
     assert out["fwd_dd"]["h5"] == -.06
     assert out["hit"]["h5"]["dd5"] is True
     assert "graded_at" not in out
+
+
+
+def _replay_parity_calib(*, credit_weights=(1.0,), credit_validated=False,
+                         include_rates=True, include_vol=False):
+    legs = {
+        "credit_oas_roc": {"lift_2020": 1.5 if credit_validated else 0.0, "thr_pct": 0.90},
+    }
+    credit_legs = [("credit_oas_roc", credit_weights[0])]
+    if len(credit_weights) > 1:
+        legs["credit_hyg_tlt"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        credit_legs.append(("credit_hyg_tlt", credit_weights[1]))
+    scares = {"credit": {"tier": "A", "legs": credit_legs}}
+    if include_rates:
+        legs["rates_move"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["rates"] = {"tier": "A", "legs": [("rates_move", 1.0)]}
+    if include_vol:
+        legs["vol_term"] = {"lift_2020": 0.0, "thr_pct": 0.90}
+        scares["vol"] = {"tier": "B", "legs": [("vol_term", 1.0)]}
+    return {"bands": dict(rr._DEFAULT_BANDS), "legs": legs, "scares": scares,
+            "alert_from": "elevated"}
+
+
+
+def test_replay_matches_live_when_two_hot_scares_have_no_validated_arm():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib()
+    sigs = _sigs(credit_oas_roc=0.70, rates_move=0.70)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "caution" and live["conjunction"] is False
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_armed_confirm_when_second_scare_is_only_watch():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(credit_weights=(0.2, 0.8), credit_validated=True)
+    sigs = _sigs(credit_oas_roc=0.95, credit_hyg_tlt=0.62, rates_move=0.60)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "elevated" and live["conjunction"] is True
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
+
+
+def test_replay_matches_live_when_tierb_only_has_measured_zero_leg():
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+
+    calib = _replay_parity_calib(include_rates=False, include_vol=True)
+    sigs = _sigs(credit_oas_roc=0.60, vol_term=0.80)
+    subs = rr.subscore_series(sigs, calib)
+    live = rr.compute(sigs=sigs, calib=calib, gate={"met": True})
+    assert live["state"] == "watch"
+    with patch.object(rr, "context_gate_series",
+                      return_value=pd.Series(True, index=subs.index)):
+        replay = bt.state_series(subs, calib, sigs=sigs)
+    assert replay.iloc[-1] == live["state"]
