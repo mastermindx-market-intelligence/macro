@@ -1825,6 +1825,17 @@
   body.page-hk .hkx-row:last-child{border-bottom:none}
   body.page-hk .hkx-row .ic{flex:0 0 20px;text-align:center;font-size:12px;padding-top:1px}
   body.page-hk .hkx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
+  /* §5.8 monoline icons — replace emoji tone marks on the What To Do glance rows;
+     pages reuse the design system's tone-up / tone-down / tone-flat class idiom
+     (canonical CSS classes mapping to --up / --down / --muted), and these
+     glance-row icons inherit their color via the page-local .ic-up / .ic-dn
+     classes that point at the same --up / --down tokens — no new CSS literal. */
+  body.page-hk .hkx-ic{flex:0 0 20px;display:flex;align-items:center;justify-content:center;padding-top:1px;color:var(--muted)}
+  body.page-hk .hkx-ic .ic-svg,body.page-hk .hkx-row .ic-svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  body.page-hk .hkx-ic.ic-up,body.page-hk .ic-up{color:var(--ink-up, var(--up))}
+  body.page-hk .hkx-ic.ic-dn,body.page-hk .ic-dn{color:var(--ink-down, var(--down))}
+  body.page-hk .hkx-ic.ic-warn,body.page-hk .ic-warn{color:var(--ink-warn, var(--warn))}
+  body.page-hk .hkx-tx{flex:1;min-width:0}
   body.page-hk .hkx-kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}
   body.page-hk .hkx-kv:last-of-type{border-bottom:none}
   body.page-hk .hkx-kv .k{color:var(--muted)}
@@ -1944,9 +1955,10 @@
   @media(max-width:1100px){body.page-hk .hkx-cas-strip{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:560px){body.page-hk .hkx-cas-strip{grid-template-columns:repeat(2,1fr)}}
   body.page-hk .hkx-cat{padding:10px 12px;border-radius:12px}
-  body.page-hk .hkx-cat .cat-tag{font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  body.page-hk .hkx-cat .cat-tag{font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--muted);margin-bottom:4px}
   body.page-hk .hkx-cat .cat-val{font-size:14px;font-weight:700;line-height:1.1}
   body.page-hk .hkx-cat .cat-chg{font-size:10.5px;font-weight:650;margin-top:2px}
+  body.page-hk .hkx-cat .cat-mean{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3}
   body.page-hk .hkx-cat .cat-tone{font-size:9.5px;font-weight:700;letter-spacing:.5px;border-radius:4px;padding:1px 7px;margin-top:3px;display:inline-block}
   body.page-hk .hkx-cat .cat-tone.bull{background:color-mix(in srgb,var(--up) 14%,transparent);color:var(--ink-up, var(--up))}
   body.page-hk .hkx-cat .cat-tone.bear{background:color-mix(in srgb,var(--down) 14%,transparent);color:var(--ink-down, var(--down))}
