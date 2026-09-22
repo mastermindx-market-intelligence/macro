@@ -1,0 +1,38 @@
+<!doctype html>
+<html data-theme="dark" data-lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Brain composer removal - local fixture</title>
+<style>body{margin:0;font-family:Arial,sans-serif;background:#101318}html[data-theme="light"] body{background:#edf1f7}</style>
+</head><body>
+<script>
+// Local-only fixture: synthetic auth and quotas. No production request is sent.
+// Mirror the host's documented language-switch event for capture tools.
+new MutationObserver(function(changes){if(changes.some(function(c){return c.attributeName==='data-lang';})) document.dispatchEvent(new Event('langchange'));}).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
+window.__requests = [];
+window.__fixtureTier = 'pro';
+window.MDXAuth = {onChange: function(cb){cb({id:'local-fixture'});}, enabled:function(){return true;}, user:function(){return {id:'local-fixture'};}};
+window.MM_BRAIN_CFG = {anchor:'br',symbol:function(){return '600519.SS';},page:'Active chart'};
+window.fetch = async function(url, options) {
+  options = options || {};
+  if (String(url).endsWith('/api/brain/me')) return new Response(JSON.stringify({tier:'pro',quotas:{fast:{limit:100,remaining:100},pro:{limit:window.__fixtureTier==='pro'?150:0,remaining:150}}}),{status:200});
+  if (String(url).endsWith('/api/brain/threads')) return new Response(JSON.stringify({threads:[]}),{status:200});
+  if (String(url).endsWith('/api/brain/stream')) {
+    window.__requests.push(JSON.parse(options.body));
+    return new Response('event: done\ndata: {}\n\n',{status:200,headers:{'Content-Type':'text/event-stream'}});
+  }
+  return new Response('{}',{status:404});
+};
+</script>
+<script src="/templates/mm_brain.js"></script>
+<script>
+window.MMBrain.open();
+(async function(){
+  for (var n=0;n<100;n++) {
+    if(document.getElementById('mmb-q').textContent.trim()) break;
+    await new Promise(function(r){setTimeout(r,10);});
+  }
+  var ta=document.getElementById('mmb-ta');
+  ta.value='/';ta.dispatchEvent(new Event('input',{bubbles:true}));
+  document.querySelector('.mmb-slash-i[data-i="1"]').click();
+  ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));
+  window.__fixtureReady=true;
+})();
+</script></body></html>
