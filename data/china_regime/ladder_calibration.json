@@ -1,24 +1,24 @@
 {
   "DECLINE": {
-    "n": 7171,
+    "n": 7173,
     "hit_pct": 52.9,
-    "avg_fwd_pct": 1.78,
+    "avg_fwd_pct": 1.77,
     "dd_med_pct": -4.46,
-    "dd_p10_pct": -14.6,
+    "dd_p10_pct": -14.59,
     "dd_bad_pct": 21.3,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "BOTTOM WATCH": {
-    "n": 3536,
+    "n": 3540,
     "hit_pct": 44.7,
     "avg_fwd_pct": 1.63,
-    "dd_med_pct": -3.56,
-    "dd_p10_pct": -14.46,
+    "dd_med_pct": -3.57,
+    "dd_p10_pct": -14.44,
     "dd_bad_pct": 19.4,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "TURN SIGNALED": {
-    "n": 11420,
+    "n": 11433,
     "hit_pct": 48.3,
     "avg_fwd_pct": 1.18,
     "dd_med_pct": -4.55,
@@ -27,16 +27,16 @@
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "FRESH BUY": {
-    "n": 2392,
-    "hit_pct": 52.1,
-    "avg_fwd_pct": 2.19,
-    "dd_med_pct": -4.45,
-    "dd_p10_pct": -13.76,
+    "n": 2396,
+    "hit_pct": 52.0,
+    "avg_fwd_pct": 2.18,
+    "dd_med_pct": -4.46,
+    "dd_p10_pct": -13.74,
     "dd_bad_pct": 19.6,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "RALLY ON": {
-    "n": 2414,
+    "n": 2415,
     "hit_pct": 50.6,
     "avg_fwd_pct": 1.52,
     "dd_med_pct": -4.28,
@@ -45,7 +45,7 @@
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "TOP WATCH": {
-    "n": 6403,
+    "n": 6408,
     "hit_pct": 51.1,
     "avg_fwd_pct": 2.51,
     "dd_med_pct": -4.92,
@@ -59,34 +59,34 @@
     "avg_fwd_pct": 0.48,
     "dd_med_pct": -4.49,
     "dd_p10_pct": -13.48,
-    "dd_bad_pct": 19.8,
+    "dd_bad_pct": 19.4,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "COUNTERTREND BOUNCE": {
-    "n": 11056,
-    "hit_pct": 51.8,
-    "avg_fwd_pct": 1.37,
-    "dd_med_pct": -4.18,
-    "dd_p10_pct": -14.92,
+    "n": 11076,
+    "hit_pct": 51.7,
+    "avg_fwd_pct": 1.35,
+    "dd_med_pct": -4.19,
+    "dd_p10_pct": -14.93,
     "dd_bad_pct": 21.2,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "BOTTOM WATCH +early-bull": {
-    "n": 148,
-    "hit_pct": 45.9,
-    "avg_fwd_pct": 1.79,
-    "dd_med_pct": -1.75,
-    "dd_p10_pct": -13.17,
-    "dd_bad_pct": 18.9,
+    "n": 144,
+    "hit_pct": 48.6,
+    "avg_fwd_pct": 2.79,
+    "dd_med_pct": -1.92,
+    "dd_p10_pct": -13.61,
+    "dd_bad_pct": 20.1,
     "anchor_era": "cyc-abs-session-2026-08-06"
   },
   "BOTTOM WATCH no-early": {
-    "n": 3388,
-    "hit_pct": 44.7,
-    "avg_fwd_pct": 1.63,
+    "n": 3396,
+    "hit_pct": 44.5,
+    "avg_fwd_pct": 1.58,
     "dd_med_pct": -3.61,
-    "dd_p10_pct": -14.51,
-    "dd_bad_pct": 19.5,
+    "dd_p10_pct": -14.46,
+    "dd_bad_pct": 19.4,
     "anchor_era": "cyc-abs-session-2026-08-06"
   }
 }

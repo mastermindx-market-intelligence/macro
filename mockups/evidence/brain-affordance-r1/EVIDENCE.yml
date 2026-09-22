@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/mm_brain.js
+  - site/mm_brain.js
+manifest: mockups/evidence/brain-affordance-r1/manifest.json
