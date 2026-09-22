@@ -752,3 +752,90 @@ def test_all_three_boundary_mirrors_agree():
     assert lists, "Caddyfile matcher lists not found — did the file change shape?"
     for line in lists:
         assert "/etfs.html" in line, f"Caddy matcher missing /etfs.html: {line.strip()[:90]}"
+
+# UIUX: coverage age is comparative to the newest stored snapshot, not the clock.
+def _coverage_fixture(rows):
+    source = (ROOT / 'templates/etfs.html.j2').read_text(encoding='utf-8')
+    start = source.index('<details open>\n      <summary')
+    end = source.index('\n  </section>', start)
+    return _env().from_string(
+        '{% from "_etf_macros.html.j2" import t, help %}' + source[start:end]
+    ).render(coverage=rows)
+
+
+def _coverage_row(**overrides):
+    row = {'fund': 'EXAMPLE', 'fund_name': 'Illustrative fund', 'sponsor': 'Fixture',
+           'n_snapshots': 25, 'stale_days': 0, 'latest_asof': '2020-01-10',
+           'unofficial': False, 'fleet_group': 'theme'}
+    row.update(overrides)
+    return row
+
+
+def test_coverage_age_is_relative_not_a_claim_of_recent_filing():
+    html = _coverage_fixture([_coverage_row(), _coverage_row(fund='OLDER', stale_days=8)])
+    assert 'near latest snapshot' in html
+    assert '接近最新快照' in html
+    assert 'filed in the last three days' not in html
+    assert 'not from today' in html
+    assert re.search(r'<b>1</b>\s*<span class="l-en">near latest snapshot', html)
+
+
+def test_coverage_help_is_a_native_optional_disclosure_not_a_nested_hover_target():
+    html = _coverage_fixture([_coverage_row()])
+    main_summary = html[html.index('<summary class="fl-sum">'):html.index('</summary>')]
+    assert 'txq' not in main_summary
+    assert '<details class="fl-help">' in html
+    assert 'How to read coverage' in html and '如何解读覆盖数据' in html
+    assert 'class="fl-help" open' not in html
+    assert 'Snapshot counts show saved daily holdings records.' in html
+
+
+@pytest.mark.parametrize('snapshots,age,label,state', [
+    (0, None, 'No snapshots', 's0'),
+    (25, None, 'Date unknown', 's0'),
+    (25, 0, None, 's1'),
+    (25, 3, None, 's1'),
+    (25, 4, None, 's2'),
+    (25, 10, None, 's2'),
+    (25, 11, None, 's3'),
+])
+def test_coverage_missing_dates_never_look_current_or_proven_stale(snapshots, age, label, state):
+    html = _coverage_fixture([_coverage_row(n_snapshots=snapshots, stale_days=age)])
+    assert f'class="fu {state}"' in html
+    assert f'<i>{snapshots}</i>' in html
+    assert '<b>EXAMPLE</b>' in html
+    if label:
+        assert label in html
+    else:
+        assert 'No snapshots' not in html and 'Date unknown' not in html
+
+
+def test_coverage_without_funds_keeps_the_real_empty_directory_state():
+    html = _coverage_fixture([])
+    assert 'No funds registered in the coverage directory yet.' in html
+    assert 'near latest snapshot' not in html
+    assert 'fl-help' not in html
+
+
+def test_coverage_current_count_excludes_missing_and_undated_snapshots():
+    html = _coverage_fixture([_coverage_row(), _coverage_row(fund='UNDATED',stale_days=None),
+                              _coverage_row(fund='MISSING',n_snapshots=0,stale_days=None)])
+    assert re.search(r'<b>3</b>\s*<span class="l-en">funds tracked', html)
+    assert re.search(r'<b>1</b>\s*<span class="l-en">near latest snapshot', html)
+    assert html.count('class="fu ') == 3
+
+
+def test_coverage_published_css_matches_source_and_native_focus_rules():
+    import hashlib
+    source = (ROOT / 'templates/etfs.html.j2').read_text(encoding='utf-8')
+    html = SHELL.read_text(encoding='utf-8')
+    fingerprint = re.search(r'href="assets/css/([a-f0-9]{8})\.css\?v=\1"',html)
+    assert fingerprint
+    raw = (ROOT/'site/assets/css'/f'{fingerprint.group(1)}.css').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()[:8] == fingerprint.group(1)
+    css = raw.decode('utf-8')
+    canonical = re.search(r'<style>(.*?)</style>',source,re.S).group(1)
+    assert ''.join(canonical.split()) == ''.join(css.split())
+    assert '.fl-help>summary:focus-visible' in css and 'min-height:40px' in css
+    assert 'filed in the last three days' not in html
+    assert 'How to read coverage' in html

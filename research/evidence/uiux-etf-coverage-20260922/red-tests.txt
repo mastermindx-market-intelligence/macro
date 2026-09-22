@@ -1,0 +1,86 @@
+FFFF.....F                                                               [100%]
+=================================== FAILURES ===================================
+__________ test_coverage_age_is_relative_not_a_claim_of_recent_filing __________
+
+    def test_coverage_age_is_relative_not_a_claim_of_recent_filing():
+        html = _coverage_fixture([_coverage_row(), _coverage_row(fund='OLDER', stale_days=8)])
+>       assert 'within 3 days of the newest snapshot' in html
+E       assert 'within 3 days of the newest snapshot' in '<details open>\n      <summary><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span> <...><span>Illustrative fund</span><u>8d</u><i>25</i></span></div>\n        </div>\n        \n      </div>\n    </details>'
+
+tests/test_etfs_gate.py:776: AssertionError
+_ test_coverage_help_is_a_native_optional_disclosure_not_a_nested_hover_target _
+
+    def test_coverage_help_is_a_native_optional_disclosure_not_a_nested_hover_target():
+        html = _coverage_fixture([_coverage_row()])
+        main_summary = html[html.index('<summary>'):html.index('</summary>')]
+>       assert 'txq' not in main_summary
+E       assert 'txq' not in '<summary><s...et">▶</span>'
+E         
+E         'txq' is contained here:
+E         ?           ^
+E           an class="txq" tabindex="0">?<span class="txq-tip"><span class="l-en">The small figure after each fund is how many daily holdings reads we hold for it: a shallow history means that fund’s numbers exist but have no context yet, a deep one means a streak on that fund is meaningful. Freshness is measured against the newest fund in the fleet rather than against the clock, because sponsors publish on different calendars and a timezone would otherwise manufacture staleness. A fund with no reads at all is a broken feed, not a quiet fund.</span><span class="l-zh...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_etfs_gate.py:786: AssertionError
+_ test_coverage_missing_dates_never_look_current_or_proven_stale[0-None-No snapshots-s0] _
+
+snapshots = 0, age = None, label = 'No snapshots', state = 's0'
+
+    @pytest.mark.parametrize('snapshots,age,label,state', [
+        (0, None, 'No snapshots', 's0'),
+        (25, None, 'Date unknown', 's0'),
+        (25, 0, None, 's1'),
+        (25, 3, None, 's1'),
+        (25, 4, None, 's2'),
+        (25, 10, None, 's2'),
+        (25, 11, None, 's3'),
+    ])
+    def test_coverage_missing_dates_never_look_current_or_proven_stale(snapshots, age, label, state):
+        html = _coverage_fixture([_coverage_row(n_snapshots=snapshots, stale_days=age)])
+        assert f'class="fu {state}"' in html
+        assert f'<i>{snapshots}</i>' in html
+        assert '<b>EXAMPLE</b>' in html
+        if label:
+>           assert label in html
+E           assert 'No snapshots' in '<details open>\n      <summary><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span> <...EXAMPLE</b><span>Illustrative fund</span><i>0</i></span></div>\n        </div>\n        \n      </div>\n    </details>'
+
+tests/test_etfs_gate.py:808: AssertionError
+_ test_coverage_missing_dates_never_look_current_or_proven_stale[25-None-Date unknown-s0] _
+
+snapshots = 25, age = None, label = 'Date unknown', state = 's0'
+
+    @pytest.mark.parametrize('snapshots,age,label,state', [
+        (0, None, 'No snapshots', 's0'),
+        (25, None, 'Date unknown', 's0'),
+        (25, 0, None, 's1'),
+        (25, 3, None, 's1'),
+        (25, 4, None, 's2'),
+        (25, 10, None, 's2'),
+        (25, 11, None, 's3'),
+    ])
+    def test_coverage_missing_dates_never_look_current_or_proven_stale(snapshots, age, label, state):
+        html = _coverage_fixture([_coverage_row(n_snapshots=snapshots, stale_days=age)])
+>       assert f'class="fu {state}"' in html
+E       assert 'class="fu s0"' in '<details open>\n      <summary><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span> <...XAMPLE</b><span>Illustrative fund</span><i>25</i></span></div>\n        </div>\n        \n      </div>\n    </details>'
+
+tests/test_etfs_gate.py:804: AssertionError
+______ test_coverage_current_count_excludes_missing_and_undated_snapshots ______
+
+    def test_coverage_current_count_excludes_missing_and_undated_snapshots():
+        html = _coverage_fixture([_coverage_row(), _coverage_row(fund='UNDATED',stale_days=None),
+                                  _coverage_row(fund='MISSING',n_snapshots=0,stale_days=None)])
+        assert re.search(r'<b>3</b>\s*<span class="l-en">funds tracked', html)
+>       assert re.search(r'<b>1</b>\s*<span class="l-en">within 3 days', html)
+E       assert None
+E        +  where None = <function search at 0x109b1f480>('<b>1</b>\\s*<span class="l-en">within 3 days', '<details open>\n      <summary><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span> <...NDATED</b><span>Illustrative fund</span><i>25</i></span></div>\n        </div>\n        \n      </div>\n    </details>')
+E        +    where <function search at 0x109b1f480> = re.search
+
+tests/test_etfs_gate.py:824: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_etfs_gate.py::test_coverage_age_is_relative_not_a_claim_of_recent_filing
+FAILED tests/test_etfs_gate.py::test_coverage_help_is_a_native_optional_disclosure_not_a_nested_hover_target
+FAILED tests/test_etfs_gate.py::test_coverage_missing_dates_never_look_current_or_proven_stale[0-None-No snapshots-s0]
+FAILED tests/test_etfs_gate.py::test_coverage_missing_dates_never_look_current_or_proven_stale[25-None-Date unknown-s0]
+FAILED tests/test_etfs_gate.py::test_coverage_current_count_excludes_missing_and_undated_snapshots
+5 failed, 5 passed, 31 deselected in 1.13s

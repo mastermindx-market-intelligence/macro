@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/etfs.html.j2
+  - site/etfs.html
+  - site/assets/css/bf4337e2.css
+manifest: mockups/evidence/uiux-etf-coverage-20260922/manifest.json
