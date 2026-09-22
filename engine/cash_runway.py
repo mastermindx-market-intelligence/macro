@@ -207,6 +207,35 @@ def _find_duration_fact(
     return None, "absent"
 
 
+def _ladder_matches_period(
+    ladder: Mapping[str, Any] | None,
+    *,
+    canon_cik: str,
+    winner: Mapping[str, Any],
+    stale: bool,
+) -> bool:
+    """Only allow near-term coverage from the same issuer and filing.
+
+    ``ladder`` is an optional compatibility input.  The combined
+    ``capital_need.v1`` adapter applies the same rule, but enforcing it here
+    prevents older callers from silently reviving the former cross-period
+    arithmetic path.
+    """
+    if not ladder or ladder.get("status") != "reported":
+        return False
+    if _canonical_cik_or_none(ladder.get("cik")) != canon_cik:
+        return False
+    if ladder.get("unit", "USD") != "USD":
+        return False
+    if (ladder.get("period") or {}).get("stale") or stale:
+        return False
+    ladder_period = ladder.get("period") or {}
+    for key in ("accn", "end", "form", "fp", "fy"):
+        if ladder_period.get(key) != winner.get(key):
+            return False
+    return True
+
+
 def extract_cash_runway(
     companyfacts: Mapping[str, Any] | None,
     *,
@@ -311,16 +340,16 @@ def extract_cash_runway(
     else:
         runway_display = "self_funding"
 
+    end_date = _parse_date(win_end)
+    stale = bool(as_of and end_date and (as_of - end_date).days > _STALE_DAYS)
+
     near_term_cover_pct: float | None = None
-    if ladder and ladder.get("status") == "reported":
+    if _ladder_matches_period(ladder, canon_cik=canon_cik, winner=winner, stale=stale):
         y1_bucket = (ladder.get("buckets") or [{}])[0] if ladder.get("buckets") else {}
         y1_reported = y1_bucket.get("reported", False)
         y1_usd = y1_bucket.get("usd") or 0
         if y1_reported and y1_usd > 0 and cash_val:
             near_term_cover_pct = round(100 * cash_val / y1_usd)
-
-    end_date = _parse_date(win_end)
-    stale = bool(as_of and end_date and (as_of - end_date).days > _STALE_DAYS)
 
     return {
         "schema": "cash_runway.v1",

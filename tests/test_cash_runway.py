@@ -90,6 +90,16 @@ class TestExtractCashRunway:
         from engine.cash_runway import extract_cash_runway
         ladder = {
             "status": "reported",
+            "cik": "0000099999",
+            "unit": "USD",
+            "period": {
+                "accn": "synthetic-2025-01",
+                "end": "2024-12-31",
+                "form": "10-K",
+                "fp": "FY",
+                "fy": 2024,
+                "stale": False,
+            },
             "buckets": [
                 {"reported": True, "usd": 10_000_000},  # y1
                 {"reported": True, "usd": 5_000_000},
@@ -356,8 +366,12 @@ class TestCashRunwayRender:
         en, zh = _en_text(html), _zh_text(html)
         assert "In the year ending 2025-09-27 (10-K) it brought in more cash than it spent, including equipment — no burn to measure." in en
         assert "截至 2025-09-27 的财年（10-K）其现金流入多于支出（包括设备支出），暂无可衡量的消耗。" in zh
-        assert "In the year ending 2025-09-27 (10-K) cash on hand covers 323% of the debt coming due in the next 12 months." in en
-        assert "截至 2025-09-27 的财年（10-K）现金可覆盖未来12个月内到期债务的 323%。" in zh
+        # Near-term debt coverage is rendered by capital_need.v1 only after
+        # exact issuer/period validation; this standalone runway fixture is
+        # FY2025 while the ladder fixture is FY2024, so no 323% cross-period
+        # assertion may appear here.
+        assert "cash on hand covers 323%" not in en
+        assert "现金可覆盖未来12个月内到期债务的 323%" not in zh
         assert "Last year" not in en
         assert "去年" not in zh
         assert "months" not in zh
@@ -696,4 +710,3 @@ class TestResolveCashRunway:
         for key in result:
             if key not in ("schema", "status", "as_of"):
                 assert result[key] is None, f"{key} should be None when the loader import failed"
-

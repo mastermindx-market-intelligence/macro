@@ -85,25 +85,13 @@
       {% if cash_runway.runway_display == 'self_funding' %}
       <p class="dmw-lede">{{ t(_year_en ~ ' it brought in more cash than it spent, including equipment — no burn to measure.',
                               _year_zh ~ '其现金流入多于支出（包括设备支出），暂无可衡量的消耗。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% if cash_runway.near_term_cover_pct %}
-      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
-                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% endif %}
       {% elif cash_runway.runway_display == 'more_than_10_years' %}
       <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.annual_burn_display ~ ' more than it brought in after buying equipment — at that pace the cash lasts more than 10 years.',
                               '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '购买设备后的支出超过现金流入 ' ~ cash_runway.annual_burn_display ~ '，按此速度现金可支撑超过10年。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% if cash_runway.near_term_cover_pct %}
-      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
-                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% endif %}
       {% elif cash_runway.runway_display == 'months' %}
       {% set _n = '%.1f'|format(cash_runway.runway_months) if cash_runway.runway_months < 12 else '%d'|format(cash_runway.runway_months|round|int) %}
       <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.monthly_burn_display ~ ' more per month than it brought in after buying equipment — at that pace the cash lasts about ' ~ _n ~ ' months.',
                               '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '每月购买设备后的支出超过现金流入约 ' ~ cash_runway.monthly_burn_display ~ '，按此速度现金可支撑约 ' ~ _n ~ ' 个月。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% if cash_runway.near_term_cover_pct %}
-      <p class="dmw-lede">{{ t(_year_en ~ ' cash on hand covers ' ~ cash_runway.near_term_cover_pct ~ '% of the debt coming due in the next 12 months.',
-                              _year_zh ~ '现金可覆盖未来12个月内到期债务的 ' ~ cash_runway.near_term_cover_pct ~ '%。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
-      {% endif %}
       {% endif %}
 
     {% elif cash_runway.status == 'no_cash_facts' %}
@@ -134,6 +122,36 @@
                                  '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
     {% endif %}
   </div><!-- .dmw-runway -->
+  {% endif -%}
+
+  {% if capital_need and capital_need.status != 'not_applicable' -%}
+  <div class="dmw-capital-need" data-panel="capital_need.v1">
+    {% set _cover = (capital_need.derived or {}).get('near_term_cash_cover') %}
+    {% set _gap = (capital_need.derived or {}).get('near_term_cash_gap_usd') %}
+    {% set _scenario = (capital_need.derived or {}).get('scenario_runway') %}
+    {% if _cover and _cover.value_pct is not none %}
+    <p class="dmw-lede">{{ t('Cash covers ' ~ _cover.value_pct ~ '% of issuer-reported principal due in the next 12 months.',
+                            '现金可覆盖未来12个月发行人已披露到期本金的 ' ~ _cover.value_pct ~ '%。') }}</p>
+    {% if _gap is not none %}
+    <p class="dmw-nullwhy">{{ t('Cash shortfall against that reported principal: $' ~ ('%.0f'|format(_gap)),
+                                   '相对该已披露本金的现金缺口：$' ~ ('%.0f'|format(_gap)) ~ '。') }}</p>
+    {% endif %}
+    {% elif capital_need.status == 'partial' %}
+    <p class="dmw-null">{{ t('Capital-need coverage is partial; cash and debt are not joined across different filing periods.',
+                                '资本需求覆盖信息不完整；现金与债务不会跨不同报告期拼接。') }}</p>
+    <p class="dmw-nullwhy">{{ t('The cash-flow scenario remains context only. No zero or financing forecast is substituted for the missing same-period debt.',
+                                   '现金流情景仅供参考；缺少同一报告期债务时，不以零值或融资预测替代。') }}</p>
+    {% elif capital_need.status == 'unknown' %}
+    <p class="dmw-null">{{ t('Capital-need coverage is not available for this issuer yet.',
+                                '该发行人的资本需求覆盖信息暂不可用。') }}</p>
+    <p class="dmw-nullwhy">{{ t('Reported facts remain separate from the cash-flow scenario until identity and filing provenance are confirmed.',
+                                   '在确认身份与报告来源之前，已披露事实与现金流情景保持分离。') }}</p>
+    {% endif %}
+    {% if _scenario and _scenario.state == 'stale' %}
+    <p class="dmw-nullwhy">{{ t('The runway scenario uses a stale annual filing and is not a current coverage assertion.',
+                                   '现金跑道情景使用已过时的年度文件，不代表当前覆盖能力。') }}</p>
+    {% endif %}
+  </div><!-- .dmw-capital-need -->
   {% endif -%}
 
   <div class="mod-ft">{{ t('Research context only — reported figures from SEC filings, not a rating, a signal or investment advice.',
