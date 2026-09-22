@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T03:34:45.432361+00:00",
-  "count": 2612,
+  "generated_at": "2026-09-22T03:49:48.615915+00:00",
+  "count": 2613,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -94,6 +94,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-xnayvnhgbuu-7d2285",
+      "title": "Pulp & Paper Monthly Tracker — September 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:57Z",
+      "summary_points": [
+        "China Inventory Glut: China pulp port inventories at 2.3mt (3% m/m rise) exceed 5yr avg (1.9mt), signaling structural supply overhang and margin pressure.",
+        "Europe Pricing Divergence: European hardwood prices down 3% m/m vs Kraftliner up 2% m/m; Chinese paper margins negative (-13%/-6%), highlighting downstream weakness and sector fragmentation.",
+        "Indonesia Export Collapse: Indonesia hardwood exports dropped sharply mid-2023 (Exhibit 25), indicating policy-driven supply disruption impacting global paper chains.",
+        "China Demand Policy Risk: Robust tissue margins but declining net exports (Exhibit 23) amid regulatory tightening on recycled pulp imports, threatening supply chain stability.",
+        "Europe Structural Demand Weakness: Western Europe printing/writing paper demand at 2026 lows (Exhibit 31), signaling irreversible sector decline for valuation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ihuigovalkl-fb636d",
       "title": "GM Market Rhythm",
