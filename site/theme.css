@@ -3285,6 +3285,10 @@ html[data-theme="light"] .mrs{
   border-color:var(--line);
   box-shadow:var(--card-shadow);
 }
+/* zh swaps --down to green (red = up). Risk-off is a danger stance, not a
+   price candle, so this pill stays on --ink-act, which does not swap.
+   Otherwise 风险规避 paints the same green family as 风险偏好. */
+html[data-lang="zh"] .mrs .mx-stance--down{ --c: var(--ink-act); }
 .mrs-hd{ margin:0 0 var(--sp-3,12px); }
 .mrs-title{
   margin:0;

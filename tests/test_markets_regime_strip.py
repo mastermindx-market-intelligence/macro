@@ -434,6 +434,24 @@ def test_fresh_render_byte_matches_committed_markets_html(_restore_bake_side_eff
     assert after == before
 
 
+def test_zh_risk_off_pill_stays_danger_ink_not_the_price_pole():
+    """zh swaps --down to green (red = up). Risk-off uses mx-stance--down.
+
+    Leaving that pill on --ink-down paints 风险规避 the same green family as
+    风险偏好. The strip is a danger stance, not a price candle, so the zh
+    rule must pin it to --ink-act, which does not swap.
+    """
+    css = (TEMPLATES / "theme.css").read_text(encoding="utf-8")
+    marker = 'html[data-lang="zh"] .mrs .mx-stance--down'
+    assert marker in css
+    rule = css[css.index(marker):css.index("}", css.index(marker))]
+    body = rule.split("{", 1)[1]
+    assert "--ink-act" in body
+    assert "--down" not in body
+    site_css = (ROOT / "site" / "theme.css").read_text(encoding="utf-8")
+    assert marker in site_css
+
+
 def test_template_site_sync_passes():
     proc = subprocess.run(
         [sys.executable, "-m", "scripts.check_template_site_sync"],
