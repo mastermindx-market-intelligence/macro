@@ -3892,6 +3892,219 @@ def _fast_visible_tool_schemas(
     return [schema for schema in full_schemas if schema.get("name") in allowed]
 
 
+_EVIDENCE_FAMILY_LABELS = {
+    "single_name_current": "single-name",
+    "macro_rates": "macro/rates",
+    "options_single_name": "options",
+    "portfolio_current": "portfolio",
+    "theme_current": "theme",
+}
+
+# Contradiction readers add metadata but never satisfy primary family coverage by
+# themselves. This preserves "we checked for disagreement" without pretending that a
+# contradiction ledger is the underlying options/portfolio/macro observation.
+_EVIDENCE_FAMILY_CONTRADICTION_READS: dict[str, tuple[str, ...]] = {
+    "single_name_current": ("read_contradictions",),
+    "macro_rates": ("read_contradictions",),
+    "options_single_name": ("list_options_contradictions",),
+    "portfolio_current": ("list_factor_contradictions", "read_contradictions"),
+    "theme_current": (),
+}
+
+
+def _fast_evidence_requirements(
+    visible_schemas: list[dict],
+    message: str,
+    context_ticker: str | None,
+    *,
+    lane: str,
+    mode: str,
+    page: str,
+    internals_allowed: bool,
+) -> dict[str, tuple[str, ...]] | None:
+    """Request-local evidence contract for the same profiles progressive visibility owns.
+
+    None means fail open: specialist/ambiguous, Pro/Research, Terminal, internals, or
+    schema drift. A dict means the turn is qualified and each named family has at least
+    one authorized witness available on this exact model-visible surface.
+    """
+    if (
+        lane != "fast"
+        or mode != "chat"
+        or str(page).lower() == "terminal"
+        or internals_allowed
+    ):
+        return None
+    from engine.neuralweb.ask_brain import (  # noqa: PLC0415
+        _fast_required_evidence_families,
+        _question_profile,
+    )
+
+    profile = _question_profile(message, context_ticker)
+    required = _fast_required_evidence_families(profile)
+    if required is None:
+        return None
+
+    visible_names = {
+        schema.get("name") for schema in visible_schemas if isinstance(schema, dict)
+    }
+    for family, witnesses in required.items():
+        if not any(name in visible_names for name in witnesses):
+            log.warning(
+                "brain_gateway: Fast evidence gate fail-open for profile %s; "
+                "family %s has no authorized visible witness",
+                profile.name,
+                family,
+            )
+            return None
+    return required
+
+
+def _evidence_result_state(result: Any) -> str:
+    """Normalize one attempted read into the existing coverage vocabulary.
+
+    Successful empty answers remain AVAILABLE: "no events/no holdings" can be a valid
+    observed negative. Only an explicit producer state/error turns an attempted read into
+    unavailable/stale/not-applicable/conflicted/partial.
+    """
+    if result is None:
+        return "UNAVAILABLE"
+    if not isinstance(result, dict):
+        return "AVAILABLE"
+
+    probes: list[str] = []
+    for key in (
+        "coverage_state", "coverageState", "freshness_status", "freshness",
+        "status", "state", "null_reason", "error",
+    ):
+        val = result.get(key)
+        if isinstance(val, str) and val.strip():
+            probes.append(val.strip().lower().replace("-", "_").replace(" ", "_"))
+    joined = " ".join(probes)
+
+    if "not_applicable" in joined:
+        return "NOT_APPLICABLE"
+    if "stale" in joined:
+        return "STALE"
+    if "conflict" in joined:
+        return "CONFLICTED"
+    if "partial" in joined:
+        return "PARTIAL"
+    if "not_covered" in joined:
+        return "NOT_COVERED"
+    if result.get("error") or any(
+        token in joined for token in (
+            "unavailable", "source_unavailable", "rights_blocked",
+            "producer_degraded", "fetch_failed", "read_failed",
+        )
+    ):
+        return "UNAVAILABLE"
+    return "AVAILABLE"
+
+
+def _evidence_coverage_receipt(
+    required: dict[str, tuple[str, ...]] | None,
+    observations: list[tuple[str, Any]],
+) -> dict:
+    """Build a bounded in-memory family receipt from actual tool results."""
+    if required is None:
+        return {"qualified": False, "families": []}
+
+    rows: list[dict] = []
+    precedence = {
+        "AVAILABLE": 6,
+        "PARTIAL": 5,
+        "CONFLICTED": 4,
+        "STALE": 3,
+        "NOT_APPLICABLE": 2,
+        "UNAVAILABLE": 1,
+        "NOT_COVERED": 0,
+    }
+    for family, witnesses in required.items():
+        witness_set = set(witnesses)
+        attempted: list[str] = []
+        states: list[str] = []
+        as_of: list[str] = []
+        contradicted = False
+        contradiction_reads = set(_EVIDENCE_FAMILY_CONTRADICTION_READS.get(family, ()))
+        for tool_name, result in observations:
+            if tool_name in contradiction_reads and isinstance(result, dict):
+                contradicted = contradicted or bool(
+                    result.get("contradictions") or result.get("conflicts")
+                )
+            if tool_name not in witness_set:
+                continue
+            attempted.append(tool_name)
+            state_i = _evidence_result_state(result)
+            states.append(state_i)
+            if isinstance(result, dict):
+                for key in ("as_of", "generated_at", "updated_at"):
+                    val = result.get(key)
+                    if isinstance(val, str) and val and val not in as_of:
+                        as_of.append(val)
+                contradicted = contradicted or bool(
+                    result.get("contradictions") or result.get("conflicts")
+                )
+        state = max(states, key=lambda x: precedence.get(x, -1)) if states else "NOT_COVERED"
+        freshness = (
+            "STALE_PRESENT" if "STALE" in states
+            else ("CURRENT_OR_UNSPECIFIED" if states else "NOT_OBSERVED")
+        )
+        rows.append({
+            "family": family,
+            "label": _EVIDENCE_FAMILY_LABELS.get(family, family.replace("_", " ")),
+            "state": state,
+            "freshness": freshness,
+            "attempted": sorted(set(attempted)),
+            "as_of": as_of[:3],
+            "contradicted": contradicted,
+        })
+    return {"qualified": True, "families": rows}
+
+
+def _evidence_coverage_missing(receipt: dict) -> list[dict]:
+    return [
+        row for row in receipt.get("families", [])
+        if isinstance(row, dict) and row.get("state") == "NOT_COVERED"
+    ]
+
+
+def _evidence_coverage_gate_message(receipt: dict) -> str:
+    missing = _evidence_coverage_missing(receipt)
+    labels = ", ".join(str(row.get("label") or row.get("family")) for row in missing)
+    return (
+        "Before answering, evidence coverage is incomplete for: "
+        f"{labels}. Retrieve at least one relevant already-authorized read for EACH "
+        "missing family in one batch. If a read says unavailable, stale, conflicted, "
+        "partial, or not applicable, preserve that state rather than guessing. "
+        "This is one repair pass; if a family still cannot be read, disclose the gap "
+        "plainly in the answer."
+    )
+
+
+def _evidence_coverage_synthesis_message(receipt: dict) -> str:
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    if not rows:
+        return "Please synthesize your findings and answer my question."
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        item = f"{row.get('label') or row.get('family')}: {row.get('state', 'NOT_COVERED')}"
+        if row.get("freshness") == "STALE_PRESENT" and row.get("state") != "STALE":
+            item += " + STALE_PRESENT"
+        if row.get("contradicted"):
+            item += " + CONTRADICTION_PRESENT"
+        parts.append(item)
+    summary = "; ".join(parts)
+    return (
+        "Please synthesize your findings and answer my question. Evidence coverage "
+        f"at synthesis is: {summary}. Never fill a NOT_COVERED/UNAVAILABLE gap with "
+        "inference presented as fact; disclose stale, partial, conflicted, or unavailable "
+        "evidence when it materially affects the conclusion."
+    )
+
+
 _CHART_COMMAND_SYSTEM_DIRECTIVE = """
 CHART CONTROL (Terminal only):
 You can drive the user's chart with client-side DISPLAY ACTIONS: set_chart_symbol,
@@ -6030,6 +6243,17 @@ def _run_brain_loop(
         page=safe_page,
         internals_allowed=internals_ok,
     )
+    evidence_required = _fast_evidence_requirements(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_observations: list[tuple[str, Any]] = []
+    evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
@@ -6153,6 +6377,15 @@ def _run_brain_loop(
 
         stop_reason = getattr(resp, "stop_reason", None)
         if stop_reason == "end_turn":
+            receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+            if not evidence_gate_issued and _evidence_coverage_missing(receipt):
+                messages.append({
+                    "role": "user",
+                    "content": _evidence_coverage_gate_message(receipt),
+                })
+                evidence_gate_issued = True
+                _timing_round(timing, _round_model_ms, _round_tools)
+                continue
             _timing_round(timing, _round_model_ms, _round_tools)
             break
         if stop_reason != "tool_use":
@@ -6188,6 +6421,7 @@ def _run_brain_loop(
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
+            evidence_observations.append((tool_name, result))
 
             # Collect annotate_chart payloads for the response
             if tool_name == "annotate_chart" and result.get("client_executed"):
@@ -6226,7 +6460,11 @@ def _run_brain_loop(
     # no-more-tools synthesis turn so chat() returns a real answer.
     if last_resp is not None and getattr(last_resp, "stop_reason", None) == "tool_use":
         _synth_t0 = time.monotonic()
-        messages.append({"role": "user", "content": "Please synthesize your findings and answer my question."})
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        messages.append({
+            "role": "user",
+            "content": _evidence_coverage_synthesis_message(receipt),
+        })
         try:
             resp, model = _create_failover(
                 _cands,
@@ -6898,6 +7136,17 @@ def _run_brain_loop_stream(
         page=safe_page,
         internals_allowed=internals_ok,
     )
+    evidence_required = _fast_evidence_requirements(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_observations: list[tuple[str, Any]] = []
+    evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
@@ -7157,6 +7406,18 @@ def _run_brain_loop_stream(
             _emitted = ""
 
         if stop_reason == "end_turn":
+            receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+            if not evidence_gate_issued and _evidence_coverage_missing(receipt):
+                if _emitted:
+                    yield _wipe_event()
+                    _emitted = ""
+                messages.append({
+                    "role": "user",
+                    "content": _evidence_coverage_gate_message(receipt),
+                })
+                evidence_gate_issued = True
+                _timing_round(timing, _round_model_ms, _round_tools)
+                continue
             _timing_round(timing, _round_model_ms, _round_tools)
             break
         if stop_reason != "tool_use":
@@ -7201,6 +7462,7 @@ def _run_brain_loop_stream(
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
+            evidence_observations.append((tool_name, result))
 
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
@@ -7259,7 +7521,11 @@ def _run_brain_loop_stream(
     need_synthesis = last_stop == "tool_use"
     if need_synthesis:
         _synth_t0 = time.monotonic()
-        messages.append({"role": "user", "content": "Please synthesize your findings and answer my question."})
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        messages.append({
+            "role": "user",
+            "content": _evidence_coverage_synthesis_message(receipt),
+        })
         yield _status_event("synthesis", _t0, _STAGE_LABELS["synthesis"])
         # Stream with OAuth-token failover. Text now goes out as it is written, so a
         # candidate that dies MID-BODY cannot simply restart with a fresh buffer the way
