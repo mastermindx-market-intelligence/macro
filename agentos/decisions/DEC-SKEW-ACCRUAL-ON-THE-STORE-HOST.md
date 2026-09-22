@@ -104,7 +104,7 @@ evidence:
   - "Verify: `python3 -m pytest tests/test_skew_accrual_gate.py
     tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py
     tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py
-    -q` exits 0 with all 70 tests passing across the five suites
+    -q` exits 0 with all 71 tests passing across the five suites
     (round-5 Meta-CEO A binding ruling added 2 B2 repeatability tests:
     test_two_run_cycle_is_admitted_via_real_git +
     test_runstate_files_live_outside_repo, plus 1 MINOR-2 receipt-line
