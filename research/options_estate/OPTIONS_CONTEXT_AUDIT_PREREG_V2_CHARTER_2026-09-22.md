@@ -8,7 +8,9 @@ Mission: design a complete-population successor to the byte-pinned v1 context au
 
 This packet was designed against Macro `origin/main` at:
 
-`9e9da53a671f3420b2cab9cca20b131c811a05df`
+`dea0a794ac63df21d5dcdceef90b427de0f6b62a`
+
+The source identity was refreshed after the initial charter commit. The v1 and adjacent artifact byte hashes and row counts were re-read at this head; the h60 digest above is corrected to its full 64-hex value. No implementation claim follows from this refresh.
 
 The protected Mastermind procedure used for the commissioning and review boundary was Skillpack commit:
 
@@ -27,7 +29,7 @@ The census was performed from immutable blobs at the exact Macro source SHA abov
 | v1 input or adjacent artifact | rows | bytes | SHA-256 | v1 treatment |
 |---|---:|---:|---|---|
 | `data/options_signal_episode/episodes.jsonl` | 9,641 | 15,013,207 | `20120ddeff5983248ec404afaa65d3414c36ed1011936638c84e4ada52f50940` | consumed |
-| `data/options_signal_episode/outcomes_h60.jsonl` | 7,843 | 15,886,486 | `18fb5dd5deb5114b1d55778fa0aead63154653b4f7d7d67e` | consumed |
+| `data/options_signal_episode/outcomes_h60.jsonl` | 7,843 | 15,886,486 | `18fb5dd5deb5114b1d55778eb6c3a4632207d58fa0aead63154653b4f7d7d67e` | consumed |
 | `data/options_signal_episode/campaigns.jsonl` | 8 | 10,492 | `db326f5c772ab417c43b8579ad50abb0434916922bda3a13c2da5b8303813910` | frozen legacy campaign input |
 | `config/market_memory_canary.v1.json` | — | 1,650 | `5e7823e48866b2c0828122b65f684ed5872c6816a6224f61e44db4c03d129b33` | consumed |
 | `data/options_signal_episode/outcomes_session.jsonl` | 30,327 | 100,471,221 | measured, not bound here | adjacent artifact; explicit exclusion required |
