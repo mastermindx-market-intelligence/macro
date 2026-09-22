@@ -125,40 +125,30 @@ prs:
 ---
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001. Sol retains PR7622 source custody.
-Procedure:Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1, compatible1.0.1/bootstrap1.
-Chairman continues capability work; hosted CI/release deferred; Draft/HOLD remains.
-Latest semantic source9c6bef3f37f98454a8d5fc4f347593bd164407ac composes current-main
-72bb997548453c8954c09306d8944b458c7e8088 and incumbent shared-Lens6860
-03b21b1a9e0f1b5b517a9a92545bc02824411ced. Neither dependency branch/controller changed.
+Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
+Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f, compatible1.0.1/bootstrap1.
+Current Chairman intent continues accuracy work; CI/release deferred, Draft/HOLD.
+Base4c3fdf2e1a63397086751f73fbe4be470ce2a4fc already contains combined7592,
+participation/cohort/optional weights, missing-member explanation and incumbent6860.
+DO_NOT_REDO:these integrations/measurements and their historical evidence.
 
-DO_NOT_REDO:earlier participation, risk interpretation, combined7592 integrity and
-dated-weight research remain preserved. New actual September21 case is297/300
-complete CSI300 members;601059.SS,601238.SS,601995.SS lack Sep21 stored closes.
-The new bounded per-window explanation names missing observations without filling
-prices, substituting names, altering eligibility or claiming suspension/vendor failure.
-Final544 tests/10 inherited warnings;14 added coverage tests. Exact page a7b1ea68...
-is277173bytes, committed;17 JS/CSS stamps match. Accepted main's shared Lens replaces
-the earlier local tooltip;6860 fixes the first-click self-dismiss mechanism.
+Current delta:only four quadrant definitions and four bilingual regime reasons in
+engine/china_playbook.py change. Full-page Jinja proves the old bottom/hit-rate
+claims no longer return in the playbook dialog. Existing scoring and non-regime
+reasons are unchanged across405 synthetic scenarios; non-string AST identical.
+12 RED cases/36 controls preceded repair; final373 tests pass,50 new cases.
+Exact evidence:research/grey_deer/CHINA_REGIME_COPY_20260922.json.
+Current source is committed before the normal offline publication-artifact check.
+No source worker, watcher or source-effect uncertainty exists.
 
-Browser boundary:pre-Lens42edefed5d28 had16 rest/focus captures but FAILED its
-actual first-click journey. Post-Lens browser call was platform-refused; metadata
-readback proves no new log/interaction receipt. Do not run it via another actor,
-selector/tactic workaround or carrier. The first-click assertion was not weakened.
-No final browser acceptance, no worker/watcher or background continuation exists.
+Frozen gates remain:post-Lens browser safety-status refusal; source-clock edit
+with15 pending cases; protective automatic-weight-supply append; prior7029 review;
+optional weight name/residual augmentation. This turn's separate macro-detail/
+latest-payload compound read was also refused, not repeated or rerouted.
+RDC0.2.50 preflight shows allowed worktree and commands, not platform-gate recovery.
+No new risk model, probability, sizing, authority or collection is introduced.
+No official weight artifact is connected. Prior source branches/controllers untouched.
 
-Frozen older gates:clock edit/15 pending cases; protective weight-refresh runner
-append; prior7029 compound review; optional weight name/residual augmentation.
-No repeated attempt or delegated bypass. No weight artifact written, no fresh
-collection, model calibration, score/probability/force/sizing change or deployment.
-
-Current source/evidence:research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md,
-mockups/evidence/china-source-current-20260922/final-source-receipt.json.
-Next:exact post-Lens proof gate resolution, then original source-supply/clock gates;
-normal release qualification remains separate. Resume from this record and minimum
-fresh canonical state, not tool history. Same branch/operation and effects retained.
-FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE:false
-Boundary:context-heavy current-source, new observed-input defect and incumbent
-dependency integration completed at tested-source level; required real interaction
-proof is explicitly refused, not manufactured. No custody transfer or automatic wake.
+Next:finish source-bound offline page proof and publish this same candidate;
+then resolve exact original platform gates before final browser/CI/live acceptance.
+MISSION_COMPLETE:false. No background work or custody transfer is claimed.

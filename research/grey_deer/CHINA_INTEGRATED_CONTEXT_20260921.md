@@ -143,3 +143,26 @@ CI remains deferred. Final browser/production acceptance remains false.
 FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE:false; context-heavy source integration and dependency repair
 are persisted at this exact incomplete boundary, not represented as delivery.
+
+## September22 regime-interpretation repair
+Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f; same PR7622.
+The actual playbook producer still emitted static best-bottom/~70%-hit/entry
+claims after the earlier glance-only repair. The registered full-page Jinja test
+reproduced their presence in the existing playbook dialog, not a mock card.
+Four quadrant definitions now describe model signal directions rather than price
+levels or realized output; confirmation rules can retain a label during change.
+The four regime reason strings identify a model prior, not a confirmed entry,
+market bottom, guaranteed gain or protected sector. No points or bands changed.
+12 new output/consumer cases failed before repair with36 arithmetic controls passing.
+Current four-suite regression:373 passed, including50 new cases. Two explicit
+inflation controls distinguish falling positive inflation from improving negative
+inflation. A separate405-scenario old/new comparison preserves every numeric score,
+posture, reason sign and non-regime reason. Non-string AST is identical; exactly16
+string literals changed. Neither input clocks nor probability calibration changed.
+Evidence:research/grey_deer/CHINA_REGIME_COPY_20260922.json.
+A separate macro-detail/latest-payload compound read was platform-refused this turn;
+it was not repeated or routed elsewhere. The existing browser, clock, weight-supply
+and recovery refusals remain held. Current RDC preflight confirms permitted paths
+and process configuration, not recovery of the platform safety-status gate.
+Next bounded action:normal offline builder and source-bound artifact check;
+post-Lens browser/public acceptance and hosted CI remain explicitly unproven.

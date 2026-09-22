@@ -39,20 +39,23 @@ def _strip_internal_ids(s: str) -> str:
     """
     return re.sub(r'\s*\((§|SS)[^)]*\)', '', s)
 
-QUAD_MEANING_CN = {
-    "Q1": ("Goldilocks — growth firming while price pressure eases. Historically the "
-           "friendliest A-share backdrop for tech, quality growth and consumer leaders.",
-           "理想增长 — 增长回暖、物价压力缓解。历史上对科技、优质成长与消费龙头最友好的 A 股环境。"),
-    "Q2": ("Reflation — growth and prices both rising. Favors cyclicals, brokers, materials "
-           "and property, but the backtest shows only a mild edge — fade strength, don't chase.",
-           "再通胀 — 增长与物价同步上行。利好周期股、券商、材料与地产，但回测仅显示微弱优势 — 宜逢强减持而非追高。"),
-    "Q3": ("Stagflation — growth fading while prices stay hot. The dangerous quad; defensives, "
-           "banks and upstream materials hold up best. Historically unstable in China — lean on confirmation.",
-           "滞胀 — 增长走弱而物价高企。最危险的象限；防御板块、银行与上游材料相对抗跌。在中国历史上不稳定 — 宜依赖确认信号。"),
-    "Q4": ("Growth-scare — both growth and prices falling, fear peaking. The market's measured "
-           "best contrarian bottom (highest forward return, ~70% hit). Accumulate quality into the fear.",
-           "增长恐慌 — 增长与物价齐跌、恐慌见顶。实测最佳的逆向底部（前瞻收益最高，命中率约 70%）。在恐慌中吸纳优质资产。"),
-}
+# Model directions are not economic levels or evidence of a trade entry.
+QUAD_MEANING_CN = {'Q1': ('Goldilocks — model quadrant: growth-up and inflation-down signals. These are signal '
+        'directions, not price levels or realized economic growth. Confirmation rules may retain '
+        'the label while inputs change.',
+        '理想增长——模型象限：增长信号偏上、通胀信号偏下。这些是信号方向，不是价格水平或已实现的经济增速；确认规则可能在输入变化时暂时保留原标签。'),
+ 'Q2': ('Reflation — model quadrant: growth-up and inflation-up signals. These are signal '
+        'directions, not price levels or realized economic growth. Confirmation rules may retain '
+        'the label while inputs change.',
+        '再通胀——模型象限：增长与通胀信号均偏上。这些是信号方向，不是价格水平或已实现的经济增速；确认规则可能在输入变化时暂时保留原标签。'),
+ 'Q3': ('Stagflation — model quadrant: growth-down and inflation-up signals. These are signal '
+        'directions, not price levels or realized economic growth. Confirmation rules may retain '
+        'the label while inputs change.',
+        '滞胀——模型象限：增长信号偏下、通胀信号偏上。这些是信号方向，不是价格水平或已实现的经济增速；确认规则可能在输入变化时暂时保留原标签。'),
+ 'Q4': ('Growth-scare — model quadrant: growth-down and inflation-down signals. These are signal '
+        'directions, not price levels or proof of an economic contraction or market bottom. '
+        'Confirmation rules may retain the label while inputs change.',
+        '增长恐慌——模型象限：增长与通胀信号均偏下。这些是信号方向，不是价格水平，也不证明经济收缩或市场见底；确认规则可能在输入变化时暂时保留原标签。')}
 
 _POSTURES = ["DEFENSIVE", "CAREFUL", "NEUTRAL", "CONSTRUCTIVE", "AGGRESSIVE"]
 
@@ -63,19 +66,19 @@ def _dial(latest: dict, internals: dict) -> dict:
     quad = latest.get("quad")
     if quad == "Q4":
         score += 2
-        reasons.append(("+", "Growth-scare is the market's measured best contrarian bottom (~70% hit) — accumulate quality into the fear.",
-                        "增长恐慌是实测最佳的逆向底部（命中率约70%）— 在恐慌中吸纳优质资产。"))
+        reasons.append(("+", 'Growth-scare is a positive regime prior in the existing posture dial, not an entry signal or confirmation of a market bottom.',
+                        '增长恐慌在现有姿态刻度中属于偏积极的周期先验，不是入场信号，也不确认市场底部。'))
     elif quad == "Q1":
         score += 1
-        reasons.append(("+", "Goldilocks — growth firming with price pressure easing, the friendliest backdrop for quality growth.",
-                        "理想增长 — 增长回暖、物价压力缓解，最利好优质成长。"))
+        reasons.append(("+", 'Goldilocks is a supportive regime prior in the existing posture dial, not an entry signal or a guarantee of stock gains.',
+                        '理想增长在现有姿态刻度中属于支持性的周期先验，不是入场信号，也不保证股票上涨。'))
     elif quad == "Q2":
-        reasons.append(("i", "Reflation carries only a mild measured edge — favor cyclicals/materials but fade strength.",
-                        "再通胀仅有微弱的实测优势 — 偏好周期／材料，但逢强减持。"))
+        reasons.append(("i", 'Reflation is a neutral regime prior in the existing posture dial, not an entry signal or proof of a sector return advantage.',
+                        '再通胀在现有姿态刻度中属于中性的周期先验，不是入场信号，也不证明某板块具有收益优势。'))
     elif quad == "Q3":
         score -= 1
-        reasons.append(("-", "Stagflation is the dangerous quad — defensives/banks/upstream hold up best; it is regime-unstable in China.",
-                        "滞胀是最危险的象限 — 防御／银行／上游相对抗跌；在中国周期不稳定。"))
+        reasons.append(("-", 'Stagflation is a cautious regime prior in the existing posture dial, not an entry signal or proof that any sector is protected.',
+                        '滞胀在现有姿态刻度中属于谨慎的周期先验，不是入场信号，也不证明任何板块可以免受损失。'))
 
     # --- MONETARY-CONDITIONS: ONE VOTE (max contribution ±1) ---
     # Collapsed from three co-moving PBoC-aggregate legs (M2-accel, M1−M2 scissors, TSF

@@ -429,7 +429,7 @@ def test_risk_reading_same_value_other_driver_is_not_breadth_attribution():
 
 # Execute the actual published page and its existing dialog view-model, not a
 # hand-written copy of the card. All fixtures are synthetic, never live proof.
-def _render_china_risk_case(recession, action_en="", action_zh=""):
+def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=None):
     from jinja2 import ChainableUndefined, Environment, FileSystemLoader
     from engine import china_tier1, i18n
     from scripts.build_china import _radar_dlg_vm
@@ -452,7 +452,7 @@ def _render_china_risk_case(recession, action_en="", action_zh=""):
                           ("posture_lane", "posture_tone", "reason_faces", "hero_clause", "slowdown_face")})
     ctx = _radar_dlg_vm({"market_state": market_state}, latest)
     return env.get_template("china.html.j2").render(
-        mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx)
+        mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx, pb=playbook)
 
 
 def _risk_card(html):
@@ -545,3 +545,69 @@ def test_integrated_risk_card_retains_both_probability_scope_and_economic_nulls(
     assert 'data-risk-score-basis' in TPL
     assert 'Shanghai ≥5% · 21 sessions' in TPL
     assert 'participation_panel' in TPL
+
+
+# Regime directions describe the model, not current economic levels or an entry.
+@pytest.mark.parametrize("quad", ["Q1", "Q2", "Q3", "Q4"])
+def test_regime_definition_separates_signals_from_levels(quad):
+    from engine.china_playbook import QUAD_MEANING_CN
+    en, zh = QUAD_MEANING_CN[quad]
+    assert "model" in en.lower() and "signal" in en.lower()
+    assert "模型" in zh and "信号" in zh
+    assert "price levels" in en.lower() and "价格水平" in zh
+    for claim in ("~70%", "best contrarian", "fear peaking", "accumulate", "命中率", "恐慌见顶", "吸纳"):
+        assert claim not in en.lower() + zh
+
+
+@pytest.mark.parametrize("quad,base", [("Q1", 1), ("Q2", 0), ("Q3", -1), ("Q4", 2)])
+@pytest.mark.parametrize("liquidity,monetary", [("expanding", 1), ("contracting", -1), ("neutral", 0)])
+@pytest.mark.parametrize("margin,positioning", [(10, 1), (50, 0), (90, -1)])
+def test_regime_wording_preserves_existing_posture_arithmetic(quad, base, liquidity, monetary, margin, positioning):
+    from engine.china_playbook import _dial, _POSTURES
+    latest = {"quad": quad, "liquidity_overlay": liquidity}
+    internals = {"margin": {"pctile": margin}}
+    before = copy.deepcopy((latest, internals))
+    result = _dial(latest, internals)
+    expected = base + monetary + positioning
+    assert result["score"] == expected
+    assert result["posture"] == _POSTURES[max(0, min(4, 2 + expected))]
+    assert (latest, internals) == before
+
+
+@pytest.mark.parametrize("quad", ["Q1", "Q2", "Q3", "Q4"])
+def test_regime_reason_is_a_prior_not_a_measured_entry_call(quad):
+    from engine.china_playbook import _dial
+    sign, en, zh = _dial({"quad": quad}, {})["reasons"][0]
+    assert "regime prior" in en.lower() and "先验" in zh
+    assert "not an entry signal" in en.lower() and "不是入场信号" in zh
+    for claim in ("70%", "best contrarian", "hold up best", "fade strength", "命中率", "最抗跌"):
+        assert claim not in en.lower() + zh
+
+
+@pytest.mark.parametrize("quad", ["Q1", "Q2", "Q3", "Q4"])
+def test_regime_producer_and_actual_page_do_not_reintroduce_bottom_claims(quad, monkeypatch):
+    from engine import china_playbook
+    from bs4 import BeautifulSoup
+    monkeypatch.setattr(china_playbook.config, "load", lambda: {"china": {"yahoo": {"sector_etfs": {}}}})
+    payload = china_playbook.build({"quad": quad}, None, [], {})
+    html = _render_china_risk_case(None, playbook=payload)
+    dialog = BeautifulSoup(html, "html.parser").find(id="cnx-dlg-playbook")
+    assert dialog is not None
+    text = dialog.get_text(" ", strip=True)
+    assert "regime prior" in text.lower() and "先验" in text
+    assert "70%" not in text and "命中率" not in text
+    assert "not an entry signal" in text.lower() and "不是入场信号" in text
+
+
+@pytest.mark.parametrize("earlier,latest,direction", [(1.4, 0.8, -1), (-0.5, -0.2, 1)])
+def test_regime_inflation_direction_is_not_the_price_level(earlier, latest, direction):
+    import pandas as pd
+    from engine.china_axes import _monthly_sign
+    from engine.china_playbook import QUAD_MEANING_CN
+    frame = pd.DataFrame({"cpi_yoy": [earlier] * 63 + [latest]},
+                         index=pd.bdate_range("2026-01-05", periods=64))
+    assert _monthly_sign(frame, "cpi_yoy", 63).iloc[-1] == direction
+    # Falling positive inflation is not deflation; improving negative inflation
+    # is not an increasing price level. The producer keeps these meanings apart.
+    en, zh = QUAD_MEANING_CN["Q4" if direction < 0 else "Q2"]
+    assert "not price levels" in en and "不是价格水平" in zh

@@ -1,0 +1,27 @@
+{
+  "base": "4c3fdf2e1a63397086751f73fbe4be470ce2a4fc",
+  "file": "engine/china_playbook.py",
+  "source_sha256": "e7cbfceee7c081837a7d1c34dd0440e15918e73faffc877334e21b2a39ff4ad7",
+  "non_string_ast_identical": true,
+  "changed_string_literals": 16,
+  "risk_formulas_changed": false,
+  "clock_repair_implemented": false,
+  "numeric_comparison": {
+    "base": "4c3fdf2e1a63397086751f73fbe4be470ce2a4fc",
+    "synthetic_cases": 405,
+    "numeric_and_posture_outputs_identical": true,
+    "non_regime_reasons_identical": true,
+    "market_inputs_read": false
+  },
+  "procedure": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "red": "12 failed / 36 arithmetic controls passed",
+  "regression": "373 passed",
+  "new_cases": 50,
+  "clock_pending_excluded": 15,
+  "full_page_jinja_cases": 4,
+  "build_proof": false,
+  "browser_proof": false,
+  "production": false,
+  "test_command": "python -m pytest tests/test_china_archetype_d_s1.py tests/test_china_participation.py tests/test_risk_radar_dlg_country_wiring.py tests/test_risk_radar_dlg_partial.py -q",
+  "test_source_sha256": "004196902184aa462cd26dd2656465a90dd18702bcdf3e7f4cf4e4989f089678"
+}
