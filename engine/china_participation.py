@@ -1152,6 +1152,7 @@ def index_member_breadth_context(membership, closes, benchmark, *, asof: str) ->
         result['data_gaps'].extend(snapshot['data_gaps'])
         for w in result['windows'].values():
             w['membership_observed_after_start'] = bool(w['start'] and observed>pd.Timestamp(w['start']))
+            w['coverage_detail'] = _index_member_price_gaps(closes, benchmark, names, w)
         if snapshot['status']=='unavailable':
             return result
         if not any(w['status']=='ok' for w in result['windows'].values()):
@@ -1290,3 +1291,37 @@ def load_index_weight_context(*, asof: str) -> dict:
     result=index_weight_context(weights,prices,benchmark.get('close',pd.Series(dtype=float)),asof=asof)
     result['data_gaps'].extend(errors)
     return result
+
+
+def _index_member_price_gaps(closes, benchmark, names, window) -> dict:
+    """Explain this existing window's excluded members; never alter its result."""
+    out = {'status': 'unavailable', 'excluded_count': None, 'members': []}
+    if not window.get('start'):
+        return dict(out, status='short_history')
+    try:
+        prices = _context_daily_frame(closes)
+        bench = _context_daily_frame(benchmark.to_frame('benchmark'))
+        grid = bench.loc[window['start']:window['end']].index
+        if len(grid) != window['sessions'] + 1:
+            return out
+        block = _context_prices(prices.reindex(index=grid, columns=names))
+        complete = block.notna().all()
+        with np.errstate(over='ignore', divide='ignore', invalid='ignore'):
+            returns = (block.iloc[-1] / block.iloc[0] - 1) * 100
+        eligible = complete & np.isfinite(returns)
+        # Diagnostics must reconcile to the owning calculation, never explain a
+        # different denominator with a plausible-looking list of missing stocks.
+        if int(eligible.sum()) != window['eligible']:
+            return out
+        rejected = []
+        for ticker in sorted(eligible.index[~eligible]):
+            missing = block.index[block[ticker].isna()]
+            rejected.append({'ticker': ticker, 'missing_observations': len(missing),
+                'first_missing': str(missing[0].date()) if len(missing) else None,
+                'last_missing': str(missing[-1].date()) if len(missing) else None,
+                'latest_quote_missing': bool(pd.isna(block[ticker].iloc[-1])),
+                'reason': 'missing_or_invalid_price' if len(missing) else 'nonfinite_return'})
+        return {'status': 'incomplete' if rejected else 'complete',
+                'excluded_count': len(rejected), 'members': rejected}
+    except (ValueError, TypeError, AttributeError, IndexError, KeyError, OverflowError):
+        return out

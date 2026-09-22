@@ -73,6 +73,15 @@
       <div class="cnx-kv"><span class="k">{{ bl('CSI 300 ETF','沪深300 ETF') }}</span><span class="v">{{ pct(w.get('benchmark_return_pct'),true) }}</span></div>
       <div class="cnx-kv"><span class="k">{{ bl('Snapshot members rising','快照成分股上涨比例') }}</span><span class="v">{{ pct(w.get('positive_pct')) }}</span></div>
       <div class="cnx-part-sub">{{ w.get('eligible',0) }} / {{ cohort.expected_members }} {{ bl('eligible; full snapshot required for a return','只符合要求；收益计算须覆盖完整快照') }}</div>
+      {% set gap = w.get('coverage_detail') or {} %}
+      {% if gap.get('status') == 'incomplete' %}
+      <div class="cnx-member-gap-summary cnx-part-note">{{ bl('Missing or invalid stored prices','存储价格缺失或无效') }} · {{ bl('%d affected members'|format(gap.excluded_count),'%d只受影响成分股'|format(gap.excluded_count)) }}</div>
+      <table class="cnx-part-table cnx-member-gaps"><thead><tr><th>{{ bl('Member','成分股') }}</th><th>{{ bl('Unusable observations','无效观测数') }}</th><th>{{ bl('Last missing date','最近缺失日期') }}</th></tr></thead><tbody>
+      {% for row in gap.members[:5] %}<tr><td>{{ row.ticker }}{% if row.reason == 'nonfinite_return' %}<div class="cnx-part-sub">{{ bl('Invalid return','收益无效') }}</div>{% endif %}</td><td>{{ row.missing_observations }}</td><td>{{ row.last_missing or '—' }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% if gap.excluded_count > 5 %}<div class="cnx-part-sub">{{ bl('First 5 affected members shown.','仅显示前5只受影响成分股。') }}</div>{% endif %}
+      <div class="cnx-part-sub">{{ bl('The stored data do not establish whether this is a suspension or a feed gap.','仅凭存储数据无法判断是停牌还是数据源缺失。') }}</div>
+      {% elif gap.get('status') == 'short_history' %}<div class="cnx-part-sub">{{ bl('Not enough observed sessions for this window.','本窗口的已观测交易日不足。') }}</div>{% endif %}
       {% endfor %}
       {% else %}<p class="cnx-part-note">{{ bl('Constituent comparison unavailable — check membership and price coverage.','成分股对比暂不可用，请核对成员名单与价格覆盖。') }}</p>{% endif %}
       <p class="cnx-part-note">{{ bl('One observed snapshot, not a historical membership archive. Applying these names to earlier returns does not reconstruct past index membership. The comparator is an ETF, not a reconstruction of the cash index.','单次观察快照，并非历史成分股档案。将这些成员用于较早的收益计算，不代表重建历史指数成员。比较对象是ETF，而非重建的现货指数。') }}</p>

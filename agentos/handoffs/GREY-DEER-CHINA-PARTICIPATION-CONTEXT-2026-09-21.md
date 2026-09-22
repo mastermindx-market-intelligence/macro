@@ -114,44 +114,35 @@ prs:
 
 
 # Current cumulative continuation
-Operation: china-participation-context-20260921-sol-001. Sol retains source custody.
-Procedure: Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e (1.0.1/bootstrap1).
-Same PR7622/branch/worktree; CI/release deferred, no arming or deployment.
-DO_NOT_REDO: the combined page/integrity/participation/risk-meaning source at
-6bf539301af18afb7030fec645bd141696d282cf,389-test integration and16/8 browser proof
-remain accepted offline evidence in CHINA_INTEGRATED_CONTEXT_20260921.md.
-PR7592 remains untouched. No forecast calibration, risk score or policy change.
+Operation:china-participation-context-20260921-sol-001; same PR7622 carrier, Sol custody.
+Procedure:Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1; compatible1.0.1/bootstrap1.
+Chairman continues capability work; hosted CI/release remain deferred. No worker/watcher.
+Starting candidate40845b5ddb2e91a7777868d1b218d1ea6c63e51e integrates main72bb997548453c8954c09306d8944b458c7e8088.
+This is a real generated-page conflict and accepted shared-Lens dependency update,
+not an ancestry-only refresh. Earlier combined page and official-weight research remain DO_NOT_REDO.
+PR7592 and recovery#7029 source/controller were not modified or restarted.
 
-New bounded source: official CSI300 close-weight parser, pure fixed-start basket,
-read-only optional artifact reader and existing expandable-page consumer. The
-once-retrieved official file is datedAugust31,300 names,sum100%,top10=23.18%.
-ThroughSeptember18 the fixed-start basket is-2.4174%,ETF-2.1985%,median-2.6424%.
-This is after-the-fact evidence, not official cash-index contribution or PIT data.
-Current three-suite verification:220 tests pass,31 new cases,10 inherited warnings.
-Exact source/input receipts:CHINA_INDEX_WEIGHT_CONTEXT_20260921.md and
-CHINA_INDEX_WEIGHT_REAL_INPUT_20260921.json in research/grey_deer/.
+New observed case:September21 data have297/300 complete CSI300 members;601059.SS,
+601238.SS and601995.SS lack September21 stored closes. No cause is inferred.
+The full300 return remains withheld. Per-window coverage diagnostics name the
+excluded members and missing observations without changing any original metric.
+Visible rows are bounded to5 with the full excluded count retained.
+Twelve cases RED; final477 tests/10 inherited warnings across11 suites, including14
+new cases. One fixture frequency mistake was repaired by comparing after setup;
+no product threshold was loosened. Pending clock cases remain outside this count.
 
-Supply is NOT enabled: the protective refresh-runner test append was safety-refused;
-readback proves it absent and no automatic refresh method was implemented. Do not
-retry/delegate that operation. The new reader truthfully handles an absent artifact.
-The older clock edit remains refused/NO_EFFECT;15 pending tests remain excluded.
-This turn's compound7029 fetch/diff/review request was refused; no alternate path
-or recovery implementation was attempted. Existing recovery owner remains7029.
+Actual builder now uses committed September21 inputs; no new collector or weight
+injection. Source-current normalization and browser proof are recorded next under
+mockups/evidence/china-source-current-20260922; do not claim browser PASS yet.
+Current worktree MERGE_HEAD is the exact main pin until the integration commit.
+No ambiguous modifying effect is unresolved; do not create another branch/carrier.
 
-Completed proof:8 full-page captures and8 detail interactions using genuine weight
-input injected solely at store.read. Page27296118... is evidence-only, not deployed.
-27 generated outputs restored; source table remains absent and original input hashes
-match. Detailed proof is mockups/evidence/china-index-weights-20260921/.
-No official dataset is committed; raw workbook stays local. No worker/watcher.
-The later optional English-name/residual augmentation was also refused; the original
-derived receipt is unchanged, and no equivalent write was routed elsewhere.
-
-FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+Frozen gates:participation clock implementation, protective weight-refresh runner
+append, old#7029 compound review, optional weight English-name/residual augmentation.
+Do not retry or delegate those refused operations. Weight supply remains absent;
+no score/probability/force/sizing or historical ledger change is authorized here.
+15 pending clock cases are not included among477 passing tests.
+Next:commit this tested same-carrier source/page, complete actual current-source
+browser acceptance including shared Lens and real missing-member UI, preserve/read
+back evidence, then retain Draft until normal CI/release and exact gates are cleared.
 MISSION_COMPLETE:false
-Boundary:the dated official-weight analysis and optional consumer are proven, with
-source-supply and source-clock gates separately held; a tool-heavy phase is sealed
-into these exact source/evidence owners. Source90e9e9eae2c6 is the semantic revision;
-final committed evidence revision is the same PR's canonical head. Resume from this
-record plus minimum fresh procedure, not old tool history. Next:the exact existing
-source-supply gate, then normal qualified release when CI work resumes. No autonomous
-wake, worker assignment, source transfer or whole-dashboard completion is claimed.

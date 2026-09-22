@@ -12,8 +12,12 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as capture
-INTEGRATED = '--integrated' in sys.argv
+CURRENT_SOURCE = '--current-source' in sys.argv
+INTEGRATED = '--integrated' in sys.argv or CURRENT_SOURCE
+EXPECTED = json.loads(Path(sys.argv[sys.argv.index('--expected')+1]).read_text()) if CURRENT_SOURCE else None
 OUT = ROOT / ('mockups/evidence/china-integrated-context-20260921' if INTEGRATED else 'mockups/evidence/china-risk-reading-20260921')
+if CURRENT_SOURCE:
+    OUT = ROOT / 'mockups/evidence/china-source-current-20260922'
 OUT.mkdir(parents=True, exist_ok=True)
 PAGE = ROOT / 'site/china.html'
 BEFORE = hashlib.sha256(PAGE.read_bytes()).hexdigest()
@@ -71,7 +75,10 @@ try:
                             assert card.count() == 1
                             card_text = card.text_content()
                             assert 'Weak large-cap participation' in card_text
-                            assert '大盘股参与偏弱' in card_text and '94' in card_text and '50%' in card_text
+                            assert '大盘股参与偏弱' in card_text
+                            score = EXPECTED['radar']['top_score'] if CURRENT_SOURCE else 94
+                            probability_pct = round(EXPECTED['radar']['dd21']*100) if CURRENT_SOURCE else 50
+                            assert str(score) in card_text and f'{probability_pct}%' in card_text
                             assert 'Historical stress' in card_text and 'not a probability' in card_text
                             assert 'all-boats' not in card_text
                             if INTEGRATED:
@@ -103,12 +110,44 @@ try:
                                 panel = page.locator('#cnx-participation')
                                 panel.locator('summary').click()
                                 assert panel.locator('details').get_attribute('open') is not None
-                                assert '1711 / 1816' in panel.text_content()
+                                assert ((f"{EXPECTED['sample']['eligible']} / {EXPECTED['sample']['configured']}") if CURRENT_SOURCE else '1711 / 1816') in panel.text_content()
                                 cohort = panel.locator('.cnx-index-members')
-                                assert '300 / 300' in cohort.text_content()
-                                assert '-0.67%' in cohort.text_content() and '+0.07%' in cohort.text_content()
-                                assert panel.locator('tbody tr').count() == 16
+                                if CURRENT_SOURCE:
+                                    assert EXPECTED['cohort']['asof'] in cohort.text_content()
+                                    assert f"{EXPECTED['cohort']['five']['eligible']} / 300" in cohort.text_content()
+                                    assert 'Starting index weights unavailable' in cohort.text_content()
+                                    assert panel.locator('.cnx-index-weights').count() == 0
+                                    gaps = EXPECTED['cohort']['five'].get('coverage_detail', {})
+                                    if gaps.get('excluded_count'):
+                                        assert 'Unavailable' in cohort.locator('.cnx-kv .v').first.text_content()
+                                        for row in gaps['members'][:5]:
+                                            assert row['ticker'] in cohort.locator('.cnx-member-gaps').first.text_content()
+                                        assert f"{gaps['excluded_count']} affected members" in cohort.text_content()
+                                    if width == 390:
+                                        cohort.screenshot(path=str(OUT/f'coverage-{width}-{theme}-{lang}.png'))
+                                else:
+                                    assert '300 / 300' in cohort.text_content()
+                                    assert '-0.67%' in cohort.text_content() and '+0.07%' in cohort.text_content()
+                                assert panel.locator('table').filter(has_text='Sector proxy').locator('tbody tr').count() == 16
                                 panel.locator('summary').click()
+                                if CURRENT_SOURCE:
+                                    from bs4 import BeautifulSoup
+                                    trigger = page.locator('.cnx-reason-row .cnx-lens.lens-q').first
+                                    raw_tip = trigger.get_attribute('data-tip-'+lang)
+                                    trigger.click()
+                                    lens = page.locator('.lens-pop.open')
+                                    lens.wait_for(state='visible')
+                                    plain_tip = ' '.join(BeautifulSoup(raw_tip, 'html.parser').get_text(' ', strip=True).split())
+                                    assert plain_tip in ' '.join(lens.inner_text().split())
+                                    page.wait_for_timeout(350)
+                                    bounds = lens.bounding_box()
+                                    assert bounds and bounds['x'] >= -1 and bounds['x']+bounds['width'] <= width+1
+                                    assert bounds['y'] >= -1 and bounds['y']+bounds['height'] <= height+1
+                                    assert not page.locator('#cnx-dlg-playbook').is_visible()
+                                    if (width,theme,lang) in [(1440,'dark','en'),(390,'light','zh')]:
+                                        page.screenshot(path=str(OUT/f'lens-{width}-{theme}-{lang}.png'))
+                                    page.keyboard.press('Escape')
+                                    lens.wait_for(state='hidden')
                                 from tests.test_china_archetype_d_s1 import _render_china_risk_case, _risk_card
                                 # Explicitly synthetic missing-input component, rendered
                                 # by the real full-page template then inspected in Chrome.
@@ -122,11 +161,13 @@ try:
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             assert not errors, errors
                             cases.append({'width':width,'theme':theme,'locale':lang,
-                                'score':94,'state_probability_pct':50,'scoped_card':True,
+                                'score':score,'state_probability_pct':probability_pct,'scoped_card':True,
                                 'scoped_popover':True,'scoped_shared_dialog':True,
                                 'both_entrypoints_open':True,'escape_closes':True,'page_errors':errors,
                                 'integrated_participation_and_slowdown':INTEGRATED,
-                                'synthetic_missing_guidance_and_slowdown':INTEGRATED})
+                                'synthetic_missing_guidance_and_slowdown':INTEGRATED,
+                                'current_source_missing_cohort_proof':CURRENT_SOURCE,
+                                'canonical_lens_visible_in_viewport':CURRENT_SOURCE})
                         finally:
                             ctx.close()
         finally:
@@ -141,7 +182,8 @@ receipt = {'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cw
     'page_sha256':BEFORE,'page_bytes':PAGE.stat().st_size,'capture_cases':CAPTURE_CASES,
     'interaction_cases':cases,'source_page_unchanged':True,'server_closed':True,
     'kind':'actual no-network builder with stored inputs; no live deployment',
-    'production':False,'fresh_collection':False,'risk_model_changed':False}
+    'production':False,'fresh_collection':False,'risk_model_changed':False,
+    'expected_input_receipt':EXPECTED, 'weight_injection':False}
 (OUT/'interaction-proof.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps({'capture_cases':CAPTURE_CASES,'interaction_cases':len(cases),
     'page_sha256':BEFORE,'production':False,'server_closed':True}))

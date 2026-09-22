@@ -64,3 +64,31 @@ records/0 errors/63 existing warnings. The source-only whitespace check passed;
 generated HTML retains existing builder whitespace and is not called lint-clean.
 FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE:false. Resume through the current same-PR owner record.
+
+## September22 current-source and real missing-member case
+Procedure:Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1.
+Same PR7622 carrier; initial head40845b5ddb2e; integration main72bb99754845.
+A real generated-page conflict was reproduced. Accepted main also moved reason
+receipts onto the existing shared Lens (#7607); this is material interaction
+behavior, not an ancestry-only refresh. Existing source merged without conflict;
+the only generated conflict is rebuilt through the incumbent China publication path.
+
+The newer committed September21 inputs expose297/300 complete CSI300 members.
+601059.SS,601238.SS and601995.SS have no stored September21 close in the
+five-session window. The cause is not established: suspension and vendor outage
+must not be inferred from missing prices alone. The owning full-300 rule already
+withholds return/participation numbers; the source is not patched with old closes.
+
+An additive per-window diagnostic now names the excluded members, unusable
+observation counts and first/last missing dates; it reconciles to the owning
+eligibility count and never changes any original measurement. Five visible rows
+maximum with the full excluded count retained; unknown cause stays explicit.
+Twelve new cases were RED. The first GREEN pass exposed one test-fixture frequency
+metadata mistake, not a product defect; immutability is now checked after fixture
+construction. Final eleven-suite run477 passed,10 inherited warnings, including14
+new coverage-detail/control cases. The15 old clock cases remain pending/excluded.
+
+The newer data also update the price-library panel to1695/1817 eligible names and
+a20-session median of+0.9302%, without changing the model94/50% interpretation.
+This is a new stored-input vintage, not independently collected production data.
+Current browser proof and final normalized publication fingerprint are next.

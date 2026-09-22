@@ -1329,3 +1329,84 @@ def test_weight_builder_attaches_optional_read_without_mutating_other_context(mo
     monkeypatch.setattr(pc,'load_index_weight_context',lambda **kw:{'status':'unavailable'})
     assert build_china._participation_context('2026-09-18')['index_weights']['status']=='unavailable'
     assert base=={'authority':'context_only'}
+
+
+# Explain a withheld cohort result without changing its eligibility or return.
+def test_member_gap_detail_names_missing_latest_quotes_without_substitution():
+    m,p,b = _index_member_fixture()
+    p.iloc[-1,:3] = np.nan
+    r = _index_member_context(m,p,b)
+    w = r['windows']['5']; detail = w['coverage_detail']
+    assert w['eligible'] == 297 and w['median_return_pct'] is None
+    assert detail['excluded_count'] == 3 and detail['status'] == 'incomplete'
+    assert [x['ticker'] for x in detail['members']] == list(p.columns[:3])
+    assert all(x['missing_observations'] == 1 and x['last_missing'] == '2026-09-18'
+               and x['latest_quote_missing'] for x in detail['members'])
+
+
+def test_member_gap_detail_keeps_each_window_and_same_end_date_separate():
+    m,p,b = _index_member_fixture(); p.iloc[-10,0] = np.nan
+    r = _index_member_context(m,p,b)
+    assert r['windows']['5']['coverage_detail']['status'] == 'complete'
+    detail = r['windows']['20']['coverage_detail']
+    assert detail['excluded_count'] == 1
+    assert detail['members'][0]['last_missing'] == str(p.index[-10].date())
+    assert detail['members'][0]['latest_quote_missing'] is False
+
+
+@pytest.mark.parametrize('bad', [None, -1.0, 0.0, np.inf, True, 'bad'])
+def test_member_gap_detail_handles_invalid_prices_without_inventing_a_reason(bad):
+    m,p,b = _index_member_fixture(); p=p.astype(object); p.iloc[-1,0]=bad
+    d = _index_member_context(m,p,b)['windows']['5']['coverage_detail']
+    assert d['excluded_count'] == 1 and d['members'][0]['reason'] == 'missing_or_invalid_price'
+
+
+def test_member_gap_detail_absent_column_names_all_window_observations():
+    m,p,b = _index_member_fixture(); name=p.columns[0]; p=p.drop(columns=name)
+    d = _index_member_context(m,p,b)['windows']['20']['coverage_detail']
+    assert d['members'][0]['ticker'] == name
+    assert d['members'][0]['missing_observations'] == 21
+
+
+def test_member_gap_detail_short_window_is_not_three_hundred_bad_stocks():
+    m,p,b = _index_member_fixture()
+    d = _index_member_context(m,p.iloc[-3:],b.iloc[-3:])['windows']['5']['coverage_detail']
+    assert d['status'] == 'short_history' and d['excluded_count'] is None
+    assert d['members'] == []
+
+
+def test_member_gap_detail_ignores_future_holes_and_keeps_inputs_immutable():
+    m,p,b = _index_member_fixture()
+    p.loc[p.index[-1]+pd.offsets.BDay()] = np.nan
+    original=p.copy()
+    result=_index_member_context(m,p,b)
+    assert result['windows']['5']['coverage_detail']['excluded_count'] == 0
+    pd.testing.assert_frame_equal(p,original)
+
+
+def test_member_gap_detail_renders_why_the_comparison_is_withheld_in_both_languages():
+    m,p,b = _index_member_fixture(); p.iloc[-1,:3]=np.nan
+    html=_render_participation_context({'index_members':_index_member_context(m,p,b)})
+    assert 'Missing or invalid stored prices' in html and '存储价格缺失或无效' in html
+    assert '600000.SS' in html and '297 / 300' in html
+    assert '3 affected members' in html and '3只受影响成分股' in html
+
+
+def test_member_gap_detail_does_not_change_any_existing_window_measurement():
+    from engine.china_participation import price_breadth_context
+    m,p,b=_index_member_fixture(); p.iloc[-1,:3]=np.nan
+    raw=price_breadth_context(p,b,members=m.ticker.tolist(),asof='2026-09-18',min_coverage=1.0)
+    result=_index_member_context(m,p,b)
+    for key,w in result['windows'].items():
+        assert {k:v for k,v in w.items() if k not in ('coverage_detail','membership_observed_after_start')} == raw['windows'][key]
+
+
+def test_member_gap_detail_limits_visible_rows_without_hiding_the_total():
+    from bs4 import BeautifulSoup
+    m,p,b=_index_member_fixture(); p.iloc[-1,:6]=np.nan
+    result=_index_member_context(m,p,b)
+    assert len(result['windows']['5']['coverage_detail']['members']) == 6
+    html=_render_participation_context({'index_members':result})
+    soup=BeautifulSoup(html,'html.parser')
+    assert all(len(table.select('tbody tr')) == 5 for table in soup.select('.cnx-member-gaps'))
+    assert '6 affected members' in html and 'First 5 affected members shown.' in html
