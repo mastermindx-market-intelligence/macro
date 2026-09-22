@@ -1,0 +1,84 @@
+F........FF..F...........F....................                           [100%]
+=================================== FAILURES ===================================
+________________________ test_compute_real_data_schema _________________________
+
+    def test_compute_real_data_schema():
+        out = rr.compute()
+        assert out["schema"] == "risk_radar.v2"
+>       assert out["state"] in ("calm", "watch", "caution", "elevated", "risk-off")
+E       AssertionError: assert None in ('calm', 'watch', 'caution', 'elevated', 'risk-off')
+
+tests/test_risk_radar.py:26: AssertionError
+_________________ test_evidence_gate_validated_legs_still_lead _________________
+
+    def test_evidence_gate_validated_legs_still_lead():
+        from engine import risk_radar_backtest as bt
+        sigs = rr.leading_signals()
+>       onsets = bt.detect_events()
+                 ^^^^^^^^^^^^^^^^^^
+
+tests/test_risk_radar.py:97:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine/risk_radar_backtest.py:31: in detect_events
+    spy = _spy() if spy is None else spy
+          ^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def _spy():
+        df = store.read("yahoo", "SPY")
+>       s = df["close"].dropna()
+            ^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+engine/risk_radar_backtest.py:22: TypeError
+______________________ test_credit_oas_roc_is_era_robust _______________________
+
+    def test_credit_oas_roc_is_era_robust():
+        from engine import risk_radar_backtest as bt
+>       sigs = rr.leading_signals(); onsets = bt.detect_events()
+                                              ^^^^^^^^^^^^^^^^^^
+
+tests/test_risk_radar.py:114:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine/risk_radar_backtest.py:31: in detect_events
+    spy = _spy() if spy is None else spy
+          ^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def _spy():
+        df = store.read("yahoo", "SPY")
+>       s = df["close"].dropna()
+            ^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+engine/risk_radar_backtest.py:22: TypeError
+_________________________ test_flow_status_in_snapshot _________________________
+
+    def test_flow_status_in_snapshot():
+        out = rr.compute(gate={"met": True})
+>       assert "flow_status" in out and out["flow_status"]["min_history"] == rr._FLOW_MIN_HISTORY
+E       AssertionError: assert ('flow_status' in {'schema': 'risk_radar.v2', 'state': None, 'alert': False, 'is_context_only': False, ...})
+
+tests/test_risk_radar.py:140: AssertionError
+________________ test_rrx_tierb_legs_appear_in_leading_signals _________________
+
+    def test_rrx_tierb_legs_appear_in_leading_signals():
+        """nh_contraction and jpy_carry should appear in leading_signals() when stores are present.
+        Both stores (breadth.parquet, FRED DEXJPUS) are tracked and present in the worktree."""
+        sigs = rr.leading_signals()
+        # Both stores are present in the test environment; columns must appear.
+>       assert "jpy_carry" in sigs.columns, "jpy_carry absent from leading_signals — DEXJPUS missing?"
+E       AssertionError: jpy_carry absent from leading_signals — DEXJPUS missing?
+E       assert 'jpy_carry' in RangeIndex(start=0, stop=0, step=1)
+E        +  where RangeIndex(start=0, stop=0, step=1) = Empty DataFrame\nColumns: []\nIndex: [].columns
+
+tests/test_risk_radar.py:262: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, browser, calibration, content, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_risk_radar.py::test_compute_real_data_schema - AssertionErr...
+FAILED tests/test_risk_radar.py::test_evidence_gate_validated_legs_still_lead
+FAILED tests/test_risk_radar.py::test_credit_oas_roc_is_era_robust - TypeErro...
+FAILED tests/test_risk_radar.py::test_flow_status_in_snapshot - AssertionErro...
+FAILED tests/test_risk_radar.py::test_rrx_tierb_legs_appear_in_leading_signals
+5 failed, 41 passed in 38.44s

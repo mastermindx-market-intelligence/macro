@@ -5,7 +5,8 @@ Usage:
 
 Runs every adapter through the circuit-breaker runner. Never exits nonzero
 because one source broke — the engine consumes whatever is fresh and the
-dashboard surfaces staleness. Exits 1 only if EVERY source failed.
+dashboard surfaces staleness. Exits 1 if EVERY source failed; the Asia shard
+also exits 3 when its required china_search close plane is behind the mainland clock.
 """
 from __future__ import annotations
 
@@ -242,6 +243,7 @@ def all_adapters() -> dict:
         ("china_qvix", "collectors.china_qvix", "ChinaQvixAdapter"),           # 300/50ETF option-implied vol ("China VIX") — fear/euphoria + drawdown
         ("china_credit", "collectors.china_credit", "ChinaCreditAdapter"),     # 社融 TSF (PBoC direct; mofcom mirror froze at 2026-04 — 2026-07 repair)
         ("china_tushare", "collectors.china_tushare", "ChinaTushareAdapter"),  # gated Tushare plane (mktcap/moneyflow/margin/chips) — never CI-invoked before, froze 2026-06-21
+        ("gold_china_basis", "collectors.china_gold_basis", "ChinaGoldBasisAdapter"),  # Gold product source: SGE Au99.99 vs licensed global XAU/CNY; US-nightly lane already carries both credentials
         ("china_property", "collectors.china_property", "ChinaPropertyAdapter"),  # 70-city price breadth + climate + CGB + rebar/iron-ore
         ("china_pboc", "collectors.china_pboc", "ChinaPbocAdapter"),           # PBoC corridor legs: FX reserves+gold / repo fixings FR007 / USD-CNY ref (engine/china_policy_watch.py)
         ("china_yield_spread", "collectors.china_yield_spread", "ChinaYieldSpreadAdapter"),  # CN vs US sovereign curve + slope + CN-US spread — ACCRUING (no engine consumer yet)
@@ -520,6 +522,40 @@ def run_quality_audits(cfg: dict | None = None, audit_fns: list | None = None) -
     log.info("[quality] gate passed — %d audit(s), %d/%d members failed, %d soft flag(s); "
              "0 universes over %.0f%%.", len(docs), total_fail, total_n, total_flags, abort_pct)
     return summary
+
+
+def _required_group_health(
+    group: str,
+    now: datetime | None = None,
+    *,
+    skip_quality: bool = False,
+    only: str = "",
+) -> int:
+    """Binding postcondition for required shard planes; 0 for all other groups.
+
+    ``--skip-quality`` is the existing, explicit maintenance escape hatch. A
+    deliberately partial Asia ``--only`` run that does not include the core
+    producer is also exempt: it cannot be expected to repair that plane.
+    """
+    if group != "asia":
+        return 0
+    selected = {name.strip() for name in str(only or "").split(",") if name.strip()}
+    bypass_reason = (
+        "--skip-quality" if skip_quality else
+        "partial --only run without china_universe"
+        if selected and "china_universe" not in selected else ""
+    )
+    if bypass_reason:
+        print(
+            "::warning title=China core freshness BYPASS::"
+            f"{bypass_reason}; required china_search freshness was not enforced. "
+            "This is an explicit maintenance escape, not production proof.",
+            flush=True,
+        )
+        return 0
+    from scripts.check_tushare_freshness import check_china_search_core  # noqa: PLC0415
+
+    return check_china_search_core(now)
 
 
 def main() -> int:
@@ -1326,6 +1362,10 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("source_registry nightly_run step failed: %s", e)
 
+    required_rc = _required_group_health(
+        args.group, skip_quality=args.skip_quality, only=args.only)
+    if required_rc:
+        return required_rc
     return 0 if ok > 0 else 1
 
 
