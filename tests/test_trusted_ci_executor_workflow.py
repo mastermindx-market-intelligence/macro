@@ -78,6 +78,7 @@ def run_trusted_gate(
         "BASE_REF": "main",
         "EVENT_PR_NUMBER": pr_number,
         "DISPATCH_PR_NUMBER": "",
+        "REQUESTED_ROUTE": "hosted",
     }
     environment.update(overrides)
     result = subprocess.run(
@@ -119,6 +120,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "pr_number": "${{ steps.admit.outputs.pr_number }}",
         "mode": "${{ steps.admit.outputs.mode }}",
         "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+        "execution_route": "${{ steps.admit.outputs.execution_route }}",
     }
     gate = trusted_gate_step()
     assert gate["id"] == "admit"
@@ -133,6 +135,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "BASE_REF": "${{ github.base_ref }}",
         "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
         "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+        "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
     }
 
     production = workflow("ci.yml")
@@ -156,6 +159,7 @@ def test_p3ba_accepts_exact_main_called_same_repo_pr_and_derives_identity(
         "pr_number": "6390",
         "mode": "production",
         "semantic_workflow": "ci",
+        "execution_route": "hosted",
     }
 
 
@@ -184,7 +188,29 @@ def test_p3ba_keeps_the_direct_main_dispatch_canary(tmp_path: Path) -> None:
         "pr_number": "6390",
         "mode": "dispatch",
         "semantic_workflow": "trusted-ci-executor",
+        "execution_route": "pc",
     }
+
+
+def test_p3ba_repository_route_pc_keeps_same_repo_calls_on_pc(tmp_path: Path) -> None:
+    result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE="pc")
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs == {
+        "control_sha": "a" * 40,
+        "pr_number": "6390",
+        "mode": "production",
+        "semantic_workflow": "ci",
+        "execution_route": "pc",
+    }
+
+
+def test_p3ba_unknown_or_empty_repository_route_fails_safe_to_hosted(
+    tmp_path: Path,
+) -> None:
+    for route in ("", "hosted", "unexpected"):
+        result, outputs = run_trusted_gate(tmp_path, REQUESTED_ROUTE=route)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["execution_route"] == "hosted"
 
 
 @pytest.mark.parametrize(
@@ -279,8 +305,45 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     assert "--count 1" in selector["run"]
     assert "matrix=$FULL_MATRIX" in selector["run"]
 
+    assert plan["outputs"]["execution_route"] == (
+        "${{ needs.trust-gate.outputs.execution_route }}"
+    )
+
     trusted_pack = document["jobs"]["trusted-pack"]
     assert trusted_pack["strategy"]["max-parallel"] == 3
+    assert trusted_pack["if"] == "needs.plan.outputs.execution_route == 'pc'"
+    assert trusted_pack["runs-on"] == {
+        "group": "macro-home-canary",
+        "labels": "ci-linux",
+    }
+
+    hosted_pack = document["jobs"]["legacy-hosted-pack"]
+    assert hosted_pack["needs"] == "plan"
+    assert hosted_pack["if"] == "needs.plan.outputs.execution_route == 'hosted'"
+    assert hosted_pack["runs-on"] == "ubuntu-latest"
+    assert "max-parallel" not in hosted_pack["strategy"]
+    assert hosted_pack["strategy"]["matrix"] == (
+        "${{ fromJSON(needs.plan.outputs.matrix) }}"
+    )
+    execute = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name")
+        == "execute the frozen logical pack and retain its semantic result"
+    )
+    assert (
+        '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"'
+        in execute["run"]
+    )
+    assert "--base-replay-budget-seconds 900" in execute["run"]
+    assert "semantic_pack_rc=$pack_rc" in execute["run"]
+    assert "exit $pack_rc" not in execute["run"]
+    upload = next(
+        step
+        for step in hosted_pack["steps"]
+        if step.get("name") == "publish the legacy caller semantic fragment"
+    )
+    assert upload["with"]["name"] == "trusted-ci-fragment-${{ matrix.pack }}"
 
 
 def test_p4_hosted_planner_avoids_full_tree_materialization_without_narrowing_semantics() -> None:
@@ -409,6 +472,31 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     assert "$RUNNER_TEMP/trusted-ci-control/scripts/monitor_ci_host_resources.py" in execute
 
 
+LEGACY_JOBS_MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+
+
+def _declared_code_gate_job_count() -> int:
+    """Count the manifest's ``gate: code`` jobs by reading the YAML directly.
+
+    The bundle test below asserts that the frozen control bundle validated
+    EVERY merge-gate job, not a subset — so it needs the expected count. That
+    count used to be a literal (132, pinned 2026-08-26 on #6351) and rotted
+    to a red every time a code-gated job was added to the manifest; nine
+    landed between the pin and 2026-09-15 (last: #7164) with nothing on a PR
+    to say so, because this suite's only home is the ``gate: data`` job
+    ``workflow-yaml``. The count is derived here from the manifest so the
+    assertion tracks the tree, and it is derived WITHOUT importing
+    ``scripts.run_ci_pack`` on purpose: reusing the module under test's own
+    ``load_legacy_jobs(gate="code")`` would make the check tautological. The
+    default mirrors ``run_ci_pack.py``'s documented rule — an absent ``gate``
+    is code, so nothing can leave the merge gate silently.
+    """
+    document = yaml.safe_load(LEGACY_JOBS_MANIFEST.read_text(encoding="utf-8"))
+    jobs = document["jobs"]
+    assert isinstance(jobs, dict) and jobs, "legacy manifest carries no jobs"
+    return sum(1 for job in jobs.values() if (job or {}).get("gate", "code") == "code")
+
+
 def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     tmp_path: Path,
 ) -> None:
@@ -456,7 +544,12 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "Validated 132 legacy jobs" in result.stdout
+    expected = _declared_code_gate_job_count()
+    assert expected > 0
+    assert f"Validated {expected} legacy jobs" in result.stdout, (
+        f"the frozen control bundle did not validate every gate: code job "
+        f"(expected {expected}); stdout was:\n{result.stdout}"
+    )
 
 
 def test_p3a_selfhosted_job_uses_the_selected_group_and_negotiated_cache() -> None:

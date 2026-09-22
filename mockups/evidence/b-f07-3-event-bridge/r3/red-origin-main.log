@@ -1,0 +1,8 @@
+Interpreter: /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 3.12.10
+Command: PATH="/Library/Frameworks/Python.framework/Versions/3.12/bin:$PATH" python3 -m pytest tests/test_valuation_event_bridge.py -q -p no:cacheprovider --basetemp .heal-7134/pytest-red -k "committed_nsa or aapl_typed_null"
+Producer: origin/main engine/valuation_assumptions.py (temporarily swapped; restored after)
+
+FF                                                                       [100%]
+FAILED tests/test_valuation_event_bridge.py::test_production_path_renders_committed_nsa_post_effective_amendment - KeyError: 'latest_event_bridge'
+FAILED tests/test_valuation_event_bridge.py::test_production_path_renders_aapl_typed_null_from_committed_spine - KeyError: 'latest_event_bridge'
+2 failed, 26 deselected in 2.12s

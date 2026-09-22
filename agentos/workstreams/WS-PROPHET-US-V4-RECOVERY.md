@@ -15,7 +15,7 @@ status: active
 program: prophet-us
 p0: US_PROPHET_ENTRY_TIMING
 repos: [macro]
-owner: fable
+owner: sol
 class: build
 blast_radius: user_facing
 ambiguity: scoped
@@ -38,6 +38,9 @@ owns_paths:
   - tests/test_us_candidate_episode_intake.py
   - tests/test_us_candidate_episode_reconciler.py
   - tests/test_us_candidate_episode_wiring.py
+  - engine/prophet_b2_disposition.py
+  - tests/test_prophet_b2_disposition.py
+  - research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md
 depends_on:
   - WS:PROPHET-US-AVAILABILITY
   - WS:LIVE-ENTRY-RADAR
@@ -48,6 +51,7 @@ depends_on:
   - WS:PROPHET-US-ENTRY-TIMING
   - WS:EVAL-OS-MEASUREMENT-LAW
 decisions:
+  - DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE
   - DEC:PROPHET-V4-THEIA-SOURCE-RIGHTS
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
@@ -209,7 +213,11 @@ waves:
   - id: b2
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
-    status: todo
+    status: in_progress
+    next_action: >
+      B2-0 records packet frozen: the B-15..B-19 disposition matrix + correction/
+      supersession/PIT-replay/mutation law — see
+      research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -649,15 +657,16 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  D5's bounded Earnings implementation is independently hostile-review accepted and locally
-  exact-head verified after fresh-main reconciliation at merge head
-  bb34c575f58879f4944ca353e17ca6a6fa4512ca, but it is not yet hosted-CI accepted, merged
-  to main, deployed, or live-proven. Continue Task 4 from
-  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-30-d5-pre-delivery.md: push the exact
-  records-only child, open one PR, wait for concluded hosted CI, squash-merge, verify
-  main/deploy, and collect authenticated covered plus typed-unresolved endpoint receipts.
-  Radar forward lineage remains
-  PROPOSED/STAGED_NOT_ARMED; A2/A3/A4, B2/B3/B4, D6, and every later wave remain separate.
+  Chairman 2026-09-18 assigns Sol Meta-CEO accountability for the existing rotation
+  participation outcome; DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE records
+  the scope without transferring incumbent source writers or runtime assignments.
+  Resume from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-18-meta-ceo-rotation.md.
+  First close the current availability recovery's actual review/CI/publication gates
+  through its existing carriers and integration owner, not another recovery branch.
+  Then advance the already-frozen B3/B4/B5, GMI and Fusion dependency graph to a real
+  leadership-to-entry-to-thesis-management journey. Current-price publication alone
+  is not completion. Retain historical D5 evidence and independent owner boundaries;
+  do not replay its old next action without reconciling newer implementation/evidence.
 ---
 
 ## Context

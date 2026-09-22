@@ -1,5 +1,5 @@
 {
-"applied": "2026-09-12T17:34:06.220343+00:00",
+"applied": "2026-09-19T19:59:23.267781+00:00",
 "rows_flagged": 173,
 "tickers_flagged": 53,
 "by_flag": {
@@ -2271,14 +2271,14 @@
 "ticker": "MRCY",
 "fy": 2023,
 "col": "ni",
-"panel": -137640000.0,
+"panel": -137600000.0,
 "statements": -28335000.0
 },
 {
 "ticker": "MRCY",
 "fy": 2024,
 "col": "ni",
-"panel": -37904000.0,
+"panel": -37900000.0,
 "statements": -137640000.0
 },
 {
@@ -4135,6 +4135,27 @@
 "col": "revenue",
 "panel": 350285000.0,
 "statements": 1238680000.0
+},
+{
+"ticker": "QNST",
+"fy": 2022,
+"col": "revenue",
+"panel": 31030000.0,
+"statements": 582099000.0
+},
+{
+"ticker": "QNST",
+"fy": 2023,
+"col": "revenue",
+"panel": 16690000.0,
+"statements": 580624000.0
+},
+{
+"ticker": "QNST",
+"fy": 2024,
+"col": "revenue",
+"panel": 20365000.0,
+"statements": 613514000.0
 },
 {
 "ticker": "ROIV",
