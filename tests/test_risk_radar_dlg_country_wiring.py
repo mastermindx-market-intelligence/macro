@@ -529,7 +529,15 @@ def test_china_gauge_read_words_come_from_the_engine_band_not_a_local_threshold(
     src = (ROOT / "scripts" / "build_china.py").read_text(encoding="utf-8")
     block = src[src.index("# ── Gauges:"):src.index("# ── Leaders:")]
     assert '(60, "high"' not in block and '(40, "elevated"' not in block
-    assert 'rec.get("label")' in block and 'dd.get("band")' in block
+    assert 'slowdown_face(rec)' in block and 'dd.get("band")' in block
+    from scripts.build_china import _radar_dlg_vm
+    ctx = _radar_dlg_vm({}, {"conditions": {
+        "recession": {"score": 51, "label": "high"},
+        "drawdown_risk": {"score": 51, "band": "elevated"}}})
+    rows = {g["label_en"]: g for g in ctx["gauges"]}
+    assert rows["Slowdown gauge"]["read_en"] == "weak"
+    assert rows["Deep-drawdown gauge"]["read_en"] == "building"
+    assert ctx["slowdown"]["en"] == rows["Slowdown gauge"]["read_en"]
 
 
 def test_china_says_the_local_rows_are_not_inputs_to_the_score():

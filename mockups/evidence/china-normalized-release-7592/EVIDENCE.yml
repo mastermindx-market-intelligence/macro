@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - site/china.html
+  - site/assets/css/fea32970.css
+manifest: mockups/evidence/china-normalized-release-7592/manifest.json

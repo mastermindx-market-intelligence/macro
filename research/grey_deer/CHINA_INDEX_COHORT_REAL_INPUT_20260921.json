@@ -1,0 +1,69 @@
+{
+  "source_base": "8ec7f8236d07f2b4911e2a9b26d313176fddfd21",
+  "source_sha256": "90408365e8ef1d9b666c2f4d3b433943191db5ac5f00ea5919bcea3616cbe296",
+  "inputs_sha256": {
+    "data/china_search/index_cons.parquet": "d95f79e71e0307a28c57209e9e7ee97d35e00ff94589b44cede640ce24d65af1",
+    "data/china_search/closes.parquet": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+    "data/china/510300.SS.parquet": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7"
+  },
+  "context": {
+    "authority": "context_only",
+    "symbol": "000300",
+    "status": "available",
+    "assessment_asof": "2026-09-18",
+    "expected_members": 300,
+    "member_count": 300,
+    "membership_observed": "2026-09-15",
+    "price_asof": "2026-09-18",
+    "membership_age_days_at_assessment": 3,
+    "historical_membership": false,
+    "contribution_status": "unavailable_no_official_start_weights",
+    "windows": {
+      "5": {
+        "sessions": 5,
+        "status": "ok",
+        "eligible": 300,
+        "coverage_pct": 100.0,
+        "start": "2026-09-11",
+        "end": "2026-09-18",
+        "up": 116,
+        "down": 178,
+        "flat": 6,
+        "positive_pct": 38.666666666666664,
+        "median_return_pct": -0.6652529131951856,
+        "mean_return_pct": 0.10608051273061367,
+        "p10_return_pct": -3.2866568757897703,
+        "p90_return_pct": 5.144604614818073,
+        "dispersion_pp": 8.431261490607843,
+        "benchmark_return_pct": 0.0655117397849958,
+        "comparison": "index_up_sample_down",
+        "membership_observed_after_start": true
+      },
+      "20": {
+        "sessions": 20,
+        "status": "ok",
+        "eligible": 300,
+        "coverage_pct": 100.0,
+        "start": "2026-08-21",
+        "end": "2026-09-18",
+        "up": 104,
+        "down": 190,
+        "flat": 6,
+        "positive_pct": 34.66666666666667,
+        "median_return_pct": -1.2313801786771161,
+        "mean_return_pct": -1.6522938312329514,
+        "p10_return_pct": -9.576587004952325,
+        "p90_return_pct": 6.356184703370955,
+        "dispersion_pp": 15.93277170832328,
+        "benchmark_return_pct": -2.094018230463357,
+        "comparison": "both_down",
+        "membership_observed_after_start": true
+      }
+    },
+    "data_gaps": []
+  },
+  "fresh_collection": false,
+  "production": false,
+  "weights_used": false,
+  "clock_repair_implemented": false
+}

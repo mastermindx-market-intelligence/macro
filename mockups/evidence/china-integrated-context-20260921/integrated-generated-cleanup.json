@@ -1,0 +1,32 @@
+{
+  "restored_own_generated_paths": [
+    "data/china_regime/regime_history.parquet",
+    "data/risk_radar/scorecard.json",
+    "site/china_allocation.html",
+    "site/china_history.html",
+    "site/china_lookup.html",
+    "site/china_news.html",
+    "site/china_stocks.html",
+    "site/chinabasketdata/act_now_cn.json",
+    "site/factordata/china_scoreboard.json",
+    "site/riskdata/scorecard.json",
+    "site/sectors/159928.SZ.html",
+    "site/sectors/159992.SZ.html",
+    "site/sectors/512170.SS.html",
+    "site/sectors/512200.SS.html",
+    "site/sectors/512400.SS.html",
+    "site/sectors/512660.SS.html",
+    "site/sectors/512690.SS.html",
+    "site/sectors/512760.SS.html",
+    "site/sectors/512800.SS.html",
+    "site/sectors/512880.SS.html",
+    "site/sectors/512980.SS.html",
+    "site/sectors/515000.SS.html",
+    "site/sectors/515030.SS.html",
+    "site/sectors/515220.SS.html",
+    "site/sectors/515250.SS.html",
+    "site/sectors/515790.SS.html"
+  ],
+  "preserved_page_sha256": "0d75fe73bd4dd373d4a1a70edf47de1417a75fd50c834ee9f32d0f273e505326",
+  "scope": "only this no-network build; final China artifact retained"
+}

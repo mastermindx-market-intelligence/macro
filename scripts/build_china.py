@@ -919,6 +919,65 @@ def _rd_word(value, bands):
     return None
 
 
+def _participation_context(asof: str) -> dict:
+    """Read-only breadth evidence; no classifier or publication ownership change."""
+    from engine.china_participation import load_breadth_context, load_index_member_breadth_context, load_index_weight_context
+    context = dict(load_breadth_context(asof=asof, sector_universe=config.load()["china"]["yahoo"].get("sector_etfs", {})))
+    context["index_members"] = load_index_member_breadth_context(asof=asof)
+    context["index_weights"] = load_index_weight_context(asof=asof)
+    return context
+
+
+def _china_risk_reading(raw: dict | None, display: dict | None) -> dict:
+    """Scope legacy CN display labels; never mutate source, numbers or authority."""
+    from copy import deepcopy
+    from math import isfinite
+
+    result = {"radar": deepcopy(display) if isinstance(display, dict) else {}, "basis": None}
+    if not isinstance(raw, dict) or not isinstance(display, dict):
+        return result
+    if (raw.get("schema") != "risk_radar_intl.v1" or raw.get("market") != "cn"
+            or "composition" in raw or "composition" in display):
+        return result
+    score, shown = raw.get("top_score"), display.get("top_score")
+    def valid_score(v):
+        return isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v <= 100 and isfinite(v)
+    if (not valid_score(score) or not valid_score(shown) or round(score) != round(shown)
+            or raw.get("state") != display.get("state")
+            or raw.get("state") not in {"calm", "watch", "caution", "elevated", "risk-off"}):
+        return result
+    labels = {"label_en": "Weak large-cap participation", "label_zh": "大盘股参与偏弱"}
+    rd = result["radar"]
+    if raw.get("dominant_scare") == "breadth" and raw.get("state") != "calm":
+        rd.update(labels)
+    for scare in rd.get("scares") or []:
+        if isinstance(scare, dict) and scare.get("scare") == "breadth":
+            scare.update(labels)
+    result["basis"] = {
+        "score_kind": "historical_stress_percentile",
+        "benchmark_en": "Shanghai Composite", "benchmark_zh": "上证综指",
+        "horizon_sessions": 21,
+        "source_label_en": raw.get("dominant_label_en"),
+        "source_label_zh": raw.get("dominant_label_zh"),
+        "caption_en": "Historical stress · not a probability",
+        "caption_zh": "历史压力水平 · 并非概率",
+        "explanation_en": (
+            "The score ranks composite stress against its own history; it is not a pullback probability. "
+            "The breadth input is the share of a curated large-cap sample above their own 200-day "
+            "averages, not a whole-market decline count."),
+        "explanation_zh": (
+            "该分数表示综合压力在自身历史中的相对位置，并非回撤概率。"
+            "宽度输入为精选大盘股样本中位于各自200日均线上方的比例，而非全市场下跌家数。"),
+        "probability_note_en": (
+            "Separate state-based estimate: Shanghai Composite falling at least 5% within 21 trading "
+            "sessions. It is not an exact-score probability or proof of forecast accuracy."),
+        "probability_note_zh": (
+            "独立的状态分组估计：上证综指在21个交易日内下跌至少5%。"
+            "它并非对应某个精确分数的概率，也不证明预测准确。"),
+    }
+    return result
+
+
 def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     """Assemble the `radar_dlg` ctx the shared Risk Radar dialog consumes on china.html.
 
@@ -936,7 +995,9 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
       fx        market_state.radar.fx_context  (lib/forex_link)
     """
     ctx: dict = {}
-    rd = ((vm.get("market_state") or {}).get("radar")) or {}
+    reading = vm.get("risk_reading") or {}
+    rd = (reading.get("radar") if reading.get("basis") else
+          ((vm.get("market_state") or {}).get("radar"))) or {}
 
     # ── one as-of for the whole dialog ────────────────────────────────────────────
     try:
@@ -955,6 +1016,12 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
                         "and how broadly the market is falling. The pull is real but modest.")
     ctx["caveat_zh"] = ("A股回撤多由外部因素引导——美债利率、人民币汇率，以及下跌的广度。"
                         "这种引导确实存在，但幅度有限。")
+
+    # Qualified legacy rendering metadata never changes measured state or source odds.
+    basis = reading.get("basis")
+    if basis:
+        for lang in ("en", "zh"):
+            ctx["caveat_" + lang] = basis["explanation_" + lang] + " " + basis["probability_note_" + lang]
 
     # ── Leading tile: benchmark stretch vs its 200-day average + the loudest leg ──
     try:
@@ -1213,9 +1280,7 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     # Read-words come from the ENGINE's own band label (`recession.label` on _REC_BANDS
     # 26/45, `drawdown_risk.band` on 50/75/90), not from thresholds invented here — the
     # old 60/40 cut points contradicted the gauge's own history-anchored bands.
-    _REC_READ = {"low": ("calm", "平静", "up"),
-                 "elevated": ("softening", "走弱", "warn"),
-                 "high": ("weak", "疲弱", "down")}
+    from engine.china_tier1 import slowdown_face
     _DD_READ = {"low": ("calm", "平静", "up"),
                 "elevated": ("building", "升温", "warn"),
                 "high": ("high", "偏高", "down"),
@@ -1224,9 +1289,11 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
         cond = latest.get("conditions") or {}
         gauges = []
         rec = cond.get("recession") or {}
-        rec_sc = rec.get("score")
+        read = slowdown_face(rec)
+        ctx["slowdown"] = read  # same producer interpretation for glance and dialog
+        rec_sc = read["score"]
         if rec_sc is not None or cond.get("recession_html"):
-            w = _REC_READ.get(rec.get("label"), (None, None, "muted"))
+            w = (read["en"], read["zh"], read["tone"])
             gauges.append({
                 "label_en": "Slowdown gauge", "label_zh": "放缓仪表",
                 "score": round(rec_sc) if rec_sc is not None else None,
@@ -1419,6 +1486,7 @@ def main() -> int:
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "sectors": sectors,
             "breadth": _breadth(),
+            "breadth_context": _participation_context(latest.get("date")),
             "benchmark": _benchmark_card(),
             "pair": latest.get("pair_ratios", {}),
             "pref": latest.get("preference_check", {}),
@@ -2033,6 +2101,8 @@ def main() -> int:
         # chinastatedata JSONs, the calendar and top_setups, so every one of them
         # must already be on the vm. Display-only; absent-safe section by section.
         try:
+            vm["risk_reading"] = _china_risk_reading(
+                latest.get("risk_radar"), (vm.get("market_state") or {}).get("radar"))
             vm["radar_dlg"] = _radar_dlg_vm(vm, latest)
         except Exception as _rdlg_e:  # noqa: BLE001 — additive, never fatal
             log.warning("china radar_dlg ctx failed (%s); dialog renders core only", _rdlg_e)

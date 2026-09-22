@@ -1,0 +1,111 @@
+{
+  "source_commit": "03b2f4b6de5a107bdb6f2d83a9ac83f596febb7c",
+  "page_sha256": "7de2aa8b851e6ebd78c66c1c89f14714540b6967306d0b83de4a230dc676fcff",
+  "page_bytes": 456913,
+  "input_receipt": "research/grey_deer/CHINA_INDEX_COHORT_REAL_INPUT_20260921.json",
+  "kind": "actual no-network builder with stored inputs; no production deployment",
+  "assessment_asof": "2026-09-18",
+  "capture_cases": 16,
+  "interaction_cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "details_open": true,
+      "sectors": 16,
+      "negative_absolute_positive_gap": true,
+      "index_cohort_checked": true,
+      "synthetic_missing_and_delayed_presentation": true,
+      "page_errors": [],
+      "horizontal_overflow": false
+    }
+  ],
+  "source_page_unchanged": true,
+  "server_closed": true,
+  "production": false,
+  "fresh_collection": false
+}

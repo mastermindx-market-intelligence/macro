@@ -1,0 +1,36 @@
+{
+  "source_commit": "646abdc2ed5d7b9ff911bff9bd140705c1b11894",
+  "source_asof": "2026-09-18",
+  "original_label": "Breadth breakdown (all-boats)",
+  "display_label": "Weak large-cap participation",
+  "all_nonlabel_rendering_fields_unchanged": true,
+  "original_model_and_market_state_labels_preserved": true,
+  "score": 94,
+  "state": "risk-off",
+  "rendering_fields": {
+    "top_score": 94,
+    "dd21": 0.5,
+    "gross": 0.62,
+    "can_force": false,
+    "binding": false,
+    "ceiling": null
+  },
+  "basis": {
+    "score_kind": "historical_stress_percentile",
+    "benchmark_en": "Shanghai Composite",
+    "benchmark_zh": "上证综指",
+    "horizon_sessions": 21,
+    "source_label_en": "Breadth breakdown (all-boats)",
+    "source_label_zh": "广度普跌（普跌）",
+    "caption_en": "Historical stress · not a probability",
+    "caption_zh": "历史压力水平 · 并非概率",
+    "explanation_en": "The score ranks composite stress against its own history; it is not a pullback probability. The breadth input is the share of a curated large-cap sample above their own 200-day averages, not a whole-market decline count.",
+    "explanation_zh": "该分数表示综合压力在自身历史中的相对位置，并非回撤概率。宽度输入为精选大盘股样本中位于各自200日均线上方的比例，而非全市场下跌家数。",
+    "probability_note_en": "Separate state-based estimate: Shanghai Composite falling at least 5% within 21 trading sessions. It is not an exact-score probability or proof of forecast accuracy.",
+    "probability_note_zh": "独立的状态分组估计：上证综指在21个交易日内下跌至少5%。它并非对应某个精确分数的概率，也不证明预测准确。"
+  },
+  "source_page_sha256": "f42a6bb88ad4099d29a7a15a20b9b999455c36c4d68435682cece2e83edf8abb",
+  "production": false,
+  "fresh_collection": false,
+  "clock_repair_implemented": false
+}

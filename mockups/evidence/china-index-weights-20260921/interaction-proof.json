@@ -1,0 +1,153 @@
+{
+  "source_commit": "90e9e9eae2c6d801c766a6990796022d5d2ca173",
+  "source_sha256": {
+    "collectors/china_universe.py": "78b28a12c6ba7740e2cb2375b1c103bab9fc81645f7317d3c28f83c1716fc5d4",
+    "engine/china_participation.py": "0b6c0b0c47a6a04cf76bddff1f697162e50fe322857f65863c81314ea92f4add",
+    "scripts/build_china.py": "2e5e7fc1bdfd5f6e536d877b11266bd2978d58c673298234d69ff0ded394995a",
+    "templates/_china_participation_context.html.j2": "c4dc2a7a371f037ae5f4277a120a1d097db61670a795cf3707407849196a65bb"
+  },
+  "raw_weight_sha256": "72bc4c9bd1be88f7d2c16e5a54f74777f4f43a768629699d22698a83f86c8e71",
+  "input_sha256": {
+    "data/china_search/closes.parquet": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+    "data/china/510300.SS.parquet": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7"
+  },
+  "page_sha256": "27296118018ae217c648e049b82437e1a51f51d096d3ce5871c6cb6cbb9153f9",
+  "capture_cases": 8,
+  "interaction_cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "visible": true,
+      "rows": 6,
+      "page_errors": []
+    }
+  ],
+  "context": {
+    "authority": "context_only",
+    "status": "available",
+    "expected_members": 300,
+    "eligible": 300,
+    "weight_date": "2026-08-31",
+    "observed_at": "2026-09-22T03:06:46.553923+00:00",
+    "weight_sum_pct": 100.0,
+    "top10_weight_pct": 23.18,
+    "basket_return_pct": -2.4174449463749785,
+    "median_return_pct": -2.64240097189391,
+    "benchmark_return_pct": -2.1985093978650894,
+    "start": "2026-08-31",
+    "end": "2026-09-18",
+    "observed_sessions": 14,
+    "top_contributors": [
+      {
+        "ticker": "300308.SZ",
+        "name_zh": "中际旭创",
+        "weight_pct": 3.617,
+        "return_pct": 8.748675446157028,
+        "contribution_pp": 0.31643959088749973
+      },
+      {
+        "ticker": "300502.SZ",
+        "name_zh": "新易盛",
+        "weight_pct": 2.133,
+        "return_pct": 10.732327719623736,
+        "contribution_pp": 0.2289205502595743
+      },
+      {
+        "ticker": "600150.SS",
+        "name_zh": "中国船舶",
+        "weight_pct": 0.586,
+        "return_pct": 15.8157250588435,
+        "contribution_pp": 0.0926801488448229
+      }
+    ],
+    "top_detractors": [
+      {
+        "ticker": "300750.SZ",
+        "name_zh": "宁德时代",
+        "weight_pct": 3.66,
+        "return_pct": -16.94401805922131,
+        "contribution_pp": -0.6201510609675
+      },
+      {
+        "ticker": "601899.SS",
+        "name_zh": "紫金矿业",
+        "weight_pct": 2.112,
+        "return_pct": -6.712202092180853,
+        "contribution_pp": -0.1417617081868596
+      },
+      {
+        "ticker": "600519.SS",
+        "name_zh": "贵州茅台",
+        "weight_pct": 3.092,
+        "return_pct": -3.262744996368472,
+        "contribution_pp": -0.10088407528771315
+      }
+    ],
+    "known_after_window": true,
+    "official_index_attribution": false,
+    "data_gaps": []
+  },
+  "source_injection": "genuine once-retrieved official workbook at store.read boundary; all other stored inputs unchanged",
+  "automatic_ingestion": false,
+  "production": false,
+  "official_index_reconstruction": false,
+  "server_closed": true,
+  "weights_table_written": false
+}

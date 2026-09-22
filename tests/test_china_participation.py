@@ -736,3 +736,677 @@ if __name__ == "__main__":
 
     print(f"\nResult: {PASS_COUNT} passed, {FAIL_COUNT} failed")
     sys.exit(0 if FAIL_COUNT == 0 else 1)
+
+# Chairman China dispersion slice: descriptive, never a second scored state.
+def _price_context_fixture():
+    dates = pd.bdate_range(end='2026-09-18', periods=210)
+    names = [f'{600000+i}.SS' for i in range(10)]
+    prices = pd.DataFrame(100.0, index=dates, columns=names)
+    bench = pd.Series(100.0, index=dates)
+    return prices, bench, names
+
+
+def _price_context(prices, bench, names, **kw):
+    from engine import china_participation as pc
+    return pc.price_breadth_context(prices, bench, members=names,
+                                   asof='2026-09-18', **kw)
+
+
+def test_context_exposes_index_up_while_most_sampled_shares_fall():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = [170.0] + [98.0] * 9
+    bench.iloc[-1] = 104.0
+    r = _price_context(prices, bench, names)
+    w = r['windows']['20']
+    assert r['status'] == 'current'
+    assert (w['eligible'], w['up'], w['down']) == (10, 1, 9)
+    assert w['median_return_pct'] == pytest.approx(-2)
+    assert w['mean_return_pct'] == pytest.approx(5.2)
+    assert w['benchmark_return_pct'] == pytest.approx(4)
+    assert w['comparison'] == 'index_up_sample_down'
+    assert w['dispersion_pp'] >= 0
+    assert r['authority'] == 'context_only'
+    assert 'probability' not in r and 'risk_score' not in r
+
+
+@pytest.mark.parametrize('bad', [None, float('nan'), float('inf'), 0.0, -1.0, 'bad'])
+def test_context_missing_current_prices_are_not_filled(bad):
+    prices, bench, names = _price_context_fixture()
+    prices = prices.astype(object)
+    prices.iloc[-1, 4:] = bad
+    r = _price_context(prices, bench, names)
+    assert r['asof'] == '2026-09-18'
+    assert r['quote_count'] == 4
+    assert r['windows']['20']['status'] == 'insufficient_coverage'
+    assert r['windows']['20']['median_return_pct'] is None
+
+
+def test_context_old_price_sample_is_dated_not_current():
+    prices, bench, names = _price_context_fixture()
+    r = _price_context(prices.iloc[:-10], bench, names)
+    assert r['status'] == 'delayed'
+    assert r['asof'] == str(prices.index[-11].date())
+    assert r['requested_asof'] == '2026-09-18'
+    assert r['current_comparison'] is None
+
+
+def test_context_future_rows_cannot_change_past_snapshot():
+    prices, bench, names = _price_context_fixture()
+    expected = _price_context(prices, bench, names)
+    prices.loc[pd.Timestamp('2026-09-21')] = 2000.0
+    bench.loc[pd.Timestamp('2026-09-21')] = 500.0
+    assert _price_context(prices, bench, names) == expected
+
+
+def test_context_internal_gap_disqualifies_stock_from_return_window():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-7, 0] = np.nan
+    r = _price_context(prices, bench, names)
+    assert r['windows']['5']['eligible'] == 10
+    assert r['windows']['20']['eligible'] == 9
+
+
+def test_context_benchmark_gap_cannot_look_like_a_zero_return():
+    prices, bench, names = _price_context_fixture()
+    bench.iloc[-1] = np.nan
+    w = _price_context(prices, bench, names)['windows']['20']
+    assert w['benchmark_return_pct'] is None
+    assert w['comparison'] == 'sample_only'
+
+
+def test_context_unrequested_symbol_cannot_improve_coverage():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1, 4:] = np.nan
+    prices['EXTRA'] = 100.0
+    r = _price_context(prices, bench, names)
+    assert r['configured_count'] == 10 and r['quote_count'] == 4
+
+
+@pytest.mark.parametrize('which', ['date', 'column', 'members'])
+def test_context_duplicate_inputs_refuse_without_double_counting(which):
+    prices, bench, names = _price_context_fixture()
+    if which == 'date': prices = pd.concat([prices, prices.iloc[-1:]])
+    elif which == 'column': prices = pd.concat([prices, prices.iloc[:, :1]], axis=1)
+    else: names += names[:1]
+    assert _price_context(prices, bench, names)['status'] == 'unavailable'
+
+
+def test_context_ma_change_uses_identical_members_at_both_endpoints():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-5:, :4] = 110.0
+    prices.iloc[-1, 8:] = np.nan
+    r = _price_context(prices, bench, names)['trend']
+    assert r['eligible'] == 8 and r['paired_eligible'] == 8
+    assert r['above200_pct'] == 50
+    assert r['paired_change_pp'] == 50
+
+
+def test_context_percent_change_is_not_percentage_point_difference():
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 110.0
+    w = _price_context(prices, bench, names)['windows']['20']
+    assert w['median_return_pct'] == pytest.approx(10)
+    assert w['positive_pct'] == 100
+
+
+def test_context_empty_inputs_keep_explicit_absence():
+    _, bench, names = _price_context_fixture()
+    r = _price_context(pd.DataFrame(), bench, names)
+    assert r['status'] == 'unavailable'
+    assert r['current_comparison'] is None
+
+
+def test_context_short_history_does_not_fake_ma_or_twenty_sessions():
+    prices, bench, names = _price_context_fixture()
+    r = _price_context(prices.iloc[-6:], bench, names)
+    assert r['windows']['5']['status'] == 'ok'
+    assert r['windows']['20']['status'] == 'insufficient_coverage'
+    assert r['trend']['above200_pct'] is None
+
+
+def _board_fixture():
+    return pd.DataFrame({'n': [5000], 'adv': [4000], 'dec': [900], 'flat': [100],
+                         'med_pct': [1.5], 'source': ['sina']},
+                        index=pd.to_datetime(['2026-09-18']))
+
+
+def test_context_board_keeps_full_board_and_sample_scopes_separate():
+    from engine.china_participation import board_breadth_context
+    r = board_breadth_context(_board_fixture(), asof='2026-09-18')
+    assert r['status'] == 'current' and r['n'] == 5000
+    assert r['positive_pct'] == 80 and r['median_return_pct'] == 1.5
+    assert r['scope'] == 'hushen_traded_board'
+
+
+@pytest.mark.parametrize('field,value', [('n',200), ('adv',-1), ('flat',np.nan),
+                                         ('dec',999), ('adv',True), ('med_pct',np.inf)])
+def test_context_board_bad_counts_never_become_broad_confirmation(field, value):
+    from engine.china_participation import board_breadth_context
+    df = _board_fixture().astype(object)
+    df.loc[df.index[0],field] = value
+    r = board_breadth_context(df, asof='2026-09-18')
+    assert r['status'] == 'unavailable' and r['positive_pct'] is None
+
+
+def test_context_board_does_not_relabel_old_counts_as_current():
+    from engine.china_participation import board_breadth_context
+    r = board_breadth_context(_board_fixture(), asof='2026-09-21')
+    assert r['status'] == 'delayed' and r['asof'] == '2026-09-18'
+
+
+def test_context_loader_reads_existing_stores_without_network_or_writes(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    prices, bench, names = _price_context_fixture()
+    reads = []
+    inputs = {('china_search','closes'): prices,
+              ('china','510300.SS'): bench.to_frame('close'),
+              ('china_board_breadth','breadth'): _board_fixture()}
+    def read(g, n):
+        reads.append((g,n))
+        return inputs.get((g,n))
+    monkeypatch.setattr(store, 'read', read)
+    r = pc.load_breadth_context(asof='2026-09-18')
+    assert r['sample']['configured_count'] == 10 and r['daily_board']['n'] == 5000
+    assert set(reads) == set(inputs)
+
+
+def test_context_loader_ignores_etfs_and_offshore_symbols(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    prices, bench, names = _price_context_fixture()
+    for name in ['510300.SS','00700.HK','200011.SZ','830799.BJ']:
+        prices[name] = 10.0
+    monkeypatch.setattr(store, 'read', lambda g,n: prices if g=='china_search' else
+                        bench.to_frame('close') if g=='china' else _board_fixture())
+    assert pc.load_breadth_context(asof='2026-09-18')['sample']['configured_count'] == 10
+
+
+def _render_participation_context(context):
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader
+    env = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parents[1]/'templates')),
+                      autoescape=True)
+    return env.from_string('{% import "_china_participation_context.html.j2" as cbx %}'
+                           '{{ cbx.participation_panel(ctx) }}').render(ctx=context)
+
+
+def test_context_panel_distinguishes_recent_improvement_from_twenty_day_weakness():
+    from engine import china_participation as pc
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-21:-5] = 110.0
+    prices.iloc[-5:] = 105.0
+    # Synthetic scenario: force named window values; producer arithmetic is tested above.
+    sample = _price_context(prices, bench, names)
+    sample['windows']['5'].update(status='ok', median_return_pct=1.0, positive_pct=60)
+    sample['windows']['20'].update(status='ok', median_return_pct=-1.0, positive_pct=40)
+    html = _render_participation_context({'sample':sample,
+                         'daily_board':pc.board_breadth_context(_board_fixture(),asof='2026-09-18')})
+    assert 'Recent rebound, uneven recovery' in html
+    assert '20-session sample' in html and 'Latest board session' in html
+    assert 'Not an equal-weight index' in html
+    assert 'Price-library sample' in html and '沪深' in html
+
+
+def test_context_panel_missing_data_is_not_a_calm_or_bearish_verdict():
+    html = _render_participation_context({})
+    assert 'Participation unavailable' in html and '参与度暂不可用' in html
+    assert 'Recent rebound' not in html
+    assert 'Risk-off' not in html and 'Risk-on' not in html
+
+
+def test_context_panel_stale_sample_never_gets_a_current_rebound_headline():
+    prices, bench, names = _price_context_fixture()
+    sample = _price_context(prices.iloc[:-5],bench,names)
+    html = _render_participation_context({'sample':sample})
+    assert 'Sample behind assessment' in html
+    assert sample['asof'] in html
+    assert 'Recent rebound, uneven recovery' not in html
+
+
+def test_context_panel_nonfinite_prices_do_not_leak_json_nan():
+    import json
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = np.inf
+    json.dumps(_price_context(prices,bench,names),allow_nan=False)
+
+
+def test_context_builder_binds_to_assessment_date_not_render_clock(monkeypatch):
+    from scripts import build_china
+    from engine import china_participation as pc
+    seen = []
+    def load(*, asof, sector_universe):
+        assert sector_universe
+        seen.append(asof)
+        return {'assessment_asof':asof,'authority':'context_only'}
+    monkeypatch.setattr(pc, 'load_breadth_context', load)
+    assert build_china._participation_context('2026-09-18')['assessment_asof'] == '2026-09-18'
+    assert seen == ['2026-09-18']
+
+
+def test_context_sector_outperformance_does_not_mean_sector_rose():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 98
+    bench.iloc[-1] = 95
+    r = sector_breadth_context({'ETF':prices.iloc[:,0].to_frame('close')},bench,
+                              names={'ETF':['Banks']},asof='2026-09-18')
+    row = r['rows'][0]
+    assert row['return_pct'] == pytest.approx(-2)
+    assert row['benchmark_gap_pp'] == pytest.approx(3)
+    assert r['rising'] == 0 and r['eligible'] == 1
+
+
+def test_context_sector_missing_data_does_not_shrink_declared_universe():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    r = sector_breadth_context({'ETF':prices.iloc[:,0].to_frame('close')},bench,
+                              names={'ETF':['Banks'],'MISSING':['Missing']},asof='2026-09-18')
+    assert r['declared'] == 2 and len(r['rows']) == 2 and r['eligible'] == 1
+    assert r['rows'][1]['return_pct'] is None
+
+
+def test_context_sector_delayed_read_does_not_count_in_current_rising_tally():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    r = sector_breadth_context({'ETF':prices.iloc[:-1,0].to_frame('close')},bench,
+                              names={'ETF':['Banks']},asof='2026-09-18')
+    assert r['eligible'] == 0 and r['rows'][0]['status'] == 'delayed'
+
+
+def test_context_extreme_finite_quotes_cannot_export_infinite_metrics():
+    import json
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 1e308
+    result = _price_context(prices,bench,names)
+    json.dumps(result,allow_nan=False)
+
+
+def test_context_boolean_prices_are_invalid_not_one_currency_unit():
+    prices, bench, names = _price_context_fixture()
+    prices = prices.astype(object)
+    prices.iloc[-1,4:] = True
+    r = _price_context(prices,bench,names)
+    assert r['quote_count'] == 4 and r['windows']['20']['median_return_pct'] is None
+
+
+def test_context_unsorted_rows_do_not_change_the_snapshot():
+    prices, bench, names = _price_context_fixture()
+    assert _price_context(prices.iloc[::-1],bench.iloc[::-1],names) == _price_context(prices,bench,names)
+
+
+def test_context_input_frames_are_not_mutated():
+    prices, bench, names = _price_context_fixture()
+    original, original_bench = prices.copy(), bench.copy()
+    _price_context(prices,bench,names)
+    pd.testing.assert_frame_equal(prices,original)
+    pd.testing.assert_series_equal(bench,original_bench)
+
+
+def test_context_panel_absent_board_has_no_direction_word():
+    from bs4 import BeautifulSoup
+    html = _render_participation_context({})
+    text = BeautifulSoup(html,'html.parser').select_one('.cnx-part-data').get_text(' ',strip=True)
+    assert 'rose' not in text and '上涨' not in text
+
+
+# CSI 300 single-snapshot constituent lens. No historical/index-weight claims.
+def _index_member_fixture():
+    dates = pd.bdate_range(end="2026-09-18", periods=205)
+    names = [f"{600000+i:06d}.SS" for i in range(300)]
+    membership = pd.DataFrame({"symbol": ["000300"]*300, "ticker": names,
+                               "fetched_date": ["2026-09-15"]*300})
+    prices = pd.DataFrame(100.0, index=dates, columns=names)
+    prices.iloc[-1,:200] = 99.0
+    prices.iloc[-1,200:] = 104.0
+    benchmark = pd.Series(100.0,index=dates)
+    benchmark.iloc[-1] = 100.1
+    return membership, prices, benchmark
+
+
+def _index_member_context(membership, prices, benchmark):
+    from engine.china_participation import index_member_breadth_context
+    return index_member_breadth_context(membership,prices,benchmark,asof="2026-09-18")
+
+
+def test_index_member_lens_separates_etf_gain_from_its_typical_constituent():
+    m,p,b = _index_member_fixture()
+    r = _index_member_context(m,p,b)
+    assert r["status"] == "available"
+    assert r["member_count"] == r["expected_members"] == 300
+    assert r["membership_observed"] == "2026-09-15"
+    w = r["windows"]["5"]
+    assert w["eligible"] == 300 and w["median_return_pct"] == pytest.approx(-1)
+    assert w["benchmark_return_pct"] == pytest.approx(.1)
+    assert w["comparison"] == "index_up_sample_down"
+    assert r["contribution_status"] == "unavailable_no_official_start_weights"
+    assert r["historical_membership"] is False
+
+
+@pytest.mark.parametrize("change", ["short", "duplicate", "mixed_dates", "future", "missing_date", "bad_ticker", "bad_date", "duplicate_columns"])
+def test_index_member_lens_refuses_invalid_membership_without_shrinking(change):
+    m,p,b = _index_member_fixture()
+    if change == "short": m=m.iloc[:-1]
+    elif change == "duplicate": m.loc[299,"ticker"]=m.loc[0,"ticker"]
+    elif change == "mixed_dates": m.loc[299,"fetched_date"]="2026-09-14"
+    elif change == "future": m["fetched_date"]="2026-09-19"
+    elif change == "missing_date": m=m.drop(columns="fetched_date")
+    elif change == "bad_ticker": m.loc[0,"ticker"]="0700.HK"
+    elif change == "bad_date": m["fetched_date"]="not-a-date"
+    else: m=pd.concat([m,m[["ticker"]]],axis=1)
+    r = _index_member_context(m,p,b)
+    assert r["status"] == "unavailable"
+    assert r["windows"] == {} and r["data_gaps"]
+    assert r["expected_members"] == 300
+
+
+def test_index_member_lens_ignores_other_indices_and_extra_stocks():
+    m,p,b = _index_member_fixture()
+    extra=m.iloc[:1].copy();extra["symbol"]="000852";extra["ticker"]="300999.SZ"
+    m=pd.concat([m,extra],ignore_index=True)
+    p["300999.SZ"] = 1e10
+    r=_index_member_context(m,p,b)
+    assert r["member_count"] == 300
+    assert r["windows"]["20"]["median_return_pct"] == pytest.approx(-1)
+
+
+def test_index_member_lens_does_not_replace_missing_member_with_extra():
+    m,p,b = _index_member_fixture()
+    p=p.drop(columns=p.columns[0]);p["300999.SZ"]=100.0
+    r=_index_member_context(m,p,b)
+    assert r["status"] == "insufficient_coverage"
+    assert r["windows"]["20"]["eligible"] == 299
+    assert r["windows"]["20"]["median_return_pct"] is None
+
+
+def test_index_member_lens_never_uses_market_cap_placeholders_as_weights():
+    m,p,b=_index_member_fixture()
+    original=_index_member_context(m,p,b)
+    m["mktcap_yi"]=30.0;m.loc[0,"mktcap_yi"]=1e99
+    assert _index_member_context(m,p,b) == original
+    assert "weighted_return" not in original and "contributions" not in original
+
+
+def test_index_member_lens_declares_snapshot_applied_retrospectively():
+    m,p,b=_index_member_fixture()
+    r=_index_member_context(m,p,b)
+    assert r["windows"]["20"]["membership_observed_after_start"] is True
+    assert r["windows"]["5"]["membership_observed_after_start"] is True
+    assert r["membership_age_days_at_assessment"] == 3
+
+
+def test_index_member_lens_delayed_prices_keep_their_own_date():
+    m,p,b=_index_member_fixture()
+    r=_index_member_context(m,p.iloc[:-1],b)
+    assert r["status"] == "delayed" and r["price_asof"] == "2026-09-17"
+    assert r["membership_observed"] == "2026-09-15"
+
+
+def test_index_member_loader_reads_only_existing_membership_and_closes(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    m,p,b=_index_member_fixture()
+    fixtures={("china_search","index_cons"):m,("china_search","closes"):p,
+              ("china","510300.SS"):b.to_frame("close")}
+    reads=[]
+    def read(g,n):
+        reads.append((g,n));return fixtures[(g,n)]
+    monkeypatch.setattr(store,"read",read)
+    result=pc.load_index_member_breadth_context(asof="2026-09-18")
+    assert result["status"] == "available" and set(reads)==set(fixtures)
+
+
+def test_index_member_loader_read_error_is_explicit_not_empty_confirmation(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    def read(g,n): raise OSError("source unavailable")
+    monkeypatch.setattr(store,"read",read)
+    result=pc.load_index_member_breadth_context(asof="2026-09-18")
+    assert result["status"] == "unavailable" and result["data_gaps"]
+
+
+def test_index_member_panel_shows_dated_cohort_not_weighted_contribution():
+    m,p,b = _index_member_fixture()
+    r = _index_member_context(m,p,b)
+    html = _render_participation_context({'index_members':r})
+    assert 'CSI 300 members' in html and '沪深300成分股' in html
+    assert '2026-09-15' in html and '2026-09-18' in html
+    assert '-1.00%' in html and '+0.10%' in html
+    assert 'not a historical membership archive' in html
+    assert 'Starting index weights unavailable' in html
+
+
+def test_index_member_panel_missing_membership_does_not_invent_index_attribution():
+    m,p,b = _index_member_fixture()
+    html = _render_participation_context({'index_members':_index_member_context(m.iloc[:20],p,b)})
+    assert 'Constituent comparison unavailable' in html
+    assert '成分股对比暂不可用' in html
+    assert 'Weighted contribution' not in html
+
+
+def test_index_member_panel_preserves_incomplete_price_denominator():
+    m,p,b = _index_member_fixture()
+    html = _render_participation_context({'index_members':_index_member_context(m,p.iloc[:,:299],b)})
+    assert '299 / 300' in html
+    assert 'All 300' not in html
+
+
+def test_index_member_builder_adds_cohort_without_mutating_original_context(monkeypatch):
+    from scripts import build_china
+    from engine import china_participation as pc
+    original = {'assessment_asof':'2026-09-18', 'sample':{'status':'delayed'}}
+    member = {'membership_observed':'2026-09-15','status':'available'}
+    monkeypatch.setattr(pc,'load_breadth_context',lambda **_kw: original)
+    def loader(*, asof):
+        assert asof=='2026-09-18'
+        return member
+    monkeypatch.setattr(pc,'load_index_member_breadth_context',loader)
+    r = build_china._participation_context('2026-09-18')
+    assert r['index_members'] == member
+    assert 'index_members' not in original
+    assert r['sample']['status'] == 'delayed'
+
+
+# A fixed starting-weight basket is descriptive, not official index attribution.
+def _weighted_context_fixture():
+    members = [f'{600000+i:06d}.SS' for i in range(300)]
+    dates = pd.bdate_range('2026-08-31','2026-09-18')
+    prices = pd.DataFrame(100.0,index=dates,columns=members)
+    prices.iloc[-1,0] = 110
+    prices.iloc[-1,1:] = 99
+    weights = pd.DataFrame({'symbol':'000300','ticker':members,'name_zh':members,
+        'weight_date':'2026-08-31','observed_at':'2026-09-22T00:00:00+00:00',
+        'source':'csindex_closeweight','weight_pct':[10.0]+[90/299]*299})
+    benchmark = pd.Series(100.0,index=dates)
+    return weights,prices,benchmark
+
+
+def test_weighted_context_uses_actual_start_weights_not_equal_weights_or_end_caps():
+    from engine.china_participation import index_weight_context
+    weights,prices,bench = _weighted_context_fixture()
+    r = index_weight_context(weights,prices,bench,asof='2026-09-18')
+    assert r['status'] == 'available' and r['eligible'] == 300
+    assert r['basket_return_pct'] == pytest.approx(.1)
+    assert r['median_return_pct'] == pytest.approx(-1)
+    assert r['top_contributors'][0]['contribution_pp'] == pytest.approx(1)
+    assert r['official_index_attribution'] is False
+    assert r['start'] == '2026-08-31' and r['end'] == '2026-09-18'
+    assert r['known_after_window'] is True
+
+
+@pytest.mark.parametrize('fault',['missing','gap','before_weights','bad_total','duplicate','foreign'])
+def test_weighted_context_refuses_false_attribution(fault):
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    if fault == 'missing': p = p.iloc[:,:-1]
+    elif fault == 'gap': p.iloc[3,3] = np.nan
+    elif fault == 'before_weights': w['weight_date'] = '2026-09-30'
+    elif fault == 'bad_total': w['weight_pct'] = 1
+    elif fault == 'duplicate': w.loc[1,'ticker'] = w.loc[0,'ticker']
+    elif fault == 'foreign': w['source'] = 'market_caps'
+    r = index_weight_context(w,p,b,asof='2026-09-18')
+    assert r['basket_return_pct'] is None
+    assert r['official_index_attribution'] is False
+    assert r['data_gaps']
+
+
+def test_weighted_context_keeps_concentration_when_price_coverage_is_incomplete():
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    r = index_weight_context(w,p.iloc[:,:-1],b,asof='2026-09-18')
+    assert r['top10_weight_pct'] == pytest.approx(10+9*90/299)
+    assert r['eligible'] == 299 and r['basket_return_pct'] is None
+
+
+def test_weighted_context_is_input_immutable_and_json_finite():
+    import json
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    before = (w.copy(),p.copy(),b.copy())
+    json.dumps(index_weight_context(w,p,b,asof='2026-09-18'),allow_nan=False)
+    pd.testing.assert_frame_equal(w,before[0]); pd.testing.assert_frame_equal(p,before[1])
+    pd.testing.assert_series_equal(b,before[2])
+
+
+@pytest.mark.parametrize('bad_ticker',['510300.SS','00700.HK','notreal.X'])
+def test_weighted_context_rejects_nonmember_symbol_classes(bad_ticker):
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    w.loc[0,'ticker'] = bad_ticker
+    p = p.rename(columns={p.columns[0]:bad_ticker})
+    r = index_weight_context(w,p,b,asof='2026-09-18')
+    assert r['basket_return_pct'] is None and r['data_gaps']
+
+
+def test_weight_reader_is_read_only_and_absence_is_not_fabricated(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    seen=[]
+    def read(g,n):
+        seen.append((g,n)); return None
+    monkeypatch.setattr(store,'read',read)
+    r=pc.load_index_weight_context(asof='2026-09-18')
+    assert r['basket_return_pct'] is None and r['official_index_attribution'] is False
+    assert set(seen)=={('china_search','index_weights'),('china_search','closes'),('china','510300.SS')}
+    assert r['data_gaps']
+
+
+def test_weight_reader_consumes_the_official_snapshot_without_network(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    w,p,b=_weighted_context_fixture()
+    inputs={('china_search','index_weights'):w,('china_search','closes'):p,('china','510300.SS'):b.to_frame('close')}
+    monkeypatch.setattr(store,'read',lambda g,n:inputs[(g,n)])
+    assert pc.load_index_weight_context(asof='2026-09-18')['basket_return_pct']==pytest.approx(.1)
+
+
+def test_weight_view_names_the_basket_and_never_claims_cash_index_attribution():
+    from engine.china_participation import index_weight_context
+    w,p,b=_weighted_context_fixture()
+    html=_render_participation_context({'index_weights':index_weight_context(w,p,b,asof='2026-09-18')})
+    assert 'Official weights' in html and '官方权重' in html
+    assert '2026-08-31' in html and '2026-09-18' in html
+    assert 'Fixed-start basket estimate' in html
+    assert 'not official index attribution' in html
+    assert '+0.10%' in html and '300 / 300' in html
+    assert 'obtained after this return window' in html
+
+
+def test_weight_view_preserves_incomplete_price_coverage_without_zero_return():
+    from engine.china_participation import index_weight_context
+    w,p,b=_weighted_context_fixture()
+    html=_render_participation_context({'index_weights':index_weight_context(w,p.iloc[:,:-1],b,asof='2026-09-18')})
+    assert '299 / 300' in html and 'Unavailable' in html
+    assert '+0.00%' not in html
+
+
+def test_weight_builder_attaches_optional_read_without_mutating_other_context(monkeypatch):
+    from engine import china_participation as pc
+    from scripts import build_china
+    base={'authority':'context_only'}
+    monkeypatch.setattr(pc,'load_breadth_context',lambda **kw:base)
+    monkeypatch.setattr(pc,'load_index_member_breadth_context',lambda **kw:{})
+    monkeypatch.setattr(pc,'load_index_weight_context',lambda **kw:{'status':'unavailable'})
+    assert build_china._participation_context('2026-09-18')['index_weights']['status']=='unavailable'
+    assert base=={'authority':'context_only'}
+
+
+# Explain a withheld cohort result without changing its eligibility or return.
+def test_member_gap_detail_names_missing_latest_quotes_without_substitution():
+    m,p,b = _index_member_fixture()
+    p.iloc[-1,:3] = np.nan
+    r = _index_member_context(m,p,b)
+    w = r['windows']['5']; detail = w['coverage_detail']
+    assert w['eligible'] == 297 and w['median_return_pct'] is None
+    assert detail['excluded_count'] == 3 and detail['status'] == 'incomplete'
+    assert [x['ticker'] for x in detail['members']] == list(p.columns[:3])
+    assert all(x['missing_observations'] == 1 and x['last_missing'] == '2026-09-18'
+               and x['latest_quote_missing'] for x in detail['members'])
+
+
+def test_member_gap_detail_keeps_each_window_and_same_end_date_separate():
+    m,p,b = _index_member_fixture(); p.iloc[-10,0] = np.nan
+    r = _index_member_context(m,p,b)
+    assert r['windows']['5']['coverage_detail']['status'] == 'complete'
+    detail = r['windows']['20']['coverage_detail']
+    assert detail['excluded_count'] == 1
+    assert detail['members'][0]['last_missing'] == str(p.index[-10].date())
+    assert detail['members'][0]['latest_quote_missing'] is False
+
+
+@pytest.mark.parametrize('bad', [None, -1.0, 0.0, np.inf, True, 'bad'])
+def test_member_gap_detail_handles_invalid_prices_without_inventing_a_reason(bad):
+    m,p,b = _index_member_fixture(); p=p.astype(object); p.iloc[-1,0]=bad
+    d = _index_member_context(m,p,b)['windows']['5']['coverage_detail']
+    assert d['excluded_count'] == 1 and d['members'][0]['reason'] == 'missing_or_invalid_price'
+
+
+def test_member_gap_detail_absent_column_names_all_window_observations():
+    m,p,b = _index_member_fixture(); name=p.columns[0]; p=p.drop(columns=name)
+    d = _index_member_context(m,p,b)['windows']['20']['coverage_detail']
+    assert d['members'][0]['ticker'] == name
+    assert d['members'][0]['missing_observations'] == 21
+
+
+def test_member_gap_detail_short_window_is_not_three_hundred_bad_stocks():
+    m,p,b = _index_member_fixture()
+    d = _index_member_context(m,p.iloc[-3:],b.iloc[-3:])['windows']['5']['coverage_detail']
+    assert d['status'] == 'short_history' and d['excluded_count'] is None
+    assert d['members'] == []
+
+
+def test_member_gap_detail_ignores_future_holes_and_keeps_inputs_immutable():
+    m,p,b = _index_member_fixture()
+    p.loc[p.index[-1]+pd.offsets.BDay()] = np.nan
+    original=p.copy()
+    result=_index_member_context(m,p,b)
+    assert result['windows']['5']['coverage_detail']['excluded_count'] == 0
+    pd.testing.assert_frame_equal(p,original)
+
+
+def test_member_gap_detail_renders_why_the_comparison_is_withheld_in_both_languages():
+    m,p,b = _index_member_fixture(); p.iloc[-1,:3]=np.nan
+    html=_render_participation_context({'index_members':_index_member_context(m,p,b)})
+    assert 'Missing or invalid stored prices' in html and '存储价格缺失或无效' in html
+    assert '600000.SS' in html and '297 / 300' in html
+    assert '3 affected members' in html and '3只受影响成分股' in html
+
+
+def test_member_gap_detail_does_not_change_any_existing_window_measurement():
+    from engine.china_participation import price_breadth_context
+    m,p,b=_index_member_fixture(); p.iloc[-1,:3]=np.nan
+    raw=price_breadth_context(p,b,members=m.ticker.tolist(),asof='2026-09-18',min_coverage=1.0)
+    result=_index_member_context(m,p,b)
+    for key,w in result['windows'].items():
+        assert {k:v for k,v in w.items() if k not in ('coverage_detail','membership_observed_after_start')} == raw['windows'][key]
+
+
+def test_member_gap_detail_limits_visible_rows_without_hiding_the_total():
+    from bs4 import BeautifulSoup
+    m,p,b=_index_member_fixture(); p.iloc[-1,:6]=np.nan
+    result=_index_member_context(m,p,b)
+    assert len(result['windows']['5']['coverage_detail']['members']) == 6
+    html=_render_participation_context({'index_members':result})
+    soup=BeautifulSoup(html,'html.parser')
+    assert all(len(table.select('tbody tr')) == 5 for table in soup.select('.cnx-member-gaps'))
+    assert '6 affected members' in html and 'First 5 affected members shown.' in html

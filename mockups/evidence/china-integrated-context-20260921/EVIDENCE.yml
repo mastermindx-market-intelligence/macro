@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - site/china.html
+  - site/assets/css/fd2baf90.css
+manifest: mockups/evidence/china-integrated-context-20260921/manifest.json

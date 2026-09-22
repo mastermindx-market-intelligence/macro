@@ -1,0 +1,13 @@
+{
+  "source_commit": "ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac",
+  "preserved_from_7622": {
+    "engine/china_participation.py": "90408365e8ef1d9b666c2f4d3b433943191db5ac5f00ea5919bcea3616cbe296",
+    "engine/risk_radar_intl.py": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+    "engine/market_state.py": "ce03ea62a0611c2b351ef147633809c7057220b2d808d4e1fcc8400f20497045",
+    "engine/risk_radar_recovery.py": "321545a3cace15f20d23b564e1b43595ccd0804fab3de362eceb5a580695c593"
+  },
+  "breadth_collector_matches_7592": true,
+  "clock_repair_implemented": false,
+  "model_recalibrated": false,
+  "ci_or_deployment_claimed": false
+}

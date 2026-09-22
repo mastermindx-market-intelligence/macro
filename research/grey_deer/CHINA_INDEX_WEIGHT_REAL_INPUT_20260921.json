@@ -1,0 +1,82 @@
+{
+  "source_base": "6bf539301af18afb7030fec645bd141696d282cf",
+  "raw_weight_sha256": "72bc4c9bd1be88f7d2c16e5a54f74777f4f43a768629699d22698a83f86c8e71",
+  "weight_data_date": "2026-08-31",
+  "analysis_observed_at": "2026-09-22T02:56:19.284914+00:00",
+  "source_sha256": {
+    "collectors/china_universe.py": "78b28a12c6ba7740e2cb2375b1c103bab9fc81645f7317d3c28f83c1716fc5d4",
+    "engine/china_participation.py": "29193c6eaa4c58591f27fece9fcae69abcc6e4e950be84de75c02df7896b76f2"
+  },
+  "input_sha256": {
+    "data/china_search/closes.parquet": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+    "data/china/510300.SS.parquet": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7"
+  },
+  "context": {
+    "authority": "context_only",
+    "status": "available",
+    "expected_members": 300,
+    "eligible": 300,
+    "weight_date": "2026-08-31",
+    "observed_at": "2026-09-22T02:56:19.284914+00:00",
+    "weight_sum_pct": 100.0,
+    "top10_weight_pct": 23.18,
+    "basket_return_pct": -2.4174449463749785,
+    "median_return_pct": -2.64240097189391,
+    "benchmark_return_pct": -2.1985093978650894,
+    "start": "2026-08-31",
+    "end": "2026-09-18",
+    "observed_sessions": 14,
+    "top_contributors": [
+      {
+        "ticker": "300308.SZ",
+        "name_zh": "中际旭创",
+        "weight_pct": 3.617,
+        "return_pct": 8.748675446157028,
+        "contribution_pp": 0.31643959088749973
+      },
+      {
+        "ticker": "300502.SZ",
+        "name_zh": "新易盛",
+        "weight_pct": 2.133,
+        "return_pct": 10.732327719623736,
+        "contribution_pp": 0.2289205502595743
+      },
+      {
+        "ticker": "600150.SS",
+        "name_zh": "中国船舶",
+        "weight_pct": 0.586,
+        "return_pct": 15.8157250588435,
+        "contribution_pp": 0.0926801488448229
+      }
+    ],
+    "top_detractors": [
+      {
+        "ticker": "300750.SZ",
+        "name_zh": "宁德时代",
+        "weight_pct": 3.66,
+        "return_pct": -16.94401805922131,
+        "contribution_pp": -0.6201510609675
+      },
+      {
+        "ticker": "601899.SS",
+        "name_zh": "紫金矿业",
+        "weight_pct": 2.112,
+        "return_pct": -6.712202092180853,
+        "contribution_pp": -0.1417617081868596
+      },
+      {
+        "ticker": "600519.SS",
+        "name_zh": "贵州茅台",
+        "weight_pct": 3.092,
+        "return_pct": -3.262744996368472,
+        "contribution_pp": -0.10088407528771315
+      }
+    ],
+    "known_after_window": true,
+    "official_index_attribution": false,
+    "data_gaps": []
+  },
+  "official_index_reconstruction": false,
+  "automatic_ingestion": false,
+  "production": false
+}

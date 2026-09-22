@@ -556,3 +556,56 @@ def test_missing_akshare_and_a_dead_csindex_is_not_fatal(monkeypatch, adapter, c
     monkeypatch.setitem(sys.modules, "akshare", None)   # `import akshare` -> ImportError
     assert adapter._index_constituents([INDEX_CODE]) == []
     assert _annotations(capsys), "a total miss must still annotate"
+
+
+# Official close-weight evidence is dated separately from membership retrieval.
+def _weight_frame():
+    frame = _csindex_frame([f'{600000+i:06d}' for i in range(300)])
+    frame['指数代码'] = 300
+    frame['日期'] = 20260831
+    frame['权重'] = [0.333] * 299 + [0.433]
+    return frame
+
+
+def test_close_weights_keep_provider_date_and_reported_units():
+    frame = _weight_frame()
+    before = frame.copy(deep=True)
+    out = cu._close_weight_snapshot(frame, symbol='000300', observed_at='2026-09-22T00:00:00Z')
+    assert len(out) == 300 and out.ticker.nunique() == 300
+    assert set(out.weight_date) == {'2026-08-31'}
+    assert set(out.observed_at) == {'2026-09-22T00:00:00+00:00'}
+    assert out.weight_pct.sum() == pytest.approx(100)
+    assert set(out.source) == {'csindex_closeweight'}
+    pd.testing.assert_frame_equal(frame, before)
+
+
+@pytest.mark.parametrize('fault', ['short','duplicate','mixed_date','future','wrong_index',
+    'bad_symbol','negative','boolean','infinite','wrong_total','duplicate_columns'])
+def test_close_weights_reject_incomplete_or_misdated_source(fault):
+    frame = _weight_frame().astype(object)
+    if fault == 'short': frame = frame.iloc[:-1]
+    elif fault == 'duplicate': frame.iloc[-1,4] = frame.iloc[0,4]
+    elif fault == 'mixed_date': frame.loc[0,'日期'] = 20260828
+    elif fault == 'future': frame['日期'] = 20261001
+    elif fault == 'wrong_index': frame.loc[0,'指数代码'] = 905
+    elif fault == 'bad_symbol': frame.loc[0,'成分券代码'] = 'ETF'
+    elif fault == 'negative': frame.loc[0,'权重'] = -1
+    elif fault == 'boolean': frame.loc[0,'权重'] = True
+    elif fault == 'infinite': frame.loc[0,'权重'] = float('inf')
+    elif fault == 'wrong_total': frame['权重'] = 0.01
+    elif fault == 'duplicate_columns': frame = pd.concat([frame,frame[['权重']]],axis=1)
+    with pytest.raises(ValueError):
+        cu._close_weight_snapshot(frame,symbol='000300',observed_at='2026-09-22T00:00:00Z')
+
+
+def test_close_weights_accept_raw_bilingual_headers_without_index_code_confusion():
+    frame = _weight_frame()
+    frame.columns = RAW_COLS + ['权重(%)weight']
+    out = cu._close_weight_snapshot(frame,symbol='000300',observed_at='2026-09-22T00:00:00Z')
+    assert out.ticker.iloc[0] == '600000.SS'
+    assert out.ticker.iloc[-1] == '600299.SS'
+
+
+def test_close_weights_do_not_guess_observation_time():
+    with pytest.raises(ValueError):
+        cu._close_weight_snapshot(_weight_frame(),symbol='000300',observed_at='bad')

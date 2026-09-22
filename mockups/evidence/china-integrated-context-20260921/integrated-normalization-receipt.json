@@ -1,0 +1,22 @@
+{
+  "raw_source_head": "ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac",
+  "integrated_parents": [
+    "e7e59f1ba188deb4522377772133cf4f967d3a13",
+    "51db6f0ab393fee1195b9f81674b302135382945"
+  ],
+  "raw_sha256": "cbdc35e5424de1d21591d1830134f681e2b77f4bc6546bb8df48306d60556a53",
+  "raw_bytes": 457740,
+  "normalized_bytes": 272394,
+  "normalized_sha256": "0d75fe73bd4dd373d4a1a70edf47de1417a75fd50c834ee9f32d0f273e505326",
+  "created_assets": [
+    "site/assets/css/fd2baf90.css"
+  ],
+  "pipeline": [
+    "lib.pages.inject_text",
+    "lib.pages.externalize_css_text",
+    "lib.pages.externalize_js_text",
+    "scripts.optimize_assets.make_optimizer"
+  ],
+  "pruned_assets": false,
+  "production": false
+}

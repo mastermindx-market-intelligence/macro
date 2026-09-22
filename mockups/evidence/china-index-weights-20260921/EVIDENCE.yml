@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_china_participation_context.html.j2
+manifest: mockups/evidence/china-index-weights-20260921/manifest.json

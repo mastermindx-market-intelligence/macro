@@ -892,3 +892,436 @@ def latest_snapshot(tape: pd.DataFrame) -> dict:
         )
 
     return snap
+
+
+# Read-only market breadth lens. This does NOT enter the participation classifier,
+# its historical tape, a risk score, probabilities, rankings, or position sizing.
+def _context_daily_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    if not isinstance(frame, pd.DataFrame) or frame.empty:
+        raise ValueError('missing observations')
+    if frame.columns.has_duplicates:
+        raise ValueError('duplicate symbols')
+    idx = pd.DatetimeIndex(pd.to_datetime(frame.index, errors='raise'))
+    if idx.hasnans or idx.tz is not None or idx.has_duplicates:
+        raise ValueError('invalid or duplicate dates')
+    if not idx.equals(idx.normalize()):
+        raise ValueError('daily session dates required')
+    result = frame.copy()
+    result.index = idx
+    return result.sort_index()
+
+
+def _context_prices(frame: pd.DataFrame) -> pd.DataFrame:
+    frame = frame.map(lambda v: np.nan if isinstance(v, (bool, np.bool_)) else v)
+    frame = frame.apply(pd.to_numeric, errors='coerce')
+    return frame.where(np.isfinite(frame) & (frame > 0))
+
+
+def price_breadth_context(
+    closes: pd.DataFrame, benchmark: pd.Series, *, members: list[str],
+    asof: str, min_coverage: float = 0.6,
+) -> dict:
+    """Matched-window sample evidence, never a market-wide/index-weight diagnosis.
+
+    Calendar is the benchmark's observed daily-session index, not a generated
+    business-day calendar. No price is forward-filled. Every return requires all
+    window observations. MA change uses identical eligible names at both ends.
+    Current library membership is descriptive, not point-in-time backtest evidence.
+    The comparator (CSI300 ETF) is a different universe: no contribution claim.
+    """
+    result = {'authority': 'context_only', 'status': 'unavailable',
+              'scope': 'ashare_price_library_sample', 'requested_asof': str(asof),
+              'asof': None, 'configured_count': len(members), 'quote_count': 0,
+              'current_comparison': None, 'windows': {}, 'trend': {}, 'data_gaps': []}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        if not members or len(members) != len(set(members)):
+            raise ValueError('missing or duplicate membership')
+        if not 0 < min_coverage <= 1:
+            raise ValueError('invalid coverage policy')
+        prices = _context_daily_frame(closes)
+        bench = _context_daily_frame(benchmark.to_frame('benchmark'))
+        prices = prices.loc[prices.index <= when]
+        bench = bench.loc[bench.index <= when]
+        if prices.empty or bench.empty:
+            raise ValueError('no observations on or before assessment date')
+        end = min(prices.index[-1], bench.index[-1])
+        calendar = bench.index[bench.index <= end]
+        if calendar.empty:
+            raise ValueError('no common session')
+        end = calendar[-1]
+        grid = calendar[-205:]
+        p = _context_prices(prices.reindex(index=grid, columns=members))
+        b = _context_prices(bench.reindex(index=grid))['benchmark']
+        result.update(asof=end.strftime('%Y-%m-%d'),
+                      status='current' if end == when else 'delayed',
+                      quote_count=int(p.iloc[-1].notna().sum()))
+        for horizon in (5, 20):
+            w = {'sessions': horizon, 'status': 'insufficient_coverage',
+                 'eligible': 0, 'coverage_pct': 0.0, 'start': None, 'end': str(end.date()),
+                 'up': None, 'down': None, 'flat': None, 'positive_pct': None,
+                 'median_return_pct': None, 'mean_return_pct': None,
+                 'p10_return_pct': None, 'p90_return_pct': None, 'dispersion_pp': None,
+                 'benchmark_return_pct': None, 'comparison': None}
+            block = p.tail(horizon + 1)
+            if len(block) == horizon + 1:
+                eligible = block.notna().all()
+                ret = ((block.iloc[-1, eligible.values] /
+                        block.iloc[0, eligible.values] - 1) * 100).replace([np.inf, -np.inf], np.nan).dropna()
+                w.update(eligible=len(ret), coverage_pct=100 * len(ret) / len(members),
+                         start=str(block.index[0].date()))
+                if len(ret) / len(members) >= min_coverage:
+                    q10, median, q90 = (float(ret.quantile(q)) for q in (.1, .5, .9))
+                    w.update(status='ok', up=int((ret > 0).sum()), down=int((ret < 0).sum()),
+                             flat=int((ret == 0).sum()), positive_pct=float((ret > 0).mean() * 100),
+                             median_return_pct=median, mean_return_pct=float((ret / len(ret)).sum()),
+                             p10_return_pct=q10, p90_return_pct=q90, dispersion_pp=q90-q10)
+                    bw = b.tail(horizon + 1)
+                    br = float((bw.iloc[-1] / bw.iloc[0] - 1) * 100) if bw.notna().all() else np.nan
+                    w['benchmark_return_pct'] = br if np.isfinite(br) else None
+                    w['comparison'] = ('sample_only' if not np.isfinite(br) else
+                        'index_up_sample_down' if br > 0 and median < 0 else
+                        'index_down_sample_up' if br < 0 and median > 0 else
+                        'both_up' if br > 0 and median > 0 else
+                        'both_down' if br < 0 and median < 0 else 'mixed')
+            result['windows'][str(horizon)] = w
+        trend = {'window': 200, 'change_sessions': 5, 'eligible': 0,
+                 'above200_pct': None, 'paired_eligible': 0, 'paired_change_pp': None}
+        if len(p) >= 200:
+            current = p.tail(200)
+            names = current.notna().all()
+            trend['eligible'] = int(names.sum())
+            if names.mean() >= min_coverage:
+                trend['above200_pct'] = float((current.iloc[-1, names.values] >
+                                               current.loc[:, names].div(len(current)).sum()).mean() * 100)
+        if len(p) == 205:
+            paired = p.notna().all()
+            trend['paired_eligible'] = int(paired.sum())
+            if paired.mean() >= min_coverage:
+                same = p.loc[:, paired]
+                old = same.iloc[-6] > same.iloc[:-5].div(200).sum()
+                new = same.iloc[-1] > same.iloc[-200:].div(200).sum()
+                trend['paired_change_pp'] = float((new.mean() - old.mean()) * 100)
+        result['trend'] = trend
+        if result['status'] == 'current':
+            result['current_comparison'] = result['windows']['20']['comparison']
+        else:
+            result['data_gaps'].append('price sample or benchmark is behind the assessment session')
+    except (ValueError, TypeError, AttributeError, IndexError) as exc:
+        result['status'] = 'unavailable'
+        result['current_comparison'] = None
+        result['data_gaps'].append(str(exc))
+    return result
+
+
+def board_breadth_context(board: pd.DataFrame, *, asof: str) -> dict:
+    """One-session traded Shanghai/Shenzhen board counts, not library coverage."""
+    r = {'scope': 'hushen_traded_board', 'status': 'unavailable', 'asof': None,
+         'n': None, 'adv': None, 'dec': None, 'flat': None, 'positive_pct': None,
+         'median_return_pct': None, 'source': None, 'data_gaps': []}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        df = _context_daily_frame(board)
+        df = df.loc[df.index <= when]
+        if df.empty:
+            raise ValueError('no board observation on or before assessment date')
+        row = df.iloc[-1]
+        counts = {}
+        for name in ('n','adv','dec','flat'):
+            v = row.get(name)
+            if isinstance(v, (bool, np.bool_)) or not isinstance(v, (int,float,np.number)):
+                raise ValueError('invalid board counts')
+            if not np.isfinite(v) or v < 0 or int(v) != v:
+                raise ValueError('invalid board counts')
+            counts[name] = int(v)
+        if counts['n'] < 3000 or sum(counts[k] for k in ('adv','dec','flat')) != counts['n']:
+            raise ValueError('incomplete or inconsistent traded-board counts')
+        median = row.get('med_pct')
+        if isinstance(median, (bool,np.bool_)) or not isinstance(median, (int,float,np.number)) or not np.isfinite(median):
+            raise ValueError('board median unavailable')
+        r.update(counts)
+        r.update(asof=str(df.index[-1].date()),
+                 status='current' if df.index[-1] == when else 'delayed',
+                 positive_pct=100*counts['adv']/counts['n'],
+                 median_return_pct=float(median), source=str(row.get('source') or 'unknown'))
+    except (ValueError,TypeError,AttributeError,IndexError) as exc:
+        r['data_gaps'].append(str(exc))
+    return r
+
+
+def load_breadth_context(*, asof: str, sector_universe: dict | None = None) -> dict:
+    """Read existing stores once. No collection, mutation, ledger or new artifact."""
+    from lib import store
+    gaps = []
+    def read(group, name):
+        try:
+            df = store.read(group, name)
+            return df if isinstance(df, pd.DataFrame) else pd.DataFrame()
+        except Exception as exc:  # context leaf cannot take the page down
+            gaps.append(f'{group}/{name}: {type(exc).__name__}')
+            return pd.DataFrame()
+    closes = read('china_search','closes')
+    bench = read('china','510300.SS')
+    board = read('china_board_breadth','breadth')
+    def ashare(symbol):
+        if not isinstance(symbol,str) or len(symbol) != 9 or not symbol[:6].isdigit():
+            return False
+        return ((symbol.endswith('.SS') and symbol.startswith(('60','68')))
+                or (symbol.endswith('.SZ') and symbol.startswith(('00','30'))))
+    members = [s for s in closes.columns if ashare(s)]
+    sample = price_breadth_context(closes, bench.get('close',pd.Series(dtype=float)),
+                                  members=members, asof=asof)
+    sectors = sector_breadth_context(
+        {t: read('china',t) for t in (sector_universe or {})},
+        bench.get('close',pd.Series(dtype=float)),names=sector_universe or {},asof=asof)
+    return {'authority': 'context_only', 'assessment_asof': str(asof),
+            'benchmark': 'CSI 300 ETF (510300.SS)',
+            'sample': sample, 'daily_board': board_breadth_context(board,asof=asof),
+            'sectors':sectors, 'data_gaps': gaps}
+
+
+def sector_breadth_context(prices: dict, benchmark: pd.Series, *, names: dict, asof: str) -> dict:
+    """Sector-ETF absolute returns and arithmetic gaps, not rankings or signals."""
+    rows = []
+    for ticker, meta in names.items():
+        frame = prices.get(ticker)
+        close = frame.get('close',pd.Series(dtype=float)) if isinstance(frame,pd.DataFrame) else pd.Series(dtype=float)
+        name = str(meta[0] if isinstance(meta,(tuple,list)) and meta else meta)
+        context = price_breadth_context(close.to_frame(ticker),benchmark,members=[ticker],
+                                       asof=asof,min_coverage=1.0)
+        window = context.get('windows',{}).get('20',{})
+        value = window.get('median_return_pct')
+        comparator = window.get('benchmark_return_pct')
+        rows.append({'ticker':ticker,'name':name,'asof':context.get('asof'),
+                     'status':context['status'],'start':window.get('start'),
+                     'return_pct':value,
+                     'benchmark_gap_pp':value-comparator if value is not None and comparator is not None else None})
+    available = [r for r in rows if r['status']=='current' and r['return_pct'] is not None]
+    return {'declared':len(names),'eligible':len(available),
+            'rising':sum(r['return_pct']>0 for r in available),
+            'rows':rows,'authority':'context_only'}
+
+
+def index_member_breadth_context(membership, closes, benchmark, *, asof: str) -> dict:
+    """Describe a stored CSI300 membership snapshot, never weighted attribution.
+
+    The member list is applied retrospectively, not certified as the members at
+    either return-window start. Require all300 names for each published return.
+    Do not read market-cap placeholders or pretend the ETF is the cash index.
+    """
+    from collectors.china_universe import _INDEX_EXPECTED_SIZE
+    import re
+    expected = _INDEX_EXPECTED_SIZE['000300']
+    result = {'authority':'context_only', 'symbol':'000300', 'status':'unavailable',
+              'assessment_asof':str(asof), 'expected_members':expected,
+              'member_count':0, 'membership_observed':None, 'price_asof':None,
+              'membership_age_days_at_assessment':None, 'historical_membership':False,
+              'contribution_status':'unavailable_no_official_start_weights',
+              'windows':{}, 'data_gaps':[]}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        if not isinstance(membership,pd.DataFrame) or membership.columns.has_duplicates:
+            raise ValueError('invalid membership table')
+        if not {'symbol','ticker','fetched_date'}.issubset(membership.columns):
+            raise ValueError('membership snapshot fields unavailable')
+        part = membership.loc[membership['symbol'].astype(str)=='000300']
+        names = part['ticker'].tolist()
+        result['member_count'] = len(names)
+        pattern = r'(?:6[08]\d{4}\.SS|(?:00|30)\d{4}\.SZ)'
+        if len(names)!=expected or len(set(names))!=expected:
+            raise ValueError('CSI300 snapshot must contain300 distinct members')
+        if any(not isinstance(n,str) or not re.fullmatch(pattern,n) for n in names):
+            raise ValueError('invalid mainland member ticker')
+        stamps = pd.DatetimeIndex(pd.to_datetime(part['fetched_date'],errors='raise'))
+        if stamps.hasnans or stamps.tz is not None or not stamps.equals(stamps.normalize()):
+            raise ValueError('invalid membership observation dates')
+        if len(stamps.unique())!=1 or stamps[0]>when:
+            raise ValueError('mixed or future membership snapshot')
+        observed = stamps[0]
+        result.update(membership_observed=str(observed.date()),
+                      membership_age_days_at_assessment=(when-observed).days)
+        snapshot = price_breadth_context(closes,benchmark,members=names,
+                                        asof=asof,min_coverage=1.0)
+        result.update(price_asof=snapshot['asof'], windows=snapshot['windows'])
+        result['data_gaps'].extend(snapshot['data_gaps'])
+        for w in result['windows'].values():
+            w['membership_observed_after_start'] = bool(w['start'] and observed>pd.Timestamp(w['start']))
+            w['coverage_detail'] = _index_member_price_gaps(closes, benchmark, names, w)
+        if snapshot['status']=='unavailable':
+            return result
+        if not any(w['status']=='ok' for w in result['windows'].values()):
+            result['status']='insufficient_coverage'
+        else:
+            result['status']='delayed' if snapshot['status']=='delayed' else 'available'
+    except (ValueError,TypeError,AttributeError,IndexError,OverflowError) as exc:
+        result.update(status='unavailable',windows={})
+        result['data_gaps'].append(str(exc))
+    return result
+
+
+def load_index_member_breadth_context(*, asof: str) -> dict:
+    """Read the existing single-snapshot cache and prices; no fetch or writes."""
+    from lib import store
+    errors = []
+    def read(group,name):
+        try:
+            data = store.read(group,name)
+            return data if isinstance(data,pd.DataFrame) else pd.DataFrame()
+        except Exception as exc:
+            errors.append(f'{group}/{name}: {type(exc).__name__}')
+            return pd.DataFrame()
+    membership = read('china_search','index_cons')
+    closes = read('china_search','closes')
+    benchmark = read('china','510300.SS').get('close',pd.Series(dtype=float))
+    result = index_member_breadth_context(membership,closes,benchmark,asof=asof)
+    result['data_gaps'].extend(errors)
+    return result
+
+
+def index_weight_context(weights: pd.DataFrame, closes: pd.DataFrame,
+                         benchmark: pd.Series, *, asof: str) -> dict:
+    """Dated concentration and fixed-start-weight arithmetic, not the cash index.
+
+    Current/end-date market caps never enter. The file's own weight date is the
+    only allowed starting point; no 5/20-session attribution is manufactured.
+    """
+    from math import fsum
+    from numbers import Real
+    r = {'authority':'context_only','status':'unavailable','expected_members':300,
+         'eligible':0,'weight_date':None,'observed_at':None,'weight_sum_pct':None,
+         'top10_weight_pct':None,'basket_return_pct':None,'median_return_pct':None,
+         'benchmark_return_pct':None,'start':None,'end':None,'observed_sessions':None,
+         'top_contributors':[],'top_detractors':[],'known_after_window':None,
+         'official_index_attribution':False,'data_gaps':[]}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        required = {'ticker','symbol','source','weight_date','weight_pct','observed_at'}
+        if (not isinstance(weights,pd.DataFrame) or weights.columns.has_duplicates
+                or not required.issubset(weights) or len(weights) != 300):
+            raise ValueError('complete official 300-member weight snapshot required')
+        if set(weights.symbol) != {'000300'} or set(weights.source) != {'csindex_closeweight'}:
+            raise ValueError('official CSI300 weight source required; no market caps')
+        names = weights.ticker.tolist()
+        def ashare(t):
+            return (isinstance(t,str) and len(t)==9 and t[:6].isdigit()
+                    and ((t.endswith('.SS') and t.startswith(('60','68')))
+                         or (t.endswith('.SZ') and t.startswith(('00','30')))))
+        if len(set(names)) != 300 or any(not ashare(t) for t in names):
+            raise ValueError('invalid or duplicate weighted membership')
+        values = weights.weight_pct.tolist()
+        if any(isinstance(v,bool) or not isinstance(v,Real) or not 0 <= v <= 100 for v in values):
+            raise ValueError('invalid reported weights')
+        total = fsum(values)
+        if abs(total-100) > .15000001:
+            raise ValueError('incomplete weight total; weights are not renormalized')
+        dates = [pd.Timestamp(d) for d in weights.weight_date]
+        observations = [pd.Timestamp(d) for d in weights.observed_at]
+        if (len(set(dates))!=1 or any(pd.isna(d) or d.tz is not None or d!=d.normalize() for d in dates)
+                or len(set(observations))!=1 or any(pd.isna(d) or d.tz is None for d in observations)):
+            raise ValueError('mixed or invalid weight-source dates')
+        start = dates[0]; observed = observations[0].tz_convert('UTC')
+        if start > when or start.date() > observed.date():
+            raise ValueError('weights postdate the requested assessment or observation')
+        r.update(status='partial',weight_date=str(start.date()),observed_at=observed.isoformat(),
+                 weight_sum_pct=total,top10_weight_pct=fsum(sorted(values,reverse=True)[:10]),
+                 start=str(start.date()))
+        prices = _context_daily_frame(closes)
+        bench = _context_daily_frame(benchmark.to_frame('benchmark'))
+        calendar = bench.index[(bench.index>=start)&(bench.index<=when)]
+        if len(calendar)<2 or calendar[0]!=start:
+            raise ValueError('exact weight-date price and a later observed session required')
+        end = calendar[-1]
+        r.update(end=str(end.date()),observed_sessions=len(calendar)-1,
+                 known_after_window=observed.date()>end.date())
+        panel = _context_prices(prices.reindex(index=calendar,columns=names))
+        valid = panel.notna().all()
+        r['eligible'] = int(valid.sum())
+        if r['eligible']!=300:
+            raise ValueError('complete unfilled prices for all 300 weighted members required')
+        with np.errstate(over='ignore',invalid='ignore'):
+            returns = (panel.iloc[-1]/panel.iloc[0]-1)*100
+        if not np.isfinite(returns).all():
+            raise ValueError('nonfinite constituent returns')
+        parts = [float(w/100*returns[t]) for t,w in zip(names,values)]
+        b = _context_prices(bench.reindex(calendar))['benchmark']
+        br = float((b.iloc[-1]/b.iloc[0]-1)*100) if b.notna().all() else np.nan
+        labels = weights.get('name_zh',weights.ticker).astype(str).tolist()
+        rows = [{'ticker':t,'name_zh':label,'weight_pct':float(w),
+                 'return_pct':float(returns[t]),'contribution_pp':part}
+                for t,label,w,part in zip(names,labels,values,parts)]
+        r.update(status='available' if end==when else 'delayed',
+                 basket_return_pct=fsum(parts),median_return_pct=float(returns.median()),
+                 benchmark_return_pct=br if np.isfinite(br) else None,
+                 top_contributors=sorted([x for x in rows if x['contribution_pp']>0],
+                     key=lambda x:(-x['contribution_pp'],x['ticker']))[:3],
+                 top_detractors=sorted([x for x in rows if x['contribution_pp']<0],
+                     key=lambda x:(x['contribution_pp'],x['ticker']))[:3])
+        if end!=when:
+            r['data_gaps'].append('benchmark observations predate the assessment')
+    except (ValueError,TypeError,AttributeError,IndexError,OverflowError) as exc:
+        r['data_gaps'].append(str(exc))
+    return r
+
+
+def load_index_weight_context(*, asof: str) -> dict:
+    """Read the optional incumbent source artifact; never fetch or write weights.
+
+    The source collection is not enabled by this reader. Absence remains explicit.
+    """
+    from lib import store
+    errors=[]
+    def read(group,name):
+        try:
+            value=store.read(group,name)
+            return value if isinstance(value,pd.DataFrame) else pd.DataFrame()
+        except Exception as exc:
+            errors.append(f'{group}/{name}: {type(exc).__name__}')
+            return pd.DataFrame()
+    weights=read('china_search','index_weights')
+    prices=read('china_search','closes')
+    benchmark=read('china','510300.SS')
+    result=index_weight_context(weights,prices,benchmark.get('close',pd.Series(dtype=float)),asof=asof)
+    result['data_gaps'].extend(errors)
+    return result
+
+
+def _index_member_price_gaps(closes, benchmark, names, window) -> dict:
+    """Explain this existing window's excluded members; never alter its result."""
+    out = {'status': 'unavailable', 'excluded_count': None, 'members': []}
+    if not window.get('start'):
+        return dict(out, status='short_history')
+    try:
+        prices = _context_daily_frame(closes)
+        bench = _context_daily_frame(benchmark.to_frame('benchmark'))
+        grid = bench.loc[window['start']:window['end']].index
+        if len(grid) != window['sessions'] + 1:
+            return out
+        block = _context_prices(prices.reindex(index=grid, columns=names))
+        complete = block.notna().all()
+        with np.errstate(over='ignore', divide='ignore', invalid='ignore'):
+            returns = (block.iloc[-1] / block.iloc[0] - 1) * 100
+        eligible = complete & np.isfinite(returns)
+        # Diagnostics must reconcile to the owning calculation, never explain a
+        # different denominator with a plausible-looking list of missing stocks.
+        if int(eligible.sum()) != window['eligible']:
+            return out
+        rejected = []
+        for ticker in sorted(eligible.index[~eligible]):
+            missing = block.index[block[ticker].isna()]
+            rejected.append({'ticker': ticker, 'missing_observations': len(missing),
+                'first_missing': str(missing[0].date()) if len(missing) else None,
+                'last_missing': str(missing[-1].date()) if len(missing) else None,
+                'latest_quote_missing': bool(pd.isna(block[ticker].iloc[-1])),
+                'reason': 'missing_or_invalid_price' if len(missing) else 'nonfinite_return'})
+        return {'status': 'incomplete' if rejected else 'complete',
+                'excluded_count': len(rejected), 'members': rejected}
+    except (ValueError, TypeError, AttributeError, IndexError, KeyError, OverflowError):
+        return out

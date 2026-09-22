@@ -800,3 +800,52 @@ class ChinaUniverseAdapter(Adapter):
                             "n_dropped": [len(dropped_df)]},
                            index=pd.DatetimeIndex([closes.index.max()], name="date"))
         return {"coverage": cov}
+
+
+_CSINDEX_WEIGHT_URL = ('https://oss-ch.csindex.com.cn/static/html/csindex/'
+    'public/uploads/file/autofile/closeweight/{symbol}closeweight.xls')
+
+
+def _close_weight_snapshot(frame: pd.DataFrame, *, symbol: str, observed_at: str) -> pd.DataFrame:
+    """Strict official reported-weight snapshot, never current membership authority."""
+    from math import fsum
+    from numbers import Real
+    if not isinstance(frame,pd.DataFrame) or frame.empty or frame.columns.has_duplicates:
+        raise ValueError('missing or duplicate weight columns')
+    expected = _INDEX_EXPECTED_SIZE.get(symbol)
+    if expected is None or len(frame) != expected:
+        raise ValueError('complete declared index membership required')
+    observed = pd.Timestamp(observed_at)
+    if pd.isna(observed) or observed.tz is None:
+        raise ValueError('an explicit observation timestamp is required')
+    observed = observed.tz_convert('UTC')
+    def column(markers):
+        cols = [c for c in frame if not any(e in str(c).lower() for e in _ENGLISH_MARKERS)
+                and any(m in str(c) or m in str(c).lower() for m in markers)]
+        if len(cols) != 1:
+            raise ValueError('ambiguous weight-source column')
+        return cols[0]
+    cc = column(_CONS_CODE_MARKERS); nc = column(_CONS_NAME_MARKERS)
+    dc = column(('日期','date')); ic = column(('指数代码','index code'))
+    wc = column(('权重','weight'))
+    tickers = [_code_to_ticker(_norm_code(v)) for v in frame[cc]]
+    if any(not t for t in tickers) or len(set(tickers)) != expected:
+        raise ValueError('invalid or duplicate weighted constituents')
+    if any(_norm_code(v) != symbol for v in frame[ic]):
+        raise ValueError('mixed or foreign index')
+    dates = [pd.Timestamp(str(v).strip()) for v in frame[dc]]
+    if any(pd.isna(d) or d.tz is not None or d != d.normalize() for d in dates):
+        raise ValueError('invalid weight date')
+    if len(set(dates)) != 1 or dates[0].date() > observed.date():
+        raise ValueError('mixed or future weight dates')
+    values = list(frame[wc])
+    if any(isinstance(v,bool) or not isinstance(v,Real) or not 0 <= v <= 100 for v in values):
+        raise ValueError('invalid reported weight')
+    # Provider publishes three decimal percent precision. Do not renormalize.
+    if abs(fsum(values)-100) > expected * .0005 + 1e-8:
+        raise ValueError('reported weights do not account for the whole index')
+    return pd.DataFrame({'symbol':symbol,'ticker':tickers,
+        'name_zh':[str(v).strip() for v in frame[nc]],
+        'weight_date':str(dates[0].date()),'weight_pct':values,
+        'observed_at':observed.isoformat(),'source':'csindex_closeweight',
+        'source_url':_CSINDEX_WEIGHT_URL.format(symbol=symbol)}).sort_values('ticker').reset_index(drop=True)
