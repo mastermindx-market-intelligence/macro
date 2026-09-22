@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "9448e8732a4ddc3caeb7e00a1e0aa5bbccaf11706e869ba3d898989e1b47e24c"
+        "sha256": "da7769a6c18cf9d9e2f6be61dd55fe2e3379a359753db9ddff8dffc6e6fae2da"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "44fe58da355304216ad9140aedf223a90f9064984d02ff04ade960f44f52ca0a"
+        "sha256": "0db16d37676a5876d27c36ae155d7502701961215606caf572f5e2bb49458a4c"
       }
     },
     "claims": {
@@ -566,7 +566,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
-        "sha256": "1dbcefed724da2b70ce9d635289e5d5c1282c183df58b09fd329d3b22799413f"
+        "sha256": "ff2650d7e2c05fc2a56d8ace1fac68a0fd798d4742806ffa92f476e848a96e2e"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
@@ -574,7 +574,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
-        "sha256": "d1a85dfb204b4cf275ec10cc64df641c37bf438df1eadecb65bbed34915db4c8"
+        "sha256": "da91904cd3211b7110b4de41b781a357877d47e80d23c367a3919991a92c9898"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
@@ -582,11 +582,11 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
-        "sha256": "cf4280ef9bbf7c8234b1543278156eca4795a4faea6a24f9ebbf119ccd66296c"
+        "sha256": "1ab8e2a62f2b6d7ffd056f90a1fbc1f1d5f03f5b706dbdcfac7edf0a62c2ac2d"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
-        "sha256": "44eff7c38d8ecf413995f5290a6d8e8cd0d30fbfca6ce671c42ce73f3a082c68"
+        "sha256": "b60291ef44a9bebf6df27dd00c2783172f09810d47cfff49b91f0ad0e69282f5"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
