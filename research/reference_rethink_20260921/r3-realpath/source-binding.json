@@ -1,0 +1,81 @@
+{
+  "source_commit": "49f462dc67f6ea850a77d261a8a1a6a8f810b6df",
+  "tracked_inputs_clean": true,
+  "inputs": [
+    {
+      "path": "lib/market_guide.py",
+      "sha256": "f88c9628042e5a4d10076e0b01b43e4d160e7fca0ea52d8c6cc8eab9d7792cb3",
+      "bytes": 12851
+    },
+    {
+      "path": "config/market_reference.yml",
+      "sha256": "f5b752334b571f1f3577bef677db4c6752cd134a2b415989f8122eec739aa666",
+      "bytes": 102638
+    },
+    {
+      "path": "scripts/build_market_reference.py",
+      "sha256": "3742f904f00043767966af1e3b7db7a94dba87cbbd96c8efff17154167b68f81",
+      "bytes": 30402
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-presentation.json",
+      "sha256": "39334bc8b469ece3cd4e32aa7bd28121e91f4d84ee18bf68547e454a7cbbeef2",
+      "bytes": 1830
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-client.js",
+      "sha256": "fbf4c1696f06b631f8938444a1b9d45aa97cca514fda216bb00ddfe1554fbce1",
+      "bytes": 10760
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-view.js",
+      "sha256": "6a729ef4459bc89ced43dad7886d32d1a22ca5d4617e3a7ad6e34464dc27c91d",
+      "bytes": 18334
+    },
+    {
+      "path": "research/reference_rethink_20260921/prototype.css",
+      "sha256": "e8ee98c61e5135c8d931ded82a3efb9425bc6adb214e4c8f82a75ad9a6f129fc",
+      "bytes": 8652
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-view.css",
+      "sha256": "5105f7707bda298784841e6d772ca1205d37ec0ca93b23fe302d21443660e7b0",
+      "bytes": 1194
+    },
+    {
+      "path": "research/reference_rethink_20260921/render_shared_preview.py",
+      "sha256": "a96257890899649dda8646004f941c8292bb62269848b6b1d921ef3312b020e6",
+      "bytes": 6467
+    },
+    {
+      "path": "site/aibrief.html",
+      "sha256": "41c9ff3ac7579d583a94f905684af0b6bf1aecf0c1997d87b160c2a0a75c1bfb",
+      "bytes": 98961
+    },
+    {
+      "path": "site/bonds.html",
+      "sha256": "906d0fcd4eeb2c11e6150bd21486ede6710970f2b5f8d9329b0b4edeb1794187",
+      "bytes": 252095
+    },
+    {
+      "path": "site/committee.html",
+      "sha256": "7299ab7c3f9fbf4f41353260987da1a470e941fd22b25b1b44dbb35a0fcd2496",
+      "bytes": 310052
+    },
+    {
+      "path": "site/macro.html",
+      "sha256": "2847c9bbd602fb193fc1707a55071f8742e62b07ee529fea2533e18c5434bd0a",
+      "bytes": 606738
+    },
+    {
+      "path": "site/us_stocks.html",
+      "sha256": "18be61fb31e1a4a56218a74bdc28d02709f77d3fdb6848a57e8ba0e263d16cd5",
+      "bytes": 560505
+    },
+    {
+      "path": "site/whitehouse.html",
+      "sha256": "53dd4b9d32d73d214308c3360dd1fa28a35cb56050c884d97bcca43e5e204888",
+      "bytes": 501131
+    }
+  ]
+}

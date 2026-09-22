@@ -1,43 +1,26 @@
 {
   "operation": "reference-rethink-20260921",
-  "boundary": "real-source qualification and current shared-help integration preparation",
+  "mission": "Replace the confusing reference-page experience with a visual Market Guide and contextual Macro explanations, preserving the canonical registry and useful deep detail",
   "mission_complete": false,
   "production_changed": false,
-  "principal_judgment": "PRINCIPAL_JUDGMENT: reconcile source and restore the frozen design in the shared consumer before independent visual acceptance. No eligible Executive submit tool found; no worker START or effect unknown.",
-  "source_pin": "ff90f9beacb5109e43848faf0a76e45060bd07f9",
+  "finalization_classification": "ALL_SCOPED_LANES_BLOCKED",
+  "boundary": "Real-source browser qualification advanced; integration edits and focus diagnosis refused; release gates remain open",
   "protected_authority_pin": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
+  "source_subject": "49f462dc67f6ea850a77d261a8a1a6a8f810b6df",
+  "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
   "carrier": "claude/reference-rethink-20260921",
+  "pr": 7647,
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
-  "verification": "browser-test-receipt.json",
-  "prototype_sha256": "c688441a586d750251848b51e2bbbe40f2c8daae40187ea68220a6cf23e769c7",
-  "do_not_redo": [
-    "Do not replace the validated registry with a second editorial database.",
-    "Do not recreate the full glossary or alphabet rail as the default experience.",
-    "Do not rerun one-shot Paper composition scripts against frozen nodes.",
-    "Do not invent live scores, illustrative component values, thresholds or formulas."
-  ],
-  "next_action": "Integrate material main changes on this same carrier, wire the new suites into existing CI, qualify the new reader and embedded help using source-backed real-browser tests, preserve independent design/release gates.",
-  "gaps": [
-    "Independent design/code adjudication pending.",
-    "Production wiring/merge/deploy/live proof owed.",
-    "Latest-base input compatibility and full real-browser matrix in progress."
-  ],
-  "current_subject": "e3f4b2e0834387f9e6a7c723403060c281fa81cc",
-  "current_main_observed": "259477158b3363aee5a704946b9b46a1309708dc",
-  "source_qualification": {
-    "entries": 46,
-    "fixture_only": false,
-    "content_revision": "3986cc832462d070ff26ce142d2e412a0dd839b96aacd4b483a7b2b069fd5495",
-    "owner_pages": "materialized from the current carrier; newer main must be qualified after integration"
-  },
-  "capability_recovery": {
-    "studio_process": "read and source fast-forward succeeded",
-    "studio_browser": "Chromium 151.0.7922.34 loaded the exact file preview with no page error; no browser or policy settings changed"
-  },
-  "adjacent_work": {
-    "6792": "OPEN at 7853ffeaca41d4d8f33995b1453db2be134ce8a3; retain all route and evidence obligations",
-    "7610": "MERGED 2026-09-22T02:31:47Z; consume current main rather than reimplement shared help"
-  },
-  "ci_defect": "contract-delta correctly reports two new pytest modules absent from existing CI enrollment; repair enrollment, never waive tests"
+  "last_material_delta": "Actual 46-entry registry and rendered owners compile; Chromium exercised 184 EN/ZH desktop/mobile detail routes plus real history and recovery behavior",
+  "proof": "r3-realpath/qualification-status.json and r3-realpath/remaining-routes.json",
+  "held_failure": "Native Tab containment assertion failed. Product versus test/browser-chrome behavior remains unresolved. Do not call this full browser PASS",
+  "adjacent_work": {"6792":"OPEN at 7853ffeaca41d4d8f33995b1453db2be134ce8a3; source/evidence obligations retained", "7610":"MERGED; current-main shared help consumed, not rewritten"},
+  "blocked_lanes": {"integration_and_ci_repair":"Exact edit request refused by safety checks; same-carrier readback confirms no edit", "focus_diagnosis":"Diagnostic request blocked; no alternative route used", "full_visual_matrix":"Matrix-writing request blocked and not repeated", "independent_review":"No eligible Executive worker submit tool exposed; no reviewer assigned or execution claimed", "release":"Requires the unresolved CI, browser, design and integration gates"},
+  "principal_judgment": "Direct bounded qualification under existing source custody; no worker started and no effect unknown",
+  "active_children": [],
+  "autonomous_return_path": null,
+  "do_not_redo": ["Do not recreate the 20 Paper artboards", "Do not build a second editorial store", "Do not invent live values, weights or thresholds", "Do not reuse old prototype browser PASS for this source", "Do not waive the two unenrolled suites", "Do not clear the native-focus failure without diagnosis", "Do not overwrite incumbent reference/help work", "Do not reroute refused edits or diagnostics"],
+  "next_action": "After an actual authorized capability recovery, diagnose the held native-focus assertion, repair the two-suite enrollment in the existing CI owner and add context-only mounting; qualify against the bound source before production integration and independent acceptance",
+  "intended_resume_surface": "Same operation and PR; reconcile current remote/local effect and source custody before changes"
 }
