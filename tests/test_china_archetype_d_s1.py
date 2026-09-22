@@ -220,6 +220,7 @@ def test_mobile_section_index_improves_scanability_without_collapsing_depth() ->
 def test_mobile_deep_rows_become_swipeable_without_removing_cards() -> None:
     assert "body.page-china .cnx-wrap > .cnx-rack3{display:flex;overflow-x:auto" in TPL
     assert "body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px)" in TPL
+    assert "body.page-china .cnx-links[data-cn-driver-rail]{flex-wrap:nowrap;overflow-x:auto" in TPL
     assert "scroll-snap-type:x mandatory" in TPL
     assert "scroll-snap-align:start" in TPL
     for target in ("cnx-focus-action", "cnx-focus-markets", "cnx-focus-drivers", "cnx-focus-deep"):
