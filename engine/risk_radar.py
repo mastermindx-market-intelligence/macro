@@ -161,7 +161,8 @@ _VALIDATED_MIN = 1.20   # a leg is a real LEADING leg only if its 2020+ lift cle
 
 
 def _is_validated(leg: str, calib: dict | None = None) -> bool:
-    lc = (calib or {"legs": _LEG_CALIB})["legs"].get(leg, {})
+    legs = (calib or {"legs": _LEG_CALIB}).get("legs", {})
+    lc = legs.get(leg, {})
     return float(lc.get("lift_2020") or 0.0) >= _VALIDATED_MIN
 
 
@@ -720,8 +721,8 @@ def leading_signals() -> pd.DataFrame:
 def display_only_legs(calib: dict | None = None) -> set:
     """Legs registered display_only=True — STRUCTURALLY UNABLE to move a scare tier until
     gauntlet-promoted (VSB W6 doctrine). Shared by subscore_series (the DISPLAYED sub-score)
-    and _tierb_can_escalate (escalation eligibility) so the two can never disagree."""
-    legs = (calib or _calib())["legs"]
+    and _resolve_state_row (escalation eligibility) so the two can never disagree."""
+    legs = (calib or _calib()).get("legs", {})
     return {leg for leg, lc in legs.items() if lc.get("display_only")}
 
 
@@ -733,7 +734,7 @@ def subscore_series(sigs: pd.DataFrame | None = None, calib: dict | None = None)
     research/REGIME_DISLOCATION_RECAL_PROPOSAL.md.
 
     The 2026-07-29 audit is right that the VSB W6 contract ("STRUCTURALLY UNABLE to move scare
-    tier until gauntlet-promoted") is enforced only in _tierb_can_escalate, so an un-promoted
+    tier until gauntlet-promoted") is enforced only in _resolve_state_row, so an un-promoted
     leg still sets the DISPLAYED number, and that it does so in the calming direction: a quiet
     display_only leg at 0.0 carries full weight in the mean, so 'vol' prints 22.4 while its one
     graded leg (vix_term) sits at pctile 0.67.
@@ -873,6 +874,98 @@ def _band(score: float, bands: dict) -> str:
     return "calm"
 
 
+
+def _resolve_state_row(subrow: pd.Series, sigrow: pd.Series, calib: dict, *,
+                       gate_met: bool) -> dict:
+    """Canonical Risk Radar state transition for one dated observation.
+
+    This is the single semantic owner for Tier-A origin, armed+confirm
+    conjunction, Tier-B escalation eligibility, and the broad-tape loud-state
+    cap. Replay code must call this helper with the same causal signal row
+    rather than reconstructing a simplified state machine from sub-scores.
+    """
+    bands = calib["bands"]
+    scare_specs = calib["scares"]
+    legs_cfg = calib.get("legs", {})
+    tier_a_scores: dict[str, float] = {}
+    tier_b_scores: dict[str, float] = {}
+
+    state = "calm"
+    for scare, spec in scare_specs.items():
+        value = subrow.get(scare)
+        if value is None or pd.isna(value):
+            continue
+        score = float(value)
+        if spec.get("tier") == "A":
+            tier_a_scores[scare] = score
+            band = _band(score, bands)
+            if _STATE_ORDER.index(band) > _STATE_ORDER.index(state):
+                state = band
+        elif spec.get("tier") == "B":
+            tier_b_scores[scare] = score
+
+    hot_a = [scare for scare, score in tier_a_scores.items()
+             if score >= bands["caution"]]
+    second_a = [scare for scare, score in tier_a_scores.items()
+                if score >= bands["watch"]]
+
+    armed_a = []
+    for scare in hot_a:
+        for leg, _weight in scare_specs[scare].get("legs", []):
+            if not _is_validated(leg, calib):
+                continue
+            value = sigrow.get(leg)
+            if value is None or pd.isna(value):
+                continue
+            lc = legs_cfg.get(leg, {})
+            threshold = float(lc.get("thr_pct", 0.90))
+            # Live compute() first requires the leg to be a firing leg at the
+            # watch floor, then requires confirmation at its strict threshold.
+            if (float(value) >= bands["watch"] / 100.0
+                    and float(value) >= threshold):
+                armed_a.append(scare)
+                break
+
+    conjunction = bool(armed_a and len(second_a) >= 2)
+    escalate = conjunction
+
+    if state != "calm":
+        display_only = display_only_legs(calib)
+        for scare, score in tier_b_scores.items():
+            if score < bands["caution"]:
+                continue
+            firing_escalatable = []
+            for leg, _weight in scare_specs[scare].get("legs", []):
+                if leg in display_only:
+                    continue
+                value = sigrow.get(leg)
+                if value is None or pd.isna(value):
+                    continue
+                if float(value) >= bands["watch"] / 100.0:
+                    firing_escalatable.append(leg)
+            if (firing_escalatable
+                    and not all(legs_cfg.get(leg, {}).get("lift_2020") == 0.0
+                                for leg in firing_escalatable)):
+                escalate = True
+                break
+
+    state_ungated = state
+    if (escalate and state != "calm"
+            and _STATE_ORDER.index(state) < _STATE_ORDER.index("risk-off")):
+        state = _STATE_ORDER[_STATE_ORDER.index(state) + 1]
+        state_ungated = state
+
+    if not gate_met and _STATE_ORDER.index(state) > _STATE_ORDER.index("caution"):
+        state = "caution"
+
+    return {
+        "state": state,
+        "state_ungated": state_ungated,
+        "conjunction": conjunction,
+        "hot_a_count": len(hot_a),
+    }
+
+
 def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=None,
             gate: dict | None = None) -> dict:
     """Live regime-typed risk snapshot. Pure-ish (reads store via leading_signals if sigs is None).
@@ -995,65 +1088,18 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
 
     scares.sort(key=lambda d: -d["score"])
     tierA = [s for s in scares if s["tier"] == "A"]
-    tierB = [s for s in scares if s["tier"] == "B"]
     # dominant/named scare from the VALIDATED (Tier-A) set, lift-weighted so leading > coincident
     dominant = max(tierA, key=lambda d: d["lead_weighted"]) if tierA else (scares[0] if scares else None)
-    # state originates ONLY from Tier-A (validated) scares; loud+early = worst Tier-A band
-    state = "calm"
-    for s in tierA:
-        if _STATE_ORDER.index(s["band"]) > _STATE_ORDER.index(state):
-            state = s["band"]
     hotA = [s for s in tierA if s["score"] >= bands["caution"]]
-    # ARMED + CONFIRM conjunction (verified; the naive >=2 count was REJECTED as noise): escalate
-    # only when a VALIDATED leading leg is ARMED inside a hot Tier-A scare (its scare hot AND it has a
-    # confirmed+validated firing leg) AND a SECOND Tier-A scare is at least at watch.
-    armed = [s for s in hotA
-             if any(l.get("confirmed") and _is_validated(l["leg"], calib) for l in s["firing_legs"])]
-    second = [s for s in tierA if s["score"] >= bands["watch"]]
-    conjunction = len(armed) >= 1 and len(second) >= 2
-    esc = conjunction
-    # Tier-B scares may escalate a hot Tier-A state, never originate one.  Two exclusion rules:
-    # (1) A scare whose ALL firing legs carry lift_2020==0.0 (measured null — e.g. nh_contraction
-    #     perm_p=0.978) is excluded from the escalation set until it accrues a real forward-graded
-    #     lift.  This keeps phase-0 null legs display-only per the context-accrual law.
-    #     Legs with lift_2020=None (unknown/accruing, e.g. vol flow legs, global_breadth) are
-    #     NOT excluded by this rule alone — their lift is simply unmeasured, not measured-zero.
-    # (2) VSB W6 doctrine — legs flagged display_only=True are STRUCTURALLY UNABLE to move a scare
-    #     tier regardless of lift_2020.  This preserves the spec requirement ("lift_2020=None-style
-    #     accruing registration so they can NEVER move a scare tier until gauntlet-promoted").
-    #     display_only legs count toward the scare's display score but are EXCLUDED from the
-    #     escalation computation.  When ALL remaining firing legs are display_only, the scare
-    #     cannot escalate.  When some non-display_only legs are present, those govern escalation.
-    def _tierb_can_escalate(scare_d: dict, calib: dict) -> bool:
-        legs = scare_d["firing_legs"]
-        if not legs:
-            return False
-        # Exclude display_only legs from escalation eligibility (VSB W6 doctrine). SINGLE
-        # SOURCE with subscore_series' exclusion (display_only_legs()) so the DISPLAYED
-        # sub-score and the escalation decision can never disagree about which legs speak.
-        _skip = display_only_legs(calib)
-        escalatable = [l for l in legs if l["leg"] not in _skip]
-        if not escalatable:
-            # all firing legs are display_only — scare is structurally non-escalating
-            return False
-        # all remaining legs measured-zero → exclude from escalation
-        if all(calib["legs"].get(l["leg"], {}).get("lift_2020") == 0.0 for l in escalatable):
-            return False
-        return True
-    if state != "calm" and any(
-        s["score"] >= bands["caution"] and _tierb_can_escalate(s, calib) for s in tierB
-    ):
-        esc = True
-    state_ungated = state
-    if esc and _STATE_ORDER.index(state) < _STATE_ORDER.index("risk-off") and state != "calm":
-        state = _STATE_ORDER[_STATE_ORDER.index(state) + 1]
-        state_ungated = state
 
-    # CONTEXT GATE: the LOUD banner (elevated+) requires the broad tape to be breaking; otherwise cap
-    # at 'caution' (the early/quiet tier still shows). Biggest verified FP-reduction lever.
-    # (gate was computed above for the election-cycle overlay; reuse it.)
-    if not gate.get("met") and _STATE_ORDER.index(state) > _STATE_ORDER.index("caution"):
-        state = "caution"
+    # Canonical state transition. Replay uses this exact owner too, so research cannot
+    # silently drift back to the rejected naive-count conjunction or permissive Tier-B rule.
+    resolved_state = _resolve_state_row(
+        row, sigrow, calib, gate_met=bool(gate.get("met"))
+    )
+    state = resolved_state["state"]
+    state_ungated = resolved_state["state_ungated"]
+    conjunction = bool(resolved_state["conjunction"])
 
     alert = _STATE_ORDER.index(state) >= _STATE_ORDER.index(calib.get("alert_from", _ALERT_FROM))
     gross = _gross_for(state)
@@ -1064,10 +1110,10 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
     if gross_applied:
         gross = round(max(_GROSS["floor"], gross * float(mod["gross_mult"])), 3)
     mod["gross_applied"] = bool(gross_applied)
-    prob = _drawdown_prob(state, len(hotA), calib)
+    prob = _drawdown_prob(state, int(resolved_state["hot_a_count"]), calib)
     head_en, head_zh = _headline(state, dominant, hotA, prob)
     authority = _market_state_authority(state, bool(alert), scares, prob, calib)
-    traj = trajectory(subs, calib)
+    traj = trajectory(subs, calib, sigs=sigs)
     deesc = _deescalation(dominant["scare"] if dominant else None, subs, traj, prob)
 
     # cap_leadership is True from 'elevated'. THRESHOLD REVIEW (incident
@@ -1363,7 +1409,7 @@ def _trajectory_from_series(win, states, odds, caution_band: float) -> dict:
 
 
 def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
-               window: int = _TRAJ_WINDOW) -> dict | None:
+               window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None) -> dict | None:
     """Recent PATH of the radar — has its intensity peaked and turned down, and how fast are the
     pullback odds dropping? Powers the de-escalation / "risk-off may be ending" panel
     (engine/risk_radar_recovery.py). LEAK-FREE: every input is a causal trailing-window percentile
@@ -1372,7 +1418,9 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
         calib = calib or _calib()
         bands = calib["bands"]
         if subs is None:
-            subs = subscore_series(leading_signals(), calib)
+            if sigs is None:
+                sigs = leading_signals()
+            subs = subscore_series(sigs, calib)
         if subs is None or subs.empty:
             return None
         tierA = [s for s, v in calib["scares"].items()
@@ -1391,7 +1439,7 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
         states = odds = None
         try:
             from engine.risk_radar_backtest import state_series
-            states = state_series(subs, calib).reindex(intensity.index).tail(window)
+            states = state_series(subs, calib, sigs=sigs).reindex(intensity.index).tail(window)
             # Calendar context is sizing-only; the measured caution cut is identical in the
             # live engine and this causal replica.
             nhot = sum((subs[s] >= bands["caution"]).astype(int) for s in tierA
