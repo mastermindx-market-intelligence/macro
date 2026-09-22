@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T15:36:07.349892+00:00",
-  "count": 2647,
+  "generated_at": "2026-09-22T15:56:07.568333+00:00",
+  "count": 2648,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -127,6 +127,26 @@
         "Agentic AI Power Demand Catalyst: +10pp AI queries (20-30% by 2030-35) boost datacenter needs by +25%, creating tailwinds for renewables growth and FlexGen margins in utilities.",
         "Ireland Offshore Wind Grid Delays: 3GW of pending grid connections for 5GW installed offshore wind, posing critical risk to renewable deployment timelines and project viability.",
         "Electric Utilities Valuation Target Increase: Goldman Sachs raises target P/E to above mid-cycle (c. 16x), signaling elevated sector valuation expectations amid strong balance sheets (RWE, Orsted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hpwe6lu9ruq-dba3dc",
+      "title": "GS Housing Market Activity Scale Week of September 13 Scale Down 2 Sequentially Led by Decline in Sales and Purchase Appli...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:33Z",
+      "summary_points": [
+        "Mortgage Rate Surge & Demand Collapse: 30-year fixed rate at 6.95% (52-week high) driving 40% YoY decline in total mortgage applications and 61% YoY drop in refinancing, signaling severe rate-driven demand suppression.",
+        "Affordability Crisis Dominates: Buyer hesitation due to elevated rates (up 69bps YoY) and economic headwinds, with purchase applications down 10% YoY and sales declining 5% sequentially.",
+        "Refinancing Market in Freefall: Refinancing applications fell 61% YoY, reflecting acute rate sensitivity and liquidity constraints for homeowners amid sustained high borrowing costs.",
+        "Housing Activity Stagnation: Sequential 2% decline in housing activity scale (sales down 5%, purchase apps down 1%) with market near long-term average (scale 4), indicating no near-term recovery."
       ],
       "tags": [],
       "tickers": [],
