@@ -19,6 +19,9 @@ changed:
 - path: tests/test_china_participation.py
   what: Cover missing/stale/invalid/future data, matched denominators, benchmark absence,
     absolute-versus-relative returns and bilingual null presentation.
+- path: scripts/build_china.py + templates/china.html.j2
+  what: Qualified legacy CN rendering copy identifies historical stress and sampled
+    breadth without changing raw model, odds or policy fields.
 verified:
 - claim: The final affected three-suite run passes with the new context and unchanged
     neighboring consumers.
@@ -47,6 +50,17 @@ verified:
     tests/test_china_board_breadth.py -q; python research/grey_deer/capture_china_participation_context.py
   result: 154 active tests passed; 16 rest/focus captures and8 interactions passed.
     Fifteen explicitly pending clock tests are excluded and remain failing.
+- claim: Risk-reading and existing China/shared-dialog regression
+  command: python -m pytest tests/test_china_archetype_d_s1.py tests/test_china_participation.py
+    tests/test_risk_radar_dlg_country_wiring.py tests/test_risk_radar_dlg_partial.py
+    -q
+  result: 269 passed;26 added cases; raw fields preserved. Fifteen pending clock cases
+    remain excluded and unresolved.
+- claim: Real builder risk-card/popover/dialog scope and controls
+  command: CHINA_FAST_RENDER=1 RENDER_NO_DRIP=1 CHINA_VM_DUMP=1 python -m scripts.build_china;
+    python research/grey_deer/capture_china_risk_reading.py
+  result: 8 full-page captures and8 interactive cases; unchanged source-page hash;
+    server/browser closed. Source646abdc2ed5d, pagef42a6bb8. Offline only.
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -67,17 +81,12 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Preserve PR7622 exact source and its154-test/real-builder/cohort evidence; no CI
-  polling or PR7592 mutation under current deferred-release instruction.
-- Clock edit is frozen at platform refusal with confirmed NO_EFFECT. Resolve that
-  exact gate through permitted same-carrier procedure before applying the preserved15
-  acceptance cases; do not reroute or blind-retry.
-- Advance historical-membership and official starting-weight qualification through
-  the incumbent China source owners; current membership snapshots and placeholder/end-date
-  caps cannot prove contributions.
-- At release qualification, compose with PR7592, retain the existing publication normalization,
-  obtain required checks and real public-page proof. Do not represent this draft as
-  deployed.
+- Resolve the exact clock-edit gate without bypass;15 pending clock cases remain explicit,
+  not passing.
+- Qualify official starting weights/historical membership and the remaining shared
+  recovery/probability language through existing owners.
+- When release resumes, integrate PR7622 with PR7592 and run ordinary source-current
+  CI/publication/live browser acceptance; do not overwrite the earlier repairs.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -143,15 +152,23 @@ mockups/evidence/china-index-cohort-20260921; old proof is historical/DO_NOT_RED
 Parent ownership stays Sol; no worker, watcher, CI run or background continuation
 is claimed. Resume from this record plus fresh compatible procedure, not tool history.
 
-## Active risk-reading scope repair
-Current procedure: Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f.
-Same PR7622 source carrier; prior clock-edit refusal remains NO_EFFECT/frozen.
-The China-only legacy rendering view now identifies the historical stress rank,
-separate Shanghai 21-session estimate and curated large-cap breadth scope.
-No score, odds, state, policy, source payload, model or ledger is modified.
-Other markets, unknown constructions and explicit composition metadata remain
-outside this interpretation; shared radar/card/dialog source is untouched.
-269 active tests passed across four affected suites, including26 added display
-cases. Source design/evidence: CHINA_RISK_READING_SCOPE_20260921.md in the existing
-research/grey_deer directory. Next: real-builder/interactive browser proof, then
-same-carrier evidence publication. No CI, fresh collection or release claimed.
+## Current risk-reading continuation
+Procedure:Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f.
+Same PR7622 branch and source ownership. The original model's94 and50% remain;
+the card/popover/dialog now describe their different meanings and curated sample.
+Actual source646abdc2ed5d7b9ff911bff9bd140705c1b11894, browser page
+f42a6bb88ad4099d29a7a15a20b9b999455c36c4d68435682cece2e83edf8abb.
+See research/grey_deer/CHINA_RISK_READING_SCOPE_20260921.md and sibling real-input
+receipt plus mockups/evidence/china-risk-reading-20260921/.
+269 active tests passed;8 capture and8 interaction cases passed. Model/state/
+policy and original source labels were preserved. Generated data/site changes
+were restored only after preserving the verified page. No source effect unknown.
+The old clock refusal remains NO_EFFECT/frozen;15 pending cases are not passed.
+PR7592/shared model/recovery source untouched. CI/release remain deferred; no
+worker, watcher, fresh collection or production deployment is claimed.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false
+Boundary: bounded risk-interpretation vertical proven offline, with the next
+source-clock/official-weight/shared-model and integrated-release obligations
+explicit. Resume from this cumulative record and fresh minimum procedure, not
+old tool history; parent ownership is retained, not handed off.
