@@ -21,9 +21,11 @@ The inherited International Contagion-board automatic grid minimum, 340px event
 track, narrow control row, risk-label row, and reference-fold wrapping were
 repaired without clipping dashboard content or changing any financial reading.
 
-Focused route/mobile/component pack: 68 passed, 1 pre-existing conditional skip.
-The three new mobile tests were observed failing before their respective fixes.
-The shared theme's cache-busting reference on `site/intl.html` is refreshed.
+Focused route/mobile/component pack: 72 passed, 1 pre-existing conditional skip.
+The mobile/projection regressions were observed failing before their fixes.
+The final implementation leaves shared `theme.css` byte-identical to current main:
+International derives its hero CSS from the governed Macro block and ships that
+bridge inside the existing snapshot, so unrelated P0B theme receipts are untouched.
 
 These are local implementation proofs, not deployment or public-route acceptance.
 Final acceptance requires public Macro `ud=0/radar=1` and International `ud=1`,
