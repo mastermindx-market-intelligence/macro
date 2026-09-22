@@ -1,0 +1,5 @@
+FAILED tests/test_ftr_w3_ui.py::test_basket_holdings_sort_controls_are_native_and_truthful
+FAILED tests/test_ftr_w3_ui.py::test_basket_holdings_sort_help_is_bilingual_and_not_a_native_title
+FAILED tests/test_ftr_w3_ui.py::test_basket_holdings_sort_keeps_one_native_activation_and_focus
+FAILED tests/test_ftr_w3_ui.py::test_all_basket_sort_artifacts_keep_semantics_and_static_styles
+4 failed, 55 deselected, 5 warnings in 3.11s
