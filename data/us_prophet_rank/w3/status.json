@@ -65,8 +65,8 @@
       "stamps": 0,
       "written": 0
     },
-    "n_coverage_rows": 8,
-    "n_family_rows": 8,
+    "n_coverage_rows": 0,
+    "n_family_rows": 0,
     "n_paired_rows": 1044,
     "paired": {
       "identical": 1001,
@@ -76,6 +76,7 @@
       "written": 0
     },
     "reconstruction_refused": [
+      "2026-09-18",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -92,7 +93,7 @@
       "identical": 18,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
