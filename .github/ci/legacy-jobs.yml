@@ -2810,199 +2810,6 @@ jobs:
     # statement-tape guard here, and both its check script and tests/test_statement_tape.py
     # are still in this job. The B4/attested-history cluster moved to
     # `attested-history-guards` and the express guards to `express-render-guards`.
-    paths:
-      - "templates/markets.html.j2"
-      - "templates/_market_regime_strip.html.j2"
-      - "templates/theme.css"
-      - "scripts/build_markets.py"
-      - "site/markets.html"
-      - "site/theme.css"
-      - "tests/fixtures/markets_regime_strip/**"
-      - "tests/test_canada_build.py"
-      - "tests/test_canada_canonical_board.py"
-      - "tests/test_canada_v36_composer.py"
-      - "tests/test_stock_dashboard_first_frame_data.py"
-      - "tests/test_stock_dashboard_css.py"
-      - "tests/test_debt_maturity.py"
-      - "tests/test_cash_runway.py"
-      - "tests/test_hk_v37_composer.py"
-      - "tests/test_commodity_signals.py"
-      - "tests/test_commodity_index.py"
-      - "tests/test_commodity_confluence.py"
-      - "tests/test_commodity_cycle_state.py"
-      - "tests/test_commodity_coverage_matrix.py"
-      - "tests/test_china_gold_premium.py"
-      - "tests/test_fear_euphoria.py"
-      - "tests/test_froth_fragility.py"
-      - "tests/test_vol_velocity.py"
-      - "tests/test_fear_greed_honesty.py"
-      - "tests/test_archive_context_snapshots.py"
-      - "tests/test_ai_breadth_split.py"
-      - "tests/test_vsb_surface.py"
-      - "tests/test_ud_b2_w1_vw_fold.py"
-      - "tests/test_unified_dashboard_b1.py"
-      - "tests/test_unified_dashboard_b2w2.py"
-      - "tests/test_markets_regime_strip.py"
-      - "tests/test_macro_w9_r1.py"
-      - "tests/test_hub_plain_language.py"
-      - "tests/test_unified_dashboard_b2w3.py"
-      - "tests/test_ud_b2_w1_red_first_proof.py"
-      - "tests/test_missing_tape.py"
-      - "tests/test_price_basis_flip.py"
-      - "tests/test_risk_lead_lag.py"
-      - "tests/test_anticipation.py"
-      - "tests/test_risk_radar_market_catalysts.py"
-      - "tests/test_risk_radar_recovery.py"
-      - "tests/test_risk_radar_scorecard.py"
-      - "tests/test_vsb_radar_alert.py"
-      - "tests/test_risk_radar_intl_profiles.py"
-      - "tests/test_gd4a_cnhk_ledger_repair.py"
-      - "tests/test_risk_radar_dlg_country_wiring.py"
-      - "tests/test_risk_radar_dlg_partial.py"
-      - "tests/test_risk_state_live_copy_sync.py"
-      - "tests/test_build_china_risk_state.py"
-      - "tests/test_china_connect_leaderboard_render.py"
-      - "tests/test_canon.py"
-      - "tests/test_whitehouse_w5.py"
-      - "tests/test_winner_autopsy.py"
-      - "tests/test_admin_long_hold.py"
-      - "tests/test_falsifier_packet.py"
-      - "tests/test_board_ledger.py"
-      - "tests/test_grade_us_board.py"
-      - "tests/test_ob_mask_start_invariance.py"
-      - "tests/test_board_ledger_lane_gates.py"
-      - "tests/test_prophet_governor.py"
-      - "tests/test_prophet_showcase.py"
-      - "tests/test_prophet_options_context.py"
-      - "tests/test_pick_autopsy_selection.py"
-      - "tests/test_trade_memory.py"
-      - "tests/test_options_stamp.py"
-      - "tests/test_options_entry_state.py"
-      - "tests/test_sector_pulse_wiring.py"
-      - "tests/test_news_page_render.py"
-      - "tests/test_china_lens_hub.py"
-      - "tests/test_news_rank_aging.py"
-      - "tests/test_build_netliq_daily.py"
-      - "tests/test_ignition_radar.py"
-      - "tests/test_mag7_washout.py"
-      - "tests/test_mag7_washout_shadow.py"
-      - "tests/test_mag7_regime.py"
-      - "tests/test_theme_scoring_leadership_split.py"
-      - "tests/test_ignition_persistence.py"
-      - "tests/test_mag7_panel.py"
-      - "tests/test_stance_matrix.py"
-      - "tests/test_theme_scoring_conflicted.py"
-      - "tests/test_basket_score_rollover_w4.py"
-      - "tests/test_index_momentum.py"
-      - "tests/test_cohort_flow_chips.py"
-      - "tests/test_statement_tape.py"
-      - "tests/test_backfill_options_flow.py"
-      - "tests/test_rlt_sector_stance_enrich.py"
-      - "tests/test_stock_personality_w4_surfaces.py"
-      - "tests/test_fundamental_forensics_page.py"
-      - "tests/test_fundamental_forensics_private_state.py"
-      - "tests/test_fundamental_forensics_health.py"
-      - "tests/test_fundamental_forensics_ui.py"
-      - "tests/test_fundamental_forensics_acquisition.py"
-      - "tests/test_fundamental_forensics_disclosure_diff.py"
-      - "tests/test_fundamental_forensics_disclosure_projection.py"
-      - "tests/test_fundamental_forensics_source_sync.py"
-      - "tests/test_fundamental_forensics_attestation.py"
-      - "tests/test_fundamental_forensics_wave2_operator.py"
-      - "tests/test_fundamental_forensics_companyfacts.py"
-      - "tests/test_fundamental_forensics_companyfacts_ledger.py"
-      - "tests/test_fundamental_forensics_metric_registry.py"
-      - "tests/test_fundamental_forensics_raw_ledger.py"
-      - "tests/test_fundamental_forensics_periods.py"
-      - "tests/test_fundamental_forensics_query.py"
-      - "tests/test_fundamental_forensics_financial_intelligence_packet.py"
-      - "tests/test_fundamental_forensics_financial_intelligence_packet_r2.py"
-      - "tests/test_fundamental_forensics_financial_intelligence_packet_r3.py"
-      - "tests/test_fundamental_forensics_query_snapshots.py"
-      - "tests/test_fundamental_forensics_attested_query_snapshots.py"
-      - "tests/test_fundamental_forensics_attested_history_reader.py"
-      - "tests/test_sec_document_spine.py"
-      - "tests/test_fundamental_forensics_filing_package.py"
-      - "tests/test_fundamental_forensics_financial_query_service.py"
-      - "tests/test_fundamental_forensics_financial_query_api.py"
-      - "tests/test_fundamental_forensics_ixbrl_raw_ledger.py"
-      - "tests/test_fundamental_forensics_financial_revision_service.py"
-      - "tests/test_fundamental_forensics_financial_revision_api.py"
-      - "tests/test_fundamental_forensics_financial_packet_service.py"
-      - "tests/test_fundamental_forensics_financial_packet_api.py"
-      - "tests/test_fundamental_forensics_financial_statement_service.py"
-      - "tests/test_fundamental_forensics_financial_statement_api.py"
-      - "tests/test_forensics_api.py"
-      - "tests/test_edgar_forensics_collector.py"
-      - "tests/test_fundamental_forensics_broad_sec.py"
-      - "tests/test_filing_forensics_broad_sec_lane.py"
-      - "tests/test_fundamental_forensics_edgar_index.py"
-      - "tests/test_context_api.py"
-      - "tests/test_finra_knowable.py"
-      - "tests/test_t0_indicator.py"
-      - "tests/test_intraday_flow.py"
-      - "tests/test_intraday_flow_stance.py"
-      - "tests/test_intraday_flow_w11_r1.py"
-      - "tests/test_intraday_flow_w11_r2.py"
-      - "tests/test_intraday_flow_w11_r3.py"
-      - "tests/test_intraday_flow_w11_r4.py"
-      - "tests/test_intraday_flow_w11_r5.py"
-      - "tests/test_intraday_flow_ncp_js.py"
-      - "tests/test_standout_audit.py"
-      - "tests/test_track_record_page.py"
-      - "tests/test_altdata_hygiene.py"
-      - "tests/test_china_news_engine.py"
-      - "tests/test_china_library_limited.py"
-      - "tests/test_china_standouts_serialization.py"
-      - "tests/test_china_stocks_w1c_render.py"
-      - "tests/test_intl_act_now_board_icons.py"
-      - "tests/test_act_now_board_icons.py"
-      - "tests/test_china_delayed_board_disclosure.py"
-      - "tests/test_cn_board_freshness_truth.py"
-      - "tests/test_china_zt_pool_dates.py"
-      - "tests/test_drip_append_only.py"
-      - "tests/test_cn_calendar.py"
-      - "tests/test_china_stocks_copy_w09.py"
-      - "tests/test_china_board_track_render.py"
-      - "tests/test_china_alpha_w2a.py"
-      - "tests/test_china_alpha_w2b.py"
-      - "tests/test_china_act_now.py"
-      - "tests/test_us_act_now.py"
-      - "tests/test_p_mp1_shell_groundwork.py"
-      - "tests/test_p_mp1_shell_stance_projection.py"
-      - "tests/test_p_mp1_shell_nonus_byte_parity.py"
-      - "tests/test_wl1_lifecycle_neutralization.py"
-      - "tests/test_p_mp1_shell_ladder_filter_css.py"
-      - "tests/test_p_mp1_shell_ladder_error_state.py"
-      - "tests/test_p_mp1_shell_css_comment_termination.py"
-      - "tests/test_p_mp1_shell_repair_round.py"
-      - "tests/test_p0_prophet_candidate_board.py"
-      - "tests/test_hk_library_limited.py"
-      - "tests/test_canada_library_limited.py"
-      - "tests/test_intl_library_limited.py"
-      - "tests/test_intl_session_asof.py"
-      - "tests/test_library_chg_1d.py"
-      - "tests/test_stock_technicals.py"
-      - "tests/test_aibrief_page.py"
-      - "tests/test_aibrief_w4_panels.py"
-      - "tests/test_market_reference.py"
-      - "tests/test_validated_claims_thirdparty.py"
-      - "tests/test_validated_claims_engine.py"
-      - "tests/test_validated_claims_surfaces.py"
-      - "tests/test_validated_claims_registry_source.py"
-      - "tests/test_validated_claims_structural_scope.py"
-      - "tests/test_intl_recovery_quality.py"
-      - "tests/test_sa_w5_v2_grader_hook.py"
-      - "tests/test_w8b_macro_prior_entries.py"
-      - "tests/test_rr_scorecard_card.py"
-      - "tests/test_engine_run_no_regress.py"
-      - "tests/test_cycles.py"
-      - "tests/test_stretch_oracle_contract.py"
-      - "tests/test_opex.py"
-      - "tests/test_opex_risk.py"
-      - "tests/test_seo_meta_rollout.py"
-      - "tests/test_cycles_anchor_invariance.py"
-      - "tests/test_research_priority_ordering.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3117,11 +2924,6 @@ jobs:
       # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
       # engine.cash_runway is a pure module under this job's engine/*.py glob and the
       # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
-      # tests/test_markets_regime_strip.py (UD-B2-W4B-1) rides this step: it renders
-      # templates/markets.html.j2 and the regime-strip partial (jinja2) and reads the
-      # persisted market-state feeds the way scripts/build_markets.py does.
-      # pandas, pyarrow, jinja2 and beautifulsoup4 are already on the install line.
-      # No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -3146,7 +2948,6 @@ jobs:
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
           tests/test_unified_dashboard_b2w2.py
-          tests/test_markets_regime_strip.py
           tests/test_macro_w9_r1.py
           tests/test_hub_plain_language.py
           tests/test_unified_dashboard_b2w3.py
@@ -15608,6 +15409,90 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  markets-regime-strip:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # markets.html risk-regime strip. scope: exclusive replaces inference
+    # (the suite's jinja loader and its subprocess bake are opaque).
+    # Paths are the page family plus every concrete file
+    # suite_dependency_closure reports for tests/test_markets_regime_strip.py.
+    # An unlisted closure file is an uncovered path. No tests/** catch-all.
+    scope: exclusive
+    paths:
+      - "templates/markets.html.j2"
+      - "templates/_market_regime_strip.html.j2"
+      # Parity test reads the hero stance sentences from this partial.
+      - "templates/_unified_dashboard_hero.html.j2"
+      - "templates/theme.css"
+      - "site/theme.css"
+      - "site/markets.html"
+      - "scripts/build_markets.py"
+      - "engine/market_state.py"
+      - "tests/test_markets_regime_strip.py"
+      - "tests/fixtures/markets_regime_strip/**"
+      # Import closure beyond the page family. Listed literally so
+      # exclusive scope still covers what inference would have owned.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/sparse_worktree.json"
+      - "engine/__init__.py"
+      - "engine/business_cycle.py"
+      - "engine/canon.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/global_liquidity.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime_prior.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycle_seed.py"
+      - "scripts/build_regime_prior.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/optimize_assets.py"
+      - "scripts/refresh_markets_now.py"
+      - "scripts/worktree_sparse.py"
+      - "site/countrycyclesdata/country_cycles.json"
+      - "site/cycle.css"
+      - "site/cycle_data.js"
+      - "site/markets_app.js"
+      - "site/markets_data.js"
+      - "site/markets_i18n.js"
+      - "site/marketsdata/markets_engine.js"
+      - "site/mm_charts.js"
+      - "site/regimedata/regime_prior.js"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Fresh-venv proof: start from pytest pyyaml jinja2 pillow, then
+      # beautifulsoup4 (collection import), numpy and pandas
+      # (engine/market_state.py), pyarrow (score_log.parquet in
+      # scripts/build_markets.py:_persisted_ms_view). markupsafe
+      # arrives with jinja2. Never importorskip.
+      - name: install regime-strip test dependencies
+        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
+      - name: markets risk-regime strip
+        run: python -m pytest tests/test_markets_regime_strip.py -q
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
