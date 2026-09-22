@@ -932,9 +932,8 @@
      own stacking context at level 0; without this the popover — trapped in the hero's
      own backdrop-filter context — renders BEHIND the later cards. Stays below dialogs (60). */
   body.page-china .cnx-hero{display:grid;grid-template-columns:minmax(360px,2fr) minmax(400px,3fr);gap:0;padding:0;position:relative;z-index:30}
-  body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:2fr 1fr}
-  body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:block}
-  @media(max-width:1000px){body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}}
+  body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:1fr}
+  body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}
   body.page-china .cnx-hero-left{padding:22px 26px;border-right:1px solid rgba(255,255,255,.12);position:relative}
   body.page-china .cnx-hero-right{padding:18px 24px 14px}
   body.page-china .cnx-regime-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:4px 12px;font-size:11.5px;background:rgba(208,69,69,.10)}
@@ -1056,6 +1055,11 @@
   .cnx-wrap .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
   .cnx-wrap .cnx-live-freshness{margin-left:3px;opacity:.78}
   .cnx-wrap .cnx-playbook-context{font-size:10.5px;line-height:1.35;color:var(--muted);margin:2px 0 0}
+  /* When history is too short for a path, spend the unused desktop hero column
+     on watch context; keep mobile on the existing stacked scan path. */
+  body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:2fr 1fr}
+  body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:block}
+  @media(max-width:1000px){body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}}
   body.page-china .cnx-links.cnx-mobile-index{display:none}
   .cnx-wrap [id^="cnx-focus-"]{scroll-margin-top:84px}
   @media (max-width:760px){
