@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T23:22:27.406632+00:00",
-  "count": 2670,
+  "generated_at": "2026-09-22T23:52:14.488822+00:00",
+  "count": 2671,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -62,6 +62,7 @@
     "Nuveen",
     "One River",
     "PNC",
+    "Pictet",
     "Piper Sandler",
     "RBC",
     "Rabobank",
@@ -97,6 +98,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-fu308f16ebn-258aff",
+      "title": "US stock market A mega cap refuge",
+      "institution": "Pictet",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T23:23:24Z",
+      "summary_points": [
+        "Mega-Cap Tech Flows & Leadership: MAGS US ETF flows reversed from -15% June outflows to accelerated inflows, confirming renewed investor interest in US mega-cap tech (Magnificent 7) as a scarcity-driven \"hard asset\" amid rising sovereign debt, with ETF breaking all-time highs (71.72) targeting 85–87.",
+        "Market Breadth Deterioration: S&P 500 200-day breadth below 50% (first since April) near record highs, signaling concentrated leadership but non-bearish (historical precedents show 12-month returns of +8.90% vs. all-time average of +9.90%).",
+        "Technical Confirmation of Tech Resilience: Nasdaq 100/S&P 500 ratio broke 3.85 resistance (23.6% Fib retracement), targeting 4.20; Nasdaq 100 rebounded above 7,492 support and 50-day SMA (7,617), with RSI neutral (50.7), confirming outperformance.",
+        "Equal Weight vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-g9h7iunik4a-f14141",
       "title": "Emerging market bonds",
