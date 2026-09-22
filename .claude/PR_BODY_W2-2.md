@@ -1,6 +1,6 @@
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
-**Head SHA:** `33b8a9135411fb42c88898df5ddf96d7b2cd0997` (W2-2 packet deliverable head — round 2/3 refresh)
+**Head SHA:** `f388c33500307949f79b00b1fa7c89b35e87c7f2` (W2-2 packet deliverable head — round 3/3 refresh: BLOCKER 1/2/3/4 + MINOR 1/2 fixes)
 **Base:** `origin/main` @ `6ea475723e85480b4411d53f4b4c1e3fdf3d7039`
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
 
@@ -10,30 +10,46 @@ MO-PAID-013 W2-2 / F03-OPTIONS-EXPRESSION ships the **store-host producer** that
 
 The lane adds files, tests, and an `options_skew` data-dir registration in `scripts/publish_r2._DATA_DIRS`. It does NOT change `engine/options_skew.py`, `scripts/build_options_skew.py`, or any workflow step. The plist is OFF by default until the seat installs it per the runbook.
 
+## Round 3/3 refresh — fixes applied
+
+| ID | Fix | Commit |
+| --- | --- | --- |
+| BLOCKER 1 | Pre-W2-1b tree failure is now caught by `scripts/skew_accrual_precheck` BEFORE the accrue step; runner aborts loud (exit 4, FLAG_MISSING) instead of silently running `main()`. | `7f87a269e1`, `74c0cb733c` |
+| BLOCKER 2 | `if ! cmd; then rc=$?` capture bug fixed — `rc` is captured BEFORE the if. A non-zero accrue/publish step now propagates the real exit code instead of silently returning 0. | `74c0cb733c` |
+| BLOCKER 3 | `scripts/skew_accrual_verify_ledger` runs between accrue and publish; an empty/unchanged ledger aborts loud (exit 5, NO_LEDGER) instead of publishing a zero-row artefact to R2. | `7f87a269e1`, `74c0cb733c` |
+| BLOCKER 4 | Plist schedule moved to 05:30 local wall-clock (PST = 13:30Z, PDT = 12:30Z), giving ≥1h headroom after the 11:30Z ThetaData EOD refresh year-round. | `f6e29f5874` |
+| MAJOR 3 | `--no-manifest` removed from the first publish — manifest guard now compares against the (empty) prior manifest and writes a real one. | `74c0cb733c` |
+| MINOR 1 | `n_sign_flip` tautology in `audit_options_skew_overlap` replaced with a real sign-flip counter using `legacy_skew * new_skew < 0`. | `89f82b4dfc` |
+| MINOR 2 | Runbook first-run narrative refreshed (schedule, test surface). | `f388c33500` |
+
 ## Sequencing law (FROZEN — DO NOT REORDER)
 
 | Wave | Branch | Owns |
 | --- | --- | --- |
 | W2-1b (sibling, in flight) | `claude/mo-a-2-a-f03-w2-1` | `scripts/build_options_skew.py --accrue \| --emit` + source-stamped ledger upsert; render hosts pinned to legacy source |
-| **W2-2 (THIS packet)** | `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` | Store-host producer: launchd job, runner, gate helper, audit tool, R2 registry entry |
+| **W2-2 (THIS packet)** | `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` | Store-host producer: launchd job, runner, gate helper, precheck/verify helpers, audit tool, R2 registry entry |
 | W2-3 (later) | TBD | Render cutover to `--emit`; `fetch_r2 --dirs options_skew` restore |
 
 ## Files changed (true list — scoped diff vs `origin/main`)
 
 ```
-.claude/PR_BODY_W2-2.md                                            | 116 +++++++
-agentos/decisions/DEC-SKEW-ACCRUAL-ON-THE-STORE-HOST.md          | 135 ++++++++
-config/unrun_test_waivers.yml                                    |  45 +++   (waivers for the 3 new test suites — see "Contract delta" below)
-ops/launchd/com.macro.skewaccrual.plist                          | 189 +++++++++++
-ops/launchd/run_skew_accrual.sh                                  | 251 ++++++++++++++
-research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md      | 287 ++++++++++++++++
-scripts/audit_options_skew_overlap.py                            | 355 ++++++++++++++++++++
-scripts/publish_r2.py                                            |  36 ++-
-scripts/skew_accrual_gate.py                                     | 201 ++++++++++++
-tests/test_audit_options_skew_overlap.py                         | 360 +++++++++++++++++++++
-tests/test_skew_accrual_gate.py                                  | 221 +++++++++++++
-tests/test_skew_accrual_launchd.py                               | 210 ++++++++++++
-12 files changed, 2404 insertions(+), 2 deletions(-)
+.claude/PR_BODY_W2-2.md                                            | 117 +++++
+agentos/decisions/DEC-SKEW-ACCRUAL-ON-THE-STORE-HOST.md          | 135 ++++++
+config/unrun_test_waivers.yml                                      |  45 ++   (waivers for the 5 new test suites — see "Contract delta" below)
+ops/launchd/com.macro.skewaccrual.plist                            | 199 +++++++++
+ops/launchd/run_skew_accrual.sh                                    | 346 +++++++++++++++
+research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md       | 296 +++++++++++++
+scripts/audit_options_skew_overlap.py                              | 379 +++++++++++++++
+scripts/publish_r2.py                                              |  36 +-
+scripts/skew_accrual_gate.py                                       | 201 +++++++++
+scripts/skew_accrual_precheck.py                                   | 132 ++++++
+scripts/skew_accrual_verify_ledger.py                              | 106 +++++
+tests/test_audit_options_skew_overlap.py                           | 419 ++++++++++++++++++
+tests/test_skew_accrual_gate.py                                    | 221 ++++++++++
+tests/test_skew_accrual_launchd.py                                 | 474 +++++++++++++++++++++
+tests/test_skew_accrual_precheck.py                                | 186 ++++++++
+tests/test_skew_accrual_verify_ledger.py                           | 120 ++++++
+16 files changed, 3410 insertions(+), 2 deletions(-)
 ```
 
 ## Install runbook
@@ -47,16 +63,13 @@ See `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md`. Highlights:
 
 ## Tails (real receipts captured 2026-09-22)
 
-### `pytest` — `tests/test_skew_accrual_gate.py tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py`
+### `pytest` — all 5 new test files
 ```
-plugins: anyio-4.15.1
-collected 45 items
+python3 -m pytest tests/test_skew_accrual_gate.py tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py -q
+49 passed in 33.85s
 
-tests/test_skew_accrual_gate.py .............                    [ 28%]
-tests/test_skew_accrual_launchd.py .................              [ 66%]
-tests/test_audit_options_skew_overlap.py ...............          [100%]
-
-============================== 45 passed in 3.48s ==============================
+python3 -m pytest tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py -q
+13 passed in 1.10s
 ```
 
 ### `python3 scripts/agentos.py validate`
@@ -77,7 +90,7 @@ RUNNER_SH_N_OK   (exit code 0)
 
 ### `plutil -lint ops/launchd/com.macro.skewaccrual.plist`
 ```
-/Users/chriswong/.../com.macro.skewaccrual.plist: OK
+ops/launchd/com.macro.skewaccrual.plist: OK
 ```
 
 ## Audit tool — what the seat does with it
@@ -88,7 +101,7 @@ After W2-1b lands on main and the store-host lane has produced ~5 trading days o
 python -m scripts.audit_options_skew_overlap
 ```
 
-This recomputes the ThetaData skew for every legacy `polygon_gex` (date, underlying) row, emits a one-line JSON summary to stdout (`keys_compared`, `sign_agreement_rate`, `|delta_skew|` p50/p90/max, top-10 worst keys), and writes `research/MARKET_ONTOLOGY_F03_SKEW_OVERLAP_RECEIPT_<TODAY>.md`.
+This recomputes the ThetaData skew for every legacy `polygon_gex` (date, underlying) row, emits a one-line JSON summary to stdout (`keys_compared`, `sign_agreement_rate`, `n_sign_flip`, `|delta_skew|` p50/p90/max, top-10 worst keys), and writes `research/MARKET_ONTOLOGY_F03_SKEW_OVERLAP_RECEIPT_<TODAY>.md`.
 
 The exit codes are:
 - `0` — `EXIT_OK` (run completed; review the summary / receipt).
@@ -106,12 +119,14 @@ The exit codes are:
 
 ## Contract delta — waiver rationale
 
-`scripts/check_contract_delta.py` flagged the three new test files as unrun suites. Listing them in `.github/ci/legacy-jobs.yml` would be a global CI invalidator (full 194-job suite, ci-authority hit) and the lanes they cover are store-host ops, not signal-contract / render subjects. The fix is a reasoned waiver row per suite in `config/unrun_test_waivers.yml` (one row each for `test_skew_accrual_gate.py`, `test_skew_accrual_launchd.py`, `test_audit_options_skew_overlap.py`). Each row names the owner (`META-CEO A, lane A-F03-W2-2`), the direct pytest invocation, and the deletion condition (when a store-host-side ops CI step is commissioned).
+`scripts/check_contract_delta.py` flagged the five new test files as unrun suites. Listing them in `.github/ci/legacy-jobs.yml` would be a global CI invalidator (full 194-job suite, ci-authority hit) and the lanes they cover are store-host ops, not signal-contract / render subjects. The fix is a reasoned waiver row per suite in `config/unrun_test_waivers.yml` (one row each for `test_skew_accrual_gate.py`, `test_skew_accrual_launchd.py`, `test_skew_accrual_precheck.py`, `test_skew_accrual_verify_ledger.py`, `test_audit_options_skew_overlap.py`). Each row names the owner (`META-CEO A, lane A-F03-W2-2`), the direct pytest invocation, and the deletion condition (when a store-host-side ops CI step is commissioned).
 
 ## Reference
 
 - `agentos/decisions/DEC-SKEW-ACCRUAL-ON-THE-STORE-HOST.md` — the store-host choice and the three rejected alternatives (CI label, git narrow-commit, 60 GB store hydration).
 - `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md` — install runbook, sequencing law, audit-tool pointer.
 - `scripts/skew_accrual_gate.py` — column-pruned freshness gate (T-1 NYSE session via `lib.nyse_calendar.expected_last_session()`).
+- `scripts/skew_accrual_precheck.py` — BLOCKER-1 source-grep for the `--accrue` flag (runner aborts loud on pre-W2-1b tree).
+- `scripts/skew_accrual_verify_ledger.py` — BLOCKER-3 ledger row-count check (runner aborts loud on zero-row publish).
 - `scripts/audit_options_skew_overlap.py` — legacy-vs-ThetaData real-overlap audit.
 - `scripts/publish_r2.py` — adds `options_skew` to `_DATA_DIRS` with a 10 KB floor + a `min_files_override=2` (snapshots.parquet + validation_gate.json sidecar).
