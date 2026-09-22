@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T15:56:07.568333+00:00",
-  "count": 2648,
+  "generated_at": "2026-09-22T17:51:31.877925+00:00",
+  "count": 2654,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,27 @@
   ],
   "items": [
     {
+      "id": "marketdesk-1c6ij86icrc-10d4e0",
+      "title": "Mexico Weak Jul Retail Sales",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:44Z",
+      "summary_points": [
+        "Retail Sales Miss & Q3 Trend: July retail sales fell 0.1% mom sa (vs.",
+        "+0.1% consensus), with Q3 2026 sales at -0.3% qoq sa, signaling persistent consumption weakness.",
+        "Services Sector Funding Pressure: Negative 2026 carry (-1.3%) amid declining services employment (-0.1% mom sa) and mixed real wage growth (1.0% mom sa), indicating rising funding risks.",
+        "Retail Resilience vs.",
+        "Services Divergence: Retail Sales index (122) outperformed Non-Financial Services (100) since Jun-20, highlighting consumer spending resilience despite services sector softness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-uo882snx41f-078e66",
       "title": "LATAM Today September 22, 2026",
       "institution": "Goldman Sachs",
@@ -191,6 +212,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jss1fygo6mb-0ce1cf",
+      "title": "Auto1 Group (AG1G.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:21Z",
+      "summary_points": [
+        "Structural Advantage: Vertically integrated tech-led model (14y data, 170+ logistics centers, 300+ partners) creates structural edge over traditional dealers; Q4 re-acceleration expected post-inventory rebuilds and new trading system benefits (GPUs, faster inventory turns).",
+        "GPU Efficiency Focus: Prioritizing inventory efficiency (reducing excess stock, improving turns) over unit growth in Autohero, alternating quarterly; directly impacts margins and liquidity.",
+        "Key Risk Catalysts: Slower online car adoption (Autohero revenue), lower merchant market share gains, used car volatility, rising interest rates (inventory financing costs), and slower profitability ramp-up.",
+        "Cross-Border Expansion: Launching German stock in Poland (first cross-listed inventory) to broaden assortment, improve liquidity, and expand buyer base; long-term growth driver with minimal near-term impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -312,6 +353,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2z5r4rjqtuu-4fe779",
+      "title": "GS Biswas Credit MarketStrats In Spotlight iTraxx S46 index tranches TRADING 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:49Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4zyqktnbhxh-4e9797",
       "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",
       "institution": "S&T",
@@ -328,6 +384,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zmtv5zbgvjn-b3af34",
+      "title": "GS Banovic GS Credit What You Need to Know 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:43Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -1055,6 +1126,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-f2nj8caehtc-9aef6a",
+      "title": "BofA Quant View of Global Themes AI Intact",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:23:22Z",
+      "summary_points": [
+        "Photonics sustained outperformance: Dominated YTD (36% vs.",
+        "Global’s -17%) and 12-month (173% vs.",
+        "Global’s -20%), signaling structural momentum for long-term allocation.",
+        "AI Compute/Photonics/Data Centers momentum: All five sectors in top quintile Triple Momentum (green line above threshold), confirming tech-driven growth as critical portfolio priority.",
+        "AI Platforms underperformance risk: Microsoft’s $-40.7B equity outflow, Tencent/Baidu’s -32%/-17% returns, and low TM Rank (19) indicate aggressive selling and China regulatory risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 116,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zeihs5chw4x-3736ec",
       "title": "Wolfe Research The Wolfe Power Trip",
       "institution": "Nuclear",
@@ -1294,6 +1386,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-whv21ahuhak-233505",
+      "title": "FedEx Freight Holding (FDXF) Shifting to Calendar Year",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:12Z",
+      "summary_points": [
+        "Calendar Model Shift & Price Target: Goldman Sachs updates FDXF model to calendar year (vs fiscal), lowers price target to $171 (42.3% upside), reiterates Buy on strong operational execution, stable profit trajectory, and unchanged 2029 targets despite short-term noise.",
+        "Minimal Leverage & Cash Flow Strength: Net debt/EBITDA at 0.0, $1,760.8mn operating cash flow, and $4.83 free cash flow/share signal robust financial health with negligible leverage risk.",
+        "Revenue Quality & Margin Expansion: Targets 4-6% revenue CAGR via higher-margin segments (SMB, healthcare, grocery), with revenue per shipment growth outpacing cost per shipment, driving margin expansion and 85% OR by 2029.",
+        "Outperformance & EPS Trajectory: 27.71% 3-month absolute return vs S&P 500; revised EPS to $4.10/$4.65/$5.85/$7.10 (2026-2029) with 13-26% annual growth, exceeding 4-6% revenue target.",
+        "Key Near-Term Risks: $130m transition costs, TSA cost drag (50bp headwind), OR seasonality (300-400bps Q4→Q1 improvement), and potential delays in TSA offload impacting 2027 margin timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
