@@ -1,4 +1,4 @@
-"""Own-history valuation percentiles for A-share names (keyless, via akshare/Baidu).
+"""Own-history valuation percentiles for A-share names (keyless, via Baidu).
 
 How A-share investors actually read valuation: not the absolute P/E, but where today's
 P/E sits inside the stock's OWN multi-year band ("市盈率分位" — PE percentile). A name on
@@ -24,8 +24,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import time
 
 import pandas as pd
+import requests
 
 from lib import config
 from collectors.china_analyst import _num
@@ -34,6 +36,9 @@ log = logging.getLogger("china_valuation")
 
 OUT = config.data_dir() / "china_valuation" / "percentiles.parquet"
 INDICATORS = {"市盈率(TTM)": "pe", "市净率": "pb", "市销率": "ps"}
+BAIDU_VALUATION_URL = "https://gushitong.baidu.com/opendata"
+REQUEST_TIMEOUT_SECONDS = 8.0
+REFRESH_BUDGET_SECONDS = 180.0
 
 
 def ak_symbol(ticker: str) -> str:
@@ -41,16 +46,32 @@ def ak_symbol(ticker: str) -> str:
     return ticker.split(".")[0]
 
 
-def _band(ak, sym: str, indicator: str) -> dict | None:
-    """Current value + its percentile within the trailing-5y band for one indicator.
-    Percentile = share of history at/below today (0 = cheapest in band, 100 = dearest).
-    Multiples <= 0 (loss-making P/E etc.) are dropped before ranking."""
+def _band(sym: str, indicator: str, *, timeout: float = REQUEST_TIMEOUT_SECONDS) -> dict | None:
+    """Current value + percentile within the trailing-5y band for one indicator.
+
+    AkShare's ``stock_zh_valuation_baidu`` adapter currently calls
+    ``requests.get`` without a timeout. That made this best-effort context drip
+    capable of pinning the entire production render until the workflow's 180m
+    timeout. Keep the same public Baidu payload contract, but own the transport
+    timeout here so provider degradation fails closed to "no context".
+    """
+    params = {
+        "openapi": "1", "dspName": "iphone", "tn": "tangram",
+        "client": "app", "query": indicator, "code": sym, "word": "",
+        "resource_id": "51171", "market": "ab", "tag": indicator,
+        "chart_select": "近五年", "industry_select": "",
+        "skip_industry": "1", "finClientType": "pc",
+    }
     try:
-        df = ak.stock_zh_valuation_baidu(symbol=sym, indicator=indicator, period="近五年")
-    except Exception as e:  # noqa: BLE001
+        response = requests.get(BAIDU_VALUATION_URL, params=params, timeout=timeout)
+        response.raise_for_status()
+        body = response.json()["Result"][0]["DisplayData"]["resultData"]["tplData"]["result"]["chartInfo"][0]["body"]
+        df = pd.DataFrame(body)
+        if df.empty or len(df.columns) != 2:
+            return None
+        df.columns = ["date", "value"]
+    except Exception as e:  # noqa: BLE001 — optional context must never break a render
         log.debug("%s %s failed: %s", sym, indicator, e)
-        return None
-    if df is None or df.empty or "value" not in df.columns:
         return None
     s = pd.to_numeric(df["value"], errors="coerce").dropna()
     if indicator != "总市值":
@@ -64,12 +85,11 @@ def _band(ak, sym: str, indicator: str) -> dict | None:
             "n": int(len(s))}
 
 
-def fetch_one(ticker: str) -> dict | None:
-    import akshare as ak
+def fetch_one(ticker: str, *, timeout: float = REQUEST_TIMEOUT_SECONDS) -> dict | None:
     sym = ak_symbol(ticker)
     out: dict = {}
     for ind, key in INDICATORS.items():
-        b = _band(ak, sym, ind)
+        b = _band(sym, ind, timeout=timeout)
         if b is not None:
             out[key] = b
     return out or None
@@ -93,9 +113,16 @@ def _universe(limit: int) -> list[str]:
     return [str(t) for t in m[tcol].tolist()]
 
 
-def refresh(max_new: int = 60, max_age_days: int = 14) -> int:
-    """Drip: refresh up to `max_new` names whose cached percentile is missing or older
-    than `max_age_days`. Best-effort; returns how many were (re)fetched."""
+def refresh(
+    max_new: int = 60,
+    max_age_days: int = 14,
+    max_runtime_seconds: float = REFRESH_BUDGET_SECONDS,
+) -> int:
+    """Refresh stale names without allowing optional context to pin a render.
+
+    Each provider request is bounded, and the whole drip has a wall-clock budget.
+    Budget exhaustion preserves the existing cache and resumes coverage next build.
+    """
     cache: dict[str, dict] = {}
     if OUT.exists():
         try:
@@ -112,8 +139,20 @@ def refresh(max_new: int = 60, max_age_days: int = 14) -> int:
         return 0
     today = pd.Timestamp.now().strftime("%Y-%m-%d")
     got = 0
+    started = time.monotonic()
     for t in todo:
-        rec = fetch_one(t)
+        remaining = max_runtime_seconds - (time.monotonic() - started)
+        if remaining <= 0:
+            log.warning(
+                "china valuation: runtime budget exhausted after %d/%d names; preserving cache",
+                got, len(todo),
+            )
+            break
+        per_request_timeout = min(
+            REQUEST_TIMEOUT_SECONDS,
+            max(0.5, remaining / max(len(INDICATORS), 1)),
+        )
+        rec = fetch_one(t, timeout=per_request_timeout)
         if rec:
             cache[t] = {"payload": json.dumps(rec, default=str), "asof": today}
             got += 1
