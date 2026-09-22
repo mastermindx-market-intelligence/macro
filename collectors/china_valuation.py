@@ -24,6 +24,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import signal
+import threading
 import time
 
 import pandas as pd
@@ -39,6 +41,35 @@ INDICATORS = {"市盈率(TTM)": "pe", "市净率": "pb", "市销率": "ps"}
 BAIDU_VALUATION_URL = "https://gushitong.baidu.com/opendata"
 REQUEST_TIMEOUT_SECONDS = 8.0
 REFRESH_BUDGET_SECONDS = 180.0
+
+
+def _bounded_get(*, params: dict, timeout: float):
+    """GET Baidu with a true wall-clock deadline, including DNS resolution.
+
+    ``requests`` timeouts bound socket connect/read phases but do not bound the
+    resolver on every platform. Production render runs on Unix main threads, so
+    SIGALRM gives this optional context fetch an outer deadline. Any unsupported
+    execution context fails closed rather than silently becoming unbounded.
+    """
+    if timeout <= 0:
+        raise TimeoutError("china valuation request budget exhausted")
+    if not hasattr(signal, "SIGALRM") or threading.current_thread() is not threading.main_thread():
+        raise RuntimeError("bounded China valuation transport requires a Unix main thread")
+    if signal.getitimer(signal.ITIMER_REAL)[0] > 0:
+        raise RuntimeError("refusing to replace an existing process wall-clock timer")
+
+    previous_handler = signal.getsignal(signal.SIGALRM)
+
+    def _deadline(_signum, _frame):
+        raise TimeoutError(f"Baidu valuation request exceeded {timeout:.2f}s wall-clock deadline")
+
+    signal.signal(signal.SIGALRM, _deadline)
+    signal.setitimer(signal.ITIMER_REAL, timeout)
+    try:
+        return requests.get(BAIDU_VALUATION_URL, params=params, timeout=timeout)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous_handler)
 
 
 def ak_symbol(ticker: str) -> str:
@@ -63,7 +94,7 @@ def _band(sym: str, indicator: str, *, timeout: float = REQUEST_TIMEOUT_SECONDS)
         "skip_industry": "1", "finClientType": "pc",
     }
     try:
-        response = requests.get(BAIDU_VALUATION_URL, params=params, timeout=timeout)
+        response = _bounded_get(params=params, timeout=timeout)
         response.raise_for_status()
         body = response.json()["Result"][0]["DisplayData"]["resultData"]["tplData"]["result"]["chartInfo"][0]["body"]
         df = pd.DataFrame(body)
