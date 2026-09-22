@@ -521,6 +521,15 @@ _RATES_DETAIL_PROFILE_TERMS = re.compile(
     r"2s10s|duration|term\s+premium|breakeven|real\s+yield|real\s+rates?)\b"
     r"|(?:收益率曲线|收益率曲線|期限溢价|期限溢價|实际利率|實際利率)",
 )
+_SPECIALIST_FULL_VISIBILITY_TERMS = re.compile(
+    r"(?i)\b(street|sell[- ]side|buy[- ]side|analysts?|institutional|research\s+report|"
+    r"insiders?|congress(?:ional)?\s+trades?|smart\s+money|historical\s+analog(?:ue)?s?|"
+    r"backtest|stage\s+peers?|chart|draw|support|resistance|special[- ]situations?|"
+    r"m&a|merger|acquisition|stage\s+analysis)\b|"
+    r"机构|機構|研报|研報|内部人|內部人|国会交易|國會交易|历史类比|歷史類比|"
+    r"回测|回測|图表|圖表|支撑|支撐|阻力|并购|併購",
+)
+
 _MIXED_MACRO_RATES_TERMS = re.compile(
     r"(?i)\b("
     r"treasur\w+|fomc|"
@@ -739,6 +748,13 @@ def _question_profile(question: str, context_ticker: str | None) -> _QuestionPro
         return _QuestionProfile(
             "self_contained_financial", _BUDGET_GENERAL, (), "self_contained"
         )
+
+    # Specialist evidence lanes are intentionally not progressively narrowed yet.  Keep
+    # the legacy budget/seeds (and therefore the existing seed-plan behavior), but mark
+    # the canonical task profile ambiguous so the gateway exposes every authorized tool.
+    if _SPECIALIST_FULL_VISIBILITY_TERMS.search(question):
+        budget, seeds = _legacy_classify_question(question, context_ticker)
+        return _QuestionProfile("ambiguous", budget, tuple(seeds), "ambiguous")
 
     if (
         _PORTFOLIO_TRIGGER_TERMS.search(question)

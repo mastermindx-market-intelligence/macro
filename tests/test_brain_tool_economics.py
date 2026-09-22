@@ -882,3 +882,33 @@ def test_fast_internals_session_keeps_full_authorized_surface():
         internals_allowed=True,
     )
     assert out is full
+
+
+
+def test_fast_specialist_macro_question_fails_open_to_full_authorized_surface(quiet_grounding):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, "Show me historical analogues for NVDA after CPI shocks")
+    expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(client.create_kwargs[0]) == expected
+
+
+
+@pytest.mark.parametrize("question", [
+    "What does the street research say about NVDA?",
+    "What do insiders and Congress trades say about NVDA?",
+    "Show me historical analogues for NVDA",
+    "Backtest NVDA and show similar stage peers",
+    "Chart NVDA and draw support",
+    "What is the factor DNA of AAPL?",
+    "What special-situations M&A context exists for NVDA?",
+    "What stage analysis applies to PLTR?",
+])
+def test_fast_hostile_specialist_family_retains_full_authorized_surface(
+    quiet_grounding, question
+):
+    root = _root()
+    client = _CaptureClient()
+    _drive_loop(root, client, question)
+    expected = {item["name"] for item in gw._all_brain_tool_schemas(root)}
+    assert _visible_names(client.create_kwargs[0]) == expected
