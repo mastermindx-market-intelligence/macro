@@ -199,3 +199,22 @@ def test_desk_and_detail_use_identical_nonentry_explanation_contract():
     sources = [(ROOT / name).read_text() for name in ("templates/baskets_desk.js", "templates/basket_detail.html.j2")]
     snippets = [re.search(r"const RECO_NOENTRY_WHY = t => \{.*?\n\};", source, re.S).group(0) for source in sources]
     assert snippets[0] == snippets[1]
+
+
+@pytest.mark.parametrize("path", ["templates/baskets_desk.js", "templates/basket_detail.html.j2"])
+def test_legacy_relative_strength_texture_is_not_presented_as_price_stretch(path):
+    import re
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node required for the native reason-text formatter")
+    source = (ROOT / path).read_text()
+    helper = re.search(r"function rolloverReasonText\(reasons, zh=false\)\{.*?\n\}", source, re.S)
+    assert helper
+    program = helper.group(0) + "\nconsole.log(JSON.stringify([rolloverReasonText(['extended (RS 99%ile)','breadth narrowing']),rolloverReasonText(['extended (RS 99%ile)'],true),rolloverReasonText(null)]));"
+    actual = json.loads(subprocess.check_output([node, "-e", program], text=True))
+    assert actual == ["high relative strength · breadth narrowing", "相对强势偏高", ""]
+    assert "very extended (RS ≥95%ile)" not in source
+    assert "not an own-price extension measure" in source
+    assert "${L('WAIT FOR ENTRY','等待入场')}" in source

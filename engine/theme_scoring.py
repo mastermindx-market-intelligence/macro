@@ -757,7 +757,7 @@ def _long_below_trend(mtf: dict | None, fp: dict | None = None) -> bool:
 def _extended(fp: dict, rs_thresh: float = 0.80) -> bool:
     """Is the theme too stretched to chase? Non-US uses the ABSOLUTE ext_abs z (a theme that
     only out-performs the benchmark is not 'extended' — only a parabolic stretch above its own
-    trend is); US / legacy falls back to the cross-sectional rs_pctile so the validated US page
+    trend is); US / legacy falls back to the rolling percentile of its relative-price history so the validated US page
     and the pure unit tests are unchanged."""
     ea = fp.get("ext_abs")
     if ea is not None:

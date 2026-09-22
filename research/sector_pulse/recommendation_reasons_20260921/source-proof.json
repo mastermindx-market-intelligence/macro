@@ -3,7 +3,7 @@
   "source_path": "site/basketdata/baskets.json",
   "source_sha256": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
   "source_as_of": "2026-09-18",
-  "candidate_engine_sha256": "493c77c26d40243961c7cf197d37388e2cfe1ffbbb181cb23f3f3578c8eb0a72",
+  "candidate_engine_sha256": "ea963a42c96946d88c26fafc654fbf89157cd905278f5c82fc7bc353782d3b5d",
   "policy_parity": {
     "cases": 10584,
     "mismatches": 0,

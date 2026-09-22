@@ -402,7 +402,7 @@ const badge=(cls,c,en,zh)=>{const cc=zhColor(c);return`<span class="${cls}" styl
 const RECO_NOENTRY = ['rgba(245,158,11,.16)','rgba(245,158,11,.55)','#d97706'];
 const recoNoEntry = t => (t.reco==='accumulate'||t.reco==='enter') && !(((t.textures||{}).clean_entry)||{}).flag;
 const recoChip = t => recoNoEntry(t)
-  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" data-tip-en="Theme in favour; no clean entry is confirmed." data-tip-zh="主题获看好；尚未确认清晰入场点。">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
+  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" data-tip-en="Theme in favour; no clean entry is confirmed." data-tip-zh="主题获看好；尚未确认清晰入场点。">${L('WAIT FOR ENTRY','等待入场')}</span>`
   : badge('treco',RECO_COLOR[t.reco]||RECO_COLOR.hold,t.reco_en||(t.reco||'—'),t.reco_zh||'');
 const RECO_NOENTRY_WHY = t => {
   const known=t&&['entry_not_confirmed','entry_read_unavailable'].includes(t.reco_reason_code)
@@ -545,18 +545,25 @@ function convCell(c){
 // ---- Leadership Health (display-only, deterministic — a shape/fragility read, not a forecast).
 // "Contested": the (slow, validated) lifecycle label is constructive while >=2 of the faster
 // descriptive textures disagree. Computed purely from already-published payload fields.
+function rolloverReasonText(reasons, zh=false){
+  return (reasons||[]).map(value=>{
+    const text=String(value==null?'':value);
+    return /^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text)
+      ?(zh?'相对强势偏高':'high relative strength'):text;
+  }).join(' · ');
+}
 function contestedList(th,b){
   const tx=th.textures||{}, rr=tx.rollover_risk||{}, cyc=(b||{}).cycle||null;
   const list=[];
   if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
     list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
   if(th.rs_pctile!=null && th.rs_pctile>=0.95)
-    list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
+    list.push(['relative strength high within its recent history; not an own-price extension measure','相对强势在近期历史中偏高；不是价格偏离自身趋势的度量']);
   const early = rr.band==='low' && (rr.reasons||[]).length>0 && th.rs_pctile!=null && th.rs_pctile>=0.9;
   if(rr.band==='elevated'||rr.band==='high')
-    list.push(['roll-over risk '+rr.band+(rr.reasons&&rr.reasons.length?': '+rr.reasons.join(' · '):''),'回落风险'+(rr.band_zh||rr.band)+(rr.reasons&&rr.reasons.length?'：'+rr.reasons.join(' · '):'')]);
+    list.push(['roll-over risk '+rr.band+(rr.reasons&&rr.reasons.length?': '+rolloverReasonText(rr.reasons):''),'回落风险'+(rr.band_zh||rr.band)+(rr.reasons&&rr.reasons.length?'：'+rolloverReasonText(rr.reasons,true):'')]);
   else if(early)
-    list.push(['early cracks: '+(rr.reasons||[]).join(' · '),'初现裂痕：'+(rr.reasons||[]).join(' · ')]);
+    list.push(['early caution: '+rolloverReasonText(rr.reasons),'早期提示：'+rolloverReasonText(rr.reasons,true)]);
   if(th.delta_5d!=null && th.delta_5d<0)
     list.push(['negative 5-day relative return ('+fmtPct(th.delta_5d)+')','5日相对收益为负（'+fmtPct(th.delta_5d)+'）']);
   return list;
