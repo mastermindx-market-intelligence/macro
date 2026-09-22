@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T17:51:31.877925+00:00",
-  "count": 2654,
+  "generated_at": "2026-09-22T18:21:34.491413+00:00",
+  "count": 2655,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -232,6 +232,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-byxbajnfkdi-8bc450",
+      "title": "Global Economics Analyst Where in the World Is There Still an Inflation Problem",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:16Z",
+      "summary_points": [
+        "US Inflation Drivers: US core goods inflation elevated temporarily by tariffs (2.4pp, fading H2 2024) and mismeasured AI (1pp, fading 2027), while global peers face persistent services inflation; US is less severe outlier than perceived.",
+        "China Trade Impact: Stronger Chinese exports lower global goods prices by 0.6-0.8% (non-US DMs/EMs), offsetting energy spillovers and creating structural disinflationary tailwinds.",
+        "Rental Inflation Dynamics: US rental inflation below DMs/EMs ex-China due to immigration slowdown; positive correlation (R²=0.46) between migration declines and rent reduction, highlighting policy sensitivity.",
+        "Global Inflation Divergence: Unit labor costs elevated outside US (sustained inflation risk), while US labor costs near pre-pandemic average; non-shelter services inflation overshooting target globally except US (harmonized basis)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
