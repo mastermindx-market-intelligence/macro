@@ -168,6 +168,14 @@ def test_four_driver_synthesis_reuses_the_existing_link_rail_and_deep_dialogs() 
         assert marker in TPL
 
 
+def test_upcoming_events_name_the_next_catalyst_without_adding_a_new_module() -> None:
+    assert "{% set _next_watch = _ev_pool[0] if _ev_pool else none %}" in TPL
+    assert "Next catalyst ·" in TPL
+    assert "下一催化 ·" in TPL
+    assert 'class="cnx-ctitle-note"' in TPL
+    assert "ROW 1: What To Do + Upcoming Events" in TPL
+
+
 def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
     assert "{% set _ev_pool = [] %}" in TPL
     assert "if c.importance == 'high'" in TPL
