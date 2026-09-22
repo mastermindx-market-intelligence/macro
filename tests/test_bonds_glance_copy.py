@@ -95,15 +95,26 @@ def test_committed_bonds_stylesheet_is_fingerprinted() -> None:
     import hashlib
     import re
 
+    from jinja2 import Environment, StrictUndefined
+
+    from scripts.build_bonds import C
+
+    blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", _src(), re.IGNORECASE | re.DOTALL)
+    source_css = next(block for block in blocks if ".dtp-chip--snapshot" in block)
+    rendered_css = Environment(
+        autoescape=True,
+        keep_trailing_newline=True,
+        undefined=StrictUndefined,
+    ).from_string(source_css).render(C=C)
+    digest = hashlib.sha256(rendered_css.encode("utf-8")).hexdigest()[:8]
+
     html = SITE.read_text(encoding="utf-8")
     refs = re.findall(r"assets/css/([0-9a-f]{8})\.css\?v=\1", html)
-    # Main's 2026-09-21 markets re-render moved the bonds sheet
-    # f5ed7f7d.css -> ebe31e14.css (comment "LIVE / as-of" -> "Snapshot / as-of").
-    # sha256(ebe31e14.css)[:8] == ebe31e14; chip assertions unchanged.
-    assert "ebe31e14" in refs
-    css = ROOT / "site" / "assets" / "css" / "ebe31e14.css"
+    assert digest in refs
+    css = ROOT / "site" / "assets" / "css" / f"{digest}.css"
     assert css.is_file()
-    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == "ebe31e14"
+    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == digest
     text = css.read_text(encoding="utf-8")
+    assert text == rendered_css
     assert ".dtp-chip--snapshot" in text
     assert ".dtp-chip--live" not in text
