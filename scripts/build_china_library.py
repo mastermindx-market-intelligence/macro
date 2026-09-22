@@ -2105,6 +2105,52 @@ def _attach_eligible_coiled_fire(
     return evaluated
 
 
+def _refresh_context_drips() -> None:
+    """Refresh additive China context only on data-owning lanes.
+
+    ``render.yml`` and ``CHINA_FAST_RENDER`` are site-only rebakes: they must
+    reuse committed caches and must not make AkShare/Eastmoney/Tushare network
+    calls whose writes are discarded.  The normal nightly leaves both flags
+    unset and therefore retains the existing drip behavior unchanged.
+    """
+    import os
+
+    if (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    ):
+        log.info("china context drips: no-network rerender; reusing committed caches")
+        return
+
+    import importlib
+
+    _val_cap = int((config.load().get("china") or {}).get("valuation_per_build", 60))
+    for _mod, _kw in (("collectors.china_analyst", {}),
+                      ("collectors.china_earnings", {}),
+                      ("collectors.china_margin_detail", {}),
+                      ("collectors.china_valuation", {"max_new": _val_cap}),
+                      ("collectors.china_comment", {}),
+                      ("collectors.china_lhb", {}),
+                      ("collectors.china_block_trades", {}),
+                      ("collectors.china_zt_pool", {}),
+                      ("collectors.china_buyback", {}),
+                      ("collectors.china_pledge", {}),
+                      ("collectors.china_unlocks", {}),
+                      ("collectors.china_preannounce", {}),
+                      ("collectors.china_st", {}),
+                      ("collectors.tushare_valuation", {}),
+                      ("collectors.tushare_margin", {}),
+                      ("collectors.tushare_moneyflow", {}),
+                      ("collectors.tushare_chips", {}),
+                      ("collectors.tushare_broker", {}),
+                      ("collectors.tushare_forecast", {}),
+                      ("collectors.tushare_history", {})):
+        try:
+            importlib.import_module(_mod).refresh(**_kw)
+        except Exception as e:  # noqa: BLE001 — additive context, never fatal
+            log.warning("china context drip %s skipped (%s)", _mod, e)
+
+
 def main(alpha: dict | None = None) -> dict | None:
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "chinastockdata"
@@ -2123,47 +2169,7 @@ def main(alpha: dict | None = None) -> dict | None:
                  label, _now - _tick_prev[0], _now - _tick_t0)
         _tick_prev[0] = _now
 
-    # Refresh the additive A-share CONTEXT caches that power the US-parity per-stock panels
-    # (analyst consensus / earnings-disclosure calendar / own-history valuation percentile /
-    # per-name margin financing). Keyless akshare/Eastmoney drips — best-effort, idempotent
-    # within a day, capped where per-name. GFW-reachable from CI only; a blocked source just
-    # leaves its cache (stale or absent) and the page hides that panel. Mirrors the US
-    # build_stock_library equity_profile drip — keeps the fetch out of the workflow YAML.
-    import importlib
-    _val_cap = int((config.load().get("china") or {}).get("valuation_per_build", 60))
-    for _mod, _kw in (("collectors.china_analyst", {}),
-                      ("collectors.china_earnings", {}),
-                      ("collectors.china_margin_detail", {}),
-                      ("collectors.china_valuation", {"max_new": _val_cap}),
-                      # US-parity alt-data feeds (snapshot refreshers, idempotent within a UTC day)
-                      ("collectors.china_comment", {}),       # 千股千评 attention / inst-participation / main-force cost
-                      ("collectors.china_lhb", {}),           # 龙虎榜 Dragon-Tiger smart/hot-money + institutional seats
-                      ("collectors.china_block_trades", {}),  # 大宗交易 block premium/discount
-                      ("collectors.china_zt_pool", {}),       # 涨停板 limit-up momentum / sector breadth
-                      ("collectors.china_buyback", {}),       # 回购 corporate buybacks
-                      ("collectors.china_pledge", {}),        # 股权质押 forced-sell tail risk
-                      ("collectors.china_unlocks", {}),       # 限售股 restricted-share unlock queue
-                      ("collectors.china_preannounce", {}),   # 业绩预告 earnings pre-announcements
-                      # china_inquiry has been FULLY RETIRED (W4 review fix): inquiry letters are
-                      # now sourced exclusively from collectors/china_filings.py →
-                      # data/china_filings/filings.parquet (category=='inquiry_letter').
-                      # The engine's read-fallback to the frozen data/china_inquiry/inquiry.parquet
-                      # stays in place to surface honest asof staleness if filings degrades.
-                      ("collectors.china_st", {}),            # ST board snapshot + history + goodwill
-                      # PREMIUM Tushare feeds — GATED on TUSHARE_TOKEN (each refresh() self-no-ops
-                      # without the token, so CI / keyless builds are unaffected). See
-                      # research/TUSHARE_INTEGRATION.md.
-                      ("collectors.tushare_valuation", {}),   # daily_basic per-name PE/PB/turnover/mv
-                      ("collectors.tushare_margin", {}),      # margin_detail per-name 融资余额
-                      ("collectors.tushare_moneyflow", {}),   # moneyflow_dc per-name + sector 主力资金 (push2 replacement)
-                      ("collectors.tushare_chips", {}),       # cyq_perf 筹码胜率 holder cost-basis
-                      ("collectors.tushare_broker", {}),      # broker_recommend 券商金股 pick tally
-                      ("collectors.tushare_forecast", {}),    # forecast 业绩预告 + report_rc revision
-                      ("collectors.tushare_history", {})):    # daily-grid flow/chips history → china_validation
-        try:
-            importlib.import_module(_mod).refresh(**_kw)
-        except Exception as e:  # noqa: BLE001 — additive context, never fatal
-            log.warning("china context drip %s skipped (%s)", _mod, e)
+    _refresh_context_drips()
 
     # Register the GATED Tushare drip plane in run_status/health (masterplan §W6-CN fix 4).
     # These drips run here (not in the collect.py adapter loop), so a frozen/token-less
