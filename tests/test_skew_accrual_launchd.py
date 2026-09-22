@@ -109,8 +109,87 @@ def test_plist_pins_keepalive_throttle_session_type():
     assert p["KeepAlive"] is False
     assert p["ThrottleInterval"] == 60
     assert p.get("LimitLoadToSessionType") == "Aqua"
-    assert p["StandardOutPath"] == "/tmp/skewaccrual.stdout.log"
-    assert p["StandardErrorPath"] == "/tmp/skewaccrual.stderr.log"
+    assert p["StandardOutPath"] == "/Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log"
+    assert p["StandardErrorPath"] == "/Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log"
+
+
+def test_plist_log_paths_live_outside_repo_in_sibling_state_dir():
+    """MAJOR-1 (round-5 reviewer): all run-state files (.skew_pre_rows,
+    receipts, locks, logs) live OUTSIDE the checkout under a sibling state
+    directory. The launchd-managed stdout/stderr pair is part of that
+    contract — the round-1 /tmp/skewaccrual.*.log pair sat in /tmp (still
+    outside $REPO) but broke the spirit of the contract: every run-state
+    file lives under ONE sibling state directory, the one the runner's
+    $SKEW_STATE_DIR defaults to. Pin both destinations and prove neither
+    one lives inside the dedicated lane checkout (/Users/chriswong/skew-ops-wt).
+    """
+    p = _load_plist()
+    out_path = p["StandardOutPath"]
+    err_path = p["StandardErrorPath"]
+    # 1. The default state directory — the same /Users/chriswong/skew-ops-state
+    #    the runner defaults to (STATE_DIR_DEFAULT in run_skew_accrual.sh).
+    #    Hardcoded because launchd paths are literal (no env-var expansion);
+    #    an operator override of SKEW_STATE_DIR must update these two keys.
+    assert out_path == (
+        "/Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log"
+    ), (
+        f"plist StandardOutPath is {out_path!r}; the round-5 contract pins it "
+        "to /Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log (the "
+        "same $SKEW_STATE_DIR default the runner uses). /tmp/skewaccrual.* "
+        "is no longer compliant — every run-state file lives under ONE "
+        "sibling state directory, never /tmp."
+    )
+    assert err_path == (
+        "/Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log"
+    ), (
+        f"plist StandardErrorPath is {err_path!r}; the round-5 contract "
+        "pins it to /Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log."
+    )
+    # 2. NOT inside the dedicated lane checkout — the install runbook creates
+    #    /Users/chriswong/skew-ops-wt as a sparse clone of origin/main, so a
+    #    log path that starts with that prefix would land inside the very
+    #    checkout the runner's `git reset --hard && git clean -fd` wipes
+    #    on every run.
+    repo_prefix = "/Users/chriswong/skew-ops-wt"
+    for label, path in (("StandardOutPath", out_path), ("StandardErrorPath", err_path)):
+        assert not path.startswith(repo_prefix + "/") and path != repo_prefix, (
+            f"{label}={path!r} lives INSIDE /Users/chriswong/skew-ops-wt; "
+            "the round-5 contract requires it under the sibling state "
+            "directory /Users/chriswong/skew-ops-state, never inside the "
+            "lane checkout the runner wipes on every run."
+        )
+
+
+def test_run_with_env_wrapper_exists_on_origin_main():
+    """MINOR-1 (round-5 reviewer): the plist's ProgramArguments chain
+    (/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh) references a
+    wrapper that lives outside this PR's diff. A future revert on main that
+    drops the wrapper would silently break the launchd bootstrap on the M1
+    ops host — `launchctl bootstrap` would fail with a non-existent-program
+    error and the lane would go dark without the operator seeing why. Pin
+    the wrapper's existence on origin/main so that future edits surface at
+    PR time.
+    """
+    out = subprocess.run(
+        ["git", "ls-tree", "origin/main", "ops/launchd/run_with_env.sh"],
+        capture_output=True, text=True, check=True, cwd=str(ROOT),
+    ).stdout.strip()
+    assert out, (
+        "ops/launchd/run_with_env.sh is referenced by the plist's "
+        "ProgramArguments (line 113) but is NOT present on origin/main — "
+        "the launchd bootstrap will fail with a non-existent-program error "
+        "on the M1 ops host. The wrapper has been in the repo since 2026 "
+        "(sha 02bd7387); a drop on main is a deployment-breaking event "
+        "and must be a deliberate, separately-reviewed change."
+    )
+    # The wrapper is mode 100755 — a non-executable wrapper cannot be
+    # exec'd by launchd. Pin the mode so a future chmod regression
+    # surfaces at PR time too.
+    assert "100755" in out, (
+        f"ops/launchd/run_with_env.sh on origin/main is not mode 100755: "
+        f"{out!r}. launchd requires the wrapper to be executable or the "
+        "ProgramArguments exec call returns ENOEXEC."
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────── #
