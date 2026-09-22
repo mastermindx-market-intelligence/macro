@@ -1,0 +1,1027 @@
+{
+  "source_ref": "1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee",
+  "prereg_commit": "59bf08ca81632451165ac2423637181d536ab9e4",
+  "price_start": "1998-12-22",
+  "price_end": "2026-09-18",
+  "decision_rows": 8937,
+  "decision_refusals": {
+    "incomplete_trailing_native_input_window": 2727
+  },
+  "selection_counts": {
+    "incumbent": 692,
+    "entry_veto_only": 726,
+    "recommendation_veto_only": 692,
+    "both_rs_vetoes": 726,
+    "both_with_price_bound": 705
+  },
+  "assessment_primary_bh": {
+    "recommendation_veto_only": {
+      "p": 1.0,
+      "q": 1.0,
+      "reject": false
+    },
+    "both_rs_vetoes": {
+      "p": 0.4828,
+      "q": 0.6437,
+      "reject": false
+    },
+    "entry_veto_only": {
+      "p": 0.4828,
+      "q": 0.6437,
+      "reject": false
+    },
+    "both_with_price_bound": {
+      "p": 0.1337,
+      "q": 0.5348,
+      "reject": false
+    }
+  },
+  "promotion_authorized": false,
+  "registered_arms": 5,
+  "dispositions": {
+    "observed": 26145,
+    "missing_future_session": 504,
+    "tail_unavailable": 162
+  },
+  "purged_partition_events": 162,
+  "archive_calendar_mismatch_dates": [
+    "2001-09-11",
+    "2001-09-12",
+    "2001-09-13",
+    "2001-09-14",
+    "2004-06-11",
+    "2007-01-02"
+  ],
+  "primary": {
+    "development": {
+      "full_dates": 538,
+      "arms": {
+        "incumbent": {
+          "selected": {
+            "n_events": 342,
+            "n_dates": 236,
+            "net_mean": 0.0065846182237197124,
+            "relative_mean": -0.0005346455572889692,
+            "net_median": 0.009580940061667877,
+            "negative_net_share": 0.39766081871345027,
+            "mae_mean": -0.022739498766408864,
+            "mae_below_minus8_share": 0.04678362573099415
+          },
+          "additional": {
+            "n_events": 0,
+            "n_dates": 0,
+            "net_mean": null,
+            "relative_mean": null,
+            "negative_net_share": null,
+            "mae_below_minus8_share": null
+          },
+          "paired_vs_incumbent": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 538,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {},
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "entry_veto_only": {
+          "selected": {
+            "n_events": 361,
+            "n_dates": 243,
+            "net_mean": 0.006775388970504204,
+            "relative_mean": -0.0005118068822062409,
+            "net_median": 0.009898890742151336,
+            "negative_net_share": 0.3850415512465374,
+            "mae_mean": -0.022485176719275312,
+            "mae_below_minus8_share": 0.04709141274238227
+          },
+          "additional": {
+            "n_events": 19,
+            "n_dates": 18,
+            "net_mean": 0.010209262412625033,
+            "relative_mean": -0.00010071073071712718,
+            "net_median": 0.022071746471253206,
+            "negative_net_share": 0.15789473684210525,
+            "mae_mean": -0.017907379870871466,
+            "mae_below_minus8_share": 0.05263157894736842
+          },
+          "paired_vs_incumbent": {
+            "mean": -0.0,
+            "se": 2e-05,
+            "t": -0.02,
+            "p": 0.9838,
+            "n": 538,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLB": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.023595983924324937,
+              "relative_mean": 0.017170826813164286,
+              "net_median": 0.023595983924324937,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.010411754711246446,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLE": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.00653600595351045,
+              "relative_mean": -0.05993741684420617,
+              "net_median": 0.00653600595351045,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.032045049532414605,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLI": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": 0.009304107876062062,
+              "relative_mean": 0.0033012241957142714,
+              "net_median": 0.009304107876062062,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.019753448511933447,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLK": {
+              "n_events": 6,
+              "n_dates": 6,
+              "net_mean": 0.014083946846690584,
+              "relative_mean": 0.0071615007684450735,
+              "net_median": 0.02379941560789267,
+              "negative_net_share": 0.16666666666666666,
+              "mae_mean": -0.02272033110650244,
+              "mae_below_minus8_share": 0.16666666666666666
+            },
+            "XLU": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.004716753465932035,
+              "relative_mean": -0.04183750116309537,
+              "net_median": 0.004716753465932035,
+              "negative_net_share": 0.0,
+              "mae_mean": 0.0,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLV": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.015629820915810333,
+              "relative_mean": 0.009927169838722513,
+              "net_median": 0.03254677967592556,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.0115676012463104,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 5,
+              "n_dates": 5,
+              "net_mean": 0.0018251765832819184,
+              "relative_mean": 0.000667524958449063,
+              "net_median": 0.005751011650373618,
+              "negative_net_share": 0.2,
+              "mae_mean": -0.01745034518021682,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.017012976086162073,
+              "relative_mean": 0.005382668501733339,
+              "net_median": 0.023595983924324937,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.010618085802391467,
+              "mae_below_minus8_share": 0.0
+            },
+            "2010s": {
+              "n_events": 16,
+              "n_dates": 15,
+              "net_mean": 0.008933566098836838,
+              "relative_mean": -0.00112884433680159,
+              "net_median": 0.019532997546891973,
+              "negative_net_share": 0.1875,
+              "mae_mean": -0.019274122508711466,
+              "mae_below_minus8_share": 0.0625
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "recommendation_veto_only": {
+          "selected": {
+            "n_events": 342,
+            "n_dates": 236,
+            "net_mean": 0.0065846182237197124,
+            "relative_mean": -0.0005346455572889692,
+            "net_median": 0.009580940061667877,
+            "negative_net_share": 0.39766081871345027,
+            "mae_mean": -0.022739498766408864,
+            "mae_below_minus8_share": 0.04678362573099415
+          },
+          "additional": {
+            "n_events": 0,
+            "n_dates": 0,
+            "net_mean": null,
+            "relative_mean": null,
+            "negative_net_share": null,
+            "mae_below_minus8_share": null
+          },
+          "paired_vs_incumbent": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 538,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {},
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "both_rs_vetoes": {
+          "selected": {
+            "n_events": 361,
+            "n_dates": 243,
+            "net_mean": 0.006775388970504204,
+            "relative_mean": -0.0005118068822062409,
+            "net_median": 0.009898890742151336,
+            "negative_net_share": 0.3850415512465374,
+            "mae_mean": -0.022485176719275312,
+            "mae_below_minus8_share": 0.04709141274238227
+          },
+          "additional": {
+            "n_events": 19,
+            "n_dates": 18,
+            "net_mean": 0.010209262412625033,
+            "relative_mean": -0.00010071073071712718,
+            "net_median": 0.022071746471253206,
+            "negative_net_share": 0.15789473684210525,
+            "mae_mean": -0.017907379870871466,
+            "mae_below_minus8_share": 0.05263157894736842
+          },
+          "paired_vs_incumbent": {
+            "mean": -0.0,
+            "se": 2e-05,
+            "t": -0.02,
+            "p": 0.9838,
+            "n": 538,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLB": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.023595983924324937,
+              "relative_mean": 0.017170826813164286,
+              "net_median": 0.023595983924324937,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.010411754711246446,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLE": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.00653600595351045,
+              "relative_mean": -0.05993741684420617,
+              "net_median": 0.00653600595351045,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.032045049532414605,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLI": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": 0.009304107876062062,
+              "relative_mean": 0.0033012241957142714,
+              "net_median": 0.009304107876062062,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.019753448511933447,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLK": {
+              "n_events": 6,
+              "n_dates": 6,
+              "net_mean": 0.014083946846690584,
+              "relative_mean": 0.0071615007684450735,
+              "net_median": 0.02379941560789267,
+              "negative_net_share": 0.16666666666666666,
+              "mae_mean": -0.02272033110650244,
+              "mae_below_minus8_share": 0.16666666666666666
+            },
+            "XLU": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.004716753465932035,
+              "relative_mean": -0.04183750116309537,
+              "net_median": 0.004716753465932035,
+              "negative_net_share": 0.0,
+              "mae_mean": 0.0,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLV": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.015629820915810333,
+              "relative_mean": 0.009927169838722513,
+              "net_median": 0.03254677967592556,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.0115676012463104,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 5,
+              "n_dates": 5,
+              "net_mean": 0.0018251765832819184,
+              "relative_mean": 0.000667524958449063,
+              "net_median": 0.005751011650373618,
+              "negative_net_share": 0.2,
+              "mae_mean": -0.01745034518021682,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.017012976086162073,
+              "relative_mean": 0.005382668501733339,
+              "net_median": 0.023595983924324937,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.010618085802391467,
+              "mae_below_minus8_share": 0.0
+            },
+            "2010s": {
+              "n_events": 16,
+              "n_dates": 15,
+              "net_mean": 0.008933566098836838,
+              "relative_mean": -0.00112884433680159,
+              "net_median": 0.019532997546891973,
+              "negative_net_share": 0.1875,
+              "mae_mean": -0.019274122508711466,
+              "mae_below_minus8_share": 0.0625
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "both_with_price_bound": {
+          "selected": {
+            "n_events": 348,
+            "n_dates": 238,
+            "net_mean": 0.006386363549243706,
+            "relative_mean": -0.00046226082532237797,
+            "net_median": 0.009297361092113434,
+            "negative_net_share": 0.39655172413793105,
+            "mae_mean": -0.022909164185500014,
+            "mae_below_minus8_share": 0.04885057471264368
+          },
+          "additional": {
+            "n_events": 6,
+            "n_dates": 6,
+            "net_mean": -0.004914152895888757,
+            "relative_mean": 0.0036636688967733137,
+            "net_median": 0.0032023236873948164,
+            "negative_net_share": 0.3333333333333333,
+            "mae_mean": -0.03258009307369578,
+            "mae_below_minus8_share": 0.16666666666666666
+          },
+          "paired_vs_incumbent": {
+            "mean": 0.0,
+            "se": 1e-05,
+            "t": 0.547,
+            "p": 0.5842,
+            "n": 538,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLK": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.04637589556007271,
+              "relative_mean": 0.015060990486948424,
+              "net_median": -0.04637589556007271,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.10536333785332164,
+              "mae_below_minus8_share": 1.0
+            },
+            "XLV": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.03254677967592556,
+              "relative_mean": 0.006454424932262672,
+              "net_median": 0.03254677967592556,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.002865494687768977,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 4,
+              "n_dates": 4,
+              "net_mean": -0.003913950372796349,
+              "relative_mean": 0.00011664949035719661,
+              "net_median": 0.0032023236873948164,
+              "negative_net_share": 0.25,
+              "mae_mean": -0.021812931475271025,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 6,
+              "n_dates": 6,
+              "net_mean": -0.004914152895888757,
+              "relative_mean": 0.0036636688967733137,
+              "net_median": 0.0032023236873948164,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.03258009307369578,
+              "mae_below_minus8_share": 0.16666666666666666
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        }
+      }
+    },
+    "assessment": {
+      "full_dates": 434,
+      "arms": {
+        "incumbent": {
+          "selected": {
+            "n_events": 340,
+            "n_dates": 186,
+            "net_mean": 0.0015192123668649467,
+            "relative_mean": -0.005162187803893177,
+            "net_median": 0.009719276307755821,
+            "negative_net_share": 0.43823529411764706,
+            "mae_mean": -0.032471414658565394,
+            "mae_below_minus8_share": 0.09117647058823529
+          },
+          "additional": {
+            "n_events": 0,
+            "n_dates": 0,
+            "net_mean": null,
+            "relative_mean": null,
+            "negative_net_share": null,
+            "mae_below_minus8_share": null
+          },
+          "paired_vs_incumbent": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 434,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {},
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "entry_veto_only": {
+          "selected": {
+            "n_events": 354,
+            "n_dates": 192,
+            "net_mean": 0.00214157232460888,
+            "relative_mean": -0.0045080888538466864,
+            "net_median": 0.009719276307755821,
+            "negative_net_share": 0.4378531073446328,
+            "mae_mean": -0.031911452153975915,
+            "mae_below_minus8_share": 0.08757062146892655
+          },
+          "additional": {
+            "n_events": 14,
+            "n_dates": 14,
+            "net_mean": 0.017256028441247247,
+            "relative_mean": 0.011377171361568112,
+            "net_median": 0.011481064221461001,
+            "negative_net_share": 0.42857142857142855,
+            "mae_mean": -0.01831236275680295,
+            "mae_below_minus8_share": 0.0
+          },
+          "paired_vs_incumbent": {
+            "mean": 4e-05,
+            "se": 6e-05,
+            "t": 0.702,
+            "p": 0.4828,
+            "n": 434,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLE": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.07817717505818973,
+              "relative_mean": 0.08420193433383198,
+              "net_median": 0.08241897926201469,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.009065887520674424,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLF": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.006237698786978035,
+              "relative_mean": -0.014075933864560408,
+              "net_median": -0.014038695761143137,
+              "negative_net_share": 0.6666666666666666,
+              "mae_mean": -0.014363385757848087,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLI": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.018226605603534174,
+              "relative_mean": -0.022283526782083007,
+              "net_median": -0.018226605603534174,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.02024206750713109,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLP": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.06699174093730653,
+              "relative_mean": 0.008953580681979269,
+              "net_median": -0.06699174093730653,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.07609538246428493,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLU": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.016728774563020687,
+              "relative_mean": 0.025679305551665088,
+              "net_median": 0.016728774563020687,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.008065122274951153,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLV": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": -0.01616279985757907,
+              "relative_mean": -0.007243520724730668,
+              "net_median": -0.01616279985757907,
+              "negative_net_share": 0.5,
+              "mae_mean": -0.02841869472627262,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.029718316111645438,
+              "relative_mean": -0.016319973449320384,
+              "net_median": 0.034064713495759236,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.008281765686920442,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": 0.014477229702681949,
+              "relative_mean": -0.03457101231240722,
+              "net_median": 0.014477229702681949,
+              "negative_net_share": 0.5,
+              "mae_mean": -0.012422648530380664,
+              "mae_below_minus8_share": 0.0
+            },
+            "2020s": {
+              "n_events": 12,
+              "n_dates": 12,
+              "net_mean": 0.017719161564341463,
+              "relative_mean": 0.019035201973897336,
+              "net_median": 0.011481064221461001,
+              "negative_net_share": 0.4166666666666667,
+              "mae_mean": -0.019293981794539995,
+              "mae_below_minus8_share": 0.0
+            }
+          }
+        },
+        "recommendation_veto_only": {
+          "selected": {
+            "n_events": 340,
+            "n_dates": 186,
+            "net_mean": 0.0015192123668649467,
+            "relative_mean": -0.005162187803893177,
+            "net_median": 0.009719276307755821,
+            "negative_net_share": 0.43823529411764706,
+            "mae_mean": -0.032471414658565394,
+            "mae_below_minus8_share": 0.09117647058823529
+          },
+          "additional": {
+            "n_events": 0,
+            "n_dates": 0,
+            "net_mean": null,
+            "relative_mean": null,
+            "negative_net_share": null,
+            "mae_below_minus8_share": null
+          },
+          "paired_vs_incumbent": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 434,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {},
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2020s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            }
+          }
+        },
+        "both_rs_vetoes": {
+          "selected": {
+            "n_events": 354,
+            "n_dates": 192,
+            "net_mean": 0.00214157232460888,
+            "relative_mean": -0.0045080888538466864,
+            "net_median": 0.009719276307755821,
+            "negative_net_share": 0.4378531073446328,
+            "mae_mean": -0.031911452153975915,
+            "mae_below_minus8_share": 0.08757062146892655
+          },
+          "additional": {
+            "n_events": 14,
+            "n_dates": 14,
+            "net_mean": 0.017256028441247247,
+            "relative_mean": 0.011377171361568112,
+            "net_median": 0.011481064221461001,
+            "negative_net_share": 0.42857142857142855,
+            "mae_mean": -0.01831236275680295,
+            "mae_below_minus8_share": 0.0
+          },
+          "paired_vs_incumbent": {
+            "mean": 4e-05,
+            "se": 6e-05,
+            "t": 0.702,
+            "p": 0.4828,
+            "n": 434,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLE": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.07817717505818973,
+              "relative_mean": 0.08420193433383198,
+              "net_median": 0.08241897926201469,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.009065887520674424,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLF": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.006237698786978035,
+              "relative_mean": -0.014075933864560408,
+              "net_median": -0.014038695761143137,
+              "negative_net_share": 0.6666666666666666,
+              "mae_mean": -0.014363385757848087,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLI": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.018226605603534174,
+              "relative_mean": -0.022283526782083007,
+              "net_median": -0.018226605603534174,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.02024206750713109,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLP": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.06699174093730653,
+              "relative_mean": 0.008953580681979269,
+              "net_median": -0.06699174093730653,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.07609538246428493,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLU": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.016728774563020687,
+              "relative_mean": 0.025679305551665088,
+              "net_median": 0.016728774563020687,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.008065122274951153,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLV": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": -0.01616279985757907,
+              "relative_mean": -0.007243520724730668,
+              "net_median": -0.01616279985757907,
+              "negative_net_share": 0.5,
+              "mae_mean": -0.02841869472627262,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.029718316111645438,
+              "relative_mean": -0.016319973449320384,
+              "net_median": 0.034064713495759236,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.008281765686920442,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 2,
+              "n_dates": 2,
+              "net_mean": 0.014477229702681949,
+              "relative_mean": -0.03457101231240722,
+              "net_median": 0.014477229702681949,
+              "negative_net_share": 0.5,
+              "mae_mean": -0.012422648530380664,
+              "mae_below_minus8_share": 0.0
+            },
+            "2020s": {
+              "n_events": 12,
+              "n_dates": 12,
+              "net_mean": 0.017719161564341463,
+              "relative_mean": 0.019035201973897336,
+              "net_median": 0.011481064221461001,
+              "negative_net_share": 0.4166666666666667,
+              "mae_mean": -0.019293981794539995,
+              "mae_below_minus8_share": 0.0
+            }
+          }
+        },
+        "both_with_price_bound": {
+          "selected": {
+            "n_events": 347,
+            "n_dates": 191,
+            "net_mean": 0.002096150804623731,
+            "relative_mean": -0.004183486437222157,
+            "net_median": 0.009898039593631893,
+            "negative_net_share": 0.43515850144092216,
+            "mae_mean": -0.032272670328294346,
+            "mae_below_minus8_share": 0.0893371757925072
+          },
+          "additional": {
+            "n_events": 7,
+            "n_dates": 7,
+            "net_mean": 0.03011887492433604,
+            "relative_mean": 0.043353437086798875,
+            "net_median": 0.047786580332389805,
+            "negative_net_share": 0.2857142857142857,
+            "mae_mean": -0.022619374286557754,
+            "mae_below_minus8_share": 0.0
+          },
+          "paired_vs_incumbent": {
+            "mean": 8e-05,
+            "se": 5e-05,
+            "t": 1.5,
+            "p": 0.1337,
+            "n": 434,
+            "lags": 5,
+            "lags_requested": 5
+          },
+          "additional_by_asset": {
+            "XLE": {
+              "n_events": 3,
+              "n_dates": 3,
+              "net_mean": 0.07817717505818973,
+              "relative_mean": 0.08420193433383198,
+              "net_median": 0.08241897926201469,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.009065887520674424,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLF": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.047786580332389805,
+              "relative_mean": 0.008125677533543653,
+              "net_median": 0.047786580332389805,
+              "negative_net_share": 0.0,
+              "mae_mean": 0.0,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLP": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.06699174093730653,
+              "relative_mean": 0.008953580681979269,
+              "net_median": -0.06699174093730653,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.07609538246428493,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLV": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": -0.03855895359505945,
+              "relative_mean": 0.05066862528609173,
+              "net_median": -0.03855895359505945,
+              "negative_net_share": 1.0,
+              "mae_mean": -0.042802859740847854,
+              "mae_below_minus8_share": 0.0
+            },
+            "XLY": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.034064713495759236,
+              "relative_mean": -0.016879626895518474,
+              "net_median": 0.034064713495759236,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.012239715238748228,
+              "mae_below_minus8_share": 0.0
+            }
+          },
+          "additional_by_era": {
+            "2000s": {
+              "n_events": 0,
+              "n_dates": 0,
+              "net_mean": null,
+              "relative_mean": null,
+              "negative_net_share": null,
+              "mae_below_minus8_share": null
+            },
+            "2010s": {
+              "n_events": 1,
+              "n_dates": 1,
+              "net_mean": 0.034064713495759236,
+              "relative_mean": -0.016879626895518474,
+              "net_median": 0.034064713495759236,
+              "negative_net_share": 0.0,
+              "mae_mean": -0.012239715238748228,
+              "mae_below_minus8_share": 0.0
+            },
+            "2020s": {
+              "n_events": 6,
+              "n_dates": 6,
+              "net_mean": 0.02946123516243217,
+              "relative_mean": 0.053392281083851766,
+              "net_median": 0.05753074405362868,
+              "negative_net_share": 0.3333333333333333,
+              "mae_mean": -0.024349317461192677,
+              "mae_below_minus8_share": 0.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

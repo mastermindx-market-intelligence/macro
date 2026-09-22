@@ -25,12 +25,22 @@ changed:
   - path: tests/test_theme_recommendation_reasons.py
     what: Seventy-two gate, parity, native JavaScript, missingness, translation and native-entry attribution cases.
   - path: research/sector_pulse/recommendation_reasons_20260921/
-    what: Source-bound policy replay, original-versus-candidate browser evidence and exact limitations.
+    what: Source-bound replay, native entry attribution, frozen historical five-arm comparison and exact limitations.
+  - path: tests/test_theme_entry_gate_comparison.py
+    what: Thirty-six causality, veto-isolation, date, forward-outcome and fixed-denominator regression cases.
+  - path: data/trial_ledger.jsonl
+    what: Append five study configurations through the existing native trial owner; preserve all prior records.
   - path: .github/ci/legacy-jobs.yml
     what: Register the original theme scoring suite and new reason suite in the existing owner job.
   - path: .github/workflows/ci.yml
     what: Trigger that job for the reason tests and frozen test-only control fixture.
 verified:
+  - claim: Frozen historical comparison and existing theme consumers pass the expanded owner suite.
+    command: python3 -m pytest -q tests/test_theme_entry_gate_comparison.py tests/test_theme_recommendation_reasons.py tests/test_theme_scoring.py tests/test_theme_scoring_conflicted.py tests/test_theme_scoring_leadership_split.py tests/test_basket_detail_glance_copy.py
+    result: 205 passed on Python 3.14; 197 overlapping core tests passed on Python 3.12.
+  - claim: Five fixed arms were compared on the same immutable sector-price population after pre-outcome registration.
+    command: python3 research/sector_pulse/recommendation_reasons_20260921/compare_entry_gates.py --source-ref 1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee --prereg-commit 59bf08ca81632451165ac2423637181d536ab9e4 --output /tmp/theme-entry-gate-comparison
+    result: 8937 valid decision rows; 434 common 21-session assessment dates; 14 added unbounded and seven price-bounded observations; no primary multiple-testing-adjusted significance or promotion.
   - claim: Theme, reason, native consumer and detail contracts pass locally.
     command: python3 -m pytest -q tests/test_theme_recommendation_reasons.py tests/test_theme_scoring.py tests/test_theme_scoring_conflicted.py tests/test_theme_scoring_leadership_split.py tests/test_basket_detail_glance_copy.py
     result: 169 passed.
@@ -196,3 +206,67 @@ entry-attribution SHA-256 is
 `5ce749aa1810d7e0aa66a73c779980e4fc6d4b94a846d3fb51e28e7fce443049`.
 The exact final source head and new CI identity belong in the same PR's read-back
 checkpoint comment, avoiding an ancestry-only or self-referencing docs commit.
+
+
+## September 22 continuation — frozen historical two-gate comparison
+
+Procedure was re-pinned to protected `Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1`;
+same-pin Skillpack 1.0.1/bootstrap 1 compatibility and unchanged loaded-skill digests
+were verified. Original #7650 and #7669 had concluded successful full repository
+CI at recovery, but still had no independent approval. The existing #7478 release
+cleanup remains DO_NOT_REDO. No reviewer account, worker or alternate release
+carrier was invented to bypass the unconsumed review request.
+
+A pre-outcome protocol was committed and pushed at
+`59bf08ca81632451165ac2423637181d536ab9e4` before computing the historical comparison.
+The new pure research CLI `compare_entry_gates.py` reuses native calibration,
+entry, recommendation, extension, calendar and statistical owners. Its five fixed
+arms are registered with the existing native `data/trial_ledger.jsonl`: five
+append-only records, no separate ledger, no earlier record change. The .75 entry
+veto is relaxed only at already-sufficient ORIGINAL quality; no .20 counterfactual
+quality bonus is granted. The .85 recommendation veto is evaluated separately.
+
+Input pin `macro@1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee` binds the nine native
+core sector ETF close archives plus SPY, December 1998 through September 18, 2026.
+The study produced 8,937 valid decision-time asset rows. Decisions use only causal
+features, hypothetical entry is NEXT-session close, costs total 20 basis points,
+and 5/21/63-session outcomes remain null when future paths are incomplete.
+The fixed pre-2018 / 2018-onward partition excludes crossing development outcomes.
+
+Primary 2018-onward result on 434 fully observed common decision dates:
+- Entry-veto-only and both-veto alternatives add 14 observations; mean added
+  21-session net absolute return +1.73%, net relative return +1.14 percentage
+  points, six negative outcomes. Date-level corrected q=0.6437.
+- Recommendation-veto-only adds zero observations: the stricter clean-entry path
+  remains. This does not make the .85 rule globally irrelevant to theme portrayal.
+- Native-price-bounded additional admission retains seven extra observations;
+  mean net +3.01%, relative +4.34 points, two negative outcomes, q=0.5348.
+- None of the four primary comparisons passes the frozen significance screen.
+  Small positive cohorts are not a promoted live entry algorithm.
+
+The companion REPORT states the earlier-period instability, weak baseline proxy,
+fixed-slot non-compounded event-budget estimand, and six archive/calendar mismatch
+dates. Those mismatches are not filled or silently treated as corrected calendar
+history. They excluded 2,727 potential decision rows under the complete-prefix
+rule and are an exact independent calendar-owner follow-up.
+
+Evidence: `research/sector_pulse/recommendation_reasons_20260921/gate-comparison/`
+contains the full source-bound result, deterministic compressed event rows,
+readable report and test receipts. New test suite has 36 discriminators; 205 full
+Python 3.14 owner/consumer/detail tests and 197 overlapping Python 3.12 tests pass.
+Original 10,584-case recommendation parity is retained. The new suite is wired
+into the existing hosted job and trigger list. No runtime engine, UI, quote,
+rank, entry permission or sizing policy changed in this continuation.
+
+Ruling: no blanket production gate removal; the .85-only adjustment is not a
+solution for this clean-entry path. Continue source release review, preserve
+leadership/candidate visibility, then use the existing #7572 entry/selection owner
+for a same-decision-time stock-level comparison. Do not tune this proxy experiment
+until it turns green, claim portfolio returns, label it prospective/PIT availability
+validation, or redo the completed freeze/run without a material invalidator.
+
+This bounded research comparison is complete; the parent product mission is not.
+Final source head, source/data hashes and hosted run identities are recorded by
+read-back comments on the same PR, without a self-referential commit loop.
+MISSION_COMPLETE: false
+PRODUCTION_POLICY_CHANGED: false

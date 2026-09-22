@@ -2977,6 +2977,7 @@ jobs:
           tests/test_stance_matrix.py
           tests/test_theme_scoring_conflicted.py
           tests/test_theme_scoring.py tests/test_theme_recommendation_reasons.py
+          tests/test_theme_entry_gate_comparison.py
           tests/test_basket_score_rollover_w4.py
           tests/test_index_momentum.py
           tests/test_cohort_flow_chips.py
