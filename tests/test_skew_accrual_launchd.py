@@ -216,6 +216,18 @@ FAKE_PUBLISH_OK = '''"""Fake publish — exit 0."""
 import sys
 sys.exit(0)
 '''
+FAKE_FETCH_R2_OK = '''"""Fake fetch_r2 — exits 0 (no actual R2 I/O).
+
+The runner's step_hydrate_ledger (B2 cure, 2026-09-22) calls
+`python -m scripts.fetch_r2 --dirs options_skew` to restore the durable
+options_skew bytes from R2 BEFORE the accrue. The fake MUST restore (or
+in the test, simply succeed) so the runner can proceed to accrue + verify
++ publish. A no-op fake fetch is acceptable here because the test only
+proves the step ordering — it does not exercise the live R2 plane.
+"""
+import sys
+sys.exit(0)
+'''
 FAKE_PUBLISH_FAIL = '''"""Fake publish — exit 1."""
 import sys
 sys.exit(1)
@@ -255,6 +267,7 @@ def _build_fake_repo(tmp_path: Path, *,
                      publish: str = FAKE_PUBLISH_OK,
                      accrue: str = FAKE_ACCRUE_OK,
                      gate: str = FAKE_GATE_FRESH,
+                     fetch_r2: str = FAKE_FETCH_R2_OK,
                      write_ledger: bool = True) -> tuple[Path, Path]:
     """Construct a fake checkout the runner can drive end-to-end.
 
@@ -285,6 +298,12 @@ def _build_fake_repo(tmp_path: Path, *,
     (scripts_dir / "skew_accrual_verify_ledger.py").write_text(verify, encoding="utf-8")
     (scripts_dir / "build_options_skew.py").write_text(accrue, encoding="utf-8")
     (scripts_dir / "publish_r2.py").write_text(publish, encoding="utf-8")
+    # B2 cure (2026-09-22): the new step_hydrate_ledger calls
+    # `scripts.fetch_r2 --dirs options_skew`. A fetch_r2 stub is always
+    # written now — defaults to a no-op OK so the existing tests keep
+    # passing; an individual test can override the kwarg to drive the
+    # R2-failure branch.
+    (scripts_dir / "fetch_r2.py").write_text(fetch_r2, encoding="utf-8")
     # A copy of the real runner — keeps the test hermetic: edits to the
     # real runner flow through immediately.
     shutil.copyfile(RUNNER, ops_dir / "run_skew_accrual.sh")
@@ -482,6 +501,237 @@ def test_runner_aborts_loud_when_checkout_is_dirty(tmp_path):
     rc = _run_runner(tmp_path, repo, stub_bin)
     assert rc.returncode == 1, (rc.stdout, rc.stderr)
     assert "dirty" in rc.stdout.lower()
+
+
+# ────────────────────────────────────────────────────────────────────────────── #
+# 3b. B2 cure (2026-09-22): producer repeatability through step ordering.        #
+# ────────────────────────────────────────────────────────────────────────────── #
+# The round-1 review flagged that the runner wrote an untracked .skew_pre_rows
+# file inside $REPO and immediately refused the NEXT run as dirty. The B2 cure
+# moves every run-state artifact to a sibling state directory OUTSIDE $REPO
+# (default /Users/chriswong/skew-ops-state, override SKEW_STATE_DIR) AND splits
+# the previously-bundled `step_refresh_checkout` into separate `step_refresh`
+# and `step_assert_clean_tree` functions so the destructive refresh
+# (`git reset --hard && git clean -fd`) runs BEFORE the clean-tree assertion.
+# These two tests prove the cycle:
+#   - two_run_cycle_is_admitted_via_real_git: real `git init` repo, two
+#     back-to-back dry-runs both exit 0 (B2 cure works);
+#   - runstate_files_live_outside_repo: state files appear in $SKEW_STATE_DIR,
+#     never in $REPO, between step_accrue and step_verify_ledger.
+
+
+def _build_real_git_repo(tmp_path: Path,
+                         *,
+                         precheck: str = FAKE_PRECHECK_OK,
+                         verify: str = FAKE_VERIFY_OK,
+                         publish: str = FAKE_PUBLISH_OK,
+                         accrue: str = FAKE_ACCRUE_OK,
+                         gate: str = FAKE_GATE_FRESH,
+                         fetch_r2: str = FAKE_FETCH_R2_OK,
+                         write_ledger: bool = True) -> tuple[Path, Path]:
+    """Like _build_fake_repo, but `.git/` is a REAL git repo with a
+    LOCAL bare 'origin' remote so `git fetch origin` succeeds offline.
+
+    The runner's `step_refresh` (B2 cure, 2026-09-22) calls `git fetch`,
+    `git checkout --detach origin/main`, `git reset --hard`, `git clean -fd`
+    in the wild, all of which require a real git binary the existing stubs
+    cannot satisfy (a stub `git checkout --detach origin/main` would not
+    create a real detached HEAD, and origin is required to exist for `git
+    fetch origin` to return 0). This helper builds a bare repo as origin,
+    clones it into the working tree, and sets origin's URL to the bare path
+    so network is never touched."""
+    repo = tmp_path / "real_repo"
+    scripts_dir = repo / "scripts"
+    ops_dir = repo / "ops" / "launchd"
+    data_dir = repo / "data" / "options_skew"
+    repo.mkdir()
+    scripts_dir.mkdir(parents=True)
+    ops_dir.mkdir(parents=True)
+    data_dir.mkdir(parents=True)
+    # Seed the bootstrap ledger the W2-1b sibling would commit in production.
+    if write_ledger:
+        try:
+            import pandas as pd
+            pd.DataFrame([
+                {"date": "2026-09-15", "underlying": "BOOTSTRAP",
+                 "skew": 0.05},
+            ]).to_parquet(data_dir / "snapshots.parquet")
+        except Exception:
+            pass
+    env = os.environ.copy()
+    env["GIT_AUTHOR_NAME"] = "T"
+    env["GIT_AUTHOR_EMAIL"] = "t@example.com"
+    env["GIT_COMMITTER_NAME"] = "T"
+    env["GIT_COMMITTER_EMAIL"] = "t@example.com"
+    # 1. Stub python modules FIRST (tracked into the bootstrap commit so
+    #    `git reset --hard` later does NOT wipe them — that is the very
+    #    point of the B2 cure: destructive refresh must leave the
+    #    production helpers in place while still wiping any new state).
+    (scripts_dir / "skew_accrual_gate.py").write_text(gate, encoding="utf-8")
+    (scripts_dir / "skew_accrual_precheck.py").write_text(precheck, encoding="utf-8")
+    (scripts_dir / "skew_accrual_verify_ledger.py").write_text(verify, encoding="utf-8")
+    (scripts_dir / "build_options_skew.py").write_text(accrue, encoding="utf-8")
+    (scripts_dir / "publish_r2.py").write_text(publish, encoding="utf-8")
+    (scripts_dir / "fetch_r2.py").write_text(fetch_r2, encoding="utf-8")
+    shutil.copyfile(RUNNER, ops_dir / "run_skew_accrual.sh")
+    (ops_dir / "run_skew_accrual.sh").chmod(0o755)
+    # 2. Bare origin
+    bare = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "--bare", "-q", str(bare)],
+                   check=True, env=env)
+    # 3. Seed repo on main, commit (carrying the fake scripts), push.
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo,
+                   check=True, env=env)
+    subprocess.run(["git", "config", "user.email", "t@example.com"],
+                   cwd=repo, check=True, env=env)
+    subprocess.run(["git", "config", "user.name", "T"], cwd=repo,
+                   check=True, env=env)
+    subprocess.run(["git", "remote", "add", "origin", str(bare)],
+                   cwd=repo, check=True, env=env)
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "W2-2 fake bootstrap"],
+                   cwd=repo, check=True, env=env)
+    subprocess.run(["git", "push", "-q", "origin", "main"], cwd=repo,
+                   check=True, env=env)
+    # python shim only — system git is unmolested.
+    stub_bin = tmp_path / "stub_bin"
+    stub_bin.mkdir()
+    # Use a separate file so the Python-source escapes are unambiguous.
+    # Writing the shim through Python's write_text breaks \\\\n in heredocs
+    # (the outer file_write decodes one level: a literal "\\n" becomes
+    # the two chars `\n` then a `\n` is interpreted at runpy time as
+    # newline + n + ...; the right escape is to write the shim from a
+    # raw bytes blob).
+    py_shim_text = (
+        "#!/usr/bin/env python3\n"
+        "import os, runpy, sys\n"
+        "args = sys.argv[1:]; mod = None\n"
+        "i = 0\n"
+        "while i < len(args):\n"
+        "    if args[i] == '-m' and i + 1 < len(args):\n"
+        "        mod = args[i + 1]; del args[i:i + 2]; break\n"
+        "    i += 1\n"
+        "if mod is None:\n"
+        "    sys.stderr.write('fake-python: -m <module> required\\n'); sys.exit(2)\n"
+        "short = mod.rsplit('.', 1)[-1]\n"
+        "fake_repo = os.environ.get('SKEW_OPS_ROOT')\n"
+        "if fake_repo is None:\n"
+        "    sys.stderr.write('fake-python: SKEW_OPS_ROOT not set\\n'); sys.exit(2)\n"
+        "path = os.path.join(fake_repo, 'scripts', short + '.py')\n"
+        "if not os.path.isfile(path):\n"
+        "    sys.stderr.write('fake-python: ' + path + ' not found\\n'); sys.exit(2)\n"
+        "sys.argv = [path] + args\n"
+        "runpy.run_path(path, run_name='__main__')\n"
+    )
+    (stub_bin / "python").write_text(py_shim_text, encoding="utf-8")
+    (stub_bin / "python").chmod(0o755)
+    return repo, stub_bin
+
+
+def _run_runner_with_state(tmp_path: Path, repo: Path, stub_bin: Path,
+                           *, state_dir: Path,
+                           freshness_bypass: bool = True,
+                           dry_run: bool = True,
+                           env_extra: dict | None = None,
+                           timeout: int = 60
+                           ) -> subprocess.CompletedProcess:
+    """Same as _run_runner, but also sets SKEW_STATE_DIR explicitly.
+
+    The B2 cure is the default run-state home; the test sets it explicitly
+    so the assertion can prove post-run files landed in the right dir."""
+    env = os.environ.copy()
+    env["PATH"] = f"{stub_bin}:{env.get('PATH', '')}"
+    env["SKEW_OPS_ROOT"] = str(repo)
+    env["SKEW_STATE_DIR"] = str(state_dir)
+    env["PYTHON"] = str(stub_bin / "python")
+    env["SKEW_PYTHON"] = str(stub_bin / "python")
+    if freshness_bypass:
+        env["SKEW_FRESHNESS_BYPASS"] = "1"
+    if dry_run:
+        env["SKEW_DRY_RUN"] = "1"
+    if env_extra:
+        env.update(env_extra)
+    return subprocess.run(
+        ["/bin/sh", str(repo / "ops" / "launchd" / "run_skew_accrual.sh")],
+        capture_output=True, text=True, env=env, check=False, timeout=timeout,
+    )
+
+
+def test_two_run_cycle_is_admitted_via_real_git(tmp_path):
+    """B2 RED-first regression: a runner that wrote an untracked
+    .skew_pre_rows file inside $REPO and refused the NEXT run as dirty
+    is un-repeatable. The B2 cure (state dir + step_split) must let two
+    back-to-back runs against a real `git init`'d repo BOTH succeed.
+
+    The test:
+      1. Builds a real `git init`'d repo under tmp_path with a single
+         bootstrap commit (snapshots.parquet seeded with 1 row).
+      2. Sets SKEW_STATE_DIR to a sibling state directory.
+      3. Runs the runner end-to-end (SKEW_DRY_RUN=1, SKEW_FRESHNESS_BYPASS=1).
+      4. Confirms first run exits 0.
+      5. Runs the runner again with the SAME state directory.
+      6. Confirms the second run ALSO exits 0 — the prior run's pre_rows
+         file is in $SKEW_STATE_DIR (not $REPO) so the prior ledger state
+         is wiped by `git reset --hard && git clean -fd` on the next
+         step_refresh, and step_assert_clean_tree passes."""
+    repo, stub_bin = _build_real_git_repo(tmp_path)
+    state_dir = tmp_path / "skew_state"
+    state_dir.mkdir()
+    first = _run_runner_with_state(
+        tmp_path, repo, stub_bin, state_dir=state_dir,
+    )
+    assert first.returncode == 0, (first.stdout, first.stderr)
+    # Receipt that every B2 step ran in order: refresh → assert clean →
+    # hydrate (fetch_r2) → freshness (bypassed) → precheck → accrue →
+    # verify → publish (skipped, dry-run).
+    for marker in (
+        "checkout refreshed",
+        "checkout clean — proceeding to hydrate",
+        "options_skew hydrated from R2",
+        "W2-1b precheck passed",
+        "accrue completed",
+        "ledger verified",
+        "SKEW_DRY_RUN=1 — skipping publish_r2",
+        "done",
+    ):
+        assert marker in first.stdout, f"first run missing: {marker}\n{first.stdout}"
+    # Second run — the B2 cure's whole point is that this exits 0 too.
+    second = _run_runner_with_state(
+        tmp_path, repo, stub_bin, state_dir=state_dir,
+    )
+    assert second.returncode == 0, (second.stdout, second.stderr)
+    assert "checkout refreshed" in second.stdout
+    assert "checkout clean" in second.stdout
+    assert "done" in second.stdout
+
+
+def test_runstate_files_live_outside_repo(tmp_path):
+    """B2 cure: every run-state artifact — gate status, precheck status,
+    verify status, pre_rows snapshot — lives in $SKEW_STATE_DIR, never
+    inside $REPO. Pins the design boundary that the next refresh+assert
+    tick relies on: if any of these files drifted into $REPO they would
+    dirty the post-refresh checkout and fail step_assert_clean_tree."""
+    repo, stub_bin = _build_real_git_repo(tmp_path)
+    state_dir = tmp_path / "skew_state"
+    state_dir.mkdir()
+    rc = _run_runner_with_state(
+        tmp_path, repo, stub_bin, state_dir=state_dir,
+    )
+    assert rc.returncode == 0, (rc.stdout, rc.stderr)
+    # After run: NO .skew_* artifacts remain in $REPO at all. (The runner
+    # deletes the pre_rows file in step_verify_ledger on success; the
+    # status files are intentionally left around for the operator log but
+    # sit OUTSIDE the checkout.)
+    repo_run_state = list(repo.glob("**/.skew_*"))
+    assert repo_run_state == [], (
+        f"runner leaked run-state files into $REPO: {repo_run_state}"
+    )
+    # The state dir has at least the pre_rows file written and then
+    # removed; we sample what survives, which is the per-pid gate /
+    # precheck / verify status files. The point is: they are in the
+    # state dir, not the repo.
+    state_files = list(state_dir.glob("*"))
+    assert state_files, "state dir is empty — run-state files missing entirely"
 
 
 # ─────────────────────────────────────────────────────────────────────────── #

@@ -19,12 +19,14 @@
 #     source so nothing flips prematurely.
 #   W2-2 (THIS packet)
 #     builds the store-host producer that will feed the ledger via R2. This
-#     is the runner — it (1) refreshes the dedicated checkout, (2) gates on
-#     the ThetaData EOD store, (3) verifies the W2-1b --accrue flag exists
-#     in source, (4) calls the W2-1b accrue command against the ledger on
-#     the store host, (5) verifies the ledger has content, (6) publishes
-#     the resulting data/options_skew dir to R2 so the W2-3 cutover can
-#     flip render hosts to the emit command.
+#     is the runner — it (1) refreshes the dedicated checkout, (2) asserts
+#     the refreshed checkout is clean (BLOCKER-2 revisit: B2 cure moves the
+#     assertion to its own step between refresh and any hydration/write),
+#     (3) hydrates data/options_skew from R2 (the durable home; this
+#     checkout is disposable), (4) gates on ThetaData EOD freshness, (5)
+#     verifies the W2-1b --accrue flag exists in source, (6) calls the W2-1b
+#     accrue command, (7) verifies the ledger has at least one row that grew
+#     under the accrue, and (8) publishes data/options_skew to R2.
 #   W2-3 (later)
 #     cuts render over to the emit command. Out of scope here.
 #
@@ -34,12 +36,29 @@
 # host) until the seat installs it per the runbook.
 #
 # STEP ORDER (load-bearing — each step gates the next on a non-zero exit)
-#   1. step_refresh_checkout    — dedicated checkout, refuses dirt / failure
-#   2. step_freshness_gate      — SPY eod >= T-1 NYSE session
-#   3. step_precheck_w21b       — W2-1b --accrue flag exists in source
-#   4. step_accrue              — append today's skew to the ledger
-#   5. step_verify_ledger       — ledger has at least one row before publish
-#   6. step_publish             — publish to R2 (skipped under SKEW_DRY_RUN=1)
+#   1. step_refresh                — fetch + detach + reset --hard + clean -fd
+#   2. step_assert_clean_tree      — refuses any post-refresh dirty state
+#   3. step_hydrate_ledger         — restore options_skew from R2 (durable)
+#   4. step_freshness_gate         — SPY eod >= T-1 NYSE session
+#   5. step_precheck_w21b          — W2-1b --accrue flag exists in source
+#   6. step_accrue                 — append today's skew to the ledger
+#   7. step_verify_ledger          — ledger has at least one row and grew
+#   8. step_publish                — publish to R2 (skipped under SKEW_DRY_RUN=1)
+#
+# Dry-run (SKEW_DRY_RUN=1) performs steps 1-7 and skips step 8 — the ledger is
+# written locally, the R2 leg is dropped. Used for smoke / integration checks
+# where you want to verify the build pipeline without touching live artifacts.
+#
+# RUN-STATE FILES (B2 cure, 2026-09-22)
+# ─────────────────────────────────────────────────────────────────────────────
+# Every run-state artifact (pre-accrue row count, gate/precheck/verify status
+# files, run logs) lives OUTSIDE the checkout under a sibling state directory
+# ($SKEW_STATE_DIR, default /Users/chriswong/skew-ops-state) — never inside
+# $REPO. Stale run-state files inside $REPO would dirty the post-refresh
+# checkout and fail step_assert_clean_tree, which is what made the runner
+# un-repeatable from one launchd tick to the next. The state dir is the
+# durable home for ephemeral per-run state; $REPO is the disposable, R2-
+# owned bytestream that gets reset --hard + clean -fd on every run.
 #
 # FRESHNESS GATE
 # ─────────────────────────────────────────────────────────────────────────────
@@ -84,12 +103,13 @@
 #
 # DRY-RUN (no publish)
 # ─────────────────────────────────────────────────────────────────────────────
-# Set SKEW_DRY_RUN=1 to run the accrual WITHOUT the publish_r2 step. The
-# ledger is written locally (data/options_skew/snapshots.parquet) but does NOT
-# upload to R2. Use this for smoke / integration checks where you want to
-# verify the build pipeline without touching live artifacts.
+# Set SKEW_DRY_RUN=1 to run steps 1-7 (refresh, assert, hydrate,
+# freshness, precheck, accrue, verify) WITHOUT step 8 (publish to R2).
+# The ledger is written locally (data/options_skew/snapshots.parquet) but
+# does NOT upload to R2. Use this for smoke / integration checks where you
+# want to verify the build pipeline without touching live artifacts.
 #
-# USAGE (smoke — accrues locally, no R2 publish):
+# USAGE (smoke — refresh+assert+hydrate+accrue+verify, no R2 publish):
 #   set -a; source /Users/chriswong/skew-ops-wt/.env; set +a
 #   SKEW_FRESHNESS_BYPASS=1 SKEW_DRY_RUN=1 \
 #     /Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh
@@ -107,11 +127,12 @@
 # The dedicated lane checkout is /Users/chriswong/skew-ops-wt (NOT the M1
 # flow-ops-wt or theta-ops-wt trees — both are stale/dirty by design and would
 # undermine a "checkout is clean" assertion). The runner refreshes the checkout
-# itself before any work: `git fetch origin && git checkout --detach origin/main`
-# with a `git status --porcelain` empty check. A dirty or stale checkout is
-# REFUSED — that is the lane's load-bearing safety property (a dirty tree would
-# publish someone's WIP). The lane NEVER pushes to git; the only outbound is
-# publish_r2, and that is gated on the dedup'd ledger contents.
+# itself before any work: `git fetch origin && git checkout --detach origin/main
+# && git reset --hard && git clean -fd` followed by step_assert_clean_tree. A
+# dirty or stale checkout is REFUSED — that is the lane's load-bearing safety
+# property (a dirty tree would publish someone's WIP). The lane NEVER pushes to
+# git; the only outbound is publish_r2, and that is gated on the dedup'd
+# ledger contents.
 
 set -eu
 
@@ -122,6 +143,31 @@ PYTHON="${SKEW_PYTHON:-/opt/homebrew/Caskroom/miniconda/base/bin/python}"
 STORE="${THETADATA_STORE:-/Users/chriswong/theta-ops-wt/data/thetadata_eod}"
 LEDGER_DEFAULT="$REPO/data/options_skew/snapshots.parquet"
 LEDGER="${SKEW_LEDGER_PATH:-$LEDGER_DEFAULT}"
+# Sibling state directory — every run-state artifact lives here, OUTSIDE the
+# checkout (B2 cure, 2026-09-22). Stale files inside $REPO from a prior run
+# would dirty the post-refresh checkout and fail step_assert_clean_tree, which
+# is exactly the un-repeatability the round-1 review flagged. The default
+# /Users/chriswong/skew-ops-state is a sibling of /Users/chriswong/skew-ops-wt
+# (by design — not under the tree). Override with SKEW_STATE_DIR for tests.
+STATE_DIR_DEFAULT="/Users/chriswong/skew-ops-state"
+STATE_DIR="${SKEW_STATE_DIR:-$STATE_DIR_DEFAULT}"
+
+# Ensure the state dir exists — every run-state file write below targets it.
+# On the M1 ops host the install runbook (research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE
+# _2026-09-22.md §3.1) creates it once; tests that exercise the runner under
+# tmp_path may set SKEW_STATE_DIR to a path that does not yet exist.
+mkdir -p "$STATE_DIR"
+
+# Per-pid run-state files. Using $$ means two launches of the runner can run
+# in parallel without clobbering; old files in $STATE_DIR from a prior process
+# are stale inputs, not polluting writes (they are READ-only at step_verify).
+RUN_TAG="$$"
+GATE_STATUS_FILE="$STATE_DIR/.skew_gate_status.$RUN_TAG"
+PRECHECK_STATUS_FILE="$STATE_DIR/.skew_precheck_status.$RUN_TAG"
+PRECHECK_STDERR_FILE="$STATE_DIR/.skew_precheck_stderr.$RUN_TAG"
+VERIFY_STATUS_FILE="$STATE_DIR/.skew_verify_status.$RUN_TAG"
+VERIFY_STDERR_FILE="$STATE_DIR/.skew_verify_stderr.$RUN_TAG"
+PRE_ROWS_FILE="$STATE_DIR/.skew_pre_rows.$RUN_TAG"
 
 log() {
     # One-line receipt at line start — the runbook points operators here.
@@ -129,24 +175,24 @@ log() {
 }
 
 # ── step 1: refresh the dedicated checkout ─────────────────────────────────────
-step_refresh_checkout() {
+step_refresh() {
     if [ ! -d "$REPO/.git" ]; then
         log "ERROR: dedicated checkout $REPO does not exist or is not a git worktree"
         log "  → see research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md install runbook"
         return 1
     fi
     cd "$REPO"
-    # Belt-and-suspenders: refuse to operate on a dirty working tree. A dirty
-    # checkout means a sibling session is mid-edit; publishing from here would
-    # race their bytes. The exception is `git status` itself creating noise —
-    # untracked entries under the four fleet worktree roots are excluded by
-    # ship_loop_guard; we mirror that posture with a stricter surface here.
-    dirty=$(git status --porcelain --untracked-files=all 2>/dev/null || true)
-    if [ -n "$dirty" ]; then
-        log "ERROR: dedicated checkout $REPO is dirty — refusing to run"
-        log "  porcelain: $(echo "$dirty" | head -5 | tr '\n' ';')"
-        return 1
-    fi
+    # Belt-and-suspenders (B2 cure, 2026-09-22): the refresh IS destructive.
+    # The dedicated skew-ops-wt checkout is disposable by design — its durable
+    # state lives in R2 (snapshots.parquet, manifest, gate receipts). Every
+    # run's refresh therefore:
+    #   1) fetches origin (network),
+    #   2) detaches onto origin/main (read-only by design),
+    #   3) resets --hard (collapses any local commit),
+    #   4) cleans -fd (removes any untracked / ignored bytes).
+    # This makes the cycle repeatable: a stale .skew_pre_rows sidecar from a
+    # prior tick inside $REPO will be wiped here, and a fetch_r2 hydrate
+    # from step 3 always lands onto the freshly-detached origin/main.
     if ! git fetch origin >/dev/null 2>&1; then
         log "ERROR: git fetch origin failed (network? rate limit?) — refusing to run"
         return 1
@@ -158,11 +204,61 @@ step_refresh_checkout() {
         log "ERROR: git checkout --detach origin/main failed — refusing to run"
         return 1
     fi
+    if ! git reset --hard >/dev/null 2>&1; then
+        log "ERROR: git reset --hard failed — refusing to run"
+        return 1
+    fi
+    if ! git clean -fd >/dev/null 2>&1; then
+        log "ERROR: git clean -fd failed — refusing to run"
+        return 1
+    fi
     log "checkout refreshed — HEAD=$(git rev-parse --short HEAD)"
     return 0
 }
 
-# ── step 2: freshness gate ────────────────────────────────────────────────────
+# ── step 2: clean-tree assertion (BEFORE any hydrate or write) ─────────────────
+# B2 cure (2026-09-22): the previous design bundled the dirty-tree check into
+# step_refresh_checkout, which caught dirtyness caused by the runner itself
+# (a stale .skew_pre_rows from a prior tick). The fix is to assert AFTER the
+# destructive refresh and BEFORE any hydration or write, so the only thing
+# that can dirty the tree is the hydration step. A red here means a sibling
+# session is mid-edit on $REPO — refuse, do not auto-clean.
+step_assert_clean_tree() {
+    cd "$REPO"
+    dirty=$(git status --porcelain --untracked-files=all 2>/dev/null || true)
+    if [ -n "$dirty" ]; then
+        log "ERROR: dedicated checkout $REPO is dirty — refusing to run"
+        log "  porcelain: $(echo "$dirty" | head -5 | tr '\n' ';')"
+        return 1
+    fi
+    log "checkout clean — proceeding to hydrate"
+    return 0
+}
+
+# ── step 3: hydrate the live ledger from R2 (durable home) ─────────────────────
+# B2 cure (2026-09-22): the dedicated checkout is disposable; its durable
+# bytes live in R2 (see scripts/publish_r2._DATA_DIRS['options_skew']). Every
+# run hydrates the latest options_skew ledger from R2 BEFORE the accrue step,
+# so the accrue operates on the union of prior publishes plus today's accrual.
+# A non-zero exit from fetch_r2 means DO NOT accrue and DO NOT publish — the
+# fresh R2 state may be unwritable / network down / R2 creds expired; the
+# attention restore/publish pairing is documented in scripts/fetch_r2.py's
+# docstring (and is the contract publish_r2._DATA_DIRS['options_skew'] assumes).
+step_hydrate_ledger() {
+    cd "$REPO"
+    set +e
+    "$PYTHON" -m scripts.fetch_r2 --dirs options_skew >/dev/null 2>&1
+    rc=$?
+    set -e
+    if [ "$rc" -ne 0 ]; then
+        log "ERROR: fetch_r2 hydrate of options_skew failed (rc=$rc) — refusing to accrue and publish"
+        return "$rc"
+    fi
+    log "options_skew hydrated from R2 (rc=$rc)"
+    return 0
+}
+
+# ── step 4: freshness gate ────────────────────────────────────────────────────
 step_freshness_gate() {
     if [ "${SKEW_FRESHNESS_BYPASS:-0}" = "1" ]; then
         log "SKEW_FRESHNESS_BYPASS=1 — skipping freshness gate"
@@ -177,9 +273,9 @@ step_freshness_gate() {
         # inside the body, so the rc-must-be-captured-before pattern is the
         # only way to keep failure rc's intact (BLOCKER-2 fix).
         ( cd "$REPO" && "$PYTHON" -m scripts.skew_accrual_gate \
-            --store "$STORE" --repo "$REPO" >/tmp/.skew_gate_status 2>/tmp/.skew_gate_stderr )
+            --store "$STORE" --repo "$REPO" >"$GATE_STATUS_FILE" 2>&1 )
         gate_rc=$?
-        status=$(cat /tmp/.skew_gate_status 2>/dev/null || true)
+        status=$(cat "$GATE_STATUS_FILE" 2>/dev/null || true)
         case "$status" in
             FRESH|RESOLVE_ERROR)
                 # RESOLVE_ERROR is fatal: a missing tier is not a wait-and-retry
@@ -209,7 +305,7 @@ step_freshness_gate() {
     done
 }
 
-# ── step 3: W2-1b precheck — does --accrue exist in source? ───────────────────
+# ── step 5: W2-1b precheck — does --accrue exist in source? ───────────────────
 # The precheck is BLOCKER-1's load-bearing safety property: on a pre-W2-1b
 # tree, calling `python -m scripts.build_options_skew --accrue` either
 # silently runs main() (which writes site/options_skew/latest.json and
@@ -219,25 +315,27 @@ step_freshness_gate() {
 # instead of a silent pollution.
 step_precheck_w21b() {
     cd "$REPO"
-    # Capture stdout/stderr to files so the rc-must-be-captured-before
-    # pattern works (BLOCKER-2 fix carries through here too).
+    # Capture stdout/stderr to files in $STATE_DIR so the rc-must-be-captured-
+    # before pattern works (BLOCKER-2 fix carries through here too).
+    set +e
     ( "$PYTHON" -m scripts.skew_accrual_precheck --repo "$REPO" \
-        >/tmp/.skew_precheck_status 2>/tmp/.skew_precheck_stderr )
+        >"$PRECHECK_STATUS_FILE" 2>"$PRECHECK_STDERR_FILE" )
     precheck_rc=$?
-    status=$(cat /tmp/.skew_precheck_status 2>/dev/null || true)
+    set -e
+    status=$(cat "$PRECHECK_STATUS_FILE" 2>/dev/null || true)
     if [ "$precheck_rc" -ne 0 ]; then
         # Precheck exit 4 → FLAG_MISSING. The named reason lives on stderr.
         log "ERROR: W2-1b precheck failed (rc=$precheck_rc, status=$status)"
         while IFS= read -r line; do
             log "  $line"
-        done </tmp/.skew_precheck_stderr
+        done <"$PRECHECK_STDERR_FILE"
         return 4
     fi
     log "W2-1b precheck passed ($status) — --accrue flag exposed by scripts.build_options_skew"
     return 0
 }
 
-# ── step 4: call --accrue ──────────────────────────────────────────────────────
+# ── step 6: call --accrue ──────────────────────────────────────────────────────
 # W2-1b ships `scripts/build_options_skew.py` with the accrue flag (a source-
 # stamped ledger upsert into data/options_skew/snapshots.parquet). On the
 # pre-W2-1b tree the flag is unknown — step_precheck_w21b above catches that
@@ -249,7 +347,9 @@ step_precheck_w21b() {
 # can refuse a no-op accrue (BLOCKER-2). The snapshot() can return 0
 # without writing rows (chain=None, no rows, dedup-only, or byte-equal
 # rewrite); without the pre_rows check the launchd log would report a
-# successful publish for an unchanged ledger.
+# successful publish for an unchanged ledger. The pre_rows file lives in
+# $STATE_DIR (B2 cure, 2026-09-22): it must NOT be inside $REPO or it would
+# dirty the checkout and fail step_assert_clean_tree on the next tick.
 step_accrue() {
     cd "$REPO"
     # Record pre-state — the row count the ledger has TODAY, before the
@@ -269,7 +369,7 @@ except Exception:
         pre_rows=0
     fi
     log "pre-accrue row count: $pre_rows"
-    printf '%s\n' "$pre_rows" > "$REPO/.skew_pre_rows"
+    printf '%s\n' "$pre_rows" > "$PRE_ROWS_FILE"
     log "launching python -m scripts.build_options_skew --accrue (W2-1b)"
     # Explicit rc-capture BEFORE any control flow:
     set +e
@@ -284,41 +384,42 @@ except Exception:
     return 0
 }
 
-# ── step 5: verify ledger has content AND grew under the accrue step ─────────
+# ── step 7: verify ledger has content AND grew under the accrue step ─────────
 # W2-1b's snapshot() can return 0 without writing rows (chain is None, no
 # rows, dedup-only, or byte-equal rewrite). A no-op accrue must NOT publish —
 # the R2 leg would advertise an unchanged ledger under a fresh
 # Last-Modified stamp, polluting audit_r2's freshness anchor. The verify
-# step reads the pre-accrue row count from .skew_pre_rows (recorded in
-# step_accrue) and refuses any post-state that has not strictly grown.
+# step reads the pre-accrue row count from the $STATE_DIR pre_rows file
+# (recorded in step_accrue) and refuses any post-state that has not
+# strictly grown.
 step_verify_ledger() {
     cd "$REPO"
     log "verifying ledger content: $LEDGER"
     pre_rows=0
-    if [ -f "$REPO/.skew_pre_rows" ]; then
-        pre_rows=$(cat "$REPO/.skew_pre_rows" 2>/dev/null || echo 0)
+    if [ -f "$PRE_ROWS_FILE" ]; then
+        pre_rows=$(cat "$PRE_ROWS_FILE" 2>/dev/null || echo 0)
     fi
     log "verify pre-accrue rows: $pre_rows"
     set +e
     "$PYTHON" -m scripts.skew_accrual_verify_ledger \
         --ledger "$LEDGER" --pre-rows "$pre_rows" \
-        >/tmp/.skew_verify_status 2>/tmp/.skew_verify_stderr
+        >"$VERIFY_STATUS_FILE" 2>"$VERIFY_STDERR_FILE"
     rc=$?
     set -e
-    status=$(cat /tmp/.skew_verify_status 2>/dev/null || true)
+    status=$(cat "$VERIFY_STATUS_FILE" 2>/dev/null || true)
     if [ "$rc" -ne 0 ]; then
         log "ERROR: ledger verification failed (rc=$rc, status=$status)"
         while IFS= read -r line; do
             log "  $line"
-        done </tmp/.skew_verify_stderr
+        done <"$VERIFY_STDERR_FILE"
         return 5
     fi
     log "ledger verified ($status)"
-    rm -f "$REPO/.skew_pre_rows"
+    rm -f "$PRE_ROWS_FILE"
     return 0
 }
 
-# ── step 6: publish to R2 ─────────────────────────────────────────────────────
+# ── step 8: publish to R2 ─────────────────────────────────────────────────────
 # Skipped under SKEW_DRY_RUN=1 (the ledger is still written locally; the R2
 # leg is the only thing dropped).
 step_publish() {
@@ -348,10 +449,18 @@ step_publish() {
 }
 
 # ── main ───────────────────────────────────────────────────────────────────────
-log "starting skew_accrual: repo=$REPO store=$STORE bypass=${SKEW_FRESHNESS_BYPASS:-0} dry_run=${SKEW_DRY_RUN:-0}"
+log "starting skew_accrual: repo=$REPO state_dir=$STATE_DIR store=$STORE bypass=${SKEW_FRESHNESS_BYPASS:-0} dry_run=${SKEW_DRY_RUN:-0}"
 
-if ! step_refresh_checkout; then
-    log "ABORT at step_refresh_checkout"
+if ! step_refresh; then
+    log "ABORT at step_refresh"
+    exit 1
+fi
+if ! step_assert_clean_tree; then
+    log "ABORT at step_assert_clean_tree"
+    exit 1
+fi
+if ! step_hydrate_ledger; then
+    log "ABORT at step_hydrate_ledger (R2 restore failed — refusing to accrue/publish)"
     exit 1
 fi
 if ! step_freshness_gate; then
