@@ -3960,16 +3960,34 @@ def _fast_evidence_requirements(
     return required
 
 
+def _evidence_probe_has_positive_token(probe: str, accepted: set[str]) -> bool:
+    """Match one positive status token without treating explicit negation as adverse."""
+    tokens = tuple(part for part in str(probe or "").split("_") if part)
+    neg_before = {"no", "not", "without"}
+    neg_after = {"free", "false", "none", "absent"}
+    for index, token in enumerate(tokens):
+        if token not in accepted:
+            continue
+        previous = tokens[index - 1] if index else ""
+        following = tokens[index + 1] if index + 1 < len(tokens) else ""
+        if previous in neg_before or following in neg_after:
+            continue
+        return True
+    return False
+
+
 def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
     """Return every adverse producer condition encoded by one attempted read.
 
-    A primary witness can be simultaneously partial/stale/conflicted.  Preserve every
+    A primary witness can be simultaneously partial/stale/conflicted. Preserve every
     condition so a sibling AVAILABLE witness may satisfy coverage without erasing the
     adverse evidence the synthesis still needs to disclose.
     """
     if result is None:
         return ("UNAVAILABLE",)
     if not isinstance(result, dict):
+        # An empty list can be a valid "read succeeded, no rows" result. Availability is
+        # about whether the family was actually read, not whether it contained findings.
         return ()
 
     probes: list[str] = []
@@ -3980,24 +3998,40 @@ def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
         val = result.get(key)
         if isinstance(val, str) and val.strip():
             probes.append(val.strip().lower().replace("-", "_").replace(" ", "_"))
-    joined = " ".join(probes)
 
     found: set[str] = set()
-    if "conflict" in joined:
+    if any(_evidence_probe_has_positive_token(
+        probe, {"conflict", "conflicted", "conflicting"}
+    ) for probe in probes):
         found.add("CONFLICTED")
-    if "partial" in joined:
+    if any(_evidence_probe_has_positive_token(
+        probe, {"partial", "partially"}
+    ) for probe in probes):
         found.add("PARTIAL")
-    if "stale" in joined:
+    if any(_evidence_probe_has_positive_token(probe, {"stale"}) for probe in probes):
         found.add("STALE")
-    if "not_applicable" in joined:
+    if any("not_applicable" in probe for probe in probes):
         found.add("NOT_APPLICABLE")
-    if "not_covered" in joined:
+    if any("not_covered" in probe for probe in probes):
         found.add("NOT_COVERED")
-    if result.get("error") or any(
-        token in joined for token in (
-            "unavailable", "source_unavailable", "rights_blocked",
-            "producer_degraded", "fetch_failed", "read_failed",
-        )
+
+    error_value = result.get("error")
+    normalized_error = (
+        str(error_value).strip().lower().replace("-", "_").replace(" ", "_")
+        if isinstance(error_value, str) else ""
+    )
+    has_error = bool(error_value) and normalized_error not in {
+        "none", "no_error", "false", "not_applicable",
+    }
+    unavailable_markers = (
+        "unavailable", "source_unavailable", "rights_blocked",
+        "producer_degraded", "fetch_failed", "read_failed",
+    )
+    if has_error or any(
+        marker in probe
+        and not probe.startswith(("no_" + marker, "not_" + marker))
+        for probe in probes
+        for marker in unavailable_markers
     ):
         found.add("UNAVAILABLE")
 
@@ -4006,7 +4040,6 @@ def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
         "UNAVAILABLE", "NOT_COVERED",
     )
     return tuple(state for state in order if state in found)
-
 
 def _evidence_result_state(result: Any) -> str:
     """One primary state for coverage while retaining compound conditions separately."""
@@ -4025,8 +4058,8 @@ def _evidence_coverage_receipt(
     rows: list[dict] = []
     precedence = {
         "AVAILABLE": 6,
-        "PARTIAL": 5,
-        "CONFLICTED": 4,
+        "CONFLICTED": 5,
+        "PARTIAL": 4,
         "STALE": 3,
         "NOT_APPLICABLE": 2,
         "UNAVAILABLE": 1,
@@ -4125,6 +4158,37 @@ def _evidence_coverage_synthesis_message(receipt: dict) -> str:
         f"at synthesis is: {summary}. Never fill a NOT_COVERED/UNAVAILABLE gap with "
         "inference presented as fact; disclose stale, partial, conflicted, or unavailable "
         "evidence when it materially affects the conclusion."
+    )
+
+
+def _evidence_coverage_fallback_answer(receipt: dict, *, lang: str = "en") -> str:
+    """Deterministic fail-closed reply when the one repair pass returns no prose."""
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        label = str(row.get("label") or row.get("family") or "evidence")
+        state = str(row.get("state") or "NOT_COVERED").lower().replace("_", " ")
+        extras = [
+            str(condition).lower().replace("_", " ")
+            for condition in row.get("conditions", [])
+            if condition != row.get("state")
+        ]
+        if extras:
+            state += " (" + ", ".join(extras) + " also present)"
+        parts.append(f"{label}: {state}")
+    summary = "; ".join(parts) or "required evidence: not covered"
+    if str(lang).lower().startswith("zh"):
+        return (
+            "证据覆盖修复后仍无法生成有依据的答案。"
+            f"证据状态：{summary}。"
+            "我不会用未经支持的推断填补缺失或不可用的证据。"
+        )
+    return (
+        "I couldn't produce a supported answer after the evidence-coverage repair. "
+        f"Evidence status — {summary}. "
+        "I won't fill missing or unavailable evidence with unsupported inference."
     )
 
 
@@ -6509,6 +6573,10 @@ def _run_brain_loop(
             log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
 
+    if evidence_gate_issued and not answer_text.strip():
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        answer_text = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
+
     # Extract usage from the final response (fix #1: never zeros)
     usage_dict: dict = {}
     if last_resp is not None:
@@ -7697,6 +7765,10 @@ def _run_brain_loop_stream(
         for block in last_resp_content:
             if getattr(block, "type", "") == "text":
                 full_answer += block.text
+
+    if evidence_gate_issued and not full_answer.strip():
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        full_answer = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
 
     yield _status_event("review", _t0, _STAGE_LABELS["review"])
 
