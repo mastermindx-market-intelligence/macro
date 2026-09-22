@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T14:05:57.524815+00:00",
-  "count": 2643,
+  "generated_at": "2026-09-22T14:35:58.885378+00:00",
+  "count": 2644,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gqsjbmhkacp-ba2aaa",
+      "title": "Global Views Lower Inflation, Limited Hikes",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:30Z",
+      "summary_points": [
+        "Fed's Hawkish Mispricing: GS probability-weighted path shows 50% chance of two hikes/cuts to 3.25-3.5% by late 2027, contradicting market pricing and signaling overestimation of Fed tightening.",
+        "Middle East Oil Supply Constraints: Persian Gulf exports at 16.8 mb/d (Method 2) with 80% recovery despite Strait disruptions; refining shortages and escalation risks sustain Brent at $85 by December.",
+        "China's Demand-Supply Divergence: Exports surge (5% YoY, industrial robots) but domestic retail sales weak (small retailers-driven); 2026 GDP forecast cut to 4.5%, requiring policy shifts to boost consumption.",
+        "S&P 500 Tech Earnings Risk: AI investment peak causes EPS growth to slow from 36% (2026) to 11% (2027), with private investment contributing 15 pp in 2026 vs. 11 pp in 2027—critical for AI/semiconductor portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
