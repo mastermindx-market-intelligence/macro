@@ -71,6 +71,32 @@ def test_dialog_triggers_expose_controls_to_assistive_tech() -> None:
     assert TPL.count('aria-haspopup="dialog"') >= 12
 
 
+def test_deep_cards_fail_closed_to_truthful_empty_states() -> None:
+    sector = TPL.split("{# Sector Temperature card #}", 1)[1].split("ROW 3: Policy Monitor", 1)[0]
+    assert "Sector read unavailable." in sector
+    assert "No current leaders, buy-zone candidates, or sector heat were published" in sector
+
+    policy = TPL.split("{# Policy Monitor card #}", 1)[1].split("{# Connect Flows card #}", 1)[0]
+    assert "{% set _has_credit_impulse =" in policy
+    assert "{% set _has_policy_read =" in policy
+    assert "Policy read unavailable." in policy
+
+    flows = TPL.split("{# Connect Flows card #}", 1)[1].split("{# What Changed:", 1)[0]
+    assert "Connect-flow read unavailable." in flows
+    assert "Southbound flow is supportive." in flows
+    assert "Southbound flow is a headwind." in flows
+    assert "Mainland money supporting Hong Kong." not in flows
+
+    prop = TPL.split("{# Property card #}", 1)[1].split("{# AI Brief card", 1)[0]
+    assert "{% if P and P.regime %}" in prop
+    assert "Property regime unavailable." in prop
+
+    brief = TPL.split("{# AI Brief card", 1)[1].split("{# Alerts Centre card #}", 1)[0]
+    assert "AI brief unavailable." in brief
+    assert "Brief loaded without a publishable summary." in brief
+    assert "<span class=\"cnx-chip\">{{ t('Regime','周期') }}</span>" not in brief
+
+
 def test_dashboard_header_keeps_effective_date_visible() -> None:
     assert (
         '<div class="cnx-secbar"><b>{{ t(\'CHINA DASHBOARD\',\'中国看板\') }}</b>'
