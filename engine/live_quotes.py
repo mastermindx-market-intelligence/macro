@@ -219,7 +219,9 @@ def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
         # already carried by the incumbent Polygon snapshot.  NBBO remains FEED
         # evidence only; downstream policy must separately establish identity,
         # freshness, basis/provenance and strategy-specific fillability authority.
-        day_open = day.get("o")
+        # A missing/non-positive open is not measured session-open evidence.
+        # Polygon may surface zero before the regular session has established an open.
+        day_open = _pos(day.get("o"))
         day_vol = day.get("v")
         day_hi = day.get("h")
         day_lo = day.get("l")
@@ -229,7 +231,7 @@ def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
             "quote_ts_synthetic": synthetic,
             "source": "polygon", "price_basis": basis, "delay_min": _delay_min(ts, now),
             "prev_close": round(float(prev["c"]), 4) if prev.get("c") else None,
-            "day_open": round(float(day_open), 4) if day_open is not None else None,
+            "day_open": round(day_open, 4) if day_open is not None else None,
             "currency": "USD",
             "day_volume": int(day_vol) if day_vol is not None else None,
             "day_high": round(float(day_hi), 4) if day_hi is not None else None,

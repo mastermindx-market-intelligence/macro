@@ -70,9 +70,11 @@ def test_parse_polygon_snapshot_refuses_unproven_nbbo():
     trade_ns = int(datetime(2026, 6, 21, 14, 50, tzinfo=timezone.utc).timestamp() * 1e9)
     payload = {"tickers": [
         {"ticker": "LOCKED", "lastTrade": {"p": 10.0, "t": trade_ns},
-         "lastQuote": {"p": 10.0, "P": 10.0, "t": trade_ns}},
+         "lastQuote": {"p": 10.0, "P": 10.0, "t": trade_ns},
+         "day": {"o": 0.0}},
         {"ticker": "NOTIME", "lastTrade": {"p": 20.0, "t": trade_ns},
-         "lastQuote": {"p": 19.99, "P": 20.01}},
+         "lastQuote": {"p": 19.99, "P": 20.01},
+         "day": {"o": "not-a-price"}},
     ]}
     out = lq.parse_polygon_snapshot(payload)
     for symbol in ("LOCKED", "NOTIME"):
@@ -80,6 +82,7 @@ def test_parse_polygon_snapshot_refuses_unproven_nbbo():
         assert out[symbol]["ask_price"] is None
         assert out[symbol]["nbbo_ts"] is None
         assert out[symbol]["nbbo_source"] is None
+        assert out[symbol]["day_open"] is None
 
 
 def test_parse_polygon_snapshot_prevday_basis_is_not_live():
