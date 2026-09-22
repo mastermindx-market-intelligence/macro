@@ -427,6 +427,33 @@ def test_queue_health_annotation_probes_only_actionable_recent_queue():
     assert "/actions/runs/444/jobs?per_page=100" in job_fetch.call_args.args[0][1]
 
 
+def test_queue_health_annotation_keeps_mixed_queued_child_actionable():
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    run = {
+        "id": 777,
+        "name": "mixed-workflow",
+        "status": "queued",
+        "created_at": (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat(),
+    }
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[
+            {"status": "completed"},
+            {"status": "in_progress"},
+            {"status": "queued"},
+        ],
+    ):
+        annotated = _annotate_queue_health_runs(
+            [run], _MINIMAL_REGISTRY["lane_health"]
+        )
+
+    assert annotated[0]["_queue_projection_state"] == "queued_children"
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+
+
 # ── 12. Lane-health: runner-offline detector ─────────────────────────────────
 
 def test_lane_health_runner_offline_fires():
