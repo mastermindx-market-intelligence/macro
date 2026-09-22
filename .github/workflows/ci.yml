@@ -666,6 +666,8 @@ on:
       # covered by engine/** and templates/**; name the suite so a test-only edit
       # still starts the owner job.
       - "tests/test_market_score_authority_2026_08_12.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_macro_sector_desk.py"
       # #5481 folded the China Policy Watch express-render guards into this
       # canonical suite. Name the test half explicitly beside its owner job;
       # collectors/**, engine/**, scripts/**, and templates/** cover its subjects.

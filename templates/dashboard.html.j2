@@ -12090,12 +12090,7 @@ html[data-theme="light"] :is(
       {%- set _wnx_hi = (macro_catalysts | selectattr('impact','equalto','high') | list) -%}
       {%- set _wnx_ev = (_wnx_hi | first) if _wnx_hi else (macro_catalysts | first) -%}
     {%- endif -%}
-    {# ── Slot B: hottest desk (sector-heat leader) — links to Sector Central ── #}
-    {%- set _wnx_hot = none -%}
-    {%- if sector_heat is defined and sector_heat -%}
-      {%- set _wnx_heating = (sector_heat.get('heating') or []) -%}
-      {%- set _wnx_hot = (_wnx_heating | first) if _wnx_heating else none -%}
-    {%- endif -%}
+    {# Slot B selection belongs to the full-population velocity view, not this strip. #}
     {# ── Slot C: risk follow-up when elevated (dlg-risk), else upturn/ignition, else Macro Weather ── #}
     {%- set _wnx_rdr = (market_state.radar if (market_state is defined and market_state and market_state.radar is defined) else none) -%}
     {%- set _wnx_rstate = (_wnx_rdr.state if (_wnx_rdr and _wnx_rdr.state is defined) else '') -%}
@@ -12146,28 +12141,7 @@ html[data-theme="light"] :is(
         </a>
         {% endif %}
 
-        {# ── Card B — hottest desk ── #}
-        {% if _wnx_hot %}
-        <a class="wnx-card" style="--wnx-c:var(--isle-evidence)" href="sector_central.html">
-          <div class="wnx-kicker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 11V7h-4"/></svg>
-            <span class="l-en">Hottest desk</span><span class="l-zh">最热板块</span>
-          </div>
-          <div class="wnx-state"><span class="l-en">{{ _wnx_hot.get('name','')[:20] }}</span><span class="l-zh">{{ (_wnx_hot.get('name_zh') or _wnx_hot.get('name',''))[:10] }}</span></div>
-          <div class="wnx-line"><span class="l-en">Running hot right now — see who's leading</span><span class="l-zh">当前领涨——看看谁在带头</span></div>
-          <span class="wnx-go"><span class="l-en">Sector Central</span><span class="l-zh">行业中枢</span> &rarr;</span>
-        </a>
-        {% else %}
-        <a class="wnx-card" style="--wnx-c:var(--isle-evidence)" href="sector_central.html">
-          <div class="wnx-kicker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 11V7h-4"/></svg>
-            <span class="l-en">Sector desk</span><span class="l-zh">板块桌面</span>
-          </div>
-          <div class="wnx-state"><span class="l-en">Sector Central</span><span class="l-zh">行业中枢</span></div>
-          <div class="wnx-line"><span class="l-en">What's heating up and what's rolling over</span><span class="l-zh">谁在升温、谁在退潮</span></div>
-          <span class="wnx-go"><span class="l-en">Open</span><span class="l-zh">打开</span> &rarr;</span>
-        </a>
-        {% endif %}
+        {% include '_macro_sector_desk.html.j2' %}
 
         {# ── Card C — risk follow-up / upturn cross-ref ── #}
         {% if _wnx_risk_elev %}
