@@ -16076,6 +16076,43 @@ jobs:
       - name: markets risk-regime strip
         run: python -m pytest tests/test_markets_regime_strip.py -q
 
+  options-skew-engine:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # A-F03-W2-1b (2026-09-22). tests/test_options_skew.py used to be a step on
+    # flow-surface, which is gate:data and never runs in a PR pack. This job is
+    # the gate:code home. scope: exclusive — the paths below are the measured
+    # import closure of that one pytest file, plus every live caller the
+    # legacy-source pin reads (engine-render, closing-bell, render.yml, and
+    # the nightly engine shell). No data/** fallback.
+    scope: exclusive
+    paths:
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/render.yml"
+      - "engine/__init__.py"
+      - "engine/options_skew.py"
+      - "engine/thetadata_store.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_skew.py"
+      - "scripts/ci/daily_engine_regional_desk_builders.sh"
+      - "scripts/validate_options_skew.py"
+      - "tests/test_options_skew.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install options-skew engine test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: options skew engine
+        run: python -m pytest tests/test_options_skew.py -q
+
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
     gate: code
