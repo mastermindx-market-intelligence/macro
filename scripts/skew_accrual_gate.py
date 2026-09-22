@@ -189,11 +189,18 @@ def main(argv: list[str] | None = None) -> int:
     repo = Path(args.repo) if args.repo else None
     code, status, info = check(store, repo, root=args.root, tier=args.tier,
                                 required_iso=args.required_date)
-    # One line on stdout so the runner's `status=$(_check_freshness)` captures
-    # exactly the status word. Verbose info goes to stderr — the runner logs it
-    # line-by-line and the ledger never reads it.
+    # ONE physical line on stdout so the runner's `status=$(_check_freshness)`
+    # captures exactly the status word. The receipt writer emits EXACTLY one
+    # physical line on stderr (MINOR-2 fix, 2026-09-22): a dict's str() can
+    # span multiple lines, embedded newlines in a `reason` value can spill
+    # them too. Flatten with repr() + newline-strip so an operator greppinng
+    # the launchd log for `::gate-info::` always sees exactly one line per
+    # call (the runner logs each `::gate-info::` line line-by-line, and a
+    # multi-line receipt would anchor two log rows to one receipt call —
+    # silent green / doubled entries).
     print(status)
-    print(f"::gate-info:: {info}", file=sys.stderr)
+    info_one_line = repr(info).replace("\n", " ").replace("\r", " ")
+    print(f"::gate-info:: {info_one_line}", file=sys.stderr)
     return code
 
 

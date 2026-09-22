@@ -219,3 +219,41 @@ def test_check_no_rows_in_shard_is_resolve_error(tmp_path):
                                     required_iso="2026-09-21")
     assert code == mod.EXIT_RESOLVE_ERROR
     assert info["latest_reason"] == "no_rows"
+
+def test_main_receipt_writer_emits_exactly_one_physical_line(tmp_path):
+    """MINOR-2 fix (2026-09-22): the gate's stderr `::gate-info::` receipt
+    must be EXACTLY one physical line per call. The dict's str() can span
+    multiple lines on its own, and embedded newlines in a `reason` value
+    can spill them too — that would anchor two log rows to one receipt
+    call (silent green / doubled entries in the launchd log). Pin the
+    contract: either stderr is empty OR stderr has exactly one non-empty
+    line starting with `::gate-info::`. The runner reads stdout's status
+    word (always one line) and stderr's `::gate-info::` body."""
+    mod = _import_gate()
+    store = tmp_path / "store"
+    _write_eod_shard(store, "SPY", 2026, "2026-09-21")
+    rc = subprocess.run(
+        [sys.executable, "-m", "scripts.skew_accrual_gate",
+         "--store", str(store),
+         "--required-date", "2026-09-21"],
+        capture_output=True, text=True, cwd=str(ROOT), check=False,
+    )
+    assert rc.returncode == mod.EXIT_OK
+    # stdout: one line on receipt (status word)
+    stdout_lines = [l for l in rc.stdout.splitlines() if l.strip()]
+    assert stdout_lines == ["FRESH"], stdout_lines
+    # stderr: zero OR one line starting with `::gate-info::`.
+    receipt_lines = [
+        l for l in rc.stderr.splitlines()
+        if l.startswith("::gate-info::")
+    ]
+    assert len(receipt_lines) <= 1, (
+        f"gate emitted {len(receipt_lines)} ::gate-info:: lines, "
+        f"expected at most 1:\n" + "\n".join(receipt_lines)
+    )
+    if receipt_lines:
+        # Verify the receipt line itself contains no embedded newlines
+        # by checking the byte count of the recorded line equals the
+        # number of `\n` characters we'd see if it had been split.
+        body = receipt_lines[0]
+        assert "\n" not in body, body

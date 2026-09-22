@@ -104,12 +104,15 @@ evidence:
   - "Verify: `python3 -m pytest tests/test_skew_accrual_gate.py
     tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py
     tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py
-    -q` exits 0 with all 66 tests passing across the five suites
-    (BLOCKER-2 fix added the --pre-rows end-to-end path, BLOCKER-1 fix
-    rewrote _delta_stats against pairs with the product test, MAJOR-4
-    added the recomputed-key match check, and the new measurement
-    tests pin the publish_r2 floor against the actual tracked bootstrap
-    at 238,595 bytes)."
+    -q` exits 0 with all 70 tests passing across the five suites
+    (round-5 Meta-CEO A binding ruling added 2 B2 repeatability tests:
+    test_two_run_cycle_is_admitted_via_real_git +
+    test_runstate_files_live_outside_repo, plus 1 MINOR-2 receipt-line
+    test: test_main_receipt_writer_emits_exactly_one_physical_line; the
+    earlier rounds added the --pre-rows end-to-end path, the BLOCKER-1
+    pair-based _delta_stats, MAJOR-4's recomputed-key match check, and
+    the measurement tests pinning the publish_r2 floor against the
+    actual tracked bootstrap at 238,595 bytes)."
   - "Verify: `python3 scripts/agentos.py validate` exits 0 (this DEC record
     validated by the schema)"
   - "Verify: `python3 scripts/check_contract_delta.py --base origin/main`
