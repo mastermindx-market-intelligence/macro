@@ -4239,6 +4239,8 @@ jobs:
       - "lib/finra_knowable.py"
       - "lib/forex_link.py"
       - "lib/global_regime_fragment.py"
+      # #7635: internationalized hero styles are derived from the governed Macro CSS.
+      - "templates/theme.css"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
@@ -8146,6 +8148,8 @@ jobs:
       - "site/vol/**"
       # F13-X1: build_site imports the source-bound help directory, whose
       # fail-closed contract reads these exact existing owner templates.
+      # #7635: global_regime_fragment derives the International bridge from governed hero CSS.
+      - "templates/theme.css"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
