@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-21T14:49:36.972290+00:00",
-  "as_of": "2026-09-21",
+  "generated_utc": "2026-09-22T02:59:18.028833+00:00",
+  "as_of": "2026-09-22",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -6140,15 +6140,6 @@
           "parties": "D"
         },
         {
-          "ticker": "AAPL",
-          "net": -8,
-          "buys": 4,
-          "sells": 12,
-          "members": 8,
-          "est_usd": 32002.0,
-          "parties": "D/R"
-        },
-        {
           "ticker": "MSFT",
           "net": -8,
           "buys": 8,
@@ -6192,6 +6183,15 @@
           "members": 2,
           "est_usd": 0.0,
           "parties": "R"
+        },
+        {
+          "ticker": "CLH",
+          "net": -8,
+          "buys": 0,
+          "sells": 8,
+          "members": 1,
+          "est_usd": 0.0,
+          "parties": "D"
         }
       ]
     },
@@ -6241,7 +6241,7 @@
         "total_usd": 64474896.0,
         "contracts": 39,
         "agencies": 14,
-        "accel_x": 52.69,
+        "accel_x": 55.91,
         "top_agency": "Social Security Administration"
       },
       {
@@ -6249,7 +6249,7 @@
         "total_usd": 63819575.0,
         "contracts": 33,
         "agencies": 10,
-        "accel_x": 0.8,
+        "accel_x": 0.96,
         "top_agency": "Department of Health and Human Services"
       },
       {
@@ -6257,7 +6257,7 @@
         "total_usd": 60747309.0,
         "contracts": 19,
         "agencies": 7,
-        "accel_x": 3.72,
+        "accel_x": 4.42,
         "top_agency": "Department of Health and Human Services"
       },
       {
@@ -6265,7 +6265,7 @@
         "total_usd": 50475299.0,
         "contracts": 98,
         "agencies": 11,
-        "accel_x": 2.35,
+        "accel_x": 2.64,
         "top_agency": "Department of Transportation"
       },
       {
@@ -27146,14 +27146,6 @@
           "sellers": 2
         },
         {
-          "ticker": "NVDA",
-          "buy_usd": 0.0,
-          "sell_usd": 868590352.0,
-          "net_usd": -868590352.0,
-          "buyers": 0,
-          "sellers": 29
-        },
-        {
           "ticker": "ANET",
           "buy_usd": 0.0,
           "sell_usd": 849092944.0,
@@ -27184,6 +27176,14 @@
           "net_usd": -724585963.0,
           "buyers": 0,
           "sellers": 123
+        },
+        {
+          "ticker": "AUR",
+          "buy_usd": 0.0,
+          "sell_usd": 685365878.0,
+          "net_usd": -685365878.0,
+          "buyers": 0,
+          "sellers": 12
         }
       ]
     },
@@ -28240,14 +28240,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -29911,100 +29911,142 @@
       {
         "ticker": "AZO",
         "next_date": "2026-09-22",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 54.97,
         "last_surprise_pct": 5.2
       },
       {
         "ticker": "GIS",
         "next_date": "2026-09-23",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 0.72,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "PAYX",
         "next_date": "2026-09-23",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 1.33,
         "last_surprise_pct": 0.8
       },
       {
         "ticker": "COST",
         "next_date": "2026-09-24",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 6.48,
         "last_surprise_pct": null
       },
       {
         "ticker": "JEF",
         "next_date": "2026-09-28",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 0.85,
         "last_surprise_pct": -5.5
       },
       {
         "ticker": "NCPL",
         "next_date": "2026-09-28",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "FDS",
         "next_date": "2026-09-30",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 4.32,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 31.24,
         "last_surprise_pct": 18.6
       },
       {
         "ticker": "ACN",
         "next_date": "2026-10-01",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 3.19,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "NKE",
         "next_date": "2026-10-01",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 0.44,
         "last_surprise_pct": 81.8
       },
       {
         "ticker": "LW",
         "next_date": "2026-10-06",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 0.58,
         "last_surprise_pct": 40.3
       },
       {
         "ticker": "RPM",
         "next_date": "2026-10-06",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 1.95,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "DAL",
         "next_date": "2026-10-08",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 2.03,
         "last_surprise_pct": 3.3
       },
       {
         "ticker": "PEP",
         "next_date": "2026-10-08",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 2.3,
         "last_surprise_pct": 0.5
+      },
+      {
+        "ticker": "BLK",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 14.24,
+        "last_surprise_pct": 9.8
+      },
+      {
+        "ticker": "C",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 2.67,
+        "last_surprise_pct": 15.8
+      },
+      {
+        "ticker": "GS",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 15.62,
+        "last_surprise_pct": 45.0
+      },
+      {
+        "ticker": "JNJ",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 2.96,
+        "last_surprise_pct": 2.1
+      },
+      {
+        "ticker": "JPM",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 5.84,
+        "last_surprise_pct": 9.8
+      },
+      {
+        "ticker": "UNH",
+        "next_date": "2026-10-13",
+        "days_to": 21,
+        "eps_forecast": 4.07,
+        "last_surprise_pct": 29.1
       }
     ],
     "retail": [
@@ -30260,7 +30302,7 @@
           "activist_13d",
           "gov_contract_accel"
         ],
-        "why": "activist_13d: 13D activist campaign \u00b7 gov_contract_accel: $64,474,896, 52.7x accel"
+        "why": "activist_13d: 13D activist campaign \u00b7 gov_contract_accel: $64,474,896, 55.9x accel"
       },
       {
         "ticker": "BAH",
@@ -30270,7 +30312,7 @@
           "gov_contract_accel",
           "special_situation"
         ],
-        "why": "gov_contract_accel: $60,747,309, 3.7x accel \u00b7 special_situation: Acquisitions"
+        "why": "gov_contract_accel: $60,747,309, 4.4x accel \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "MMC",

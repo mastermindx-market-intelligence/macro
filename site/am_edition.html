@@ -33,7 +33,7 @@
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span> — 2026-09-21T16:02:23.786153+00:00</title>
+<title><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span> — 2026-09-21T22:46:04.487136+00:00</title>
 
 
 
@@ -282,7 +282,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=3cb38601" defer></script>
+  <script src="live.js?v=4c6fe392" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -310,7 +310,7 @@
     <h1><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></h1>
     
       
-        <span class="state-badge state-open"><span class="l-en">US markets open</span><span class="l-zh">美股正在交易</span></span>
+        <span class="state-badge state-closed"><span class="l-en">US markets closed</span><span class="l-zh">美股已收盘</span></span>
       
     
   </div>
@@ -318,7 +318,7 @@
     <span class="l-en">Before the US open: tape since the prior close, the session clock, regime context, today's calendar, and a link to yesterday's brief. Refreshes once a day.</span><span class="l-zh">美股开盘前：自前一收盘以来的盘面走势、交易时段时钟、周期背景、今日日历，以及上一交易日简报链接。每日更新一次。</span>
   </p>
   
-  <p class="muted sm" style="margin:4px 0 0"><span class="l-en">Built at</span><span class="l-zh">构建时间</span> 2026-09-21T16:02:23.786153+00:00</p>
+  <p class="muted sm" style="margin:4px 0 0"><span class="l-en">Built at</span><span class="l-zh">构建时间</span> 2026-09-21T22:46:04.487136+00:00</p>
   
 </div>
 
@@ -344,12 +344,13 @@
   </div>
   <div class="ctx-strip">
     
-      <span class="ctx-chip" style="border-color:var(--up);color:var(--up)">
-        <span class="l-en">Open</span><span class="l-zh">交易中</span>
-        
+      <span class="ctx-chip" style="border-color:var(--muted);color:var(--muted)">
+        <span class="l-en">Closed</span><span class="l-zh">已收盘</span>
       </span>
     
 
+    
+    <span class="muted sm"><span class="l-en">US markets have closed for the day.</span><span class="l-zh">美股今日已收盘。</span></span>
     
   </div>
 
@@ -383,7 +384,7 @@
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <h2 style="margin:0"><span class="l-en">Tape since prior close</span><span class="l-zh">自前一收盘</span></h2>
     
-    <span class="muted sm"><span class="l-en">prior close:</span><span class="l-zh">前一收盘：</span> 2026-09-18</span>
+    <span class="muted sm"><span class="l-en">prior close:</span><span class="l-zh">前一收盘：</span> 2026-09-21</span>
     
     <span class="help">?<span class="tip"><span class="l-en">Price change since the last regular-session close. Sources from the live quote feed at build time.</span><span class="l-zh">自最近一次常规交易收盘以来的价格变动。数据来源于构建时的实时行情。</span></span></span>
   </div>
@@ -408,7 +409,7 @@
     
   </div>
   
-  <p class="feasibility-note"><span class="l-en">Compared with the close of 24 Jul — no newer close has been captured. Last updated 7 weeks ago — showing the last known reading, not a fresh one.</span><span class="l-zh">对比的是7月24日收盘——尚未捕获更新的收盘价。最近更新于7周前——展示的是最新已知读数，而非最新数据。</span></p>
+  <p class="feasibility-note"><span class="l-en">Compared with the close of 24 Jul — no newer close has been captured. Last updated 1 month ago — showing the last known reading, not a fresh one.</span><span class="l-zh">对比的是7月24日收盘——尚未捕获更新的收盘价。最近更新于1个月前——展示的是最新已知读数，而非最新数据。</span></p>
   
   
 </div>
@@ -442,7 +443,20 @@
     <span class="help">?<span class="tip"><span class="l-en">Overall market regime: Risk-on (uptrend / positive momentum) or Risk-off (downtrend / negative momentum).</span><span class="l-zh">整体市场周期：风险偏好（上涨趋势/正向动能）或风险规避（下跌趋势/负向动能）。</span></span></span>
   </div>
   
-  <p class="muted sm"><span class="l-en">Regime data unavailable.</span><span class="l-zh">周期数据不可用。</span></p>
+    
+    <div class="ctx-strip">
+      <span class="ctx-chip regime">
+        <span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span>
+      </span>
+      
+      <span class="ctx-row"><span class="ctx-label"><span class="l-en">Posture</span><span class="l-zh">姿态</span></span>
+        <span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span></span>
+      
+    </div>
+    
+    <p class="muted sm" style="margin-top:6px"><span class="l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</span><span class="l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</span></p>
+    
+    
   
 </div>
 
@@ -574,10 +588,10 @@
 
 <p class="muted sm" style="text-align:center;margin-top:8px">
   <span class="l-en">Some readings are unavailable —</span><span class="l-zh">部分数据暂时不可用 —</span>
-  1 <span class="l-en">item(s) could not be loaded.</span><span class="l-zh">项无法加载。</span>
+  2 <span class="l-en">item(s) could not be loaded.</span><span class="l-zh">项无法加载。</span>
 </p>
 
 
-<script src="theme.js?v=a5808ca0" defer></script>
+<script src="theme.js?v=3ffc953f" defer></script>
 </body>
 </html>

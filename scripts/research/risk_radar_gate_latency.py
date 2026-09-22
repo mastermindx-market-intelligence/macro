@@ -26,8 +26,9 @@ from engine.risk_radar import (
     _calib,
     leading_signals,
     subscore_series,
+    _resolve_state_row,
 )
-from engine.risk_radar_backtest import _ORDER, _band_idx, _spy, detect_events, state_accuracy
+from engine.risk_radar_backtest import _ORDER, _spy, detect_events, state_accuracy
 from lib import store
 
 OUT = ROOT / "research/grey_deer/evidence/gate-latency-20260921"
@@ -42,28 +43,19 @@ def _hash(path: Path) -> str:
     return h.hexdigest()
 
 
-def pre_gate_state_series(subs: pd.DataFrame, calib: dict) -> pd.Series:
-    """Production state-machine through escalation, before the context-gate cap."""
-    bands = calib["bands"]
-    scares = calib["scares"]
-    tier_a = [s for s, v in scares.items() if v.get("tier") == "A" and s in subs.columns]
-    tier_b = [s for s, v in scares.items() if v.get("tier") == "B" and s in subs.columns]
-    if not tier_a:
-        return pd.Series("calm", index=subs.index)
-    a_idx = pd.concat([_band_idx(subs[s], bands) for s in tier_a], axis=1)
-    max_a = a_idx.max(axis=1)
-    n_hot_a = pd.concat(
-        [(subs[s] >= bands["caution"]).astype(int) for s in tier_a], axis=1
-    ).sum(axis=1)
-    conjunction = n_hot_a >= 2
-    b_hot = (
-        pd.concat([(subs[s] >= bands["caution"]) for s in tier_b], axis=1).any(axis=1)
-        if tier_b else pd.Series(False, index=subs.index)
-    )
-    escalated = conjunction | (b_hot & (max_a > 0))
-    state_idx = max_a + (escalated & (max_a < 4) & (max_a > 0)).astype(int)
-    state_idx = state_idx.clip(0, 4)
-    return state_idx.map(lambda i: _ORDER[int(i)])
+def pre_gate_state_series(
+    subs: pd.DataFrame, calib: dict, sigs: pd.DataFrame | None = None
+) -> pd.Series:
+    """Exact production state through escalation, before the context-gate cap."""
+    if sigs is None:
+        sigs = leading_signals().reindex(subs.index)
+    else:
+        sigs = sigs.reindex(subs.index)
+    out = []
+    for day, subrow in subs.iterrows():
+        sigrow = sigs.loc[day] if day in sigs.index else pd.Series(dtype=float)
+        out.append(_resolve_state_row(subrow, sigrow, calib, gate_met=True)["state"])
+    return pd.Series(out, index=subs.index, dtype=object)
 
 
 def gate_components(idx: pd.DatetimeIndex) -> pd.DataFrame:
@@ -353,7 +345,7 @@ def build_result() -> dict:
     # Match the canonical evaluator's knowability rule: an all-missing
     # subscore row is not a calm call and cannot enter the comparison population.
     known_state = subs.notna().any(axis=1)
-    raw_state = pre_gate_state_series(subs, calib).reindex(idx).where(known_state)
+    raw_state = pre_gate_state_series(subs, calib, sigs=sigs).reindex(idx).where(known_state)
     gate = gate_components(idx)
     spy = _spy(drop_missing=False)
     labels = native_forward_labels(spy, idx)
