@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "532cd1eab9ce3ad0b3e921659b5e8efd34a4c52882ccea2c83fb1e09e536277b"
+        "sha256": "81e10bf27c6412446c35fd81246dd863ecdfd77356cf045017dece5549b800fc"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "a3334515d6ada4ef795b35c3b9aa10816aad4f0b6e45cce598a87fd051fde56b"
+        "sha256": "efaa7217fea06a6790556472a2d7772adef34c75d1a8df069507491abae9b196"
       }
     },
     "claims": {
@@ -574,19 +574,19 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
-        "sha256": "3afdcd546b71791691e0a20c1ad6cbd40912551719984f237f6e127d0a30aba7"
+        "sha256": "0e74a4643850e05b76902478103b738212396b93992fb579eeaf8682264f8470"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
-        "sha256": "e98fa90a8ce62508dc7b42b0654da61735450c00f0a60a26f23bc837ad587e6e"
+        "sha256": "c23416148db283d41c3e30195fa2208a3f944834edd111a1adebcbc677e5680d"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
-        "sha256": "cb6e970d8b3f60ec50eac6b0965ddbdbc50f691749dcb19200b1423c2c5e14da"
+        "sha256": "7b0ad67ff06c43d39470065cdce31cfbc1b045a16e7ce6f5fed1b2bfac0beee2"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
-        "sha256": "29de7caca9af7f8c7447031c1d21af3bd4bb051db99cdbae6a8d1e8c4c6c6122"
+        "sha256": "6300ccb1506660f42ff34e666939fa07345e8b3dcfeccf0ad2b00dffadf8e3d3"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
