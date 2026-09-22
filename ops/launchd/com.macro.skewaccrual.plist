@@ -24,13 +24,20 @@
 
   SCHEDULE
   ─────────────────────────────────────────────────────────────────────────
-  StartCalendarInterval fires daily at 12:30 UTC = 04:30 PST (05:30 PDT).
-  The host is assumed to be on America/Los_Angeles (mirroring the
-  optionsmatrix and thetadata-r2sync plists). The choice, 12:30 UTC, gives
-  ~1 hour of headroom after the observed 11:30Z ThetaData EOD refresh
-  (com.macro.thetadata-r2sync is the canonical sync job; the EOD store
-  settles there). Far from any other M1 ops lane (optionsmatrix 16:00 PST
-  = 19:00 ET, thetadata-r2sync 22:00 PST = 01:00 ET next day).
+  StartCalendarInterval fires weekdays at 05:30 LOCAL wall-clock. launchd
+  has no UTC mode; the runner uses the host's America/Los_Angeles zone
+  (mirroring optionsmatrix + thetadata-r2sync). 05:30 local = 13:30Z
+  during PST (UTC-8) and 12:30Z during PDT (UTC-7). Both are safely
+  AFTER the observed 11:30Z ThetaData EOD refresh on either side of the
+  DST switch — the previous 04:30-local choice raced the 11:30Z refresh
+  by zero hours during PDT, which is BLOCKER-4 of this packet. The new
+  value buys at minimum one hour of headroom year-round.
+
+  The reason the local wall-clock is 05:30 (not 06:30 or 07:30) is that
+  the ThetaData EOD refresh observed on the M1 ops host settles around
+  11:30Z. Anything later than 05:30 local shrinks the post-refresh
+  window without buying anything; anything earlier races it during PDT.
+  05:30 is the tightest safe point.
 
   WEEKDAY SCOPE
   ─────────────────────────────────────────────────────────────────────────
@@ -116,36 +123,39 @@
   <string>/Users/chriswong/skew-ops-wt</string>
 
   <!--
-    12:30 UTC daily = 04:30 PST (05:30 PDT) — ~1 hour after the 11:30Z
-    ThetaData EOD store refresh observed on the M1 ops host. Host is assumed
-    America/Los_Angeles (consistent with optionsmatrix and thetadata-r2sync
-    plists). Weekday 1 to 5 only (NYSE is closed weekends).
+    05:30 LOCAL daily = 13:30Z during PST (UTC-8) / 12:30Z during PDT
+    (UTC-7) — at minimum 1 hour after the 11:30Z ThetaData EOD refresh
+    observed on the M1 ops host, on either side of the DST switch. Host
+    is assumed America/Los_Angeles (consistent with optionsmatrix and
+    thetadata-r2sync plists). launchd has no UTC mode; the local time is
+    intentionally chosen to be the tightest safe point year-round.
+    Weekday 1 to 5 only (NYSE is closed weekends).
   -->
   <key>StartCalendarInterval</key>
   <array>
     <dict>
       <key>Weekday</key><integer>1</integer>
-      <key>Hour</key><integer>4</integer>
+      <key>Hour</key><integer>5</integer>
       <key>Minute</key><integer>30</integer>
     </dict>
     <dict>
       <key>Weekday</key><integer>2</integer>
-      <key>Hour</key><integer>4</integer>
+      <key>Hour</key><integer>5</integer>
       <key>Minute</key><integer>30</integer>
     </dict>
     <dict>
       <key>Weekday</key><integer>3</integer>
-      <key>Hour</key><integer>4</integer>
+      <key>Hour</key><integer>5</integer>
       <key>Minute</key><integer>30</integer>
     </dict>
     <dict>
       <key>Weekday</key><integer>4</integer>
-      <key>Hour</key><integer>4</integer>
+      <key>Hour</key><integer>5</integer>
       <key>Minute</key><integer>30</integer>
     </dict>
     <dict>
       <key>Weekday</key><integer>5</integer>
-      <key>Hour</key><integer>4</integer>
+      <key>Hour</key><integer>5</integer>
       <key>Minute</key><integer>30</integer>
     </dict>
   </array>
