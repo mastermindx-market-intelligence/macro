@@ -16224,7 +16224,9 @@ jobs:
         # (parquet read of data/options_skew/snapshots.parquet) and by
         # the audit suite (legacy ledger read). No signal-contract /
         # render deps; the launcher + argparse helpers are stdlib-only.
-        run: pip install pytest pandas pyarrow
+        # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
+        # (12 publish_r2 registration tests red without it — run 35782263306).
+        run: pip install pytest pandas pyarrow pyyaml
       - name: skew-accrual lane — gate, precheck, verify, launchd, real-overlap audit
         run: |
           python -m pytest \

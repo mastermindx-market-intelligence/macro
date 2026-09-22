@@ -473,6 +473,12 @@ def _run_runner(tmp_path: Path, repo: Path, stub_bin: Path,
     env = os.environ.copy()
     env["PATH"] = f"{stub_bin}:{env.get('PATH', '')}"
     env["SKEW_OPS_ROOT"] = str(repo)
+    # Never let a test fall through to the runner's production default
+    # (/Users/chriswong/skew-ops-state): on ubuntu-latest `mkdir -p /Users/...`
+    # is "Permission denied" (measured ci-pack-6 run 35782263306, 6 runner
+    # tests red) and on a sandboxed Mac session it is refused too. The
+    # sibling-state contract itself is proven by _run_runner_with_state_dir.
+    env["SKEW_STATE_DIR"] = str(tmp_path / "skew-state")
     env["PYTHON"] = str(stub_bin / "python")
     env["SKEW_PYTHON"] = str(stub_bin / "python")
     if freshness_bypass:
