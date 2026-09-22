@@ -150,17 +150,67 @@ def test_fast_mixed_end_turn_without_evidence_gets_one_repair_round(quiet_ground
     assert "macro/rates" in gate_message
 
 
-def test_fast_coverage_repair_is_one_shot_when_model_declines_tools(quiet_grounding):
+def test_fast_coverage_repair_is_one_shot_and_discloses_uncovered_families(quiet_grounding):
     root = _root()
     client = _CaptureClient(
         [
             _Resp([_Block("text", "Premature answer.")], "end_turn"),
-            _Resp([_Block("text", "Final answer with disclosed gap.")], "end_turn"),
+            _Resp([_Block("text", "Final answer." )], "end_turn"),
         ]
     )
     answer, *_rest = _drive_loop(root, client, QUESTION)
-    assert answer == "Final answer with disclosed gap."
+    assert "Final answer." in answer
+    assert "Evidence caveat" in answer
+    assert "single-name: not covered" in answer
+    assert "macro/rates: not covered" in answer
     assert len(client.create_kwargs) == 2
+
+
+def test_adverse_sibling_state_gets_deterministic_disclosure():
+    required = {"macro_rates": ("read_world_state", "get_curve_detail")}
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [
+            ("read_world_state", {"ok": True}),
+            ("get_curve_detail", {"coverage_state": "stale"}),
+        ],
+    )
+    answer = gw._append_evidence_coverage_disclosure("Core answer.", receipt)
+    assert "Core answer." in answer
+    assert "Evidence caveat" in answer
+    assert "macro/rates: available (stale present)" in answer
+
+
+def test_evidence_disclosure_preserves_next_suggestion_block():
+    required = {"macro_rates": ("get_curve_detail",)}
+    receipt = gw._evidence_coverage_receipt(required, [])
+    answer = gw._append_evidence_coverage_disclosure(
+        "Core answer.\n[NEXT]\n- Check the curve", receipt
+    )
+    clean, suggestions = gw._split_suggestions(answer)
+    assert "Core answer." in clean
+    assert "Evidence caveat" in clean
+    assert suggestions == ["Check the curve"]
+
+
+def test_streaming_fast_repair_discloses_uncovered_families_after_nonempty_answer(quiet_grounding):
+    root = _root()
+    client = _CaptureClient(
+        [
+            _Resp([_Block("text", "Premature answer.")], "end_turn"),
+            _Resp([_Block("text", "Final answer.")], "end_turn"),
+        ]
+    )
+    answer_out: list[str] = []
+    events = _drive_stream(root, client, QUESTION, answer_out=answer_out)
+    visible = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
+    assert "Premature answer." not in visible
+    assert "Final answer." in visible
+    assert "Evidence caveat" in visible
+    assert "single-name: not covered" in visible
+    assert "macro/rates: not covered" in visible
+    assert len(answer_out) == 1
+    assert "Evidence caveat" in answer_out[0]
 
 
 def test_streaming_fast_coverage_repair_retracts_premature_text(quiet_grounding):

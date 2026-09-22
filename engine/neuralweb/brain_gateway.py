@@ -4195,6 +4195,53 @@ def _evidence_coverage_fallback_answer(receipt: dict, *, lang: str = "en") -> st
     )
 
 
+def _evidence_coverage_disclosure(receipt: dict, *, lang: str = "en") -> str:
+    """Deterministic user-visible caveat for any qualified adverse evidence state."""
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        state = str(row.get("state") or "NOT_COVERED")
+        conditions = [str(c) for c in row.get("conditions", []) if c]
+        contradicted = bool(row.get("contradicted"))
+        if state == "AVAILABLE" and not conditions and not contradicted:
+            continue
+        label = str(row.get("label") or row.get("family") or "evidence")
+        detail = state.lower().replace("_", " ")
+        extras = [c.lower().replace("_", " ") + " present" for c in conditions if c != state]
+        if contradicted and "CONFLICTED" not in conditions and state != "CONFLICTED":
+            extras.append("contradiction present")
+        if extras:
+            detail += " (" + ", ".join(extras) + ")"
+        parts.append(f"{label}: {detail}")
+    if not parts:
+        return ""
+    summary = "; ".join(parts)
+    if str(lang).lower().startswith("zh"):
+        return f"证据提示 — {summary}。"
+    return f"Evidence caveat — {summary}."
+
+
+def _append_evidence_coverage_disclosure(answer: str, receipt: dict, *, lang: str = "en") -> str:
+    """Insert deterministic evidence disclosure before the existing [NEXT] suggestion block."""
+    disclosure = _evidence_coverage_disclosure(receipt, lang=lang)
+    if not disclosure:
+        return answer
+    lines = str(answer or "").split("\n")
+    marker_idx = -1
+    for index, line in enumerate(lines):
+        if line.strip() == "[NEXT]":
+            marker_idx = index
+    if marker_idx >= 0:
+        body = "\n".join(lines[:marker_idx]).rstrip()
+        tail = "\n".join(lines[marker_idx:])
+        prefix = f"{body}\n\n" if body else ""
+        return f"{prefix}{disclosure}\n{tail}"
+    body = str(answer or "").rstrip()
+    return f"{body}\n\n{disclosure}" if body else disclosure
+
+
 _CHART_COMMAND_SYSTEM_DIRECTIVE = """
 CHART CONTROL (Terminal only):
 You can drive the user's chart with client-side DISPLAY ACTIONS: set_chart_symbol,
@@ -6576,9 +6623,13 @@ def _run_brain_loop(
             log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
 
+    receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
     if evidence_gate_issued and not answer_text.strip():
-        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
         answer_text = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
+    else:
+        answer_text = _append_evidence_coverage_disclosure(
+            answer_text, receipt, lang=turn_lang
+        )
 
     # Extract usage from the final response (fix #1: never zeros)
     usage_dict: dict = {}
@@ -7769,9 +7820,13 @@ def _run_brain_loop_stream(
             if getattr(block, "type", "") == "text":
                 full_answer += block.text
 
+    receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
     if evidence_gate_issued and not full_answer.strip():
-        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
         full_answer = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
+    else:
+        full_answer = _append_evidence_coverage_disclosure(
+            full_answer, receipt, lang=turn_lang
+        )
 
     yield _status_event("review", _t0, _STAGE_LABELS["review"])
 
