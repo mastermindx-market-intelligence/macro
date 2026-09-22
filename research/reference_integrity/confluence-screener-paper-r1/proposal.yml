@@ -1,0 +1,148 @@
+schema: mastermind.rig_proposal.v1
+reference_id: confluence-screener-paper-r1
+
+proposed_artifact:
+  frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+  paths:
+    - mockups/refs/reference_integrity/confluence-screener-paper-r1/REFERENCE.md
+  screenshots:
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-desktop.jpg, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-desktop.jpg, viewport: desktop, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-desktop.jpg, viewport: desktop, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-desktop.jpg, viewport: desktop, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-mobile.jpg, viewport: mobile390, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-mobile.jpg, viewport: mobile390, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-mobile.jpg, viewport: mobile390, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-mobile.jpg, viewport: mobile390, theme: light, locale: zh}
+
+dispositions:
+  - id: hero.current_answer
+    disposition: RETAIN
+    target: "Hero / Signal Stack Discovery; runtime count remains data-bound, never hardcoded by the reference."
+  - id: ledger.rank_order
+    disposition: RETAIN
+    target: "Ranked result cards #1..#3; deterministic builder remains rank authority."
+  - id: ledger.validation_pair
+    disposition: IMPROVE
+    target: "Right-aligned recent-vs-older-era validation pair on each result."
+    rationale: "The pair remains adjacent but gains stronger visual separation and explicit runtime binding."
+  - id: ledger.signal_legs
+    disposition: RETAIN
+    target: "Stacked timeframe/leg rows on each result card."
+  - id: ledger.wins_per_10
+    disposition: RELOCATE
+    destination: "Result evidence/receipt detail rather than primary card hero."
+    reachability: "Kept in the migration packet as required evidence detail; may remain compact in the card footer or disclosure but cannot disappear."
+  - id: access.rank1_free_tickers
+    disposition: RETAIN
+    target: "Rank-1 Matching now row with public ticker links."
+  - id: access.rank23_no_leak
+    disposition: IMPROVE
+    target: "Paid result lock slot that explicitly states count-only public truth and reveals no ticker identity."
+    rationale: "Makes the existing server boundary legible instead of presenting a generic paywall."
+  - id: access.entitled_hydration
+    disposition: RETAIN
+    target: "Locked row transforms in-place to paid Matching now identities after protected payload hydration."
+  - id: honesty.guidance
+    disposition: IMPROVE
+    target: "Hero/context line plus truth footer; detailed honesty guidance remains reachable below the result set."
+    rationale: "Moves the key evidence-not-trade-authority warning earlier without removing the current detailed guidance."
+  - id: cta.paid_continuation
+    disposition: RETAIN
+    target: "Paid-view continuation CTA after the result stack."
+  - id: parity.theme_locale
+    disposition: RETAIN
+    target: "Eight-cell Dark/Light × EN/ZH × desktop/mobile reference matrix."
+  - id: parity.mobile_no_horizontal_scroll
+    disposition: RETAIN
+    target: "390px stacked composition with no page-level horizontal-scroll allowance."
+
+additions:
+  - id: add.presentation_filters
+    note: "Presentation-only discovery filters/open state. They may filter the already-rendered top-three result set but may not change deterministic rank, producer eligibility, or access truth. RIG may reject this addition without affecting the rest of the reference."
+  - id: add.state_contract
+    note: "Designed loading, empty, stale, error, focus/focus-visible, hover, expanded/open and disabled treatments; browser/runtime proof remains separate."
+
+user_tasks:
+  - id: task.scan_now
+    task: Identify which combinations and names deserve research attention now.
+    critical: true
+    production: "Hero count followed by three ledger cards."
+    proposal: "Answer-first hero followed by ranked result cards; same deterministic population."
+    verdict: EQUIVALENT
+    notes: "Hierarchy changes, population authority does not."
+  - id: task.compare_evidence
+    task: Compare recent validation with older-era performance without cherry-picking.
+    critical: true
+    production: "Recent and old rates appear together in each card."
+    proposal: "Same pair stays adjacent and is visually strengthened."
+    verdict: BETTER
+    notes: "No new statistic is introduced."
+  - id: task.read_signal_stack
+    task: Understand what legs/timeframes make a setup.
+    critical: true
+    production: "Leg stack on every card."
+    proposal: "Leg stack retained with stronger timeframe treatment."
+    verdict: EQUIVALENT
+    notes: ""
+  - id: task.use_free_match
+    task: Open the free rank-1 matching ticker identities.
+    critical: true
+    production: "Rank 1 exposes public ticker links."
+    proposal: "Rank 1 keeps a Matching now row and links."
+    verdict: EQUIVALENT
+    notes: ""
+  - id: task.respect_paid_boundary
+    task: Know paid matches exist without seeing protected ticker identities before entitlement.
+    critical: true
+    production: "Rank 2/3 lock shows count and hydrates only after protected fetch."
+    proposal: "Count-only lock makes the same boundary explicit; hydration remains the only reveal path."
+    verdict: BETTER
+    notes: ""
+  - id: task.mobile_bilingual
+    task: Use the same screener truth on mobile and in Chinese.
+    critical: true
+    production: "Current live eight-cell capture; 390px scrollWidth equals viewport."
+    proposal: "Eight-cell matrix explicitly designs the same truth with mobile-specific stacking."
+    verdict: EQUIVALENT
+    notes: "Implementation must prove, not assume, no-horizontal-scroll."
+
+authority_delta:
+  - id: auth.rank
+    production_claim: "Builder rank ordering decides the top three."
+    proposal_claim: "UI presents builder rank ordering; filters may not rerank."
+    direction: equal
+    warranted: true
+    evidence: "scripts/build_confluence_screener.py:116-122; REFERENCE.md truth contract"
+  - id: auth.access
+    production_claim: "Rank 2/3 ticker identities are protected until entitlement."
+    proposal_claim: "Same; public view exposes count only."
+    direction: equal
+    warranted: true
+    evidence: "scripts/build_confluence_screener.py:81-83,146-148,186-212"
+  - id: auth.trade
+    production_claim: "Watch/research context, not a buy instruction."
+    proposal_claim: "Evidence increases research priority; it does not authorize a position."
+    direction: equal
+    warranted: true
+    evidence: "templates/confluence_screener.html.j2:403-417; proposal hero/truth footer"
+  - id: auth.market_values
+    production_claim: "Runtime data is produced by the deterministic artifact/builder."
+    proposal_claim: "Reference uses runtime/DEMO placeholders and claims no live values."
+    direction: weaker
+    warranted: true
+    evidence: "REFERENCE.md; all proposal screenshot fixtures"
+
+information_economics:
+  words_per_card:
+    production: "Compact card plus leg labels, validation labels and access treatment; see production captures."
+    proposal: "Comparable glance density; detail warnings are moved to hero/footer rather than duplicated on every card."
+  findings:
+    - "Recent and older-era validation remain adjacent; no single-rate simplification."
+    - "Signal legs remain visual rows rather than collapsing into prose."
+    - "Access truth is made more explicit without fake protected content."
+    - "Presentation filters are an addition and must not become a second ranking/eligibility authority."
+  preserved:
+    - "Answer-first discovery-board shape rather than report layout."
+    - "Top-three card density and paid/free separation."
+    - "Dark/Light, EN/ZH and 390px parity as first-class design constraints."
