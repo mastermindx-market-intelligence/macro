@@ -235,6 +235,8 @@ def test_mobile_deep_rows_become_swipeable_without_removing_cards() -> None:
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
     assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
+    assert 'href="#cnx-dlg-playbook"' in links
+    assert "cnxOpenDlg('cnx-dlg-playbook')" in links
     assert 'href="china_policy_watch.html"' in links
     assert 'href="flow_velocity.html"' in links
     assert 'href="china_news.html"' not in links
