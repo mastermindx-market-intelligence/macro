@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T09:20:29.093538+00:00",
-  "count": 2629,
+  "generated_at": "2026-09-22T11:20:38.912957+00:00",
+  "count": 2635,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -96,6 +96,105 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-nv8h2kfaxkk-465160",
+      "title": "JPM Delta One Flows",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:44:37Z",
+      "summary_points": [
+        "CIB-Distorted Flows & Sector Rotation: Sector rotation out of Financials/Health Care into Tech/Comm Services/Discretionary amid CIB-driven US equity flows below average; India/Korea/Japan weakness; duration cuts and Managed Money reducing Copper longs signal key risks.",
+        "CFTC Positioning Shifts: Managed money sharply cut Copper longs (-3z) and Gasoline longs (-1.3z); asset managers sold NDX/VIX, leveraged funds reduced NDX shorts (2z), and institutional bearishness on bonds (non-commercial net short increasing on US 10Y).",
+        "APAC Short Signals as Critical Risk Factor: Concentrated short positions in Hang Seng, CSI 300, and CSI 500 signal geopolitical/policy vulnerabilities in EM Asia, requiring immediate portfolio monitoring and allocation adjustments.",
+        "Oil Price Sensitivity: VIX shows 20% positive oil correlation; S&P 500 shows -5% inverse correlation with 9.4% oil change—critical for hedging strategies amid high oil volatility exposure.",
+        "US Equity & Tech Flow Leadership: $37.1B 1w ETF inflows (z-score +1.3) and Technology sector leading with $5.33B 4w flows signal persistent capital allocation to US growth and tech innovation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q6hjtis6mvq-695c1a",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:42:48Z",
+      "summary_points": [
+        "Tech Leadership & Geopolitical Pricing: Agentic AI (Meta Muse, CPU-linked stocks) drove Tech rally despite oil weakness; geopolitical optimism (Trump-Xi Summit, UN GA) priced in, but Tech bounce fading in APAC.",
+        "U.S.",
+        "AI Capital Advantage: U.S.",
+        "hyperscaler capex exceeds $800B (vs China’s $144B), generating >$65B revenue run-rate for flagship models—critical for tech valuation and competitive positioning.",
+        "Energy Security Shift: VLCC hiring costs surged to $1.1M/day (vs $50k–$100k earlier) amid Iran war, signaling acute shipping cost volatility impacting energy logistics and global trade."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cbbyroymeyc-ce2dcf",
+      "title": "Europe Equity Research | Today’s Morning Meeting",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:28:14Z",
+      "summary_points": [
+        "Wolters Kluwer Upgrade: AI-driven value expansion (40% upside), 50% discount from 18-month price, moat disruption via automation - Atalaya Mining Initiation: 10%+ CAGR copper growth in Spain (tier 1), £13.30/sh PT (30% upside), low capital intensity vs. peers - Givaudan Q326 Growth Forecast: Organic sales growth strengthening to +6.7% (fundamental sales outlook) - EU Earnings Outlook: Critical assessment of H2'26 earnings expectations ahead of reporting season - Hurricane Season Risk: Negative sector impact on European Building Materials & Reinsurance (quietest Atlantic start since 1960) - EPS Revisions Highlight Risk: Forvia next-period EPS down 43.1% (severe deterioration risk), Givaudan up 1.7% (positive momentum)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i3rahu5kzsj-919baa",
+      "title": "UK & EUROPEAN RESEARCH AT A GLANCE",
+      "institution": "RBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:27:15Z",
+      "summary_points": [
+        "Luxury Sector Downgrades & Macro Risks: LVMH (downgraded to SP, EPS cut 10% to €23.03) and Burberry (downgraded to SP, FY28-29 EPS reduced 6-8%) signal sector-wide growth moderation due to Middle East conflict, oil prices, central bank tightening, and softening China/US demand, with RBC noting consensus overoptimism and creative renewal risks.",
+        "RBC Luxury Datawatch Catalyst: Downgrades LVMH, Burberry, Kering, Hermes, Swatch due to macro demand softening (China/US), consensus overoptimism, and EPS revisions (FY27E below consensus by -9% to -2%), risking earnings revisions despite low valuations.",
+        "Hermes & LVMH Valuation Pressure: Hermes de-rated to 28x FY27E P/E (vs sector 20x) with PT cut to €1,600; LVMH PT reduced to €475 amid muted growth outlook, reflecting heightened sensitivity to geopolitical and macro headwinds.",
+        "Preferred Holdings Shift: Ferrari and Richemont (Luxury) favored over beaten-down peers (LVMH, Burberry) as preferred holdings amid sector-wide earnings risks and valuation dislocations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c8mvk8ractp-492c01",
+      "title": "The Point for Europe Tuesday, 22 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:26:07Z",
+      "summary_points": [
+        "Novo Nordisk Execution & Expansion: Wegovy IO launches critical for growth; >5 multi-blockbuster launches by 2030; CagriSema 27E M&A opportunity; risk of management’s large transaction.",
+        "DSV Operational Recovery & Valuation: Road operational issues delayed synergies (c.DKK3.6bn by 2027E), but punctuality improving to 90%+; solid Air/Sea/Contract Logistics trends; current price in bottom decile (EV/EBIT 15.2x).",
+        "Volkswagen FY26 Margin & Asset Write-Downs: FY26 margin downgraded to 4.0%-5.5% (30bps); €8bn asset write-downs; EBIT/FCF annuity expected to remain stagnant longer than anticipated.",
+        "Ireland Banks: ECB Rate Hike Boost: ECB rate assumption raised to 3% (from 2.5%), lifting 2027-28E EPS by 2-3% above consensus; AIB preferred over BIRG (c.18% RoTE in 2028E)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-rl8okinfetg-a70482",
       "title": "GS Saboureault Positioning Mondays Week 38 21Sep2026",
@@ -581,6 +680,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sym3ybek6wn-e9f7ef",
+      "title": "Shopify Sep 21",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T22:36:36Z",
+      "summary_points": [
+        "Infrastructure Validation: Muse Partnership confirms AI platforms embedding Shopify’s core infrastructure (product data, merchant connectivity, Shop Pay), countering disintermediation risks and reinforcing commerce dominance.",
+        "Consistent Buy Momentum: All 12 Deutsche Bank recommendations (Dec 2023–Aug 2026) are \"Buy\" with price targets rising from $85 to $185, indicating sustained bullish sentiment and significant upside potential.",
+        "MiFID Sell Surge Risk: MiFID services correlate with extreme sell pressure (DBSI: 67% Sell vs 0% Covered; Global: 91% Sell vs 2% Covered), contrasting sharply with banking relationships (DBSI: 0% Sell; Global: 27% Sell), making MiFID a critical risk factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
