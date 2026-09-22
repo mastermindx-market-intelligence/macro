@@ -1960,6 +1960,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
        Honest "<2 rows" placeholder kept. #}
     {% set _mx5_hist = ms_history if (ms_history and ms_history | length >= 2) else none %}
     {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
+    {% set _mx5_delta = ((_mx5_hist[-1].score | float) - (_mx5_hist[-2].score | float)) if (_mx5_hist and _mx5_hist[-1].score is defined and _mx5_hist[-1].score is not none and _mx5_hist[-2].score is defined and _mx5_hist[-2].score is not none) else none %}
     {# zh 红涨绿跌: the regime score is a DIRECTION read (risk-on=bullish) — paint from --up/--down
        so it flips in zh (operator ruling 2026-07-21), matching macro.html + HK/Canada. #}
     {% set _path_col = 'var(--up)' if _ms_color == 'green' else ('var(--down)' if _ms_color == 'red' else 'var(--warn)') %}
@@ -1969,7 +1970,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
           <span class="l-zh">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}近 {{ _mx5_hist_n }} 交易日走势{% else %}60 交易日走势{% endif %}</span>
         </span>
-        <span class="mx5-path-meta"><span class="l-en">Score vs time</span><span class="l-zh">综合评分 · 时序</span></span>
+        <span class="mx5-path-meta"><span class="l-en">Score vs time{% if _mx5_delta is not none %} · Δ {{ '%+.0f'|format(_mx5_delta) }}{% endif %}</span><span class="l-zh">综合评分 · 时序{% if _mx5_delta is not none %} · 较前日 {{ '%+.0f'|format(_mx5_delta) }}{% endif %}</span></span>
       </div>
       {% if _mx5_hist %}
       {% set _ph_n = _mx5_hist | length %}
