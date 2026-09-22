@@ -65,13 +65,24 @@ asof 2026-09-18   calculation_version: ABSENT (v1-era)
 
 `5.32` is the **2026-09-17** value stamped as a 2026-09-18 observation — the pre-#7291
 ffill laundering the origin-tracking work was built to stop. Same shape on 2y/5y/10y/30y.
-The artifact was last committed **2026-09-19 15:12**, and #7291 merged **2026-09-20 00:24**,
-so the served payload has never been produced by the fixed code. Two green nightlies
-(09-21, 09-22) have not re-baked it while `data/` commits continue hourly for other lanes.
+The artifact was last committed **2026-09-19 15:12** (`weekly: deep-dive 2026-09-19`),
+and #7291 merged **2026-09-20 00:24** — about nine hours later. So the served payload has
+never been produced by the fixed code.
 
-This is a **staleness gap, not an unfixed code defect** — the code fix is already merged
-and demonstrably produces the right answer. It clears on the next re-bake of
-`data/transmission/latest.json`.
+**This is a cadence gap, not an incident and not an unfixed code defect.**
+`scripts/build_transmission.py` — the sole writer of `data/transmission/latest.json` — is
+owned as a step by exactly ONE lane: `config/dag.yml` lane 19,
+`.github/workflows/weekly.yml`, job `weekly-report`. The daily lane (lane 3, job `engine`)
+and the two render lanes only *reference* it for ordering; none runs it. So the nightly was
+never this artifact's owner, the 09-21 and 09-22 green nightlies were never going to
+refresh it, and the last weekly simply predates the fix. Confirmed live: `snapshot(f)` on
+the real frame at HEAD returns `calculation_version fixed_grid_origin.v2`, 20y `level 5.38`,
+`as_of 2026-09-18`, `observation_origin captured_source_row` — the correct payload, ready
+for the next weekly run.
+
+Note for whoever reads the code next: `scripts/run_transmission_chains.py:8` calls
+build_transmission part of "the nightly", which is stale wording and is what makes this
+look like a nightly failure.
 
 ## Phase 3 — failure semantics on the real path
 
@@ -230,9 +241,11 @@ V1–V6 — was executed directly instead.
 
 ## Next RIC action
 
-1. **Re-bake `data/transmission/latest.json`** under post-#7291 code so the served payload
-   stops laundering a carried 09-17 value as a 09-18 observation. Investigate why two green
-   nightlies since 2026-09-19 have not refreshed it.
+1. **Let the next `weekly.yml` run re-bake `data/transmission/latest.json`** — it will be
+   the first post-#7291 bake and clears the laundered 09-17-as-09-18 payload on its own.
+   No nightly investigation is owed: the daily lane does not own this artifact. To clear it
+   sooner, dispatch `weekly.yml` (standard in-flight preflight first). Correct the stale
+   "runs in the nightly" comment at `scripts/run_transmission_chains.py:8`.
 2. **Repair the `observed` computation under a fresh carrier** so an expected market-holiday
    absence no longer disqualifies the path, restoring `turn_watch` reachability. Add a
    production-shaped (holiday-bearing) fixture so the test suite can see the difference.
