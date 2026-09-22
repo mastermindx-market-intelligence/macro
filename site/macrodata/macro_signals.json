@@ -1,6 +1,6 @@
 {
   "date": "2026-09-21",
-  "generated_utc": "2026-09-22 03:01",
+  "generated_utc": "2026-09-22 05:14",
   "business_cycle": {
     "available": true,
     "asof": "2026-09-30",
@@ -4369,8 +4369,8 @@
         "key": "hy_oas",
         "name_en": "HY credit spread",
         "name_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u5229\u5dee",
-        "value": 0.957,
-        "pct": 65,
+        "value": 1.074,
+        "pct": 70,
         "lean": "risk-on"
       },
       {
@@ -4472,7 +4472,7 @@
     }
   },
   "fear_greed": {
-    "dial": 46,
+    "dial": 45,
     "label_en": "Neutral",
     "label_zh": "\u4e2d\u6027",
     "legs_included": [
@@ -4482,10 +4482,11 @@
         "name_zh": "\u6807\u666e\u52a8\u91cf\uff08\u5bf9\u6bd4125\u65e5\u5747\u7ebf\uff09",
         "orientation": "higher=greed",
         "unit": "% above/below MA",
-        "value": 5.4,
-        "z": 0.456,
-        "pct": 66,
+        "value": 3.93,
+        "z": 0.212,
+        "pct": 53,
         "pct_hist": [
+          64.1,
           56.5,
           70.6,
           76.4,
@@ -4544,12 +4545,11 @@
           49.0,
           44.2,
           53.2,
-          53.2,
-          66.3
+          53.2
         ],
         "freshness": "fresh",
-        "obs_count": 8468,
-        "last_date": "2026-09-21"
+        "obs_count": 8467,
+        "last_date": "2026-09-18"
       },
       {
         "key": "nh_nl_ratio",
@@ -4782,10 +4782,11 @@
         "name_zh": "\u907f\u9669\u9700\u6c42\uff08SPY\u2212TLT 20\u65e5\uff09",
         "orientation": "higher=greed",
         "unit": "20d ret diff %",
-        "value": 1.19,
-        "z": 0.092,
-        "pct": 50,
+        "value": 1.07,
+        "z": 0.073,
+        "pct": 49,
         "pct_hist": [
+          15.1,
           12.8,
           16.8,
           24.7,
@@ -4844,12 +4845,11 @@
           29.0,
           31.7,
           42.6,
-          48.8,
-          49.8
+          48.8
         ],
         "freshness": "fresh",
-        "obs_count": 6055,
-        "last_date": "2026-09-21"
+        "obs_count": 6054,
+        "last_date": "2026-09-18"
       },
       {
         "key": "vix_level",
@@ -4857,10 +4857,11 @@
         "name_zh": "VIX \u6c34\u5e73",
         "orientation": "lower=greed",
         "unit": "VIX points",
-        "value": 14.9,
-        "z": 0.591,
+        "value": 14.8,
+        "z": 0.599,
         "pct": 69,
         "pct_hist": [
+          45.6,
           49.8,
           57.6,
           56.7,
@@ -4919,12 +4920,11 @@
           52.2,
           49.2,
           65.2,
-          69.3,
-          68.8
+          69.3
         ],
         "freshness": "fresh",
-        "obs_count": 9250,
-        "last_date": "2026-09-21"
+        "obs_count": 9249,
+        "last_date": "2026-09-18"
       },
       {
         "key": "vix_trend",
@@ -4932,10 +4932,11 @@
         "name_zh": "VIX \u8d8b\u52bf\uff0820\u65e5\u53d8\u52a8\uff09",
         "orientation": "lower=greed",
         "unit": "VIX 20d delta",
-        "value": -0.98,
-        "z": 0.184,
-        "pct": 60,
+        "value": -0.32,
+        "z": 0.058,
+        "pct": 50,
         "pct_hist": [
+          16.5,
           27.1,
           36.9,
           38.6,
@@ -4994,12 +4995,11 @@
           29.5,
           18.1,
           53.9,
-          50.2,
-          60.0
+          50.2
         ],
         "freshness": "fresh",
-        "obs_count": 9230,
-        "last_date": "2026-09-21"
+        "obs_count": 9229,
+        "last_date": "2026-09-18"
       },
       {
         "key": "vix_term",
@@ -5007,10 +5007,11 @@
         "name_zh": "VIX \u671f\u9650\u7ed3\u6784\uff08VIX/VIX3M\uff09",
         "orientation": "lower=greed",
         "unit": "ratio (>=1=backwardation)",
-        "value": 0.822,
-        "z": 1.035,
-        "pct": 88,
+        "value": 0.812,
+        "z": 1.163,
+        "pct": 91,
         "pct_hist": [
+          81.7,
           62.4,
           36.4,
           41.1,
@@ -5069,12 +5070,11 @@
           54.0,
           49.5,
           83.9,
-          91.4,
-          87.8
+          91.4
         ],
         "freshness": "fresh",
-        "obs_count": 5073,
-        "last_date": "2026-09-21"
+        "obs_count": 5072,
+        "last_date": "2026-09-18"
       },
       {
         "key": "skew",
@@ -5328,8 +5328,8 @@
       }
     ],
     "n_legs_qualifying": 11,
-    "as_of": "2026-09-21",
-    "generated_utc": "2026-09-21T23:41:46Z",
+    "as_of": "2026-09-18",
+    "generated_utc": "2026-09-22T03:20:24Z",
     "disclaimer_en": "Sentiment context only \u2014 display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.",
     "disclaimer_zh": "\u4ec5\u4e3a\u60c5\u7eea\u53c2\u8003 \u2014 \u516c\u5f00\u5e02\u573a\u6307\u6807\u7684\u4ec5\u5c55\u793a\u5408\u6210\u3002\u4e0d\u8ba1\u5206\uff0c\u4e0d\u8fdb\u5165\u5468\u671f\u5f15\u64ce\uff0c\u65e0\u524d\u77bb\u6027\u5224\u65ad\u3002\u8d2a\u5a6a/\u6050\u60e7\u8bfb\u6570\u82e5\u65e0\u5468\u671f\u80cc\u666f\uff0c\u4e0d\u6784\u6210\u53cd\u5411\u4fe1\u53f7\u3002"
   },
@@ -5339,16 +5339,17 @@
         "key": "vix_level",
         "name_en": "VIX level",
         "name_zh": "VIX \u6c34\u5e73",
-        "value": 14.9,
+        "value": 14.8,
         "pctile": 7,
         "band": "calm",
         "state": "calm",
         "plain_en": "Volatility is low by recent standards.",
         "plain_zh": "\u8fd1\u671f\u6ce2\u52a8\u7387\u504f\u4f4e\u3002",
         "freshness": "fresh",
-        "obs_count": 9250,
-        "last_date": "2026-09-21",
+        "obs_count": 9249,
+        "last_date": "2026-09-18",
         "spark": [
+          68,
           60,
           37,
           39,
@@ -5407,7 +5408,6 @@
           51,
           58,
           15,
-          7,
           7
         ]
       },
@@ -5415,17 +5415,18 @@
         "key": "vix_velocity",
         "name_en": "VIX velocity (5d change)",
         "name_zh": "VIX \u901f\u5ea6\uff085\u65e5\u53d8\u52a8\uff09",
-        "value": -2.23,
-        "pctile": 16,
+        "value": -1.03,
+        "pctile": 30,
         "band": "quiet",
         "state": "quiet",
-        "chg20_pctile": 36,
+        "chg20_pctile": 46,
         "plain_en": "Volatility change is within normal daily variation.",
         "plain_zh": "\u6ce2\u52a8\u7387\u53d8\u5316\u5904\u4e8e\u6b63\u5e38\u65e5\u5e38\u6ce2\u52a8\u8303\u56f4\u5185\u3002",
         "freshness": "fresh",
-        "obs_count": 9250,
-        "last_date": "2026-09-21",
+        "obs_count": 9249,
+        "last_date": "2026-09-18",
         "spark": [
+          81,
           59,
           10,
           16,
@@ -5484,8 +5485,7 @@
           80,
           75,
           15,
-          30,
-          16
+          30
         ]
       },
       {
@@ -5571,16 +5571,17 @@
         "key": "term_slope",
         "name_en": "VIX term slope (9D / 3M)",
         "name_zh": "VIX \u671f\u9650\u659c\u7387\uff089D / 3M\uff09",
-        "value": 0.727,
-        "pctile": 34,
-        "band": "normal",
-        "state": "normal",
-        "plain_en": "Term structure is normal \u2014 vol market shows no unusual stress.",
-        "plain_zh": "\u671f\u9650\u7ed3\u6784\u6b63\u5e38\uff0c\u6ce2\u52a8\u7387\u5e02\u573a\u65e0\u5f02\u5e38\u538b\u529b\u3002",
+        "value": 0.673,
+        "pctile": 12,
+        "band": "steep_contango",
+        "state": "steep_contango",
+        "plain_en": "The curve is steeply in contango \u2014 vol market is calm, sellers in control.",
+        "plain_zh": "\u66f2\u7ebf\u6df1\u5ea6\u987a\u7ed3\u6784\uff0c\u6ce2\u52a8\u7387\u5e02\u573a\u5e73\u9759\uff0c\u505a\u7a7a\u65b9\u5360\u4e3b\u5bfc\u3002",
         "freshness": "fresh",
-        "obs_count": 3948,
-        "last_date": "2026-09-21",
+        "obs_count": 3947,
+        "last_date": "2026-09-18",
         "spark": [
+          27,
           69,
           84,
           80,
@@ -5639,8 +5640,7 @@
           79,
           78,
           33,
-          12,
-          34
+          12
         ]
       },
       {
@@ -5949,8 +5949,8 @@
         ]
       }
     ],
-    "as_of": "2026-09-21",
-    "generated_utc": "2026-09-21T23:41:47Z",
+    "as_of": "2026-09-18",
+    "generated_utc": "2026-09-22T03:20:25Z",
     "n_young": 0,
     "disclaimer_en": "Display-only context \u2014 volatility surface indicators from public CBOE / Yahoo data. Never scored, no forward claim. These chips describe the current vol environment; they do not predict direction.",
     "disclaimer_zh": "\u4ec5\u4f9b\u5c55\u793a\u7684\u80cc\u666f \u2014 \u6765\u81ea\u516c\u5f00 CBOE / Yahoo \u6570\u636e\u7684\u6ce2\u52a8\u7387\u66f2\u9762\u6307\u6807\u3002\u4e0d\u8ba1\u5206\uff0c\u65e0\u524d\u77bb\u5224\u65ad\u3002\u8fd9\u4e9b\u82af\u7247\u63cf\u8ff0\u5f53\u524d\u6ce2\u52a8\u7387\u73af\u5883\uff0c\u4e0d\u9884\u6d4b\u65b9\u5411\u3002"
@@ -6338,11 +6338,11 @@
     {
       "name": "<span class=\"l-en\">Options hedging mood</span><span class=\"l-zh\">\u671f\u6743\u5bf9\u51b2\u60c5\u7eea</span>",
       "pct": null,
-      "label": "<span class=\"l-en\">guarded</span><span class=\"l-zh\">\u8b66\u60d5</span>",
-      "verdict": "<span class=\"l-en\">more puts than calls \u2014 mild caution</span><span class=\"l-zh\">\u770b\u8dcc\u591a\u4e8e\u770b\u6da8 \u2014 \u8f7b\u5ea6\u8c28\u614e</span>",
+      "label": "<span class=\"l-en\">balanced</span><span class=\"l-zh\">\u5747\u8861</span>",
+      "verdict": "<span class=\"l-en\">nothing notable</span><span class=\"l-zh\">\u65e0\u663e\u8457</span>",
       "left": "",
       "right": "",
-      "tip": "<span class=\"l-en\">Put/call volume ratio on S&amp;P index options, computed from CBOE&#39;s chain: bearish bets \u00f7 bullish bets traded today. Above ~1.3 = heavy hedging; below ~0.8 = complacency. Today: 1.13 (as of 2026-09-18). A young series \u2014 labels are based on standard thresholds until enough history accrues.</span><span class=\"l-zh\">\u6807\u666e\u6307\u6570\u671f\u6743\u7684\u770b\u8dcc/\u770b\u6da8\u6210\u4ea4\u91cf\u6bd4\uff0c\u7531 CBOE \u671f\u6743\u94fe\u8ba1\u7b97\uff1a\u4eca\u65e5\u770b\u7a7a\u62bc\u6ce8 \u00f7 \u770b\u591a\u62bc\u6ce8\u3002\u9ad8\u4e8e\u7ea61.3 = \u5927\u91cf\u5bf9\u51b2\uff1b\u4f4e\u4e8e\u7ea60.8 = \u81ea\u6ee1\u3002\u4eca\u65e5\uff1a1.13\uff08\u622a\u81f3 2026-09-18\uff09\u3002\u8fd9\u662f\u4e00\u4e2a\u8f83\u65b0\u7684\u5e8f\u5217 \u2014 \u5728\u79ef\u7d2f\u8db3\u591f\u5386\u53f2\u524d\uff0c\u6807\u7b7e\u57fa\u4e8e\u6807\u51c6\u9608\u503c\u3002</span>"
+      "tip": "<span class=\"l-en\">Put/call volume ratio on S&amp;P index options, computed from CBOE&#39;s chain: bearish bets \u00f7 bullish bets traded today. Above ~1.3 = heavy hedging; below ~0.8 = complacency. Today: 0.80 (as of 2026-09-21). A young series \u2014 labels are based on standard thresholds until enough history accrues.</span><span class=\"l-zh\">\u6807\u666e\u6307\u6570\u671f\u6743\u7684\u770b\u8dcc/\u770b\u6da8\u6210\u4ea4\u91cf\u6bd4\uff0c\u7531 CBOE \u671f\u6743\u94fe\u8ba1\u7b97\uff1a\u4eca\u65e5\u770b\u7a7a\u62bc\u6ce8 \u00f7 \u770b\u591a\u62bc\u6ce8\u3002\u9ad8\u4e8e\u7ea61.3 = \u5927\u91cf\u5bf9\u51b2\uff1b\u4f4e\u4e8e\u7ea60.8 = \u81ea\u6ee1\u3002\u4eca\u65e5\uff1a0.80\uff08\u622a\u81f3 2026-09-21\uff09\u3002\u8fd9\u662f\u4e00\u4e2a\u8f83\u65b0\u7684\u5e8f\u5217 \u2014 \u5728\u79ef\u7d2f\u8db3\u591f\u5386\u53f2\u524d\uff0c\u6807\u7b7e\u57fa\u4e8e\u6807\u51c6\u9608\u503c\u3002</span>"
     },
     {
       "name": "<span class=\"l-en\">Market-maker effect</span><span class=\"l-zh\">\u505a\u5e02\u5546\u6548\u5e94</span>",
@@ -6351,7 +6351,7 @@
       "verdict": "<span class=\"l-en\">market-makers&#39; hedging absorbs moves \u2014 calmer tape likely (and we&#39;re near the tipping point \u2014 it can flip any day)</span><span class=\"l-zh\">\u505a\u5e02\u5546\u5bf9\u51b2\u5438\u6536\u6ce2\u52a8 \u2014 \u76d8\u9762\u53ef\u80fd\u66f4\u5e73\u9759\uff08\u4e14\u6211\u4eec\u5df2\u63a5\u8fd1\u4e34\u754c\u70b9 \u2014 \u968f\u65f6\u53ef\u80fd\u53cd\u8f6c\uff09</span>",
       "left": "",
       "right": "",
-      "tip": "<span class=\"l-en\">Estimated dealer gamma (GEX) from the S&amp;P options chain, standard assumption (dealers long calls/short puts). Positive = their hedging dampens market moves; negative = it amplifies them. Today: +29bn per 1% move (as of 2026-09-18). An estimate, not ground truth.</span><span class=\"l-zh\">\u7531\u6807\u666e\u671f\u6743\u94fe\u4f30\u7b97\u7684\u505a\u5e02\u5546 gamma\uff08GEX\uff09\uff0c\u91c7\u7528\u6807\u51c6\u5047\u8bbe\uff08\u505a\u5e02\u5546\u6301\u6709\u591a\u5934\u770b\u6da8/\u7a7a\u5934\u770b\u8dcc\uff09\u3002\u6b63\u503c = \u5176\u5bf9\u51b2\u6291\u5236\u5e02\u573a\u6ce2\u52a8\uff1b\u8d1f\u503c = \u653e\u5927\u6ce2\u52a8\u3002\u4eca\u65e5\uff1a\u6bcf1%\u6ce2\u52a8 +29\u5341\u4ebf \uff08\u622a\u81f3 2026-09-18\uff09\u3002\u8fd9\u662f\u4f30\u7b97\uff0c\u5e76\u975e\u771f\u5b9e\u503c\u3002</span>"
+      "tip": "<span class=\"l-en\">Estimated dealer gamma (GEX) from the S&amp;P options chain, standard assumption (dealers long calls/short puts). Positive = their hedging dampens market moves; negative = it amplifies them. Today: +123bn per 1% move (as of 2026-09-21). An estimate, not ground truth.</span><span class=\"l-zh\">\u7531\u6807\u666e\u671f\u6743\u94fe\u4f30\u7b97\u7684\u505a\u5e02\u5546 gamma\uff08GEX\uff09\uff0c\u91c7\u7528\u6807\u51c6\u5047\u8bbe\uff08\u505a\u5e02\u5546\u6301\u6709\u591a\u5934\u770b\u6da8/\u7a7a\u5934\u770b\u8dcc\uff09\u3002\u6b63\u503c = \u5176\u5bf9\u51b2\u6291\u5236\u5e02\u573a\u6ce2\u52a8\uff1b\u8d1f\u503c = \u653e\u5927\u6ce2\u52a8\u3002\u4eca\u65e5\uff1a\u6bcf1%\u6ce2\u52a8 +123\u5341\u4ebf \uff08\u622a\u81f3 2026-09-21\uff09\u3002\u8fd9\u662f\u4f30\u7b97\uff0c\u5e76\u975e\u771f\u5b9e\u503c\u3002</span>"
     },
     {
       "name": "<span class=\"l-en\">Fear gauge</span><span class=\"l-zh\">\u6050\u614c\u6307\u6807</span>",
