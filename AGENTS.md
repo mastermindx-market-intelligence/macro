@@ -381,15 +381,115 @@ itself on demand.
   re-read on every remaining turn. Prefer targeted `grep`/line-ranged reads over
   whole files, cap command output (`head`, `--limit`, `--jq`), and keep browser
   screenshots and full page dumps inside a subagent.
-- **One session = one task boundary.** A long program needs durable state on
-  disk, not a long session. Run it as a chain of short sessions over a
-  `research/*_CONTINUATION_HANDOFF_<date>.md`, one wave per session. Keep an
-  orchestrator under ~200k; past ~250k, checkpoint to a handoff and let the
-  operator clear rather than grinding to the ceiling.
+- **Durable state on disk — and a session may run as long as it stays useful.**
+  Operator 2026-09-01 REPEALED the former "one session = one task boundary" rule:
+  it forced every long workflow into a relay of amnesiac sessions, and
+  re-establishing context in each successor cost more than the stop ever saved.
+  There is no task-boundary stop — a merged, live-verified wave is a checkpoint,
+  not a session end, and one session may carry a program end-to-end across many
+  waves and many merges. The durable-state half survives as a WRITE rule, not a
+  STOP rule: keep program state in a
+  `research/*_CONTINUATION_HANDOFF_<date>.md` and `agentos/handoffs/` as you go,
+  so the work survives a clear, a crash, or an operator handoff. Cost control is
+  the two bullets above and is unaffected — a long session held near 150k is
+  cheap, a short one riding 800k is not, so when context grows, delegate the next
+  wave's execution rather than shortening the session. Context figures are
+  advisory targets, never a stop trigger.
 
 Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, so
 cutting thinking degrades quality for at most a sixth of the cost. The savings
 are in where work happens and how large the context is.
+
+## Execution continuation law
+
+A blocked lane is not a finished mission. This section governs when a session may
+STOP; the "Definition of done" section below governs what the ship chain owes once a
+session produces a commit. This law does not weaken the ordinary ship chain: both bind,
+and neither releases the other. A blocked lane is a reason to keep working other lanes,
+never a reason to leave an unmerged pull request.
+
+### Authority model — restated here, duplicated nowhere
+
+Chairman Chris is final authority. **Sol is the default AI CEO / system owner.**
+Ordinary Claude and Codex sessions remain **bounded workers**. **Fable is scarce
+principal capacity by default.** The governing authority map stays in Mastermind
+(`config/authority_map.yml` + `control_plane/packet_gate.py`); the "Required context"
+section above already forbids a second copy in this repository, and this section
+creates none, dispatches nothing, and grants no one a permission they did not have.
+
+What it adds is the scope rule the defaults were missing. **An explicit Chairman
+delegation overrides those defaults inside its stated scope, and a default role
+assumption never overrides it back.** A seat holding a Chairman-delegated program
+decides in-scope matters itself and does not re-ask Sol for what it was already
+delegated — the standing example is Meta-CEO Fable B owning the Agent Fabric program,
+which repeatedly stalled waiting for a Sol authorization it did not need. The converse
+binds just as hard: **delegated authority never leaks outside its stated scope**,
+exactly as conditional merge authority granted for one pull request never transfers to
+another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
+credential, and changes no provider permission.
+
+### The six execution invariants
+
+`BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
+One blocked review, tool, provider or CI lane freezes that lane, never the mission.
+Before any stop, enumerate the other authorized lanes and continue on them. Only when
+every scoped lane is genuinely blocked is `ALL_SCOPED_LANES_BLOCKED` the honest state,
+and that classification must name the lanes it checked.
+
+`NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
+direct bounded execution may continue`. A delegation surface being unavailable — the
+Fabric down, a pool exhausted, a spawn refused — is not evidence that execution is
+impossible. If no worker actually started, the principal still holds lawful tools and
+custody, no other owner is working the same artifact, and no act sits in an
+`EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
+those four is false the lawful outcome is `ALL_SCOPED_LANES_BLOCKED` or
+`EXACT_HUMAN_GATE` naming the exact missing thing — never a silent stop, and never a
+second worker on a contested artifact.
+
+`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
+burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
+merge sweeper, then work an independent lane. A Stop-hook block during a wait is
+satisfied by a one-line hold note, never by a fresh poll.
+
+`2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
+nothing observable ban a third identical one. The Stop guard now names the cycle count
+in its own block text rather than repeating one unchanging instruction.
+
+`accepted work -> DO_NOT_REDO unless materially invalidated`. Accepted, merged or
+ratified work reopens only on a material invalidator: new contradicting evidence, a
+changed contract, or an explicit authority reversal. A fresh session, a lost
+transcript, and an absent memory are none of those. Check the `agentos/`
+`do_not_redo` entries and `research/DO_NOT_REBUILD.md` before re-opening anything.
+
+`EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
+whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a dropped
+tool call — is reconciled on the same carrier that performed it. A blind retry or a
+failover to another provider is how one irreversible act becomes two.
+
+### The delivery ladder
+
+`ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
+ACCEPTANCE` are nine distinct facts and none implies the next. An acknowledgement is
+not a queue entry; a queue entry is not a started worker; a returned packet is not a
+green check; a merge is not production proof; production proof is not acceptance by
+the commissioning authority. Report the rung the evidence reaches and no higher. A
+checkpoint, a status note, or a continuation record describes work; it is never the
+outcome it describes.
+
+### Session end classification
+
+Every substantial session states one line before it ends: `SESSION END: <STATE>`,
+where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
+`ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or `MORE_WORK_EXISTS`. The
+set is closed on purpose. **`MORE_WORK_EXISTS` is never a valid stopping state**, and
+the Stop guard refuses it under the code `more_work_exists`, escapable only through
+the ordinary any-code ladder.
+
+The converse binds equally. Reaching the actual outcome or the exact human gate early
+is a complete session however short or expensive it was: never pad a session to look
+substantial, and never stop while authorized work remains. Context compaction,
+rotation, or a `/clear` is a harness event and not an outcome — the guard's block
+ledger deliberately survives `resume` and `compact`.
 
 ## Definition of done
 
@@ -417,11 +517,23 @@ one is abandoned work, not delivered work.
 `DEC:SOL-HOLD-IS-A-MERGE-BARRIER` is fully satisfied: exact PR head pushed and local
 worktree clean; binding checks concluded green; PR DRAFT; no `merge-on-green` label;
 native auto-merge null; title/body/comment holds merge and names Sol as authority plus
-a Sol-controlled release condition. PARKED is terminal for the current session but is
-NOT SHIPPED, not deployed/live evidence, and not a retryable `SHIP LOOP BLOCKED` state.
-Report it once and stop. Do not poll, arm, mark ready, merge, or re-enter the ship loop
-until Sol changes or releases the hold. Ambiguous/incomplete hold state remains ordinary
-unfinished work and fails closed.
+a Sol-controlled release condition. PARKED is terminal for the current ship/merge attempt
+but is NOT SHIPPED, not deployed/live evidence, and not a retryable `SHIP LOOP BLOCKED`
+state. Report it once and stop shipping. Do not poll, arm, mark ready, merge, or re-enter
+the ship loop until Sol changes or releases the hold. Ambiguous/incomplete hold state
+remains ordinary unfinished work and fails closed.
+
+**That terminality is scoped to the ship attempt, never to the worker**
+(`DEC:HOLD-PARKS-SHIP-NOT-DIALOGUE`). The reciprocal worker/Sol child dialogue remains
+nonterminal: the same child, carrier, branch and PR resume on a same-carrier Sol
+`CONTINUE` / `RULING` / `REQUEST_REPAIR`, and only an explicit same-carrier Sol STOP (or
+`ACCEPTED / STOP`, `CLOSED / STOP`) closes the child. Before yielding at PARKED you must
+already have posted one exact-carrier `RESULT / HOLD-FOR-SOL` and established a truthful
+continuation path — `WATCH_ARMED` only for a real, verified registration, otherwise
+`WATCH_UNAVAILABLE` naming the surface checked and the exact failure. "Waiting for Sol"
+is not a continuation path, and going silent on the holding authority is not a lawful
+stop: the task/wave boundary, the PR merge hold, the reasoning-session yield, the child
+STOP and program completion are five distinct facts, and none may be inferred from another.
 
 `merge-on-green` remains available and is still the recommended way to get the
 merge PERFORMED for ordinary work — arming it means you do not have to run the merge yourself. It
@@ -524,9 +636,11 @@ state (no arming label, `autoMergeRequest` null, DRAFT, hold comment naming auth
 release condition), and never arm a PR you did not open without grepping its
 title+body+comments for a hold. Once that protocol is complete, the exact head is pushed
 and clean, and binding checks are green, the delivery state is `PARKED / HOLD-FOR-SOL`:
-terminal for the current session, not SHIPPED, and not a retryable blocker. Report once;
-do not poll, re-arm, mark ready, merge, or re-enter the ship loop until the holding authority
-changes or releases the hold. Conditional merge authority granted for one PR NEVER
+terminal for the current ship/merge attempt, not SHIPPED, and not a retryable blocker.
+Report once; do not poll, re-arm, mark ready, merge, or re-enter the ship loop until the
+holding authority changes or releases the hold — but that is the SHIP attempt ending, not
+the child: the worker/Sol dialogue remains nonterminal and only an explicit same-carrier
+Sol STOP closes it (`DEC:HOLD-PARKS-SHIP-NOT-DIALOGUE`). Conditional merge authority granted for one PR NEVER
 transfers to any other PR (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`).
 
 **DISARMING IS NEVER SILENT (PR #5291, 2026-08-11).** The sweeper never removes
@@ -747,7 +861,16 @@ removes the only thing that would have noticed.
 Claude enforces this contract with `.claude/hooks/ship_loop_guard.py` at SessionStart
 and `scripts/ship_loop_hold_wrapper.py` at Stop. The wrapper delegates every ordinary
 state to the canonical guard and only turns a fully lawful Sol hold into terminal
-`SHIP LOOP PARKED`. For ordinary work, the guard snapshots pre-existing dirty files,
+`SHIP LOOP PARKED`. A lawful hold whose binding checks are not yet green instead gets
+`HOLD-FOR-SOL WAITING`, or `HOLD-FOR-SOL CHECKS RED` when one concluded red — and since
+2026-08-28 that applies on `claude/*` as well as `sol/*`. It used to be `sol/*`-only, so
+an ordinary held pull request fell through to `unmerged` and was told to squash-merge and
+deploy the very pull request `DEC:SOL-HOLD-IS-A-MERGE-BARRIER` forbids merging; PR #6608
+took 121 consecutive blocks carrying that impossible instruction. The repair corrects the
+ADVICE only — pending and red still block, `parked` remains the one terminal exit and
+still requires every binding check concluded green, and waiting on CI still does not
+qualify for the escape ladder, so answer such a block with a one-line hold note rather
+than a fresh poll or a `SHIP LOOP BLOCKED` report. For ordinary work, the guard snapshots pre-existing dirty files,
 then refuses a normal stop while session-created work is uncommitted, unpushed,
 unmerged, awaiting a render, or absent from production. `unmerged` is satisfied by an
 actually-MERGED pull request and by nothing else; an armed `merge-on-green` pull request

@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-08-29",
+ "as_of": "2026-09-22",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -44,24 +44,24 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
-    },
-    {
      "ticker": "QCOM",
      "name": "Qualcomm Inc"
+    },
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -78,12 +78,16 @@
      "name": "Shopify Inc"
     },
     {
+     "ticker": "ADP",
+     "name": "Automatic Data Processing Inc"
+    },
+    {
      "ticker": "ADBE",
      "name": "Adobe Inc"
     },
     {
-     "ticker": "ADP",
-     "name": "Automatic Data Processing Inc"
+     "ticker": "DDOG",
+     "name": "Datadog Inc"
     },
     {
      "ticker": "INTU",
@@ -94,20 +98,16 @@
      "name": "Cadence Design Systems Inc"
     },
     {
-     "ticker": "DDOG",
-     "name": "Datadog Inc"
-    },
-    {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "MSTR",
+     "name": "Strategy Inc"
     },
     {
      "ticker": "WDAY",
      "name": "Workday Inc"
     },
     {
-     "ticker": "MSTR",
-     "name": "Strategy Inc"
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -200,12 +200,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     }
    ]
   },
@@ -214,11 +214,11 @@
    "sector": "Internet & Platforms",
    "members": [
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
@@ -334,16 +334,20 @@
    "sector": "Software & Cloud",
    "members": [
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
+    },
+    {
      "ticker": "KTOS",
      "name": "KTOS"
+    },
+    {
+     "ticker": "AVAV",
+     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -398,24 +402,24 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
-    },
-    {
      "ticker": "QCOM",
      "name": "Qualcomm Inc"
+    },
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -520,12 +524,16 @@
      "name": "Shopify Inc"
     },
     {
+     "ticker": "ADP",
+     "name": "Automatic Data Processing Inc"
+    },
+    {
      "ticker": "ADBE",
      "name": "Adobe Inc"
     },
     {
-     "ticker": "ADP",
-     "name": "Automatic Data Processing Inc"
+     "ticker": "DDOG",
+     "name": "Datadog Inc"
     },
     {
      "ticker": "INTU",
@@ -536,20 +544,16 @@
      "name": "Cadence Design Systems Inc"
     },
     {
-     "ticker": "DDOG",
-     "name": "Datadog Inc"
-    },
-    {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "MSTR",
+     "name": "Strategy Inc"
     },
     {
      "ticker": "WDAY",
      "name": "Workday Inc"
     },
     {
-     "ticker": "MSTR",
-     "name": "Strategy Inc"
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -572,16 +576,20 @@
      "name": "Copart Inc"
     },
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
+    },
+    {
      "ticker": "KTOS",
      "name": "KTOS"
+    },
+    {
+     "ticker": "AVAV",
+     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -610,11 +618,11 @@
    "name_zh": "互联网与平台",
    "members": [
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
@@ -630,12 +638,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     },
     {
      "ticker": "TMUS",
@@ -853,7 +861,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

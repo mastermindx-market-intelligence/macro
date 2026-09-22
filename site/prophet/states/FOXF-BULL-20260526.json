@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FOXF-BULL-20260526",
-  "asof": "2026-08-28",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 71.3,
-  "raw_confidence": 70.5,
-  "delta_vs_base": 11.3,
-  "recommended_action": "hold",
-  "human_state": "Advancing Cleanly",
+  "asof": "2026-09-22",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 42.4,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -17.6,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 51.4,
-    "pace": 62.0,
-    "retention": 50.0,
-    "overlay": 64.0
+    "progress": 12.2,
+    "pace": 0.0,
+    "retention": 11.7,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.034,
-    "dist_to_t1_r": 0.466,
-    "dist_to_t2_r": 1.966,
-    "horizon_pct_used": 97.8,
-    "p1": 0.689,
-    "p2": 0.3445,
+    "dist_to_stop_r": 1.151,
+    "dist_to_t1_r": 1.349,
+    "dist_to_t2_r": 2.849,
+    "horizon_pct_used": 153.3,
+    "p1": 0.1007,
+    "p2": 0.0503,
     "p3": null,
-    "move_r": 1.034,
+    "move_r": 0.151,
     "mfe_r": 1.285,
     "mae_r": -0.07
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 44,
-  "tau": 0.9778
+  "days_elapsed": 69,
+  "tau": 1.5333
 }

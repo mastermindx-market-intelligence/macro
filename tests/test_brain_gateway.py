@@ -5808,6 +5808,60 @@ def test_contradiction_doctrine_de_escalates_and_never_overrules_the_desk():
     assert "mushy middle" in low                      # no averaging opposing signals away
 
 
+def test_system_prompt_forbids_promoting_component_dates_to_market_sessions():
+    """A dated factor/basket artifact is evidence about that component only. The
+    gateway must never turn it into a claim about the exchange's last trading day."""
+    for prompt in (gw._build_system_prompt("chat"),
+                   gw._build_system_prompt("research"),
+                   gw._build_system_prompt("chat", page="terminal")):
+        low = prompt.lower()
+        assert "a component as-of date is not the market's last trading day" in low
+        assert "latest completed session" in low
+
+
+def test_gateway_grounding_keeps_china_component_date_below_exchange_clock(tmp_path, monkeypatch):
+    """Code-gate replay of the 2026-09-13 user-visible failure.
+
+    A 9/9 basket component can ride in the same packet as 9/11 state, but the
+    text handed to the model must name 9/11 as the completed exchange session
+    and must never render ``CN (2026-09-09)`` as a session stamp.
+    """
+    from engine.neuralweb import market_packet as mp
+
+    def _dump(rel: str, payload: dict) -> None:
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+    monkeypatch.setenv("MACRO_LIVE_DIR", str(tmp_path / "live"))
+    _dump("site/chinabasketdata/baskets.json", {
+        "as_of": "2026-09-09",
+        "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+        "cycle_context": {"asOf": "2026-09-11", "market": "CN"},
+    })
+    _dump("data/china_regime/latest.json", {
+        "date": "2026-09-11",
+        "quad": "Q4",
+        "quad_name": "Growth-scare",
+        "cycle_tag": "mid",
+    })
+
+    monkeypatch.setattr(
+        mp, "digest",
+        lambda root, lang="en": mp.render_digest(
+            mp.build_packet(root, now=datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)),
+            lang=lang,
+        ),
+    )
+    context = gw._grounding_digest(tmp_path)
+
+    assert "latest completed session 2026-09-11" in context
+    assert "state through 2026-09-11" in context
+    assert "basket inputs through 2026-09-09, 2 sessions behind" in context
+    assert "CN (2026-09-09)" not in context
+
+
 def test_contradiction_doctrine_does_not_tell_the_model_to_pick_a_winner():
     """Regression pin for the escalation the first draft shipped: 'lean on the fresher,
     corroborated reading' had the model adjudicate staleness and assert to the user that

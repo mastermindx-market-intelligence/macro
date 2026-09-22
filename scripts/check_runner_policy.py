@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Enforce the public-repository trusted-CI runner-routing boundary.
 
-The planner, stable pack anchors, semantic gate, forks, fences, and merge controller
-remain hosted. Exact same-repository PR execution may call the protected-main trusted
-executor; candidate-authored jobs may not address the runner group or supply executor
-identity. Existing production self-hosted lanes are left untouched.
+The planner, stable pack anchors, semantic gate, ordinary PR packs, forks, fences,
+and merge controller default to GitHub-hosted Linux/x64. Exact same-repository PR
+execution may call the protected-main trusted executor only through the explicit
+CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runner
+group or supply executor identity. Existing production self-hosted lanes are left
+untouched.
 
 It also owns the label-DECLARATION boundary (rules R11/R12, added 2026-08-17): every
 literal ``runs-on`` label in every workflow must be declared in
@@ -14,6 +16,16 @@ is ``orphaned`` may not be used by a scheduled workflow without a dated
 label lives only in GitHub's runners-API state, so deregistering a host silently
 orphans every label it carried, and a cron job queued on a dead label can hold its
 concurrency group hostage for 24h (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
+
+Rule R14 (added 2026-09-01) owns the live/pending capacity boundary for the PC CI
+pool. ``pool_topology.pc-ci.slots`` is the live, routable inventory and stays at
+three; the fourth slot is declared only as ``pending_slots``/``pending_carriers``/
+``pending_labels`` so the code can support four candidates without the policy file
+ever claiming four are carrying traffic. R14 refuses a fifth slot, an invented
+carrier name, a pending block on any other pool, a pending label outside platform
+identity, and — the activation act itself — pc-ci-4 entering any ``carried_by``
+roster. Making the fourth slot live is a separate audited carrier gated on a real
+GitHub online/idle receipt, never an edit to this file alone.
 """
 
 from __future__ import annotations
@@ -62,17 +74,23 @@ TRUSTED_EXECUTOR_CALL = (
     "mastermindx-market-intelligence/macro/.github/workflows/"
     "trusted-ci-executor.yml@main"
 )
+FOUR_SLOT_PREFLIGHT_ROUTE = (
+    ".github/workflows/selfhosted-ci-canary.yml",
+    "four-slot-preflight",
+)
 SAME_REPO_PR = (
     "github.event.pull_request.head.repo.full_name == github.repository"
 )
 FORK_PR = (
     "github.event.pull_request.head.repo.full_name != github.repository"
 )
+PC_ROUTE = "vars.CI_EXECUTION_ROUTE == 'pc'"
+HOSTED_ROUTE = "vars.CI_EXECUTION_ROUTE != 'pc'"
 TRUSTED_CALL_JOB = {
     "name": "trusted-ci",
     "needs": "ci-plan",
     "if": (
-        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR
+        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR + " && " + PC_ROUTE
     ),
     "uses": TRUSTED_EXECUTOR_CALL,
     "permissions": {"contents": "read", "pull-requests": "read"},
@@ -378,6 +396,171 @@ def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list
     return findings
 
 
+def _pending_capacity_findings(registry: dict) -> list[Finding]:
+    """R14: the fourth PC CI slot may be declared as architecture, never as capacity.
+
+    ``slots`` is the live, routable inventory; ``pending_slots``/``pending_carriers``/
+    ``pending_labels`` are the pending architecture. The two must never merge here.
+    Live activation — pc-ci-4 acquiring ``ci-linux`` or entering a ``carried_by``
+    roster — is a separately audited act gated on a real online/idle receipt, so
+    this guard refuses it from the policy file alone.
+    """
+
+    findings: list[Finding] = []
+    topology = registry.get("pool_topology") or {}
+    label_registry = registry.get("label_registry") or {}
+
+    # Only the PC CI pool may declare pending capacity. A pending block anywhere
+    # else is how a fifth slot, or a pending render listener, would enter sideways.
+    for name, pool in topology.items():
+        if name == "pc-ci" or not isinstance(pool, dict):
+            continue
+        declared = sorted(
+            key for key in ("pending_slots", "pending_carriers", "pending_labels")
+            if key in pool
+        )
+        if declared:
+            findings.append(
+                Finding(
+                    "R14",
+                    f"pool {name!r} may not declare pending capacity {declared}; "
+                    "only pc-ci carries a pending fourth slot",
+                )
+            )
+
+    # A whole second CI pool is the other way a fifth slot hides in YAML. The
+    # live CI inventory is `pc-ci.slots` and nothing else, so no other pool may
+    # carry the routable CI label at all.
+    for name, pool in topology.items():
+        if name == "pc-ci" or not isinstance(pool, dict):
+            continue
+        if "ci-linux" in set(pool.get("labels") or []):
+            findings.append(
+                Finding(
+                    "R14",
+                    f"pool {name!r} carries the live CI label 'ci-linux'; only pc-ci "
+                    f"may, or its {pool.get('slots')!r} slot(s) are CI capacity "
+                    "outside the declared inventory",
+                )
+            )
+
+    ci_pool = topology.get("pc-ci") or {}
+    missing = sorted(
+        key for key in ("pending_slots", "pending_carriers", "pending_labels")
+        if key not in ci_pool
+    )
+    if missing:
+        findings.append(
+            Finding(
+                "R14",
+                f"pc-ci must declare its pending fourth-slot contract; missing {missing}",
+            )
+        )
+        return findings
+
+    live_slots = ci_pool.get("slots")
+    pending_slots = ci_pool.get("pending_slots")
+    pending_carriers = ci_pool.get("pending_carriers")
+    pending_labels = ci_pool.get("pending_labels")
+
+    if not isinstance(pending_carriers, list) or not isinstance(pending_labels, list):
+        findings.append(
+            Finding("R14", "pc-ci pending_carriers and pending_labels must be lists")
+        )
+        return findings
+    if not all(isinstance(carrier, str) for carrier in pending_carriers):
+        findings.append(Finding("R14", "pc-ci pending_carriers must contain strings"))
+        return findings
+    if not all(isinstance(label, str) for label in pending_labels):
+        findings.append(Finding("R14", "pc-ci pending_labels must contain strings"))
+        return findings
+
+    # `type(...) is int` on purpose: bool is an int subclass, so `pending_slots:
+    # true` would satisfy `== 1`, and a float silently skipped the cross-check.
+    if type(pending_slots) is not int or pending_slots != 1:
+        findings.append(
+            Finding("R14", f"pc-ci must declare exactly one pending slot, not {pending_slots!r}")
+        )
+    if type(live_slots) is int and type(pending_slots) is int:
+        if live_slots + pending_slots != 4:
+            findings.append(
+                Finding(
+                    "R14",
+                    f"PC CI live+pending capacity must total exactly four, not "
+                    f"{live_slots}+{pending_slots}",
+                )
+            )
+    if len(pending_carriers) != pending_slots:
+        findings.append(
+            Finding(
+                "R14",
+                f"pc-ci declares {pending_slots!r} pending slot(s) but "
+                f"{len(pending_carriers)} pending carrier(s): {pending_carriers}",
+            )
+        )
+
+    # The pending carrier is the exact next slot name, never an invented host.
+    if type(live_slots) is int:
+        expected_carriers = [f"pc-ci-{live_slots + 1}"]
+        if pending_carriers != expected_carriers:
+            findings.append(
+                Finding(
+                    "R14",
+                    f"pc-ci pending_carriers must be exactly {expected_carriers}, "
+                    f"not {pending_carriers}",
+                )
+            )
+
+    # Platform/architecture identity only. `ci-linux` here would make the fourth
+    # slot routable on paper before any host receipt exists.
+    expected_pending_labels = ["self-hosted", "Linux", "X64"]
+    if pending_labels != expected_pending_labels:
+        findings.append(
+            Finding(
+                "R14",
+                f"pc-ci pending_labels must be exactly {expected_pending_labels}, "
+                f"not {pending_labels!r}",
+            )
+        )
+
+    # A pending carrier is by definition in no live roster. This is the rule that
+    # refuses the activation act — adding pc-ci-4 to ci-linux.carried_by.
+    for label, entry in label_registry.items():
+        if not isinstance(entry, dict):
+            continue
+        carried_by = entry.get("carried_by")
+        if not isinstance(carried_by, list):
+            continue
+        leaked = sorted(set(pending_carriers) & set(carried_by))
+        if leaked:
+            findings.append(
+                Finding(
+                    "R14",
+                    f"pending carrier(s) {leaked} appear in live label_registry "
+                    f"{label!r}.carried_by; activation requires a separate audited "
+                    "carrier with an online/idle receipt",
+                )
+            )
+
+    # Guarded: a non-integer slot count is R7's finding to report, and R7 can only
+    # report it if this does not raise first -- findings are printed after
+    # evaluate() returns, so a TypeError here replaces every message with a
+    # traceback.
+    if type(live_slots) is int:
+        ci_linux_roster = (label_registry.get("ci-linux") or {}).get("carried_by")
+        expected_roster = [f"pc-ci-{index}" for index in range(1, live_slots + 1)]
+        if ci_linux_roster != expected_roster:
+            findings.append(
+                Finding(
+                    "R14",
+                    f"ci-linux live roster must be exactly {expected_roster}, "
+                    f"not {ci_linux_roster!r}",
+                )
+            )
+
+    return findings
+
+
 def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Finding]:
     registry = load_yaml(registry_path)
     findings: list[Finding] = []
@@ -388,7 +571,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
     if registry.get("repository_visibility") != "public":
         findings.append(Finding("R0", "repository visibility boundary must remain public"))
     expected_scenarios = {
-        "same_repo_ordinary_pr": "pc-ci-via-main-executor",
+        "same_repo_ordinary_pr": "github-hosted",
         "fork_pr": "github-hosted",
         "trusted_dispatch_canary": "pc-ci-canary",
         "trusted_executor_dispatch": "pc-ci",
@@ -505,6 +688,13 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                     )
                 )
 
+    # The fourth-slot preflight is deliberately source-defined rather than a
+    # live topology declaration: adding it to runner-policy.yml would make the
+    # pending carrier look registered/routable before C3R-B. Admit only this
+    # exact diagnostic job to R6; its blocking, no-checkout and strict-envelope
+    # shape is pinned by tests/test_ci_canary_workflows.py.
+    allowed_custom.add(FOUR_SLOT_PREFLIGHT_ROUTE)
+
     trusted_route = registry.get("trusted_executor_route") or {}
     expected_trusted_route = {
         "workflow": ".github/workflows/trusted-ci-executor.yml",
@@ -530,6 +720,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trust_gate = trusted_jobs.get("trust-gate") or {}
         plan_job = trusted_jobs.get("plan") or {}
         trusted_job = trusted_jobs.get(trusted_job_id) or {}
+        hosted_compat_job = trusted_jobs.get("legacy-hosted-pack") or {}
         trigger_config = trusted_document.get(
             "on", trusted_document.get(True, {})
         )
@@ -575,6 +766,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "BASE_REF": "${{ github.base_ref }}",
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+            "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -592,6 +784,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "pr_number": "${{ steps.admit.outputs.pr_number }}",
             "mode": "${{ steps.admit.outputs.mode }}",
             "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+            "execution_route": "${{ steps.admit.outputs.execution_route }}",
         }
         plan_text = str(plan_job)
         selector = next(
@@ -608,8 +801,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 "${{ needs.trust-gate.outputs.control_sha }}",
                 "${{ needs.trust-gate.outputs.pr_number }}",
                 "${{ needs.trust-gate.outputs.semantic_workflow }}",
+                "${{ needs.trust-gate.outputs.execution_route }}",
                 "${{ github.event_name }}",
             )
+        ) and plan_job.get("outputs", {}).get("execution_route") == (
+            "${{ needs.trust-gate.outputs.execution_route }}"
         ) and selector.get("env") == {
             "EXECUTION_MODE": "${{ needs.trust-gate.outputs.mode }}",
             "FULL_MATRIX": "${{ steps.plan.outputs.matrix }}",
@@ -636,8 +832,76 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or trusted_job.get("runs-on")
             != {"group": "macro-home-canary", "labels": "ci-linux"}
             or (trusted_job.get("strategy") or {}).get("max-parallel") != 3
+            or trusted_job.get("if") != "needs.plan.outputs.execution_route == 'pc'"
         ):
-            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, or three-slot bound"))
+            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, three-slot bound, or explicit PC route"))
+
+        hosted_compat_steps = hosted_compat_job.get("steps") or []
+        hosted_compat_execute = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name")
+                == "execute the frozen logical pack and retain its semantic result"
+            ),
+            {},
+        )
+        hosted_compat_upload = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name") == "publish the legacy caller semantic fragment"
+            ),
+            {},
+        )
+        hosted_compat_text = str(hosted_compat_execute.get("run", ""))
+        hosted_compat_is_exact = (
+            isinstance(hosted_compat_job, dict)
+            and hosted_compat_job.get("needs") == "plan"
+            and hosted_compat_job.get("if")
+            == "needs.plan.outputs.execution_route == 'hosted'"
+            and hosted_compat_job.get("runs-on") == HOSTED
+            and (hosted_compat_job.get("strategy") or {}).get("fail-fast") is False
+            and "max-parallel" not in (hosted_compat_job.get("strategy") or {})
+            and (hosted_compat_job.get("strategy") or {}).get("matrix")
+            == "${{ fromJSON(needs.plan.outputs.matrix) }}"
+            and hosted_compat_execute.get("env", {}).get(
+                "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+            )
+            == "${{ github.workspace }}"
+            and all(
+                token in hosted_compat_text
+                for token in (
+                    '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"',
+                    '--plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json"',
+                    '--expect-plan-sha "${{ needs.plan.outputs.plan_sha }}"',
+                    '--expect-tested-tree-sha "${{ needs.plan.outputs.tested_sha }}"',
+                    '--expect-subject-head-sha "${{ needs.plan.outputs.head_sha }}"',
+                    '--expect-base-sha "${{ needs.plan.outputs.base_sha }}"',
+                    "--base-replay-budget-seconds 900",
+                    "set +e",
+                    "pack_rc=$?",
+                    'test -s "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json"',
+                )
+            )
+            and "exit $pack_rc" not in hosted_compat_text
+            and hosted_compat_upload.get("uses") == "actions/upload-artifact@v4"
+            and (hosted_compat_upload.get("with") or {}).get("name")
+            == "trusted-ci-fragment-${{ matrix.pack }}"
+            and (hosted_compat_upload.get("with") or {}).get("path")
+            == "${{ runner.temp }}/ci-semantic-fragments/trusted-fragment.json"
+            and (hosted_compat_upload.get("with") or {}).get("if-no-files-found")
+            == "error"
+        )
+        if not hosted_compat_is_exact:
+            findings.append(
+                Finding(
+                    "R13",
+                    "legacy same-repo callers must use the protected hosted compatibility pack and preserve the trusted fragment contract",
+                )
+            )
         ci_document = documents.get(".github/workflows/ci.yml") or {}
         ci_jobs = ci_document.get("jobs") or {}
         trusted_call = ci_jobs.get("trusted-ci")
@@ -677,7 +941,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "validate and run legacy CI pack",
             "fail-safe full suite when no authoritative plan was produced",
         }
-        heavyweight_fork_only = True
+        heavyweight_hosted_default = True
         for step in pack_steps:
             if not isinstance(step, dict):
                 continue
@@ -690,10 +954,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 }
                 or step.get("name") in protected_pack_steps
             )
-            if is_heavy and FORK_PR not in str(step.get("if", "")):
-                heavyweight_fork_only = False
+            guard = str(step.get("if", ""))
+            if is_heavy and not (FORK_PR in guard and HOSTED_ROUTE in guard):
+                heavyweight_hosted_default = False
         relay_is_exact = (
-            relay_step.get("if") == SAME_REPO_PR
+            relay_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and relay_step.get("uses")
             == "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
             and relay_step.get("with") == {
@@ -703,7 +968,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         )
         parity_text = str(parity_step.get("run", ""))
         parity_is_exact = (
-            parity_step.get("if") == SAME_REPO_PR
+            parity_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and parity_step.get("env") == {
                 "HOSTED_PLAN_SHA": "${{ needs.ci-plan.outputs.plan_sha }}",
                 "TRUSTED_PLAN_SHA": "${{ needs.trusted-ci.outputs.plan_sha }}",
@@ -731,7 +996,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == (
                 "always() && needs.ci-plan.result == 'success' && "
                 "needs.ci-plan.outputs.has_work == 'true' && "
-                f"({FORK_PR} || needs.trusted-ci.result == 'success')"
+                f"({FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
             )
             and (ci_pack.get("strategy") or {}).get("matrix")
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"
@@ -741,12 +1006,12 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             findings.append(Finding("R13", "P3B-B ci.yml lost its exact protected-main no-input executor call"))
         if not (
             ci_pack_contract_is_exact
-            and heavyweight_fork_only
+            and heavyweight_hosted_default
             and relay_is_exact
             and parity_is_exact
             and upload_is_exact
         ):
-            findings.append(Finding("R13", "P3B-B hosted anchor, fork isolation, or semantic relay drifted"))
+            findings.append(Finding("R13", "hosted-first pack execution, explicit PC fallback, or semantic relay drifted"))
 
     runner_group_name = str(runtime_group.get("name", ""))
     runner_group_consumers = {
@@ -793,6 +1058,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         findings.append(Finding("R7", "PC CI and render pools overlap beyond self-hosted"))
     if (topology.get("pc-ci") or {}).get("slots") != 3:
         findings.append(Finding("R7", "PC CI topology must reserve exactly three slots"))
+    findings.extend(_pending_capacity_findings(registry))
     if (topology.get("pc-render") or {}).get("slots") != 1:
         findings.append(Finding("R7", "PC render topology must reserve exactly one slot"))
     m1 = topology.get("m1-theta-canary") or {}
@@ -923,7 +1189,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(f"FAIL: {len(findings)} runner-policy finding(s)")
         return 1
-    print("OK: P3B-B routes only same-repository PR execution through the protected-main PC executor.")
+    print("OK: ordinary PR CI defaults to GitHub-hosted Linux/x64; protected-main PC execution is explicit fallback only.")
     return 0
 
 

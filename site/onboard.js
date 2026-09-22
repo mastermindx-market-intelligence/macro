@@ -392,7 +392,7 @@
     { g: ["SIGNALS", "信号"], rows: [
       { l: ["Daily buy signals", "每日买入信号"], v: [["3 / list", "每列表 3 条"], ["Full book", "完整名册"], ["Full book", "完整名册"]] },
       { l: ["Track record & autopsies", "公开战绩 & 复盘"], v: [1, 1, 1] },
-      { l: ["Daily AI morning brief", "每日 AI 晨间简报"],  v: [0, 1, 1] }
+      { l: ["Daily AI market brief", "每日 AI 市场简报"],  v: [0, 1, 1] }
     ] },
     { g: ["TERMINAL", "TERMINAL"], rows: [
       { l: ["Live charting", "实时图表"],                  v: [1, 1, 1] },
@@ -403,7 +403,7 @@
       { l: ["Advanced indicator modules", "高级指标模块"], v: [0, "some", 1] },
       { l: ["Intraday options flow", "日内期权流"],        v: [0, 1, 1] }
     ] },
-    { g: ["MASTERMIND AI", "MASTERMIND AI"], rows: [
+    { g: ["MASTERMIND AI", "操盘大脑 AI"], rows: [
       { l: ["Flash AI", "Flash AI"], v: [["5 / wk", "5 次/周"], ["300 / mo", "300 次/月"], ["Unlimited", "无限量"]] },
       { l: ["Pro AI", "Pro AI"],     v: [0, ["10 / mo", "10 次/月"], ["150 / mo", "150 次/月"]] },
       { l: ["Drives Terminal charts", "操控 Terminal 图表"], v: [0, 1, 1] }

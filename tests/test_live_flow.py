@@ -558,6 +558,29 @@ class TestEventIdIdempotency:
         ]
         assert loaded.attrs["oi_vintage"] == "2026-09-03"
 
+    def test_surface_oi_snapshot_preserves_exact_loader_vintage(self, monkeypatch) -> None:
+        from scripts import live_flow_poller as poller
+
+        oi = pd.DataFrame([{
+            "expiration": "2026-09-18", "strike": 100.0,
+            "right": "C", "open_interest": 50,
+        }])
+        oi.attrs["oi_vintage"] = "2026-09-03"
+        monkeypatch.setattr(poller, "_load_oi_prev", lambda root, session_date: oi.copy())
+        poller._SURFACE_OI_CACHE.clear()
+
+        oi_map, vintage = poller._surface_oi_snapshot("TEST", "2026-09-08")
+        assert oi_map[("2026-09-18", 100.0, "C")] == 50.0
+        assert vintage == "2026-09-03"
+
+        # The second read is session-cached and must preserve the same basis.
+        monkeypatch.setattr(
+            poller, "_load_oi_prev",
+            lambda *args, **kwargs: pytest.fail("surface OI cache should be reused"),
+        )
+        assert poller._surface_oi_snapshot("TEST", "2026-09-08") == (oi_map, vintage)
+
+
     def test_oi_loader_returns_none_after_five_prior_sessions(self, monkeypatch) -> None:
         from engine import thetadata_store as theta_store
         from scripts import live_flow_poller as poller
@@ -2289,7 +2312,68 @@ class TestPollerMergePath:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 29b. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
+# 29b. time-window watermark timezone semantics
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestWatermarkStartClock:
+    @staticmethod
+    def _capture_start_time(monkeypatch, watermark: str) -> str:
+        import scripts.live_flow_poller as poller
+
+        starts: list[str | None] = []
+
+        def fake_fetch(root, session_date, start_time, end_time):
+            starts.append(start_time)
+            return root, None, None
+
+        monkeypatch.setattr(poller, "_fetch_root", fake_fetch)
+        poller.run_cycle(
+            roots=["SPY"],
+            session_date="2026-09-18",
+            delta_mode="time_window",
+            day_state={},
+            baselines={},
+            cfg={
+                "max_concurrent": 2,
+                "cadence_sec": 120,
+                "etf_floor": 0,
+                "name_floor": 0,
+                "etf_anchors": ["SPY"],
+            },
+            cycle_watermarks={"SPY": {"ts": watermark, "seq": 1}},
+        )
+        assert len(starts) == 1
+        assert starts[0] is not None
+        return starts[0]
+
+    def test_naive_theta_watermark_is_et_wall_clock_independent_of_host_tz(
+        self, monkeypatch,
+    ):
+        import os
+        import time
+
+        old_tz = os.environ.get("TZ")
+        try:
+            monkeypatch.setenv("TZ", "America/Los_Angeles")
+            time.tzset()
+            assert self._capture_start_time(
+                monkeypatch, "2026-09-18T13:53:56.805",
+            ) == "13:53:26"
+        finally:
+            if old_tz is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = old_tz
+            time.tzset()
+
+    def test_aware_watermark_converts_to_et_before_overlap(self, monkeypatch):
+        assert self._capture_start_time(
+            monkeypatch, "2026-09-18T17:53:56.805+00:00",
+        ) == "13:53:26"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 29c. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestRunCycleEndToEnd:
@@ -2315,18 +2399,20 @@ class TestRunCycleEndToEnd:
     _STRIKES = {"SPY": 550.0, "QQQ": 460.0, "IWM": 200.0}
 
     def _root_frame(self, root: str, t_hhmm: str, size: int = 100,
-                    price: float = 2.80, seq_base: int = 1000) -> pd.DataFrame:
-        """One ask-side call trade for `root` at `t_hhmm` ET on SESSION_DATE."""
+                    price: float = 2.80, seq_base: int = 1000,
+                    session_date: str = SESSION_DATE) -> pd.DataFrame:
+        """One ask-side call trade for `root` at `t_hhmm` ET on `session_date`."""
         from zoneinfo import ZoneInfo
         et = ZoneInfo("America/New_York")
         h, m = int(t_hhmm[:2]), int(t_hhmm[3:])
-        ts_utc = (datetime(2026, 7, 2, h, m, 0, tzinfo=et)
+        y, mo, d = (int(part) for part in session_date.split("-"))
+        ts_utc = (datetime(y, mo, d, h, m, 0, tzinfo=et)
                   .astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
         return pd.DataFrame([{
             "root": root, "right": "C", "expiration": "2026-07-05",
             "strike": self._STRIKES[root], "price": price, "bid": 2.40, "ask": 2.80,
             "size": size, "trade_timestamp": ts_utc, "quote_timestamp": ts_utc,
-            "sequence": seq_base, "date": SESSION_DATE,
+            "sequence": seq_base, "date": session_date,
         }])
 
     def _run_real_cycle(self, monkeypatch, frames: dict,
@@ -2334,7 +2420,9 @@ class TestRunCycleEndToEnd:
                         cycle_watermarks: dict | None = None,
                         cycle_started_at: str | None = None,
                         observed_start_to_start_sec: float | None = None,
-                        cadence_sec: int = 120) -> tuple:
+                        cadence_sec: int = 120,
+                        session_date: str = SESSION_DATE,
+                        fixed_now: datetime | None = None) -> tuple:
         """Invoke the real run_cycle with all I/O stubbed.
 
         `frames` maps root → canned calls DataFrame (the puts leg returns an empty
@@ -2360,7 +2448,7 @@ class TestRunCycleEndToEnd:
         monkeypatch.setattr(poller, "_upload_r2", _no_r2)
 
         from datetime import datetime as dt2
-        fixed_now = dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
+        fixed_now = fixed_now or dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
         monkeypatch.setattr(poller, "datetime",
                             type("FakeDT", (), {
                                 "now": staticmethod(lambda tz=None: fixed_now),
@@ -2377,7 +2465,7 @@ class TestRunCycleEndToEnd:
             "etf_anchors": ["SPY", "QQQ", "IWM"],
             "retention_hours": 24,
         }
-        def fake_stager(session_date, events):
+        def fake_stager(staged_session_date, events):
             for event in events:
                 event["available_at"] = event["decision_at"]
                 event["published_at"] = None
@@ -2386,7 +2474,7 @@ class TestRunCycleEndToEnd:
             return events
         return poller.run_cycle(
             roots=list(frames.keys()),
-            session_date=SESSION_DATE,
+            session_date=session_date,
             delta_mode="full_day",
             day_state=day_state or {},
             baselines={},
@@ -2397,6 +2485,83 @@ class TestRunCycleEndToEnd:
             cycle_started_at=cycle_started_at,
             observed_start_to_start_sec=observed_start_to_start_sec,
         )
+
+    def test_surface_quote_tap_uses_fetched_root_observation_not_cycle_start(self, monkeypatch):
+        import scripts.build_flow_surface as bfs
+
+        seen = {}
+        real = bfs.extract_cycle_quotes
+
+        def recording_extract(calls_df, puts_df, *, session_date, near_dte_cap_days=90, observed_at=None):
+            seen["session_date"] = session_date
+            seen["observed_at"] = observed_at
+            return real(
+                calls_df, puts_df,
+                session_date=session_date,
+                observed_at=observed_at,
+                near_dte_cap_days=near_dte_cap_days,
+            )
+
+        monkeypatch.setattr(bfs, "extract_cycle_quotes", recording_extract)
+        started = "2026-07-02T18:29:59Z"
+        self._run_real_cycle(
+            monkeypatch,
+            {"SPY": self._root_frame("SPY", "09:30", seq_base=1000)},
+            cycle_started_at=started,
+        )
+
+        assert seen["session_date"] == SESSION_DATE
+        # _run_real_cycle freezes the actual fetch-completion clock at 18:30:00Z.
+        # A quote available then must never be valued against the earlier cycle start.
+        assert seen["observed_at"] == "2026-07-02T18:30:00Z"
+
+    def test_surface_quote_tap_keeps_trade_and_nbbo_clocks_distinct(self, monkeypatch):
+        frame = self._root_frame("SPY", "09:30", seq_base=1000)
+        frame.loc[0, "expiration"] = "2026-07-06"  # valid NYSE session after July 2
+        frame.loc[0, "quote_timestamp"] = "2026-07-02T13:29:58.500Z"
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame}, cycle_started_at="2026-07-02T18:29:59Z",
+        )
+
+        quote = tide["surface_quotes"]["SPY"][0]
+        assert quote["trade_at"] == "2026-07-02T13:30:00Z"
+        assert quote["quote_at"] == "2026-07-02T13:29:58.500000Z"
+        assert tide["surface_observed_at"]["SPY"] == "2026-07-02T18:30:00Z"
+
+    @pytest.mark.parametrize(
+        ("session_date", "trade_hhmm", "fixed_now", "cycle_started_at"),
+        [
+            (
+                "2026-07-02", "15:50",
+                datetime(2026, 7, 2, 20, 1, 0, tzinfo=timezone.utc),
+                "2026-07-02T19:50:00Z",
+            ),
+            (
+                "2026-11-27", "12:50",
+                datetime(2026, 11, 27, 18, 1, 0, tzinfo=timezone.utc),
+                "2026-11-27T17:50:00Z",
+            ),
+        ],
+    )
+    def test_surface_quote_tap_excludes_0dte_after_session_close(
+        self, monkeypatch, session_date, trade_hhmm, fixed_now, cycle_started_at,
+    ):
+        frame = self._root_frame(
+            "SPY", trade_hhmm, seq_base=1000, session_date=session_date,
+        )
+        frame.loc[0, "expiration"] = session_date
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame},
+            cycle_started_at=cycle_started_at,
+            session_date=session_date,
+            fixed_now=fixed_now,
+        )
+
+        observed = fixed_now.isoformat().replace("+00:00", "Z")
+        assert tide["surface_observed_at"]["SPY"] == observed
+        assert tide["surface_quotes"].get("SPY") in (None, [])
 
     def test_meta_v2_separates_poll_source_and_compute_clocks(self, monkeypatch):
         started = "2026-07-02T18:29:59Z"
@@ -2415,6 +2580,14 @@ class TestRunCycleEndToEnd:
         assert meta["fetch_compute_sec"] >= 0
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 1
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["SPY"]
+        assert state["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
         assert meta["source_response_at_first"] == "2026-07-02T18:30:00Z"
         assert meta["source_response_at_last"] == "2026-07-02T18:30:00Z"
         assert meta["asof"] == "2026-07-02T18:30:00Z"
@@ -2467,11 +2640,17 @@ class TestRunCycleEndToEnd:
             lambda root, *_args, **_kwargs: (root, None, None),
         )
         prior_source = "2026-07-02T17:45:00Z"
+        prior_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
         feed, heat, meta, state, _ = poller.run_cycle(
             roots=["SPY"],
             session_date=SESSION_DATE,
             delta_mode="full_day",
-            day_state={"source_asof": prior_source},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+            },
             baselines={},
             cfg={
                 "max_concurrent": 2,
@@ -2489,8 +2668,86 @@ class TestRunCycleEndToEnd:
         assert state["source_asof"] == prior_source
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
+
+    @pytest.mark.parametrize("failed_leg", ["call", "put"])
+    def test_partial_leg_failure_retains_prior_receipts_and_skips_engine(
+        self, monkeypatch, failed_leg,
+    ):
+        import scripts.live_flow_poller as poller
+
+        successful = self._root_frame("SPY", "09:30", seq_base=1000)
+        if failed_leg == "call":
+            successful["right"] = "P"
+
+        def partial_fetch(root, *_args, **_kwargs):
+            if failed_leg == "call":
+                return root, None, successful.copy()
+            return root, successful.copy(), None
+
+        monkeypatch.setattr(poller, "_fetch_root", partial_fetch)
+        processed_roots: list[str] = []
+        real_process_batch = lf.process_batch
+
+        def recording_process_batch(**kwargs):
+            processed_roots.append("SPY")
+            return real_process_batch(**kwargs)
+
+        monkeypatch.setattr(lf, "process_batch", recording_process_batch)
+        prior_source = "2026-07-02T17:45:00Z"
+        prior_source_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
+
+        feed, heat, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {"SPY": successful},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_source_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+                "root_minutes": {
+                    "SPY": {"09:29": {"ncp": 100.0, "npp": 0.0, "vol": 1}},
+                },
+            },
+        )
+
+        assert processed_roots == []
+        assert meta["asof"] == prior_source
+        assert feed["source_asof"] == prior_source
+        assert heat["source_asof"] == prior_source
+        assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_source_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
+
+    def test_root_source_receipts_update_in_requested_order_and_preserve_prior(self, monkeypatch):
+        prior_receipts = {"IWM": "2026-07-02T17:40:00Z"}
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {
+                "QQQ": self._root_frame("QQQ", "09:30", seq_base=2000),
+                "SPY": self._root_frame("SPY", "09:30", seq_base=1000),
+            },
+            day_state={"root_source_receipts": prior_receipts},
+        )
+
+        assert meta["roots_with_source_payload_names"] == ["QQQ", "SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["QQQ", "SPY"]
+        assert state["root_source_receipts"] == {
+            "IWM": "2026-07-02T17:40:00Z",
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
 
     def test_engine_failure_does_not_advance_root_watermark(self, monkeypatch):
         frames = {
@@ -2501,11 +2758,21 @@ class TestRunCycleEndToEnd:
             lf, "process_batch",
             lambda **kwargs: (_ for _ in ()).throw(RuntimeError("synthetic engine failure")),
         )
-        self._run_real_cycle(
-            monkeypatch, frames, cycle_watermarks=watermarks,
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            frames,
+            cycle_watermarks=watermarks,
+            day_state={
+                "root_ticker_receipts": {"SPY": "2026-07-02T17:30:00Z"},
+            },
         )
         assert watermarks == {
             "SPY": {"ts": "2026-07-02T13:29:00Z", "seq": 999}
+        }
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T17:30:00Z",
         }
 
     def test_market_tide_gross_sums_all_roots_same_minute(self, monkeypatch):
@@ -3033,6 +3300,41 @@ class TestDayStateVersionDiscard:
             },
         )
         assert _load_day_state(SESSION_DATE)["source_asof"] == source_asof
+
+    def test_per_root_receipts_roundtrip_and_ignore_malformed(self, tmp_path, monkeypatch):
+        """Restart recovery preserves only canonical per-root source/ticker clocks."""
+        from scripts.live_flow_poller import _load_day_state, _save_day_state
+
+        state_dir = tmp_path / "live_flow_state"
+        state_dir.mkdir()
+        monkeypatch.setattr(
+            "scripts.live_flow_poller._state_dir", lambda: state_dir,
+        )
+        _save_day_state(
+            SESSION_DATE,
+            {
+                "emitted_ids": set(),
+                "seen_sequences": {},
+                "contract_vol": {},
+                "notability_history": {},
+                "root_source_receipts": {
+                    "SPY": "2026-07-02T18:30:00Z",
+                    "AMD": "not-a-time",
+                },
+                "root_ticker_receipts": {
+                    "SPY": "2026-07-02T18:29:59+00:00",
+                    "TLT": 123,
+                },
+            },
+        )
+
+        restored = _load_day_state(SESSION_DATE)
+        assert restored["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert restored["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:29:59Z",
+        }
 
 
 class TestDayStateLearningWal:
@@ -5105,3 +5407,453 @@ class TestProspectiveOptionsMarketMemoryCapture:
         assert env["MARKET_MEMORY_OPTIONS_CONTEXT_SSH_KEY"].endswith(
             "/.ssh/market_memory_options_context_capture"
         )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 38. OA-1T — measured trade+NBBO microstructure (direct execution location)
+# ─────────────────────────────────────────────────────────────────────────────
+
+MICRO_SCHEMA = "options.trade_nbbo_microstructure/v1"
+MICRO_KEY = ("2026-07-05", 550.0, "C")
+
+
+def _make_nbbo_trade(
+    root="SPY", right="C", expiration="2026-07-05", strike=550.0,
+    price=2.50, size=10, bid=2.40, ask=2.60,
+    trade_ts="2026-07-02T14:30:00.100", quote_ts="2026-07-02T14:30:00.000",
+    sequence=1001, bid_size=40, ask_size=45,
+) -> dict:
+    """Sibling of ``_make_trade`` that also exposes the NBBO columns the measured
+    microstructure helper reads: an independently settable quote clock and the
+    vendor bid/ask sizes.  ``_make_trade`` pins ``quote_timestamp`` to the trade
+    clock, which cannot express a stale or future quote.
+    """
+    row = _make_trade(
+        root=root, right=right, expiration=expiration, strike=strike,
+        price=price, size=size, bid=bid, ask=ask,
+        trade_ts=trade_ts, sequence=sequence,
+    )
+    row["quote_timestamp"] = quote_ts
+    row["bid_size"] = bid_size
+    row["ask_size"] = ask_size
+    return row
+
+
+class TestNbboMicrostructureMeasurement:
+    """Execution location is measured directly against the NBBO, never inferred
+    from the soft tick/quote ``sign``."""
+
+    def test_nbbo_microstructure_uses_direct_execution_location_not_sign_fallback(self):
+        # One contract, equal size, three causal quotes. The mid print is the
+        # discriminator: the existing quote-rule/tick fallback may hand it a
+        # sign, but the measurement must still call it INSIDE.
+        rows = [
+            _make_nbbo_trade(  # at ask: 4 * 1 * 100 = 400
+                price=4.0, bid=2.0, ask=4.0, size=1, sequence=1,
+                trade_ts="2026-07-02T14:30:00.100",
+                quote_ts="2026-07-02T14:30:00.000",
+            ),
+            _make_nbbo_trade(  # at bid: 2 * 1 * 100 = 200
+                price=2.0, bid=2.0, ask=4.0, size=1, sequence=2,
+                trade_ts="2026-07-02T14:30:01.100",
+                quote_ts="2026-07-02T14:30:01.000",
+            ),
+            _make_nbbo_trade(  # inside/mid: 3 * 1 * 100 = 300
+                price=3.0, bid=2.0, ask=4.0, size=1, sequence=3,
+                trade_ts="2026-07-02T14:30:02.100",
+                quote_ts="2026-07-02T14:30:02.000",
+            ),
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        assert micro["schema"] == MICRO_SCHEMA
+        assert micro["source_print_count"] == 3
+        assert micro["nbbo_valid_print_count"] == 3
+        assert micro["source_premium_usd"] == pytest.approx(900.0)
+        assert micro["nbbo_covered_premium_usd"] == pytest.approx(900.0)
+        assert micro["nbbo_print_coverage"] == pytest.approx(1.0)
+        assert micro["nbbo_premium_coverage"] == pytest.approx(1.0)
+
+        assert micro["at_ask_share"] == pytest.approx(400 / 900, abs=1e-6)
+        assert micro["at_bid_share"] == pytest.approx(200 / 900, abs=1e-6)
+        assert micro["inside_share"] == pytest.approx(300 / 900, abs=1e-6)
+        assert micro["outside_share"] == 0.0
+        assert micro["aggression_share"] == pytest.approx(600 / 900, abs=1e-6)
+        assert micro["aggression_balance"] == pytest.approx(200 / 900, abs=1e-6)
+
+        # The four categories are mutually exclusive and collectively exhaustive
+        # over covered premium.
+        assert (
+            micro["at_ask_share"] + micro["at_bid_share"]
+            + micro["inside_share"] + micro["outside_share"]
+        ) == pytest.approx(1.0, abs=4e-6)
+
+    def test_nbbo_microstructure_classifies_outside_without_calling_it_aggression(self):
+        rows = [
+            _make_nbbo_trade(  # above the ask
+                price=5.0, bid=2.0, ask=4.0, size=1, sequence=1,
+                trade_ts="2026-07-02T14:30:00.100",
+                quote_ts="2026-07-02T14:30:00.000",
+            ),
+            _make_nbbo_trade(  # below the bid
+                price=1.0, bid=2.0, ask=4.0, size=1, sequence=2,
+                trade_ts="2026-07-02T14:30:01.100",
+                quote_ts="2026-07-02T14:30:01.000",
+            ),
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        assert micro["outside_share"] == pytest.approx(1.0)
+        assert micro["at_ask_share"] == 0.0
+        assert micro["at_bid_share"] == 0.0
+        assert micro["inside_share"] == 0.0
+        # Trading through the quote is not evidence of edge aggression.
+        assert micro["aggression_share"] == 0.0
+        assert micro["aggression_balance"] == 0.0
+
+    def test_nbbo_microstructure_coverage_denominator_includes_source_valid_quote_gaps(self):
+        """Source premium counts every source-valid print; covered premium counts
+        only prints with a usable contemporaneous NBBO."""
+        covered = _make_nbbo_trade(
+            price=4.0, bid=2.0, ask=4.0, size=1, sequence=1,
+            trade_ts="2026-07-02T14:30:00.100",
+            quote_ts="2026-07-02T14:30:00.000",
+        )
+        gap = _make_nbbo_trade(
+            price=6.0, bid=None, ask=None, size=1, sequence=2,
+            trade_ts="2026-07-02T14:30:01.100",
+            quote_ts="2026-07-02T14:30:01.000",
+        )
+        micro = lf._coalesce_nbbo_microstructure(_df([covered, gap]))[MICRO_KEY]
+
+        assert micro["source_print_count"] == 2
+        assert micro["nbbo_valid_print_count"] == 1
+        assert micro["source_premium_usd"] == pytest.approx(1000.0)
+        assert micro["nbbo_covered_premium_usd"] == pytest.approx(400.0)
+        assert micro["nbbo_print_coverage"] == pytest.approx(0.5)
+        assert micro["nbbo_premium_coverage"] == pytest.approx(0.4)
+        # Shares use the covered denominator, never total source premium.
+        assert micro["at_ask_share"] == pytest.approx(1.0)
+
+    def test_nbbo_microstructure_future_quote_is_uncovered(self):
+        """A quote stamped after its trade cannot have prevailed at execution."""
+        rows = [_make_nbbo_trade(
+            price=4.0, bid=2.0, ask=4.0, size=1, sequence=1,
+            trade_ts="2026-07-02T14:30:00.000",
+            quote_ts="2026-07-02T14:30:00.100",
+        )]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        assert micro["source_print_count"] == 1
+        assert micro["nbbo_valid_print_count"] == 0
+        assert micro["source_premium_usd"] == pytest.approx(400.0)
+        assert micro["nbbo_covered_premium_usd"] == 0.0
+        assert micro["nbbo_print_coverage"] == 0.0
+        assert micro["nbbo_premium_coverage"] == 0.0
+        # Null, never zero and never neutral: no covered premium supports a share.
+        assert micro["at_ask_share"] is None
+        assert micro["at_bid_share"] is None
+        assert micro["inside_share"] is None
+        assert micro["outside_share"] is None
+        assert micro["aggression_share"] is None
+        assert micro["aggression_balance"] is None
+        assert micro["spread_median_usd"] is None
+        assert micro["quote_age_median_ms"] is None
+
+    def test_nbbo_microstructure_locked_and_crossed_quotes_are_uncovered(self):
+        """``ask <= bid`` carries no execution-location evidence."""
+        good = _make_nbbo_trade(
+            price=4.0, bid=2.0, ask=4.0, size=1, sequence=1,
+            trade_ts="2026-07-02T14:30:00.100",
+            quote_ts="2026-07-02T14:30:00.000",
+        )
+        locked = _make_nbbo_trade(
+            price=2.0, bid=2.0, ask=2.0, size=1, sequence=2,
+            trade_ts="2026-07-02T14:30:01.100",
+            quote_ts="2026-07-02T14:30:01.000",
+        )
+        crossed = _make_nbbo_trade(
+            price=2.5, bid=3.0, ask=2.0, size=1, sequence=3,
+            trade_ts="2026-07-02T14:30:02.100",
+            quote_ts="2026-07-02T14:30:02.000",
+        )
+        micro = lf._coalesce_nbbo_microstructure(_df([good, locked, crossed]))[MICRO_KEY]
+
+        assert micro["source_print_count"] == 3
+        assert micro["nbbo_valid_print_count"] == 1
+        assert micro["nbbo_covered_premium_usd"] == pytest.approx(400.0)
+        assert micro["at_ask_share"] == pytest.approx(1.0)
+
+    def test_nbbo_microstructure_preserves_quote_age_spread_and_sizes(self):
+        rows = [
+            _make_nbbo_trade(  # age 100ms, spread 0.10 on mid 2.05
+                price=2.05, bid=2.00, ask=2.10, size=1, sequence=1,
+                trade_ts="2026-07-02T14:30:00.100",
+                quote_ts="2026-07-02T14:30:00.000",
+                bid_size=10, ask_size=15,
+            ),
+            _make_nbbo_trade(  # age 200ms, spread 0.20 on mid 3.10
+                price=3.10, bid=3.00, ask=3.20, size=1, sequence=2,
+                trade_ts="2026-07-02T14:30:01.200",
+                quote_ts="2026-07-02T14:30:01.000",
+                bid_size=20, ask_size=25,
+            ),
+            _make_nbbo_trade(  # age 300ms, spread 0.60 on mid 4.30
+                price=4.30, bid=4.00, ask=4.60, size=1, sequence=3,
+                trade_ts="2026-07-02T14:30:02.300",
+                quote_ts="2026-07-02T14:30:02.000",
+                bid_size=30, ask_size=35,
+            ),
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        assert micro["quote_age_median_ms"] == pytest.approx(200.0)
+        assert micro["quote_age_max_ms"] == pytest.approx(300.0)
+        assert micro["spread_median_usd"] == pytest.approx(0.20)
+        assert micro["spread_median_pct"] == pytest.approx(0.20 / 3.10, abs=1e-6)
+        assert micro["bid_size_median"] == pytest.approx(20.0)
+        assert micro["ask_size_median"] == pytest.approx(25.0)
+        # Every print sits strictly between its own bid and ask.
+        assert micro["inside_share"] == pytest.approx(1.0)
+
+
+class TestEventMicrostructureAttachment:
+    """The measured block rides along on the existing event; it never
+    participates in identity or selection."""
+
+    @staticmethod
+    def _tape_with_one_quote_gap() -> pd.DataFrame:
+        """One contract: a large at-ask print with a usable NBBO, plus a second
+        source-valid print whose quote is missing entirely."""
+        return _df([
+            _make_nbbo_trade(  # 4.0 * 700 * 100 = $280,000, at ask
+                price=4.0, bid=2.0, ask=4.0, size=700, sequence=1,
+                trade_ts="2026-07-02T14:30:00.100",
+                quote_ts="2026-07-02T14:30:00.000",
+            ),
+            _make_nbbo_trade(  # 6.0 * 100 * 100 = $60,000, no NBBO at all
+                price=6.0, bid=None, ask=None, size=100, sequence=2,
+                trade_ts="2026-07-02T14:30:01.100",
+                quote_ts="2026-07-02T14:30:01.000",
+            ),
+        ])
+
+    def test_event_microstructure_uses_pre_sign_source_rows_without_changing_event_floor(self):
+        # SPY is not an ETF anchor here, so the $250k single-name floor applies.
+        result = _run(
+            self._tape_with_one_quote_gap(),
+            etf_floor=0, name_floor=250_000, etf_anchors=["QQQ"],
+        )
+        assert len(result["events"]) == 1
+        event = result["events"][0]
+
+        # Selection is unchanged: it still runs on the signable frame, so the
+        # quote-less print contributes nothing to the notability premium.
+        assert event["selection_rule"] == "premium_floor/v1"
+        assert event["selection_root_class"] == "single_name"
+        assert event["selection_floor_usd"] == 250_000
+        assert event["premium"] == pytest.approx(280_000)
+
+        micro = event["microstructure"]
+        assert micro["schema"] == MICRO_SCHEMA
+        assert micro["source_print_count"] == 2
+        assert micro["nbbo_valid_print_count"] == 1
+        # The denominator saw BOTH prints. Measuring after _sign_batch would have
+        # dropped the quote-less row and reported a false 100% coverage.
+        assert micro["source_premium_usd"] == pytest.approx(340_000.0)
+        assert micro["nbbo_covered_premium_usd"] == pytest.approx(280_000.0)
+        assert micro["nbbo_premium_coverage"] == pytest.approx(280_000 / 340_000, abs=1e-6)
+        assert micro["nbbo_premium_coverage"] < 1.0
+        assert micro["nbbo_print_coverage"] == pytest.approx(0.5)
+
+    def test_event_id_is_unchanged_by_microstructure_attachment(self):
+        result = _run(
+            self._tape_with_one_quote_gap(),
+            etf_floor=0, name_floor=250_000, etf_anchors=["QQQ"],
+        )
+        event = result["events"][0]
+        # seq_max is taken over the signable rows, exactly as before this wave.
+        expected = lf._event_id(SESSION_DATE, "SPY", "2026-07-05", 550.0, "C", 1)
+        assert event["id"] == expected
+        assert "microstructure" in event
+        # Identity is a function of the frozen tuple alone.
+        assert lf._event_id(SESSION_DATE, "SPY", "2026-07-05", 550.0, "C", 1) == expected
+
+    def test_existing_side_and_signing_source_remain_soft_and_unchanged(self):
+        result = _run(
+            self._tape_with_one_quote_gap(),
+            etf_floor=0, name_floor=250_000, etf_anchors=["QQQ"],
+        )
+        event = result["events"][0]
+        assert event["side"] in ("~buy", "~sell", "mixed")
+        assert event["signing_source"] == "tape"
+        # The measured block is not promoted into direction: a 100%-at-ask
+        # measurement still leaves `side` on the existing soft vocabulary.
+        assert event["microstructure"]["at_ask_share"] == pytest.approx(1.0)
+        assert not str(event["side"]).startswith("buy")
+
+
+class TestVolGtOiRatio:
+    """`vol_gt_oi_ratio` is a native descriptive event-time fact — the same
+    cumulative day volume and the same exact matched prior OI the existing
+    boolean already uses.  It is not a positioning signal and takes no authority."""
+
+    def _oi_frame(self, exp="2026-07-05", strike=550.0, right="C", oi=100) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "expiration": exp, "strike": strike, "right": right, "open_interest": oi
+        }])
+
+    def test_vol_gt_oi_ratio_uses_cumulative_day_volume_and_exact_prior_oi(self):
+        calls = _calls({"price": 2.60, "bid": 2.40, "ask": 2.60, "size": 150})
+        result = _run(calls, oi_prev=self._oi_frame(oi=100), etf_floor=0, name_floor=0)
+        event = result["events"][0]
+        assert event["vol_gt_oi"] is True
+        assert event["vol_gt_oi_ratio"] == pytest.approx(1.5)
+
+    def test_vol_gt_oi_ratio_null_when_oi_missing(self):
+        calls = _calls({"price": 2.60, "bid": 2.40, "ask": 2.60, "size": 150})
+        result = _run(calls, oi_prev=None, etf_floor=0, name_floor=0)
+        event = result["events"][0]
+        assert event["vol_gt_oi"] is None
+        assert event["vol_gt_oi_ratio"] is None
+
+    def test_vol_gt_oi_ratio_null_when_prior_oi_zero(self):
+        """Zero prior OI cannot produce a ratio; the boolean keeps its own
+        existing meaning."""
+        calls = _calls({"price": 2.60, "bid": 2.40, "ask": 2.60, "size": 150})
+        result = _run(calls, oi_prev=self._oi_frame(oi=0), etf_floor=0, name_floor=0)
+        event = result["events"][0]
+        assert event["vol_gt_oi"] is True
+        assert event["vol_gt_oi_ratio"] is None
+
+    def test_vol_gt_oi_ratio_does_not_change_vol_gt_oi_boolean(self):
+        calls = _calls({"price": 2.60, "bid": 2.40, "ask": 2.60, "size": 50})
+        result = _run(calls, oi_prev=self._oi_frame(oi=100), etf_floor=0, name_floor=0)
+        event = result["events"][0]
+        assert event["vol_gt_oi"] is False
+        assert event["vol_gt_oi_ratio"] == pytest.approx(0.5)
+        # Provenance for the OI leg stays exactly where it was.
+        assert "oi_vintage" in event
+
+
+class TestMicrostructureStrictJsonSafety:
+    """The event stage serialises with ``json.dumps(..., allow_nan=False)``
+    (scripts/live_flow_poller.py). One NaN, Infinity or numpy scalar in this
+    block refuses the ENTIRE batch, so hostile source rows must degrade to null
+    rather than to a non-finite number."""
+
+    HOSTILE = {
+        "no_nbbo_at_all": dict(bid=None, ask=None),
+        "zero_size": dict(size=0),
+        "unparseable_clocks": dict(trade_ts="not-a-time", quote_ts="also-not"),
+        "infinite_price": dict(price=float("inf")),
+        "negative_vendor_sizes": dict(bid_size=-5, ask_size=-7),
+        "locked_quote": dict(bid=2.5, ask=2.5),
+        "crossed_quote": dict(bid=3.0, ask=2.0),
+        "future_quote": dict(
+            trade_ts="2026-07-02T14:30:00.000",
+            quote_ts="2026-07-02T14:30:00.500",
+        ),
+    }
+
+    @pytest.mark.parametrize("label", sorted(HOSTILE))
+    def test_hostile_source_rows_still_emit_strict_finite_json(self, label):
+        import json
+
+        frame = _df([_make_nbbo_trade(**self.HOSTILE[label])])
+        for block in lf._coalesce_nbbo_microstructure(frame).values():
+            json.dumps(block, allow_nan=False)  # must not raise
+            for field, value in block.items():
+                if value is None or isinstance(value, str):
+                    continue
+                assert isinstance(value, (int, float)) and not isinstance(value, bool), (
+                    f"{field} is {type(value).__name__}, not a JSON-native number"
+                )
+                assert np.isfinite(value), f"{field} is non-finite: {value!r}"
+
+    def test_pandas_nullable_integer_sizes_do_not_leak_pd_na(self):
+        """`bulk_trade_quote` returns size/bid_size/ask_size as nullable Int64,
+        so `pd.NA` reaches this module and must never survive into the block."""
+        import json
+
+        frame = _df([_make_nbbo_trade(sequence=1), _make_nbbo_trade(sequence=2)])
+        for col in ("size", "bid_size", "ask_size"):
+            frame[col] = pd.array([pd.NA, pd.NA], dtype="Int64")
+
+        for block in lf._coalesce_nbbo_microstructure(frame).values():
+            json.dumps(block, allow_nan=False)
+            assert block["bid_size_median"] is None
+            assert block["ask_size_median"] is None
+
+    def test_missing_vendor_columns_degrade_to_uncovered_not_crash(self):
+        """A frame with no bid/ask, no quote clock, or no vendor sizes is
+        uncovered — it is not an exception and not a zero."""
+        for dropped in (["bid", "ask"], ["quote_timestamp"], ["bid_size", "ask_size"]):
+            frame = _df([_make_nbbo_trade()]).drop(columns=dropped)
+            measured = lf._coalesce_nbbo_microstructure(frame)
+            for block in measured.values():
+                if dropped == ["bid_size", "ask_size"]:
+                    assert block["bid_size_median"] is None
+                else:
+                    assert block["nbbo_valid_print_count"] == 0
+                    assert block["at_ask_share"] is None
+
+    def test_four_shares_are_exhaustive_within_the_published_rounding(self):
+        """Each share is rounded to 6 decimals independently, so their sum can
+        differ from 1.0 by up to ~2e-6. A consumer must not assert exact
+        equality — this pins the real bound instead of pretending it is exact."""
+        rows = [
+            _make_nbbo_trade(price=2.6, size=1, sequence=1),                     # at ask
+            _make_nbbo_trade(price=2.4, size=2, sequence=2),                     # at bid
+            _make_nbbo_trade(price=2.5, size=3, sequence=3),                     # inside
+            _make_nbbo_trade(price=9.9, size=4, sequence=4),                     # above ask
+            _make_nbbo_trade(price=0.1, size=5, sequence=5),                     # below bid
+            _make_nbbo_trade(price=2.5, size=6, sequence=6, bid=None, ask=None),  # uncovered
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        total = (
+            micro["at_ask_share"] + micro["at_bid_share"]
+            + micro["inside_share"] + micro["outside_share"]
+        )
+        assert abs(total - 1.0) <= 4 * 5e-7
+        assert micro["source_print_count"] == 6
+        assert micro["nbbo_valid_print_count"] == 5
+        assert micro["nbbo_premium_coverage"] < 1.0
+
+    def test_coverage_can_never_exceed_one_when_premium_overflows(self):
+        """The covered set must be a SUBSET of the source set. A row whose
+        premium overflows to infinity leaves the source denominator, so it must
+        leave the covered numerator too — otherwise coverage exceeds 1.0."""
+        rows = [
+            _make_nbbo_trade(  # premium overflows float64
+                price=1e300, size=10_000_000_000, bid=5e299, ask=2e300, sequence=1,
+            ),
+            _make_nbbo_trade(price=1.0, bid=0.9, ask=1.1, size=1, sequence=2),
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        assert micro["nbbo_valid_print_count"] <= micro["source_print_count"]
+        assert micro["nbbo_print_coverage"] is None or micro["nbbo_print_coverage"] <= 1.0
+        assert (
+            micro["nbbo_premium_coverage"] is None
+            or micro["nbbo_premium_coverage"] <= 1.0
+        )
+
+    def test_published_aggression_equals_the_sum_of_published_edge_shares(self):
+        """The frozen law states `aggression_share = at_ask_share + at_bid_share`.
+        Rounding each independently would break that identity at the 6th decimal,
+        so aggression is derived from the published shares."""
+        rows = [
+            _make_nbbo_trade(price=9.11, size=170, bid=9.09, ask=9.10, sequence=1),
+            _make_nbbo_trade(price=10.64, size=58, bid=10.59, ask=10.64, sequence=2),
+            _make_nbbo_trade(price=19.73, size=44, bid=19.71, ask=19.73, sequence=3),
+            _make_nbbo_trade(price=5.68, size=139, bid=5.68, ask=5.69, sequence=4),
+            _make_nbbo_trade(price=15.29, size=208, bid=15.24, ask=15.34, sequence=5),
+        ]
+        micro = lf._coalesce_nbbo_microstructure(_df(rows))[MICRO_KEY]
+
+        edge_sum = round(micro["at_ask_share"] + micro["at_bid_share"], 6)
+        edge_diff = round(micro["at_ask_share"] - micro["at_bid_share"], 6)
+        assert micro["aggression_share"] == edge_sum
+        assert micro["aggression_balance"] == edge_diff

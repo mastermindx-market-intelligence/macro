@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-08-27",
+  "asof": "2026-09-18",
   "candidates": {
-    "R": 2,
-    "T": 3,
-    "W": 33
+    "R": 0,
+    "T": 7,
+    "W": 4
   },
   "deduped": {
-    "R": 2,
-    "T": 3,
-    "W": 33
+    "R": 0,
+    "T": 7,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1494,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-08-28 14:26:53",
-  "runtime_s": 114.3,
+  "run_utc": "2026-09-21 10:57:58",
+  "runtime_s": 105.4,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -1,
-    "asof": "2026-08-28",
-    "n_members": 134,
+    "age_days": 0,
+    "asof": "2026-09-18",
+    "n_members": 108,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.962,
+        "emerging_score": 2.983,
         "rank": 1,
         "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 2.734,
+        "emerging_score": 1.913,
         "rank": 2,
-        "theme": "Commodities Metals"
+        "theme": "Education Technology"
       },
       {
-        "emerging_score": 1.776,
+        "emerging_score": 1.705,
         "rank": 3,
-        "theme": "Mega-Cap"
+        "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.77,
+        "emerging_score": 1.439,
         "rank": 4,
-        "theme": "Biometrics"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 1.333,
+        "emerging_score": 1.4,
         "rank": 5,
-        "theme": "Software"
+        "theme": "Crypto & Blockchain"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 33,
-    "asof_max": "2026-08-27",
+    "aligned": 4,
+    "asof_max": "2026-09-18",
     "asof_mismatch": 0,
-    "asof_run": "2026-08-27",
-    "evaluated": 712,
-    "fresh": 35,
+    "asof_run": "2026-09-18",
+    "evaluated": 713,
+    "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.6,
-    "skipped": 5,
+    "runtime_s": 20.9,
+    "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 97,
+    "state_turn": 76,
     "universe_n": 717
   }
 }

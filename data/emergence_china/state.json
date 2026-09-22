@@ -1,32 +1,27 @@
 {
-  "4a0628f94153": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Consumer Defensive",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Consumer Defensive",
-    "score": 61.8
+  "1ae477edc89d": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 60.3
   },
-  "910d8deff554": {
-    "name_en": "Cross-sector cluster \u00b7 Basic Materials + Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + Technology",
-    "score": 64.5
+  "30d6be22a97c": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
+    "score": 66.3
   },
-  "aea870ba9823": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Basic Materials",
+  "46ec34e4290f": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
+    "score": 47.6
+  },
+  "46f0425317df": {
+    "name_en": "Emerging Utilities cluster",
+    "name_zh": "\u65b0\u5174 Utilities \u96c6\u7fa4",
+    "score": 44.0
+  },
+  "c00427ef8be6": {
+    "name_en": "Emerging Technology cluster",
+    "name_zh": "\u65b0\u5174 Technology \u96c6\u7fa4",
     "score": 56.7
-  },
-  "cac881533aab": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Communication Services",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Communication Services",
-    "score": 62.6
-  },
-  "eaa9c5d549e3": {
-    "name_en": "Cross-sector cluster \u00b7 Utilities + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Utilities + Industrials",
-    "score": 63.9
-  },
-  "f46e6924d0a0": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Basic Materials",
-    "score": 60.5
   }
 }
