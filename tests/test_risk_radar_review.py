@@ -172,3 +172,81 @@ def test_state_ladder_population_fingerprint_binds_outcomes():
     b.loc[idx[2], "loss"] = -.07
     b.loc[idx[2], "event"] = True
     assert sl._fingerprint(a) != sl._fingerprint(b)
+
+
+
+def test_displayed_probability_audit_calls_canonical_probability_surface(monkeypatch):
+    from scripts.research import risk_radar_displayed_probability_audit as dp
+
+    idx = pd.bdate_range("2026-01-01", periods=2)
+    state = pd.Series(["watch", "caution"], index=idx)
+    hot = pd.Series([2, 3], index=idx)
+    calls = []
+
+    def fake(state_name, nhot, calib):
+        calls.append((state_name, nhot, calib))
+        return {"h5": .11 + nhot / 100, "h10": .22, "h21": .33}
+
+    monkeypatch.setattr(dp, "_drawdown_prob", fake)
+    calib = {"sentinel": True}
+    out = dp.displayed_probability_series(state, hot, calib, 5)
+    assert calls == [("watch", 2, calib), ("caution", 3, calib)]
+    assert out.tolist() == [.13, .14]
+
+
+def test_displayed_probability_audit_preserves_shipped_conjunction_bump():
+    from scripts.research import risk_radar_displayed_probability_audit as dp
+
+    calib = _calib()
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    state = pd.Series(["caution"] * 3, index=idx)
+    hot = pd.Series([1, 2, 3], index=idx)
+    out = dp.displayed_probability_series(state, hot, calib, 21)
+    assert out.iloc[1] - out.iloc[0] == dp._CONJ_BUMP["h21"]
+    assert out.iloc[2] - out.iloc[1] == dp._CONJ_BUMP["h21"]
+
+
+def test_displayed_probability_audit_exact_cell_keeps_state_count_composition():
+    from scripts.research import risk_radar_displayed_probability_audit as dp
+
+    calib = _calib()
+    idx = pd.bdate_range("2026-01-01", periods=4)
+    state = pd.Series(["watch", "caution", "watch", "caution"], index=idx)
+    hot = pd.Series([2, 1, 2, 1], index=idx)
+    probability = dp.displayed_probability_series(state, hot, calib, 21)
+    assert probability.nunique() == 1
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06, -.01, -.06, -.01],
+        "event": [True, False, True, False],
+    }, index=idx)
+    out = dp.summarize_window(
+        state, hot, probability, labels, block=2, seed=17
+    )
+    cell = next(iter(out["cells"].values()))
+    assert cell["n"] == 4
+    assert cell["observed_rate"] == .5
+    assert {tuple((c["state"], c["hot_count"], c["n"])) for c in cell["composition"]} == {
+        ("watch", 2, 2), ("caution", 1, 2)
+    }
+
+
+def test_displayed_probability_audit_hot_count_only_counts_tier_a_at_caution():
+    from scripts.research import risk_radar_displayed_probability_audit as dp
+
+    idx = pd.bdate_range("2026-01-01", periods=2)
+    subs = pd.DataFrame({
+        "credit": [70., 67.],
+        "rates": [80., 70.],
+        "vol": [99., 99.],
+    }, index=idx)
+    calib = {
+        "bands": {"watch": 55., "caution": 68., "elevated": 78., "risk_off": 88.},
+        "scares": {
+            "credit": {"tier": "A", "legs": []},
+            "rates": {"tier": "A", "legs": []},
+            "vol": {"tier": "B", "legs": []},
+        },
+    }
+    out = dp.hot_tier_a_count(subs, calib)
+    assert out.tolist() == [2, 1]

@@ -13,7 +13,7 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.53"
+    "version": "153.0.8010.12"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -542,7 +542,7 @@
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
     "site/theme.css": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
-    "site/theme.js": "c907a6b8d51a22e49a9cdbe101380e04ea3c23542ac547d8399a69a402c53b41"
+    "site/theme.js": "3ffc953ffc84a76ac09687034b428004e7c7cfde70b43db5c35ac1da16c98b10"
   },
   "viewport": {
     "width": 390,
