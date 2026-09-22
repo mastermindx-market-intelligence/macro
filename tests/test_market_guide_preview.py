@@ -84,3 +84,24 @@ def test_review_cli_refuses_production_site_target(tmp_path,monkeypatch):
     monkeypatch.setattr(sys,'argv',['render_shared_preview.py','--fixture-only','--output',str(target)])
     with pytest.raises(SystemExit):preview.main()
     assert not target.exists()
+
+
+def test_shared_guide_suites_run_in_existing_help_code_gate():
+    """Enrollment must execute, not merely make the unrun-suite audit quiet."""
+    jobs = yaml.safe_load((ROOT / '.github/ci/legacy-jobs.yml').read_text())['jobs']
+    job = jobs['public-render-fastlane']
+    assert job['gate'] == 'code'
+    commands = [step.get('run', '') for step in job['steps']]
+    python_step = next(cmd for cmd in commands if 'tests/test_market_guide.py' in cmd)
+    assert python_step.strip() == (
+        'python -m pytest tests/test_market_guide.py tests/test_market_guide_preview.py -q'
+    )
+    node_step = next(cmd for cmd in commands if 'tests/test_market_guide_client.cjs' in cmd)
+    assert node_step.strip() == (
+        'node --test tests/test_market_guide_client.cjs tests/test_market_guide_view.cjs'
+    )
+    assert any('beautifulsoup4' in cmd and cmd.startswith('pip install') for cmd in commands)
+    assert not any(step.get('continue-on-error') for step in job['steps'])
+    # Existing glossary/help contracts remain enrolled, not replaced by this feature.
+    assert any('tests/test_help_directory.py' in cmd for cmd in commands)
+    assert any('tests/test_glossary.py' in cmd for cmd in commands)

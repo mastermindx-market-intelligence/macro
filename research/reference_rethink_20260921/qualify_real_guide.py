@@ -1,5 +1,6 @@
 """Real Chromium qualification of the source-backed review consumer; never a deployment."""
 from __future__ import annotations
+import argparse
 import hashlib
 import json
 import subprocess
@@ -9,7 +10,11 @@ from render_shared_preview import compile_from_canonical_source, render_html
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-OUT = HERE / 'r3-realpath'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--output-dir', type=Path, required=True)
+OUT = parser.parse_args().output_dir.resolve()
+if OUT.is_relative_to((ROOT / 'site').resolve()):
+    parser.error('Review evidence cannot be written into the production site directory')
 OUT.mkdir(exist_ok=False)
 manifest = compile_from_canonical_source()
 content = render_html(manifest)
@@ -113,6 +118,35 @@ with sync_playwright() as p:
                 assert page.locator('#app h1').inner_text() == record_data['label'][language]
                 fit(page)
     record('184 real-record detail journeys: 46 entries × both languages × both widths')
+    for width in [1440, 390]:
+        page.set_viewport_size({'width': width, 'height': 900 if width == 1440 else 844})
+        for language in ['en', 'zh']:
+            query = '?lang=zh' if language == 'zh' else ''
+            for theme in ['light', 'dark']:
+                for state in ['', 'market-state-score', 'risk-radar', 'regime-quadrant', 'transition-state', 'help']:
+                    page.goto(url + query + ('#' + state if state and state != 'help' else ''))
+                    if theme == 'dark':
+                        page.locator('#theme').click()
+                    assert page.locator('html').get_attribute('data-theme') == theme
+                    if state == 'help':
+                        page.locator('[data-help="market-state-score"]:visible').click()
+                        assert page.locator('#help').evaluate('(node)=>node.open')
+                    fit(page)
+                    snap(page, f'{state or "home"}-{theme}-{language}-{width}')
+                    if state == 'help':
+                        page.keyboard.press('Escape')
+    record('48 current-source screenshots: six views across both themes, languages and widths')
+    nojs = browser.new_context(java_script_enabled=False, viewport={'width': 390, 'height': 844})
+    fallback = nojs.new_page()
+    fallback.goto(url)
+    assert fallback.locator('.fallback').is_visible()
+    assert fallback.locator('.fallback details').count() == len(manifest['entries'])
+    fallback.locator('.fallback summary').first.click()
+    assert fallback.locator('.fallback details').first.get_attribute('open') is not None
+    fit(fallback)
+    snap(fallback, 'no-javascript-mobile')
+    nojs.close()
+    record('JavaScript-disabled mobile fallback exposes all 46 real definitions')
     assert not errors, errors
     assert not requests, requests
     record('no uncaught browser errors or external requests in the exercised flows')
@@ -129,7 +163,7 @@ receipt = {
     'html_sha256': hashlib.sha256(pagefile.read_bytes()).hexdigest(),
     'checks': checks, 'screenshots': matrix,
     'errors': errors, 'external_requests': requests,
-    'not_run': ['full 32-state screenshot matrix', 'new no-JavaScript check', 'real Macro embedded-mode integration', 'independent review', 'production release'],
+    'not_run': ['real Macro embedded-mode integration', 'independent review', 'production release'],
 }
 (OUT / 'qualification.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2)+'\n')
 print(json.dumps({'checks_passed':len(checks),'entries':len(manifest['entries']),'receipt':str(OUT/'qualification.json')}), flush=True)
