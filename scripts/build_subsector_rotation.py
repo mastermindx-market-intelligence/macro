@@ -15,17 +15,172 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import subsector_rotation as sr  # noqa: E402
 from lib import config  # noqa: E402
+from lib.nyse_calendar import expected_last_session, is_session  # noqa: E402
 
 log = logging.getLogger("build_subsector_rotation")
+
+# Bounded Lane C first vertical. Semiconductors is already consumed by the
+# ai_semiconductors, memory_storage and semicap_equipment ThemeState rows. Other
+# source-native cohorts (servers, storage and telecom infrastructure) remain
+# measured coverage evidence until the incumbent identity/ontology owner maps them.
+CLOSED_SESSION_PARENT_KEYS = frozenset({"Semiconductors"})
 
 
 def _data(*parts: str) -> Path:
     return config.data_dir().joinpath(*parts)
 
+
+
+def _completed_session_asof(
+    market_bars,
+    requested_asof: str | None,
+    *,
+    now_utc: datetime | None = None,
+) -> str | None:
+    """Resolve the latest owner bar the canonical NYSE clock considers completed.
+
+    ``lib.nyse_calendar`` owns holidays, one-off closures and the 17:00 ET
+    close-plus-settle boundary. Requested dates and future owner bars are capped;
+    no calendar-day filling is performed.
+    """
+    if market_bars is None:
+        return None
+    if isinstance(market_bars, pd.Series):
+        close = market_bars
+    elif isinstance(market_bars, pd.DataFrame) and "close" in market_bars:
+        close = market_bars["close"]
+    else:
+        return None
+    close = pd.to_numeric(close, errors="coerce").dropna()
+    if close.empty:
+        return None
+    idx = pd.DatetimeIndex(close.index)
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)
+    idx = pd.DatetimeIndex(idx.normalize()).drop_duplicates().sort_values()
+    idx = pd.DatetimeIndex([stamp for stamp in idx if is_session(stamp.date())])
+    if idx.empty:
+        return None
+
+    completed = pd.Timestamp(expected_last_session(now_utc)).normalize()
+    requested = pd.Timestamp(requested_asof).normalize() if requested_asof else completed
+    target = min(requested, completed, idx[-1])
+    eligible = idx[idx <= target]
+    return eligible[-1].date().isoformat() if len(eligible) else None
+
+
+def _build_closed_session_leadership(
+    tree: list,
+    *,
+    requested_asof: str | None,
+    now_utc: datetime | None = None,
+    loader=None,
+    parent_keys: set[str] | frozenset[str] = CLOSED_SESSION_PARENT_KEYS,
+) -> dict:
+    """Load only the bounded owner tapes and compute the pure Lane C observation."""
+    if loader is None:
+        from engine import basket_index
+        loader = basket_index._load_member_ohlcv
+
+    market = loader("SPY")
+    completed_asof = _completed_session_asof(market, requested_asof, now_utc=now_utc)
+    if completed_asof is None:
+        return _unavailable_closed_session_leadership(
+            requested_asof=requested_asof,
+            reason="NO_COMPLETED_SESSION",
+            requested_themes=parent_keys,
+        )
+    selected = [
+        th for th in tree
+        if str(th.get("theme") or th.get("key") or "").strip() in set(parent_keys)
+    ]
+    tickers = sorted({
+        str(t).strip().upper()
+        for th in selected for sub in (th.get("subsectors") or [])
+        for t in (sub.get("members") or []) if str(t).strip()
+    })
+    frames = {}
+    for ticker in tickers:
+        frame = loader(ticker)
+        if frame is not None:
+            frames[ticker] = frame
+    result = sr.compute_closed_session_leadership(
+        selected, frames, market, asof=completed_asof, parent_keys=set(parent_keys)
+    )
+    result["requested_themes"] = sorted(set(parent_keys))
+    return result
+
+
+def _attach_closed_session_leadership(payload: dict, observation: dict) -> None:
+    """Attach measurements to existing theme rows; create no new state producer."""
+    by_theme = observation.get("themes") or {}
+    for row in payload.get("themes") or []:
+        block = by_theme.get(row.get("theme"))
+        if block is not None:
+            row["leadership_observation"] = block
+    meta = {k: v for k, v in observation.items() if k != "themes"}
+    meta["covered_themes"] = sorted(by_theme)
+    payload["closed_session_leadership"] = meta
+
+
+def _unavailable_closed_session_leadership(
+    *,
+    requested_asof: str | None,
+    reason: str,
+    requested_themes: set[str] | frozenset[str] | None = None,
+) -> dict:
+    """Visible fail-closed receipt for an unavailable owner-input path."""
+    block = sr.compute_closed_session_leadership(
+        [], {}, None, asof=requested_asof, parent_keys=set()
+    )
+    block["requested_asof"] = requested_asof
+    block["requested_themes"] = sorted(set(requested_themes or ()))
+    block["reason_codes"] = [reason]
+    return block
+
+
+def _stamp_closed_session_metadata(
+    observation: dict, *, input_snapshot_asof: str | None, computed_utc: str
+) -> None:
+    """Add local clocks and source references without claiming Lane A's shared schema."""
+    observation["clocks"] = {
+        "observation_session": observation.get("asof"),
+        "input_snapshot_asof": input_snapshot_asof,
+        "computation_utc": computed_utc,
+    }
+    observation["source_records"] = [
+        "data/themes_heatmap/themes_tree.json",
+        "engine.basket_index._load_member_ohlcv",
+        "lib.nyse_calendar.expected_last_session",
+        "lib.nyse_calendar.is_session",
+        "SPY",
+    ]
+    receipt = {
+        "schema": observation.get("schema"),
+        "benchmark": observation.get("benchmark"),
+        "windows_sessions": observation.get("windows_sessions"),
+        "basis": observation.get("basis"),
+        "permissions": observation.get("permissions"),
+        "is_context_only": observation.get("is_context_only"),
+        "is_forecast": observation.get("is_forecast"),
+        "bar_status": observation.get("bar_status"),
+        "clocks": dict(observation["clocks"]),
+        "source_records": list(observation["source_records"]),
+    }
+    for block in (observation.get("themes") or {}).values():
+        block["measurement_receipt"] = {
+            **receipt,
+            "basis": dict(receipt.get("basis") or {}),
+            "permissions": dict(receipt.get("permissions") or {}),
+            "clocks": dict(receipt["clocks"]),
+            "source_records": list(receipt["source_records"]),
+        }
 
 def _inject_megacap_node(tree: list, snap: dict) -> None:
     """RC-R4 (Rotation Command): the mega-cap generals cohort has no Finviz group, so
@@ -255,6 +410,31 @@ def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict
         generated_utc=generated_utc,
         asof=snap.get("asof") or "",
         history=_load_history(),
+    )
+
+    # Lane C closed-session leadership/reacceleration observation. It consumes
+    # existing owner tapes, stays descriptive/shadow, and never changes incumbent
+    # ranking, turn, alert or trading-policy fields. Failure remains visible.
+    try:
+        leadership = _build_closed_session_leadership(
+            tree, requested_asof=snap.get("asof") or None
+        )
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("closed-session leadership failed: %s", e)
+        leadership = _unavailable_closed_session_leadership(
+            requested_asof=snap.get("asof") or None,
+            reason="OWNER_INPUT_LOAD_FAILED",
+            requested_themes=CLOSED_SESSION_PARENT_KEYS,
+        )
+    _stamp_closed_session_metadata(
+        leadership, input_snapshot_asof=snap.get("asof") or None,
+        computed_utc=generated_utc,
+    )
+    _attach_closed_session_leadership(payload, leadership)
+    log.info(
+        "closed-session leadership: status=%s asof=%s themes=%s",
+        leadership.get("status"), leadership.get("asof"),
+        ",".join(sorted((leadership.get("themes") or {}).keys())),
     )
     tn = payload.get("turn") or {}
     if tn.get("counts"):
