@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T19:36:45.746337+00:00",
-  "count": 2659,
+  "generated_at": "2026-09-22T20:06:47.499202+00:00",
+  "count": 2660,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -172,6 +172,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qujjbovqigu-bb1c5b",
+      "title": "Porsche AG (P911 p.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:40:50Z",
+      "summary_points": [
+        "Porsche FY26 Guidance Resilience: Unchanged revenue (€35bn-36bn) and RoS (5.5-7.5%) despite VW impairment, but FY27 faces mid-triple-digit EBIT headwind from Macan gap, €400m restructuring (vs €1.2bn FY26), and China volumes dropping to 10% of group.",
+        "Strategic Recovery Catalysts: U-shaped recovery driven by 718 BEV launch (2027), ICE Macan return (mid-2028), top-end product availability, and restructuring savings (mid-triple-digit €m by 2030), with BEV supplier cost roll-off by 2030.",
+        "CMD Strategy Valuation Risks: Conservative Sportwagenschmiede 2035 targets 10-15% margins (no China recovery) at 20x P/E (£53); critical risks include China decline (tax adjustments, competition), competitive pressure, and supply-demand mismatch.",
+        "Investor Focus on Credibility: October 7 CMD meeting pivotal for validating Sportwagenschmiede 2035 strategy, with China contribution at ~25k units (weaker than FY26) and management’s U-shaped recovery plan."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
