@@ -9,10 +9,13 @@ Node. It intentionally fails if those helpers move without this guard being repo
 """
 from __future__ import annotations
 
+import importlib
 import json
 import os
 import shutil
 import subprocess
+import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -89,13 +92,31 @@ global.fetch = async function(path) {
     assert result["cachePending"] is False, result
 
 
+def _content_module(monkeypatch: pytest.MonkeyPatch):
+    """Import the real inventory module under this job's declared dependencies.
+
+    ``admin.content`` imports ``config_store`` only for the unrelated live-uptime
+    probe. The admin-js guard job intentionally installs just pytest, so provide
+    that one unused seam rather than silently widening the gate with PyYAML.
+    """
+    cached = sys.modules.get("admin.content")
+    if cached is not None:
+        return cached
+    stub = types.ModuleType("admin.config_store")
+    stub.get_value = lambda _key: None  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "admin.config_store", stub)
+    import admin
+
+    monkeypatch.setattr(admin, "config_store", stub, raising=False)
+    return importlib.import_module("admin.content")
+
+
 class TestSiteInventoryLinkCache:
     """The Site inventory cache must resolve and invalidate against its own tree."""
 
     @staticmethod
-    def _bind_site(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
-        from admin import content
-
+    def _bind_site(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+        content = _content_module(monkeypatch)
         site = tmp_path / "site"
         templates = tmp_path / "templates"
         site.mkdir()
@@ -103,14 +124,12 @@ class TestSiteInventoryLinkCache:
         monkeypatch.setattr(content, "SITE", site)
         monkeypatch.setattr(content, "_TEMPLATES", templates)
         content._link_cache.clear()
-        return site
+        return content, site
 
     def test_root_relative_page_resolves_inside_site(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        from admin import content
-
-        site = self._bind_site(monkeypatch, tmp_path)
+        content, site = self._bind_site(monkeypatch, tmp_path)
         (site / "index.html").write_text('<a href="/existing.html">Existing</a>')
         (site / "existing.html").write_text("<main>present</main>")
 
@@ -122,9 +141,7 @@ class TestSiteInventoryLinkCache:
     def test_relative_escape_is_broken_even_when_host_file_exists(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        from admin import content
-
-        site = self._bind_site(monkeypatch, tmp_path)
+        content, site = self._bind_site(monkeypatch, tmp_path)
         (tmp_path / "outside.html").write_text("<main>host-only file</main>")
         (site / "index.html").write_text('<a href="../outside.html">Escape</a>')
 
@@ -138,9 +155,7 @@ class TestSiteInventoryLinkCache:
     def test_older_page_edit_invalidates_cache(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        from admin import content
-
-        site = self._bind_site(monkeypatch, tmp_path)
+        content, site = self._bind_site(monkeypatch, tmp_path)
         source = site / "index.html"
         existing = site / "exists.html"
         newest = site / "newest.html"
