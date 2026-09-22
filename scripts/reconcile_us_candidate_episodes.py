@@ -207,7 +207,12 @@ def _door_backlog_intake(
             normalized_clock = _intake_timestamp(value, row["date"]) if isinstance(value, str) else None
             if normalized_clock is None:
                 raise EpisodeContractError("Door explicit clock is invalid")
-            clocks.append(datetime.fromisoformat(normalized_clock.replace("Z", "+00:00")))
+            # The incumbent normalizer validates the source contract but emits
+            # whole seconds. Admission compares the original instant: rounding
+            # a future fractional timestamp down would consume it too early.
+            # Date-only inputs still use the owner-resolved exchange close.
+            precise_clock = normalized_clock if len(value) == 10 else value
+            clocks.append(datetime.fromisoformat(precise_clock.replace("Z", "+00:00")))
         # Decide this before identity normalization: a future row must not become
         # an irreversible identity suppression simply because it arrived early.
         if all(value <= now for value in clocks):

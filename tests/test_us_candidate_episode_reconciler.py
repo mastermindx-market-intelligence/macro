@@ -1568,3 +1568,30 @@ def test_door_backlog_invalid_explicit_clock_cannot_gain_default_close(tmp_path,
     with pytest.raises(EpisodeContractError, match="clock"):
         _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
     assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+@pytest.mark.parametrize("field", ["signal_ts", "signal_known_ts", "observed_at"])
+@pytest.mark.parametrize("stamp", ["2026-11-30T21:05:00.100000Z", "2026-11-30T16:05:00.100000-05:00"])
+def test_door_backlog_fractional_future_clock_waits(tmp_path, monkeypatch, field, stamp):
+    """Normalization to whole seconds must not admit a not-yet-known source."""
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", **{field: stamp})])
+    first = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert first["source_counts"]["doors"]["input"] == 0
+    assert _door_owned(tmp_path) == []
+    second = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00.100000Z")
+    assert second["source_counts"]["doors"]["input"] == 1
+    observed = _door_owned(tmp_path)
+    assert len(observed) == 1
+    assert observed[0]["known_at"] == "2026-11-30T21:05:00.100000Z"
+
+
+def test_door_backlog_fractional_future_identity_stays_unconsumed(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", ticker="UNKNOWN",
+        observed_at="2026-11-30T21:05:00.000001Z")])
+    first = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert first["source_counts"]["doors"]["input"] == 0
+    assert _door_owned(tmp_path) == []
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00.000001Z")
+    assert _door_owned(tmp_path)[0]["reason"] == "IDENTITY_UNRESOLVED"

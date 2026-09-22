@@ -3,7 +3,7 @@ from pathlib import Path, PurePosixPath
 from collections import Counter
 from datetime import datetime, timezone
 from hashlib import sha256
-import json, subprocess, sys, tempfile, time
+import argparse, json, re, subprocess, sys, tempfile, time
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
@@ -12,10 +12,23 @@ from engine.us_candidate_episode import (load_candidate_episode_store_snapshot,
 from engine.us_candidate_episode_intake import load_identity_spine, door_observations
 from scripts import reconcile_us_candidate_episodes as writer
 
-REF = '758b052ff0278e9842fd1b392e0b04617124d1bb'
-OUT = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else None
-if OUT is None:
-    raise SystemExit('Usage: python prove.py /absolute/path/to/noncanonical-report.json')
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('out', type=Path)
+parser.add_argument('--source-ref', default='758b052ff0278e9842fd1b392e0b04617124d1bb')
+parser.add_argument('--full-writer', action='store_true', help='Also run the nonwriting report against all pinned source files')
+args = parser.parse_args()
+REF = args.source_ref
+if not re.fullmatch(r'[0-9a-f]{40}', REF):
+    parser.error('source-ref must be an immutable commit')
+OUT = args.out.resolve()
+OWNER_PATHS = ('scripts/reconcile_us_candidate_episodes.py',
+    'engine/us_candidate_episode.py', 'engine/us_candidate_episode_intake.py',
+    'engine/session_digest.py', 'engine/ledger_lane.py', 'lib/nyse_calendar.py')
+implementation_sources = {p: sha256((ROOT / p).read_bytes()).hexdigest() for p in OWNER_PATHS}
+for owner in OWNER_PATHS[1:]:
+    frozen = subprocess.check_output(['git', '-C', str(ROOT), 'show', REF + ':' + owner])
+    if frozen != (ROOT / owner).read_bytes():
+        raise SystemExit(f'core owner differs from source ref: {owner}')
 if OUT.is_relative_to(ROOT / 'data') or OUT.is_relative_to(ROOT / 'site'):
     raise SystemExit('Report output must not target canonical data/site paths')
 receipts = []
@@ -56,6 +69,24 @@ with tempfile.TemporaryDirectory(prefix='door-retention-proof-') as temp:
     for path in ['data/reference/security_master.parquet', 'data/reference/vendor_aliases.parquet',
                  'data/prophet_doors/flags.jsonl']:
         put(path, read(path))
+    if args.full_writer:
+        source_paths = subprocess.check_output(['git', '-C', str(ROOT), 'ls-tree', '-r', '--name-only', REF,
+            '--', 'data/us_prophet_rank/candidates', 'data/us_prophet_rank/episode_inputs/turn_watch',
+            'data/entry_radar/forward.parquet'], text=True).splitlines()
+        # Only the owner-selected newest TURN WATCH envelope and existing archive
+        # parts are supplied. No producer computation or historical substitution.
+        turn_paths = sorted(p for p in source_paths if p.endswith('.json')
+                            and p.startswith('data/us_prophet_rank/episode_inputs/turn_watch/'))
+        chosen = [p for p in source_paths if p.endswith('.parquet')]
+        if turn_paths:
+            chosen.append(turn_paths[-1])
+        if len(chosen) > 60:
+            raise RuntimeError('source file bound exceeded')
+        for path in chosen:
+            body = read(path); total += len(body)
+            if total > 256 * 1024 * 1024:
+                raise RuntimeError('fixture byte bound exceeded')
+            put(path, body)
     original = digest_files(root)
     snapshot = load_candidate_episode_store_snapshot(store)
     saved = snapshot.generation
@@ -91,7 +122,36 @@ with tempfile.TemporaryDirectory(prefix='door-retention-proof-') as temp:
         if name(row) in ('AMD','INTC','ARM','MU'):
             targets.append({k:row.get(k) for k in ['source_event_id','source_receipt','event_type',
                 'known_at','occurred_at','recorded_at','observation_session','reason','episode_id']})
+    full_writer = {'status': 'not_requested'}
+    if args.full_writer:
+        before_full = digest_files(root)
+        try:
+            full_receipt = writer.reconcile(repo_root=root, nightly=False, replay=False,
+                recorded_at=clock, correction_path=None)
+            full_writer = {'status': 'passed', 'receipt': full_receipt}
+        except Exception as exc:
+            full_writer = {'status': 'refused', 'error_type': type(exc).__name__, 'error': str(exc)}
+            # Frozen fixture stays unchanged; a separate read identifies conflicting
+            # source keys rather than using catch-and-ignore to claim acceptance.
+            _identities, batches = writer._load_intakes(root / 'data', allow_degraded_identity=False,
+                recorded_at=clock, existing_events=saved.events, existing_suppressions=saved.suppressions)
+            old_by = {_ordinary_source_key(row): row for row in (*saved.events, *saved.suppressions)}
+            conflicts = []
+            for batch in batches:
+                for row in (*batch.observations, *batch.suppressions):
+                    old = old_by.get(_ordinary_source_key(row))
+                    if old is not None and old.get('source_receipt') != row.get('source_receipt'):
+                        conflicts.append({'source_system': row['source_system'],
+                            'source_event_id': row['source_event_id'],
+                            'committed_receipt': old.get('source_receipt'),
+                            'input_receipt': row.get('source_receipt')})
+            full_writer['receipt_conflicts'] = conflicts
+        full_writer['fixture_unchanged'] = digest_files(root) == before_full
+        assert full_writer['fixture_unchanged']
+    assert implementation_sources == {p: sha256((ROOT / p).read_bytes()).hexdigest() for p in OWNER_PATHS}
     report = {'source_ref':REF,'ingestion_clock':clock,'source_generation':generation,
+        'implementation_sources_sha256':implementation_sources,
+        'full_writer':full_writer,
         'source_generation_recorded_at':saved.receipt['recorded_at'],
         'baseline_latest_only':len(baseline.observations)+len(baseline.suppressions),
         'candidate_completed_unique':len(submitted),'previously_owned':len(submitted & prior_keys),
@@ -107,4 +167,6 @@ with tempfile.TemporaryDirectory(prefix='door-retention-proof-') as temp:
                        'Existing TURN WATCH and candidate sources are not rebuilt.'],
         'sources':receipts,'elapsed_seconds':round(time.monotonic()-started,3)}
     OUT.write_text(json.dumps(report,indent=2)+'\n')
-    print(json.dumps({k:v for k,v in report.items() if k!='sources'},indent=2))
+    print(json.dumps({k:v for k,v in report.items() if k not in ('sources', 'full_writer')},indent=2))
+    print('FULL_WRITER', full_writer['status'], full_writer.get('error', ''),
+          'receipt_conflicts', len(full_writer.get('receipt_conflicts', [])))
