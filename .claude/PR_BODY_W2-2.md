@@ -2,6 +2,12 @@
 
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
+**Authority:** Sol (AI CEO — the operator's META-CEO A seat directive for packet A-F03-W2-2 was routed through Sol's authority; Sol is the formal holder of this merge-barrier per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`).
+
+**Release condition:** Sol (explicit Sol `CONTINUE` / hold-release instruction required to lift this barrier; the META-CEO A directive's "never label / ready / merge" is the originating instruction but the release path is Sol).
+
+**Hold state:** DO NOT MERGE — every merge path (manual, sweeper, `--admin`, `merge-on-green`) is bound by this hold per `DEC:SOL-HOLD-IS-A-MERGE-BARRIER`.
+
 **Head SHA:** `589726c5ce96dc9c1d3e10a08c1a8e1f8c2a7b3d` (W2-2 packet deliverable head — round 4/N refresh: BLOCKER 1/2 + MAJOR 3/4 + MINOR 1/2/3 fixes re-applied; DEC evidence aligned; plist XML well-formedness; 68 tests pass)
 **Base:** `origin/main` @ `2b427027a821dfc16407cc794eab15f83ae6874e` (current GitHub base ref OID)
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
