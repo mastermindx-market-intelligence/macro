@@ -92,3 +92,24 @@ The newer data also update the price-library panel to1695/1817 eligible names an
 a20-session median of+0.9302%, without changing the model94/50% interpretation.
 This is a new stored-input vintage, not independently collected production data.
 Current browser proof and final normalized publication fingerprint are next.
+
+### Shared Lens dependency discovered by actual interaction
+The first current-source browser journey failed: focusin opened the reason Lens,
+then the same first click toggled it closed. Resting screenshots were insufficient.
+The original shared fix already exists in PR6860@03b21b1a9e0f1b5b517a9a92545bc02824411ced;
+its gesture-sequence guard is being integrated by ancestry, not reimplemented.
+No changes are made to that PR's source branch or release controller.
+Only site/unsubscribe.html had a content conflict: preserve current page bytes,
+then update its theme hash through the existing asset optimizer. China receives
+that same hash update, and no other page content changes during normalization.
+
+A precondition incorrectly assumed the full emitted theme must equal the template.
+It failed because the accepted emitter injects public config and appends the
+Terminal overlay. No rewrite followed that failed Python assertion; the shell
+subsequently staged the conflict markers, which were explicitly reconciled before
+any commit. The corrected verification compares the exact shared Lens region and
+proves every non-Lens byte unchanged on both files. No published overlay was lost.
+An unsubscribe test also required the repository-declared FastAPI package in this
+isolated test environment; missing dependency is not counted as a product defect.
+The registered Lens tests and unchanged actual first-click assertion remain owed
+on the integrated revision; touch and genuine second-gesture dismissal were added.

@@ -64,7 +64,8 @@ try:
             for width,height in [(1440,900),(390,844)]:
                 for theme in ('dark','light'):
                     for lang in ('en','zh'):
-                        ctx = browser.new_context(viewport={'width':width,'height':height})
+                        ctx = browser.new_context(viewport={'width':width,'height':height},
+                            **({'is_mobile':True,'has_touch':True} if CURRENT_SOURCE and width==390 else {}))
                         try:
                             ctx.add_init_script(f"localStorage.setItem('theme','{theme}');localStorage.setItem('lang','{lang}');")
                             page = ctx.new_page()
@@ -134,7 +135,7 @@ try:
                                     from bs4 import BeautifulSoup
                                     trigger = page.locator('.cnx-reason-row .cnx-lens.lens-q').first
                                     raw_tip = trigger.get_attribute('data-tip-'+lang)
-                                    trigger.click()
+                                    (trigger.tap() if width==390 else trigger.click())
                                     lens = page.locator('.lens-pop.open')
                                     lens.wait_for(state='visible')
                                     plain_tip = ' '.join(BeautifulSoup(raw_tip, 'html.parser').get_text(' ', strip=True).split())
@@ -146,6 +147,13 @@ try:
                                     assert not page.locator('#cnx-dlg-playbook').is_visible()
                                     if (width,theme,lang) in [(1440,'dark','en'),(390,'light','zh')]:
                                         page.screenshot(path=str(OUT/f'lens-{width}-{theme}-{lang}.png'))
+                                    if width==390:
+                                        page.locator('.lens-scrim.open').tap(position={'x':10,'y':10})
+                                    else:
+                                        trigger.click()
+                                    lens.wait_for(state='hidden')
+                                    (trigger.tap() if width==390 else trigger.click())
+                                    lens.wait_for(state='visible')
                                     page.keyboard.press('Escape')
                                     lens.wait_for(state='hidden')
                                 from tests.test_china_archetype_d_s1 import _render_china_risk_case, _risk_card
@@ -167,7 +175,9 @@ try:
                                 'integrated_participation_and_slowdown':INTEGRATED,
                                 'synthetic_missing_guidance_and_slowdown':INTEGRATED,
                                 'current_source_missing_cohort_proof':CURRENT_SOURCE,
-                                'canonical_lens_visible_in_viewport':CURRENT_SOURCE})
+                                'canonical_lens_visible_in_viewport':CURRENT_SOURCE,
+                                'lens_real_second_gesture_closes':CURRENT_SOURCE,
+                                'touch_emulation':bool(CURRENT_SOURCE and width==390)})
                         finally:
                             ctx.close()
         finally:

@@ -146,3 +146,12 @@ Next:commit this tested same-carrier source/page, complete actual current-source
 browser acceptance including shared Lens and real missing-member UI, preserve/read
 back evidence, then retain Draft until normal CI/release and exact gates are cleared.
 MISSION_COMPLETE:false
+
+Current-source browser outcome is FAILED at the unchanged first-click Lens check,
+not PASS. Existing dependency6860@03b21b1a9e0f1b5b517a9a92545bc02824411ced
+is now composed by ancestry on this carrier. Its source/controller is unchanged.
+The only unsubscribe conflict was its generated theme stamp; preserve current
+content and emitted Terminal-overlay/public-config transformations. Lens regions
+match and non-Lens bytes are unchanged. Both pages only change theme version
+stamps in this step. Exact89 Lens/unsubscribe tests pass after isolated FastAPI
+installation. Full current-source click/touch browser proof remains next.
