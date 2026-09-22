@@ -1148,6 +1148,18 @@
   body.page-china .cnx-dh{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding:12px 20px;background:rgba(16,22,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(20px);margin-top:8px}
   body.page-china .cnx-dh b{color:var(--text);font-weight:650}
   body.page-china .cnx-dh .d{width:8px;height:8px;border-radius:50%;background:var(--ok,var(--up))}
+  body.page-china details.cnx-dh{display:block}
+  body.page-china .cnx-dh summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+  body.page-china .cnx-dh summary::-webkit-details-marker{display:none}
+  body.page-china .cnx-dh .cnx-dh-chev{margin-left:auto;opacity:.6;transition:transform .15s}
+  body.page-china .cnx-dh[open] .cnx-dh-chev{transform:rotate(180deg)}
+  body.page-china .cnx-dh-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  body.page-china .cnx-dh-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center}
+  body.page-china .cnx-dh-src{color:var(--text);font-weight:600}
+  body.page-china .cnx-dh-state{font-size:10px}
+  body.page-china .cnx-dh-state.ok{color:var(--ok,var(--up))}
+  body.page-china .cnx-dh-state.warn{color:var(--warn)}
+  body.page-china .cnx-dh-date{grid-column:1/-1;font-size:10px;color:var(--muted)}
   /* dialogs */
   /* z-index 200, not 60 (2026-08-11): the site nav sits at z-150
      (templates/navigation-refresh.css, theme.css .site-nav) and was painting straight over
@@ -2543,14 +2555,25 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
   </nav>
   {% if health %}
-  <div class="cnx-dh">
-    <span class="d"></span>
-    <b>{{ t('Data health','数据健康度') }}</b> ·
-    <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
-    <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
-    · {{ t('updated','更新于') }} {{ latest.date }}
-    <span style="margin-left:auto;opacity:.6">▾</span>
-  </div>
+  <details class="cnx-dh">
+    <summary>
+      <span class="d"></span>
+      <b>{{ t('Sources & data health','数据来源与健康度') }}</b> ·
+      <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
+      <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
+      · {{ t('updated','更新于') }} {{ latest.date }}
+      <span class="cnx-dh-chev" aria-hidden="true">▾</span>
+    </summary>
+    <div class="cnx-dh-rows">
+      {% for h in health %}
+      <div class="cnx-dh-row">
+        <span class="cnx-dh-src">{{ t(h.en, h.zh) }}</span>
+        <span class="cnx-dh-state {{ 'ok' if h.status == 'ok' else 'warn' }}">{{ t('Current','当前') if h.status == 'ok' else t('Check freshness','检查新鲜度') }}</span>
+        <span class="cnx-dh-date">{{ t('Last date','最近日期') }} · {% if h.last and h.last != '—' %}<time datetime="{{ h.last }}">{{ h.last }}</time>{% else %}—{% endif %}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </details>
   {% endif %}
 
   </div>{# /cnx-wrap #}
