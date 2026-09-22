@@ -34,6 +34,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -500,6 +501,106 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     # source so these assertions keep reading what the step actually runs.
     step["run"] = resolve_run_source(step["run"], REPO_ROOT)
     return doc, step
+
+
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
