@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-09-19",
+  "as_of": "2026-09-20",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
-      "claim_shape": "conditional_regime",
+      "id": "cortex-2026-08-23-when-a-risk-on-tape-with-broad-participa-e4a85a",
+      "claim_shape": "lead_lag",
       "verdict": "uncomputable-metric",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "gate_error": "metric 'matched_mean_spy_excess_difference' is not computable by this evaluator",
+        "gate_error": "metric 'median_credit_sensitive_lead_days' is not computable by this evaluator",
         "supported_metrics": [
           "excess_mean",
           "excess_mean_difference",
@@ -25,11 +25,12 @@
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "matched_mean_spy_excess_difference",
-        "threshold": -0.02,
-        "min_n": 30,
+        "metric": "median_credit_sensitive_lead_days",
+        "threshold": 3,
+        "min_n": 25,
         "horizon_d": 21,
-        "direction_expected": -1
+        "direction_expected": 1,
+        "clamped_from": 20
       },
       "note": null
     }
