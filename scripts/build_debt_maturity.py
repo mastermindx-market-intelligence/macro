@@ -168,8 +168,9 @@ def _load_issuer_master_ticker_cik_map_cached(im_path: Path) -> dict[str, str]:
 def resolve_cik(ticker: str) -> str | None:
     """Resolve `ticker` -> canonical 10-digit CIK, or None if unresolvable.
 
-    Tries the committed ticker->CIK ledger first (a flat ``{ticker: cik}`` or
-    ``{ticker: {"cik": ...}}`` JSON map), then falls back to the
+    Tries the committed ``{"tickers": {ticker: cik}}`` ledger first, with
+    legacy flat ``{ticker: cik}`` / ``{ticker: {"cik": ...}}`` support,
+    then falls back to the
     issuer_master reference parquet's own ticker/cik columns. Never matches
     on company name. The ledger and the parquet's ticker->cik map are each
     parsed once per distinct path and cached for the life of the process (see
@@ -183,7 +184,10 @@ def resolve_cik(ticker: str) -> str | None:
     if ledger_path.exists():
         ledger = _load_ledger_cached(ledger_path)
         if isinstance(ledger, dict):
-            entry = ledger.get(ticker)
+            # The canonical EDGAR ledger wraps its map alongside a note.
+            # A malformed wrapper is not a license to treat metadata as CIKs.
+            entries = ledger.get("tickers") if "tickers" in ledger else ledger
+            entry = entries.get(ticker) if isinstance(entries, dict) else None
             cik_val: Any = entry.get("cik") if isinstance(entry, dict) else entry
             if cik_val:
                 try:
