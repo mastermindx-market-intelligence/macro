@@ -1067,7 +1067,7 @@
     /* Keep the deep three-card rows intact, but make mobile traversal horizontal
        instead of turning every row into three full-height stacked cards. */
     body.page-china .cnx-wrap > .cnx-rack3{display:flex;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;gap:10px;padding-bottom:4px}
-    body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px);scroll-snap-align:start}
+    body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px);scroll-snap-align:start;scroll-snap-stop:always}
     body.page-china .cnx-wrap > .cnx-rack3::-webkit-scrollbar{display:none}
   }
   .cnx-wrap .cnx-reason-row{position:relative}
@@ -4741,6 +4741,14 @@ window.__CHART_SWAP__ = {
     var card=e.target.closest&&e.target.closest('.cnx-card[role="button"]');
     if(!card||e.target.closest('a,button,input,select,textarea'))return;
     e.preventDefault();card.click();
+  });
+  /* On narrow layouts the deep rows are swipe rails. Keyboard focus must reveal
+     the whole focused card instead of leaving only the 28px discovery peek visible. */
+  document.addEventListener('focusin',function(e){
+    if(!window.matchMedia('(max-width:760px)').matches)return;
+    var card=e.target.closest&&e.target.closest('.cnx-wrap > .cnx-rack3 > .cnx-card');
+    if(!card)return;
+    card.scrollIntoView({behavior:'auto',block:'nearest',inline:'start'});
   });
   /* close dialog on Escape key */
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
