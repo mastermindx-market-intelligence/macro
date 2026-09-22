@@ -188,6 +188,17 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_solo_hero_uses_empty_desktop_space_for_watch_context() -> None:
+    assert "body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:2fr 1fr}" in TPL
+    assert "body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:block}" in TPL
+    assert "@media(max-width:1000px){body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}}" in TPL
+    assert '{{ t("What we\'re watching',\'我们在盯什么\') }}' in TPL
+    assert "{{ t('Next high-impact print','下一项高影响数据') }}" in TPL
+    assert "{{ t('Regime watch','周期预警') }}" in TPL
+    assert "{{ t('Pullback-risk context','回撤风险背景') }}" in TPL
+    assert "{{ t('The score path returns after two or more history points.','累计至少两个历史点后恢复评分路径图。') }}" in TPL
+
+
 def test_mobile_section_index_improves_scanability_without_collapsing_depth() -> None:
     assert 'class="cnx-links cnx-mobile-index"' in TPL
     assert 'aria-label="China dashboard sections / 中国看板分区"' in TPL
