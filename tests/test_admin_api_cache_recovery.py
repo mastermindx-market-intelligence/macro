@@ -87,3 +87,85 @@ global.fetch = async function(path) {
     assert result["secondValue"] == {"ok": True, "recovered": True}, result
     assert result["fetchCalls"] == 2, result
     assert result["cachePending"] is False, result
+
+
+class TestSiteInventoryLinkCache:
+    """The Site inventory cache must resolve and invalidate against its own tree."""
+
+    @staticmethod
+    def _bind_site(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+        from admin import content
+
+        site = tmp_path / "site"
+        templates = tmp_path / "templates"
+        site.mkdir()
+        templates.mkdir()
+        monkeypatch.setattr(content, "SITE", site)
+        monkeypatch.setattr(content, "_TEMPLATES", templates)
+        content._link_cache.clear()
+        return site
+
+    def test_root_relative_page_resolves_inside_site(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from admin import content
+
+        site = self._bind_site(monkeypatch, tmp_path)
+        (site / "index.html").write_text('<a href="/existing.html">Existing</a>')
+        (site / "existing.html").write_text("<main>present</main>")
+
+        result = content._link_check()
+
+        assert result["count"] == 0
+        assert result["broken"] == []
+
+    def test_relative_escape_is_broken_even_when_host_file_exists(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from admin import content
+
+        site = self._bind_site(monkeypatch, tmp_path)
+        (tmp_path / "outside.html").write_text("<main>host-only file</main>")
+        (site / "index.html").write_text('<a href="../outside.html">Escape</a>')
+
+        result = content._link_check()
+
+        assert result["count"] == 1
+        assert result["broken"] == [
+            {"page": "index.html", "link": "../outside.html"}
+        ]
+
+    def test_older_page_edit_invalidates_cache(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from admin import content
+
+        site = self._bind_site(monkeypatch, tmp_path)
+        source = site / "index.html"
+        existing = site / "exists.html"
+        newest = site / "newest.html"
+        source.write_text('<a href="/exists.html">Target</a>')
+        existing.write_text("<main>present</main>")
+        newest.write_text("<main>newest</main>")
+
+        # Keep one unrelated page newest across both scans. The retired cache key
+        # used only page count + this maximum mtime, so editing ``index.html`` was
+        # invisible. The replacement fingerprints every page's own stat record.
+        base_ns = 1_700_000_000_000_000_000
+        os.utime(source, ns=(base_ns, base_ns))
+        os.utime(existing, ns=(base_ns + 1_000_000_000, base_ns + 1_000_000_000))
+        os.utime(newest, ns=(base_ns + 10_000_000_000, base_ns + 10_000_000_000))
+
+        first = content.link_check()
+        assert first["count"] == 0
+
+        # Same number of files and same byte length; only this older page's content
+        # and own mtime change. The second call must not return the cached zero.
+        source.write_text('<a href="/absent.html">Target</a>')
+        os.utime(source, ns=(base_ns + 2_000_000_000, base_ns + 2_000_000_000))
+        second = content.link_check()
+
+        assert second["count"] == 1
+        assert second["broken"] == [
+            {"page": "index.html", "link": "/absent.html"}
+        ]

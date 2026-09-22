@@ -1,8 +1,10 @@
 """Content inventory, offline broken-link check, and a live-site uptime probe."""
 from __future__ import annotations
 
+import hashlib
 import re
 import time
+from pathlib import Path
 
 from . import config_store
 from .paths import ROOT, SITE
@@ -64,26 +66,38 @@ def _ci_built(target) -> bool:
 # lets the UI say "scanned N of M" honestly when the cap ever does bite.
 
 # A full scan reads+parses ~3k pages (~17s) and blocks the single-threaded server, but the
-# result only changes when the site/ tree does. Cache it, keyed on a cheap tree signature
-# (html-file count + newest mtime) — statting files is far cheaper than reading every one,
-# so a repeat panel load returns instantly instead of re-running the crawl.
-_link_cache: dict = {}  # (max_pages, count, max_mtime) -> result dict
+# result only changes when the site/ tree does. Cache it behind a complete stat fingerprint:
+# relative path + size + each page's own mtime/ctime. This remains stat-only (far cheaper
+# than re-reading every page) while an edit to an older page can no longer hide behind an
+# unrelated page's newer mtime.
+_link_cache: dict = {}  # (max_pages, count, metadata_digest) -> result dict
 
 
 def _tree_sig(max_pages: int):
-    """Cheap cache key: (max_pages, html-file count, newest mtime) over site/. Stat-only —
-    no file reads — so any add/remove/edit of a page flips the key and forces a rescan."""
+    """Stat-only fingerprint of every local HTML page used by ``link_check``.
+
+    Paths are sorted before hashing so traversal order cannot churn the cache. Including
+    every page's size and nanosecond mtime/ctime invalidates edits, replacements, additions,
+    removals and renames without reading page bodies on each panel request.
+    """
+    digest = hashlib.sha256()
     count = 0
-    newest = 0.0
-    for p in SITE.rglob("*.html"):
+    for page in sorted(SITE.rglob("*.html"), key=lambda item: item.as_posix()):
         try:
-            m = p.stat().st_mtime
-        except OSError:
+            stat = page.stat()
+            rel = page.relative_to(SITE).as_posix()
+        except (OSError, ValueError):
             continue
         count += 1
-        if m > newest:
-            newest = m
-    return (max_pages, count, newest)
+        fields = (
+            rel,
+            str(stat.st_size),
+            str(stat.st_mtime_ns),
+            str(stat.st_ctime_ns),
+        )
+        digest.update("\0".join(fields).encode("utf-8", errors="surrogateescape"))
+        digest.update(b"\0\0")
+    return (max_pages, count, digest.digest())
 
 
 def link_check(max_pages: int = 10000) -> dict:
@@ -106,6 +120,22 @@ def link_check(max_pages: int = 10000) -> dict:
     return result
 
 
+def _site_link_target(page: Path, link: str, site_root: Path) -> Path | None:
+    """Resolve one local HTML link without ever consulting outside ``site/``.
+
+    A leading slash is same-origin site-root syntax, not a host-filesystem absolute path.
+    Relative traversal and symlinks that escape the resolved site root are refused.
+    """
+    relative = link.lstrip("/") if link.startswith("/") else link
+    base = site_root if link.startswith("/") else page.parent
+    try:
+        target = (base / relative).resolve()
+        target.relative_to(site_root)
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return target
+
+
 def _link_check(max_pages: int = 10000) -> dict:
     """Offline page-to-page nav-integrity check: internal links to a `.html` page that
     doesn't exist in the local site/ tree (the '404 nav link' class). Scans real markup
@@ -122,6 +152,7 @@ def _link_check(max_pages: int = 10000) -> dict:
     if not SITE.is_dir():
         return {"total_pages": 0, "checked_pages": 0, "truncated": False,
                 "broken": [], "count": 0, "ci_built": [], "ci_built_count": 0}
+    site_root = SITE.resolve()
     all_pages = sorted(SITE.rglob("*.html"))
     total = len(all_pages)
     truncated = total > max_pages
@@ -144,11 +175,11 @@ def _link_check(max_pages: int = 10000) -> dict:
             seen.add(link)
             if not link.lower().endswith(".html"):
                 continue                      # only page-to-page nav integrity
-            target = (p.parent / link).resolve()
-            if target.exists():
+            target = _site_link_target(p, link, site_root)
+            if target is not None and target.exists():
                 continue
             row = {"page": str(p.relative_to(SITE)), "link": link}
-            (ci_built if _ci_built(target) else broken).append(row)
+            (ci_built if target is not None and _ci_built(target) else broken).append(row)
     return {
         "total_pages": total,
         "checked_pages": checked,
