@@ -2138,7 +2138,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-lbl">{{ t('Why this regime','为什么这样判断') }}</div>
   <div class="cnx-links" data-cn-driver-rail>
     <a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% elif _credit_impulse is not none %}{{ '%+.1f'|format(_credit_impulse) }}%{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
-    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {% if I.southbound and I.southbound.net is defined %}{{ cny_yi_pair(I.southbound.net) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {% if I.southbound and I.southbound.net is defined %}{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
     <a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>
     <a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {% if P and P.regime %}{{ t(P.regime.label_en, P.regime.label_zh) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
   </div>
