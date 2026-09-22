@@ -47,7 +47,9 @@ def _pair(data: Mapping[str, Any], field: str, *, plain_en: bool = False, option
     return {"en": _text(en, field + "_en"), "zh": _text(zh, field + "_zh")}
 
 
-def _string_list(value: Any, where: str) -> list[str]:
+def _string_list(value: Any, where: str, *, optional: bool = False) -> list[str]:
+    if value is None and optional:
+        return []
     if not isinstance(value, list) or any(not isinstance(x, str) or not x.strip() for x in value):
         raise GuideError(f"{where}: expected a list of nonempty strings")
     return list(value)
@@ -106,7 +108,7 @@ def compile_guide(raw: dict, presentation: dict, *, validate_registry: Callable,
         raise GuideError("validator returned no entries")
     if not isinstance(coverage, list):
         raise GuideError("coverage validator returned a non-list")
-    if source != raw or entries != raw.get("entries") or coverage != raw.get("coverage_exceptions", []):
+    if source != raw or entries != raw.get("entries") or coverage != (raw.get("coverage_exceptions") if raw.get("coverage_exceptions") is not None else []):
         raise GuideError("validation must not rewrite, drop, or reorder source content")
     specs = presentation.get("entries", {})
     if not isinstance(specs, dict):
@@ -135,16 +137,16 @@ def compile_guide(raw: dict, presentation: dict, *, validate_registry: Callable,
         if not isinstance(kind, str) or kind not in KINDS:
             raise GuideError(f"{eid}: unsupported presentation kind")
         labels = _pair(entry, "label")
-        aliases = {lang: _string_list(entry.get("aliases_" + lang, []), f"{eid}.aliases_{lang}") for lang in LANGUAGES}
-        caveats = {lang: _string_list(entry.get("caveats_" + lang, []), f"{eid}.caveats_{lang}") for lang in LANGUAGES}
+        aliases = {lang: _string_list(entry.get("aliases_" + lang, []), f"{eid}.aliases_{lang}", optional=True) for lang in LANGUAGES}
+        caveats = {lang: _string_list(entry.get("caveats_" + lang, []), f"{eid}.caveats_{lang}", optional=True) for lang in LANGUAGES}
         if len(caveats["en"]) != len(caveats["zh"]):
             raise GuideError(f"{eid}: caveat translation count differs")
         if entry.get("kind") == "indicator" and not caveats["en"]:
             raise GuideError(f"{eid}: an indicator needs a visible limitation")
-        sources = _string_list(entry.get("public_source_refs", []), f"{eid}.sources")
+        sources = _string_list(entry.get("public_source_refs", []), f"{eid}.sources", optional=True)
         if any(not url.startswith("https://") or any(c.isspace() for c in url) for url in sources):
             raise GuideError(f"{eid}: unsafe public source target")
-        related = _string_list(entry.get("related_ids", []), f"{eid}.related_ids")
+        related = _string_list(entry.get("related_ids", []), f"{eid}.related_ids", optional=True)
         if set(related) - set(ids):
             raise GuideError(f"{eid}: unresolved related entry")
         row = {"id": eid, "kind": entry.get("kind"), "family": entry.get("family"),
@@ -178,7 +180,7 @@ def compile_guide(raw: dict, presentation: dict, *, validate_registry: Callable,
         if not SLUG.fullmatch(key) or key in set(ids) or key in coverage_names:
             raise GuideError("duplicate or invalid coverage link")
         coverage_names.add(key)
-        related = _string_list(item.get("see_ids", []), key + ".see_ids")
+        related = _string_list(item.get("see_ids", []), key + ".see_ids", optional=True)
         if set(related) - set(ids) or len(set(related)) != len(related):
             raise GuideError(f"{key}: invalid coverage targets")
         reason = _pair(item, "reason", optional=True)
