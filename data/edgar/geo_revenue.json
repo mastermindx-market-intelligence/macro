@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-21T02:38:30.483773+00:00",
+"updated":"2026-09-22T03:24:20.432223+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -29429,11 +29429,11 @@
 ]
 },
 "IBEX":{
-"foreign_pct":3.7,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0001720420-25-000027",
+"foreign_pct":3.3,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0001720420-26-000025",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -29441,31 +29441,31 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":96.3
+"pct":96.7
 },
 {
 "key":"Offshore",
 "label":"Offshore",
 "cls":"mixed",
-"pct":50.6
-},
-{
-"key":"Nearshore",
-"label":"Nearshore",
-"cls":"mixed",
-"pct":25.1
+"pct":50.8
 },
 {
 "key":"Onshore",
 "label":"Onshore",
 "cls":"mixed",
-"pct":24.4
+"pct":26.3
+},
+{
+"key":"Nearshore",
+"label":"Nearshore",
+"cls":"mixed",
+"pct":22.9
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":3.7
+"pct":3.3
 }
 ]
 },
