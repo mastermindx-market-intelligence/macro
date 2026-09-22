@@ -875,20 +875,55 @@ def test_each_editable_packet_field_is_required(tmp_path, capsys, field_prefix, 
     assert finding_code in fired, sorted(fired)
 
 
-def test_required_placeholder_does_not_satisfy_editable_source(tmp_path, capsys):
+@pytest.mark.parametrize(
+    ("field_label", "replacement", "finding_code"),
+    (
+        (
+            "3A EDITABLE SOURCE: Figma file IKqTiq7jeVBJusBfoHnPsH · frame 11:2",
+            "3A EDITABLE SOURCE: REQUIRED — tool + exact file and frame ids",
+            "packet-without-editable-source",
+        ),
+        (
+            "3B COMPONENT DELTA:\n  Reuse MX/Button and MX/State Panel; no new primitive.",
+            "3B COMPONENT DELTA: TODO — list reuse or DESIGN-SYSTEM GAP",
+            "packet-without-component-delta",
+        ),
+        (
+            "3C STATE + INTERACTION MATRIX: dark/light × EN/ZH × 1440/390; hover and focus-visible use real browser capture.",
+            "3C STATE + INTERACTION MATRIX: TBD — intended variants + browser proof",
+            "packet-without-state-interaction-matrix",
+        ),
+    ),
+)
+def test_placeholder_does_not_satisfy_editable_packet_field(
+    tmp_path, capsys, field_label, replacement, finding_code
+):
+    write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
+    packets = tmp_path / "research" / "migration_packets"
+    packets.mkdir(parents=True, exist_ok=True)
+    body = EDITABLE_PACKET_FIELDS.replace(field_label, replacement)
+    (packets / "MP-001-board.md").write_text(
+        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + body,
+        encoding="utf-8",
+    )
+    fired = _cli_codes(tmp_path, capsys)
+    assert finding_code in fired, sorted(fired)
+
+
+def test_state_interaction_field_requires_matrix_label(tmp_path, capsys):
     write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
     packets = tmp_path / "research" / "migration_packets"
     packets.mkdir(parents=True, exist_ok=True)
     body = EDITABLE_PACKET_FIELDS.replace(
-        "3A EDITABLE SOURCE: Figma file IKqTiq7jeVBJusBfoHnPsH · frame 11:2",
-        "3A EDITABLE SOURCE: REQUIRED — tool + exact file and frame ids",
+        "3C STATE + INTERACTION MATRIX:",
+        "3C STATE + INTERACTION:",
     )
     (packets / "MP-001-board.md").write_text(
         "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + body,
         encoding="utf-8",
     )
     fired = _cli_codes(tmp_path, capsys)
-    assert "packet-without-editable-source" in fired, sorted(fired)
+    assert "packet-without-state-interaction-matrix" in fired, sorted(fired)
 
 
 def test_a_packet_citing_an_unapproved_reference_fires(tmp_path, capsys):
