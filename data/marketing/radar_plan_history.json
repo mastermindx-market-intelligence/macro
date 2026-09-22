@@ -2,6 +2,33 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-22",
+      "tickers": [
+        "ACM",
+        "ASTH",
+        "ATR",
+        "BBD",
+        "CMCSA",
+        "COHU",
+        "CYBN",
+        "EBAY",
+        "FIX",
+        "GRAB",
+        "GSAT",
+        "HOOD",
+        "JAAA",
+        "MIR",
+        "MUSA",
+        "PRVA",
+        "QCOM",
+        "REXR",
+        "ROIV",
+        "SIG",
+        "TTMI",
+        "WULF"
+      ]
+    },
+    {
       "as_of": "2026-09-21",
       "tickers": [
         "ACHC",
@@ -122,19 +149,6 @@
         "MU",
         "PMTS",
         "UTL",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-15",
-      "tickers": [
-        "ALGT",
-        "DLTR",
-        "ECL",
-        "GMED",
-        "IPGP",
-        "LUMN",
-        "PWR",
         "WING"
       ]
     }
