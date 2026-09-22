@@ -463,21 +463,111 @@ def test_legacy_flag_reaches_legacy_path(tmp_path, monkeypatch):
     assert seen.get("legacy") is True
 
 
-def test_render_workflows_pin_legacy_skew_source():
-    """The cutover to --emit is a visible edit: both render brun lines export the legacy flag."""
+def _two_strike_chain(underlying="THIN", spot=100.0, put_iv=0.40, call_iv=0.30):
+    """One put and one call on the ~30d expiry. The pre-packet builder published this."""
+    t = 30 / 365.0
+    return pd.DataFrame([
+        dict(underlying=underlying, expiry="2026-07-21", K=spot * 0.95, T=t,
+             is_call=False, iv=put_iv, delta=-0.25, oi=100, gamma=0.01,
+             volume=10, spot=spot, asof="2026-06-21"),
+        dict(underlying=underlying, expiry="2026-07-21", K=spot, T=t,
+             is_call=True, iv=call_iv, delta=0.50, oi=100, gamma=0.01,
+             volume=10, spot=spot, asof="2026-06-21"),
+    ])
+
+
+def test_two_strike_expiry_keeps_the_pre_packet_skew():
+    """A chosen expiry with fewer than four rows still publishes skew.
+
+    The polygon builder at 98df3cf31eb7 returned a name as soon as that expiry
+    had a put and a call. A four-row floor dropped THIN (skew 0.1, n_strikes 2)
+    from latest.json and from the ledger. That is a live-surface change, not
+    an additive key.
+    """
+    m = S.compute_skew(_two_strike_chain())
+    assert m is not None
+    assert m["underlying"] == "THIN"
+    assert m["n_strikes"] == 2
+    assert m["skew"] == pytest.approx(0.10, abs=1e-9)
+    assert m["otm_put_iv"] == pytest.approx(0.40, abs=1e-9)
+    assert m["atm_call_iv"] == pytest.approx(0.30, abs=1e-9)
+
+
+def test_legacy_builder_publishes_a_two_strike_name(tmp_path, monkeypatch):
+    """OPTIONS_SKEW_LEGACY_CHAIN=1 must keep the thin name the polygon builder kept."""
+    data, site = _patch_dirs(monkeypatch, tmp_path)
+    chains = data / "polygon_gex" / "chains"
+    chains.mkdir(parents=True)
+    pd.concat([
+        _chain("AAA", put_iv=0.50, call_iv=0.30),
+        _two_strike_chain("THIN"),
+    ], ignore_index=True).to_parquet(chains / "2026-06-21.parquet")
+    monkeypatch.setenv(S._LEGACY_CHAIN_ENV, "1")
+    from scripts.build_options_skew import main
+
+    assert main([]) == 0
+    payload = json.loads((site / "options_skew" / "latest.json").read_text())
+    assert set(payload["names"]) == {"AAA", "THIN"}
+    assert payload["names"]["THIN"]["n_strikes"] == 2
+    assert payload["names"]["THIN"]["skew"] == pytest.approx(0.10, abs=1e-9)
+    assert payload["n"] == 2
+    ledger = pd.read_parquet(data / "options_skew" / "snapshots.parquet")
+    assert set(ledger["underlying"].astype(str)) == {"AAA", "THIN"}
+    thin = ledger[ledger["underlying"].astype(str) == "THIN"].iloc[0]
+    assert int(thin["n_strikes"]) == 2
+    assert thin["source"] == "polygon_gex"
+
+
+def _live_skew_invocations(text: str) -> list[int]:
+    """Shell lines that actually launch scripts.build_options_skew."""
+    hits = []
+    for i, line in enumerate(text.splitlines()):
+        if "scripts.build_options_skew" not in line:
+            continue
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            continue
+        if "brun " in line or "run_py " in line or "python -m " in line:
+            hits.append(i)
+    return hits
+
+
+def test_every_live_skew_caller_exports_the_legacy_flag():
+    """Every process that publishes skew today must set the legacy source.
+
+    engine-render.yml and closing-bell.yml were pinned in W2-1b. The nightly
+    engine job runs scripts/ci/daily_engine_regional_desk_builders.sh, and
+    render.yml (default runner render-linux, scope all and scope gex) also
+    launches the builder. A pin that only matches `brun options_skew` leaves
+    the run_py lines, and those two files, free to emit the old ledger.
+    """
     root = Path(__file__).resolve().parents[1]
-    for rel in (
+    required = {
         ".github/workflows/engine-render.yml",
         ".github/workflows/closing-bell.yml",
-    ):
-        lines = (root / rel).read_text().splitlines()
-        hits = [
-            i for i, line in enumerate(lines)
-            if "brun options_skew" in line and "scripts.build_options_skew" in line
-        ]
-        assert hits, rel
-        for i in hits:
-            window = "\n".join(lines[max(0, i - 6): i + 3])
-            assert "export OPTIONS_SKEW_LEGACY_CHAIN=1" in window, window
-            assert "A-F03-W2-1b (2026-09-22)" in window, window
-            assert "unset OPTIONS_SKEW_LEGACY_CHAIN" in window, window
+        ".github/workflows/render.yml",
+        "scripts/ci/daily_engine_regional_desk_builders.sh",
+    }
+    found: dict[str, int] = {}
+    for base in (root / ".github" / "workflows", root / "scripts" / "ci"):
+        for path in sorted(base.rglob("*")):
+            if path.suffix not in {".yml", ".yaml", ".sh"} or not path.is_file():
+                continue
+            rel = path.relative_to(root).as_posix()
+            lines = path.read_text().splitlines()
+            for i in _live_skew_invocations("\n".join(lines)):
+                found[rel] = found.get(rel, 0) + 1
+                assert lines[i - 1].strip() == "export OPTIONS_SKEW_LEGACY_CHAIN=1", (
+                    rel, i + 1, lines[max(0, i - 3): i + 2]
+                )
+                assert lines[i + 1].strip() == "unset OPTIONS_SKEW_LEGACY_CHAIN", (
+                    rel, i + 1, lines[i: i + 2]
+                )
+                comment = "\n".join(lines[max(0, i - 4): i])
+                assert "A-F03-W2-1b (2026-09-22)" in comment, (rel, comment)
+    assert required <= set(found), sorted(required - set(found))
+    # The narrow gex scope is a second launch in each render workflow.
+    assert found[".github/workflows/engine-render.yml"] >= 2
+    assert found[".github/workflows/render.yml"] >= 2
+    assert found["scripts/ci/daily_engine_regional_desk_builders.sh"] == 1
+    assert found[".github/workflows/closing-bell.yml"] == 1
