@@ -309,3 +309,23 @@ All tests use `tmp_path` fixtures only — no real store / R2 / network access.
 - `site/` (sparse tree — no write)
 - Any other PR (in particular #6923 / branch `claude/mo-a-2-a-f03-w2-1`,
   which this packet READS but never writes)
+
+## 9. Round-6 amendments (Meta-CEO A binding ruling, 2026-09-22)
+
+The round-6 binding ruling audited the round-5 head (`d61d200c72`) and
+named one MAJOR-1 finding (launchd logs in `/tmp`), one MAJOR-2 finding
+(strong sys.path pin missing in 3 entry scripts), and one MINOR-1 finding
+(no test pins the existence of `ops/launchd/run_with_env.sh` on
+`origin/main`). All three were cured with named-file commits:
+
+| Finding | Commit | Change |
+|---------|--------|--------|
+| **MAJOR-1** launchd logs to sibling state dir | `50c494e2ef` | `StandardOutPath`/`StandardErrorPath` in `ops/launchd/com.macro.skewaccrual.plist` redirected from `/tmp/skewaccrual.{stdout,stderr}.log` to `/Users/chriswong/skew-ops-state/logs/skewaccrual.{stdout,stderr}.log` — the same `$SKEW_STATE_DIR` default the runner uses. launchd paths are literal (no env-var expansion), so the destination is hardcoded to the default; an operator override of `$SKEW_STATE_DIR` must update both keys (see §3.3 above). |
+| **MAJOR-1 test** | `8425a434d7` | New test `test_plist_log_paths_live_outside_repo_in_sibling_state_dir` pins BOTH the destinations match the runner's default AND that neither path starts with `/Users/chriswong/skew-ops-wt/` (the dedicated lane checkout the runner's `git reset --hard && git clean -fd` wipes on every run). |
+| **MAJOR-2** strong top-level sys.path pin | `9d55fcd1dd` | `scripts/skew_accrual_precheck.py` and `scripts/skew_accrual_verify_ledger.py` now carry the exact named-form pin (`_ROOT = Path(__file__).resolve().parent.parent; sys.path.insert(0, str(_ROOT))`) at module load. `scripts/audit_options_skew_overlap.py`'s one-liner pin was refactored to the named form. `test_unpinned_entry_scripts_only_shrink` stays green — three new pins shrink the affected set. |
+| **MINOR-1** run_with_env.sh existence | `8425a434d7`, `77c5a73c54` | New test `test_run_with_env_wrapper_exists_on_origin_main` runs `git ls-tree origin/main -- ops/launchd/run_with_env.sh` and asserts a 100755-mode entry exists. CI-widening commit extends the `skew-accrual-lane` job's `paths:` to cover `ops/launchd/run_with_env.sh` so wrapper edits actually trigger the job. |
+
+The DEC record test count was refreshed from 71 to 73 (commit `d8eb9219bc`)
+to match the pytest tail in the PR body. The install-runbook §3.3 paragraph
+above (commit `0954661a4f`) documents the round-6 sibling-state-dir log
+destination change at the seat-install level.
