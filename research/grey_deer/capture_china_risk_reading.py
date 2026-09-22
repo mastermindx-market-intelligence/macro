@@ -17,6 +17,7 @@ OUT = ROOT / ('mockups/evidence/china-integrated-context-20260921' if INTEGRATED
 OUT.mkdir(parents=True, exist_ok=True)
 PAGE = ROOT / 'site/china.html'
 BEFORE = hashlib.sha256(PAGE.read_bytes()).hexdigest()
+CAPTURE_CASES = 16 if INTEGRATED else 8
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 def driver_factory(**kwargs):
@@ -35,10 +36,10 @@ code = capture.main([
     '--smells', str(OUT/'smells.json'), '--viewports', 'desktop,mobile',
     '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
     '--settle-ms', '1400',
-], driver_factory=driver_factory)
+] + (['--force-state', 'participation-focus:focus(#cnx-participation summary)'] if INTEGRATED else []), driver_factory=driver_factory)
 assert code == 0
 meta = json.loads((OUT/'manifest.json').read_text())['pages'][0]
-assert len(meta['states']) == 8 and all(s['captured'] for s in meta['states'])
+assert len(meta['states']) == CAPTURE_CASES and all(s['captured'] for s in meta['states'])
 assert not meta['console_errors'] and not meta['failed_responses']
 assert all(not m['horizontal_overflow'] for m in meta['metrics']['by_viewport'].values())
 
@@ -137,10 +138,10 @@ finally:
 assert not thread.is_alive()
 assert hashlib.sha256(PAGE.read_bytes()).hexdigest() == BEFORE
 receipt = {'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-    'page_sha256':BEFORE,'page_bytes':PAGE.stat().st_size,'capture_cases':8,
+    'page_sha256':BEFORE,'page_bytes':PAGE.stat().st_size,'capture_cases':CAPTURE_CASES,
     'interaction_cases':cases,'source_page_unchanged':True,'server_closed':True,
     'kind':'actual no-network builder with stored inputs; no live deployment',
     'production':False,'fresh_collection':False,'risk_model_changed':False}
 (OUT/'interaction-proof.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
-print(json.dumps({'capture_cases':8,'interaction_cases':len(cases),
+print(json.dumps({'capture_cases':CAPTURE_CASES,'interaction_cases':len(cases),
     'page_sha256':BEFORE,'production':False,'server_closed':True}))
