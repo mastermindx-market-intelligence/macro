@@ -2195,15 +2195,19 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-row"><span class="ic" aria-hidden="true">—</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
       {% endif %}
     </div>
-    {# Upcoming Events card #}
+    {# Upcoming Events card — preserve the incumbent module identity while borrowing
+       the retired design's stronger "what we're watching" framing in the title note. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')">
-      <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('NEXT 14 DAYS','未来14天') }}</span></div>
       {% set _high_ev = [] %}
       {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
-      {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
       {% set _ev_pool = [] %}
       {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
       {% for c in (event_strip or []) %}{% if c.importance != 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
+      {% set _next_watch = _ev_pool[0] if _ev_pool else none %}
+      <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }}
+        {% if _next_watch %}<span class="cnx-ctitle-note"><span class="l-en">Watching · {{ (_next_watch.name_en or '')|truncate(20, true, '…') }} · {{ _next_watch.date }}</span><span class="l-zh">关注 · {{ (_next_watch.name_zh or _next_watch.name_en or '')|truncate(20, true, '…') }} · {{ _next_watch.date }}</span></span>{% else %}<span class="cnx-ctitle-note">{{ t('NEXT 14 DAYS','未来14天') }}</span>{% endif %}
+      </div>
+      {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
       {% set _ev_shown = _ev_pool[:4] %}
       {% if _ev_shown %}
       <div class="cnx-estrip">
