@@ -307,6 +307,13 @@ PR body and the §7 test-surface table above. Without that refresh the DEC
 record would claim 71 while the suite reports 73 — a discrepancy the
 seat-install runbook's §1 install-receipt would surface.
 
+The PR body for this lane carries a "Round 6/N Meta-CEO A seat — fixes
+applied this round" table that names every round-6 commit by hash; the
+§9 amendments table above is the runbook-side mirror of that body table.
+If the two ever disagree (runbook newer than body, or vice versa), the
+PR body is the source of truth — the body is updated LAST after every
+push, while the runbook lands in named-file commits.
+
 ## 7. Test surface
 
 All tests use `tmp_path` fixtures only — no real store / R2 / network access.
