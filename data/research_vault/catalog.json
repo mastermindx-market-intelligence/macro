@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T15:13:16.917767+00:00",
-  "count": 2646,
+  "generated_at": "2026-09-22T16:36:18.311388+00:00",
+  "count": 2650,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,27 @@
   ],
   "items": [
     {
+      "id": "marketdesk-1c6ij86icrc-10d4e0",
+      "title": "Mexico Weak Jul Retail Sales",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:44Z",
+      "summary_points": [
+        "Retail Sales Miss & Q3 Trend: July retail sales fell 0.1% mom sa (vs.",
+        "+0.1% consensus), with Q3 2026 sales at -0.3% qoq sa, signaling persistent consumption weakness.",
+        "Services Sector Funding Pressure: Negative 2026 carry (-1.3%) amid declining services employment (-0.1% mom sa) and mixed real wage growth (1.0% mom sa), indicating rising funding risks.",
+        "Retail Resilience vs.",
+        "Services Divergence: Retail Sales index (122) outperformed Non-Financial Services (100) since Jun-20, highlighting consumer spending resilience despite services sector softness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-uo882snx41f-078e66",
       "title": "LATAM Today September 22, 2026",
       "institution": "Goldman Sachs",
@@ -127,6 +148,26 @@
         "Agentic AI Power Demand Catalyst: +10pp AI queries (20-30% by 2030-35) boost datacenter needs by +25%, creating tailwinds for renewables growth and FlexGen margins in utilities.",
         "Ireland Offshore Wind Grid Delays: 3GW of pending grid connections for 5GW installed offshore wind, posing critical risk to renewable deployment timelines and project viability.",
         "Electric Utilities Valuation Target Increase: Goldman Sachs raises target P/E to above mid-cycle (c. 16x), signaling elevated sector valuation expectations amid strong balance sheets (RWE, Orsted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hpwe6lu9ruq-dba3dc",
+      "title": "GS Housing Market Activity Scale Week of September 13 Scale Down 2 Sequentially Led by Decline in Sales and Purchase Appli...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:33Z",
+      "summary_points": [
+        "Mortgage Rate Surge & Demand Collapse: 30-year fixed rate at 6.95% (52-week high) driving 40% YoY decline in total mortgage applications and 61% YoY drop in refinancing, signaling severe rate-driven demand suppression.",
+        "Affordability Crisis Dominates: Buyer hesitation due to elevated rates (up 69bps YoY) and economic headwinds, with purchase applications down 10% YoY and sales declining 5% sequentially.",
+        "Refinancing Market in Freefall: Refinancing applications fell 61% YoY, reflecting acute rate sensitivity and liquidity constraints for homeowners amid sustained high borrowing costs.",
+        "Housing Activity Stagnation: Sequential 2% decline in housing activity scale (sales down 5%, purchase apps down 1%) with market near long-term average (scale 4), indicating no near-term recovery."
       ],
       "tags": [],
       "tickers": [],
@@ -171,6 +212,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gl6r64rsfiu-5014e0",
+      "title": "Alibaba Group (BABA) Alibaba Cloud APSARA Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:08Z",
+      "summary_points": [
+        "AI Cloud Revenue & Margin Target: $100bn AI cloud revenue by 2030 (20% EBITA margin), driven by Qwen models, custom T-head silicon, and 20GW power capacity (2023 target), with $20-25bn capex funded by core businesses.",
+        "Structural AI Inference Shift: Inference to exceed training in global AI compute spend (59% vs 41% by 2027), accelerating cloud infrastructure demand for deployment-focused applications.",
+        "MaaS ARR Acceleration: MaaS ARR surging from Rmb8bn to Rmb20bn in 3 months (approaching Rmb30bn target), supported by global expansion (31 countries, 3,200+ Edge Nodes) and Qwen 3.8 Max driving 8.5x revenue growth.",
+        "Valuation Upside & EPS Recovery: 52.9% upside to $177 (BABA) and 52.8% to HK$172 (9988.HK), with P/E compression (36.5x → 10.7x) and +58%/+27% yoy EPS growth (FY27E/FY28E).",
+        "Key Risk Factors: Lower GMV growth (macro/competition), slower China retail monetization, cloud growth deceleration, and execution risks impacting near-term trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -267,6 +329,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2z5r4rjqtuu-4fe779",
+      "title": "GS Biswas Credit MarketStrats In Spotlight iTraxx S46 index tranches TRADING 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:49Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
