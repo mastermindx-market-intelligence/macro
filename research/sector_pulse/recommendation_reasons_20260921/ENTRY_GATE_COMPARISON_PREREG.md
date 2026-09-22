@@ -64,8 +64,10 @@ and every missing-data disposition.
 
 Use 504-session warm-up and sample every five expected sessions from that anchor.
 Require the trailing 504-session proxy/benchmark window to be complete before
-features can qualify. Invoke native functions only on the decision-time prefix;
-future prices must not affect any earlier feature or arm selection. The native
+features can qualify. Scalar native functions receive only the decision-time
+prefix. Native causal rolling arrays may be computed once for efficiency, with
+prefix-invariance tests proving that future prices cannot change earlier features
+or arm selections. The native
 calibration's cross-sector panel breadth is a PROXY, not historical constituent
 breadth. Macro is fixed at neutral zero and MTF/tape legs are omitted consistently:
 this is not a full Prophet/backtest of historical published recommendations.
