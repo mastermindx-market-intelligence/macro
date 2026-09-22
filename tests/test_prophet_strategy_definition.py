@@ -256,6 +256,21 @@ def test_b4_stale_quote_ambiguous_basis_or_unknown_required_fact_fail_closed():
     assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
 
 
+def test_b4_optional_structural_overlay_unknown_does_not_deadlock_owner_stop():
+    optional_overlay = _b4_facts()
+    optional_overlay["deterministic_gates"]["structural_invalidation"] = "UNKNOWN"
+    out = _b4_evaluate(f=optional_overlay)
+    assert out["state"] == "ENTRY_OPEN"
+    assert "STRUCTURAL_INVALIDATION_UNKNOWN" not in out["blockers"]
+
+    numeric_stop = _b4_facts()
+    numeric_stop["deterministic_gates"]["structural_invalidation"] = "UNKNOWN"
+    numeric_stop["quote"]["price"] = numeric_stop["geometry"]["invalidation_price"]
+    out = _b4_evaluate(f=numeric_stop)
+    assert out["state"] == "INVALIDATED"
+    assert "STRUCTURAL_INVALIDATION_BREACHED" in out["blockers"]
+
+
 def test_b4_distinct_incumbent_price_families_require_owner_basis_resolution():
     # Production law keeps live vendor prints raw while entry geometry is computed
     # on the adjusted store.  A resolved incumbent basis audit makes those two
