@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T04:34:54.447142+00:00",
-  "count": 2615,
+  "generated_at": "2026-09-22T04:50:01.200599+00:00",
+  "count": 2616,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -153,6 +153,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rerdwz2ob94-e3e252",
+      "title": "GOAL Kickstart Markets repricing around higher rates and oil prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:26Z",
+      "summary_points": [
+        "Rate/Energy Repricing: Fed/BoJ hikes (25bps), Brent >$100/bbl, US 2s10s flattest since 2025; credit resilient despite higher commodities - Equity Overvaluation: S&P 500 at 52% expensiveness (10y percentile), US HY spreads tight (268bp), negative credit spread minus equity risk premium (-1.23) - Credit Outperformance: US IG/EUR IG YTD +1.00%/+0.80% vs S&P 500/STOXX -0.15%, signaling relative value shift toward credit - Money Market Outflows: Persistent negative weekly flows (Ex 40-41) indicating liquidity concerns and amplified volatility risk - Credit-Driven Risk Shift: Tight US HY spreads (268bp) vs.",
+        "S&P 500 overvaluation, increasing downside risk if spreads widen - Equity Flow Dominance: Equity flows largest/fastest-growing (Ex 36), with EM/US/EU leading, while money markets show negative flows - Geopolitical Energy Risk: TTF/OAT-Bund spreads moving together (Ex 5), heightening European sovereign/energy risk repricing"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
       "language": "en",
       "needs_metadata": false
     },
