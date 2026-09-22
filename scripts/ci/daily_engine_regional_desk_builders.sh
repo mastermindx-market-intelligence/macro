@@ -44,6 +44,9 @@ fi
 # --- clusters: each internally ORDERED by its data deps; clusters mutually independent ---
 cl_markets() {
   brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities
+  # Real-path receipt: source store -> premium VM -> shipped Gold panel.
+  # Source-unavailable is honest/green; only a render-contract mismatch is red.
+  brun commodities_gold_premium_audit "audit China gold premium live path" scripts.audit_china_gold_premium --strict-render
   brun spr          "build strategic reserves (build_spr)"               scripts.build_spr
   brun forex        "build forex vector (build_forex)"                   scripts.build_forex
   brun bonds        "build bonds & bond-health (build_bonds)"            scripts.build_bonds
@@ -239,7 +242,7 @@ wait
 # check_builder_failstreaks, which globs *.rc and so catches a >=2-night
 # streak regardless of ORDER) — but a FIRST failure still passed silently,
 # with no log and no step-summary line for the TXI W1 chain tracker.
-ORDER="commodities spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
+ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
 echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
 for slug in $ORDER; do
   [ -f "$ART/$slug.log" ] || continue

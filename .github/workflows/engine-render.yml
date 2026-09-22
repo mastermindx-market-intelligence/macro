@@ -127,10 +127,10 @@ jobs:
           [ -x "$VENV/bin/python" ] || "$PYBIN" -m venv "$VENV"
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
-      - name: zstd parity for actions/cache (breadth caches are macOS-saved)
+      - name: zstd parity for remaining cache-backed breadth inputs
         run: |
           # actions/cache versions include the compression method: the collect lanes
-          # (macOS) save the breadth close caches with zstd, so a runner WITHOUT zstd
+          # save Russell/China/HK breadth caches with zstd, so a runner WITHOUT zstd
           # computes a different cache version and every restore silently misses —
           # 2026-07-18: render-linux had no zstd, builders saw no close panel, and the
           # HK standout board shipped 0 buys. Heal if passwordless sudo allows; warn
@@ -151,26 +151,11 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      # Restore the gitignored breadth/intraday caches (restore-only; the nightly `collect`
-      # job produces/saves them — we fall back via restore-keys to the most recent daily's).
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-engine-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-engine-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-engine-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The US S&P 500/600/400 panels are Git-tracked committed inputs and are
+      # read directly from checkout; reader jobs must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels. Russell, China,
+      # HK and intraday stores below are separate gitignored/cache-backed inputs
+      # and keep their existing restores.
       - name: restore Russell 2000 breadth close cache
         uses: actions/cache@v4
         with:

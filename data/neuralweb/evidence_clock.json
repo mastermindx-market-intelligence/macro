@@ -1,10 +1,10 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-09-18",
-  "generated_utc": "2026-09-18T08:04:55Z",
+  "generated_utc": "2026-09-18T19:00:20Z",
   "authority": "display_only",
   "summary": {
-    "n_rows": 315,
+    "n_rows": 316,
     "by_state": {
       "overdue": 29,
       "due": 45,
@@ -14,7 +14,7 @@
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 237
+      "accruing": 238
     },
     "n_acknowledged": 0,
     "top_due": {
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "74 due/overdue, 1 missing, 237 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "74 due/overdue, 1 missing, 238 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4870,
+        "n_open": 4994,
         "n_past_check_by": 3530
       },
       "allowed_actions": [
@@ -1059,7 +1059,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 16,
+        "n_open": 17,
         "n_past_check_by": 3
       },
       "allowed_actions": [
@@ -2613,7 +2613,6 @@
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "cortex",
           "government_revenue"
         ]
       },
@@ -2697,8 +2696,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 101174,
-        "n_with_falsifier": 929,
+        "n_claims": 101303,
+        "n_with_falsifier": 941,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -5620,6 +5619,38 @@
         "score"
       ],
       "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-16",
+      "as_of": "2026-09-18",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -9616,7 +9647,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 8,
+        "n_open": 9,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9648,7 +9679,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 70,
+        "n_open": 72,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9680,7 +9711,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 28,
+        "n_open": 29,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9804,12 +9835,12 @@
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-18",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 17,
-        "last_ts": "2026-08-31T06:21:57.531381+00:00"
+        "n_trials": 18,
+        "last_ts": "2026-09-18T08:49:36.116723+00:00"
       },
       "allowed_actions": [
         "inspect",

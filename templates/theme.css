@@ -150,6 +150,38 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
+  /* ── Macro Command tints (templates/macro_command.css) ────────────────────
+     color-mix on an added surface line is enforce-added-illegal; the mixes
+     live here so the surface only names tokens. --text/--info/--ok track
+     the theme (and the zh swap) at paint. Halo fill is currentColor at
+     calc(var(--mc-halo) * 100%): rest 12% on dark, lit 22% when the
+     signature :has() raises --mc-halo, cancelled (0) on light. Stance
+     wash is 0 dark / 6% light. --mc-accent-line keeps the dest-hover
+     second stop on --mq-line (macro_suite.css), not a 12% --text stand-in. */
+  --mc-ink-02: color-mix(in srgb, var(--text) 2%, transparent);
+  --mc-ink-05: color-mix(in srgb, var(--text) 5%, transparent);
+  --mc-ink-07: color-mix(in srgb, var(--text) 7%, transparent);
+  --mc-ink-08: color-mix(in srgb, var(--text) 8%, transparent);
+  --mc-ink-09: color-mix(in srgb, var(--text) 9%, transparent);
+  --mc-ink-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-ink-12: color-mix(in srgb, var(--text) 12%, transparent);
+  --mc-ink-14: color-mix(in srgb, var(--text) 14%, transparent);
+  --mc-ink-18: color-mix(in srgb, var(--text) 18%, transparent);
+  --mc-text-06: color-mix(in srgb, var(--text) 6%, transparent);
+  --mc-text-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-text-22: color-mix(in srgb, var(--text) 22%, transparent);
+  --mc-accent-10: color-mix(in srgb, var(--info) 10%, transparent);
+  --mc-accent-12: color-mix(in srgb, var(--info) 12%, transparent);
+  --mc-accent-22: color-mix(in srgb, var(--info) 22%, transparent);
+  --mc-accent-34: color-mix(in srgb, var(--info) 34%, transparent);
+  --mc-accent-line: color-mix(in srgb, var(--info) 38%, var(--mq-line));
+  --mc-halo: 0;
+  --mc-halo-fill: color-mix(in srgb, currentColor calc(var(--mc-halo) * 100%), transparent);
+  --mc-stance-ok: transparent;
+  --mc-stance-warn: transparent;
+  --mc-stance-bad: transparent;
+  --mc-stance-neutral: transparent;
+  --mc-stance-fill: var(--mc-stance-neutral);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -165,6 +197,10 @@ html[data-theme="light"] {
   --gbtn-brd:       color-mix(in srgb, #1c2430 50%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, #1c2430 66%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.7);
+  --mc-stance-ok: color-mix(in srgb, var(--ok) 6%, transparent);
+  --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
+  --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
+  --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
@@ -2366,3 +2402,991 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
+
+/* ===================== cash runway (_debt_maturity.html.j2, packet B-F09-3 second slice) =====================
+   Reuses the ladder's .dmw-lede / .dmw-null / .dmw-nullwhy tokens and the
+   same mod-ft footer. Dark/light treatment is inherited from the ladder panel
+   above (same section, same #debt-maturity / #cash-runway parent). No new
+   colours — same tokens as the ladder rules above. */
+.dmw-runway{margin-top:28px;padding-top:22px;
+  border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);}
+[data-theme="light"] .dmw-runway{
+  border-top-color:var(--hair);}
+/* end cash runway */
+
+/* account sheet: alert delivery preferences (B-F08-1a) */
+.mmacc-alerts{position:relative;padding-left:14px}
+.mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}
+.mmacc-alerts[data-on="true"]::before{background:linear-gradient(180deg,var(--ok),color-mix(in srgb,var(--ok) 26%,transparent));box-shadow:0 0 10px -3px color-mix(in srgb,var(--ok) 55%,transparent)}
+.mmacc-alerts[data-state="unknown"]::before{background:color-mix(in srgb,var(--muted) 40%,transparent);box-shadow:none}
+.mmacc-alerts[data-quiet="true"]::after{content:"";position:absolute;left:0;bottom:13px;width:2px;height:34%;border-radius:var(--r-ctl,8px);background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--ok) 70%,transparent) 0 4px,transparent 4px 8px)}
+.mmacc-k-lead{color:var(--text);font-weight:600}
+.mmacc-sublabel{font-size:var(--fs-label,11px);font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:12px 0 6px}
+button.mmacc-switch{width:34px;height:20px;border-radius:var(--r-pill,999px);background:var(--panel2);border:1px solid var(--line);position:relative;flex:none;padding:0;cursor:pointer;opacity:1;font-family:var(--font-ui,inherit);transition:background .18s ease,border-color .18s ease}
+button.mmacc-switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:var(--r-pill,999px);background:var(--muted);transition:transform .18s cubic-bezier(.2,.9,.3,1.1),background .18s ease}
+button.mmacc-switch[aria-checked="true"]{background:var(--ok);border-color:var(--ok)}
+button.mmacc-switch[aria-checked="true"]::after{transform:translateX(14px);background:var(--panel)}
+button.mmacc-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--link) 22%,transparent)}
+.mmacc-switch-sm{width:30px;height:18px}
+.mmacc-switch-sm::after{width:12px;height:12px}
+.mmacc-switch-sm[aria-checked="true"]::after{transform:translateX(12px)}
+.mmacc-field.mmacc-alert-detail{max-height:0}
+.mmacc-field.mmacc-alert-detail.open{max-height:min(80vh,960px)}
+.mmacc-select{appearance:none;background-image:none;cursor:pointer}
+.mmacc-timepair{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.mmacc-time{width:auto;min-width:0;flex:1 1 108px;margin-bottom:0}
+.mmacc-timesep{color:var(--muted);font-size:var(--fs-sm,12.5px);flex:none}
+.mmacc-hint-off,.mmacc-hint-unknown,.mmacc-hint-none{margin-top:7px}
+.mmacc-hint-unknown{color:var(--ink-warn,var(--warn))}
+:root[data-theme="light"] .mmacc-alerts{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:11px 12px 11px 14px;box-shadow:var(--card-shadow)}
+:root[data-theme="light"] .mmacc-alerts[data-on="true"]::before{background:var(--ok);box-shadow:none}
+:root[data-theme="light"] button.mmacc-switch[aria-checked="true"]::after{background:var(--panel);border:1px solid color-mix(in srgb,var(--text) 12%,transparent)}
+:root[data-theme="light"] .mmacc-time,:root[data-theme="light"] .mmacc-select{background:var(--panel)}
+@media (max-width:560px){.mmacc-timepair{gap:6px}.mmacc-time{flex:1 1 100%}.mmacc-timesep{display:none}}
+@media (prefers-reduced-motion:reduce){.mmacc-alerts::before,button.mmacc-switch,button.mmacc-switch::after{transition:none}}
+/* end account sheet: alert delivery preferences (B-F08-1a) */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .mx-spine — Unified Macro Dashboard regime spine (UD-B1 §3, spec §3)
+
+   The signature primitive of the Unified Macro Dashboard (archetype D,
+   regime_dashboard). One horizontal scale (Risk-off ←→ Risk-on) reused identically
+   by five market rows. Each row carries: today's position (solid marker), the
+   position it came from a month ago (hollow marker), a thin connector between
+   them, a signed travel figure, and a plain stance word.
+
+   Encoding rules (each is a law being obeyed, not a style choice):
+   • Position uses neutral geometry; the marker takes its stance's ink, NEVER a
+     category hue. Travel uses muted measurement ink + an explicit arrow, NEVER
+     --up / --down (this dodges the 红涨绿跌 flip — a travel figure means the same
+     thing in both languages).
+   • Stance ink encodes health, and health never flips: Act / Get ready → --ink-ok;
+     Watch — don't chase / Protect gains → --ink-warn; Stand aside / Ignore → --muted.
+     Three levels, achromatic by default; colour only where it means severity.
+   • Zone ticks at 25 / 50 / 75 are notches, not labels. The axis is anchored in
+     WORDS (Risk-off · Neutral · Risk-on), never in a bare 0–100.
+   • The subject market (e.g. US stocks) is the only marked subject, one per spine.
+   • The null row is designed: dashed rail, no marker, "Read being updated" chip.
+     Not a blank, not an em-dash, and never falsifier vocabulary.
+
+   Token substitution alone is never proof of a light design — the spine has
+   theme-specific mechanisms (the bloom vs ring on the subject marker; the rail
+   track border; the raw ink vs ink-rung state ink). See spec §5 row 2/3/8.
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* axis — one shared rail with notches */
+.mx-spine{
+  --mxsp-rail-h: 6px;
+  --mxsp-notch-w: 1px;
+  --mxsp-marker-d: 14px;
+  --mxsp-marker-d-subject: 18px;
+  --mxsp-rail-bg: color-mix(in srgb, var(--line) 70%, transparent);
+  --mxsp-rail-brd: transparent;
+  --mxsp-notch-bg: var(--line);
+  --mxsp-travel-ink: var(--ink-3);
+  --mxsp-zone-ink: var(--muted);
+  display:flex; flex-direction:column; gap:0;
+  padding: var(--sp-4,16px) 0 0;
+  font-family: var(--num, var(--font-mono));
+}
+.mx-spine-head{
+  display:grid; grid-template-columns: 150px 1fr 78px 168px;
+  gap:14px; align-items:center;
+  padding: 0 0 8px;
+  border-bottom:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.mx-spine-head > span{
+  font-size:var(--fs-micro); font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+}
+html[data-lang="zh"] .mx-spine-head > span{ letter-spacing:0; text-transform:none; }
+/* Spec §11 item 5: Noto Sans SC has no 600/800. The ZH ramp maps 800→Black
+   and 600→Medium (the file's proxy for PingFang SC / Noto Sans CJK SC); this
+   mapping is a documented decision, not an accident. ZH 390 evidence
+   confirms the rendered glyphs (美股 / 香港 / 避险 / 趋险) hold weight
+   contrast and stay inside the spec §1 column widths at the design floor. */
+
+/* a single row — five markets on one rail */
+.mx-spine-row{
+  display:grid; grid-template-columns: 150px 1fr 78px 168px;
+  gap:14px; align-items:center;
+  padding: 10px 0;
+  border-bottom:1px solid color-mix(in srgb, var(--line) 40%, transparent);
+}
+.mx-spine-row:last-of-type{ border-bottom:none; }
+.mx-spine-name{
+  font-size:var(--fs-md); font-weight:600; color:var(--text);
+  display:flex; flex-direction:column; gap:2px;
+}
+.mx-spine-name small{
+  font-size:var(--fs-micro); color:var(--muted); font-weight:400;
+}
+
+/* the rail with notches */
+.mx-spine-rail{
+  position:relative; height: var(--mxsp-rail-h);
+  background: var(--mxsp-rail-bg);
+  border: 1px solid var(--mxsp-rail-brd);
+  border-radius: var(--r-pill,999px);
+}
+/* notches at 25 / 50 / 75 (not labels — just visual ticks cutting through the rail) */
+.mx-spine-rail::before,
+.mx-spine-rail::after,
+.mx-spine-rail .mx-spine-n25,
+.mx-spine-rail .mx-spine-n50,
+.mx-spine-rail .mx-spine-n75{
+  content:""; position:absolute; top:50%; transform:translateY(-50%);
+  width: var(--mxsp-notch-w); height: calc(var(--mxsp-rail-h) + 8px);
+  background: var(--mxsp-notch-bg);
+}
+.mx-spine-rail .mx-spine-n25{ left:25%; }
+.mx-spine-rail .mx-spine-n50{ left:50%; }
+.mx-spine-rail .mx-spine-n75{ left:75%; }
+/* axis-anchor words sit just under the rail */
+.mx-spine-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px;
+  font-size:var(--fs-micro); font-weight:600; letter-spacing:.04em;
+  color:var(--mxsp-zone-ink);
+}
+.mx-spine-anchors .mx-spine-a-mid{ margin:0 auto; }
+html[data-lang="zh"] .mx-spine-anchors{ letter-spacing:0; }
+
+/* the marker (today) — solid disc in the stance's ink */
+.mx-spine-mark{
+  position:absolute; top:50%;
+  width: var(--mxsp-marker-d); height: var(--mxsp-marker-d);
+  border-radius:var(--r-pill,999px);
+  transform: translate(-50%, -50%);
+  background: var(--mxsp-mark-ink, var(--muted));
+  z-index:2;
+}
+/* the older marker (month-ago) — hollow */
+.mx-spine-prev{
+  position:absolute; top:50%;
+  width: 9px; height: 9px;
+  border-radius:var(--r-pill,999px);
+  transform: translate(-50%, -50%);
+  background: var(--panel);
+  border: 1.5px solid var(--mxsp-mark-ink, var(--muted));
+  z-index:1;
+  opacity:.55;
+}
+/* the thin connector between them */
+.mx-spine-conn{
+  position:absolute; top:50%; height: 1.5px;
+  background: var(--mxsp-mark-ink, var(--muted));
+  opacity:.4;
+  transform:translateY(-50%);
+  z-index:1;
+}
+/* the SUBJECT market marker — larger, with a soft bloom on dark / a 2px ring on light */
+.mx-spine-row[data-subject="1"] .mx-spine-mark{
+  width: var(--mxsp-marker-d-subject); height: var(--mxsp-marker-d-subject);
+  background: var(--mxsp-mark-ink, var(--ink-link));
+}
+html[data-theme="dark"] .mx-spine-row[data-subject="1"] .mx-spine-mark{
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--link) 55%, transparent))
+          drop-shadow(0 0 14px color-mix(in srgb, var(--link) 35%, transparent));
+}
+html[data-theme="light"] .mx-spine-row[data-subject="1"] .mx-spine-mark{
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--mxsp-mark-ink, var(--link)),
+              0 2px 4px rgba(20,30,50,.12);
+}
+
+/* stance ink — three levels, achromatic by default; colour only where it means severity */
+.mx-spine-row[data-stance="act"],
+.mx-spine-row[data-stance="get-ready"]{
+  --mxsp-mark-ink: var(--ink-ok);
+}
+.mx-spine-row[data-stance="watch"],
+.mx-spine-row[data-stance="protect"]{
+  --mxsp-mark-ink: var(--ink-warn);
+}
+.mx-spine-row[data-stance="stand-aside"],
+.mx-spine-row[data-stance="ignore"]{
+  --mxsp-mark-ink: var(--muted);
+}
+
+/* travel column — signed, muted measurement ink + explicit arrow (never --up/--down) */
+.mx-spine-travel{
+  font-size:var(--fs-md); font-weight:700;
+  font-variant-numeric: tabular-nums;
+  color: var(--mxsp-travel-ink);
+  display:flex; align-items:center; gap:5px;
+}
+.mx-spine-travel .mx-spine-arrow{
+  font-size: 12px; font-weight:700;
+  color: var(--mxsp-travel-ink);
+}
+
+/* stance chip on the right — uses .mx-stance tokens */
+.mx-spine-stance{ display:flex; justify-content:flex-start; }
+
+/* null row — dashed rail, no marker, "Read being updated" chip */
+.mx-spine-row[data-null="1"] .mx-spine-rail{
+  background: transparent;
+  border: 1px dashed var(--mxsp-rail-bg);
+}
+.mx-spine-row[data-null="1"] .mx-spine-mark,
+.mx-spine-row[data-null="1"] .mx-spine-prev,
+.mx-spine-row[data-null="1"] .mx-spine-conn{ display:none; }
+
+/* footnote (once per spine) */
+.mx-spine-foot{
+  margin-top:10px;
+  font-size:var(--fs-micro); color:var(--muted);
+  font-weight:400; line-height:1.5;
+}
+
+/* ── light theme specific mechanisms (spec §5 row 2/3/8) ──────────────────────
+   Token swap alone is NOT a light design. Three mechanisms intentionally differ:
+     • spine rail on white gains a 1px track border (neutral segments vanish on white)
+     • travel ink uses --ink-* rung (raw fill fails the 4.5:1 floor on white)
+     • subject marker becomes a 2px ring (bloom becomes a pastel stain on white).
+*/
+html[data-theme="light"] .mx-spine{
+  --mxsp-rail-brd: color-mix(in srgb, var(--text) 10%, var(--line));
+  --mxsp-notch-bg: var(--panel);
+  --mxsp-travel-ink: color-mix(in srgb, var(--ink-3) 92%, var(--text));
+  --mxsp-zone-ink: color-mix(in srgb, var(--muted) 88%, var(--text));
+}
+
+/* ── mobile 390 reduction (spec §7): stacked cards, NOT a squeezed table ──────
+   Scale survives; table geometry does not. Each row becomes two rows on the
+   card: row 1 = name + stance; row 2 = the same shared rail + travel figure.
+   The --mobile:1 opt-in lets the specimen preview the reduction at any
+   viewport (used in mockups/design_system/specimen.html §6.6); it does NOT
+   affect real production render — only fires alongside the @media query. */
+/* (Canonical @media (max-width:640px) spine rule is unified below in the
+   .ud-hero block — see UD-B1 §3. The older two-column variant lived here and
+   contradicted the spec §7 single-column + grid-template-areas form.) */
+/* specimen opt-in: when a `.mx-spine` carries `style="--mobile:1;"` (the
+   design_system specimen's §6.6 panel) the reduction also fires at any
+   viewport. Real production never sets this flag; the rule is scoped to
+   the specimen wrapper class so it cannot leak. */
+.mockup-spine-390 .mx-spine-head{ display:none; }
+.mockup-spine-390 .mx-spine-row{
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name    stance"
+    "rail    rail"
+    "travel  travel";
+  column-gap: 10px;
+  row-gap: 6px;
+  padding: 14px 0;
+}
+.mockup-spine-390 .mx-spine-name{ grid-area: name; flex-direction:row; align-items:center; justify-content:space-between; }
+.mockup-spine-390 .mx-spine-stance{ grid-area: stance; align-self:center; }
+.mockup-spine-390 .mx-spine-rail-wrap{ grid-area: rail; }
+.mockup-spine-390 .mx-spine-travel{ grid-area: travel; }
+/* end .mx-spine — UD-B1 §3 */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   Locked-content ghost — spec §11 item 4
+
+   The unified dashboard's locked tier surfaces (driver 4 / locked depth-link
+   previews) use a deliberately desaturated blur to read as "this content is
+   here, just not yours yet" — NOT as a smudge on white. The recipe is exact:
+     filter: blur(5px) saturate(.35) opacity ≈ .42
+
+   Dark keeps the shipped .46 from the light-only stocks sweep (the stocks sweep
+   was a light-only design; dark inherits the locked tier .42 to stay consistent
+   with the new spec). The light theme ships the spec's exact saturate(.35) +
+   opacity .42. (test_design_system checks .mx-tier-blurred across both themes.)
+   ════════════════════════════════════════════════════════════════════════════════ */
+.mx-tier-blurred--spec{ filter: blur(5px) saturate(.35); opacity:.42; }
+html[data-theme="dark"]  .mx-tier-blurred--spec{ opacity:.42; }
+/* end locked-content ghost */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .mx-stance — stance ink chip (UD-B1)
+
+   The hero & spine use a single chip class with a derived `--c` setter that
+   downstream rules consume (background, border, ink). Stance ink encoding:
+     act / get-ready   → --ink-ok
+     watch / protect   → --ink-warn
+     stand-aside / ignore → --muted
+     narrowing-pill    → --ink-warn (a derived specialty, not a third category)
+   Three levels, achromatic by default; colour only where it means severity.
+   ════════════════════════════════════════════════════════════════════════════════ */
+.mx-stance{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-label,11px); font-weight:700;
+  padding:4px 11px; border-radius:var(--r-pill,999px);
+  background:color-mix(in srgb, var(--c) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--c) 28%, var(--line));
+  color:color-mix(in srgb, var(--c) 78%, var(--text));
+  line-height:1;
+}
+.mx-stance--ok{ --c: var(--ink-ok); }
+.mx-stance--warn{ --c: var(--ink-warn); }
+.mx-stance--down{ --c: var(--ink-down); }
+.mx-stance--muted{ --c: var(--muted); }
+/* end .mx-stance */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .ud-hero — Unified Macro Dashboard hero (UD-B1, spec §1 / §3 / §5 / §7)
+
+   Verdict hero + score + progress bar + verdict rows + arc gauge (#3/#4/#5/#9/#10)
+   plus the regime spine (#11 quad map subsumed per spec §3) plus spec §6
+   "What changed" / "Drivers" / "Watching" / "Go deeper" blocks. Dark and light
+   are TWO art directions (per CLAUDE.md §Theme art direction): dark = command
+   center with luminance depth and restrained glow; light = research workspace
+   with cool canvas, hairline discipline, shadow instead of glow. Token swap
+   alone is never proof of a light design — the bloom→ring on the subject
+   marker is one of three intentionally differing mechanisms (see spec §5).
+   ════════════════════════════════════════════════════════════════════════════════ */
+body.page-macro #ud-hero{ margin-top:0; }
+body.page-macro .ud-hero-panel{
+  display:flex; flex-direction:column; gap:var(--sp-5,20px);
+}
+body.page-macro .ud-hero-head{
+  display:flex; align-items:center; gap:var(--sp-3,12px);
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-2,var(--muted));
+}
+html[data-lang="zh"] body.page-macro .ud-eyebrow{ letter-spacing:0; text-transform:none; }
+/* 390 floor — the EN uppercase + tracking still shreds the small eyebrow;
+   drop the tracking and uppercase so both locales render at the same weight. */
+@media (max-width:390px){
+  body.page-macro .ud-eyebrow{ letter-spacing:.04em; text-transform:none; font-size:10.5px; }
+}
+body.page-macro .ud-live{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  color:var(--ink-2,var(--muted));
+}
+body.page-macro .ud-live i{
+  width:7px; height:7px; border-radius:var(--r-pill,999px);
+  background:var(--ink-3,var(--muted));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3,var(--muted)) 18%, transparent);
+}
+/* R-D: live dot uses HEALTH tokens (ok/warn) — never direction tokens
+   (up/down), so it cannot flip red under the ZH 红涨绿跌 convention. */
+body.page-macro .ud-live--ok i{
+  background:var(--ink-ok,var(--up));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-ok,var(--up)) 22%, transparent);
+}
+body.page-macro .ud-live--warn i{
+  background:var(--ink-warn,var(--warn));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-warn,var(--warn)) 22%, transparent);
+}
+body.page-macro .ud-asof{
+  margin-left:auto;
+  font-size:11px; letter-spacing:.04em; color:var(--ink-3,var(--muted));
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
+body.page-macro .ud-hero-grid{
+  display:grid; grid-template-columns:660px 316px;
+  justify-content:space-between;
+  gap:var(--sp-5,20px) 36px; align-items:start;
+}
+@media (max-width:1280px){ body.page-macro .ud-hero-grid{ grid-template-columns:minmax(0,1fr) 316px; } }
+@media (max-width:860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
+
+body.page-macro .ud-verdict{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:0 10px;
+  font-size:var(--fs-display,46px); font-weight:800; line-height:.95;
+  letter-spacing:-.03em;
+  margin:4px 0 8px;
+}
+body.page-macro .ud-verdict > .l-en,
+body.page-macro .ud-verdict > .l-zh{
+  /* Per-locale phrase is its own flex item; the comma + qualifier are inline
+     within it so the gap can never strand the comma on its own line. The
+     inline-flex gap stays >0 so the comma hugs the verdict word with a real
+     word-space, never glued onto the next qualifier. */
+  display:inline-flex; align-items:baseline; flex-wrap:wrap;
+  row-gap:0; column-gap:0;
+}
+body.page-macro .ud-verdict > .l-en .ud-verdict-comma{ margin-right:.25em; }
+body.page-macro .ud-verdict > .l-en .ud-verdict-qualifier{ margin-left:.25em; }
+body.page-macro .ud-verdict-comma{ font-weight:800; color:var(--ink-1,var(--text)); }
+html[data-lang="zh"] body.page-macro .ud-verdict-comma{ display:none; }
+html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
+@media (max-width:390px){
+  /* Spec §7 390: two-tone pair wraps to 2 lines at 36px, gauge below. */
+  body.page-macro .ud-verdict{ font-size:36px; }
+  body.page-macro .ud-verdict > .l-en, body.page-macro .ud-verdict > .l-zh{
+    flex-basis:100%;
+  }
+}
+body.page-macro .ud-verdict-word--up{ color:var(--ink-up,var(--up)); }
+body.page-macro .ud-verdict-word--down{ color:var(--ink-down,var(--down)); }
+body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-macro .ud-verdict-comma{ font-size:var(--fs-display,46px); font-weight:800; color:var(--ink-1,var(--text)); }
+body.page-macro .ud-verdict-qualifier--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-macro .ud-verdict-qualifier--down{ color:var(--ink-down,var(--down)); }
+body.page-macro .ud-verdict-qualifier--muted{ color:var(--ink-3,var(--muted)); }
+
+body.page-macro .ud-clause,
+body.page-macro .ud-flip{
+  margin:4px 0 0; max-width:62ch;
+  font-size:var(--fs-md,15px); color:var(--text);
+}
+body.page-macro .ud-flip{ color:var(--ink-2,var(--muted)); font-size:var(--fs-sm,12.5px); }
+
+body.page-macro .ud-meta{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+}
+body.page-macro .ud-fired-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-label,11px); font-weight:700;
+  padding:4px 11px; border-radius:var(--r-pill,999px);
+  background:color-mix(in srgb, var(--act,var(--down)) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--act,var(--down)) 28%, var(--line));
+  color:color-mix(in srgb, var(--act,var(--down)) 78%, var(--text));
+}
+
+/* ── Gauge column ─────────────────────────────────────────────────────── */
+body.page-macro .ud-hero-gauge{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:8px 6px 0;
+  border-left:1px solid var(--line);
+  padding-left:var(--sp-4,16px);
+}
+@media (max-width:860px){ body.page-macro .ud-hero-gauge{ border-left:0; padding-left:0; } }
+body.page-macro .ud-score{
+  display:flex; align-items:baseline; gap:6px;
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-score-num{ font-size:var(--fs-num-xl,38px); font-weight:800; color:var(--ink-1,var(--text)); line-height:1; font-variant-numeric:tabular-nums; }
+body.page-macro .ud-score-out{ font-size:18px; font-weight:500; color:var(--muted); }
+body.page-macro .ud-score-label{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+html[data-lang="zh"] body.page-macro .ud-score-label{ letter-spacing:0; text-transform:none; }
+
+body.page-macro .ud-prog-wrap{ width:100%; margin-top:10px; }
+body.page-macro .ud-prog{
+  position:relative; height:8px; border-radius:var(--r-ctl,8px);
+  background:var(--tile,var(--panel2));
+}
+body.page-macro .ud-prog-fill{
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--up); border-radius:var(--r-ctl,8px);
+}
+body.page-macro .ud-prog-tick{
+  position:absolute; top:-3px; width:1px; height:14px;
+  background:var(--ink-3,var(--muted)); opacity:.55;
+}
+body.page-macro .ud-prog-pin{
+  position:absolute; top:50%; transform:translate(-50%,-50%);
+  width:3px; height:16px; background:var(--ink-1,var(--text)); border-radius:var(--r-ctl,8px);
+}
+body.page-macro .ud-prog-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px; font-size:var(--fs-micro,10px);
+  font-weight:600; color:var(--ink-3,var(--muted));
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-prog-mid{ margin:0 auto; }
+html[data-lang="zh"] body.page-macro .ud-prog-anchors{ letter-spacing:0; }
+
+body.page-macro .ud-arc{ width:100%; max-width:220px; height:auto; margin-top:6px; }
+body.page-macro .ud-arc-solid{ transition:stroke-dasharray .35s var(--ease-std,ease); }
+body.page-macro .ud-arc-track{ stroke:var(--line); }
+body.page-macro .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── §3 spine host — namespaced, governed in theme.css ────────────────── */
+body.page-macro .ud-spine-wrap{ margin-top:6px; }
+body.page-macro .ud-spine-foot{
+  margin:8px 0 0;
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  font-weight:400; line-height:1.5;
+}
+
+/* ── §6 What changed ──────────────────────────────────────────────────── */
+body.page-macro .ud-changed{ margin-top:4px; }
+body.page-macro .ud-changed .mx-chg-row{ padding:9px 0; }
+
+/* ── §6 Drivers 2×2 ───────────────────────────────────────────────────── */
+body.page-macro .ud-drivers{ margin-top:8px; }
+body.page-macro .ud-driver-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--gap-grid,18px);
+}
+@media (max-width:860px){ body.page-macro .ud-driver-grid{ grid-template-columns:1fr; } }
+body.page-macro .ud-driver{
+  padding:14px 16px;
+  display:flex; flex-direction:column; gap:8px;
+}
+body.page-macro .ud-driver-head{ font-size:var(--fs-h3,14px); font-weight:800; color:var(--ink-1,var(--text)); margin:0; }
+body.page-macro .ud-driver-body{ margin:0; font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted)); }
+body.page-macro .ud-driver--locked{ position:relative; padding:0; min-height:90px; overflow:hidden; }
+body.page-macro .ud-driver--locked .mx-tier-blurred--spec{ padding:14px 16px; }
+body.page-macro .ud-driver-lock{
+  position:absolute; inset:auto 0 0 0;
+  padding:6px 16px; font-size:11px; font-weight:700;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  text-align:center; color:var(--ink-2,var(--muted));
+}
+
+/* ── §6 Watching list — three if→what rows ───────────────────────────── */
+body.page-macro .ud-watching{ margin-top:6px; }
+body.page-macro .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-macro .ud-watch-item{
+  padding:10px 14px;
+  border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius:var(--r-ctl,8px);
+  background:var(--panel2);
+  font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted));
+  line-height:1.5;
+}
+/* Per-cell locale display law: BOTH head AND body cells paint in each locale.
+   EN locale hides ZH spans (global .l-zh{display:none}); ZH locale hides EN.
+   Pre-fix only unhide one head + one body, leaving the other two blank. */
+body.page-macro .ud-watch-item-head{ display:none; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px; }
+body.page-macro .ud-watch-item-body{ display:none; font-weight:400; line-height:1.5; color:var(--ink-2,var(--muted)); }
+html:not([data-lang="zh"]) body.page-macro .ud-watch-item-head.l-en{ display:block; }
+html:not([data-lang="zh"]) body.page-macro .ud-watch-item-body.l-en{ display:block; }
+html[data-lang="zh"] body.page-macro .ud-watch-item-head.l-zh{ display:block; }
+html[data-lang="zh"] body.page-macro .ud-watch-item-body.l-zh{ display:block; }
+/* Each .ud-watch-item is a flex row carrying head + body cells. */
+body.page-macro .ud-watch-item{ display:flex; flex-direction:column; gap:2px; }
+/* Desktop: full list visible (force-open via specificity that beats the UA
+   `details:not([open]) > :not(summary) { display: none }` rule — this selector
+   has (0,3,3) vs the UA's (0,2,2)), summary row hidden, <details> marker
+   hidden so the summary doesn't render its disclosure triangle at 1440. R-J
+   round 7 — the wrapper is now <details><summary>…</summary><ul>…</ul></details>
+   for tap-open semantics at 390, but desktop forces the list open via CSS. */
+body.page-macro .ud-watch-details:not([open]) .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-macro .ud-watch-summary{ display:none; }
+body.page-macro .ud-watch-details > summary::-webkit-details-marker{ display:none; }
+body.page-macro .ud-watch-details > summary{ list-style:none; }
+body.page-macro .ud-driver-count{ display:none; }
+
+/* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
+body.page-macro .ud-deeper{ margin-top:6px; }
+body.page-macro .ud-deeper-rail{
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+body.page-macro .ud-depth{
+  display:inline-flex; align-items:center;
+  padding:6px 12px;
+  font-size:var(--fs-sm,12.5px); font-weight:600;
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius:var(--r-pill,999px); color:var(--text);
+  text-decoration:none;
+  transition:border-color .14s var(--ease-std,ease), background .14s var(--ease-std,ease);
+}
+body.page-macro .ud-depth:hover{
+  border-color:color-mix(in srgb, var(--link) 50%, var(--line));
+  background:color-mix(in srgb, var(--link) 6%, var(--panel2));
+}
+
+/* ── Page footer (spec §6) ────────────────────────────────────────────── */
+body.page-macro .ud-foot{
+  margin-top:8px; padding-top:14px;
+  border-top:1px solid var(--line);
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  text-align:center;
+}
+
+/* ── Light theme: depth + bloom→ring + ink rungs (spec §5 row 2/3/8) ──
+   Three mechanisms intentionally differ:
+     • panel surface switches from panel2-tinted to pure panel-white with
+       a 1px ring + soft cast shadow (the canvas stays perceptibly cooler).
+     • the subject marker bloom becomes a 2px ring (a pastel stain on white).
+     • the arc stroke darkens to --up-light for 4.5:1 on white. */
+html[data-theme="light"] body.page-macro .ud-hero-panel{
+  background:var(--panel);
+  box-shadow:0 1px 3px color-mix(in srgb, var(--text) 7%, transparent),
+             0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent);
+}
+html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ────── */
+@media (max-width:390px){
+  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-macro .ud-verdict{ font-size:36px; }
+  body.page-macro .ud-driver-grid{ gap:var(--sp-3,12px); }
+}
+/* ── Mobile 640 reduction — spine as stacked cards (spec §7 row 1) ────
+   Stance chip joins the name on row 1; the rail + travel form row 2;
+   column heads hide. The .mockup-spine-390 wrapper class also forces the
+   640 layout at any viewport so the specimen page previews the floor. */
+@media (max-width:640px){
+  body.page-macro .mx-spine-head{ display:none; }
+  body.page-macro .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  body.page-macro .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  body.page-macro .mx-spine-name{ grid-area:name; }
+  body.page-macro .mx-spine-rail-wrap{ grid-area:rail; }
+  body.page-macro .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  body.page-macro .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+  /* Display the same in the specimen via .mockup-spine-390 wrapper class. */
+  .mockup-spine-390 .mx-spine-head{ display:none; }
+  .mockup-spine-390 .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  .mockup-spine-390 .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  .mockup-spine-390 .mx-spine-name{ grid-area:name; }
+  .mockup-spine-390 .mx-spine-rail-wrap{ grid-area:rail; }
+  .mockup-spine-390 .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  .mockup-spine-390 .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+}
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ──────
+   1. Verdict two-tone pair wraps to 2 lines at 36px (no mid-word hyphen).
+   2. Drivers become a horizontal SWIPE STRIP — cards at ~86% width, with a
+      `1 / 3` counter overlay; the clipped second card is the affordance.
+      Locked (#4) hidden — same demotion rule as the desktop locked content.
+   3. Watching collapses to ONE DISCLOSURE ROW — title, count `3`, chevron,
+      plus a one-line preview of the first condition. Windows footnote stays. */
+@media (max-width:390px){
+  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-macro .ud-verdict{ font-size:36px; }
+
+  /* Drivers → swipe strip. */
+  body.page-macro .ud-driver-grid{
+    display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto;
+    grid-template-columns:none;
+    scroll-snap-type:x mandatory;
+    padding-bottom:4px;
+    margin:0 -8px; padding-left:8px; padding-right:8px;
+  }
+  body.page-macro .ud-driver{
+    flex:0 0 86%; scroll-snap-align:start; min-width:0;
+  }
+  body.page-macro .ud-driver--locked{ display:none; }
+
+  /* Driver counter chip — `1 / 3` badge that floats over the strip's right
+     edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
+  body.page-macro .ud-driver-count{ display:inline-flex; }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */
+
+/* ── Mobile ≤640px watching disclosure (R-L BLOCKER-1 fix) ─────────────
+   At ≤640px the inline state JS in templates/dashboard.html.j2 removes the
+   `open` attribute on .ud-watch-details so the <summary> disclosure row takes
+   over. The summary chrome shows by default; the list is hidden until the
+   user taps the disclosure row (the UA `:not([open])` rule handles that —
+   CSS cannot override it, which is why the DOM state is the lawful fix). */
+@media (max-width:640px){
+  body.page-macro .ud-watch-item{ display:none; }
+  body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
+  body.page-macro .ud-watch-summary{
+    display:flex; flex-direction:column; align-items:stretch; gap:6px;
+    padding:10px 14px;
+    border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    border-radius:var(--r-ctl,8px);
+    background:var(--panel2);
+    cursor:pointer;
+  }
+  body.page-macro .ud-watch-summary-row{
+    display:flex; align-items:center; gap:10px;
+  }
+  body.page-macro .ud-watch-summary-h{ flex:1; font-weight:700; color:var(--ink-1,var(--text)); }
+  body.page-macro .ud-watch-summary-ct{
+    font-size:var(--fs-sm,12.5px); font-weight:600;
+    color:var(--ink-2,var(--muted));
+  }
+  body.page-macro .ud-watch-summary-chev{
+    color:var(--ink-2,var(--muted)); font-size:18px;
+  }
+  body.page-macro .ud-watch-summary-preview{
+    font-size:var(--fs-sm,12.5px); line-height:1.5;
+    color:var(--ink-2,var(--muted));
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   UD-B2-W1 — Vol-weather sub-row inside the mx5 scorecard
+   (.mx5-sc-left). The fold-in: chips previously lived in
+   #dlg-sentiment as a sibling section; they now live inside
+   the scorecard left column, below its dial + scar chips.
+   Scoped to body.page-macro .mx5-sc-vw so the strip stays a
+   one-off — no global rules. #sx-risk-v2 is not a host.
+
+   Dark treatment: calm/breeze/gust/storm glyphs in their own
+   severity color (--up/info/warn/down), each row on a tinted
+   --panel2 cell with a hairline --line border, eyebrow in
+   --isle-color (the risk token). Reads like an instrument
+   strip on a calm command-center surface.
+
+   Light treatment: same geometry, but every tinted --panel2
+   cell becomes a soft hairline-bordered white card; the
+   glyphs keep their severity colors (they are the same
+   semantic meaning in both themes); the eyebrow ink-3 tone
+   softens so the header doesn't shout against the white
+   panel. The visual identity stays "risk instrument" — not
+   "risk callout" — so a calm day reads as one calm row, not
+   as a louder headline. -#}
+
+/* ── Strip container ── */
+body.page-macro .mx5-sc-vw .sx-vw-strip{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:10px;
+  padding:10px 12px 12px;
+  border-top:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background:color-mix(in srgb, var(--panel2) 56%, transparent);
+  border-radius:inherit;
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-strip{
+  background:color-mix(in srgb, var(--panel2) 30%, var(--panel) 70%);
+  border-top-color:color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+/* ── Eyebrow ── */
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--isle-color, var(--ink-3));
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:2px;
+}
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow::after{
+  content:'';flex:1;height:1px;
+  background:color-mix(in srgb, var(--isle-color, var(--line)) 28%, transparent);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  color:color-mix(in srgb, var(--isle-color, var(--ink-3)) 92%, transparent);
+}
+
+/* ── Row: glyph · mid · tier ── */
+body.page-macro .mx5-sc-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 70px;
+  align-items:center;
+  gap:10px;
+  padding:6px 8px;
+  border-radius:var(--r-ctl,8px);
+  border:1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-row{
+  background:color-mix(in srgb, var(--panel) 100%, transparent);
+  border-color:color-mix(in srgb, var(--line) 75%, transparent);
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+
+/* ── Glyph colour is class-driven (one-integer law: tier-word only, no values) ── */
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sg-wx{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sg-wx{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sg-wx{color:var(--muted);opacity:.6;}
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:18px;height:18px;display:block;}
+
+/* ── Mid column ── */
+body.page-macro .mx5-sc-vw .sx-vw-mid{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+}
+body.page-macro .mx5-sc-vw .sx-vw-name{
+  font-size:12px;font-weight:700;color:var(--ink-1);
+  line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.page-macro .mx5-sc-vw .sx-vw-read{
+  font-size:11px;line-height:1.45;color:var(--ink-2);
+  /* Wrap, never truncate: the read sentence is the user-facing message; clipping
+     mid-sentence at 390 is unreadable. Names alone get ellipsis if needed. */
+  overflow-wrap:anywhere;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-name{color:var(--text);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-read{color:color-mix(in srgb, var(--text) 78%, transparent);}
+
+/* ── Tier word (right column): calm / breeze / gust / storm. Bilingual side-by-side. ── */
+body.page-macro .mx5-sc-vw .sx-vw-tier{
+  font-size:11px;font-weight:700;text-align:right;letter-spacing:.02em;
+  color:var(--ink-2);
+  display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  white-space:nowrap;
+}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-en{font-size:11px;line-height:1.1;}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:10px;line-height:1.1;color:var(--ink-3);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sx-vw-tier{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sx-vw-tier{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sx-vw-tier{color:var(--ink-3);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier{color:color-mix(in srgb, var(--text) 78%, transparent);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:color-mix(in srgb, var(--text) 55%, transparent);}
+
+/* ── Mobile (≤560px): tighten padding, allow mid column to wrap freely ── */
+@media(max-width:560px){
+  body.page-macro .mx5-sc-vw .sx-vw-strip{padding:8px 10px 10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 64px;
+    gap:8px;padding:6px 8px;
+  }
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{width:22px;height:22px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:16px;height:16px;}
+  body.page-macro .mx5-sc-vw .sx-vw-name{font-size:11px;white-space:normal;}
+  body.page-macro .mx5-sc-vw .sx-vw-read{font-size:10.5px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier{font-size:10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:9px;}
+}
+
+/* Percentile-bar mark moved from dashboard.html.j2 (governed CSS).
+   --r-pill on a 12x12 box is a circle (was 50%). Border is --panel. */
+.sg-pos-mark{
+  position:absolute;top:-3px;width:12px;height:12px;
+  border-radius:var(--r-pill,999px);transform:translateX(-50%);
+  background:var(--muted);border:2px solid var(--panel);
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+
+/* ── markets.html risk-regime strip (.mrs) ──────────────────────────────────
+   Compact three-row read between the cycle overlay and today's positions.
+   Reuses .mx-stance--{ok,warn,down,muted}. No new token family.
+   Dark: a lifted panel and a 1px inset edge (luminance, no outer glow).
+   Light: the white card, a hairline, and the card shadow (shadow, not glow). */
+.mrs{
+  margin:var(--sp-4,16px) 0;
+  padding:var(--sp-4,16px);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  background:var(--panel);
+  color:var(--text);
+}
+html[data-theme="dark"] .mrs{
+  background:color-mix(in srgb, var(--panel) 86%, var(--text));
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+}
+html[data-theme="light"] .mrs{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+/* zh swaps --down to green (red = up). Risk-off is a danger stance, not a
+   price candle, so this pill stays on --ink-act, which does not swap.
+   Otherwise 风险规避 paints the same green family as 风险偏好. */
+html[data-lang="zh"] .mrs .mx-stance--down{ --c: var(--ink-act); }
+.mrs-hd{ margin:0 0 var(--sp-3,12px); }
+.mrs-title{
+  margin:0;
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  letter-spacing:0;
+  color:var(--text);
+}
+.mrs-sub{
+  margin:var(--sp-1,4px) 0 0;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.45;
+  color:var(--muted);
+}
+.mrs-rows{ display:flex; flex-direction:column; }
+.mrs-row{
+  display:grid;
+  grid-template-columns:minmax(8rem,12rem) auto minmax(0,1fr) auto;
+  gap:var(--sp-3,12px);
+  align-items:center;
+  padding:var(--sp-3,12px) 0;
+  border-top:1px solid var(--line);
+}
+.mrs-row:first-child{ border-top:0; padding-top:0; }
+.mrs-name{
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  color:var(--text);
+}
+.mrs-state,.mrs-do{ margin:0; }
+.mrs-caveat{ position:relative; justify-self:end; }
+.mrs-caveat-btn{
+  font:inherit;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.3;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:var(--r-pill,999px);
+  padding:4px 10px;
+  cursor:pointer;
+}
+html[data-theme="dark"] .mrs-caveat-btn{
+  background:color-mix(in srgb, var(--panel2) 70%, transparent);
+  color:var(--ink-2,var(--muted));
+}
+html[data-theme="light"] .mrs-caveat-btn{
+  background:var(--panel);
+  color:var(--muted);
+  box-shadow:none;
+}
+/* Tier-2 caveat: clipped out of the glance until hover or keyboard focus.
+   Kept in the tree so aria-describedby can point at it. Not a title= tooltip. */
+.mrs-pop{
+  position:absolute;
+  z-index:3;
+  right:0;
+  top:calc(100% + 6px);
+  box-sizing:border-box;
+  padding:var(--sp-3,12px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+  font-size:var(--fs-sm,12.5px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:left;
+  white-space:normal;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  height:1px;
+  width:1px;
+  overflow:hidden;
+}
+html[data-theme="dark"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:none;
+}
+html[data-theme="light"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:var(--popover-shadow);
+}
+.mrs-caveat:hover .mrs-pop,
+.mrs-caveat:focus-within .mrs-pop{
+  clip:auto;
+  clip-path:none;
+  height:auto;
+  width:min(36rem,80vw);
+  overflow:visible;
+}
+@media (max-width:640px){
+  .mrs{ padding:var(--sp-3,12px); }
+  .mrs-row{
+    grid-template-columns:1fr;
+    gap:var(--sp-2,8px);
+    align-items:start;
+  }
+  .mrs-caveat{ justify-self:start; }
+  .mrs-pop{ left:0; right:auto; }
+}

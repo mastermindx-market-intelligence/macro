@@ -445,7 +445,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-6efa09bfb9fa6111"
+    "predecessor_generation_id": "consumer_payments-US-04e1f36a55c0bac1"
   },
   "drivers": {
     "balance_sheet": [
@@ -538,11 +538,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-18T04:29:28Z",
+    "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "8c91e3249d5acd3c702cde8b0e55f5875c0cf562",
-    "content_sha256": "04e1f36a55c0bac1bdf9ffcfd70dbc9e5e7968ff6433e3a8948eff6e7156ecca",
-    "generation_id": "consumer_payments-US-04e1f36a55c0bac1",
+    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
+    "content_sha256": "35dd83ebfa54570a27e91aecc2325231c16feec147174fa6db90b685c6ab10aa",
+    "generation_id": "consumer_payments-US-35dd83ebfa54570a",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -566,7 +566,9 @@
       "dx": 3.14,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "cash_flow_momentum",
+      "y_axis_id": "credit_stress"
     },
     "prior_state": {
       "effective_date": "2026-07-01",

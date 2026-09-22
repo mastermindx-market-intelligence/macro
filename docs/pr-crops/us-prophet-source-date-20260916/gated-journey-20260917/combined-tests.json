@@ -1,0 +1,24 @@
+{
+  "tree": "f7c7533043dd2901c4462a446c133d2cbe601aba",
+  "returncode": 0,
+  "summary": "555 passed in 58.91s",
+  "seconds": 60.85,
+  "suites": [
+    "tests/test_us_breadth_completed_close.py",
+    "tests/test_breadth_split_seam.py",
+    "tests/test_russell_breadth.py",
+    "tests/test_universe_split_seam.py",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_arena_clock_parity.py",
+    "tests/test_prophet_plan_chronology_audit.py",
+    "tests/test_us_completed_session_panel.py",
+    "tests/test_prophet_whynot_receipts.py",
+    "tests/test_p0_prophet_candidate_board.py"
+  ],
+  "source_files_checked": 6447,
+  "source_files_changed": [],
+  "production": false,
+  "provider_calls": 0
+}

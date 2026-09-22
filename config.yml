@@ -576,8 +576,11 @@ polygon:
   # open interest the free Cboe feed's history discards and that CANNOT be backfilled
   # (OI is point-in-time only). Snapshots the chain each day -> a raw per-strike store
   # so any dealer-gamma variant can be recomputed later from real OI. DISPLAY/RESEARCH
-  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret); the
-  # plan is stocks+options entitled — index/futures/fx/crypto are NOT.
+  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret).
+  # Do not infer cross-asset access from this block: the committed 2026-08-08
+  # capability manifest is endpoint-grain and records fx_prev + crypto_prev as
+  # entitled while indices_snapshot is not_entitled. Cross-asset consumers must
+  # bind their exact endpoint and the governing license/entitlement record.
   base_url: https://api.polygon.io
   api_key_env: POLYGON_API_KEY
   retries: 3
@@ -3746,7 +3749,7 @@ live_flow:
   name_floor: 250000        # $ gross premium notability floor for single names
   retention_hours: 24       # trailing event window in feed_current.json
   state_retention_days: 5   # local day_state_*.json files kept (newest N sessions; current day never pruned)
-  top_names: 100            # single-name roots appended after ETF anchors
+  top_names: 128            # bounded rotating single-name roots after ETF anchors
   near_dte_cap_days: 90     # current-day fallback: cap per-expiration pulls to <=90 DTE (near-dated flow, where notable premium lives)
   # etf_anchors: []         # defaults to 22 anchors (see live_flow_poller._resolve_universe)
   # Flow-Surface store (scripts/build_flow_surface.py) — per-strike net-premium grids for the
@@ -4237,6 +4240,29 @@ commodities:
     copper: ["HG=F", cot_copper, industrial]
     oil:    ["CL=F", cot_oil,    energy]
 
+  # Gold-only China physical-premium monitor. Provider-neutral refs are filled
+  # ONLY after the applicable Shanghai/London/FX source rights are accepted.
+  # Empty legs deliberately render an honest unavailable state; never substitute
+  # the Yahoo futures price spine, an ETF, or another unofficial quote.
+  china_gold_premium:
+    canonical: {}                  # SHAUPM + LBMA Gold Price AM + USDCNY
+    intraday: {}                   # optional true intraday method; kept separate
+    close_proxy:                   # indicative, close-aligned; never spliced into canonical history
+      sge:
+        group: gold_china_basis
+        name: sge_au9999
+        column: rmb_per_g
+        source_label: Shanghai Gold Exchange Au99.99
+        entitled: true
+      global:
+        group: gold_china_basis
+        name: xaucny_spot
+        column: cny_per_oz
+        source_label: Global XAU/CNY spot
+        entitled: true
+      max_skew_minutes: 2
+      max_age_days: 4
+
   # Broad commodity roster for the SECTOR INDEX + breadth/trend-diversity engine
   # (engine/commodity_index.py). DISPLAY-TIER: these members get the generic price
   # technical + MTF + cycle stack, NOT the per-asset DSR calibration / alerts that
@@ -4562,10 +4588,13 @@ macro_news:
   enabled: true                   # MASTER SWITCH for the GDELT fetch + LLM brief
   lang: eng
   window_days: 4                  # fetch the last N days of macro news
-  max_records: 200                # candidates pulled from GDELT before filtering
+  max_records: 200                # candidates pulled PER GDELT sub-query before filtering
+                                  # (the term set goes out as several bounded
+                                  #  sub-queries — see engine/macro_news._queries)
   max_show: 36                    # headlines shown after filtering (accordion handles any length)
   min_importance_score: 34        # drops official/wire plumbing that is not macro-relevant
-  min_request_interval_s: 6       # GDELT pacing
+  min_request_interval_s: 6       # UNUSED — GDELT pacing is ONE shared floor for every
+                                  # caller: set gdelt.min_request_interval_s instead
   gdelt_attempts: 2
   gdelt_timeout_s: 15
   use_official_feeds: true        # BEA/BLS/Census/Fed/TreasuryDirect/SEC RSS bundle
