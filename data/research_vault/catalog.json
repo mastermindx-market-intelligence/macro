@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T20:06:47.499202+00:00",
-  "count": 2660,
+  "generated_at": "2026-09-22T20:36:52.315014+00:00",
+  "count": 2662,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -118,6 +118,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-i3gcewyka2j-849e6e",
+      "title": "BMW (BMWG.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:38Z",
+      "summary_points": [
+        "China EV Product Momentum: New iX3 (Nov 2026), i3 LWB (Q1 2027), iX5 launches target resilient BEV segment; >100k iX3 order book extends to 2027, countering ICE mix-driven 20% YTD China volume decline.",
+        "Restructuring & Buyback Acceleration: FY26 earnings pressured by >€1bn FX/raw-material headwinds; buyback accelerated (€625m tranche) via balance sheet strength, with CMD (29-30 Sept) to define restructuring scope and mid-term margin targets.",
+        "European Neue Klasse Validation: Record iX3 order book (>100k units) and margin parity with Gen6 batteries offset cost inflation; China pricing differences and workforce restructuring remain near-term risks.",
+        "CMD Catalyst for Capital Allocation: Upcoming CMD (29-30 Sept) to set mid-term margin ambition and China profitability trajectory (lower cost base from 2028), driving near-term capital return strategy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4td7o6oqoil-9942ad",
       "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
       "institution": "Goldman Sachs",
@@ -192,6 +212,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c2moug1j7fy-a11139",
+      "title": "GS MidDay Color US Equities Mid Day Color 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:29:08Z",
+      "summary_points": [
+        "Index Dispersion & AI Momentum: NDX +38bps (AI-driven new highs) vs SPX flat; Semis/memory/AI big tech (AAPL/MU/NVDA) leading, while MSFT/AMZN/JPM lagging; Consumer Agentic AI (META Muse) driving momentum.",
+        "AI Spillover Impact: Negative AI spillover in Financials/Insurance sectors despite stable crude (<$100), with AGENTS (e.g., GOOGL Gemini 4.0) becoming key conversation drivers.",
+        "Sector Rotation: Clear divergence between AI-focused semiconductors/memory (up) and traditional big tech/financials (down), signaling structural AI trade dominance.",
+        "Geopolitical Neutrality: Iran headlines (UN SoH, Saudi pipeline) failed to disrupt crude prices (<$100), indicating minimal near-term market impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
