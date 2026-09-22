@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T12:05:43.195046+00:00",
-  "count": 2637,
+  "generated_at": "2026-09-22T12:21:11.565870+00:00",
+  "count": 2638,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-tdu9auuayaf-e90682",
+      "title": "GS Quinn MSCI EM Futures Widespread Selling in Mid September 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:05Z",
+      "summary_points": [
+        "EM Positioning Surge: MSCI EM non-dealer net positioning surged from ~$30B (Oct 2024) to >$50B (Sep 2026), driven by accelerating institutional inflows, particularly in late 2025–2026.",
+        "EM Funding Liquidity Shock: Sharp 85-point drop in MSCI EM funding (Mar 2026, ~95→~10) signals acute liquidity stress, with persistent pressure (Jul–Sep 2026 decline to ~25) raising debt sustainability and currency risk concerns.",
+        "Funding Recovery Reversal: Temporary post-Mar 2026 recovery to ~80 (Jun 2026) reversed sharply to ~25 by Sep 2026, indicating deteriorating conditions despite short-term relief."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-4zyqktnbhxh-4e9797",
       "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",
