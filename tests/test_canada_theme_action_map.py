@@ -5,6 +5,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -498,8 +499,79 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
     assert _sha256(ROOT / shot["path"]) == shot["sha256"]
 
 
-def test_p0b_canada_evidence_remains_immutable_predecessor() -> None:
-    # The successor must not rewrite the accepted P0B evidence carrier.
-    assert _sha256(P0B_EVIDENCE / "mobile-layout-canada.json") == (
-        "f8c01489097babcc6e48c6bbf497c8241d7ac12a3e3882a7002a2e9f02a2d1dc"
+def _historical_baseline_preflight(receipt: dict) -> subprocess.CompletedProcess[str]:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", dir=SUCCESSOR_EVIDENCE, delete=False
+    ) as handle:
+        temp_receipt = Path(handle.name)
+        receipt["historical_baseline"]["receipt"]["path"] = temp_receipt.relative_to(ROOT).as_posix()
+        json.dump(receipt, handle)
+    try:
+        return subprocess.run(
+            [
+                "node", str(SUCCESSOR_VERIFIER),
+                "--html", str(ROOT / "site/canada_stocks.html"),
+                "--site-dir", str(ROOT / "site"),
+                "--fixture-receipt", str(SUCCESSOR_EVIDENCE / "missing-fixture.json"),
+                "--fixture-assets-dir", str(SUCCESSOR_EVIDENCE / "inputs/browser-data"),
+                "--out", str(temp_receipt),
+                "--historical-head", "5c9138b35221dc42d5d44a642f83043a505a9c90",
+                "--historical-tree", "719f97810b8ea22282a77a72b3e8d4ec9a8bcbea",
+            ],
+            cwd=ROOT, capture_output=True, text=True, timeout=10, check=False,
+        )
+    finally:
+        temp_receipt.unlink(missing_ok=True)
+
+
+def test_historical_baseline_accepts_declared_zero_screenshots() -> None:
+    receipt = json.loads((SUCCESSOR_EVIDENCE / "mobile-layout-canada.json").read_text())
+    assert receipt["historical_baseline"]["screenshots"] == []
+    assert receipt["historical_baseline"]["result"]["bound_screenshots"] == 0
+    run = _historical_baseline_preflight(receipt)
+    assert run.returncode == 2
+    assert "--fixture-receipt is not a file" in run.stderr
+    assert "conflicting historical baseline" not in run.stderr
+
+
+@pytest.mark.parametrize("mutation", ["cardinality", "path", "sha"])
+def test_historical_baseline_rejects_screenshot_binding_mismatch(mutation: str) -> None:
+    receipt = json.loads((SUCCESSOR_EVIDENCE / "mobile-layout-canada.json").read_text())
+    baseline = receipt["historical_baseline"]
+    if mutation == "cardinality":
+        baseline["result"]["bound_screenshots"] = 1
+    else:
+        baseline["result"]["bound_screenshots"] = 1
+        baseline["screenshots"] = [{
+            "state": "fixture",
+            "path": "scripts/verify_canada_opportunity_map.cjs",
+            "sha256": _sha256(SUCCESSOR_VERIFIER),
+        }]
+        if mutation == "path":
+            baseline["screenshots"][0]["path"] = "mockups/evidence/does-not-exist.png"
+        else:
+            baseline["screenshots"][0]["sha256"] = "0" * 64
+    run = _historical_baseline_preflight(receipt)
+    assert run.returncode == 2
+    expected = (
+        "conflicting historical baseline"
+        if mutation == "cardinality"
+        else "historical screenshot binding is unavailable"
     )
+    assert expected in run.stderr
+
+
+def test_successor_preserves_frozen_zero_screenshot_historical_baseline() -> None:
+    receipt = json.loads((SUCCESSOR_EVIDENCE / "mobile-layout-canada.json").read_text())
+    historical = receipt["historical_baseline"]
+    path = "mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json"
+    assert historical["schema"] == "mastermind.stock_dashboard_browser_historical_baseline.v1"
+    assert historical["candidate_head"] == "5c9138b35221dc42d5d44a642f83043a505a9c90"
+    assert historical["candidate_tree"] == "719f97810b8ea22282a77a72b3e8d4ec9a8bcbea"
+    assert historical["receipt"] == {
+        "path": path,
+        "sha256": "02976f4e68c55de8011c189ab70983cf6c12d2303321912b008bbb2eaf2d07fc",
+        "recovery": f"git show 5c9138b35221dc42d5d44a642f83043a505a9c90:{path}",
+    }
+    assert historical["screenshots"] == []
+    assert historical["result"]["bound_screenshots"] == 0

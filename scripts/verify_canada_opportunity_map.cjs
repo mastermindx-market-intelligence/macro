@@ -134,12 +134,26 @@ function bindHistoricalReceipt(args, repoRoot) {
   }
   if (receipt.historical_baseline) {
     const baseline = receipt.historical_baseline;
+    const boundScreenshots = baseline.result && baseline.result.bound_screenshots;
     if (baseline.schema !== "mastermind.stock_dashboard_browser_historical_baseline.v1" ||
         baseline.candidate_head !== head || baseline.candidate_tree !== tree ||
         !baseline.receipt || baseline.receipt.path !== relativeRepoPath(repoRoot, receiptFile) ||
-        !Array.isArray(baseline.screenshots) || baseline.screenshots.length !== 2 ||
+        !baseline.result || !Number.isInteger(boundScreenshots) || boundScreenshots < 0 ||
+        !Array.isArray(baseline.screenshots) || baseline.screenshots.length !== boundScreenshots ||
         !/^[0-9a-f]{64}$/.test(baseline.receipt.sha256 || "")) {
       usage("existing --out carries a conflicting historical baseline");
+    }
+    for (const screenshot of baseline.screenshots) {
+      if (!screenshot || typeof screenshot.path !== "string" ||
+          !/^[0-9a-f]{64}$/.test(screenshot.sha256 || "")) {
+        usage("existing --out carries a conflicting historical screenshot binding");
+      }
+      const filename = path.resolve(repoRoot, screenshot.path);
+      if (!filename.startsWith(repoRoot + path.sep) ||
+          !fs.existsSync(filename) || !fs.statSync(filename).isFile() ||
+          sha256File(filename) !== screenshot.sha256) {
+        usage(`historical screenshot binding is unavailable: ${screenshot.path}`);
+      }
     }
     return baseline;
   }

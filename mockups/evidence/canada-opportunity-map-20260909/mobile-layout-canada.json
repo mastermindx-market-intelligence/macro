@@ -9,15 +9,15 @@
   },
   "verifier": {
     "path": "scripts/verify_canada_opportunity_map.cjs",
-    "sha256": "3aadd4c2a6171aded44f0c6e6910e830e37fd3af56a80dc9bae3a02ee5d988d8"
+    "sha256": "a0e8f1adbb2c4ab9699f18e4189c8575179aa719a3555f9e90b96efb7a9c6e94"
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.50"
+    "version": "153.0.8010.53"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/canada-opportunity-map-20260909/rendered-fixture.json",
-    "sha256": "b31d7656d08060909bf4fa06eb8cd44392798342780c0819120041e37ba55f5e"
+    "sha256": "f5fcc167aa696cd4bc337e5e70373dbffb4cdfced8649d46ca0892673c1c4b9c"
   },
   "fixture_assets_root": "mockups/evidence/canada-opportunity-map-20260909/inputs/browser-data",
   "fixture_market": "ca",
@@ -253,7 +253,7 @@
     }
   },
   "construction_inputs": {
-    "engine/i18n.py": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2",
+    "engine/i18n.py": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152",
     "mockups/evidence/canada-opportunity-map-20260909/inputs/browser-data/canadabasketdata/baskets.json": "9e3e3b781326e6fb2720ec91882e84d350b8a04b70b5b3b4b844d63e55b29a62",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json": "6a0d10249045cbffca6e7386458b45c0b3976408b7d57021254987df0c8a11f6",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b",
@@ -294,19 +294,19 @@
     "site/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
     "site/illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
     "site/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
-    "site/live.js": "3cb3860138e49b90cf2e010578edd34bff328e25941095e79780f1476deec345",
+    "site/live.js": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6",
     "site/live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
     "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
     "site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
     "site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
-    "site/navigation-refresh.css": "fed6efbaeb3c5d7941eb4d474a549752d385dc9e50fa4ef2514e98f22c0912f3",
+    "site/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
     "site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
     "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
-    "site/theme.css": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
-    "site/theme.js": "48082a1e53686c0f8c70fccd5d2d22719dcea3f944ccde9e55e5397d3c4beddc"
+    "site/theme.css": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
+    "site/theme.js": "c907a6b8d51a22e49a9cdbe101380e04ea3c23542ac547d8399a69a402c53b41"
   },
   "viewport": {
     "width": 390,
@@ -3392,7 +3392,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "18ef9641a86effba8f98edb6816b3b084bd830099502ff642d127a397392ff65",
+          "sha256": "29e54618b7b8b81d07bc39f75041aba8e4ae3cffdcb8fe86a3e0b082130d9b39",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4829,7 +4829,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "44a5fe388c1f7fc3ec850e6dc58325341e55d9b7c70507f1535049f8ce15986e",
+          "sha256": "be742187364c648e39456a8805ac6cdf2788d7e1490ff5d4636ae25b2b4159c2",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -6266,7 +6266,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "abe777959155fc644f2daaa7c40dd2e1c9241c6be1bd526d514749b6fae44053",
+          "sha256": "97a85bbcf6c8e382757f7821873a0eb196984fec11c1bc3ac4dd0e46129d99c7",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7703,7 +7703,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "71bf5e6f6857196c350fcaf8d94b61a9cd246fad50563826fe49e5d67b9a090e",
+          "sha256": "d76ed7ea813295b48de30393064305396e1ca74fa5c85475df278e63dff1960f",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -9140,7 +9140,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "e8bb1beb788ff1adff4f1835daeb690924b9b8e9c2dae6b4959de048ee9556a7",
+          "sha256": "b03838926f8f127a770752e65f479ebe5e70e2241efae7d656b8ffcf25c2736f",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10577,7 +10577,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "d18ec461dbcfef1645f10e2ffc7505a2ff5571b6255c417e58b9fc728a49511b",
+          "sha256": "f4a06da33c648b65450636c5b10680db22bed5db2b50d63020155772fe391c10",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -12014,7 +12014,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "c458bf6bcc86a005ba2299c221d5a6f10144190c372b007c337e0f62f8014975",
+          "sha256": "14b3ca458d9fe42404f04e6b605bfe54105dcdd51c79761d6c59024ea49c3975",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -13451,7 +13451,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "8ec1d78eaaadcd4f20959cbedac92ad82d265c152fbe3f1e9ef490ed283885fe",
+          "sha256": "4274e11e11949e11ca7dc6885cb1e8bcdbc80cbf9ee4725d87b67ea77d04e94a",
           "path": "mockups/evidence/canada-opportunity-map-20260909/owner-empty-ca-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],

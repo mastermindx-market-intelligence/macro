@@ -62,7 +62,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2"
+          "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
         },
         {
           "path": "mockups/evidence/canada-opportunity-map-20260909/inputs/browser-data/canadabasketdata/baskets.json",
