@@ -94,7 +94,9 @@ def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
             }
         if _dm_state == "confirmed_no_filings":
             return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
-        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block = _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block["fetched_at"] = _dm_facts.get("fetched_at")
+        return block
     except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
         # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
         # reached the else branch), so a transient fault here (import
@@ -154,7 +156,9 @@ def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
             }
         if _cr_state == "confirmed_no_filings":
             return _cr_extract(None, cik=_cr_cik, as_of=cr_asof, ladder=None)
-        return _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block = _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block["fetched_at"] = _cr_facts.get("fetched_at")
+        return block
     except Exception as _cr_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
         print(
             f"::warning title=stock-library cash-runway producer fault::{ticker} "

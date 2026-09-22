@@ -5646,6 +5646,70 @@ def build_security_state(blob: dict | None) -> dict | None:
 # Main context builder
 # ---------------------------------------------------------------------------
 
+def _capital_need_for_page(blob: dict | None, generated_utc: str) -> dict | None:
+    """Revalidate source blocks at render time; never trust cached arithmetic."""
+    if not isinstance(blob, dict) or not any(k in blob for k in ("debt_maturity", "cash_runway", "capital_need")):
+        return None
+    try:
+        from engine.capital_need import assemble_capital_need
+        return assemble_capital_need(
+            blob.get("debt_maturity"), blob.get("cash_runway"),
+            as_of=generated_utc[:10],
+        )
+    except Exception as exc:  # additive panel; a failure must not revive cached math
+        print(f"::warning title=ticker capital-need validation::{type(exc).__name__}: {exc}", flush=True)
+        return {"schema": "capital_need.v1", "version": 1, "status": "unknown",
+                "reported": {}, "derived": {},
+                "authority": {"class": "context_only", "display_only": True}}
+
+
+def _debt_maturity_for_page(raw: dict | None, capital_need: dict | None) -> dict | None:
+    """Project validated facts in canonical order; discard cached display claims."""
+    if not isinstance(raw, dict) or raw.get("status") != "reported":
+        return raw
+    view = ((capital_need or {}).get("reported") or {}).get("debt_due")
+    if not view:
+        # Keep the verification-unavailable state without exposing unvalidated
+        # period labels or cached numeric presentation.
+        return {"status": "reported", "period": None, "buckets": []}
+    from engine.debt_maturity import BUCKETS, _usd_dollars
+
+    by_key = {row["key"]: row for row in view["buckets"]}
+    buckets = []
+    for key, tag, en, zh in BUCKETS:
+        fact = by_key.get(key) or {}
+        observed = fact.get("state") == "observed"
+        value = fact.get("value") if observed else None
+        buckets.append({
+            "key": key, "tag": tag, "label_en": en, "label_zh": zh,
+            "reported": observed, "usd": value,
+            "display": _usd_dollars(value) if observed else None,
+            "share_pct": 0 if observed else None,
+            "drop_reason": fact.get("drop_reason") or (None if observed else "absent"),
+        })
+    total = view["total_reported_usd"]
+    if total:
+        # Same largest-remainder display allocation as the source producer.
+        raw_shares = {i: row["usd"] / total * 100
+                      for i, row in enumerate(buckets) if row["reported"]}
+        shares = {i: int(value) for i, value in raw_shares.items()}
+        order = sorted(shares, key=lambda i: raw_shares[i] - shares[i], reverse=True)
+        for i in order[:max(100 - sum(shares.values()), 0)]:
+            shares[i] += 1
+        for i, value in shares.items():
+            buckets[i]["share_pct"] = value
+    period = dict(view["period"])
+    period["label"] = f"FY{period['fy']}"
+    return {
+        "schema": "debt_maturity.v1", "status": "reported", "unit": "USD",
+        "period": period, "buckets": buckets,
+        "total_reported_usd": total, "total_display": _usd_dollars(total),
+        "near_share_pct": buckets[0]["share_pct"],
+        "buckets_reported": sum(row["reported"] for row in buckets),
+        "buckets_total": len(BUCKETS),
+    }
+
+
 def build_page_context(
     ticker: str,
     name: str,
@@ -5825,6 +5889,7 @@ def build_page_context(
     hero["index_chips"] = index_chips or None
 
     valuation_assumptions = _valuation_assumptions_view(blob)
+    capital_need = _capital_need_for_page(blob, generated_utc)
 
     return {
         "meta": meta,
@@ -5838,9 +5903,9 @@ def build_page_context(
         "gauges": gauges,
         "performance": performance,
         "financials": financials,
-        "debt_maturity": (blob or {}).get("debt_maturity"),
+        "debt_maturity": _debt_maturity_for_page((blob or {}).get("debt_maturity"), capital_need),
         "cash_runway": (blob or {}).get("cash_runway"),
-        "capital_need": (blob or {}).get("capital_need"),
+        "capital_need": capital_need,
         "valuation": valuation,
         "valuation_scenario": valuation_scenario,
         "earnings": earnings,

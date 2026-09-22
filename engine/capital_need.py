@@ -1,350 +1,368 @@
-"""Compose the bounded issuer capital-need read model.
+"""Validate and compose issuer facts from the two bounded USD read models.
 
-This module is deliberately a pure adapter over the existing
-``debt_maturity.v1`` and ``cash_runway.v1`` producer outputs.  It does not
-load facts, infer issuer identity from a ticker, estimate financing access, or
-turn investor-held bond par into issuer debt.  The only combined arithmetic is
-cash on hand versus the next-12-month principal bucket when both producer
-outputs describe the same canonical CIK and exact filing period.
+Only ``debt_maturity.v1`` and ``cash_runway.v1`` establish the legacy defaults
+of issuer-reported scope and USD. Explicit metadata never overrides a conflict.
+Validation precedes both fact exposure and arithmetic; a reason is not a guard.
 """
-
 from __future__ import annotations
 
-from copy import deepcopy
-from datetime import date, datetime
+from datetime import date, datetime, timezone
+from math import isfinite, fsum
 from typing import Any, Mapping
 
-
-_COMBINABLE_STATUSES = frozenset({"reported"})
-_ISSUER_SCOPES = frozenset({"issuer", "issuer_reported", "consolidated"})
-_PERIOD_KEYS = ("accn", "end", "form", "fp", "fy")
+_SCHEMAS = {"debt": "debt_maturity.v1", "cash": "cash_runway.v1"}
+_SCOPES = frozenset({"issuer", "issuer_reported", "consolidated"})
+_FORMS = frozenset({"10-K", "10-K/A", "20-F", "40-F"})
+_PERIOD_KEYS = ("accn", "end", "filed", "form", "fp", "fy")
+_BUCKETS = frozenset({"y1", "y2", "y3", "y4", "y5", "after5"})
 
 
 def _canonical_cik(value: object) -> str | None:
-    raw = str(value or "").strip()
-    if not raw.isdigit() or len(raw) > 10 or int(raw) == 0:
+    if type(value) is int:
+        return str(value).zfill(10) if 1 <= value <= 9_999_999_999 else None
+    if not isinstance(value, str):
+        return None
+    raw = value.strip()
+    if not raw.isascii() or not raw.isdigit() or len(raw) > 10 or int(raw) == 0:
         return None
     return raw.zfill(10)
 
 
-def _iso(value: object) -> str | None:
-    if value is None:
-        return None
+def _date(value: object) -> date | None:
     if isinstance(value, datetime):
-        return value.date().isoformat()
+        return value.date()
     if isinstance(value, date):
-        return value.isoformat()
-    return str(value)
+        return value
+    if isinstance(value, str) and len(value) == 10:
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            pass
+    return None
 
 
-def _period(block: Mapping[str, Any] | None) -> dict[str, Any] | None:
-    raw = (block or {}).get("period")
-    return deepcopy(raw) if isinstance(raw, Mapping) else None
-
-
-def _period_key(period: Mapping[str, Any] | None) -> tuple[Any, ...] | None:
-    if not period or any(period.get(key) in (None, "") for key in _PERIOD_KEYS):
-        return None
-    return tuple(period.get(key) for key in _PERIOD_KEYS)
-
-
-def _same_period(left: Mapping[str, Any] | None, right: Mapping[str, Any] | None) -> bool:
-    left_key = _period_key(left)
-    right_key = _period_key(right)
-    return left_key is not None and left_key == right_key
-
-
-def _filed_after_as_of(period: Mapping[str, Any] | None, as_of: object) -> bool:
-    """Return true when a filing is not available at the requested cutoff."""
-    if not period or as_of is None or not period.get("filed"):
+def _number(value: object, *, nonnegative: bool = False) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         return False
     try:
-        filed = date.fromisoformat(str(period["filed"]))
-        cutoff = as_of.date() if isinstance(as_of, datetime) else as_of
-        if isinstance(cutoff, str):
-            cutoff = date.fromisoformat(cutoff)
-        return isinstance(cutoff, date) and filed > cutoff
-    except (TypeError, ValueError):
-        return True
+        return isfinite(value) and (not nonnegative or value >= 0)
+    except OverflowError:
+        return False
 
 
-def _empty_result(
-    *,
-    status: str,
-    cik: str | None,
-    issuer_id: str | None,
-    security_id: str | None,
-    as_of: object,
-    reasons: list[str],
-) -> dict[str, Any]:
+def _scope(block: Mapping[str, Any]) -> str:
+    return block.get("scope", block.get("source_scope", "issuer_reported"))
+
+
+def _empty_result(status, cik, issuer_id, security_id, cutoff, reasons):
     return {
-        "schema": "capital_need.v1",
-        "version": 1,
-        "status": status,
-        "issuer": {
-            "issuer_id": issuer_id,
-            "security_id": security_id,
-            "cik": cik,
-            "scope": "issuer",
-        },
-        "as_of": _iso(as_of),
+        "schema": "capital_need.v1", "version": 1, "status": status,
+        "issuer": {"issuer_id": issuer_id, "security_id": security_id,
+                   "cik": cik, "scope": "issuer"},
+        "as_of": cutoff.isoformat() if cutoff else None,
         "coverage": {"state": status, "reasons": reasons},
-        "reported": {
-            "debt_due": None,
-            "cash": None,
-            "operating_cash_flow": None,
-            "capex": None,
-        },
-        "derived": {
-            "free_cash_flow": None,
-            "scenario_runway": None,
-            "near_term_cash_cover": None,
-            "near_term_cash_gap_usd": None,
-        },
+        "reported": {"debt_due": None, "cash": None,
+                     "operating_cash_flow": None, "capex": None},
+        "derived": {"free_cash_flow": None, "scenario_runway": None,
+                    "near_term_cash_cover": None, "near_term_cash_gap_usd": None},
         "authority": {"class": "context_only", "display_only": True},
-        "source_clock": {"as_of": _iso(as_of)},
+        "source_clock": {"evaluation_as_of": cutoff.isoformat() if cutoff else None},
     }
 
 
-def _source_scope(block: Mapping[str, Any]) -> str:
-    scope = block.get("scope") or block.get("source_scope")
-    return str(scope or "issuer_reported")
+def _acquisition(block):
+    """Acquisition is a separate timezone-bearing cache clock, never as_of."""
+    value = block.get("fetched_at")
+    if isinstance(value, str):
+        try:
+            timestamp = datetime.fromisoformat(value)
+            if timestamp.tzinfo is not None:
+                return {"state": "observed", "fetched_at": value}
+        except ValueError:
+            pass
+    return {"state": "unknown", "fetched_at": None}
 
 
-def _fact_view(
-    block: Mapping[str, Any],
-    *,
-    value_key: str,
-    basis: str,
-    state: str = "observed",
-) -> dict[str, Any]:
-    period = _period(block)
-    return {
-        "state": state,
-        "value": block.get(value_key) if state == "observed" else None,
-        "unit": "USD",
-        "currency": "USD",
-        "basis": basis,
-        "period": period,
-        "scope": _source_scope(block),
-        "source_schema": block.get("schema"),
-        "source_as_of": block.get("as_of"),
-    }
+def _validated_period(block, label, cutoff, reasons):
+    """Accept a complete annual filing and clocks, never trust a stale flag alone."""
+    initial = len(reasons)
+    period = block.get("period")
+    if not isinstance(period, Mapping):
+        reasons.append(f"{label}_period_invalid")
+        return None
+    accn, fy = period.get("accn"), period.get("fy")
+    if (not isinstance(accn, str) or not accn.strip()
+            or not isinstance(period.get("form"), str)
+            or period["form"] not in _FORMS or period.get("fp") != "FY"
+            or type(fy) is not int or not 1 <= fy <= 9999):
+        reasons.append(f"{label}_period_invalid")
+    end, filed, clock = (_date(period.get("end")), _date(period.get("filed")),
+                         _date(block.get("as_of")))
+    if end is None or filed is None or clock is None or cutoff is None:
+        reasons.append(f"{label}_clock_unknown")
+    else:
+        if filed < end or clock < filed:
+            reasons.append(f"{label}_clock_order_invalid")
+        if filed > cutoff:
+            reasons.append(f"{label}_filed_after_as_of")
+        if clock > cutoff:
+            reasons.append(f"{label}_source_after_as_of")
+    available = None
+    if "source_available_at" in block:
+        available = _date(block["source_available_at"])
+        if available is None and isinstance(block["source_available_at"], str):
+            try:
+                timestamp = datetime.fromisoformat(block["source_available_at"])
+                if timestamp.tzinfo is not None:
+                    available = timestamp.astimezone(timezone.utc).date()
+            except ValueError:
+                pass
+        if (available is None or filed is None or clock is None or cutoff is None
+                or not filed <= available <= clock <= cutoff):
+            reasons.append(f"{label}_source_available_clock_invalid")
+    acquired = _acquisition(block)
+    if acquired["state"] == "observed":
+        acquired_day = datetime.fromisoformat(acquired["fetched_at"]).astimezone(timezone.utc).date()
+        if (filed is None or clock is None or cutoff is None
+                or not filed <= acquired_day <= clock <= cutoff
+                or (available is not None and available > acquired_day)):
+            reasons.append(f"{label}_acquisition_clock_invalid")
+    elif block.get("fetched_at") is not None:
+        reasons.append(f"{label}_acquisition_clock_invalid")
+    if "stale" in period and type(period["stale"]) is not bool:
+        reasons.append(f"{label}_stale_flag_invalid")
+    start = None
+    if label == "cash":
+        start = _date(period.get("start"))
+        # Annual 52/53-week and calendar fiscal years; a quarter or a stub is
+        # not an annual burn input. The producer binds both duration facts.
+        if start is None or end is None or not 330 <= (end - start).days + 1 <= 380:
+            reasons.append("cash_annual_duration_invalid")
+    if len(reasons) != initial:
+        return None
+    accepted = {k: period[k] for k in _PERIOD_KEYS}
+    accepted["end"], accepted["filed"] = end.isoformat(), filed.isoformat()
+    accepted["stale"] = period.get("stale", False) or (cutoff - end).days > 550
+    if start is not None:
+        accepted["start"] = start.isoformat()
+    return accepted
 
 
-def _debt_view(debt: Mapping[str, Any], *, available: bool = True) -> dict[str, Any]:
-    buckets = []
-    for bucket in debt.get("buckets") or []:
-        reported = bool(bucket.get("reported")) and available
-        buckets.append(
-            {
-                "key": bucket.get("key"),
-                "value": bucket.get("usd") if reported else None,
-                "unit": "USD",
-                "currency": "USD",
-                "state": "observed" if reported else "unknown",
-                "drop_reason": bucket.get("drop_reason"),
-                "tag": bucket.get("tag"),
-            }
-        )
-    return {
-        "state": "observed" if debt.get("status") == "reported" and available else "unknown",
-        "unit": debt.get("unit") or "USD",
-        "currency": "USD",
-        "period": _period(debt),
-        "scope": _source_scope(debt),
-        "issuer_debt_outstanding_only": True,
-        "buckets": buckets,
-        "total_reported_usd": debt.get("total_reported_usd") if available else None,
-        "source_schema": debt.get("schema"),
-        "source_as_of": debt.get("as_of"),
+def _validated_source(raw, label, cutoff, reasons):
+    if not isinstance(raw, Mapping) or not raw:
+        reasons.append(f"{label}_missing" if not raw else f"{label}_block_invalid")
+        return None
+    initial = len(reasons)
+    if raw.get("schema") != _SCHEMAS[label] or ("version" in raw and (type(raw["version"]) is not int or raw["version"] != 1)):
+        reasons.append(f"{label}_schema_rejected")
+    if _canonical_cik(raw.get("cik")) is None:
+        reasons.append(f"{label}_cik_unknown")
+    if raw.get("status") != "reported":
+        reasons.append(f"{label}_not_reported")
+    # Defaults belong ONLY to the accepted, USD-specific producer schemas.
+    for key in ("unit", "currency"):
+        if key in raw and raw[key] != "USD":
+            reasons.append(f"{label}_{key}_unknown")
+    for key in ("scope", "source_scope"):
+        if key in raw and (not isinstance(raw[key], str) or raw[key] not in _SCOPES):
+            reasons.append(f"{label}_investor_held_scope_rejected")
+    if "scope" in raw and "source_scope" in raw and raw["scope"] != raw["source_scope"]:
+        reasons.append(f"{label}_scope_conflict")
+    if raw.get("dimensions") not in (None, {}, []):
+        reasons.append(f"{label}_dimensions_unsupported")
+    period = _validated_period(raw, label, cutoff, reasons)
+    if len(reasons) != initial:
+        return None
+    return {"block": raw, "period": period, "scope": _scope(raw),
+            "cik": _canonical_cik(raw["cik"]),
+            "evaluation_as_of": _date(raw["as_of"]).isoformat(),
+            "acquisition": _acquisition(raw)}
+
+
+def _validated_debt(source, reasons):
+    block = source["block"]
+    rows = block.get("buckets")
+    if not isinstance(rows, list) or not rows:
+        reasons.append("debt_buckets_invalid")
+        return None
+    buckets, seen, values = [], set(), []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            reasons.append("debt_bucket_invalid")
+            return None
+        key = row.get("key")
+        if not isinstance(key, str) or key not in _BUCKETS or key in seen:
+            reasons.append("debt_bucket_key_invalid_or_duplicate")
+            return None
+        seen.add(key)
+        if any(row.get(k) is not None and not isinstance(row[k], str)
+               for k in ("tag", "drop_reason")):
+            reasons.append("debt_bucket_provenance_invalid")
+            return None
+        if type(row.get("reported")) is not bool:
+            reasons.append("debt_bucket_reported_invalid")
+            return None
+        if any(k in row and row[k] != "USD" for k in ("unit", "currency")):
+            reasons.append("debt_bucket_unit_unknown")
+            return None
+        reported = row["reported"]
+        value = row.get("usd") if reported else None
+        if not reported and row.get("usd") is not None:
+            reasons.append("debt_unreported_value_conflict")
+            return None
+        if reported and (not _number(value, nonnegative=True) or row.get("drop_reason") is not None):
+            reasons.append("debt_bucket_value_invalid")
+            return None
+        if reported:
+            values.append(value)
+        buckets.append({"key": key, "value": value, "unit": "USD", "currency": "USD",
+                        "state": "observed" if reported else "unknown",
+                        "drop_reason": row.get("drop_reason"), "tag": row.get("tag")})
+    try:
+        total = sum(values) if all(type(v) is int for v in values) else fsum(values)
+    except (OverflowError, ValueError):
+        total = None
+    claimed = block.get("total_reported_usd")
+    if (not values or not _number(total, nonnegative=True)
+            or not _number(claimed, nonnegative=True) or total != claimed):
+        reasons.append("debt_total_invalid")
+        return None
+    return {"state": "observed", "unit": "USD", "currency": "USD",
+            "period": source["period"], "scope": source["scope"],
+            "issuer_debt_outstanding_only": True, "buckets": buckets,
+            "total_reported_usd": total, "buckets_reported": len(values),
+            "ladder_complete": seen == _BUCKETS and len(values) == len(_BUCKETS),
+            "source_schema": block["schema"],
+            "evaluation_as_of": source["evaluation_as_of"],
+            "acquisition": source["acquisition"]}
+
+
+def _cash_facts_and_scenario(source, reasons):
+    block, period = source["block"], source["period"]
+    cash, ocf, capex = (block.get(k) for k in ("cash_usd", "ocf_usd", "capex_usd"))
+    if not (_number(cash, nonnegative=True) and _number(ocf) and _number(capex, nonnegative=True)):
+        reasons.append("cash_value_invalid")
+        return None
+    fcf = ocf - capex
+    if not _number(fcf):
+        reasons.append("cash_arithmetic_nonfinite")
+        return None
+    annual_burn = -fcf if fcf < 0 else 0
+    monthly_burn = annual_burn / 12
+    months = None
+    display = "self_funding"
+    if annual_burn:
+        if not monthly_burn:
+            reasons.append("cash_arithmetic_underflow")
+            return None
+        months = cash / monthly_burn
+        if not _number(months, nonnegative=True):
+            reasons.append("cash_arithmetic_nonfinite")
+            return None
+        display = "more_than_10_years" if months > 120 else "months"
+        months = round(months, 1)
+    reported = {}
+    for name, value, basis in (("cash", cash, "instant"), ("operating_cash_flow", ocf, "duration"),
+                               ("capex", capex, "duration")):
+        fact_period = dict(period)
+        if basis == "instant":
+            fact_period.pop("start")
+        reported[name] = {"state": "observed", "value": value, "unit": "USD", "currency": "USD",
+                          "basis": basis, "period": fact_period, "scope": source["scope"],
+                          "source_schema": block["schema"], "evaluation_as_of": source["evaluation_as_of"],
+            "acquisition": source["acquisition"]}
+    return reported, {
+        "free_cash_flow": {"state": "derived", "value": fcf, "unit": "USD", "currency": "USD",
+                           "formula": "operating_cash_flow - capex_outflow", "period": period},
+        "scenario_runway": {
+            "state": "stale" if period["stale"] else "scenario",
+            "value_months": months, "unit": "months" if months is not None else None,
+            "display": display, "annual_burn_usd": annual_burn, "monthly_burn_usd": monthly_burn,
+            "period": period,
+            "assumptions": {"annual_filing_only": True, "no_refinancing_forecast": True,
+                            "issuer_debt_payments_included": False},
+            "excludes": ["financing_access", "restricted_cash", "investor_held_par", "valuation",
+                         "covenant", "trade_recommendation"],
+        },
     }
 
 
 def assemble_capital_need(
-    debt_maturity: Mapping[str, Any] | None,
-    cash_runway: Mapping[str, Any] | None,
-    *,
-    issuer_id: str | None = None,
-    security_id: str | None = None,
-    as_of: object = None,
+    debt_maturity: Mapping[str, Any] | None, cash_runway: Mapping[str, Any] | None, *,
+    issuer_id: str | None = None, security_id: str | None = None, as_of: object = None,
 ) -> dict[str, Any]:
-    """Build a conservative capital-need view from two existing read models.
+    """Expose only validated issuer facts and same-filing, fresh cash coverage.
 
-    A combined result is complete only when both blocks are reported for the
-    same CIK and exact annual filing identity.  A valid cash-flow scenario may
-    still be exposed when the debt block is missing, but all coverage and
-    funding-gap fields stay null.  This is intentionally a read model: the
-    result carries no financing forecast, recommendation, rank, or authority
-    to act.
+    A rejected debt block cannot suppress a valid standalone cash scenario, but
+    cannot contribute any facts or combined arithmetic. The exact accepted USD
+    producer schemas provide the only legacy unit/scope defaults. Cash v1 must
+    additionally retain its matched annual start date; older lossy blocks fail
+    closed until rebuilt by that producer.
     """
-    debt = debt_maturity or {}
-    cash = cash_runway or {}
-    debt_cik = _canonical_cik(debt.get("cik"))
-    cash_cik = _canonical_cik(cash.get("cik"))
-    cik = debt_cik or cash_cik
-    base = _empty_result(
-        status="unknown",
-        cik=cik,
-        issuer_id=issuer_id,
-        security_id=security_id,
-        as_of=as_of,
-        reasons=[],
-    )
-    reasons: list[str] = []
-
-    if debt.get("status") == "not_applicable" or cash.get("status") == "not_applicable":
-        return _empty_result(
-            status="not_applicable",
-            cik=None,
-            issuer_id=issuer_id,
-            security_id=security_id,
-            as_of=as_of,
-            reasons=["issuer_not_applicable"],
-        )
-
-    if debt_cik and cash_cik and debt_cik != cash_cik:
-        return _empty_result(
-            status="identity_mismatch",
-            cik=None,
-            issuer_id=issuer_id,
-            security_id=security_id,
-            as_of=as_of,
-            reasons=["debt_cash_cik_mismatch"],
-        )
-    if not cik:
-        reasons.append("issuer_cik_unknown")
-
-    for label, block in (("debt", debt), ("cash", cash)):
-        if not block:
-            reasons.append(f"{label}_missing")
-            continue
-        if _source_scope(block) not in _ISSUER_SCOPES:
-            reasons.append(f"{label}_investor_held_scope_rejected")
-        if block.get("status") == "identity_mismatch":
-            reasons.append(f"{label}_identity_mismatch")
-
-    debt_scope_ok = _source_scope(debt) in _ISSUER_SCOPES if debt else False
-    cash_scope_ok = _source_scope(cash) in _ISSUER_SCOPES if cash else False
-    cash_period = _period(cash)
-    debt_period = _period(debt)
-    debt_pit_valid = not _filed_after_as_of(debt_period, as_of)
-    cash_pit_valid = not _filed_after_as_of(cash_period, as_of)
-    if debt and debt_scope_ok:
-        base["reported"]["debt_due"] = _debt_view(debt, available=debt_pit_valid)
-    if cash and cash_scope_ok:
-        cash_state = (
-            "observed"
-            if cash.get("status") == "reported" and cash_pit_valid
-            else "unknown"
-        )
-        base["reported"]["cash"] = _fact_view(
-            cash, value_key="cash_usd", basis="instant", state=cash_state
-        )
-        base["reported"]["operating_cash_flow"] = _fact_view(
-            cash, value_key="ocf_usd", basis="duration", state=cash_state
-        )
-        base["reported"]["capex"] = _fact_view(
-            cash, value_key="capex_usd", basis="duration", state=cash_state
-        )
-
-    cash_reported = cash.get("status") in _COMBINABLE_STATUSES and cash_scope_ok
-    debt_reported = debt.get("status") in _COMBINABLE_STATUSES and debt_scope_ok
-    exact_period = _same_period(debt_period, cash_period)
-    if debt and cash and not exact_period:
-        reasons.append("debt_cash_period_mismatch")
-    if debt and debt.get("unit") not in (None, "USD"):
-        reasons.append("debt_unit_unknown")
-    if cash and cash_reported and (cash.get("period") or {}).get("stale"):
-        reasons.append("cash_period_stale")
-    if debt and debt_reported and (debt.get("period") or {}).get("stale"):
-        reasons.append("debt_period_stale")
-    if not debt_pit_valid:
-        reasons.append("debt_filed_after_as_of")
-    if not cash_pit_valid:
-        reasons.append("cash_filed_after_as_of")
-
-    # Preserve the already bounded cash-flow scenario as a scenario, never as
-    # a reported financing fact.  A stale filing remains visible but is marked
-    # stale so the panel cannot present it as current coverage.
-    if cash_reported and cash_pit_valid:
-        base["derived"]["free_cash_flow"] = {
-            "state": "derived",
-            "value": cash.get("free_cash_flow_usd"),
-            "unit": "USD",
-            "currency": "USD",
-            "formula": "operating_cash_flow - capex_outflow",
-            "period": cash_period,
-        }
-        scenario_state = "stale" if cash_period and cash_period.get("stale") else "scenario"
-        base["derived"]["scenario_runway"] = {
-            "state": scenario_state,
-            "value_months": cash.get("runway_months"),
-            "unit": "months" if cash.get("runway_months") is not None else None,
-            "display": cash.get("runway_display"),
-            "annual_burn_usd": cash.get("annual_burn_usd"),
-            "monthly_burn_usd": cash.get("monthly_burn_usd"),
-            "assumptions": {
-                "annual_filing_only": True,
-                "no_refinancing_forecast": True,
-                "issuer_debt_payments_included": False,
-            },
-            "excludes": [
-                "financing_access",
-                "restricted_cash",
-                "investor_held_par",
-                "valuation",
-                "covenant",
-                "trade_recommendation",
-            ],
-        }
-    elif cash_reported:
-        reasons.append("cash_source_unavailable_at_as_of")
+    debt_raw = debt_maturity if isinstance(debt_maturity, Mapping) else {}
+    cash_raw = cash_runway if isinstance(cash_runway, Mapping) else {}
+    cutoff, reasons = _date(as_of), []
+    debt_cik, cash_cik = (_canonical_cik(b.get("cik")) for b in (debt_raw, cash_raw))
+    base = _empty_result("unknown", debt_cik or cash_cik, issuer_id, security_id, cutoff, reasons)
+    if all(b.get("schema") == _SCHEMAS[label] and b.get("status") == "not_applicable"
+           for label, b in (("debt", debt_raw), ("cash", cash_raw))):
+        return _empty_result("not_applicable", None, issuer_id, security_id, cutoff,
+                             ["issuer_not_applicable"])
+    if (debt_cik and cash_cik and debt_cik != cash_cik
+            or any(b.get("status") == "identity_mismatch" for b in (debt_raw, cash_raw))):
+        return _empty_result("identity_mismatch", None, issuer_id, security_id, cutoff,
+                             ["debt_cash_cik_mismatch"])
+    debt = _validated_source(debt_maturity, "debt", cutoff, reasons)
+    cash = _validated_source(cash_runway, "cash", cutoff, reasons)
+    debt_view = _validated_debt(debt, reasons) if debt else None
+    cash_view = _cash_facts_and_scenario(cash, reasons) if cash else None
+    base["reported"]["debt_due"] = debt_view
+    if cash_view:
+        base["reported"].update(cash_view[0])
+        base["derived"].update(cash_view[1])
+    for label, source, view in (("debt", debt, debt_view), ("cash", cash, cash_view)):
+        if view and source["period"]["stale"]:
+            reasons.append(f"{label}_period_stale")
+    if debt_view and not debt_view["ladder_complete"]:
+        reasons.append("debt_ladder_incomplete")
+    if debt_view and cash_view:
+        dp, cp = debt["period"], cash["period"]
+        if any(dp[k] != cp[k] for k in _PERIOD_KEYS):
+            reasons.append("debt_cash_period_mismatch")
+        if debt["scope"] != cash["scope"]:
+            reasons.append("debt_cash_scope_mismatch")
+        y1 = next((b for b in debt_view["buckets"] if b["key"] == "y1"), None)
+        if not y1 or y1["state"] != "observed":
+            reasons.append("y1_debt_unknown")
+        # All validation predicates participate in the gate, not just status.
+        if not reasons:
+            if y1["value"] == 0:
+                base["derived"]["near_term_cash_cover"] = {
+                    "state": "not_applicable", "reason": "reported_zero_y1_principal",
+                    "value_pct": None, "period": cp,
+                }
+                base["derived"]["near_term_cash_gap_usd"] = 0
+            else:
+                cover = cash_view[0]["cash"]["value"] / y1["value"] * 100
+                gap = max(y1["value"] - cash_view[0]["cash"]["value"], 0)
+                if _number(cover, nonnegative=True) and _number(gap, nonnegative=True):
+                    base["derived"]["near_term_cash_cover"] = {
+                        "state": "derived", "value_pct": round(cover),
+                        "formula": "cash / y1_debt_due * 100", "period": cp,
+                    }
+                    base["derived"]["near_term_cash_gap_usd"] = gap
+                else:
+                    reasons.append("coverage_arithmetic_nonfinite")
     else:
-        reasons.append("cash_flow_scenario_unavailable")
-
-    y1 = None
-    if debt_reported:
-        y1 = next((b for b in debt.get("buckets") or [] if b.get("key") == "y1"), None)
-    same_period_fresh = (
-        debt_reported
-        and cash_reported
-        and debt_pit_valid
-        and cash_pit_valid
-        and exact_period
-        and not (debt_period or {}).get("stale")
-        and not (cash_period or {}).get("stale")
-    )
-    if same_period_fresh and y1 and y1.get("reported") and y1.get("usd") is not None:
-        y1_usd = y1["usd"]
-        cash_usd = cash.get("cash_usd")
-        if y1_usd and cash_usd is not None:
-            cover = round(100 * cash_usd / y1_usd)
-            base["derived"]["near_term_cash_cover"] = {
-                "state": "derived",
-                "value_pct": cover,
-                "formula": "cash / y1_debt_due * 100",
-                "period": cash_period,
-            }
-            base["derived"]["near_term_cash_gap_usd"] = max(y1_usd - cash_usd, 0)
-        else:
-            reasons.append("y1_debt_zero_or_cash_unknown")
-    else:
-        reasons.append("near_term_cover_requires_exact_fresh_period")
-
-    if debt_reported and cash_reported and exact_period and not reasons:
-        status = "complete"
-    elif reasons and (debt_reported or cash_reported):
-        status = "partial"
-    else:
-        status = "unknown"
+        reasons.append("near_term_cover_requires_valid_sources")
+    status = "complete" if not reasons else "partial" if debt_view or cash_view else "unknown"
     base["status"] = status
-    base["coverage"] = {"state": status, "reasons": reasons}
-    base["source_clock"] = {
-        "as_of": _iso(as_of),
-        "debt_as_of": debt.get("as_of"),
-        "cash_as_of": cash.get("as_of"),
-        "debt_filed": debt_period.get("filed") if debt_period else None,
-        "cash_filed": cash_period.get("filed") if cash_period else None,
-    }
+    base["coverage"] = {"state": status, "reasons": list(dict.fromkeys(reasons))}
+    for label, raw in (("debt", debt_raw), ("cash", cash_raw)):
+        clock = _date(raw.get("as_of"))
+        base["source_clock"][f"{label}_evaluation_as_of"] = clock.isoformat() if clock else None
+        base["source_clock"][f"{label}_acquisition"] = _acquisition(raw)
+        period = raw.get("period")
+        filed = _date(period.get("filed")) if isinstance(period, Mapping) else None
+        base["source_clock"][f"{label}_filed"] = filed.isoformat() if filed else None
     return base
