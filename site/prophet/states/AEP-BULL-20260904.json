@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEP-BULL-20260904",
-  "asof": "2026-09-15",
+  "asof": "2026-09-19",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.9,
@@ -17,20 +17,20 @@
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.076,
+    "dist_to_stop_r": -1.36,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 24.4,
-    "p1": -0.7175,
-    "p2": -0.3588,
+    "horizon_pct_used": 33.3,
+    "p1": -1.5732,
+    "p2": -0.7866,
     "p3": null,
-    "move_r": -1.076,
+    "move_r": -2.36,
     "mfe_r": 0.76,
-    "mae_r": -1.076
+    "mae_r": -2.36
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.3199981689453182,
-  "_mae": -1.8699966430664006,
+  "_mae": -4.099999999999994,
   "_max_p1": 0.506503268848207,
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444
+  "days_elapsed": 15,
+  "tau": 0.3333
 }
