@@ -11,9 +11,11 @@ import inspect
 import json
 import re
 import shutil
+import subprocess
 from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urljoin
 
 from engine.market_os.macro_workspaces import contract as workspace_contract
 from engine.market_os.macro_workspaces.financial_conditions import (
@@ -2378,3 +2380,137 @@ def test_e5_request_url_matches_fragment_target() -> None:
         assert row.get("requestUrl"), key
         assert row["requestUrl"].endswith(row["fragmentTarget"]), key
         assert abs(row["elapsedMs"] - (row["cloneSeenAtMs"] - row["requestSeenAtMs"])) < 1e-6
+
+
+def _navigation_fragments(tmp_path: Path) -> list[tuple[str, str, str]]:
+    """Exercise every navigation emitter without depending on today's data."""
+    links = ["macro_rates_curves.html?view=annual&lang=zh#curve", "./macro_growth.html",
+             "#local", "?view=annual", "/root.html", "//example.org/chart",
+             "https://example.org/chart?q=1#x", "mailto:research@example.org", ""]
+    sections = []
+    originals = []
+    for index, href in enumerate(links):
+        for kind in ("plain", "subtab", "figure", "empty"):
+            section = {"id": f"{kind}-{index}", "first": False, "subtabs": [],
+                       "empty": None, "figure": None, "deep_href": href}
+            if kind == "subtab":
+                section["subtabs"] = [{"id": "detail", "empty": None,
+                                       "figure": None, "deep_href": href}]
+            elif kind == "figure":
+                section["figure"] = {"state_line": None, "count_text": None,
+                    "rows": [{"kind": "current", "href": href,
+                              "name": {"en": "Rates", "zh": "利率"},
+                              "source": None, "current": "1", "scale": None,
+                              "as_of_month": None}]}
+            elif kind == "empty":
+                section["empty"] = builder._empty_state("e5", cta_href=href)
+                section["empty"]["cta"]["href"] = href
+            sections.append(section)
+            originals.append(href)
+    before = copy.deepcopy(sections)
+    paths = builder.write_fragments(builder._environment(ROOT), sections, tmp_path)
+    assert sections == before, "fragment generation must not rewrite hub/fallback data"
+    return [(path.name, path.read_text(encoding="utf-8"), href)
+            for path, href in zip(paths, originals)]
+
+
+def _navigation_hrefs(html: str) -> list[str]:
+    return [unescape(href) for href in re.findall(r'<a\b[^>]*href="([^"]*)"', html)]
+
+
+@pytest.mark.parametrize("prefix", ["/", "/preview/"])
+def test_generated_fragment_navigation_keeps_its_destination(tmp_path: Path, prefix: str) -> None:
+    base = "https://example.test" + prefix
+    for name, html, original in _navigation_fragments(tmp_path):
+        assert "data-mc-fragment" in html
+        hrefs = _navigation_hrefs(html)
+        assert len(hrefs) == (0 if name.startswith("figure-") and not original else 1)
+        for href in hrefs:
+            if original in ("", "#local", "?view=annual"):
+                assert href == original
+            else:
+                assert urljoin(base + "macro/fragments/" + name, href) == urljoin(base, original)
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node is required for the shipped fetch handler")
+def test_fetched_fragment_navigation_uses_response_base_before_insertion(tmp_path: Path) -> None:
+    """Execute the shipped fetch handler; the DOM double only stores attributes."""
+    fragments = _navigation_fragments(tmp_path)
+    source = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
+    handler = source[source.index("  function maybeFetchFragment("):
+                     source.index("  /* ── rail click/keyboard")]
+    cases = []
+    for prefix in ("/", "/preview/"):
+        base = "https://example.test" + prefix
+        for name, html, href in fragments:
+            for response_base in (base, "https://example.test/redirected/", None):
+                cases.append({"name": name, "html": html, "href": href,
+                              "base": base, "responseBase": response_base})
+    harness = r'''
+const fs = require('fs');
+const {handler, cases} = JSON.parse(fs.readFileSync(0, 'utf8'));
+const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+const encode = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+function template() {
+  let html = '', links = [];
+  return {
+    set innerHTML(value) {
+      html = value;
+      links = [...value.matchAll(/<a\b[^>]*href="([^"]*)"/g)].map(match => ({
+        href: decode(match[1]), getAttribute() { return this.href; },
+        setAttribute(name, value) { this.href = value; }
+      }));
+    },
+    get innerHTML() {
+      let index = 0;
+      return html.replace(/(<a\b[^>]*href=")[^"]*(")/g,
+        (match, start, end) => start + encode(links[index++].href) + end);
+    },
+    content: {querySelectorAll() { return links; }}
+  };
+}
+(async () => {
+  const results = [];
+  for (const row of cases) {
+    const pending = {hidden: true}, offer = {hidden: false};
+    const figure = {innerHTML: 'initial hub content',
+      querySelector() { return pending; }, querySelectorAll() { return [offer]; }};
+    const panel = {querySelector(selector) {
+      if (selector === '[data-mc-figure]') return figure;
+      if (selector === '[data-mc-subtab][aria-selected="true"]')
+        return {getAttribute() { return 'detail'; }};
+      return null;
+    }};
+    const document = {baseURI: row.base + 'macro_monetary.html',
+      createElement(tag) { if (tag !== 'template') throw Error(tag); return template(); }};
+    let selected = null;
+    const fetch = async request => ({ok: true,
+      url: row.responseBase ? row.responseBase + 'macro/fragments/' + row.name : '',
+      headers: {get() { return 'text/html'; }}, text: async () => row.html});
+    const run = new Function('document', 'fetch', 'shell', 'fetchedSections',
+      'PENDING_TIMEOUT_MS', 'setTimeout', 'clearTimeout', 'activateSubtab',
+      handler + '; return maybeFetchFragment;')(
+        document, fetch, {hasAttribute() { return true; }}, {}, 8000,
+        () => 1, () => {}, (panel, tab) => { selected = tab; });
+    run(panel, row.name.replace(/\.html$/, ''));
+    await new Promise(resolve => setImmediate(resolve));
+    results.push({html: figure.innerHTML, selected});
+  }
+  process.stdout.write(JSON.stringify(results));
+})().catch(error => { console.error(error); process.exit(1); });
+'''
+    result = subprocess.run([shutil.which("node"), "-e", harness],
+                            input=json.dumps({"handler": handler, "cases": cases}),
+                            text=True, capture_output=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    results = json.loads(result.stdout)
+    assert len(results) == len(cases)
+    for case, result in zip(cases, results):
+        assert result["selected"] == "detail", "fetch must restore the selected subtab"
+        effective_base = case["responseBase"] or case["base"]
+        for href in _navigation_hrefs(result["html"]):
+            original = case["href"]
+            if original.startswith(("#", "?", "/")) or ":" in original or not original:
+                assert href == original
+            else:
+                assert urljoin(case["base"] + "macro_monetary.html", href) == urljoin(effective_base, original)
