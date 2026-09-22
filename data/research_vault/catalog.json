@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T02:05:07.806915+00:00",
-  "count": 2608,
+  "generated_at": "2026-09-22T05:50:05.329599+00:00",
+  "count": 2619,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -19,6 +19,7 @@
     "Berenberg",
     "Bernstein",
     "Bertschis weekly chart",
+    "Bertschli Weekly Chart Outlook",
     "Binance",
     "BlackRock",
     "Canaccord",
@@ -33,6 +34,7 @@
     "DoubleLine",
     "Doubleline",
     "Dragon Capital",
+    "EFG",
     "Eastspring",
     "Fidelity",
     "Franklin",
@@ -94,6 +96,148 @@
   ],
   "items": [
     {
+      "id": "marketdesk-rl8okinfetg-a70482",
+      "title": "GS Saboureault Positioning Mondays Week 38 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:40:16Z",
+      "summary_points": [
+        "CTA Equity Selling: $47bn global equity sell-off (including $38bn last week), models predict 1-month flip to buyers; CTAs reduced exposure to $91bn (62nd percentile).",
+        "Hedge Fund Positioning: Europe equities net bought fastest in 5 months (Industrials/Info Tech/Cons Disc bought; Energy/Financials/Staples sold); global book leverage at 309.2% (4.6 pts higher).",
+        "AAII Sentiment Extreme: Bears at 53.3% (vs historical 31%), bulls at 28.8% (vs 37.5%), most bearish since May 2025 (Neutrals 17.9%).",
+        "Trump/Xi Summit: Critical geopolitical event driving near-term market volatility and positioning shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4sbyh6neglf-9d895c",
+      "title": "GS Stankard Eq Positioning and Key Levels 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:40:13Z",
+      "summary_points": [
+        "CTA Sell Pressure & SPX Dynamics: Systematic trend could trigger $10bn equity sell (vs.",
+        "SPX’s $8.5bn buy baseline), with US equities at 5-week high net buying driven by Macro Products short covers and Single Stocks long buys.",
+        "SPX Key Levels & Buyback Blackout: SPX pivots at 7643 (short), 7420 (mid), 6944 (long); ~64% S&P500 in blackout (rising to ~85% by week-end), with 10b5-1s increasing ahead of earnings.",
+        "Down 2.5 STD 1-Month Flow Risk: Total expected flows under Down 2.5 STD for 1 Month are -$184,907M, with S&P 500 E-mini, DAX 30, and FTSE 100 showing severe negative flows (-$2,596M, -$5,797M, -$7,521M).",
+        "Health Care Sentiment Shift: Long/short ratio at 2.32 (26th percentile, lowest since Jul '25), indicating extreme short positioning and potential reversal risk; net selling for fifth consecutive week at fastest pace in six months."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xnayvnhgbuu-7d2285",
+      "title": "Pulp & Paper Monthly Tracker — September 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:57Z",
+      "summary_points": [
+        "China Inventory Glut: China pulp port inventories at 2.3mt (3% m/m rise) exceed 5yr avg (1.9mt), signaling structural supply overhang and margin pressure.",
+        "Europe Pricing Divergence: European hardwood prices down 3% m/m vs Kraftliner up 2% m/m; Chinese paper margins negative (-13%/-6%), highlighting downstream weakness and sector fragmentation.",
+        "Indonesia Export Collapse: Indonesia hardwood exports dropped sharply mid-2023 (Exhibit 25), indicating policy-driven supply disruption impacting global paper chains.",
+        "China Demand Policy Risk: Robust tissue margins but declining net exports (Exhibit 23) amid regulatory tightening on recycled pulp imports, threatening supply chain stability.",
+        "Europe Structural Demand Weakness: Western Europe printing/writing paper demand at 2026 lows (Exhibit 31), signaling irreversible sector decline for valuation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jcygycn6uds-7f20ef",
+      "title": "Americas Transportation Railroads Weekly Rail Carload Snapshot — Week 37",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:45Z",
+      "summary_points": [
+        "US Rail Carload Growth Acceleration: +5.2% YoY (vs. 3.5% in Week 36), driven by intermodal (+6.9% YoY) and ex-intermodal (+3.6% YoY), with UNP (intermodal) and NSC (ex-intermodal) leading, signaling robust logistics demand recovery.",
+        "Target Price Divergence & Valuation Gaps: NSC target fell to $278 (vs.",
+        "$222 close) while CNI target rose to $132 (vs.",
+        "$129.48 close), yet both trade below targets; UNP/CSX show 10%+ target-close gaps (UNP: $317 vs $304; CSX: $48 vs $52.81), indicating potential mispricing or short-term bearish sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rerdwz2ob94-e3e252",
+      "title": "GOAL Kickstart Markets repricing around higher rates and oil prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:26Z",
+      "summary_points": [
+        "Rate/Energy Repricing: Fed/BoJ hikes (25bps), Brent >$100/bbl, US 2s10s flattest since 2025; credit resilient despite higher commodities - Equity Overvaluation: S&P 500 at 52% expensiveness (10y percentile), US HY spreads tight (268bp), negative credit spread minus equity risk premium (-1.23) - Credit Outperformance: US IG/EUR IG YTD +1.00%/+0.80% vs S&P 500/STOXX -0.15%, signaling relative value shift toward credit - Money Market Outflows: Persistent negative weekly flows (Ex 40-41) indicating liquidity concerns and amplified volatility risk - Credit-Driven Risk Shift: Tight US HY spreads (268bp) vs.",
+        "S&P 500 overvaluation, increasing downside risk if spreads widen - Equity Flow Dominance: Equity flows largest/fastest-growing (Ex 36), with EM/US/EU leading, while money markets show negative flows - Geopolitical Energy Risk: TTF/OAT-Bund spreads moving together (Ex 5), heightening European sovereign/energy risk repricing"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tqztvgmpxoe-70f49b",
+      "title": "ROLFBERTSCHIS CHARTOUTLOOK",
+      "institution": "Bertschli Weekly Chart Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T01:07:20Z",
+      "summary_points": [
+        "Critical Index Support Breaches: SMI break below 13,670 triggers sell signal (coinciding with 10-yr yield breakout); SPX breakdown below 7450/7350 invalidates uptrend, targeting 7170/6850.",
+        "Sector Concentration Risk: Equal Weight Index underperforming Cap Weight Index signals uneven market support, highlighting overreliance on large-caps.",
+        "MSCI IT Breakout Catalyst: Consolidation above 1255 targets 1310-1330; breach of 1120/1090/1050 support invalidates bullish case.",
+        "Swiss Equity Structural Risks: Novartis long-term uptrend vulnerable below 105/100 (targeting 90-85); Flughafen Zurich volatility zone 78.50-76.75 dictates entry/exit.",
+        "SPX Trend Confirmation: SPX broke wedge pattern at 7817 (all-time high), wave 5 rally targets 7850-8100; resistance at 7700 (61.8% retracement)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ihuigovalkl-fb636d",
+      "title": "GM Market Rhythm",
+      "institution": "EFG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T01:05:27Z",
+      "summary_points": [
+        "Small Cap Failure: Russell 2000 rejected breakout despite oversold conditions, 200dma exposure confirms persistent downtrend; small caps rarely precede broader market recovery.",
+        "NYSE Breadth Deterioration: % of stocks above 200dma at 4-month low, signaling declining market participation and heightened downside risk.",
+        "MAGS Resistance Rejection: Mega caps rejected 71.16 resistance; break below 69.72 risks weak breadth and bearish momentum.",
+        "EFG FX & Metals Report: Critical analysis of central bank policies and metals demand ahead of policy shifts for hedging and allocation.",
+        "Stoxx Europe Breakdown: Key pivot broken post-relief rally, confirming bearish momentum and weakening trend structure in European equities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
       "institution": "Westpac",
@@ -135,6 +279,48 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-4rpywbeajvi-a3313f",
+      "title": "Monday Kick off",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:44:38Z",
+      "summary_points": [
+        "Central Bank Policy Shifts: Fed rate hike reinforcing credibility (10-yr yield <5.0%) and BoJ’s 1.25% rate with cautious guidance signal global policy normalization, weighing on yen and growth stocks.",
+        "Commodity & Geopolitical Tensions: Brent crude at $103.69 amid supply concerns; oil prices reflect easing geopolitical premium but US rate peak expectations add uncertainty.",
+        "EOM Exposure Shift: Global equity exposure reduced to 64% (from 83%) due to broad downgrades; regime score at 64% drives weaker exposure, with all indices except Shenzhen in “bear” mode.",
+        "Regional Factor Scores: US dominates with high regime (66) and flows (50) scores; Asia (Shenzhen index at 8) shows extreme weakness in flows (0) and low index levels, signaling US strength and Asia vulnerability.",
+        "Market Environment Indicator (MEI): Only three of eight conditions satisfied, implying reduced market resilience and heightened correction risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2opo5iktnlc-94ffac",
+      "title": "weekly 21sep26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:32:58Z",
+      "summary_points": [
+        "Fed Policy Stance: Fed hiked rates 25bps to 3.75% amid resilient labor market and AI investment; consumer spending rose 1.2% MoM, complicating near-term cut expectations despite housing data misses.",
+        "China Demand Gap: Retail sales YoY at 0.4% (vs prior 0.6%) despite industrial output gains, signaling persistent consumption weakness and demand-side supply gap risk.",
+        "Saudi mBridge Exit: Saudi Arabia withdrew from China-backed mBridge digital currency initiative, intensifying U.S.",
+        "concerns over bypassing SWIFT and reshaping cross-border financial infrastructure.",
+        "Middle East Escalation: Houthi strikes triggered U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-npncdqqzhjh-0261fc",
       "title": "Amundi ETF weekly pulse Europe equities",
       "institution": "Other",
@@ -170,6 +356,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-irfsjldm8xi-9d962a",
+      "title": "Economics Economic Update 21 09 2026",
+      "institution": "CommBank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:16:58Z",
+      "summary_points": [
+        "Net Productivity Impact: $33.8bn net benefit (1.4% GDP boost) after subtracting $24.5bn offshore AI service costs; critical factors include industry adoption rates and labor reallocation efficiency.",
+        "Labor Reallocation & Policy Risk: Initial 180k job reduction offset over 5 years via RBA policy, but healthcare/retail face largest cuts; policy missteps risk disrupting reallocation and worker incentives.",
+        "Sector-Specific Efficiency Gains: IT/telcos (5.4ppt) and finance (5.0ppt) lead in AI-driven output gains; construction/hospitality lag (1.1-0.9ppt) due to physical/regulatory constraints.",
+        "Offshore Revenue Flows: $24.5bn data center revenue flows offshore, reducing net productivity benefit and highlighting structural trade cost risk from imported AI services.",
+        "Data Center Capex Surge: $9.2bn capex (data centers) drives near-term GDP growth, with Info/Media/Telecom Capex accelerating Machinery & Equipment investment amid GPU price spikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-de82gqyq2zl-b9c21f",
+      "title": "ING Think the commodities feed oil cools off from the highs",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:12:46Z",
+      "summary_points": [
+        "Saudi Supply Disruption: East-West pipeline damage from drone attacks reduces Saudi supply, causing North Sea grade premiums and intensifying market tension despite geopolitical hopes.",
+        "Oil Net Long Record: Brent net longs at 282,657 lots (largest since May 2026), driven by Middle East supply risks and short covering, signaling overcrowded positioning.",
+        "Cocoa Deficit Outlook: Deteriorating crop conditions in Ivory Coast/Ghana + El Niño risk threaten 2026/27 supply deficit, despite 18% monthly price drop.",
+        "Wheat Supply Gap: 2026/27 wheat forecast raised to 10mt but remains below record 13.3mt, with heat stress (hot winds, low rainfall) posing acute supply risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
