@@ -166,6 +166,8 @@
   .basket-scroll { display:flex; gap:6px; flex-wrap:wrap; }
 
   .leaders-wrap { overflow-x:auto; }
+  .ift-see-all { appearance:none; -webkit-appearance:none; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; letter-spacing:inherit; }
+  .ift-see-all:hover, .ift-see-all:focus-visible { color:var(--text); }
   table.leaders { width:100%; border-collapse:collapse; font-size:13px; }
   table.leaders th { padding:9px 11px; text-align:left; font-size:var(--fs-micro); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--hair-strong); cursor:pointer; white-space:nowrap; user-select:none; }
   table.leaders th:hover { color:var(--text); }
@@ -200,10 +202,12 @@
   .chip-row { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
   .badge { display:inline-block; font-size:9.5px; font-weight:600; padding:2px 6px; border-radius:5px; border:1px solid; white-space:nowrap; }
   .badge-blue { color:var(--ink-info, var(--info,#5b9bf0)); border-color:color-mix(in srgb,var(--info) 45%,transparent); background:color-mix(in srgb,var(--info) 10%,transparent); }
+  /* Degraded row: auxiliary cells recede so the No-read stance leads. Copy unchanged. */
+  body.page-intraday-flow td.ift-aux-muted { opacity:.58; color:var(--muted); }
 
   .dealer-cell { min-width:150px; font-size:11.5px; }
   .dealer-line { line-height:1.42; }
-  .regime-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+  .regime-dot { display:inline-block; width:8px; height:8px; border-radius:var(--r-pill,999px); margin-right:5px; vertical-align:middle; background:var(--lane, var(--muted)); }
   .rd-long { background:var(--info); } .rd-short { background:var(--orange); } .rd-neutral { background:var(--muted); }
   .dealer-na { color:var(--muted); font-style:italic; }
 
@@ -236,6 +240,23 @@
   .foot-note { font-size:var(--fs-micro); color:var(--muted); margin-top:12px; line-height:1.55; }
 
   .loading-row td { color:var(--muted); font-style:italic; text-align:center; padding:26px; }
+  /* loading skeletons — true geometry, wordless; .skel is the design-system shimmer */
+  .ift-skel-thesis { height:1.15em; width:min(28ch, 92%); margin:13px 0 0; }
+  .ift-skel-sub { height:0.9em; width:min(48ch, 86%); margin:10px 0 0; }
+  .ift-skel-inline { display:inline-block; height:0.85em; width:12ch; vertical-align:middle; margin-left:8px; }
+  .spot-skel { pointer-events:none; }
+  .spot-skel .ift-skel-spot-hd { height:22px; width:42%; }
+  .spot-skel .ift-skel-spot-reason { height:0.9em; width:88%; margin-top:12px; }
+  .spot-skel .ift-skel-spot-reason.short { width:64%; margin-top:7px; }
+  .spot-skel .ift-skel-spot-metric { height:28px; width:100%; margin-top:8px; }
+  .ift-skel-row td { padding:11px; vertical-align:middle; }
+  .ift-skel-row .ift-skel-cell { height:12px; width:72%; }
+  .ift-skel-row .ift-skel-cell.narrow { width:44%; }
+  .ift-skel-host { position:relative; }
+  body.page-intraday-flow .sr-only {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
 
   /* ══ entrance / kinetic animations (reduced-motion gated) ══════ */
   @keyframes iftPulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.82);} }
@@ -271,3 +292,55 @@
 html[data-theme="light"] :is(
   .hs-num
 ) { text-shadow:none; }
+
+/* post-stack: consolidate */
+/* Light is a research workspace: hairline, ink, shadow — not the command-center glow. */
+html[data-theme="light"] body.page-intraday-flow .ift-see-all {
+  color:var(--ink-link, var(--link));
+}
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:hover,
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:focus-visible {
+  color:var(--text);
+  text-decoration-thickness:2px;
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp {
+  color:var(--muted);
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp .lens-q {
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+html[data-theme="light"] body.page-intraday-flow .skel {
+  box-shadow:none;
+}
+html[data-theme="light"] body.page-intraday-flow .spot-skel {
+  background:var(--panel);
+  box-shadow:var(--card-shadow);
+  border-color:var(--line);
+}
+html[data-theme="light"] body.page-intraday-flow .ift-skel-row td {
+  border-bottom-color:var(--line);
+}
+/* Tape chips ghost/hairline in light — recessive by design. Dark stays filled. */
+html[data-theme="light"] body.page-intraday-flow .badge-blue {
+  background:transparent;
+  color:var(--muted);
+  border-color:var(--line);
+  font-weight:500;
+}
+/* Lens card is body-appended; this page needs an opaque instrument surface so
+   the feed-status tip does not wash through the desk (theme.js owns open/close). */
+body.page-intraday-flow .lens-pop {
+  background:var(--panel);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  box-shadow:var(--popover-shadow);
+}
+html[data-theme="light"] body.page-intraday-flow .lens-pop {
+  border-color:var(--line);
+}
+/* Feed-status tip: three block rows, one per lane. The in-row delimiter is
+   ' · '; rows themselves are block elements, never joined by that same mark. */
+body.page-intraday-flow .lens-pop .ift-feed-row { display:block; }
+body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4em; }

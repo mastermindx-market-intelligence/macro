@@ -2904,6 +2904,10 @@ jobs:
       # ok/empty/unavailable contract — the same dependency set this step already
       # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
       # the suite is named here on the census step instead. No new job.
+      # W11 intraday_flow coverage-true feed words / bilingual tape chips /
+      # 8-of-N counted board (PR #7070 round 1): same subject as the two
+      # neighbouring suites, stdlib-only plus the pandas/pyarrow/jinja2
+      # install this step already owns. No new job.
       # tests/test_cash_runway.py (packet B-F09-3 second slice / W8-1, contract-delta
       # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
       # engine.cash_runway is a pure module under this job's engine/*.py glob and the
@@ -2932,6 +2936,7 @@ jobs:
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
           tests/test_unified_dashboard_b2w2.py
+          tests/test_macro_w9_r1.py
           tests/test_hub_plain_language.py
           tests/test_unified_dashboard_b2w3.py
           tests/test_ud_b2_w1_red_first_proof.py
@@ -3021,6 +3026,12 @@ jobs:
           tests/test_t0_indicator.py
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
+          tests/test_intraday_flow_w11_r1.py
+          tests/test_intraday_flow_w11_r2.py
+          tests/test_intraday_flow_w11_r3.py
+          tests/test_intraday_flow_w11_r4.py
+          tests/test_intraday_flow_w11_r5.py
+          tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
           tests/test_track_record_page.py
           tests/test_altdata_hygiene.py

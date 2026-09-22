@@ -1504,6 +1504,23 @@ body.page-macro.mx4-grid .mx5-mkt-price{
   font-size:19px;font-weight:700;line-height:1;
   color:var(--ink-1,rgba(255,255,255,.92));margin-bottom:4px;
   font-variant-numeric:tabular-nums;
+  min-height:1em;min-width:8ch;display:block;
+}
+/* Skeleton keeps the shimmer; geometry lives on the node so dropping .skel
+   (null/behind) cannot collapse the tile. ~8ch matches a live quote ("6,712.25"). */
+body.page-macro.mx4-grid .mx5-mkt-price.skel{
+  display:block;
+}
+/* .dtp-token is a chip in theme.css; on a Markets price node size it to the tile. */
+body.page-macro.mx4-grid .mx5-mkt-price.dtp-token{
+  display:block;font-size:19px;font-weight:700;letter-spacing:normal;
+  text-transform:none;gap:0;align-items:baseline;color:var(--muted);
+}
+body.page-macro.mx4-grid .mx5-mkt-delta.skel{
+  min-height:1em;min-width:3.2ch;display:block;
+}
+body.page-macro .mx5-card-stance{
+  font-size:var(--fs-sm);line-height:1.45;color:var(--ink-2);margin-top:8px;font-weight:500;
 }
 body.page-macro.mx4-grid .mx5-mkt-delta{font-size:13px;font-weight:600;}
 body.page-macro.mx4-grid .mx5-mkt-delta.up{color:var(--ink-up, var(--up,#22d97a));}
@@ -1708,6 +1725,13 @@ body.page-macro.mx4-grid .mx5-wtd-dissent{
    at the node centreline so the row reads as a timeline at a glance. */
 body.page-macro.mx4-grid .mx5-events-sub{
   font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:16px;
+}
+/* None-lane Events: content height, not a stretched empty plate matching WTD. */
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy){
+  align-self:start;
+}
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy) .sxg-face.mx5-card-face{
+  height:auto;
 }
 body.page-macro.mx4-grid .mx5-timeline{position:relative;padding-top:6px;}
 /* rail sits on the node centreline (node zone is 22px tall, centred at 12px+11px) */
@@ -2739,6 +2763,10 @@ body.page-macro.mx4-grid .mx5-alert-content{flex:1;min-width:0;}
 body.page-macro.mx4-grid .mx5-alert-title{
   font-size:13px;font-weight:600;
   color:var(--ink-1,rgba(255,255,255,.92));line-height:1.4;
+}
+body.page-macro.mx4-grid .mx5-alert-k{
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin-right:6px;
 }
 body.page-macro.mx4-grid .mx5-alert-title.warn{color:var(--mx5-warn-ink);}
 body.page-macro.mx4-grid .mx5-alert-detail{

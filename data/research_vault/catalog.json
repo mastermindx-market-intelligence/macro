@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T21:20:14.648382+00:00",
-  "count": 2594,
+  "generated_at": "2026-09-22T00:49:34.558940+00:00",
+  "count": 2604,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,46 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-18eq6v5baum-321e40",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:26:54Z",
+      "summary_points": [
+        "GSCPI Moderation: GSCPI elevated but below pre-pandemic highs, signaling moderating supply chain stress despite energy disruptions; Asia manufacturing shutdowns remain a key fundamental risk for global trade flows.",
+        "Asia Manufacturing Disruptions: Frequent shutdowns in Asia’s manufacturing hubs directly impact supply chain resilience, creating near-term volatility for portfolio managers monitoring global trade fundamentals.",
+        "Critical Data Releases: Eurozone Consumer Confidence (-5.5), US New Home Sales (-10.5%), and PMI readings (Eurozone 52, US 56) drive immediate market sentiment and economic outlook assessments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7txfyttnrvb-bc54b6",
+      "title": "Gms midterms 2026 insights",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:06:04Z",
+      "summary_points": [
+        "Divided Congress: Narrow Republican majority (218R-214D House, 53-47 Senate) constrains fiscal expansion, policy shifts, and debt ceiling negotiations, reinforcing elevated rates and gridlock through 2027+.",
+        "Debt Service Burden: $40T U.S.",
+        "public debt at 3.5% avg.",
+        "interest → 5% of real GDP in annual debt service, creating structural fiscal fragility and volatile interest rates.",
+        "Geopolitical Fragmentation: AI dominance and global regime shifts drive macro forces, reshaping trade flows and elevating U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-megf17hsiv1-847d35",
       "title": "MS Reassessing the Fed’s Rate Path What the Shift Means for Markets",
@@ -371,6 +411,168 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-34aogwpn6uz-8b64b4",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:34Z",
+      "summary_points": [
+        "<u>Valuation Overextension</u>: MXAPJ at 10.7x forward P/E (+2.3 s.d.) and 2.4x trailing P/B (+2.3 s.d.) signals overvaluation vs historical norms, despite 440bp equity/bond yield gap indicating relative cheapness vs bonds.",
+        "<u>FII Outflows & Volatility Risk</u>: Persistent FII outflows (Taiwan -39B, Korea -120B YTD) vs DII inflows (India +64B) create net negative flows, heightening capital flight risk and requiring hedging strategies.",
+        "<u>Negative Breadth & Regional Divergence</u>: Indonesia (-33%) and Malaysia (-19%) show severe negative breadth, signaling heightened decline risk; MXAPJ’s 1% breadth reflects uneven bullishness across AP.",
+        "<u>Earnings Revision Divergence</u>: Japan/Korea show negative 2026 earnings revisions, while China Real Estate/Energy and Japan Energy exhibit positive revisions, driving sector-specific allocation shifts.",
+        "<u>Currency/Rate Divergence</u>: AUD/KRW up 6.4%/4.4% vs IDR/PHP down -6.3%/-6.0%, with long rates surging (PH +147 b.p.), indicating policy tightening and economic headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0dbwi42hukc-02d7ff",
+      "title": "Global Markets Daily Re Assessing the Value of Duration for Balanced Portfolios",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:28Z",
+      "summary_points": [
+        "Global Yield Drivers: Middle East war (energy prices), AI debt issuance, and fiscal concerns drove YTD yield rises; US 10-yr near 5% (vs. 7% 250-yr avg), lifting long-term bond allocation norms.",
+        "60/40 Reassessment: Suboptimal; replace with receiver swaptions on front-end rates for recession convexity hedge and bond-like equities (negative beta) for diversification.",
+        "Recession Hedge Tactics: Short-dated USD rate receivers (1y/2y) outperform S&P 500 OTM puts in recessions, offering superior fixed income protection vs. equity hedges."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qvbwiybeqxp-c61c71",
+      "title": "GS Utilities Daily RWE secures c.120 MW of onshore wind capacity in latest German auction Ofgem has launched a consultati...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:22Z",
+      "summary_points": [
+        "German Wind Auction Execution: RWE securing 119 MW onshore wind capacity (Jüchen 3: 84 MW, Seedorf: 35 MW) with 2028 commissioning directly validates EU energy transition progress, impacting renewable capacity growth and utility fundamentals.",
+        "UK Battery Grid Fee Policy: Ofgem’s proposed £3,000–£25,000/MW grid fee range for batteries critically alters project economics and grid integration costs, signaling regulatory shifts for storage viability.",
+        "EU Solar Acceleration: Solar now drives 42% of EU renewables (vs. 37% in Q2 2025), reflecting structural policy-driven electrification shift and validating renewable deployment momentum.",
+        "Agentic AI Power Demand Surge: Agentic AI (AAI) to boost datacenter power demand by +25% (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-srs7ndz9ngi-2e0e02",
+      "title": "Americas Transportation Higher Railcar Prices Supportive of Valuation",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:06Z",
+      "summary_points": [
+        "Industry Consolidation Catalyst: 2 railcar manufacturers control 90% of industry backlog, driving elevated prices amid post-Covid inflation and commodity surges, creating durable asset value support (40-50 yr asset life).",
+        "GATX Scale Advantage: 250k-unit fleet (largest owner) vs.",
+        "TRN/GBX (100k/20k units) enables superior valuation leverage, with EV/Replacement Cost at 0.5x (global) vs. peer avg 0.8x.",
+        "Valuation Gap & Upside: GATX trades at 0.5x global replacement cost (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6qc9c9yig02-2de7db",
+      "title": "Novo Nordisk (NOVOb.CO) Initial thoughts on mid term ambitions operating margin suggest c.3 downside to cons. in 2030",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:59Z",
+      "summary_points": [
+        "Operating Margin Downside Risk: Stable margins (40.3% 2026, 41.6% 2030) imply ~3% lower consensus operating profit estimates for 2030, directly impacting earnings visibility.",
+        "Semaglutide LOE Commentary Gap: Critical omission of semaglutide LOE expectations in press release despite competitive headwinds, risking investor disappointment on key revenue driver.",
+        "Price Target vs Closing Price Discrepancy: Consistent target prices (e.g., NOVO.CO DKK285 vs closing 916.90 Dkr; NVO $44 vs $132.80) exceed current levels with 'BB'/'B' credit ratings, signaling mispricing or overvaluation risk.",
+        "Key Clinical & Manufacturing Risks: Downside driven by clinical failures (CagriSema/amycretin), Wegovy/Ozempic manufacturing delays, and sustained pricing pressure from competitors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ymeasvvuqd3-ca4306",
+      "title": "Hong Kong Tracker Softened housing volume but resilient pricing. Office recovery broadening to non central districts. Retail...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:54Z",
+      "summary_points": [
+        "HK Property Valuation Discount: Property stocks trade at 0.5x P/B (-54% NAV discount) vs historical 0.6x P/B (-42% NAV), signaling deep undervaluation amid resilient prices.",
+        "Capital Controls Impact: Tighter Chinese capital controls (Jun 5, 2026) threaten demand drivers, yet residential prices rose 12.5% YTD (CCL Index +16.3% YoY) despite softened transaction volume (-26% yoy).",
+        "Office Demand Surge: Financial institutions drove +313k sqft net office take-up in Jul-26 (+4% YTD rents, vacancy down to 12.8%), contrasting with retail sector weakness (rents -1.5% ytd).",
+        "Mortgage Sensitivity: +100bps rate hike would increase monthly payments 7.0%-12.9% across classes, with Class C (70-99.9 sqm) most vulnerable, heightening housing equity risk.",
+        "2027E Housing Softening: HK residential prices forecasted +15% YoY for 2026E but declining to 7%/4% for 2027E/2028E, signaling near-term market peak."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4irugouq8zk-c455ca",
+      "title": "Europe Paper & Forest Products US Paper Update Containerboard Up $70 t",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:41Z",
+      "summary_points": [
+        "Containerboard Price Hike Confirmed: US containerboard prices rose $70/t (Kraftliner/Testliner) in September, totaling $170/t YTD; mill backlogs at 5–6 weeks signal strong demand/supply balance countering investor concerns.",
+        "North American Containerboard Dependency: Smurfit Westrock has 60% EBITDA from North America, with ~70% of that tied to containerboard—critical for US market sensitivity to pricing trends.",
+        "Valuation Premium & Target: Goldman Sachs’ $53 target consistently exceeds current price ($44.26), reflecting bullish confidence; 9.0x EV/DAF multiple for 2027/28 implies premium valuation.",
+        "Tariff Margin Disappointment: Tariffs failing to drive higher margins (unlike steel sector) undermines US paper price forecasts and earnings estimates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-w5mmjido6jo-3212f1",
+      "title": "Americas Retail Takeaways from IR management",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:38Z",
+      "summary_points": [
+        "ASO's Resilient Margins & Diversified Mix: Gross margins flat y/y in 2H (shrink/tariff tailwinds), not impacted by industry promotions due to diversified assortment (outdoor, performance running, work boots); Nike distribution limitations pose critical share erosion risk.",
+        "Academy's SSS/EPS Beat & Catalysts: Q3 SSS +1.2% (above consensus), FY26 SSS +1.4% (above consensus), FY26 EPS $6.81 (above consensus); HOKA launch and diversified portfolio drive growth.",
+        "EYE's Comp Beat & EPS Miss: Q3 comp +3.8% (vs consensus +3.4%), EPS $0.16 (vs consensus $0.17); premium progressive lenses drive ticket growth, smart glasses focus on Meta Labs comparison.",
+        "$50M Annualized Margin Headwind: Freight/fuel/home delivery/vendor costs recognized gradually via inventory; critical for near-term profitability beyond 2H margin outlook.",
+        "ASO Target Premium & Risk: Target prices $60–$70 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
