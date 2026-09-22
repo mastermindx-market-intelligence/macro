@@ -55,3 +55,35 @@ Source/input digests and analysis observation time are in the real-input receipt
 Next proof uses the genuine parsed workbook injected only at the read-only store boundary
 of the existing builder; no production source file/table is written. Any resulting browser
 proof must say official-input injection, supply not connected, production:false.
+
+## Verified consumer proof and limits
+Source90e9e9eae2c6d801c766a6990796022d5d2ca173 consumed the genuine workbook
+through the existing store.read boundary; the optional source table was NOT written.
+The actual China builder emitted the optional weights section, then the existing
+capture owner recorded8/8 full-page and8/8 expanded-weight interactions across
+1440/390, EN/ZH and dark/light. The detail shows the weight date, price window,
+300/300 coverage,23.2% top-ten weight,negative basket and ETF returns, and six
+positive/negative basket-contribution rows. It explicitly disclaims cash-index and
+point-in-time attribution. Desktop-dark and mobile-Chinese-light images were read.
+No capture console errors, failed responses or document overflow were recorded.
+The source-page hash remained27296118018ae217c648e049b82437e1a51f51d096d3ce5871c6cb6cbb9153f9.
+Temporary server/browser closed. One optional HMM leaf logged missing hmmlearn;
+this proof is not an HMM validation or an all-model dependency qualification.
+
+The injected page is preserved operation-locally for reproducibility, NOT shipped
+as live data.27 owned generated outputs were restored after preserving the proof;
+the earlier combined site artifact remains unchanged. Both source-price hashes
+matched, the weight source table remained absent, and no ledger refresh was invoked.
+Visual-evidence and design enforce-added guards pass. No new CSS system was created:
+dark graphite and light white/cool-canvas use the existing section/table treatments.
+Evidence:mockups/evidence/china-index-weights-20260921/interaction-proof.json and
+custody-proof.json. The full third-party workbook is not redistributed.
+
+A later optional English-name/residual metadata augmentation was also safety-refused;
+readback proved the prior derived receipt unchanged. It was not retried or routed
+through another writer. Existing published numeric evidence remains valid.
+
+Current limit: the consumption capability is tested; autonomous source supply is not
+implemented. The older independent source-clock fix and shared-model recovery review
+remain frozen at their exact refusals. CI, current-main reconciliation and production
+acceptance are still deferred, not waived. No child or watcher remains running.

@@ -26,6 +26,9 @@ changed:
 - path: collectors/china_breadth.py + engine/china_tier1.py + templates/china.html.j2
   what: Integrate existing PR7592 safeguards into PR7622 without changing its original
     branch/controller; preserve both code histories and both test groups.
+- path: collectors/china_universe.py + engine/china_participation.py + templates/_china_participation_context.html.j2
+  what: Qualify the official dated close-weight file and consume it as a fixed-start
+    basket with explicit retrospective scope; automatic ingestion is not enabled.
 verified:
 - claim: Integrated source and neighboring consumers pass together.
   command: python -m pytest tests/test_china_participation.py tests/test_china_archetype_d_s1.py
@@ -44,6 +47,18 @@ verified:
   result: Final16 rest/focus captures and8 integrated interactions pass after auxiliary-output
     cleanup; page0d75fe73 unchanged; source/input/asset fingerprints verified; offline
     only.
+- claim: Official-weight parser, arithmetic and optional page consumer
+  command: python -m pytest tests/test_china_universe_index_constituents.py tests/test_china_participation.py
+    tests/test_china_archetype_d_s1.py -q --tb=short
+  result: 220 passed,31 added cases,10 inherited warnings. Source90e9e9eae2c6; no
+    clock/recovery repair is counted.
+- claim: Actual builder consumes manually injected genuine official-file data and
+    renders the new detail
+  command: python research/grey_deer/probe_china_index_weights.py <operation-local
+    official workbook>
+  result: 8 captures and8 interactions passed. Page27296118..., source90e9e9eae2c6.
+    Source table not written;27 generated outputs restored after evidence preservation;
+    no production claim.
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -56,6 +71,10 @@ unverified:
   what_would_verify: Resolve the exact platform-refused clock edit before implementing/passing
     its15 pending cases. Attribution additionally needs an accepted historical-membership
     and official starting-weight source; neither is manufactured from library caps.
+- claim: Automatic official-weight source supply
+  what_would_verify: Resolve the exact protective refresh-test append refusal, then
+    implement and verify the existing-source refresh without bypass. The current reader
+    has explicit absent-state behavior.
 unresolved:
 - Hosted CI, source-current-main qualification and release remain intentionally deferred;
   PR7592 retains its unchanged external release carrier.
@@ -64,12 +83,12 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Resolve the exact clock-edit gate without bypass;15 pending clock cases remain known
-  failing and are excluded from passing tests.
-- Qualify official starting weights/historical membership and shared recovery/probability
-  claims through existing owners.
-- When release work resumes, qualify the combined PR7622 against current main and
-  normal CI, reconcile PR7592 publication, then prove the real served page.
+- Resolve the exact official-weight supply verification gate on its original carrier;
+  do not recreate the blocked test or refresh through another actor.
+- Preserve the15 pending clock cases and the separately refused7029 comparison; resume
+  those exact lanes only under a lawful changed gate.
+- When release work resumes, reconcile current main and prove CI/publication/live
+  behavior; preserve the combined accuracy page and all existing source owners.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -77,6 +96,9 @@ do_not_redo:
 - Do not call the arithmetic sample mean an equal-weight index or relative outperformance
   an absolute gain.
 - Do not create a new collector, participation tape, queue, scheduler or risk engine.
+- Do not re-fetch or redistribute the official workbook to repeat this accepted retrospective
+  result; do not call the basket official index attribution or treat its later observation
+  as PIT evidence.
 danger_areas:
 - Missing quotes cannot be filled from earlier observations; every return window needs
   its own sufficient history.
@@ -88,6 +110,7 @@ prs:
 - 7622
 - 7592
 ---
+
 
 
 # Current cumulative continuation
@@ -115,8 +138,20 @@ The older clock edit remains refused/NO_EFFECT;15 pending tests remain excluded.
 This turn's compound7029 fetch/diff/review request was refused; no alternate path
 or recovery implementation was attempted. Existing recovery owner remains7029.
 
-Next:run the checked-in proof entry with the genuine local workbook injected only
-at the existing store.read seam, explicitly not production ingestion; inspect
-browser evidence, restore only this build's generated artifacts, publish receipts.
+Completed proof:8 full-page captures and8 detail interactions using genuine weight
+input injected solely at store.read. Page27296118... is evidence-only, not deployed.
+27 generated outputs restored; source table remains absent and original input hashes
+match. Detailed proof is mockups/evidence/china-index-weights-20260921/.
 No official dataset is committed; raw workbook stays local. No worker/watcher.
-MISSION_COMPLETE:false. Current work remains in progress; no autonomous wake claimed.
+The later optional English-name/residual augmentation was also refused; the original
+derived receipt is unchanged, and no equivalent write was routed elsewhere.
+
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false
+Boundary:the dated official-weight analysis and optional consumer are proven, with
+source-supply and source-clock gates separately held; a tool-heavy phase is sealed
+into these exact source/evidence owners. Source90e9e9eae2c6 is the semantic revision;
+final committed evidence revision is the same PR's canonical head. Resume from this
+record plus minimum fresh procedure, not old tool history. Next:the exact existing
+source-supply gate, then normal qualified release when CI work resumes. No autonomous
+wake, worker assignment, source transfer or whole-dashboard completion is claimed.
