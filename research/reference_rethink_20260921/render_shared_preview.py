@@ -52,7 +52,7 @@ def compile_from_canonical_source() -> dict:
     from scripts.build_market_reference import validate, validate_coverage_exceptions
     raw = yaml.safe_load((ROOT / 'config/market_reference.yml').read_text())
     pages = {entry['owner_ref'].partition('#')[0] for entry in raw['entries']}
-    pages.update(item['surface'] for item in raw.get('coverage_exceptions', []))
+    pages.update(item['surface'] for item in (raw.get('coverage_exceptions') or []))
     missing = sorted(page for page in pages if not (ROOT / 'site' / page).is_file())
     if missing:
         raise ValueError('Rendered owner pages missing; no source-backed qualification: ' + ', '.join(missing))
@@ -73,7 +73,7 @@ def main() -> int:
         raw = json.loads((ROOT / 'tests/fixtures/market-guide/synthetic-source.json').read_text())
         manifest = compile_guide(raw, json.loads((HERE / 'guide-presentation.json').read_text()),
                                  validate_registry=lambda data: data['entries'],
-                                 validate_coverage=lambda data, entries: data.get('coverage_exceptions', []))
+                                 validate_coverage=lambda data, entries: (data.get('coverage_exceptions') or []))
     else:
         manifest = compile_from_canonical_source()
     content = render_html(manifest, fixture_only=args.fixture_only)
