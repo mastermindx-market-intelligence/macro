@@ -256,6 +256,12 @@ jobs:
     # 180m covers the measured build plus the push loop's explicit 10m contention
     # budget without weakening any guard or publishing a partial tree.
     timeout-minutes: 180
+    # A-F03-W2-1b (2026-09-22): explicit legacy skew source until the M1 ThetaData accrual
+    # lane (W2-2) lands; the W2-3 cutover deletes this env pin and switches the builder to
+    # --emit. Job-level rather than in-step because the re-render step's run expression
+    # sits 76 chars under the 20,500-char guard (tests/test_public_render_fastlane.py).
+    env:
+      OPTIONS_SKEW_LEGACY_CHAIN: "1"
     steps:
       # Same workspace-hygiene guard as ci.yml's pack job (#5108), and it must run FIRST
       # — ahead of the bound step below, not just ahead of actions/checkout. A self-hosted
