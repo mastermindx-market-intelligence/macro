@@ -81,8 +81,11 @@ owner, and no generated detail page is manually committed to simulate deployment
 #7650 remains on exact head `ad4a8c32a79e1e919021fa9efce9beea33fc2c7c`.
 Its full hosted CI run 35660945127 and fences passed. An actual independent review
 request was added for mastermindx-3 this turn; request is not execution/approval.
-Vercel's deployment quota failure remains nonpassing; no bypass or Vercel action
-was performed. The inactive `ci-authority/codex/merge-queue-pilot` status is
+The legacy Vercel gate dependency was subsequently resolved by independently
+approved #7478, merged at `111eb086380b36fcb4afa69add59877d1a939441`. The existing
+merge-control owner executed successful real sweep 35677588845 at that exact
+merge. The old external Git status may remain red, but is now nonbinding under
+the accepted owner policy; no actual repository check was waived. The inactive `ci-authority/codex/merge-queue-pilot` status is
 nonbinding on main under the existing `merge_on_green.py` policy; the active main
 authority check stays binding. Source acceptance and real deployment are not
 inferred from passing tests.
@@ -127,3 +130,14 @@ A direct synthetic discriminator held a rising 250-point price series, accelerat
 changed: .74 produced clean-entry true / quality .9; .75 and .85 produced false /
 quality .7. This invokes the unchanged `basket_score.clean_entry` owner. It isolates
 the existing gate; it is not current market evidence or proof of superior returns.
+
+### Release receipt
+
+This capability is source PR **#7669**, initially checkpointed at implementation
+`01a7996bacb018f5fa1f1b08ac8379fff2038c20`, with the current cumulative handoff
+carried by its subsequent docs-only revision. It remains DRAFT / HOLD-FOR-SOL
+pending full exact-head CI and independent review, followed by normal production
+publication proof. A requested review is not execution or approval. The merged
+#7478 dependency is complete and must not be recreated. Its successful production
+sweep still disclosed an independent baseline/capacity backlog, not an excuse to
+create a second release controller or launch duplicate baseline runs.
