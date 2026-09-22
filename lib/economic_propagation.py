@@ -524,16 +524,26 @@ def validate_hypothesis(record: Any) -> list[Finding]:
         else {}
     )
     source_identity_state = source_identity_for_gate.get("resolution_state")
-    # The source event's OWN identity gates inference exactly as the target's does,
-    # so this block mirrors the target gate below clause for clause. Only the
-    # HEADLINE claim may consult ``abstained``: the evidence-emptiness and mechanism
-    # clauses fire regardless of it, because ``abstained: true`` is a self-report,
-    # not evidence that the evidence is absent. Without them a record could declare
-    # itself abstained and still publish a SUPPORTED Graph-1 leg built on an event
-    # whose own identity was never resolved — precisely what compose_hypothesis
-    # refuses at its gate, and what K3D_R011/K3D_R012 already refuse target-side.
-    # A validator that accepts what the composer refuses is drift, so both sides
-    # stay pinned by test_r015_mirrors_the_target_side_gate_clause_for_clause.
+    # The source event's OWN identity gates inference as the target's does. This
+    # block mirrors the target gate's NON-RESOLVED branch below (K3D_R010/R011/R012)
+    # clause for clause. Only the HEADLINE claim may consult ``abstained``: the
+    # evidence-emptiness and mechanism clauses fire regardless of it, because
+    # ``abstained: true`` is a self-report, not evidence that the evidence is
+    # absent. Without them a record could declare itself abstained and still publish
+    # a SUPPORTED Graph-1 leg built on an event whose own identity was never
+    # resolved — precisely what compose_hypothesis refuses at its gate. A validator
+    # that accepts what the composer refuses is drift, so both sides stay pinned by
+    # test_r015_mirrors_the_target_side_gate_clause_for_clause.
+    #
+    # Deliberately NOT mirrored, and NOT closed here: the target's RESOLVED-branch
+    # grain check (K3D_R013/K3D_R014, which reject a RESOLVED identity carrying a
+    # null issuer_id or security_id). A source_identity asserting RESOLVED with null
+    # ids therefore still passes BOTH composer and validator. That gap is
+    # pre-existing — it behaves identically before this commit — and is a claim to
+    # be exactly resolved rather than the "non-RESOLVED" state the controlling
+    # review ordered gated, so closing it is a separate scope change raised to Sol
+    # rather than taken here. Do not read the parity above as wider than the
+    # non-RESOLVED branch.
     if source_identity_state != "RESOLVED":
         if abstention.get("abstained") is not True:
             findings.append(
