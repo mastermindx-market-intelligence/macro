@@ -188,6 +188,20 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_mobile_density_tightens_spacing_without_hiding_cards() -> None:
+    assert "body.page-china .cnx-rack2," in TPL
+    assert "body.page-china .cnx-rack3{gap:10px;margin-bottom:10px}" in TPL
+    assert "body.page-china .cnx-card{padding:12px 14px}" in TPL
+    assert "body.page-china .cnx-row," in TPL
+    assert "body.page-china .cnx-kv{padding:6px 0}" in TPL
+    assert "body.page-china .cnx-links{gap:7px;margin:5px 0 10px}" in TPL
+
+    # Density is spacing-only: it does not remove the accepted card/rack structure.
+    assert "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature" in TPL
+    assert "ROW 3: Policy Monitor + Connect Flows + Macro News" in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_mobile_section_index_improves_scanability_without_collapsing_depth() -> None:
     assert 'class="cnx-links cnx-mobile-index"' in TPL
     assert 'aria-label="China dashboard sections / 中国看板分区"' in TPL
