@@ -188,6 +188,15 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_mobile_section_index_tracks_current_deep_zone() -> None:
+    assert 'a[aria-current="location"]' in TPL
+    assert "function cnxInitMobileIndex()" in TPL
+    assert "new IntersectionObserver" in TPL
+    assert "setAttribute('aria-current','location')" in TPL
+    assert "removeAttribute('aria-current')" in TPL
+    assert "cnxInitMobileIndex();" in TPL
+
+
 def test_mobile_section_index_stays_available_during_long_scrolls() -> None:
     assert "body.page-china .cnx-links.cnx-mobile-index{display:flex;position:sticky;top:8px;z-index:30" in TPL
     assert "background:var(--panel)" in TPL
