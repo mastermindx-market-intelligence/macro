@@ -871,47 +871,113 @@ def _flip_distance(score: float, fp: dict, perf: dict, breadth: dict, delta_5d: 
             "nearest_route": nearest, "note_en": note_en, "note_zh": note_zh}
 
 
-def _reco(label: str, macro: float, crowd_pen: float, fp: dict,
-          mtf: dict | None = None, tape: dict | None = None) -> str:
-    below_trend = _long_below_trend(mtf, fp)     # drawdown-control gate (the validated channel)
-    extended = _extended(fp, 0.85)               # absolute stretch (non-US) / rs_pctile (US)
+def _reco_decision(label: str, macro: float, crowd_pen: float, fp: dict,
+                   mtf: dict | None = None, tape: dict | None = None) -> tuple[str, str]:
+    """Existing recommendation policy, with the deciding reason returned alongside it.
+
+    No threshold, precedence or permission changes. Keeping the reason on this
+    path avoids a second classifier that can tell a different story from the verb.
+    """
+    below_trend = _long_below_trend(mtf, fp)
+    extended = _extended(fp, 0.85)
     vh_state = ((tape or {}).get("volhole") or {}).get("state")
     if label == "deteriorating":
-        return "avoid"
+        return "avoid", "trend_deteriorating"
     if label == "fading":
-        return "trim"
+        return "trim", "momentum_fading"
     if vh_state == "EXPANSION_DOWN":
-        return "trim"
+        return "trim", "downside_expansion"
     if label == "emerging":
         if below_trend:
-            return "hold"
-        return "enter" if (macro >= -0.25 and crowd_pen < 0.65) else "hold"
+            return "hold", "long_trend"
+        if not macro >= -0.25:
+            return "hold", "macro_limit" if np.isfinite(macro) else "reason_unavailable"
+        if not crowd_pen < 0.65:
+            return "hold", "crowding_limit" if np.isfinite(crowd_pen) else "reason_unavailable"
+        return "enter", "emerging_checks_clear"
     if label == "dominant":
         if below_trend:
-            return "hold"
-        if fp.get("ext_abs") is not None:
-            # Non-US: leadership itself no longer disqualifies the leader. Per the house rule
-            # (crowding only DOWN-SIZES, never fades the dominant theme — narrative_rotation),
-            # only a PARABOLIC absolute stretch (ext_abs ≥ EXT_HI) or a macro headwind blocks
-            # ACCUMULATE; crowding is shown as a sizing caution, not a veto on the verb.
-            return "accumulate" if (not extended and macro >= -0.1) else "hold"
-        # US / legacy gate unchanged (rs_pctile + crowding) so the validated page is identical.
-        return "accumulate" if (not extended and crowd_pen < 0.6 and macro >= -0.1) else "hold"
-    return "hold"
+            return "hold", "long_trend"
+        if extended:
+            return "hold", ("price_extension" if fp.get("ext_abs") is not None
+                            else "relative_strength_limit")
+        # Absolute-extension path does not impose the legacy crowding veto.
+        if fp.get("ext_abs") is None and not crowd_pen < 0.6:
+            return "hold", "crowding_limit" if np.isfinite(crowd_pen) else "reason_unavailable"
+        if not macro >= -0.1:
+            return "hold", "macro_limit" if np.isfinite(macro) else "reason_unavailable"
+        return "accumulate", "leading_checks_clear"
+    return "hold", "no_constructive_signal"
 
 
-_RECO_WHY = {
-    "enter": ("Early rotation — accelerating before extended; macro not against it.",
-              "轮动早期 — 加速且尚未过度延展；宏观未逆风。"),
-    "accumulate": ("Leading and still broad — room to add on the trend.",
-                   "领涨且仍然分散 — 趋势中可加仓。"),
-    "hold": ("In play but no fresh edge here — keep, don't chase.",
-             "仍在运行但此处无新优势 — 持有勿追。"),
-    "trim": ("Was strong, now rolling over off a high — take some risk off.",
-             "曾强势，现自高位回落 — 适度降低风险。"),
-    "avoid": ("Momentum and breadth breaking down — stand aside.",
-              "动量与广度同步走弱 — 暂避。"),
+def _reco(label: str, macro: float, crowd_pen: float, fp: dict,
+          mtf: dict | None = None, tape: dict | None = None) -> str:
+    """Backward-compatible verb-only reader of the same recommendation owner."""
+    return _reco_decision(label, macro, crowd_pen, fp, mtf, tape)[0]
+
+
+# Display text, not another gate. Expected recommendation keeps contradictory
+# payloads from acquiring a plausible but unsupported explanation.
+_RECO_REASON_TEXT = {
+    "trend_deteriorating": ("avoid", "Theme trend has deteriorated; avoid new entries.",
+                            "主题趋势已转弱；避免新开仓。"),
+    "momentum_fading": ("trim", "Momentum has weakened; protect gains rather than adding.",
+                         "动能已转弱；保护利润，避免加仓。"),
+    "downside_expansion": ("trim", "Downside expansion is active; protect gains rather than adding.",
+                            "下跌正在加速；保护利润，避免加仓。"),
+    "long_trend": ("hold", "The longer trend blocks entry; wait for it to improve.",
+                    "长期趋势尚不支持入场；等待改善。"),
+    "macro_limit": ("hold", "The macro filter blocks new exposure; wait for conditions to improve.",
+                     "宏观条件暂不支持新增仓位；等待改善。"),
+    "crowding_limit": ("hold", "Crowding blocks new exposure; wait for the pressure to ease.",
+                        "拥挤度限制新增仓位；等待压力缓解。"),
+    "relative_strength_limit": ("hold", "Relative strength hits the entry limit; price stretch is not established.",
+                                 "相对强势触及模型入场限制；这不代表价格已过度延伸。"),
+    "price_extension": ("hold", "Price is stretched above its own trend; wait for a better entry.",
+                         "价格相对自身趋势已过度延伸；等待更好的入场点。"),
+    "no_constructive_signal": ("hold", "No positive theme signal; wait for stronger confirmation.",
+                                "暂无积极的主题信号；等待进一步确认。"),
+    "risk_off_safeguard": ("hold", "The risk-off safeguard blocks new exposure; keep watching the leaders.",
+                            "避险护栏暂时限制新增仓位；继续关注领涨方向。"),
+    "momentum_cooling_safeguard": ("hold", "Momentum is cooling near the rollover threshold; avoid fresh adds.",
+                                    "动能放缓且接近转弱条件；暂不加仓。"),
+    "entry_checks_clear": ("positive", "Entry checks are clear; confirm the individual stock setup.",
+                            "主题入场条件已通过；仍需确认个股形态。"),
+    "entry_not_confirmed": ("positive", "Theme remains in favour; a clean entry is not confirmed.",
+                             "主题仍获看好；尚未确认清晰入场点。"),
+    "entry_read_unavailable": ("positive", "Theme remains in favour; entry-quality information is unavailable.",
+                                "主题仍获看好；入场质量信息暂缺。"),
+    "reason_unavailable": ("any", "Recommendation details are unavailable; check the underlying evidence.",
+                            "推荐详情暂缺；请查看底层证据。"),
 }
+
+
+def _recommendation_explanation(reco: str, base_reason: str, *,
+                                 regime_demoted: bool = False,
+                                 chase_demoted: bool = False,
+                                 clean_entry: bool | None = None) -> dict:
+    """Explain the FINAL verb, including existing subtract-only safeguards.
+
+    Entry-quality is a display distinction only; it never changes the theme
+    recommendation. Missing is not false, and no clean entry is not overextension.
+    """
+    code = base_reason
+    if regime_demoted and reco == "hold":
+        code = "risk_off_safeguard"
+    elif chase_demoted and reco == "hold":
+        code = "momentum_cooling_safeguard"
+    elif ((reco, base_reason) in (("enter", "emerging_checks_clear"),
+                                  ("accumulate", "leading_checks_clear"))):
+        code = ("entry_checks_clear" if clean_entry is True else
+                "entry_not_confirmed" if clean_entry is False else "entry_read_unavailable")
+    expected, en, zh = _RECO_REASON_TEXT.get(code, _RECO_REASON_TEXT["reason_unavailable"])
+    valid = (code in _RECO_REASON_TEXT and reco in RECOS
+             and (expected == "any" or expected == reco
+                  or (expected == "positive" and reco in ("enter", "accumulate"))))
+    if not valid:
+        code = "reason_unavailable"
+        _, en, zh = _RECO_REASON_TEXT[code]
+    return {"code": code, "en": en, "zh": zh}
 
 
 # ----------------------------------------------- backtested signal-strength grading
@@ -1171,7 +1237,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         label = _label(score, fp, perf, breadth_d, delta_5d, mtf, tape)
         # display-only distance-to-label-change meter — same literals as _label(), no new logic
         flip_dist = _flip_distance(score, fp, perf, breadth_d, delta_5d, mtf, tape)
-        reco = _reco(label, macro_g, crowd_pen, fp, mtf, tape)
+        reco, reco_base_reason = _reco_decision(label, macro_g, crowd_pen, fp, mtf, tape)
         # SUBTRACT-ONLY vol-regime caution: in a risk-off kill-switch regime, stand the
         # aggressive recos DOWN to "hold" (never the reverse, never touches score/rank). This
         # is what drops these baskets out of act_now while the regime is stressed.
@@ -1203,6 +1269,11 @@ def compute_theme_intel(region: str = "us") -> dict | None:
                 and (textures.get("overbought") or {}).get("band") in ("overbought", "extreme")
                 and flip_dist.get("route_a_bps") is not None):
             reco, chase_demoted = "hold", True
+        reco_explanation = _recommendation_explanation(
+            reco, reco_base_reason, regime_demoted=regime_demoted,
+            chase_demoted=chase_demoted,
+            clean_entry=(textures.get("clean_entry") or {}).get("flag"),
+        )
         # achieved-lead-time forward log for the divergence texture: stamp elevated/high
         # reads keyed (date, basket, region) — keep-first, so intraday rebuilds can't drift
         # the stamp — so a later grader can measure the lead vs the fading/deteriorating
@@ -1242,7 +1313,9 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "mtf": mtf or None, "tape": tape or None,
             "label": label, "label_en": LABELS[label][0], "label_zh": LABELS[label][1],
             "reco": reco, "reco_en": RECOS[reco][0], "reco_zh": RECOS[reco][1],
-            "reco_why_en": _RECO_WHY[reco][0], "reco_why_zh": _RECO_WHY[reco][1],
+            "reco_why_en": reco_explanation["en"], "reco_why_zh": reco_explanation["zh"],
+            "reco_reason_code": reco_explanation["code"],
+            "reco_base_reason_code": reco_base_reason,
             "regime_demoted": regime_demoted,
             "chase_demoted": chase_demoted,
             "reasons": reasons,

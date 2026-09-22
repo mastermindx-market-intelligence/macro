@@ -1,0 +1,612 @@
+{
+  "source_ref": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "source_path": "site/basketdata/baskets.json",
+  "source_sha256": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
+  "source_as_of": "2026-09-18",
+  "candidate_engine_sha256": "493c77c26d40243961c7cf197d37388e2cfe1ffbbb181cb23f3f3578c8eb0a72",
+  "policy_parity": {
+    "cases": 10584,
+    "mismatches": 0,
+    "baseline_ref": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+    "baseline_function": "engine/theme_scoring.py:_reco"
+  },
+  "themes": 49,
+  "replayed": 49,
+  "unmatched": [],
+  "all_non_explanation_data_unchanged": true,
+  "records": [
+    {
+      "id": "crypto",
+      "name": "Crypto & Digital Assets",
+      "reco": "hold",
+      "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
+      "after": {
+        "code": "relative_strength_limit",
+        "en": "Relative strength hits the entry limit; price stretch is not established.",
+        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89e6\u53ca\u6a21\u578b\u5165\u573a\u9650\u5236\uff1b\u8fd9\u4e0d\u4ee3\u8868\u4ef7\u683c\u5df2\u8fc7\u5ea6\u5ef6\u4f38\u3002"
+      },
+      "base_reason": "relative_strength_limit"
+    },
+    {
+      "id": "mag7",
+      "name": "Magnificent Seven",
+      "reco": "accumulate",
+      "before_en": "Leading and still broad \u2014 room to add on the trend.",
+      "after": {
+        "code": "entry_checks_clear",
+        "en": "Entry checks are clear; confirm the individual stock setup.",
+        "zh": "\u4e3b\u9898\u5165\u573a\u6761\u4ef6\u5df2\u901a\u8fc7\uff1b\u4ecd\u9700\u786e\u8ba4\u4e2a\u80a1\u5f62\u6001\u3002"
+      },
+      "base_reason": "leading_checks_clear"
+    },
+    {
+      "id": "crypto_rails",
+      "name": "Crypto & Digital Rails",
+      "reco": "accumulate",
+      "before_en": "Leading and still broad \u2014 room to add on the trend.",
+      "after": {
+        "code": "entry_checks_clear",
+        "en": "Entry checks are clear; confirm the individual stock setup.",
+        "zh": "\u4e3b\u9898\u5165\u573a\u6761\u4ef6\u5df2\u901a\u8fc7\uff1b\u4ecd\u9700\u786e\u8ba4\u4e2a\u80a1\u5f62\u6001\u3002"
+      },
+      "base_reason": "leading_checks_clear"
+    },
+    {
+      "id": "memory_storage",
+      "name": "Memory, HBM & Storage",
+      "reco": "accumulate",
+      "before_en": "Leading and still broad \u2014 room to add on the trend.",
+      "after": {
+        "code": "entry_not_confirmed",
+        "en": "Theme remains in favour; a clean entry is not confirmed.",
+        "zh": "\u4e3b\u9898\u4ecd\u83b7\u770b\u597d\uff1b\u5c1a\u672a\u786e\u8ba4\u6e05\u6670\u5165\u573a\u70b9\u3002"
+      },
+      "base_reason": "leading_checks_clear"
+    },
+    {
+      "id": "cybersecurity",
+      "name": "Cybersecurity",
+      "reco": "hold",
+      "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
+      "after": {
+        "code": "relative_strength_limit",
+        "en": "Relative strength hits the entry limit; price stretch is not established.",
+        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89e6\u53ca\u6a21\u578b\u5165\u573a\u9650\u5236\uff1b\u8fd9\u4e0d\u4ee3\u8868\u4ef7\u683c\u5df2\u8fc7\u5ea6\u5ef6\u4f38\u3002"
+      },
+      "base_reason": "relative_strength_limit"
+    },
+    {
+      "id": "us_sector_tech",
+      "name": "Technology (Equal-Weight)",
+      "reco": "trim",
+      "before_en": "Was strong, now rolling over off a high \u2014 take some risk off.",
+      "after": {
+        "code": "momentum_fading",
+        "en": "Momentum has weakened; protect gains rather than adding.",
+        "zh": "\u52a8\u80fd\u5df2\u8f6c\u5f31\uff1b\u4fdd\u62a4\u5229\u6da6\uff0c\u907f\u514d\u52a0\u4ed3\u3002"
+      },
+      "base_reason": "momentum_fading"
+    },
+    {
+      "id": "ai_semiconductors",
+      "name": "AI Semiconductors",
+      "reco": "accumulate",
+      "before_en": "Leading and still broad \u2014 room to add on the trend.",
+      "after": {
+        "code": "entry_not_confirmed",
+        "en": "Theme remains in favour; a clean entry is not confirmed.",
+        "zh": "\u4e3b\u9898\u4ecd\u83b7\u770b\u597d\uff1b\u5c1a\u672a\u786e\u8ba4\u6e05\u6670\u5165\u573a\u70b9\u3002"
+      },
+      "base_reason": "leading_checks_clear"
+    },
+    {
+      "id": "ai_software",
+      "name": "AI Software & Platforms",
+      "reco": "enter",
+      "before_en": "Early rotation \u2014 accelerating before extended; macro not against it.",
+      "after": {
+        "code": "entry_not_confirmed",
+        "en": "Theme remains in favour; a clean entry is not confirmed.",
+        "zh": "\u4e3b\u9898\u4ecd\u83b7\u770b\u597d\uff1b\u5c1a\u672a\u786e\u8ba4\u6e05\u6670\u5165\u573a\u70b9\u3002"
+      },
+      "base_reason": "emerging_checks_clear"
+    },
+    {
+      "id": "ai_infra",
+      "name": "AI Infrastructure",
+      "reco": "accumulate",
+      "before_en": "Leading and still broad \u2014 room to add on the trend.",
+      "after": {
+        "code": "entry_not_confirmed",
+        "en": "Theme remains in favour; a clean entry is not confirmed.",
+        "zh": "\u4e3b\u9898\u4ecd\u83b7\u770b\u597d\uff1b\u5c1a\u672a\u786e\u8ba4\u6e05\u6670\u5165\u573a\u70b9\u3002"
+      },
+      "base_reason": "leading_checks_clear"
+    },
+    {
+      "id": "energy_complex",
+      "name": "US Energy Complex",
+      "reco": "trim",
+      "before_en": "Was strong, now rolling over off a high \u2014 take some risk off.",
+      "after": {
+        "code": "momentum_fading",
+        "en": "Momentum has weakened; protect gains rather than adding.",
+        "zh": "\u52a8\u80fd\u5df2\u8f6c\u5f31\uff1b\u4fdd\u62a4\u5229\u6da6\uff0c\u907f\u514d\u52a0\u4ed3\u3002"
+      },
+      "base_reason": "momentum_fading"
+    },
+    {
+      "id": "ai_neoclouds",
+      "name": "AI Neoclouds & HPC Hosting",
+      "reco": "enter",
+      "before_en": "Early rotation \u2014 accelerating before extended; macro not against it.",
+      "after": {
+        "code": "entry_checks_clear",
+        "en": "Entry checks are clear; confirm the individual stock setup.",
+        "zh": "\u4e3b\u9898\u5165\u573a\u6761\u4ef6\u5df2\u901a\u8fc7\uff1b\u4ecd\u9700\u786e\u8ba4\u4e2a\u80a1\u5f62\u6001\u3002"
+      },
+      "base_reason": "emerging_checks_clear"
+    },
+    {
+      "id": "us_sector_energy",
+      "name": "Energy (Equal-Weight)",
+      "reco": "trim",
+      "before_en": "Was strong, now rolling over off a high \u2014 take some risk off.",
+      "after": {
+        "code": "momentum_fading",
+        "en": "Momentum has weakened; protect gains rather than adding.",
+        "zh": "\u52a8\u80fd\u5df2\u8f6c\u5f31\uff1b\u4fdd\u62a4\u5229\u6da6\uff0c\u907f\u514d\u52a0\u4ed3\u3002"
+      },
+      "base_reason": "momentum_fading"
+    },
+    {
+      "id": "big_pharma",
+      "name": "Big Pharma",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "silver_miners",
+      "name": "Silver Miners",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "non_ai_software",
+      "name": "Non-AI Software",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "non_ai_tech",
+      "name": "Non-AI Tech & Hardware",
+      "reco": "hold",
+      "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
+      "after": {
+        "code": "no_constructive_signal",
+        "en": "No positive theme signal; wait for stronger confirmation.",
+        "zh": "\u6682\u65e0\u79ef\u6781\u7684\u4e3b\u9898\u4fe1\u53f7\uff1b\u7b49\u5f85\u8fdb\u4e00\u6b65\u786e\u8ba4\u3002"
+      },
+      "base_reason": "no_constructive_signal"
+    },
+    {
+      "id": "gold_miners",
+      "name": "Gold Miners",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "ai_agents",
+      "name": "AI Agents & Applications",
+      "reco": "hold",
+      "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
+      "after": {
+        "code": "no_constructive_signal",
+        "en": "No positive theme signal; wait for stronger confirmation.",
+        "zh": "\u6682\u65e0\u79ef\u6781\u7684\u4e3b\u9898\u4fe1\u53f7\uff1b\u7b49\u5f85\u8fdb\u4e00\u6b65\u786e\u8ba4\u3002"
+      },
+      "base_reason": "no_constructive_signal"
+    },
+    {
+      "id": "semicap_equipment",
+      "name": "Semiconductor Equipment (WFE)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_health",
+      "name": "Health Care (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "pgm_miners",
+      "name": "PGM Miners",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "reshoring",
+      "name": "Reshoring & Industrial Capex",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "data_center_power",
+      "name": "Data-Center Power & Cooling",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "robotics_automation",
+      "name": "Robotics & Automation",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "industrial_distribution",
+      "name": "Industrial Distribution & Capital Goods",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "quantum_computing",
+      "name": "Quantum Computing",
+      "reco": "hold",
+      "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
+      "after": {
+        "code": "no_constructive_signal",
+        "en": "No positive theme signal; wait for stronger confirmation.",
+        "zh": "\u6682\u65e0\u79ef\u6781\u7684\u4e3b\u9898\u4fe1\u53f7\uff1b\u7b49\u5f85\u8fdb\u4e00\u6b65\u786e\u8ba4\u3002"
+      },
+      "base_reason": "no_constructive_signal"
+    },
+    {
+      "id": "regional_banks",
+      "name": "Regional Banks",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "space_economy",
+      "name": "Space Economy",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "insurance",
+      "name": "Insurance & Brokers",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_comm",
+      "name": "Communication Services (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "obesity_glp1",
+      "name": "GLP-1 & Obesity",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "managed_care",
+      "name": "Managed Care & Insurers",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "payments_fintech",
+      "name": "Payments & Fintech",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "retail",
+      "name": "Retail",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_financials",
+      "name": "Financials (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "critical_minerals",
+      "name": "Critical Minerals & Rare Earths",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "power_grid",
+      "name": "Power & Grid Buildout",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_materials",
+      "name": "Materials (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "defense",
+      "name": "Defense & Aerospace",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "defensives",
+      "name": "Defensives",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "travel",
+      "name": "Travel & Experiences",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_realestate",
+      "name": "Real Estate (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_staples",
+      "name": "Consumer Staples (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "nuclear_power",
+      "name": "Nuclear & SMR Power",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "housing",
+      "name": "Housing Chain",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "uranium_miners",
+      "name": "Uranium & Nuclear Fuel",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_industrials",
+      "name": "Industrials (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_utilities",
+      "name": "Utilities (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    },
+    {
+      "id": "us_sector_discretionary",
+      "name": "Consumer Discretionary (Equal-Weight)",
+      "reco": "avoid",
+      "before_en": "Momentum and breadth breaking down \u2014 stand aside.",
+      "after": {
+        "code": "trend_deteriorating",
+        "en": "Theme trend has deteriorated; avoid new entries.",
+        "zh": "\u4e3b\u9898\u8d8b\u52bf\u5df2\u8f6c\u5f31\uff1b\u907f\u514d\u65b0\u5f00\u4ed3\u3002"
+      },
+      "base_reason": "trend_deteriorating"
+    }
+  ],
+  "limitations": [
+    "Rounded stored inputs, not a full nightly rebuild.",
+    "Not live market or deployed-browser proof.",
+    "No ranking, entry permission, portfolio or return claim."
+  ]
+}

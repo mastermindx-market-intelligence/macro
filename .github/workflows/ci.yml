@@ -715,6 +715,9 @@ on:
       - "templates/allocation.html.j2"
       - "tests/test_stance_matrix.py"
       - "tests/test_theme_scoring_conflicted.py"
+      - "tests/test_theme_scoring.py"
+      - "tests/test_theme_recommendation_reasons.py"
+      - "tests/fixtures/theme_recommendation_reasons/**"
       # MLC-W4: histogram-fade leg in rollover_risk + cooling demotion.
       - "engine/basket_score.py"
       - "tests/test_basket_score_rollover_w4.py"

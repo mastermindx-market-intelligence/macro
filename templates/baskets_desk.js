@@ -122,9 +122,15 @@ const badge = (cls,c,en,zh)=>`<span class="${cls}" style="background:${c[0]};bor
 const RECO_NOENTRY = [TINT('--warn',16), TINT('--warn',55), 'var(--ink-warn, var(--warn))'];
 const recoNoEntry = t => (t.reco==='accumulate'||t.reco==='enter') && !(((t.textures||{}).clean_entry)||{}).flag;
 const recoChip = t => recoNoEntry(t)
-  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" title="In favour, but no member has a clean entry — do not chase; wait for a setup.">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
+  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" data-tip-en="Theme in favour; no clean entry is confirmed." data-tip-zh="主题获看好；尚未确认清晰入场点。">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
   : badge('treco',recoColor(t.reco),t.reco_en,t.reco_zh);
-const RECO_NOENTRY_WHY = () => L('In favour, but no member has a clean entry — do not chase; wait for a setup.','看好，但无成分股具备干净入场点 — 勿追，等待入场时机。');
+const RECO_NOENTRY_WHY = t => {
+  const known=t&&['entry_not_confirmed','entry_read_unavailable'].includes(t.reco_reason_code)
+    &&typeof t.reco_why_en==='string'&&t.reco_why_en.trim()
+    &&typeof t.reco_why_zh==='string'&&t.reco_why_zh.trim();
+  return known?L(esc(t.reco_why_en),esc(t.reco_why_zh))
+    :L('Theme in favour; no clean entry is confirmed.','主题获看好；尚未确认清晰入场点。');
+};
 const COMP_COLOR = {trend:'#5aa7ff',breadth:'#4ade80',impulse:'#a78bfa',macro:'#2dd4bf',crowding:'#fb7185'};
 const COMP_LBL = {trend:['trend','趋势'],breadth:['breadth','广度'],impulse:['impulse','脉冲'],macro:['macro','宏观'],crowding:['crowd','拥挤']};
 
@@ -299,7 +305,7 @@ function themeCard(t){
         <span class="tpill">${L('+3% / −3%','+3% / −3%')} <b class="pos">${im.up3||0}</b>/<b class="neg">${im.down3||0}</b></span>
         <span class="tpill">${L('adv/dec','涨/跌')} <b class="pos">${t.adv||0}</b>/<b class="neg">${t.dec||0}</b></span>
       </div>
-      <div class="why">${recoNoEntry(t)?RECO_NOENTRY_WHY():L(esc(t.reco_why_en),esc(t.reco_why_zh))}</div>
+      <div class="why">${recoNoEntry(t)?RECO_NOENTRY_WHY(t):L(esc(t.reco_why_en),esc(t.reco_why_zh))}</div>
       ${contested?`<div class="why" style="opacity:.9">${L('Contested — faster textures disagreeing with the label (descriptive, not a forecast)','存在分歧 — 与标签相悖的更快纹理（描述性，非预测）')}: ${cTex.map(x=>L(esc(x[0]),esc(x[1]))).join(' · ')}</div>`:''}
       ${ss?`<div class="why" style="opacity:.82">${L('Signal grade','信号评级')}: <b>${esc(ss.grade)}</b> — ${L(esc(ss.en||''),esc(ss.zh||''))}</div>`:''}
       ${top.length?`<div class="why">${L('leaders','领涨')}: ${top.map(x=>esc(x.ticker)).join(', ')}${t.leadership.breadth==='narrow'?' ⚠':''}</div>`:''}
