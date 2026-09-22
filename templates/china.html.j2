@@ -1831,7 +1831,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}<span style="opacity:.75"> · <span class="l-en">watch → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span><span class="l-zh">预警 → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span></span>{% endif %}</span>
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
-          <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
+          <span id="ms-date" style="margin-left:4px"><span class="l-en">As of </span><span class="l-zh">截至 </span><time datetime="{{ latest.date }}">{{ latest.date }}</time></span>
           {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} feeds</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 数据源</span></span>{% endif %}
         </span>
       </div>
