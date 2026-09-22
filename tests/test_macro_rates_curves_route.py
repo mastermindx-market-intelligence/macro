@@ -150,7 +150,7 @@ T11_SITE_PAGES = (
 # partials this packet never touches.
 _SUITE_REGION = ('<nav class="mq-suitenav"',
                  '<div class="mq-scrim" id="mq-scrim" hidden></div>')
-_HUB_REGION = ('<main class="mq-shell mq-hub"', "</main>")
+_HUB_REGION = ('<main class="mc-shell"', "</main>")
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
