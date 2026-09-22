@@ -21,6 +21,34 @@ UNAVAILABLE_HTML = '''<section class="panel" id="ud-hero" data-source-status="un
   is unavailable. No regime score is being inferred.</span><span class="l-zh">跨市场快照暂不可用，
   不据此推算状态评分。</span></p></section>'''
 
+_HERO_STYLE_NEEDLE = ".ud-hero — Unified Macro Dashboard hero"
+_NEXT_STYLE_NEEDLE = "UD-B2-W1 — Vol-weather sub-row"
+
+
+def internationalize_hero_styles(theme_css: str) -> str:
+    """Derive Intl-only hero CSS from the governed Macro component block.
+
+    The shared theme stays byte-stable. International receives a presentation
+    bridge inside its snapshot, so unrelated pages/receipts never need a global
+    stylesheet rebind merely because this component is mounted on intl.html.
+    """
+    if not isinstance(theme_css, str):
+        raise TypeError("theme_css must be text")
+    hero_name = theme_css.find(_HERO_STYLE_NEEDLE)
+    next_name = theme_css.find(_NEXT_STYLE_NEEDLE, hero_name + 1)
+    if hero_name < 0 or next_name < 0:
+        raise ValueError("governed hero style block not found")
+    start = theme_css.rfind("/*", 0, hero_name)
+    end = theme_css.rfind("/*", 0, next_name)
+    if start < 0 or end <= start:
+        raise ValueError("governed hero style boundaries not found")
+    block = theme_css[start:end]
+    if "body.page-macro" not in block:
+        raise ValueError("governed hero style block lost Macro scope")
+    if "body.page-intl" in block:
+        raise ValueError("shared theme already contains International hero overrides")
+    return block.replace("body.page-macro", "body.page-intl").strip()
+
 
 def write_global_regime_fragment(site: Path, html: str, *, source_asof=None) -> Path:
     """Atomically publish a fragment rendered from the existing Macro view model."""

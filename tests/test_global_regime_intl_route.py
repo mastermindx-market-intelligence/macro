@@ -137,6 +137,14 @@ def _assert_exact_fragment_publication(site: Path, html: str, fragment: str) -> 
         assert asset.read_bytes() == expected, f"Changed hero stylesheet: {relative}"
 
 
+def test_committed_fragment_carries_the_derived_international_style_bridge():
+    from lib.global_regime_fragment import read_global_regime_fragment
+
+    fragment = read_global_regime_fragment(ROOT / "site")
+    assert "body.page-intl .ud-hero-grid" in fragment
+    assert "body.page-intl .ud-watch-summary" in fragment
+
+
 def test_committed_intl_projection_preserves_shared_fragment_through_css_externalization():
     from lib.global_regime_fragment import read_global_regime_fragment
 
@@ -216,15 +224,29 @@ def test_both_builders_keep_the_shared_presentation_handoff():
     producer = (root / "scripts/build_site.py").read_text()
     consumer = (root / "scripts/build_intl.py").read_text()
     assert "write_global_regime_fragment(" in producer
+    assert "internationalize_hero_styles(" in producer
     assert "ud_international=True" in producer
     assert 'vm["global_regime_html"] = read_global_regime_fragment(site)' in consumer
 
 
-def test_intl_uses_the_same_governed_hero_styles_and_locale_rules():
-    from pathlib import Path
-    css = (Path(__file__).resolve().parent.parent / "templates/theme.css").read_text()
+def test_intl_hero_styles_are_derived_from_the_governed_macro_block():
+    from lib import global_regime_fragment as grf
+
+    assert hasattr(grf, "internationalize_hero_styles"), (
+        "International styling must be derived from the governed Macro hero block, "
+        "not copied into the shared theme stylesheet"
+    )
+    css = (ROOT / "templates/theme.css").read_text()
+    bridge = grf.internationalize_hero_styles(css)
     for selector in (".ud-hero-grid", ".ud-watch-item-head.l-en", ".ud-watch-item-body.l-zh"):
-        assert "body.page-intl " + selector in css
         assert "body.page-macro " + selector in css
+        assert "body.page-intl " + selector in bridge
+    assert "body.page-macro " not in bridge
     html = intl_env().get_template("intl.html.j2").render(**intl_vm(), mode="macro")
     assert '<body class="page-intl">' in html
+
+
+def test_shared_theme_does_not_need_international_hero_selectors():
+    css = (ROOT / "templates/theme.css").read_text()
+    assert "body.page-intl .ud-hero-grid" not in css
+    assert "body.page-intl .ud-watch-summary" not in css
