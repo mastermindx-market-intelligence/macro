@@ -797,23 +797,43 @@ def test_a_packet_without_a_rig_receipt_fires(tmp_path, capsys):
     assert "packet-without-rig-receipt" in fired, sorted(fired)
 
 
-def test_a_closed_pre_rig_packet_without_a_receipt_does_not_fire(tmp_path, capsys):
-    """L8 amendment 2026-08-14: MP-1 predates the gate (#5505 < #5520), so its
-    missing-receipt state is named, closed debt — not a finding. The exemption
-    is keyed to the exact filename in CLOSED_PRE_RIG_PACKETS; the sibling test
-    above proves an UNLISTED packet still fires, which is what keeps the list
-    closed rather than a wildcard."""
+def test_a_closed_pre_rig_packet_without_a_receipt_does_not_fire(tmp_path, capsys, monkeypatch):
+    """MP-1's historical debt exemptions are closed independently.
+
+    RIG receipt debt remains filename-bound by the 2026-08-14 amendment. The later
+    editable-source exemption is narrower: only the exact pre-contract artifact
+    hash is exempt, so a future amendment cannot inherit the carve-out.
+    """
     write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
     packets = tmp_path / "research" / "migration_packets"
     packets.mkdir(parents=True, exist_ok=True)
-    (packets / "MP-1-prophet-board.md").write_text(
-        "# Migration packet\n\nNo receipt yet: reference not approved.\n", encoding="utf-8"
+    body = "# Migration packet\n\nNo receipt yet: reference not approved.\n"
+    monkeypatch.setattr(
+        RIG,
+        "CLOSED_PRE_EDITABLE_SOURCE_PACKETS",
+        {"MP-1-prophet-board.md": RIG.hashlib.sha256(body.encode("utf-8")).hexdigest()},
     )
+    (packets / "MP-1-prophet-board.md").write_text(body, encoding="utf-8")
     fired = _cli_codes(tmp_path, capsys)
     assert "packet-without-rig-receipt" not in fired, sorted(fired)
     assert "packet-without-editable-source" not in fired, sorted(fired)
     assert "packet-without-component-delta" not in fired, sorted(fired)
     assert "packet-without-state-interaction-matrix" not in fired, sorted(fired)
+
+
+def test_legacy_packet_filename_does_not_exempt_amended_content(tmp_path, capsys):
+    write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
+    packets = tmp_path / "research" / "migration_packets"
+    packets.mkdir(parents=True, exist_ok=True)
+    (packets / "MP-1-prophet-board.md").write_text(
+        "# Migration packet\n\nPost-contract amendment with no editable fields.\n",
+        encoding="utf-8",
+    )
+    fired = _cli_codes(tmp_path, capsys)
+    assert "packet-without-rig-receipt" not in fired, sorted(fired)
+    assert "packet-without-editable-source" in fired, sorted(fired)
+    assert "packet-without-component-delta" in fired, sorted(fired)
+    assert "packet-without-state-interaction-matrix" in fired, sorted(fired)
 
 
 def test_a_closed_pre_rig_packet_citing_a_receipt_is_validated_normally(tmp_path, capsys):
