@@ -2666,7 +2666,6 @@ jobs:
       - "tests/test_options_sparse_selector_bootstrap.py"
       - "tests/test_options_sparse_selector_runtime.py"
       - "tests/test_run_options_sparse_selector.py"
-      - "tests/test_options_skew.py"
       - "tests/test_options_structure_intraday.py"
       - "tests/test_private_auth_dict.py"
       - "tests/test_thetadata_store.py"
@@ -2698,8 +2697,6 @@ jobs:
         run: pip install pytest pyyaml numpy pandas scipy jinja2 pyarrow jsonschema fastapi httpx requests
       - name: flow surface + dated archive cadence truth (poll floor, observed sparse spacing, retention)
         run: python -m pytest tests/test_flow_surface.py tests/test_flow_archive.py -q
-      - name: options skew (engine)
-        run: python -m pytest tests/test_options_skew.py -q
       # PRISM's daily matrix shares this options data-plane lane.  Keep the
       # exact-contract-side volume baseline suite distinct so PIT/no-zero-fill regressions
       # cannot hide inside a broader surface invocation.
@@ -16077,6 +16074,40 @@ jobs:
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip
         run: python -m pytest tests/test_markets_regime_strip.py -q
+
+  options-skew-engine:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # A-F03-W2-1b (2026-09-22). tests/test_options_skew.py used to be a step on
+    # flow-surface, which is gate:data and never runs in a PR pack. This job is
+    # the gate:code home. scope: exclusive — the paths below are the measured
+    # import closure of that one pytest file, plus the two render workflows the
+    # legacy-source pin reads. No data/** fallback.
+    scope: exclusive
+    paths:
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/engine-render.yml"
+      - "engine/__init__.py"
+      - "engine/options_skew.py"
+      - "engine/thetadata_store.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_skew.py"
+      - "scripts/validate_options_skew.py"
+      - "tests/test_options_skew.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install options-skew engine test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: options skew engine
+        run: python -m pytest tests/test_options_skew.py -q
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
