@@ -241,7 +241,7 @@ def build_atlas() -> dict:
         print(f"  WARNING: research gate reconstruction failed: {e}; using unknown")
         gate = pd.Series(pd.NA, index=idx, dtype="boolean")
 
-    headline_state = state_series(subs, calib) if not subs.empty else pd.Series(index=idx, dtype=object)
+    headline_state = state_series(subs, calib, sigs=sigs) if not subs.empty else pd.Series(index=idx, dtype=object)
     known_state = subs.notna().any(axis=1) if not subs.empty else pd.Series(False, index=idx)
     tier_a_scares = [s for s, v in calib["scares"].items()
                      if v["tier"] == "A" and s in subs.columns]
