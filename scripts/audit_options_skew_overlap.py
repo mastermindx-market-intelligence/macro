@@ -57,8 +57,13 @@ from typing import Any
 # Put the repo root on sys.path so engine.* resolves under both
 # `python -m scripts.audit_options_skew_overlap` (the seat's launchd run)
 # and a bare `python scripts/audit_options_skew_overlap.py` (the seat's
-# smoke from /Users/chriswong/skew-ops-wt). Mirrors scripts/build_options_skew.py.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# smoke from /Users/chriswong/skew-ops-wt). The named-form pin is the
+# exact idiom `tests/test_check_script_import_pinning.py` requires for
+# every scripts/** entry — the one-liner form slipped past the static
+# probe but the audit script is the one the seat reaches for by file
+# path, so it gets the explicit `_ROOT` assignment.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 # Exit codes — pinned in the runbook so the seat can distinguish MISSING_ENGINE
 # (do not promote yet) from a successful audit (promote if sign_agreement > X).

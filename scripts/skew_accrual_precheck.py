@@ -46,6 +46,15 @@ import re
 import sys
 from pathlib import Path
 
+# Repo-root pin so `lib.*` / `engine.*` / `scripts.*` would resolve from
+# THIS repo under bare `python scripts/skew_accrual_precheck.py --repo ...`
+# (the W2-1b audit-style smoke the operator runs from the lane checkout)
+# exactly the same way `python -m scripts.skew_accrual_precheck --repo ...`
+# resolves them. Mirrors the strong-pin idiom enforced by
+# `tests/test_check_script_import_pinning.py` for every scripts/** entry.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 EXIT_OK = 0
 EXIT_FLAG_MISSING = 4
 
