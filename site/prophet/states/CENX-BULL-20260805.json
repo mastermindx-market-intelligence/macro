@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CENX-BULL-20260805",
-  "asof": "2026-09-19",
+  "asof": "2026-09-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.107,
+    "dist_to_stop_r": -0.099,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 88.9,
-    "p1": -0.7377,
-    "p2": -0.3689,
+    "horizon_pct_used": 95.6,
+    "p1": -0.7326,
+    "p2": -0.3663,
     "p3": null,
-    "move_r": -1.107,
+    "move_r": -1.099,
     "mfe_r": 0.0,
     "mae_r": -1.107
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 40,
-  "tau": 0.8889
+  "days_elapsed": 43,
+  "tau": 0.9556
 }

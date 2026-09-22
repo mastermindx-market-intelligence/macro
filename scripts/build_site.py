@@ -2559,18 +2559,32 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2600,7 +2614,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
@@ -2613,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
@@ -5759,8 +5773,10 @@ def main() -> int:
     )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
-                       SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
     # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
     # template so the Setups card grid (re-sourced to the plan book, below) can
     # call it per row — the SAME function scripts/build_site.py already ships
@@ -6123,7 +6139,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -6132,20 +6150,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)
