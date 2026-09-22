@@ -82,7 +82,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'class="cnx-playbook-context"',
         "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
-        'class="cnx-lens"',
+        'class="cnx-lens lens-q"',
         'data-tip-en="{{ face.tip_en | e }}"',
         "{% set _ev_pool = [] %}",
         "{{ t('Macro News','宏观新闻') }}",
@@ -129,7 +129,7 @@ def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
 
 
 def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
-    assert 'class="cnx-lens"' in TPL
+    assert 'class="cnx-lens lens-q"' in TPL
     assert 'aria-label="Why this read / 为什么"' in TPL
     assert 'data-tip-en="{{ face.tip_en | e }}"' in TPL
     assert 'data-tip-zh="{{ face.tip_zh | e }}"' in TPL
