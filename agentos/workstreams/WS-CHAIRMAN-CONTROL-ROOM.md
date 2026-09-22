@@ -75,14 +75,9 @@ waves:
     status: in_progress
     depends_on: [H0]
     next_action: >
-      Converge the existing continuity carriers without creating another session or memory plane. Preserve
-      merged Mastermind #868 as the protected checkpoint-first procedure. Release #647 only after its
-      outstanding independent exact-head semantic review; release #651 only after exact-head review and
-      repeat the live Agent OS consumption proof after this workstream frontier is protected. Keep #836 on
-      its incumbent carrier and repair the reviewed durable semantic-ACK provenance gap before installation
-      or live canary. Then project R8 recovery plus the bounded continuation packet into the existing Control
-      Room and complete successor creation/bootstrap through the existing Web-Sol, RuntimeBinding and Capacity
-      owners. A chat or account is a temporary execution surface, never the durable owner of the responsibility.
+      Hold #647, #651 and #836 at independent exact-head review. After release, wire R8 recovery plus bounded
+      continuation into Control Room, then add closed successor bootstrap through existing Web-Sol,
+      RuntimeBinding and Capacity owners.
   - id: ASD-F0
     title: Active-Session Dialogue architecture and authority freeze
     status: done
@@ -208,17 +203,17 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD as independent
-  lanes. Mastermind #868 is already merged/protected and is DO_NOT_REDO. Mastermind #647 has clean
-  current-base composition plus green exact-head CI but still requires independent exact-head semantic
-  review. Mastermind #651 has green exact-head CI and a live canonical Agent OS read proving a 7,791-byte
-  continuation packet, but its semantic-sufficiency canary exposed this workstream's stale frontier;
-  repeat that canary only after this Agent OS correction is protected. Mastermind #836 remains the sole
-  Web-Sol/RuntimeBinding continuation carrier and must repair the reviewed durable semantic-ACK provenance
-  gap on that same carrier before install/live proof. After those gates, project recovery and resume into
-  the existing Control Room and complete closed successor creation/bootstrap through the existing Web-Sol,
-  RuntimeBinding and Capacity owners. Do not create a Session OS, transcript store, second recovery DB,
-  alternate RuntimeBinding writer, or account-specific project ownership.
+  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent.
+  Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
+  exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
+  exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual
+  semantic-freshness condition: current SC1 next action, 7,276 canonical bytes under the 8 KiB ceiling,
+  untruncated. #836 `f5b37701...` has the durable Web-Sol semantic-ACK provenance blocker repaired on the
+  incumbent carrier and current-base focused tests plus hosted CI green; independent exact-head review still
+  gates source release, with 0.5.0 install/restart/live canary remaining downstream. After those source gates,
+  wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor
+  creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS,
+  transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.
 ---
 
 ## Capability state
