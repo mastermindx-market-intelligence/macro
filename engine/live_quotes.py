@@ -146,6 +146,29 @@ def _tencent_timestamp(value: object) -> datetime | None:
     return local.astimezone(timezone.utc)
 
 
+def _polygon_nbbo(row: dict) -> tuple[float | None, float | None, datetime | None]:
+    """Return a measured Polygon last-quote NBBO only when all evidence is real.
+
+    ``lastQuote`` is already present in the incumbent snapshot response, so this
+    adds no provider request and creates no second quote source.  Polygon uses
+    lower-case ``p`` for bid, upper-case ``P`` for ask, and nanoseconds for ``t``.
+    Missing/crossed/locked quotes or a missing market timestamp remain unmeasured
+    rather than being repaired from ``updated``/wall-clock time.
+    """
+    raw = row.get("lastQuote")
+    if not isinstance(raw, dict):
+        return None, None, None
+    bid, ask = _pos(raw.get("p")), _pos(raw.get("P"))
+    ts_raw = _num(raw.get("t"))
+    if bid is None or ask is None or ask <= bid or ts_raw is None or ts_raw <= 0:
+        return None, None, None
+    try:
+        ts = datetime.fromtimestamp(ts_raw / 1e9, tz=timezone.utc)
+    except (OverflowError, OSError, ValueError):
+        return None, None, None
+    return bid, ask, ts
+
+
 # ----------------------------------------------------------- pure parsers ----
 
 def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
@@ -192,10 +215,14 @@ def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
             synthetic = True
             ts = (datetime.fromtimestamp(row["updated"] / 1e9, tz=timezone.utc)
                   if row.get("updated") else now)
-        # Day volume, high, low from the day bucket (zero-extra-request: already fetched).
+        # Day volume/high/low and lastQuote NBBO are zero-extra-request fields
+        # already carried by the incumbent Polygon snapshot.  NBBO remains FEED
+        # evidence only; downstream policy must separately establish identity,
+        # freshness, basis/provenance and strategy-specific fillability authority.
         day_vol = day.get("v")
         day_hi = day.get("h")
         day_lo = day.get("l")
+        bid, ask, nbbo_ts = _polygon_nbbo(row)
         out[sym] = {
             "price": round(float(price), 4), "quote_ts": ts.isoformat(),
             "quote_ts_synthetic": synthetic,
@@ -205,6 +232,10 @@ def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
             "day_volume": int(day_vol) if day_vol is not None else None,
             "day_high": round(float(day_hi), 4) if day_hi is not None else None,
             "day_low": round(float(day_lo), 4) if day_lo is not None else None,
+            "bid_price": round(bid, 4) if bid is not None else None,
+            "ask_price": round(ask, 4) if ask is not None else None,
+            "nbbo_ts": nbbo_ts.isoformat() if nbbo_ts is not None else None,
+            "nbbo_source": "polygon_lastQuote" if nbbo_ts is not None else None,
         }
     return out
 
