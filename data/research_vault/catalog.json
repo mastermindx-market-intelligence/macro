@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T00:04:18.477929+00:00",
-  "count": 2602,
+  "generated_at": "2026-09-22T00:21:50.488991+00:00",
+  "count": 2603,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7txfyttnrvb-bc54b6",
+      "title": "Gms midterms 2026 insights",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:06:04Z",
+      "summary_points": [
+        "Divided Congress: Narrow Republican majority (218R-214D House, 53-47 Senate) constrains fiscal expansion, policy shifts, and debt ceiling negotiations, reinforcing elevated rates and gridlock through 2027+.",
+        "Debt Service Burden: $40T U.S.",
+        "public debt at 3.5% avg.",
+        "interest → 5% of real GDP in annual debt service, creating structural fiscal fragility and volatile interest rates.",
+        "Geopolitical Fragmentation: AI dominance and global regime shifts drive macro forces, reshaping trade flows and elevating U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-megf17hsiv1-847d35",
       "title": "MS Reassessing the Fed’s Rate Path What the Shift Means for Markets",
