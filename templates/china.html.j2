@@ -2400,10 +2400,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% if CN and CN.tone %}
       <div class="cnx-kv"><span class="k">{{ t('Official tone','官方基调') }}</span><span class="v"><span class="cnx-stword ok">{{ t(CN.tone.label_en, CN.tone.label_zh) }}</span></span></div>
       {% endif %}
-      {% if _has_policy_read %}
-      <div class="cnx-foot">{{ t('Easy policy, but new credit is still slowing.','政策宽松，但新信贷仍在放缓。') if (_has_credit_impulse and I.credit.credit_impulse < 0) else t('Policy context.','政策背景。') }}</div>
-      {% else %}
+      {% if not _has_policy_read %}
       <div class="mx-empty">{{ t('Policy read unavailable.','政策判断暂不可用。') }}<span class="empty-why">{{ t('The PBoC, credit-impulse, and official-tone inputs have not produced a current read.','央行、信贷脉冲和官方基调输入尚未产出当前判断。') }}</span></div>
+      {% elif I.pboc and I.pboc.bias == 'easing' and _has_credit_impulse and I.credit.credit_impulse < 0 %}
+      <div class="cnx-foot">{{ t('Policy is easing, but credit impulse remains negative.','政策正在宽松，但信贷脉冲仍为负。') }}</div>
+      {% elif I.pboc and I.pboc.bias == 'tightening' and _has_credit_impulse and I.credit.credit_impulse > 0 %}
+      <div class="cnx-foot">{{ t('Policy is tightening while credit impulse remains positive.','政策正在收紧，但信贷脉冲仍为正。') }}</div>
       {% endif %}
     </div>
 
@@ -2468,12 +2470,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
       {% if P and P.regime %}
       {% set R = P.regime %}
+      {% set _prop_impact = {'neg':['growth drag','增长拖累'],'warn':['growth headwind','增长逆风'],'neutral':['stabilizing','筑底企稳'],'pos':['recovery','回暖复苏']}.get(R.tone, ['context','背景']) %}
       <div class="cnx-bignum" style="color:var(--ink-down, var(--down));font-size:22px">{{ t(R.label_en, R.label_zh) }}</div>
-      <div class="cnx-bigsub" style="color:var(--ink-warn, var(--warn))">{{ t('easing at the margin','边际宽松') if R.tone in ('neutral','pos') else t('still contracting','仍在收缩') }}</div>
+      <div class="cnx-bigsub" style="color:var(--ink-warn, var(--warn))"><span class="l-en">{{ _prop_impact[0] }}</span><span class="l-zh">{{ _prop_impact[1] }}</span></div>
       {% if P.breadth and P.breadth.new is defined and P.breadth.new is not none %}
       <div class="cnx-kv"><span class="k">{{ t('70-city prices','70城价格') }}</span><span class="v">{{ '%+d'|format(P.breadth.new) }} {{ t('net cities','净城市数') }}</span></div>
       {% endif %}
-      <div class="cnx-foot">{{ t('Still the economy\'s main drag.','仍是经济的主要拖累。') }}</div>
       {% else %}
       <div class="mx-empty">{{ t('Property regime unavailable.','房地产周期判断暂不可用。') }}<span class="empty-why">{{ t('The property feed has not produced a current regime yet.','房地产数据源尚未产出当前周期判断。') }}</span></div>
       {% endif %}
