@@ -188,6 +188,20 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_deep_dashboard_has_real_document_structure_without_visual_wipe() -> None:
+    assert '<h1 class="cnx-page-heading">' in TPL
+    assert TPL.count('class="cnx-lbl cnx-zone-heading"') >= 5
+    for target in (
+        "cnx-focus-action",
+        "cnx-focus-markets",
+        "cnx-focus-drivers",
+        "cnx-focus-deep",
+    ):
+        assert f'role="region" aria-labelledby="{target}"' in TPL
+    assert '<nav class="cnx-links" aria-labelledby="cnx-focus-research">' in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_mobile_section_index_tracks_current_deep_zone() -> None:
     assert 'a[aria-current="location"]' in TPL
     assert "function cnxInitMobileIndex()" in TPL
