@@ -160,7 +160,7 @@ def test_plist_log_paths_live_outside_repo_in_sibling_state_dir():
         )
 
 
-def test_run_with_env_wrapper_exists_on_origin_main():
+def test_run_with_env_wrapper_is_tracked_and_executable_at_head():
     """MINOR-1 (round-5 reviewer): the plist's ProgramArguments chain
     (/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh) references a
     wrapper that lives outside this PR's diff. A future revert on main that
@@ -171,7 +171,11 @@ def test_run_with_env_wrapper_exists_on_origin_main():
     PR time.
     """
     out = subprocess.run(
-        ["git", "ls-tree", "origin/main", "ops/launchd/run_with_env.sh"],
+        # HEAD, not origin/main: the ci-pack checkout is the PR merge ref at
+        # depth 1 with NO remote-tracking branch, so `origin/main` is
+        # "unknown revision" there (run 35790557450, exit 128). HEAD carries
+        # main's files in CI (merge ref) and the branch in a lane worktree.
+        ["git", "ls-tree", "HEAD", "ops/launchd/run_with_env.sh"],
         capture_output=True, text=True, check=True, cwd=str(ROOT),
     ).stdout.strip()
     assert out, (
@@ -866,7 +870,8 @@ def test_publish_r2_options_skew_floor_clears_actual_bootstrap():
     floor = mod._DATA_DIR_MIN_BYTES["options_skew"]
     # Pull the tracked bootstrap parquet bytes via git.
     blob = subprocess.run(
-        ["git", "cat-file", "-s", "origin/main:data/options_skew/snapshots.parquet"],
+        # HEAD, not origin/main — see test_run_with_env_wrapper_is_tracked_and_executable_at_head.
+        ["git", "cat-file", "-s", "HEAD:data/options_skew/snapshots.parquet"],
         capture_output=True, text=True, check=True, cwd=ROOT,
     ).stdout.strip()
     bootstrap_bytes = int(blob)
