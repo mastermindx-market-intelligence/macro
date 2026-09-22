@@ -385,6 +385,61 @@ def _reconcile_fixture(events, observations, clock="2026-11-27T18:02:00Z"):
                                   definition_era="candidate-episode-v1-2026-08-25")
 
 
+@pytest.mark.parametrize("blocked_session", ("2026-11-26", "2026-11-28"))
+def test_v2_non_session_transition_keeps_public_and_private_artifacts_unchanged(
+        tmp_path, monkeypatch, blocked_session):
+    from scripts import build_turn_watch as builder
+
+    data, site = tmp_path / "data", tmp_path / "site"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "data_session": "2026-11-25", "runtime_seconds": 10.0,
+                "coverage": {"graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
+                             "deck_by_trigger": {"dot_1d": 1}}}
+    monkeypatch.setattr(builder.config, "data_dir", lambda: data)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: site)
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
+                        lambda *a, **k: (dict(artifact), [_turn_row()]))
+
+    assert builder.build([]) == 0
+    public = site / "turn_watch/turn_watch.json"
+    sidecar_root = data / "us_prophet_rank/episode_inputs/turn_watch"
+    public_before = public.read_bytes()
+    private_before = {path.name: path.read_bytes() for path in sidecar_root.glob("*.json")}
+
+    artifact["data_session"] = blocked_session
+    assert builder.build(["--episode-input-schema", "v2"]) == 1
+    assert public.read_bytes() == public_before
+    assert {path.name: path.read_bytes() for path in sidecar_root.glob("*.json")} == private_before
+
+
+@pytest.mark.parametrize("blocked_session", ("2026-11-26", "2026-11-28"))
+def test_v2_intake_rejects_non_session_even_with_matching_document_hash(tmp_path, blocked_session):
+    _identity_spine(tmp_path)
+    path, _ = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    document = json.loads(path.read_bytes())
+    document["data_session"] = blocked_session
+    document["known_at"] = blocked_session + "T21:00:00Z"
+    document["content_sha256"] = sha256(canonical_json({
+        key: value for key, value in document.items() if key != "content_sha256"
+    }).encode("utf-8")).hexdigest()
+    malformed = path.with_name(blocked_session + ".json")
+    malformed.write_text(canonical_json(document) + "\n")
+
+    batch = turn_watch_observations(malformed, load_identity_spine(tmp_path))
+    assert not batch.observations
+    assert not batch.suppressions
+    assert batch.source_receipts[0]["status"] == "degraded"
+    assert batch.source_receipts[0]["reason"] == "MALFORMED_SOURCE"
+
+
+def test_v2_real_early_close_session_remains_accepted(tmp_path):
+    _identity_spine(tmp_path)
+    path, batch = _v2_roundtrip(tmp_path, _turn_artifact(), [_turn_row()])
+    document = json.loads(path.read_bytes())
+    assert document["known_at"] == "2026-11-27T18:00:00Z"
+    assert len(batch.observations) == 1
+
+
 def test_v2_receipts_ignore_build_runtime_but_keep_exact_file_provenance(tmp_path):
     _identity_spine(tmp_path)
     artifact = {**_turn_artifact(), "runtime_seconds": 10.0}

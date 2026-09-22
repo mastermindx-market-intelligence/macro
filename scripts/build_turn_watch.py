@@ -39,7 +39,7 @@ import logging
 import os
 import sys
 import time
-from datetime import timezone
+from datetime import date, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -51,6 +51,7 @@ from engine import us_turn_watch as turn_watch  # noqa: E402
 from engine.session_digest import session_window_et  # noqa: E402
 from engine.us_candidate_episode import canonical_json  # noqa: E402
 from lib import config  # noqa: E402
+from lib.nyse_calendar import is_session  # noqa: E402
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
@@ -72,20 +73,21 @@ def _candidate_episode_input_path(artifact: dict, data_root: Path, input_schema:
     session = artifact.get("data_session")
     if not isinstance(session, str) or not session:
         raise ValueError("TURN WATCH data_session is required for candidate episode input")
+    current_session = None
+    if input_schema.endswith("/v2"):
+        current_session = date.fromisoformat(session)
+        if session != current_session.isoformat() or not is_session(current_session):
+            raise ValueError("TURN WATCH v2 data_session must be an NYSE session")
+
     out = Path(data_root) / "us_prophet_rank" / "episode_inputs" / "turn_watch" / f"{session}.json"
     if out.exists():
         previous = json.loads(out.read_bytes())
         if not isinstance(previous, dict) or previous.get("schema") != input_schema:
             raise ValueError("TURN WATCH source schema transition requires a new session")
-    if input_schema.endswith("/v2") and not out.exists():
-        from datetime import date as _date  # noqa: PLC0415
-
-        current_session = _date.fromisoformat(session)
-        previous_sessions = [_date.fromisoformat(p.stem)
+    if current_session is not None and not out.exists():
+        previous_sessions = [date.fromisoformat(p.stem)
                              for p in out.parent.glob("????-??-??.json")]
-        if session != current_session.isoformat() or (
-            previous_sessions and current_session <= max(previous_sessions)
-        ):
+        if previous_sessions and current_session <= max(previous_sessions):
             raise ValueError("TURN WATCH source schema transition requires a new session")
     return out
 

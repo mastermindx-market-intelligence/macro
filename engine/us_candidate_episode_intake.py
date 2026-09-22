@@ -20,6 +20,7 @@ from engine.session_digest import session_window_et
 from engine.stock_identity.fingerprint import spec_hash
 from engine.us_candidate_episode import canonical_json
 from lib.dataos.identity import IssuerMaster, VendorAliasTable
+from lib.nyse_calendar import is_session
 
 
 TURN_WATCH_SCHEMA = "prophet.candidate_episode_input.turn_watch/v1"
@@ -182,6 +183,7 @@ def _valid_turn_watch_v2_document(document: Mapping[str, object]) -> bool:
     return (
         set(document) == required
         and session is not None
+        and is_session(session)
         and document.get("data_session") == session.isoformat()
         and document.get("known_at") == _close(session.isoformat())
         and all(isinstance(document.get(k), str) and bool(document[k])
