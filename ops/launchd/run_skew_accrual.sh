@@ -244,8 +244,32 @@ step_precheck_w21b() {
 # branch; this step runs only when the precheck has confirmed --accrue exists.
 # The runner MUST capture the cmd rc BEFORE the if: `if ! cmd; then rc=$?`
 # does NOT work — POSIX resets $? to 0 inside the then-block of `if !`.
+#
+# Pre-state (row count) is recorded BEFORE the call so step_verify_ledger
+# can refuse a no-op accrue (BLOCKER-2). The snapshot() can return 0
+# without writing rows (chain=None, no rows, dedup-only, or byte-equal
+# rewrite); without the pre_rows check the launchd log would report a
+# successful publish for an unchanged ledger.
 step_accrue() {
     cd "$REPO"
+    # Record pre-state — the row count the ledger has TODAY, before the
+    # accrue. Missing ledger → 0 (the verify step will treat that as
+    # "no pre-existing content" and only pass if the post-state grew).
+    if [ -f "$LEDGER" ]; then
+        pre_rows="$("$PYTHON" -c "
+import sys
+try:
+    import pandas as pd
+    df = pd.read_parquet('$LEDGER')
+    print(int(len(df)))
+except Exception:
+    print(0)
+" 2>/dev/null || echo 0)"
+    else
+        pre_rows=0
+    fi
+    log "pre-accrue row count: $pre_rows"
+    printf '%s\n' "$pre_rows" > "$REPO/.skew_pre_rows"
     log "launching python -m scripts.build_options_skew --accrue (W2-1b)"
     # Explicit rc-capture BEFORE any control flow:
     set +e
@@ -260,16 +284,24 @@ step_accrue() {
     return 0
 }
 
-# ── step 5: verify ledger has content ─────────────────────────────────────────
+# ── step 5: verify ledger has content AND grew under the accrue step ─────────
 # W2-1b's snapshot() can return 0 without writing rows (chain is None, no
-# rows, or dedup-set is full). A 0-row accrue must NOT publish — the R2
-# leg would advertise an empty ledger and the W2-3 restore would overwrite
-# the live consumers with nothing.
+# rows, dedup-only, or byte-equal rewrite). A no-op accrue must NOT publish —
+# the R2 leg would advertise an unchanged ledger under a fresh
+# Last-Modified stamp, polluting audit_r2's freshness anchor. The verify
+# step reads the pre-accrue row count from .skew_pre_rows (recorded in
+# step_accrue) and refuses any post-state that has not strictly grown.
 step_verify_ledger() {
     cd "$REPO"
     log "verifying ledger content: $LEDGER"
+    pre_rows=0
+    if [ -f "$REPO/.skew_pre_rows" ]; then
+        pre_rows=$(cat "$REPO/.skew_pre_rows" 2>/dev/null || echo 0)
+    fi
+    log "verify pre-accrue rows: $pre_rows"
     set +e
-    "$PYTHON" -m scripts.skew_accrual_verify_ledger --ledger "$LEDGER" \
+    "$PYTHON" -m scripts.skew_accrual_verify_ledger \
+        --ledger "$LEDGER" --pre-rows "$pre_rows" \
         >/tmp/.skew_verify_status 2>/tmp/.skew_verify_stderr
     rc=$?
     set -e
@@ -282,6 +314,7 @@ step_verify_ledger() {
         return 5
     fi
     log "ledger verified ($status)"
+    rm -f "$REPO/.skew_pre_rows"
     return 0
 }
 
