@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import time
 
 import pandas as pd
 import requests
@@ -53,6 +54,17 @@ def test_band_turns_transport_timeout_into_missing_optional_context(monkeypatch)
 
     monkeypatch.setattr(cv.requests, "get", fail_get)
     assert cv._band("600519", "市盈率(TTM)", timeout=0.1) is None
+
+
+def test_band_wall_clock_interrupts_uncooperative_transport(monkeypatch) -> None:
+    def blocked_get(*args, **kwargs):
+        time.sleep(1.0)
+        raise AssertionError("hard deadline failed to interrupt transport")
+
+    monkeypatch.setattr(cv.requests, "get", blocked_get)
+    started = time.monotonic()
+    assert cv._band("600519", "市盈率(TTM)", timeout=0.05) is None
+    assert time.monotonic() - started < 0.5
 
 
 def test_refresh_stops_at_wall_clock_budget(monkeypatch, tmp_path: Path) -> None:
