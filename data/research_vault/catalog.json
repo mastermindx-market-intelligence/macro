@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T14:35:58.885378+00:00",
-  "count": 2644,
+  "generated_at": "2026-09-22T14:51:00.458423+00:00",
+  "count": 2645,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,24 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-uo882snx41f-078e66",
+      "title": "LATAM Today September 22, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:40Z",
+      "summary_points": [
+        "Brazil Copom Policy Update: 25bp rate cut to Selic 13.75%, neutral stance with data-dependent policy; demand-driven inflation persists despite moderation, supply shocks (oil/climate) and election outcome critical for next move - Key Risks: Unanchored inflation expectations, geopolitical tensions (Middle East), election outcome, high oil prices, rising Dollar yields—directly impacting commodity flows and policy trajectory - Mexico Retail Sales Miss: Jul retail sales declined 0.1% mom sa vs.",
+        "+0.1% consensus (annual growth 1.8% yoy vs. 1% consensus), signaling weak consumption momentum amid domestic/external uncertainty - Inflation Policy Alignment: Mexico’s headline inflation (4.3% Dec-26) and policy rate (8.25% Dec-26) decelerated in line with prior peak (10.2% inflation, 11.45% rate), but Goldman Sachs’ forecast overestimation post-Jun-22 indicates misaligned rate expectations - Brazil Inflation Risks: Producer price inflation acceleration and services sector resilience pose upside risks; supply constraints (oil/climate) and demand stimulus could trigger second-round effects despite headline moderation"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vbtfpvlbyyy-e96bb5",
       "title": "GS Utilities Daily Snam sells c.5 stake in Industrie De Nora to institutional investors European Commission launches com...",
