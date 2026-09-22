@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T20:21:48.688586+00:00",
-  "count": 2661,
+  "generated_at": "2026-09-22T20:36:52.315014+00:00",
+  "count": 2662,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -212,6 +212,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c2moug1j7fy-a11139",
+      "title": "GS MidDay Color US Equities Mid Day Color 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:29:08Z",
+      "summary_points": [
+        "Index Dispersion & AI Momentum: NDX +38bps (AI-driven new highs) vs SPX flat; Semis/memory/AI big tech (AAPL/MU/NVDA) leading, while MSFT/AMZN/JPM lagging; Consumer Agentic AI (META Muse) driving momentum.",
+        "AI Spillover Impact: Negative AI spillover in Financials/Insurance sectors despite stable crude (<$100), with AGENTS (e.g., GOOGL Gemini 4.0) becoming key conversation drivers.",
+        "Sector Rotation: Clear divergence between AI-focused semiconductors/memory (up) and traditional big tech/financials (down), signaling structural AI trade dominance.",
+        "Geopolitical Neutrality: Iran headlines (UN SoH, Saudi pipeline) failed to disrupt crude prices (<$100), indicating minimal near-term market impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
