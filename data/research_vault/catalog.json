@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T05:50:05.329599+00:00",
-  "count": 2619,
+  "generated_at": "2026-09-22T09:20:29.093538+00:00",
+  "count": 2629,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -40,6 +40,7 @@
     "Franklin",
     "Franklin Templeton",
     "GMO",
+    "Gabelli",
     "Goldman Sachs",
     "HSBC",
     "Halcyon",
@@ -178,6 +179,47 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-uwy4zewbxiw-9aa141",
+      "title": "Global Oil The Refining Super Cycle (Part 4) A System Stretched for Longer",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:40Z",
+      "summary_points": [
+        "Refining Capacity Crunch: 2026 ex-China net capacity decline (-0.3mb/d) and 2027 demand rebound (1% above 2025) necessitate sustained high product cracks; OECD inventories risk historical lows by 2027 under disruption scenarios.",
+        "Geopolitical Supply Shock: Middle East/Russian refinery outages (Exhibit 5) threaten global supply, with OECD inventories projected below 2015 lows (4Q26-2027) under prolonged disruptions (0.5-1.5mb/d demand growth).",
+        "Refining Margin Upside: Goldman Sachs revises Asia refining margins to $33.1/22.8/14.0/bbl (2026-2028), lifting EBITDA estimates by 17-27% and 12m TPs by +24% for refiners like S-Oil and Thai Oil.",
+        "S-Oil Valuation Disconnect: Trades at 1.4x P/B (vs. 8x historical) with 2026/27 ROEs at historical highs, despite diesel/jet crack assumptions (51.5 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-k7zxcockuxh-7f3b8b",
+      "title": "European Daily Riksbank and Norges Bank Diverging Once More",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:36Z",
+      "summary_points": [
+        "Norway Rate Hike Imminent: Norges Bank to hike 25bp to 4.5% in Sept despite inflation surprises, driven by hawkish bias, elevated wage growth (4.5%), and persistent services inflation (3.9% yoy), overriding soft activity data.",
+        "Sweden Inflation Dynamics: Core inflation accelerating (CPIF ex energy at 0.5% Aug), but headline inflation to surge due to energy price spikes (petrol/diesel +10% Sept), delaying Riksbank rate hike until Dec 2027 despite 2.6% 2026 growth forecast.",
+        "Labor Market Slack Risk: Sweden’s LFS unemployment at 8.9% (5-month high) with wide output gap contradicts robust growth (2026 2.6% yoy), signaling significant labor market slack as a key risk factor for policy timing.",
+        "Inflation Forecast Revisions: Norway’s headline inflation revised up to 3.6% yoy (2026Q4) from 3.3% due to end of fuel tax subsidy, while core inflation remains below Norges Bank’s forecast but wage growth expectations (4.5%) sustain persistent pressures.",
+        "Policy Divergence: Riksbank holds rate at 1.75% until Dec 2027 (delayed hike) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rerdwz2ob94-e3e252",
       "title": "GOAL Kickstart Markets repricing around higher rates and oil prices",
       "institution": "Goldman Sachs",
@@ -192,6 +234,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9khri2f3ffz-fff0ba",
+      "title": "Credit Notes Absorbing Higher Yields in Leveraged Finance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:13Z",
+      "summary_points": [
+        "Global Yield Surge & Rate Hike Expectations: 10-yr US Treasury at 5.0% (2023 peak), 30-yr near 5.4% (2007 peak); Fed hikes expected Oct 2024, ECB 25bp hike forecast Dec 2024.",
+        "Credit Fundamentals Strengthening: USD leveraged loan interest coverage rose from 4.26x to 4.95x (Q3 2023–Q2 2026); Debt/EBITDA >7x fell to 17% (from 20% in Q3 2023).",
+        "Private Credit Fundraising Record: Global private credit fundraising hit record Q2 2026 levels, with institutional segment rebounding amid widening spreads and tightening terms.",
+        "Loan Fund Inflows Accelerating: $16.6B inflows since April 2026 (vs. 2022–2023 outflows), driven by higher policy rates not triggering recession fears."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-izwposig58d-ec77b1",
+      "title": "Dispersion of returns in private markets 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T01:08:35Z",
+      "summary_points": [
+        "Private Market Performance Dispersion: Top-quartile private equity funds deliver 30.6% net IRR vs. bottom-quartile’s -1.4% net IRR (32% IRR interquartile spread), with top funds returning ~twice the median over 10 years.",
+        "Venture Capital Extreme Dispersion: Top-decile VC funds outperform bottom-decile by multiples, with bottom-decile funds failing to return capital; bottom-quartile VC underperforms PE by 8.8% (0.1% vs 8.9% annualized).",
+        "Manager Selection Imperative: Top-quartile manager selection is non-negotiable; bottom-quartile exposure permanently impairs portfolios due to structural dispersion (PE: 19.2pp gap, VC: 19pp vs public markets’ 1.9–2.9pp).",
+        "Compounding Effect: Small manager performance differences compound significantly; top-quartile PE funds compound to ~2x median returns over 10 years."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
@@ -300,6 +382,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-k25t5daxwvq-bc9b73",
+      "title": "LloydsBankMarketInsights FX Technicals",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:37:13Z",
+      "summary_points": [
+        "EUR/USD Support Break Risk: Price testing 1.1455/69 support; break below triggers drop to 1.1325, with 1.1411 (Mar Low) and 1.1392 (Aug '25 Low) as critical supports.",
+        "GBP/USD Bearish Momentum: Lower trend confirmed; resistance breached at 1.3434/36 (Daily/Monthly), immediate risk at 1.3300, next target 1.3140 (March/June lows).",
+        "USD/CHF Breakout Signal: Breaks 0.8198/820 resistance, signaling higher trend toward 0.8476 (2025-26 base) with upside potential to 0.9000 (2023-24 range top); favorable risk/reward for longs supported by 0.8040.",
+        "USD/JPY Resistance Cap: Neutral trend; immediate upside capped at 157.75/89 (tough to hold), support at 155.63/73 (potential uptrend reassertion above 155.04-156.26 band).",
+        "USD/CNH Support Zone: Price broke below 6.6975/7000; next support at 6.5876-6.6170 (weeks away, likely year-end), longer-term direction points to 2022 low (6.3060)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-2opo5iktnlc-94ffac",
       "title": "weekly 21sep26",
       "institution": "Other",
@@ -337,6 +440,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-icmirhcvmco-107ce0",
+      "title": "Macro Volatility Digest Sep21",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:29:34Z",
+      "summary_points": [
+        "Oil-Rates Correlation: US 10Y yield-WTI oil correlation hits 65% (35-yr high), exceeding 2020/2011 levels, signaling reduced Fed dependency and heightened Iran risk sensitivity.",
+        "Corporate Credit-Rates Inversion: CDX HY (Corporate Credit) and Tsy 10Y (Rates) exhibit -88% correlation, indicating rising rates will trigger significant drawdowns in high-yield credit.",
+        "USD Volatility Surge: USD shows largest weekly volatility move (-4.5) with \"Rich\" status (implied > realized), signaling elevated risk aversion and potential overpricing of USD volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -438,6 +560,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e03u40xpjbz-5be184",
+      "title": "PFAS 2026 Whitepaper",
+      "institution": "Gabelli",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:01:24Z",
+      "summary_points": [
+        "EPA PFAS Rule Mandate: EPA's 4 ppt drinking water limit (Apr 2024) drives $50B+ capital investment and $3.5B annual operating costs for utilities over 5 years, creating sector-wide compliance pressure.",
+        "Water Utility Capex Surge: AWWA estimates $37.1–$48.3B in regulated infrastructure investment (including $2.7–$3.5B annualized), accelerating rate-base growth via regulatory recovery mechanisms.",
+        "PFAS as Infrastructure Shift: $2.85B in PFAS capex by major utilities (AWK, HTO, WTRG) signals transition from liability to mandated infrastructure, with settlements ($11.5B over 15 years) reflecting regulatory capital needs.",
+        "Remediation Tech Validation: CETCO’s FLUORO-SORB® (3-4x more effective/economical than activated carbon) validated via 100+ field trials, offering critical cost advantage for emerging remediation plays.",
+        "Regulatory-Driven Market Shift: Tightening EPA methods (533/537.1, 1633A) and $1.8B annual POTW removal costs fuel demand for public companies (374Water, Aduro, Veolia) in remediation services."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -885,6 +1028,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-bqj837ya5aj-6a8135",
+      "title": "Americas Clean Technology Solar Recalibrating estimates for resi solar lower as headwinds persist",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:33Z",
+      "summary_points": [
+        "Resi Solar Demand Collapse: Residential installations down 21% YoY (2026), permits and sales indicators at -30% YoY; Q4 2026 demand forecasted to decline -35% YoY, signaling extended trough due to financing constraints (TPO capacity tightened, PPL growth capped).",
+        "Fed Rate Hike Amplifies Headwinds: Fed rate hike to 3.75%-4.00% exacerbates residential solar affordability; interest rate sensitivity erodes margins (e.g., +50bps reduces Levered IRR from 13.3% to 12.7%).",
+        "ENPH Buy vs.",
+        "SEDG Sell: ENPH favored for higher margins/growth drivers (battery storage in Europe, C&I solar), SEDG Sell due to valuation headwinds and residential market risks; ENPH target $47 (vs.",
+        "$55 consensus), SEDG target $29 (below closing price)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-t7tlo5rhaek-93b770",
       "title": "The Credit Line Banks and AI A Credit Positive Outlook",
       "institution": "Goldman Sachs",
@@ -904,6 +1068,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-g05nisv2hyz-609864",
+      "title": "Americas Branded Consumer Goods Apparel & Accessories August store traffic update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:42:21Z",
+      "summary_points": [
+        "Department Store Fragmentation: Bloomingdale’s strongest Y/Y traffic growth contrasts with Kohl’s significant moderation, signaling sector divergence and potential underperformance in traditional department stores.",
+        "Off-Price Outperformance: Ross Dress for Less and dd’s DISCOUNTS maintained robust traffic trends, while Burlington lagged, highlighting capital shifting toward value-driven retail segments.",
+        "Global Apparel Decline: Sustained negative Y/Y traffic growth for Polo Ralph Lauren, Levi’s, Calvin Klein, and Tommy Hilfiger since May 2026, with July 2026 marking worst performance for Levi’s/Polo Ralph Lauren.",
+        "Sportswear Volatility: Under Armour Outlet and Nike Factory Store exhibit extreme traffic swings since January 2024, indicating heightened competitive pressures or operational instability in sportswear."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-wkbzwf6mbxv-7b4e77",
       "title": "Weekly US Earnings Estimates 21st 25th September 2026",
       "institution": "Week Ahead",
@@ -919,6 +1103,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uwosxdmyxgb-fc3702",
+      "title": "Weekly Economic Calendar 21st 25th September 2026 2",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:09Z",
+      "summary_points": [
+        "Central Bank Rate Data: LPR 1Y/5Y (3.0%/3.5%) and EU energy prices drive inflation expectations; Fed/ECB speeches shape policy outlooks.",
+        "US Treasury Supply & Liquidity: 20-30Y buyback (liquidity support) and USD 28bn 2Y/70bn 5Y auctions dominate supply, impacting yield curves.",
+        "Michigan Consumer Sentiment: All metrics deteriorating (Sentiment 47.8 vs 51.7, Inflation Expectations 4.6% vs 4%), signaling US growth risk.",
+        "US Labor Market Softening: Initial Jobless Claims (201K vs 196K) and New Home Sales (-10.5%) indicate cooling labor market.",
+        "Global PMI Contraction: Manufacturing PMI (54 vs 54.9) and Services PMI (52 vs 53.5) signal weakening global growth momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
