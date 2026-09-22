@@ -2142,13 +2142,19 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _credit_impulse = I.credit.credit_impulse if I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse is not none else none %}
   {% set _risk_state_driver = (latest.risk_radar.state if latest.risk_radar else 'unknown') %}
   {% set _risk_face = {'calm':['Calm','平稳'],'caution':['Caution','谨慎'],'elevated':['Elevated','偏高'],'risk-off':['Risk-off','避险']}.get(_risk_state_driver, ['Unclear','待确认']) %}
+  {% set _driver_policy = I.pboc or _credit_impulse is not none %}
+  {% set _driver_flows = I.southbound and I.southbound.net is defined %}
+  {% set _driver_risk = _risk_state_driver in ('calm','caution','elevated','risk-off') %}
+  {% set _driver_property = P and P.regime %}
+  {% if _driver_policy or _driver_flows or _driver_risk or _driver_property %}
   <div class="cnx-lbl">{{ t('Why this regime','为什么这样判断') }}</div>
   <div class="cnx-links" data-cn-driver-rail>
-    <a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% elif _credit_impulse is not none %}{{ '%+.1f'|format(_credit_impulse) }}%{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
-    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {% if I.southbound and I.southbound.net is defined %}{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
-    <a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>
-    <a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {% if P and P.regime %}{{ t(P.regime.label_en, P.regime.label_zh) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+    {% if _driver_policy %}<a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% else %}{{ '%+.1f'|format(_credit_impulse) }}%{% endif %}</a>{% endif %}
+    {% if _driver_flows %}<a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}</a>{% endif %}
+    {% if _driver_risk %}<a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>{% endif %}
+    {% if _driver_property %}<a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {{ t(P.regime.label_en, P.regime.label_zh) }}</a>{% endif %}
   </div>
+  {% endif %}
 
   {# Mobile scanability without compression: a tiny jump rail exposes the deep
      dashboard's major zones without hiding or collapsing any accepted content. #}
