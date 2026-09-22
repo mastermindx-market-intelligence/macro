@@ -223,6 +223,10 @@ def test_mobile_deep_rows_become_swipeable_without_removing_cards() -> None:
     assert "body.page-china .cnx-links[data-cn-driver-rail]{flex-wrap:nowrap;overflow-x:auto" in TPL
     assert "scroll-snap-type:x mandatory" in TPL
     assert "scroll-snap-align:start" in TPL
+    assert "scroll-snap-stop:always" in TPL
+    assert "document.addEventListener('focusin'" in TPL
+    assert "window.matchMedia('(max-width:760px)').matches" in TPL
+    assert "card.scrollIntoView({behavior:'auto',block:'nearest',inline:'start'})" in TPL
     for target in ("cnx-focus-action", "cnx-focus-markets", "cnx-focus-drivers", "cnx-focus-deep"):
         assert f'role="region" aria-labelledby="{target}"' in TPL
 
