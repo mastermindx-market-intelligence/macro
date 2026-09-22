@@ -155,9 +155,56 @@ import sys
 print("FLAG_MISSING")
 sys.exit(4)
 '''
-FAKE_VERIFY_OK = '''"""Fake verify — OK."""
-import sys
+FAKE_VERIFY_OK = '''"""Fake verify — self-contained BLOCKER-2 check (no recursive import).
+
+BLOCKER-2 fix: the runner now passes --pre-rows to verify_ledger so a
+no-op accrue (chain=None, no rows, dedup-only, byte-equal rewrite) is
+refused. The fake mirrors the real verify_ledger's contract: load the
+ledger, read pre_rows from --pre-rows, refuse any post-state that has
+not strictly grown.
+"""
+import os, sys
+import pandas as pd
+
+argv = sys.argv[1:]
+ledger = None
+pre_rows = None
+i = 0
+while i < len(argv):
+    if argv[i] == "--ledger" and i + 1 < len(argv):
+        ledger = argv[i + 1]
+        i += 2
+        continue
+    if argv[i] == "--pre-rows" and i + 1 < len(argv):
+        try:
+            pre_rows = int(argv[i + 1])
+        except ValueError:
+            pre_rows = None
+        i += 2
+        continue
+    i += 1
+
+if not ledger or not os.path.isfile(ledger):
+    print("NO_LEDGER")
+    print(f"  reason=ledger file does not exist: {ledger}", file=sys.stderr)
+    sys.exit(5)
+
+df = pd.read_parquet(ledger)
+n = int(len(df))
+if n == 0:
+    print("NO_LEDGER")
+    print("  reason=ledger has 0 rows after accrue", file=sys.stderr)
+    sys.exit(5)
+if pre_rows is not None and n <= pre_rows:
+    print("NO_LEDGER")
+    print(f"  reason=ledger did not grow under accrue — pre_rows={pre_rows}, post_rows={n}",
+          file=sys.stderr)
+    sys.exit(5)
+
 print("OK")
+print(f"  rows={n}", file=sys.stderr)
+if pre_rows is not None:
+    print(f"  pre_rows={pre_rows}", file=sys.stderr)
 sys.exit(0)
 '''
 FAKE_VERIFY_NO_LEDGER = '''"""Fake verify — NO_LEDGER."""
@@ -173,8 +220,25 @@ FAKE_PUBLISH_FAIL = '''"""Fake publish — exit 1."""
 import sys
 sys.exit(1)
 '''
-FAKE_ACCRUE_OK = '''"""Fake accrue — exit 0 (writes no parquet)."""
-import sys
+FAKE_ACCRUE_OK = '''"""Fake accrue — exit 0 AND appends one row to the ledger.
+
+BLOCKER-2 fix: the runner now records pre-accrue rows and refuses a
+no-op accrue. The fake must grow the ledger (write >= 1 new row) for
+the verify step to pass.
+"""
+import os, sys
+import pandas as pd
+
+ledger = os.path.join(os.environ["SKEW_OPS_ROOT"], "data",
+                      "options_skew", "snapshots.parquet")
+if os.path.exists(ledger):
+    df = pd.read_parquet(ledger)
+else:
+    df = pd.DataFrame(columns=["date", "underlying", "skew"])
+new_row = pd.DataFrame([{"date": "2099-01-01", "underlying": "FAKE_NEW",
+                          "skew": 0.99}])
+df = pd.concat([df, new_row], ignore_index=True)
+df.to_parquet(ledger, index=False)
 sys.exit(0)
 '''
 FAKE_GATE_FRESH = '''"""Fake gate — FRESH."""
@@ -227,11 +291,17 @@ def _build_fake_repo(tmp_path: Path, *,
     (ops_dir / "run_skew_accrual.sh").chmod(0o755)
     if write_ledger:
         # Even with verify=OK we need a file so `wc -c` and the parquet
-        # read don't blow up. A 0-row parquet satisfies both.
+        # read don't blow up. The runner now records pre-accrue rows and
+        # the BLOCKER-2 fix expects a grow under the accrue; seed the
+        # file with one row so the fake accrue's new FAKE_NEW row is
+        # detected as growth (pre=1, post=2). Tests that exercise the
+        # no-op path inject a different verify that returns NO_LEDGER.
         try:
             import pandas as pd
-            pd.DataFrame(columns=["date", "underlying", "skew"]).to_parquet(
-                data_dir / "snapshots.parquet")
+            pd.DataFrame([
+                {"date": "2026-09-15", "underlying": "BOOTSTRAP",
+                 "skew": 0.05},
+            ]).to_parquet(data_dir / "snapshots.parquet")
         except Exception:
             # pandas unavailable in the test env — leave the path empty;
             # tests that need a ledger pass write_ledger=True with verify=OK.
@@ -443,6 +513,44 @@ def test_publish_r2_options_skew_bytes_floor_is_sane():
     mod = _load_publish()
     floor = mod._DATA_DIR_MIN_BYTES["options_skew"]
     assert 1_000 <= floor <= 1_000_000
+
+
+def test_publish_r2_options_skew_floor_clears_actual_bootstrap():
+    """MAJOR-3 measurement regression: the floor must clear the actual
+    bootstrap ledger committed on origin/main (not a hypothetical
+    'one session of ~380 roots' guess). Read the tracked blob via git,
+    confirm the floor admits it with a sane margin, AND that the bare
+    tracked sidecars (validation_gate.json only) are still refused."""
+    import subprocess
+    mod = _load_publish()
+    floor = mod._DATA_DIR_MIN_BYTES["options_skew"]
+    # Pull the tracked bootstrap parquet bytes via git.
+    blob = subprocess.run(
+        ["git", "cat-file", "-s", "origin/main:data/options_skew/snapshots.parquet"],
+        capture_output=True, text=True, check=True, cwd=ROOT,
+    ).stdout.strip()
+    bootstrap_bytes = int(blob)
+    # Floor admits the bootstrap with a sane margin (>= 4x margin means
+    # any first-run store trivially clears).
+    assert bootstrap_bytes > floor, (
+        f"floor={floor} but bootstrap parquet is {bootstrap_bytes}B — "
+        "first legitimate run would be refused.")
+    margin = bootstrap_bytes // floor
+    assert margin >= 4, (
+        f"margin {margin}x between floor and bootstrap is too thin — "
+        "any first-run store smaller than the bootstrap would fail.")
+
+
+def test_publish_r2_options_skew_floor_refuses_sidecars_only():
+    """MAJOR-3 measurement regression: the floor must still refuse a
+    sparse-CI sidecars-only tree (just the tracked
+    validation_gate.json sidecar, ~700 bytes)."""
+    mod = _load_publish()
+    floor = mod._DATA_DIR_MIN_BYTES["options_skew"]
+    sidecar_bytes = 700  # measured against the tracked validation_gate.json
+    assert sidecar_bytes < floor, (
+        f"floor={floor} admits a {sidecar_bytes}B sidecars-only tree — "
+        "a sparse-CI checkout would publish 700B over the deep store.")
 
 
 def test_publish_r2_options_skew_min_files_override_is_set():

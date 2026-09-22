@@ -44,7 +44,7 @@ def _write_ledger(path: Path, rows: list[dict] | None) -> Path:
 
 
 def test_check_returns_ok_when_ledger_has_rows(tmp_path):
-    """A ledger with at least one row → exit 0."""
+    """A ledger with at least one row (no pre_rows recorded) → exit 0."""
     mod = _import_verify()
     ledger = _write_ledger(tmp_path / "snapshots.parquet", [
         {"date": "2026-09-22", "underlying": "SPY", "skew": 0.05},
@@ -54,6 +54,44 @@ def test_check_returns_ok_when_ledger_has_rows(tmp_path):
     assert info["rows"] == 1
     assert info["bytes"] > 0
     assert "content" in info["reason"]
+
+
+def test_check_returns_ok_when_ledger_grew_under_accrue(tmp_path):
+    """BLOCKER-2 RED-first: post-accrue rows > pre_rows → exit 0.
+    This is the load-bearing case for a successful run."""
+    mod = _import_verify()
+    ledger = _write_ledger(tmp_path / "snapshots.parquet", [
+        {"date": "2026-09-22", "underlying": "SPY", "skew": 0.05},
+        {"date": "2026-09-22", "underlying": "AAPL", "skew": 0.06},
+        {"date": "2026-09-22", "underlying": "MSFT", "skew": 0.07},
+    ])
+    code, info = mod.check(ledger, pre_rows=2)
+    assert code == mod.EXIT_OK
+    assert info["rows"] == 3
+    assert info["pre_rows"] == 2
+    assert "content" in info["reason"]
+
+
+def test_check_returns_no_ledger_when_no_growth(tmp_path):
+    """BLOCKER-2 RED-first regression: the W2-1b no-op accrue case.
+    Pre-accrue row count equals post-accrue row count — the accrue
+    contributed nothing new (chain=None, no rows, or dedup-only). The
+    OLD "ledger has >= 1 row" check passed this through to publish; the
+    NEW check refuses on no growth, so the launchd log cannot report a
+    successful publish for a byte-equal ledger."""
+    mod = _import_verify()
+    # 12,375 rows in the bootstrap ledger → accrue is supposed to add
+    # today's session. If snapshot() returns 0 (no-op), the row count
+    # is unchanged and verify refuses.
+    rows = [{"date": "2026-09-15", "underlying": f"SYM{i}",
+             "skew": 0.01 * i} for i in range(12375)]
+    ledger = _write_ledger(tmp_path / "snapshots.parquet", rows)
+    code, info = mod.check(ledger, pre_rows=12375)
+    assert code == mod.EXIT_NO_LEDGER
+    assert info["rows"] == 12375
+    assert info["pre_rows"] == 12375
+    assert "did not grow" in info["reason"]
+    assert "no-op snapshot" in info["reason"]
 
 
 def test_check_returns_no_ledger_when_file_missing(tmp_path):
@@ -118,3 +156,19 @@ def test_main_exit_code_when_ledger_missing(tmp_path):
     assert rc.returncode == mod.EXIT_NO_LEDGER
     first = next((l for l in rc.stdout.splitlines() if l.strip()), "")
     assert first == "NO_LEDGER"
+
+
+def test_main_cli_pre_rows_blocks_no_op_accrue(tmp_path):
+    """BLOCKER-2 RED-first end-to-end: --pre-rows blocks a no-op accrue
+    via the subprocess CLI (the runner's actual call shape)."""
+    mod = _import_verify()
+    rows = [{"date": "2026-09-15", "underlying": f"SYM{i}",
+             "skew": 0.01 * i} for i in range(5)]
+    ledger = _write_ledger(tmp_path / "snapshots.parquet", rows)
+    rc = subprocess.run(
+        [sys.executable, str(VERIFY),
+         "--ledger", str(ledger), "--pre-rows", "5"],
+        capture_output=True, text=True, check=False,
+    )
+    assert rc.returncode == mod.EXIT_NO_LEDGER
+    assert "did not grow" in rc.stderr

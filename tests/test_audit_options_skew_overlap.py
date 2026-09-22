@@ -148,7 +148,7 @@ def test_select_legacy_rows_filters_on_source_column():
 
 
 def test_delta_stats_returns_nan_safe_on_empty():
-    """An empty deltas list returns n=0 and None quantiles (no crash)."""
+    """An empty pairs list returns n=0 and None quantiles (no crash)."""
     mod = _load_audit()
     stats = mod._delta_stats([])
     assert stats["n"] == 0
@@ -159,58 +159,80 @@ def test_delta_stats_returns_nan_safe_on_empty():
     assert stats["n_sign_flip"] == 0
 
 
-def test_delta_stats_sign_agreement_matches_sign_of_delta():
-    """delta = legacy - new; sign_agreement_rate counts deltas >= 0
-    (legacy >= new means the two paths agree on direction OR new is smaller).
-    For deltas [0.05, 0.10, -0.03]: 2 of 3 are non-negative → 2/3."""
+def test_delta_stats_sign_agreement_matches_product_test():
+    """BLOCKER-1 RED-first regression: sign_agreement_rate is
+    (n_sign_match + n_zero_delta) / n — agreement means the two paths
+    share a sign OR agree on zero. Pairs [(0.05, 0.05), (0.10, 0.05),
+    (0.03, 0.06)] give 3 of 3 in agreement (all positive)."""
     mod = _load_audit()
-    stats = mod._delta_stats([0.05, 0.10, -0.03])
+    stats = mod._delta_stats([(0.05, 0.05), (0.10, 0.05), (0.03, 0.06)])
     assert stats["n"] == 3
-    assert stats["max"] == 0.10
-    assert stats["sign_agreement_rate"] == pytest.approx(2 / 3)
+    assert stats["max"] == 0.05
+    assert stats["sign_agreement_rate"] == pytest.approx(1.0)
+    assert stats["n_sign_match"] == 3
+    assert stats["n_zero_delta"] == 0
+    assert stats["n_sign_flip"] == 0
 
 
 def test_delta_stats_counts_genuine_sign_flips():
-    """MINOR-1 RED-first regression: a negative delta means the legacy
-    path and the new ThetaData path DISAGREE on sign — the audit must
-    surface that as `n_sign_flip`. The previous implementation used
-    `d * d < 0` which is tautologically false for any real d, so it
-    always returned 0 regardless of input. Verify the fix:
-    deltas [-2.0, 3.0] must yield n_sign_flip == 1.
-    """
+    """BLOCKER-1 RED-first regression: a true sign flip means legacy and
+    new have STRICTLY OPPOSITE non-zero signs. The product test
+    `legacy * new < 0` is the only correct way: a delta-based classifier
+    conflates same-sign magnitude differences with actual flips. Verify
+    pairs [(0.10, -0.10), (0.05, 0.07)] give n_sign_flip == 1,
+    n_sign_match == 1."""
     mod = _load_audit()
-    stats = mod._delta_stats([-2.0, 3.0])
+    stats = mod._delta_stats([(0.10, -0.10), (0.05, 0.07)])
     assert stats["n"] == 2
     assert stats["n_sign_flip"] == 1
     assert stats["n_sign_match"] == 1
     assert stats["n_zero_delta"] == 0
-    # The buckets must exhaust the input set: sum == n
-    assert stats["n_sign_flip"] + stats["n_sign_match"] + stats["n_zero_delta"] == stats["n"]
+
+
+def test_delta_stats_same_sign_magnitude_difference_is_NOT_a_flip():
+    """BLOCKER-1 regression: the OLD delta-based classifier called
+    legacy=0.05, new=0.15 (both positive, SAME sign) a "flip" because
+    delta = -0.10 < 0. Pin the corrected behavior: that pair is a
+    sign_match, NOT a sign_flip. The same applies to (legacy=-0.05,
+    new=-0.15) — both negative, SAME sign, also a sign_match."""
+    mod = _load_audit()
+    stats = mod._delta_stats([(0.05, 0.15), (-0.05, -0.15)])
+    assert stats["n"] == 2
+    assert stats["n_sign_flip"] == 0
+    assert stats["n_sign_match"] == 2
+    assert stats["n_zero_delta"] == 0
+    # Both pairs are agreement: same non-zero sign on both sides.
+    assert stats["sign_agreement_rate"] == pytest.approx(1.0)
 
 
 def test_delta_stats_separates_zero_delta_from_sign_match():
-    """A delta of exactly 0 means legacy == new (no skew difference) —
-    that is a special agreement bucket, not a sign-match. The audit
-    surfaces it as `n_zero_delta` so the markdown receipt can distinguish
-    "they agree there is no skew" from "they agree on the same sign"."""
+    """A pair where BOTH paths report exactly zero skew is the
+    `n_zero_delta` bucket — the audit surfaces it separately so the
+    receipt can distinguish "they agree there is no skew" from "they
+    agree on the same sign". Pairs: same-positive-equal (sign_match),
+    same-positive-unequal (sign_match), opposite-sign (sign_flip),
+    both-zero (zero_delta)."""
     mod = _load_audit()
-    stats = mod._delta_stats([0.0, 0.5, -0.5, 0.0])
+    stats = mod._delta_stats([(0.10, 0.05), (0.25, -0.25),
+                              (0.0, 0.0), (-0.1, -0.1)])
     assert stats["n"] == 4
-    assert stats["n_zero_delta"] == 2
-    assert stats["n_sign_match"] == 1
+    # (0.0, 0.0) is the only zero-delta pair; the others share a sign
+    # in either direction. n_zero_delta is reserved for "both zero".
+    assert stats["n_zero_delta"] == 1
+    assert stats["n_sign_match"] == 2
     assert stats["n_sign_flip"] == 1
     assert stats["n_sign_flip"] + stats["n_sign_match"] + stats["n_zero_delta"] == 4
+    # sign_agreement_rate = (1 zero + 2 match) / 4 = 3/4
+    assert stats["sign_agreement_rate"] == pytest.approx(3 / 4)
 
 
 def test_delta_stats_sign_agreement_includes_zero_delta():
-    """sign_agreement_rate is `delta >= 0 / n` per the existing spec —
-    zero deltas count as agreement (legacy == new). Pin the math so the
-    new bucket labels do not silently change the headline number."""
+    """Zero-delta pairs count toward sign_agreement_rate — the two
+    paths agree on no skew, which IS agreement. Pairs [(0.0, 0.0),
+    (0.0, 0.0), (0.05, -0.05)] → 2 of 3 are zero-delta, 1 is a flip."""
     mod = _load_audit()
-    stats = mod._delta_stats([0.0, 0.0, -0.1])
+    stats = mod._delta_stats([(0.0, 0.0), (0.0, 0.0), (0.05, -0.05)])
     assert stats["n"] == 3
-    # 2 of 3 deltas >= 0 → 2/3 sign-agreement (the same spec the prior
-    # test pin held; this confirms we did not regress the headline).
     assert stats["sign_agreement_rate"] == pytest.approx(2 / 3)
     assert stats["n_zero_delta"] == 2
     assert stats["n_sign_flip"] == 1
@@ -319,18 +341,20 @@ def test_cli_happy_path_emits_receipt_and_summary(tmp_path):
          "source": "polygon_gex"},
         {"date": "2026-09-18", "underlying": "GOOG", "skew": 0.13,
          "source": "polygon_gex"},   # sign flip below
-        {"date": "2026-09-19", "underlying": "AMZN", "skew": 0.14,
-         "source": "polygon_gex"},   # large |delta| below
+        {"date": "2026-09-19", "underlying": "AMZN", "skew": 0.0,
+         "source": "polygon_gex"},   # both-zero pair below
     ]
     ledger = _write_ledger(tmp_path / "snapshots.parquet", rows)
-    # Fake table: SPY identical; AAPL/MSFT small delta; GOOG flips sign;
-    # AMZN large |delta|.
+    # Fake table: SPY/AAPL/MSFT/GOOG all same sign (sign_match under the
+    # product test — even SPY with legacy == new == 0.10 is "same sign",
+    # NOT a zero-delta because the value is non-zero); AMZN is the only
+    # both-zero pair; GOOG flips sign.
     table = {
-        "2026-09-15": {"SPY": 0.10},   # legacy - new = 0.00
-        "2026-09-16": {"AAPL": 0.12},  # legacy 0.11 - new 0.12 = -0.01
-        "2026-09-17": {"MSFT": 0.13},  # legacy 0.12 - new 0.13 = -0.01
-        "2026-09-18": {"GOOG": -0.13}, # legacy 0.13 - new -0.13 = +0.26
-        "2026-09-19": {"AMZN": -0.10}, # legacy 0.14 - new -0.10 = +0.24
+        "2026-09-15": {"SPY": 0.10},   # legacy 0.10, new 0.10 → MATCH (same non-zero sign)
+        "2026-09-16": {"AAPL": 0.12},  # legacy 0.11, new 0.12 → -0.01, MATCH
+        "2026-09-17": {"MSFT": 0.13},  # legacy 0.12, new 0.13 → -0.01, MATCH
+        "2026-09-18": {"GOOG": -0.13}, # legacy 0.13, new -0.13 → +0.26, FLIP
+        "2026-09-19": {"AMZN": 0.0},   # legacy 0.0, new 0.0 → ZERO (both exactly zero)
     }
     out_md = tmp_path / "receipt.md"
     rc = subprocess.run(
@@ -344,18 +368,19 @@ def test_cli_happy_path_emits_receipt_and_summary(tmp_path):
     assert rc.returncode == mod.EXIT_OK, (rc.stdout, rc.stderr)
     summary = json.loads(rc.stdout.strip().splitlines()[-1])
     assert summary["keys_compared"] == 5
-    # 3 of 5 deltas are >= 0 (SPY 0.0, GOOG +0.26, AMZN +0.24) → 3/5
-    assert summary["sign_agreement_rate"] == pytest.approx(3 / 5)
+    # sign_agreement = (n_sign_match + n_zero_delta) / n = (3 + 1) / 5 = 4/5
+    assert summary["sign_agreement_rate"] == pytest.approx(4 / 5)
     # max |delta| is GOOG +0.26
     assert summary["abs_delta_skew"]["max"] == pytest.approx(0.26)
-    # MINOR-1 fix: bucket the deltas honestly. The five deltas are
-    # [SPY 0.0, AAPL -0.01, MSFT -0.01, GOOG +0.26, AMZN +0.24]:
-    #   n_zero_delta   = 1  (SPY)
-    #   n_sign_match   = 2  (GOOG, AMZN — both > 0)
-    #   n_sign_flip    = 2  (AAPL, MSFT — both < 0)
+    # BLOCKER-1 fix: bucket the pairs under the product test.
+    #   SPY    → legacy 0.10, new 0.10: sign_match (same non-zero sign)
+    #   AAPL   → legacy 0.11, new 0.12: sign_match (both > 0, same sign)
+    #   MSFT   → legacy 0.12, new 0.13: sign_match (both > 0, same sign)
+    #   GOOG   → legacy 0.13, new -0.13: sign_flip  (opposite signs)
+    #   AMZN   → legacy 0.0,  new 0.0:   zero_delta (both exactly zero)
     assert summary["n_zero_delta"] == 1
-    assert summary["n_sign_match"] == 2
-    assert summary["n_sign_flip"] == 2
+    assert summary["n_sign_match"] == 3
+    assert summary["n_sign_flip"] == 1
     assert (summary["n_sign_flip"] + summary["n_sign_match"]
             + summary["n_zero_delta"]) == summary["keys_compared"]
     assert out_md.exists()
@@ -364,7 +389,7 @@ def test_cli_happy_path_emits_receipt_and_summary(tmp_path):
     assert "| date | underlying | legacy_skew | new_skew | delta_skew |" in body
     # Worst key is GOOG with delta 0.26
     assert "GOOG" in body
-    # MINOR-1: receipt surfaces the new sign-bucket breakdown.
+    # Receipt surfaces the new sign-bucket breakdown.
     assert "match=" in body and "flip=" in body and "zero=" in body
 
 
