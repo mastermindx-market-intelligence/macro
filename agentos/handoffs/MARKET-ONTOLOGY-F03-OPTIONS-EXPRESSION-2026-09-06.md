@@ -23,6 +23,10 @@ changed:
     what: OPTIONS_SKEW_LEGACY_CHAIN=1 around the options_skew brun and the narrow gex run_py, unset immediately after.
   - path: .github/workflows/closing-bell.yml
     what: OPTIONS_SKEW_LEGACY_CHAIN=1 around the options_skew brun, unset immediately after.
+  - path: .github/workflows/render.yml
+    what: Same legacy export around the options_skew brun and the scope-gex run_py. Round 2. These two calls were still unpinned.
+  - path: scripts/ci/daily_engine_regional_desk_builders.sh
+    what: Same legacy export around the nightly brun options_skew. Round 2. daily.yml job engine runs this script.
   - path: .github/ci/legacy-jobs.yml
     what: Removed the options-skew step from flow-surface. Added gate:code job options-skew-engine.
   - path: tests/test_options_skew.py
@@ -32,16 +36,16 @@ changed:
 verified:
   - claim: Upsert, canonical-wins, atomic replace, accrue-skip, emit-from-ledger, and the legacy pin tests pass, and the entry-state consumer still reads the ledger.
     command: python -m pytest tests/test_options_skew.py tests/test_options_entry_state.py -q
-    result: 44 passed
+    result: 46 passed
   - claim: options-skew-engine is in CURATED_EXCLUSIVE and its exclusive paths cover the import closure. flow-surface no longer needs the skew suite for its own closure.
     command: python -m pytest tests/test_ci_pack.py -k curated_exclusive -q
     result: 2 passed, 119 deselected
-  - claim: With OPTIONS_SKEW_LEGACY_CHAIN=1 the branch builder matches the pre-packet builder at 98df3cf31eb7. latest.json is equal apart from generated_utc and the five additive keys. Ledger rows are equal apart from source=polygon_gex.
-    command: python comparison of git show 98df3cf31eb7:scripts/build_options_skew.py plus engine/options_skew.py against the branch builder, synthetic polygon chain, temp dirs only
-    result: JSON_EQUAL_MODULO_GENERATED_UTC_AND_FIVE_ADDITIVE_KEYS and LEDGER_EQUAL_MODULO_SOURCE rows 2
+  - claim: With OPTIONS_SKEW_LEGACY_CHAIN=1 the branch builder matches the pre-packet builder at 98df3cf31eb7, including a two-strike expiry. latest.json is equal apart from generated_utc and the five additive keys. Ledger rows are equal apart from source=polygon_gex.
+    command: python comparison of git show 98df3cf31eb7:engine/options_skew.py against the branch builder, synthetic polygon chain AAA/BBB (4 strikes) plus THIN (2 strikes), temp dirs only
+    result: JSON_STRIPPED_EQUAL True. Names AAA, BBB, THIN. THIN skew 0.1, n_strikes 2. LEDGER_NINE_EQUAL True, rows 3, source polygon_gex.
   - claim: The legacy-jobs manifest still validates, and this PR introduces no contract-delta closure miss.
     command: python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --pack-index 1 --pack-count 12 --validate-only && python scripts/check_contract_delta.py --base origin/main
-    result: Validated 221 legacy jobs. contract-delta 0 introduced, 1 inherited (base 0d7b6fb14d2f).
+    result: Validated 221 legacy jobs. contract-delta 0 introduced, 1 inherited (base 59c07595d287). That base id is origin/main at the moment the script resolved it. Main kept moving after the merge.
   - claim: GitHub annotation warnings in this tree still start at column 0.
     command: python -m pytest tests/test_gh_annotation_line_start.py -q
     result: 4 passed
@@ -55,7 +59,7 @@ unresolved:
   - agentos validate reports one dangling-ref. No workstream record exists for WS:MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION, and this packet does not invent one.
 next_actions:
   - W2-2 installs the M1 launchd ThetaData accrual. The store host accrues and commits the parquet ledger. Do not do that on a render host.
-  - W2-3 removes OPTIONS_SKEW_LEGACY_CHAIN=1 from engine-render.yml and closing-bell.yml and switches those calls to --emit.
+  - W2-3 removes OPTIONS_SKEW_LEGACY_CHAIN=1 from engine-render.yml, closing-bell.yml, render.yml, and scripts/ci/daily_engine_regional_desk_builders.sh, and switches those calls to --emit.
 do_not_redo:
   - Sequencing law. W2-1b is code with zero live behavior change. W2-2 is the M1 ThetaData accrual lane. W2-3 is the render cutover. Do not install launchd or switch render hosts to --emit in W2-1b.
   - Do not add a second chain or skew engine. Reuse engine.thetadata_store.make_chain_provider.
@@ -64,6 +68,8 @@ danger_areas:
   - The non-atomic concat-and-rewrite of data/options_skew/snapshots.parquet is retired. snapshot() now writes a temp file and os.replace in the same directory. Do not put the concat back.
   - A polygon_gex row must never replace a thetadata row for the same (date, underlying). A missing source column reads as polygon_gex.
   - Render hosts still have no ThetaData store. Removing the legacy export before W2-2 lands publishes null skew.
+  - A four-strike floor in compute_skew drops names the polygon builder still publishes. Do not put that floor back.
+  - config/dag.yml names the module but does not launch it. The live launches are engine-render.yml, closing-bell.yml, render.yml, and scripts/ci/daily_engine_regional_desk_builders.sh. A new launch without the export is a live regression.
 ---
 
 # Handoff — MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION (A-F03-W2-1)
@@ -146,18 +152,37 @@ line and does not write the ledger. Emit reads the ledger and writes
 (`accrued_today` or `ledger_only`). Emit does not construct a chain provider.
 
 `engine-render.yml` and `closing-bell.yml` export `OPTIONS_SKEW_LEGACY_CHAIN=1`
-on the options_skew brun line and unset it immediately after. That is the
-zero-regression pin. MAIN_AT_START for the merge was `98df3cf31eb7bbca79f1e1cdcb6b3f1fc30edacc`.
+on the options_skew brun line and unset it immediately after. The first merge
+of `origin/main` was a real two-parent merge. Its second parent was
+`98df3cf31eb7bbca79f1e1cdcb6b3f1fc30edacc`.
+
+### W2-1b round 2 (2026-09-22)
+
+The first pin did not cover every live caller, and a four-strike floor dropped
+names the polygon builder still publishes. Both are fixed in this round.
+
+`render.yml` exports the legacy flag on its `brun options_skew` line and on
+its scope-`gex` `run_py` line. `scripts/ci/daily_engine_regional_desk_builders.sh`
+does the same for the nightly engine job (`daily.yml` only calls that script).
+Each export is unset on the next line. `compute_skew` no longer returns before
+the put-minus-call formula when the chosen expiry has fewer than four rows.
+
+A second two-parent merge brought `origin/main` in at
+`a1a4c0d561a1b9fbbc8b06467ec75bf92cdb5ad9`. Pre-merge
+`git diff --stat 98df3cf31eb7 HEAD` and post-merge
+`git diff --stat origin/main...HEAD` were the same eight files, 1067 insertions,
+55 deletions. None were dropped. Main moved again after that merge (hot-tape
+and `#7295`); this round does not chase those commits.
 
 ### do_not_redo
 
-Sequencing law: W2-1b is this code, with the legacy flag still on. W2-2 is
-the M1 launchd ThetaData accrual (the store host accrues and pushes the
-parquet). W2-3 is the cutover (render hosts drop the flag and switch to
-`--emit`). Do not do W2-2 or W2-3 here.
+Sequencing law, unchanged: W2-1b is this code, with the legacy flag still on.
+W2-2 is the M1 launchd ThetaData accrual. W2-3 is the cutover. Do not do W2-2
+or W2-3 here.
 
 ### danger_areas
 
-The non-atomic concat-and-rewrite of `data/options_skew/snapshots.parquet`
-is what this packet retires. Putting that rewrite back races every reader
-that opens the ledger while it is being replaced.
+The non-atomic concat-and-rewrite of `data/options_skew/snapshots.parquet` is
+what this packet retires. Putting that rewrite back races every reader that
+opens the ledger while it is being replaced. A four-strike floor, or a live
+caller without `OPTIONS_SKEW_LEGACY_CHAIN=1`, changes the published surface.
