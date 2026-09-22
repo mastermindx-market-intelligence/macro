@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T02:36:17.010788+00:00",
-  "count": 2609,
+  "generated_at": "2026-09-22T02:49:44.508552+00:00",
+  "count": 2610,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -191,6 +191,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-de82gqyq2zl-b9c21f",
+      "title": "ING Think the commodities feed oil cools off from the highs",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:12:46Z",
+      "summary_points": [
+        "Saudi Supply Disruption: East-West pipeline damage from drone attacks reduces Saudi supply, causing North Sea grade premiums and intensifying market tension despite geopolitical hopes.",
+        "Oil Net Long Record: Brent net longs at 282,657 lots (largest since May 2026), driven by Middle East supply risks and short covering, signaling overcrowded positioning.",
+        "Cocoa Deficit Outlook: Deteriorating crop conditions in Ivory Coast/Ghana + El Niño risk threaten 2026/27 supply deficit, despite 18% monthly price drop.",
+        "Wheat Supply Gap: 2026/27 wheat forecast raised to 10mt but remains below record 13.3mt, with heat stress (hot winds, low rainfall) posing acute supply risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
