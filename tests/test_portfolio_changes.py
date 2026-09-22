@@ -922,6 +922,20 @@ def test_two_error_paths_no_longer_claim_opposite_populations(monkeypatch, tmp_p
     assert query_fail == "unspecified"
 
 
+def test_private_store_unavailable_note_forbids_false_empty_narration():
+    """The model must report a read failure, never reinterpret it as an empty book."""
+    import engine.neuralweb.brain_gateway as gw  # noqa: PLC0415
+
+    result = gw._portfolio_store_unavailable("watchlist data unreachable")
+
+    assert result["available"] is False
+    assert result["error"] == "portfolio_store_unavailable"
+    note = result["note"].lower()
+    assert "could not be read this turn" in note
+    assert "do not report" in note
+    assert "empty or zero-name" in note
+
+
 def test_brain_gateway_loader_also_refuses_to_guess(monkeypatch, tmp_path):
     """A2 applies to BOTH loaders. The gateway has its own inline copy of the
     positions→watchlist fallback, so fixing only app.main would leave the Brain tool

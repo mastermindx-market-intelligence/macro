@@ -2644,10 +2644,14 @@ def _portfolio_store_unavailable(note: str) -> dict:
     result. Callers must preserve that boundary so an outage never becomes an empty
     account, a zero count, or a fabricated Watchlist fallback.
     """
+    guidance = (
+        "Private Portfolio/Watchlist state could not be read this turn. "
+        "Say it is unavailable; do not report an empty or zero-name book."
+    )
     return {
         "available": False,
         "error": "portfolio_store_unavailable",
-        "note": note,
+        "note": f"{note}. {guidance}" if note else guidance,
     }
 
 
