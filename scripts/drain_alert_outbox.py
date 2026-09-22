@@ -1,6 +1,7 @@
 """scripts/drain_alert_outbox.py -- entry point for the fired-alert delivery drain.
 
     python -m scripts.drain_alert_outbox [--dry-run] [--limit N] [--now ISO8601]
+        [--fire-event-id ID]
 
 Wires ``engine.alert_delivery_drain.drain`` (pure decisions + isolated PostgREST IO)
 to ``app.mailer.send_alert`` (the only place that actually touches SMTP). Importing
@@ -38,7 +39,14 @@ def main(argv=None) -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=200)
     parser.add_argument("--now", default=None, help="ISO8601 override, for tests/ops.")
+    parser.add_argument("--fire-event-id", default=None,
+                        help="Select exactly one fired alert for a bounded canary.")
     args = parser.parse_args(argv)
+
+    if args.fire_event_id is not None and not str(args.fire_event_id).strip():
+        print("::error title=alert-drain-selector-invalid::"
+              "--fire-event-id must not be blank", flush=True)
+        return 2
 
     enabled = (os.environ.get("ALERT_DRAIN_ENABLE") or "").strip() == "1"
     dry_run = args.dry_run or not enabled
@@ -53,9 +61,17 @@ def main(argv=None) -> int:
             now_utc = now_utc.replace(tzinfo=timezone.utc)
 
     send_fn = None if dry_run else mailer.send_alert
-    result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit, dry_run=dry_run)
+    result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit,
+                             dry_run=dry_run, fire_event_id=args.fire_event_id)
 
-    if result.read_state == drain_mod.READ_UNAVAILABLE:
+    selector_failed = args.fire_event_id is not None and (
+        result.read_state == drain_mod.READ_UNAVAILABLE or result.selector_state is not None)
+    if selector_failed:
+        print("::error title=alert-drain-selector-failed::"
+              "fire_event_id %r was not uniquely and exactly selected (%s) -- "
+              "0 sends, 0 writes"
+              % (args.fire_event_id, result.selector_state or result.error_class), flush=True)
+    elif result.read_state == drain_mod.READ_UNAVAILABLE:
         print("::warning title=alert-drain-read-unavailable::"
               "alert_outbox/alert_runs not readable (%s) -- 0 sends, 0 writes"
               % result.error_class, flush=True)
@@ -81,7 +97,7 @@ def main(argv=None) -> int:
               "%d alert row(s) quarantined with an undetermined delivery effect -- "
               "check the relay log before replaying any of them by hand"
               % result.effect_unknown_n, flush=True)
-    return 0
+    return 2 if selector_failed else 0
 
 
 if __name__ == "__main__":

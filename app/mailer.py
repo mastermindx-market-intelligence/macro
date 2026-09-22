@@ -261,10 +261,17 @@ def _ledger_mark_attempting(idem_key: str) -> bool:
     opposite mistake is an invisible, unrecoverable double-delivery. We take the first.
     """
     try:
-        _pg("PATCH", f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}",
-            body={"status": "queued",
-                  "detail": f"{SMTP_ATTEMPT_MARKER}@{datetime.now(timezone.utc).isoformat()}"},
-            prefer="return=minimal")
+        rows = _pg("PATCH", f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}",
+                   body={"status": "queued",
+                         "detail": f"{SMTP_ATTEMPT_MARKER}@{datetime.now(timezone.utc).isoformat()}"},
+                   prefer="return=representation")
+        # PostgREST treats a zero-row PATCH as a successful request.  A 2xx alone
+        # therefore does not prove that the marker is durable; representation is the
+        # acknowledgement that the claimed row actually matched and was updated.
+        if not isinstance(rows, list) or len(rows) != 1:
+            log.warning("mailer: attempt marker for %s matched %s ledger rows -- NOT sending",
+                        idem_key, len(rows) if isinstance(rows, list) else "an unknown number of")
+            return False
         return True
     except Exception as exc:  # noqa: BLE001
         log.warning("mailer: could not mark %s as attempting (%s) -- NOT sending",
@@ -550,12 +557,16 @@ def _build_message(*, to_email: str, subject: str, html: str, text: str,
 # The single send path
 # --------------------------------------------------------------------------- #
 def send(*, template: str, cls: str, to_email: str, subject: str, html: str, text: str,
-         idem_key: str, user_id: str | None = None, headers: dict | None = None) -> str:
+         idem_key: str, user_id: str | None = None, headers: dict | None = None,
+         strict_ledger: bool = False) -> str:
     """Send one email through the ledger. Returns the final status; never raises.
 
     Order (SEE-R3, ledger-first):
       1. INSERT email_log(status='queued') keyed on ``idem_key``. A unique violation →
          return ``'duplicate'`` WITHOUT sending. This is the whole idempotency gate.
+         ``strict_ledger=True`` also refuses transport when the INSERT result is not
+         confirmed; alert delivery uses this because a POST may fail before commit or
+         commit and lose its reply, and neither state permits crossing SMTP safely.
       2. marketing only: suppression / opt-out → PATCH ``'suppressed'``, return it.
       3. mail-off → PATCH ``'skipped_no_smtp'``, return it.
       4. Mark the row ``'queued'`` + ``SMTP_ATTEMPT_MARKER`` (fail-closed: no marker,
@@ -587,6 +598,13 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         log.info("mailer: %s duplicate idem_key %s — not sending", template, idem_key)
         return "duplicate"
     except Exception as exc:  # noqa: BLE001
+        if strict_ledger:
+            # An exception cannot distinguish a pre-commit failure from a committed
+            # claim whose response was lost.  In either case no alert has entered SMTP,
+            # so fail closed and let the bounded outbox retry use a fresh attempt key.
+            log.warning("mailer: durable ledger claim unconfirmed for %s (%s) -- NOT sending",
+                        template, type(exc).__name__)
+            return "failed"
         # The ledger is unreachable (no service-role key, network, table absent). We
         # proceed WITHOUT the idempotency guarantee rather than dropping the message:
         # for the traffic on this path (a support reply, an operator alert) a lost mail
@@ -660,9 +678,11 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         # succeeds and the boundary is durable after all. Only when it also fails is
         # the ledger genuinely unreachable, and then the documented degraded mode
         # applies -- send without idempotency rather than drop the message.
-        log.warning("mailer: sending %s with NO effect-boundary marker -- ledger "
-                    "unreachable; a duplicate is possible if this process dies", idem_key)
-        return True
+        if not strict_ledger:
+            log.warning("mailer: sending %s with NO effect-boundary marker -- ledger "
+                        "unreachable; a duplicate is possible if this process dies", idem_key)
+            return True
+        return False
 
     last: Exception | None = None
     for attempt in range(_SEND_ATTEMPTS):
@@ -1404,4 +1424,5 @@ def send_alert(*, fire_event_id: str, to_email: str, payload: dict,
     # previous except clause was unreachable and encoded a false contract belief.
     return send(template=ALERT_TEMPLATE, cls=ALERT_CLS, to_email=to_email,
                subject=c["subject"], html=html, text=text,
-               idem_key=alert_idem_key(fire_event_id, attempt=attempt), user_id=user_id)
+               idem_key=alert_idem_key(fire_event_id, attempt=attempt), user_id=user_id,
+               strict_ledger=True)

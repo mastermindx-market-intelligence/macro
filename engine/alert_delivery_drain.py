@@ -102,6 +102,9 @@ EFFECT_UNKNOWN = "effect_unknown"
 # the retry predicate and THIS string carries the truth: not an ordinary failure, an
 # unresolved uncertainty that wants an operator, not a retry.
 EFFECT_UNKNOWN_LAST_ERROR = "effect_unknown_after_smtp"
+SELECTOR_NO_MATCH = "selector_no_match"
+SELECTOR_MULTIPLE_MATCH = "selector_multiple_match"
+SELECTOR_MISMATCH = "selector_mismatch"
 
 # How old a marker must be before its writer is presumed gone. DERIVED, not guessed:
 # ``app/mailer.py`` can spend at most ``_SEND_ATTEMPTS`` (2) x six socket operations x
@@ -272,6 +275,7 @@ class AlertPrefs:
     quiet: tuple | None
     quiet_note: str | None
     lang: str
+    categories_note: str | None = None
 
 
 def _parse_quiet(value) -> tuple:
@@ -302,13 +306,22 @@ def parse_alert_prefs(meta: dict | None) -> AlertPrefs | None:
     optin_raw = meta.get("alert_email_optin")
     email_optin = optin_raw is True or optin_raw in ("true", "1", "on")
     cats = meta.get("alert_categories")
-    categories = tuple(cats) if isinstance(cats, (list, tuple)) else None
+    if cats is None:
+        categories, categories_note = None, None
+    elif isinstance(cats, (list, tuple)) and all(
+            isinstance(category, str) and category.strip() for category in cats):
+        categories, categories_note = tuple(category.strip() for category in cats), None
+    else:
+        # A malformed stored value must not widen delivery to every category.  Keep
+        # the parse typed so decide_row can count it as unevaluable.
+        categories, categories_note = None, "unparsed"
     tz = meta.get("tz") or "UTC"
     tz_source = "user" if meta.get("tz") else "default_utc"
     quiet, quiet_note = _parse_quiet(meta.get("quiet_hours"))
     lang = meta.get("lang") if meta.get("lang") in ("en", "zh") else "en"
     return AlertPrefs(email_optin=email_optin, categories=categories, tz=tz,
-                      tz_source=tz_source, quiet=quiet, quiet_note=quiet_note, lang=lang)
+                      tz_source=tz_source, quiet=quiet, quiet_note=quiet_note, lang=lang,
+                      categories_note=categories_note)
 
 
 # --------------------------------------------------------------------------- #
@@ -340,14 +353,18 @@ def fetch_user_record(user_id: str) -> tuple:
 # Quiet hours -- user tz, never NY (F08 freeze section 3/8)
 # --------------------------------------------------------------------------- #
 def quiet_decision(now_utc: datetime, prefs: AlertPrefs) -> tuple:
-    """('send', None) or ('defer', <window-open instant, UTC>)."""
+    """('send', None), ('defer', <window-open instant, UTC>), or unevaluable.
+
+    UTC is the explicit default only when the user has no stored timezone.  An invalid
+    stored timezone paired with quiet hours is not silently reinterpreted as UTC.
+    """
     if not prefs.quiet:
         return "send", None
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
     try:
         tz = ZoneInfo(prefs.tz)
-    except (ZoneInfoNotFoundError, ValueError, KeyError):
-        tz = ZoneInfo("UTC")
+    except (ZoneInfoNotFoundError, ValueError, KeyError, TypeError):
+        return "unevaluable", None
     local = now_utc.astimezone(tz)
     minute_of_day = local.hour * 60 + local.minute
     start_m, end_m = prefs.quiet
@@ -434,8 +451,13 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if not prefs.email_optin:
         return Decision(action="suppress", reason="not_opted_in", to_email=to_email, lang=prefs.lang)
     payload = row.get("payload") or {}
-    category = payload.get("category")
-    if prefs.categories is not None and category is not None and category not in prefs.categories:
+    category = payload.get("category") if isinstance(payload, dict) else None
+    if not isinstance(category, str) or not category.strip():
+        return Decision(action="unevaluable", reason="category_missing")
+    category = category.strip()
+    if prefs.categories_note == "unparsed":
+        return Decision(action="unevaluable", reason="alert_categories_unparsed")
+    if prefs.categories is not None and category not in prefs.categories:
         return Decision(action="suppress", reason="category_filtered", to_email=to_email, lang=prefs.lang)
     if suppression.state == READ_UNAVAILABLE:
         return Decision(action="unevaluable", reason="address_suppression_unavailable")
@@ -454,6 +476,8 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
         # surface it as unevaluable (typed, counted, visible in the run receipt).
         return Decision(action="unevaluable", reason="quiet_hours_unparsed")
     action, deliver_after = quiet_decision(now_utc, prefs)
+    if action == "unevaluable":
+        return Decision(action="unevaluable", reason="quiet_hours_timezone_invalid")
     if action == "defer":
         return Decision(action="defer", reason="quiet_hours", deliver_after=deliver_after,
                         to_email=to_email, lang=prefs.lang)
@@ -588,10 +612,21 @@ class DrainResult:
     error_class: str | None
     run_id: str | None
     receipt_written: bool
+    selector_state: str | None = None
+
+
+def _selector_failure(state: str, *, read_state: str) -> DrainResult:
+    """A canary selector failed cardinality/identity checks before any effect."""
+    return DrainResult(outcome="failure", evaluated_n=0, fired_n=0, unevaluable_n=0,
+                       deferred_n=0, suppressed_n=0, failed_n=0,
+                       category_unfiltered_n=0, duplicate_n=0, effect_unknown_n=0,
+                       in_flight_n=0, read_state=read_state, error_class=state,
+                       run_id=None, receipt_written=False, selector_state=state)
 
 
 def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None,
-         limit: int = 200, dry_run: bool = False) -> DrainResult:
+         limit: int = 200, dry_run: bool = False,
+         fire_event_id: str | None = None) -> DrainResult:
     """Drain one batch. NEVER raises for a delivery reason.
 
     ``send_fn(fire_event_id=..., to_email=..., payload=..., lang=..., user_id=...,
@@ -607,17 +642,55 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
     A 'failed' row is re-selected only while ``attempts < ALERT_RETRY_ATTEMPTS_CAP`` --
     once capped it stays 'failed' but drops out of the ``or=(...)`` predicate below, so
     it is never retried again and never silently reappears as unaccounted-for.
+
+    ``fire_event_id`` is the canary lane. It is applied server-side and forces a
+    two-row read so cardinality can be proven. Before opening a run receipt or touching
+    user state, preferences, SMTP, or an outbox row, the result must contain exactly
+    one row whose returned identity exactly matches the requested value.
     """
+    if fire_event_id is not None and not str(fire_event_id).strip():
+        raise ValueError("fire_event_id selector must not be blank")
+
     now_utc = now_utc or datetime.now(timezone.utc)
     now_iso = now_utc.isoformat()
 
+    selector_filter = ""
+    read_limit = int(limit)
+    if fire_event_id is not None:
+        selector_filter = ("&fire_event_id=eq."
+                           + urllib.parse.quote(str(fire_event_id), safe=""))
+        read_limit = 2
+
     outbox_read = typed_get(
         "alert_outbox?channel=eq.email"
+        f"{selector_filter}"
         "&or=(status.eq.pending,"
         f"and(status.eq.failed,attempts.lt.{int(ALERT_RETRY_ATTEMPTS_CAP)}),"
         f"and(status.eq.deferred,deliver_after.lte.{urllib.parse.quote(now_iso)}))"
         "&select=id,user_id,alert_id,fire_event_id,status,payload,attempts,deliver_after"
-        f"&order=created_at.asc&limit={int(limit)}")
+        f"&order=created_at.asc&limit={read_limit}")
+
+    # Canary validation happens before the receipt is opened. A selector that is
+    # unreadable, ambiguous, absent, or contradicted by the returned identity has no
+    # permitted effect beyond this one bounded read.
+    if fire_event_id is not None:
+        if outbox_read.state == READ_UNAVAILABLE:
+            return DrainResult(outcome="failure", evaluated_n=0, fired_n=0,
+                               unevaluable_n=0, deferred_n=0, suppressed_n=0,
+                               failed_n=0, category_unfiltered_n=0, duplicate_n=0,
+                               effect_unknown_n=0, in_flight_n=0,
+                               read_state=READ_UNAVAILABLE,
+                               error_class=outbox_read.error_class, run_id=None,
+                               receipt_written=False)
+        selector_rows = outbox_read.rows or []
+        if not selector_rows:
+            return _selector_failure(SELECTOR_NO_MATCH, read_state=outbox_read.state)
+        if len(selector_rows) != 1:
+            return _selector_failure(SELECTOR_MULTIPLE_MATCH, read_state=outbox_read.state)
+        selector_row = selector_rows[0]
+        if (not isinstance(selector_row, dict)
+                or str(selector_row.get("fire_event_id")) != str(fire_event_id)):
+            return _selector_failure(SELECTOR_MISMATCH, read_state=outbox_read.state)
 
     run_uuid, run_id, wrote = (None, None, False) if dry_run else open_receipt(now_utc)
 

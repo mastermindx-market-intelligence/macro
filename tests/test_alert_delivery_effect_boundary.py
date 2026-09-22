@@ -208,6 +208,10 @@ class EstateDB:
                     raise RuntimeError("supabase 503")
             if key in self.email_log:
                 self.email_log[key].update(body or {})
+                if prefer == "return=representation":
+                    return [dict(self.email_log[key])]
+            elif prefer == "return=representation":
+                return []
             return None
         if method == "GET" and path.startswith("email_suppression"):
             return []
@@ -276,6 +280,7 @@ def _outbox_row(**kw):
                 status="pending", attempts=0, deliver_after=None, delivered_at=None,
                 last_error=None,
                 payload={"subject": "AAPL moved", "ticker": "AAPL",
+                         "category": "technical",
                          "summary_plain": "It moved a lot today.",
                          "condition_plain": "the price crossed your level",
                          "evidence_url": "https://example.com/e",
@@ -816,14 +821,11 @@ def test_engine_still_does_not_import_app():
 # logical alert twice, or lost one, before the fix named in its docstring.
 # ============================================================================ #
 def test_a_lost_insert_reply_does_not_disable_the_boundary(estate):
-    """BLOCKER: `_pg` translates only HTTP 409 into DuplicateKey and times out at 6s,
-    so an `email_log` INSERT that COMMITS server-side and then loses its reply leaves
-    a real claim row while `send()` believes the ledger is unreachable.
+    """An alert INSERT that commits but loses its reply never crosses SMTP.
 
-    If the marker is skipped in that state, the surviving row is a bare 'queued' --
-    which reads as provably-unsent -- and the next tick mints a fresh key and delivers
-    again. The marker must therefore be ATTEMPTED even when the claim is unconfirmed:
-    when the row is really there the write lands and the boundary holds after all.
+    The caller cannot distinguish this from a failure before commit.  Strict alert
+    delivery therefore refuses both, and the bounded drain later retries under a fresh
+    key.  The orphaned bare claim is safe because no transport was entered for it.
     """
     db, relay = estate
     key = mailer.alert_idem_key("fe1", attempt=0)
@@ -838,20 +840,70 @@ def test_a_lost_insert_reply_does_not_disable_the_boundary(estate):
     import app.mailer as m
     m._pg = insert_commits_then_loses_its_reply
     try:
-        relay.fault = "accept_then_die"
-        _tick(db, now=T0, expect_death=True)
+        _tick(db, now=T0)
     finally:
         m._pg = real_pg
-    relay.fault = None
 
-    assert len(relay.mailbox) == 1, "precondition: it was delivered"
-    assert drain.SMTP_ATTEMPT_MARKER in str(db.email_log[key].get("detail") or ""), (
-        "the marker must be attempted even when the claim is unconfirmed -- without it "
-        "the surviving row reads as provably-unsent and licenses a resend")
+    assert relay.sessions == []
+    assert relay.mailbox == []
+    assert drain.SMTP_ATTEMPT_MARKER not in str(db.email_log[key].get("detail") or "")
 
     for i in range(1, 5):
         _tick(db, now=T0 + timedelta(minutes=5 * i))
-    assert len(relay.mailbox) == 1, "a delivered alert was resent through the lost-reply path"
+    assert len(relay.mailbox) == 1, "the provably-unsent alert must retry exactly once"
+    assert db.outbox[0]["status"] == "sent"
+
+
+def test_alert_insert_failure_before_commit_never_crosses_smtp_and_is_bounded(estate):
+    db, relay = estate
+    real_pg = db.mailer_pg
+
+    def fail_before_commit(method, path, body=None, prefer=None, timeout=6):
+        if method == "POST" and path.startswith("email_log"):
+            raise RuntimeError("database unavailable before commit")
+        return real_pg(method, path, body, prefer, timeout)
+
+    mailer._pg = fail_before_commit
+    try:
+        _tick(db, now=T0)
+    finally:
+        mailer._pg = real_pg
+
+    assert db.email_log == {}
+    assert relay.sessions == [] and relay.mailbox == []
+    assert db.outbox[0]["status"] == "failed"
+    assert db.outbox[0]["attempts"] == 1
+
+    _tick(db, now=T0 + timedelta(minutes=5))
+    assert len(relay.mailbox) == 1
+    assert db.outbox[0]["status"] == "sent"
+
+
+def test_alert_marker_patch_zero_matches_never_crosses_smtp(estate):
+    db, relay = estate
+    real_pg = db.mailer_pg
+
+    def marker_matches_zero(method, path, body=None, prefer=None, timeout=6):
+        if (method == "PATCH" and path.startswith("email_log")
+                and (body or {}).get("status") == "queued"):
+            assert prefer == "return=representation"
+            return []
+        return real_pg(method, path, body, prefer, timeout)
+
+    mailer._pg = marker_matches_zero
+    try:
+        _tick(db, now=T0)
+    finally:
+        mailer._pg = real_pg
+
+    assert relay.sessions == ["smtp.example.com:587"]  # marker follows connect/AUTH
+    assert relay.mailbox == [], "zero matched marker rows must stop before SMTP DATA"
+    assert db.outbox[0]["status"] == "failed"
+    assert db.outbox[0]["attempts"] == 1
+
+    _tick(db, now=T0 + timedelta(minutes=5))
+    assert len(relay.mailbox) == 1
+    assert db.outbox[0]["status"] == "sent"
 
 
 def test_b_quit_anomaly_cannot_destroy_an_in_flight_uncertainty(estate):

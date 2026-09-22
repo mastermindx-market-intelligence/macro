@@ -126,6 +126,9 @@ class _Ledger:
             return None
         if method == "PATCH" and path.startswith("email_log"):
             self.patches.append((path, body or {}))
+            key = path.split("idem_key=eq.", 1)[1].split("&", 1)[0]
+            if prefer == "return=representation":
+                return [dict(body or {})] if key in self.keys else []
             return None
         if method == "GET" and path.startswith("email_suppression"):
             self.lookups.append(path)
@@ -226,6 +229,35 @@ def test_ledger_outage_still_sends_without_idempotency(wired, monkeypatch):
     monkeypatch.setattr(mailer, "_pg", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("no key")))
     assert _send() == "sent"
     assert len(smtp.connections) == 1
+
+
+def test_strict_ledger_refuses_transport_when_claim_is_unconfirmed(wired, monkeypatch):
+    """Alert mode fails closed whether an INSERT failed before commit or lost its reply."""
+    _, smtp = wired
+    _mail_on(monkeypatch)
+    monkeypatch.setattr(mailer, "_pg",
+                        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("no reply")))
+    assert _send(strict_ledger=True) == "failed"
+    assert smtp.connections == []
+
+
+@pytest.mark.parametrize("returned_rows", [[], [{"id": 1}, {"id": 2}]])
+def test_attempt_marker_requires_exactly_one_match_before_smtp_data(
+        wired, monkeypatch, returned_rows):
+    """A 2xx marker PATCH is durable only when exactly one claimed row matched."""
+    led, smtp = wired
+    _mail_on(monkeypatch)
+    real_pg = led.pg
+
+    def zero_marker(method, path, body=None, prefer=None, timeout=6):
+        if method == "PATCH" and (body or {}).get("status") == "queued":
+            return returned_rows
+        return real_pg(method, path, body, prefer, timeout)
+
+    monkeypatch.setattr(mailer, "_pg", zero_marker)
+    assert _send(strict_ledger=True) == "failed"
+    assert len(smtp.connections) == 1  # marker is deliberately written after AUTH
+    assert smtp.connections[0]["messages"] == []  # but the message never crosses DATA
 
 
 def test_missing_idem_key_is_refused(wired, monkeypatch):
