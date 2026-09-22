@@ -3,6 +3,22 @@ from __future__ import annotations
 from engine import market_state as ms
 
 
+ASOF = "2026-09-18"
+
+
+def _fresh(*, asof: str = ASOF, vintage_asof: str | None = None, stale: bool = False) -> dict:
+    return {
+        "market": "us",
+        "asof": asof,
+        "input_vintages": {
+            "pct_above_200": {
+                "asof": vintage_asof or asof,
+                "stale": stale,
+            }
+        },
+    }
+
+
 def _leg(key: str, score: int) -> dict:
     return {
         "key": key,
@@ -32,8 +48,8 @@ def _risk_on_components(breadth: int) -> list[dict]:
 def test_us_risk_on_with_weak_breadth_is_selective_not_broad():
     comps = _risk_on_components(0)
 
-    scope = ms._participation_scope("RISK_ON", comps, market="us")
-    headline = ms._headline_for("RISK_ON", comps, market="us")
+    scope = ms._participation_scope("RISK_ON", comps, **_fresh())
+    headline = ms._headline_for("RISK_ON", comps, **_fresh())
 
     assert scope["state"] == "selective"
     assert scope["participation"] == "weak"
@@ -49,8 +65,8 @@ def test_us_risk_on_with_weak_breadth_is_selective_not_broad():
 def test_us_risk_on_with_uneven_breadth_is_selective():
     comps = _risk_on_components(50)
 
-    scope = ms._participation_scope("RISK_ON", comps, market="us")
-    headline = ms._headline_for("RISK_ON", comps, market="us")
+    scope = ms._participation_scope("RISK_ON", comps, **_fresh())
+    headline = ms._headline_for("RISK_ON", comps, **_fresh())
 
     assert scope["state"] == "selective"
     assert scope["participation"] == "uneven"
@@ -62,8 +78,8 @@ def test_us_risk_on_with_uneven_breadth_is_selective():
 def test_us_risk_on_with_supportive_breadth_is_broad():
     comps = _risk_on_components(75)
 
-    scope = ms._participation_scope("RISK_ON", comps, market="us")
-    headline = ms._headline_for("RISK_ON", comps, market="us")
+    scope = ms._participation_scope("RISK_ON", comps, **_fresh())
+    headline = ms._headline_for("RISK_ON", comps, **_fresh())
 
     assert scope["state"] == "broad"
     assert scope["participation"] == "supportive"
@@ -75,14 +91,43 @@ def test_us_risk_on_with_supportive_breadth_is_broad():
 def test_us_risk_on_with_missing_breadth_fails_closed():
     comps = [c for c in _risk_on_components(75) if c["key"] != "breadth"]
 
-    scope = ms._participation_scope("RISK_ON", comps, market="us")
-    headline = ms._headline_for("RISK_ON", comps, market="us")
+    scope = ms._participation_scope("RISK_ON", comps, **_fresh())
+    headline = ms._headline_for("RISK_ON", comps, **_fresh())
 
     assert scope["state"] == "unverified"
     assert scope["participation"] == "unverified"
     assert scope["breadth_score"] is None
     assert "participation is unverified" in headline[0]
     assert "Broad risk-on" not in headline[0]
+
+
+def test_breadth_truth_fails_closed_when_not_one_fresh_same_session_observation():
+    fresh = _fresh()
+    degraded = _risk_on_components(75)
+    degraded[2]["degraded"] = True
+    boolean_score = _risk_on_components(75)
+    boolean_score[2]["score"] = True
+    numeric_string = _risk_on_components(75)
+    numeric_string[2]["score"] = "75"
+
+    cases = [
+        ([c for c in _risk_on_components(75) if c["key"] != "breadth"], fresh),
+        (_risk_on_components(75) + [_leg("breadth", 80)], fresh),
+        (_risk_on_components(101), fresh),
+        (boolean_score, fresh),
+        (numeric_string, fresh),
+        (degraded, fresh),
+        (_risk_on_components(75), _fresh(stale=True)),
+        (_risk_on_components(75), _fresh(vintage_asof="2026-09-17")),
+        (_risk_on_components(75), {"market": "us", "asof": ASOF, "input_vintages": {}}),
+    ]
+    for comps, kwargs in cases:
+        scope = ms._participation_scope("RISK_ON", comps, **kwargs)
+        headline = ms._headline_for("RISK_ON", comps, **kwargs)
+        assert scope["state"] == "unverified"
+        assert scope["participation"] == "unverified"
+        assert "participation is unverified" in headline[0]
+        assert not headline[0].startswith(("Broad risk-on", "Selective risk-on"))
 
 
 def test_base_risk_on_fallback_never_claims_breadth_confirmation():
@@ -96,10 +141,10 @@ def test_base_risk_on_fallback_never_claims_breadth_confirmation():
 def test_non_risk_on_and_non_us_keep_existing_headline_contract():
     comps = _risk_on_components(0)
 
-    assert ms._participation_scope("MIXED", comps, market="us") is None
-    assert ms._headline_for("MIXED", comps, market="us") == ms._HEADLINES["MIXED"]
-    assert ms._participation_scope("RISK_ON", comps, market="cn") is None
-    assert ms._headline_for("RISK_ON", comps, market="cn") == ms._HEADLINES["RISK_ON"]
+    assert ms._participation_scope("MIXED", comps, **_fresh()) is None
+    assert ms._headline_for("MIXED", comps, **_fresh()) == ms._HEADLINES["MIXED"]
+    assert ms._participation_scope("RISK_ON", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) is None
+    assert ms._headline_for("RISK_ON", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) == ms._HEADLINES["RISK_ON"]
 
 
 def test_snapshot_keeps_score_and_verdict_while_exposing_selective_scope():
@@ -115,12 +160,18 @@ def test_snapshot_keeps_score_and_verdict_while_exposing_selective_scope():
         overrides=frozenset(),
     )
 
-    snap = ms.market_state_snapshot({"date": "2026-09-18"}, None, [], profile=profile)
+    latest = {
+        "date": ASOF,
+        "conditions": {"vintages": _fresh()["input_vintages"]},
+    }
+    snap = ms.market_state_snapshot(latest, None, [], profile=profile)
 
     assert snap is not None
     assert snap["raw_score"] >= 60
     assert snap["score"] == snap["raw_score"]
     assert snap["verdict"] == "RISK_ON"
+    assert snap["label_en"] == "Risk-on"
+    assert snap["posture_en"] == "Risk-on"
     assert snap["participation_scope"]["state"] == "selective"
     assert snap["participation_scope"]["breadth_score"] == 0
     assert snap["headline_en"].startswith("Selective risk-on")

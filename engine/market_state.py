@@ -481,31 +481,70 @@ _US_SCOPE_GUIDANCE = {
 }
 
 
-def _participation_scope(verdict: str, comps: list, *, market: str) -> dict | None:
+def _participation_scope(
+    verdict: str,
+    comps: list,
+    *,
+    market: str,
+    asof: str | None = None,
+    input_vintages: dict | None = None,
+) -> dict | None:
     """Display-only breadth qualifier for the US Risk-on band.
 
-    The 0-100 score and discrete verdict keep their existing authority. This helper
-    only answers whether participation justifies reading a US RISK_ON print as a
-    broad rally. The 42/60 boundaries deliberately reuse the component tone cuts
-    instead of introducing a second breadth model.
+    The score/verdict keep their existing authority. A numeric breadth value may
+    qualify Risk-on only when it is a single non-degraded leg whose canonical
+    pct_above_200 vintage is fresh and bound to the same settled session. Missing,
+    duplicated, malformed, stale, or cross-session breadth fails closed to
+    unverified; intraday clocks never re-date the settled observation.
     """
     if market != "us" or verdict != "RISK_ON":
         return None
-    breadth = next((c for c in (comps or []) if c.get("key") == "breadth"), None)
-    score = _num((breadth or {}).get("score"))
-    if score is None:
-        state, participation, score = "unverified", "unverified", None
+
+    breadth_rows = [
+        c for c in (comps or [])
+        if isinstance(c, dict) and c.get("key") == "breadth"
+    ]
+    breadth = breadth_rows[0] if len(breadth_rows) == 1 else None
+    raw_score = (breadth or {}).get("score")
+    numeric_score = (
+        isinstance(raw_score, (int, float, np.number))
+        and not isinstance(raw_score, (bool, np.bool_))
+    )
+    score = _num(raw_score) if numeric_score else None
+
+    vintages = input_vintages if isinstance(input_vintages, dict) else {}
+    vintage = (
+        vintages.get("pct_above_200")
+        if isinstance(vintages.get("pct_above_200"), dict)
+        else {}
+    )
+    breadth_asof = vintage.get("asof")
+    score_valid = score is not None and 0 <= score <= 100
+    verified = (
+        len(breadth_rows) == 1
+        and score_valid
+        and not bool((breadth or {}).get("degraded"))
+        and bool(asof)
+        and breadth_asof == asof
+        and vintage.get("stale") is False
+    )
+
+    if not verified:
+        state, participation = "unverified", "unverified"
+        score_out = int(round(score)) if score_valid else None
     else:
-        score = int(round(score))
+        score_out = int(round(score))
         if score >= 60:
             state, participation = "broad", "supportive"
         else:
             state = "selective"
             participation = "uneven" if score >= 42 else "weak"
+
     out = {
         "state": state,
         "participation": participation,
-        "breadth_score": score,
+        "breadth_score": score_out,
+        "breadth_asof": breadth_asof,
     }
     out.update(_US_SCOPE_GUIDANCE[(state, participation)])
     return out
@@ -535,8 +574,21 @@ _US_SCOPE_HEADLINES = {
 }
 
 
-def _headline_for(verdict: str, comps: list, *, market: str) -> tuple[str, str]:
-    scope = _participation_scope(verdict, comps, market=market)
+def _headline_for(
+    verdict: str,
+    comps: list,
+    *,
+    market: str,
+    asof: str | None = None,
+    input_vintages: dict | None = None,
+) -> tuple[str, str]:
+    scope = _participation_scope(
+        verdict,
+        comps,
+        market=market,
+        asof=asof,
+        input_vintages=input_vintages,
+    )
     if scope is None:
         return _HEADLINES[verdict]
     return _US_SCOPE_HEADLINES[(scope["state"], scope["participation"])]
@@ -1081,8 +1133,21 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
-        participation_scope = _participation_scope(verdict, comps, market=profile.key)
-        headline_en, headline_zh = _headline_for(verdict, comps, market=profile.key)
+        input_vintages = ((latest.get("conditions") or {}).get("vintages") or {})
+        participation_scope = _participation_scope(
+            verdict,
+            comps,
+            market=profile.key,
+            asof=latest.get("date"),
+            input_vintages=input_vintages,
+        )
+        headline_en, headline_zh = _headline_for(
+            verdict,
+            comps,
+            market=profile.key,
+            asof=latest.get("date"),
+            input_vintages=input_vintages,
+        )
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),
@@ -1113,7 +1178,7 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             # persist()'s freshness stamp can be derived from real store vintages instead of the
             # frame calendar it used to certify itself with. Empty on markets whose conditions
             # reader does not emit them.
-            "input_vintages": ((latest.get("conditions") or {}).get("vintages") or {}),
+            "input_vintages": input_vintages,
             "stale_inputs": ((latest.get("conditions") or {}).get("stale_inputs") or []),
             # which legs are running on fewer inputs than their label implies
             "degraded_components": [c["key"] for c in comps if c.get("degraded")],
