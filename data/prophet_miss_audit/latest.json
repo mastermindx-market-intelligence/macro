@@ -12,7 +12,7 @@
   "priority_score": "engine.us_prophet_grades' full-population grade store (H=10/21 sessions, excess vs SPY, next-bar fill) joined to the priority score the US Context Vector store stamped for that name on that night. Read-only: this audit recomputes neither the score nor the grade. EVERY stamped name is graded, so a pick's hit is judged against that night's whole universe, not against the picks alone."
  },
  "summary": {
-  "universe_n": 1496,
+  "universe_n": 1494,
   "eligible_today_n": 14,
   "top63_n": 150,
   "top63_eligible_today_n": 9,
@@ -20,7 +20,7 @@
   "top63_never_eligible_pct": 0.2333,
   "top63_eligible_days": {
    "n": 150,
-   "mean": 5.06,
+   "mean": 5.14,
    "p25": 2.0,
    "median": 6.0,
    "p75": 9.0,
@@ -28,7 +28,7 @@
    "max": 21.0
   },
   "top21_n": 50,
-  "top21_eligible_today_n": 8,
+  "top21_eligible_today_n": 9,
   "conversion_rate": 0.1652,
   "conversion_n": "19/115",
   "basket_misses_n": 0,
@@ -36,42 +36,42 @@
  },
  "top63_excluder_hist": {
   "not_topped_veto(stoch_bear+macd_bear)": 61,
-  "not_topped_veto(macd_bear)": 30,
+  "not_topped_veto(macd_bear)": 29,
   "not_topped_veto(stoch_ob)": 17,
   "not_topped_veto(stoch_ob+stoch_bear)": 15,
   "not_topped_veto(stoch_bear)": 13,
   "ELIGIBLE": 9,
-  "freshness_expired": 4,
+  "freshness_expired": 5,
   "rsi_cap_on_fresh_cross": 1
  },
  "top63_excluder_family_hist": {
-  "not_topped_veto": 136,
+  "not_topped_veto": 135,
   "ELIGIBLE": 9,
-  "freshness_expired": 4,
+  "freshness_expired": 5,
   "rsi_cap_on_fresh_cross": 1
  },
  "top21_excluder_hist": {
   "not_topped_veto(stoch_ob)": 18,
-  "ELIGIBLE": 8,
+  "ELIGIBLE": 9,
   "not_topped_veto(stoch_ob+stoch_bear)": 7,
-  "not_topped_veto(macd_bear)": 6,
+  "not_topped_veto(macd_bear)": 5,
   "not_topped_veto(stoch_bear+macd_bear)": 5,
   "not_topped_veto(stoch_bear)": 4,
   "freshness_expired": 1,
   "rsi_cap_on_fresh_cross": 1
  },
  "veto_leg_hist": {
-  "macd_bear": 91,
+  "macd_bear": 90,
   "stoch_bear": 89,
   "stoch_ob": 32
  },
  "runner_sector_hist": {
-  "Health Care": 54,
-  "Information Technology": 43,
+  "Health Care": 53,
+  "Information Technology": 42,
   "Energy": 17,
   "Industrials": 13,
-  "Financials": 10,
-  "Communication Services": 6,
+  "Financials": 11,
+  "Communication Services": 7,
   "Consumer Discretionary": 5,
   "Consumer Staples": 1,
   "Materials": 1
@@ -1576,7 +1576,7 @@
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
   "store_n": 21056,
-  "scan_n": 1535,
+  "scan_n": 1536,
   "runners_n": 150,
   "runners_eligible_today_n": 1,
   "runners_never_eligible_n": 21,
@@ -5469,38 +5469,6 @@
    "gate_near_miss": null
   },
   {
-   "ticker": "ILMN",
-   "r63_pct": 48.0,
-   "sector": "Health Care",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 3,
-   "first_eligible": "2026-08-25",
-   "fwd_ret_from_first_pct": 6.5,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": false,
-   "macd_bear": true,
-   "rsi_block": true,
-   "k3": 53.3,
-   "d3": 37.0,
-   "rsi3d": 71.5,
-   "t1_ticks": 6,
-   "t2_ticks": 63,
-   "t2raw_ticks": 0,
-   "recent3": true,
-   "veto_legs": [
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(macd_bear)",
-   "excluder_family": "not_topped_veto",
-   "gate_eligible": false,
-   "gate_tier": null,
-   "gate_near_miss": null
-  },
-  {
    "ticker": "GSHD",
    "r63_pct": 47.9,
    "sector": "Financials",
@@ -6200,39 +6168,6 @@
     "stoch_ob"
    ],
    "excluder": "not_topped_veto(stoch_ob)",
-   "excluder_family": "not_topped_veto",
-   "gate_eligible": false,
-   "gate_tier": null,
-   "gate_near_miss": null
-  },
-  {
-   "ticker": "P",
-   "r63_pct": 39.6,
-   "sector": "Information Technology",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 3,
-   "first_eligible": "2026-08-04",
-   "fwd_ret_from_first_pct": 24.09,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": true,
-   "macd_bear": true,
-   "rsi_block": false,
-   "k3": 36.2,
-   "d3": 37.6,
-   "rsi3d": 60.3,
-   "t1_ticks": 11,
-   "t2_ticks": 25,
-   "t2raw_ticks": 17,
-   "recent3": true,
-   "veto_legs": [
-    "stoch_bear",
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(stoch_bear+macd_bear)",
    "excluder_family": "not_topped_veto",
    "gate_eligible": false,
    "gate_tier": null,
@@ -9044,6 +8979,69 @@
    "gate_eligible": false,
    "gate_tier": null,
    "gate_near_miss": null
+  },
+  {
+   "ticker": "JKHY",
+   "r63_pct": 22.7,
+   "sector": "Financials",
+   "eligible_today": false,
+   "tier_today": NaN,
+   "days_eligible": 6,
+   "first_eligible": "2026-06-25",
+   "fwd_ret_from_first_pct": 20.31,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": true,
+   "macd_bear": true,
+   "rsi_block": false,
+   "k3": 15.9,
+   "d3": 26.1,
+   "rsi3d": 50.3,
+   "t1_ticks": 20,
+   "t2_ticks": 30,
+   "t2raw_ticks": 11,
+   "recent3": true,
+   "veto_legs": [
+    "stoch_bear",
+    "macd_bear"
+   ],
+   "excluder": "not_topped_veto(stoch_bear+macd_bear)",
+   "excluder_family": "not_topped_veto",
+   "gate_eligible": false,
+   "gate_tier": null,
+   "gate_near_miss": null
+  },
+  {
+   "ticker": "MTCH",
+   "r63_pct": 22.5,
+   "sector": "Communication Services",
+   "eligible_today": false,
+   "tier_today": NaN,
+   "days_eligible": 12,
+   "first_eligible": "2026-07-06",
+   "fwd_ret_from_first_pct": 15.29,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": false,
+   "rsi_block": false,
+   "k3": 75.3,
+   "d3": 69.8,
+   "rsi3d": 63.1,
+   "t1_ticks": 5,
+   "t2_ticks": 29,
+   "t2raw_ticks": 10,
+   "recent3": true,
+   "veto_legs": [],
+   "excluder": "freshness_expired",
+   "excluder_family": "freshness_expired",
+   "gate_eligible": false,
+   "gate_tier": null,
+   "gate_near_miss": null
   }
  ],
  "top21_runners": [
@@ -9906,35 +9904,6 @@
    "excluder_family": "not_topped_veto"
   },
   {
-   "ticker": "ILMN",
-   "r21_pct": 16.9,
-   "sector": "Health Care",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 3,
-   "first_eligible": "2026-08-25",
-   "fwd_ret_from_first_pct": 6.5,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": false,
-   "macd_bear": true,
-   "rsi_block": true,
-   "k3": 53.3,
-   "d3": 37.0,
-   "rsi3d": 71.5,
-   "t1_ticks": 6,
-   "t2_ticks": 63,
-   "t2raw_ticks": 0,
-   "recent3": true,
-   "veto_legs": [
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(macd_bear)",
-   "excluder_family": "not_topped_veto"
-  },
-  {
    "ticker": "HPQ",
    "r21_pct": 16.0,
    "sector": "Information Technology",
@@ -10474,6 +10443,33 @@
    ],
    "excluder": "not_topped_veto(stoch_bear+macd_bear)",
    "excluder_family": "not_topped_veto"
+  },
+  {
+   "ticker": "COHR",
+   "r21_pct": 10.4,
+   "sector": "Information Technology",
+   "eligible_today": true,
+   "tier_today": "T1",
+   "days_eligible": 12,
+   "first_eligible": "2026-08-12",
+   "fwd_ret_from_first_pct": -10.76,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": false,
+   "rsi_block": false,
+   "k3": 52.8,
+   "d3": 47.3,
+   "rsi3d": 50.6,
+   "t1_ticks": 2,
+   "t2_ticks": 16,
+   "t2raw_ticks": 5,
+   "recent3": true,
+   "veto_legs": [],
+   "excluder": "ELIGIBLE",
+   "excluder_family": "ELIGIBLE"
   }
  ],
  "eligible_today": [
