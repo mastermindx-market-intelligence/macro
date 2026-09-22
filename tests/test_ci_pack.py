@@ -3506,6 +3506,25 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
+    # home for tests/test_markets_regime_strip.py — its thematic neighbours
+    # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
+    # PR packs never plan. Curated for COVERAGE: its `paths:` are the measured
+    # 54-path import closure of the suite (scripts/build_markets.py pulls the
+    # collectors/ and engine.market_state chains), so exclusivity loses no
+    # owner and contract-delta stays at 0 introduced.
+    "markets-regime-strip",
+    # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
+    # gate:code home for tests/test_options_skew.py. The suite previously
+    # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
+    # the migration test was dark on every pull request. Curated for
+    # COVERAGE: paths are the measured import closure (options_skew,
+    # thetadata_store, the builder, and the validate_options_skew import
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
+    "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
