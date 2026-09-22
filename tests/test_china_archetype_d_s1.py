@@ -176,6 +176,33 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_mobile_section_index_improves_scanability_without_collapsing_depth() -> None:
+    assert 'class="cnx-links cnx-mobile-index"' in TPL
+    assert 'aria-label="China dashboard sections / 中国看板分区"' in TPL
+    for target in (
+        "cnx-focus-action",
+        "cnx-focus-markets",
+        "cnx-focus-drivers",
+        "cnx-focus-deep",
+        "cnx-focus-research",
+    ):
+        assert f'href="#{target}"' in TPL
+        assert f'id="{target}"' in TPL
+
+    for marker in (
+        "{{ t('Action & calendar','操作与日历') }}",
+        "{{ t('Markets & risk','市场与风险') }}",
+        "{{ t('Drivers & news','驱动与新闻') }}",
+        "{{ t('Deep context','深层背景') }}",
+    ):
+        assert marker in TPL
+
+    # Scanability is additive: the macro dashboard does not introduce a new
+    # cnx-* disclosure/collapse layer; unrelated stock-depth details may exist.
+    assert '<details class="cnx-' not in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
     assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
