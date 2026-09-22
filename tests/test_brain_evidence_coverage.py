@@ -44,6 +44,52 @@ def test_specialist_profile_has_no_deterministic_coverage_gate():
     assert ab._fast_required_evidence_families(profile) is None
 
 
+@pytest.mark.parametrize(
+    "gate_kwargs",
+    [
+        {"lane": "pro", "mode": "chat", "page": "", "internals_allowed": False},
+        {"lane": "fast", "mode": "research", "page": "", "internals_allowed": False},
+        {"lane": "fast", "mode": "chat", "page": "terminal", "internals_allowed": False},
+        {"lane": "fast", "mode": "chat", "page": "", "internals_allowed": True},
+    ],
+)
+def test_fast_evidence_gate_fail_open_boundaries(gate_kwargs):
+    visible = [{"name": "get_symbol_context"}, {"name": "get_curve_detail"}]
+    assert gw._fast_evidence_requirements(
+        visible,
+        QUESTION,
+        None,
+        **gate_kwargs,
+    ) is None
+
+
+def test_fast_evidence_gate_fails_open_when_required_witness_is_not_visible():
+    assert gw._fast_evidence_requirements(
+        [],
+        QUESTION,
+        None,
+        lane="fast",
+        mode="chat",
+        page="",
+        internals_allowed=False,
+    ) is None
+
+
+def test_self_contained_financial_profile_is_qualified_but_requires_no_external_evidence():
+    message = "Assume EPS is 5 and P/E is 20; what is the valuation in this scenario?"
+    profile = ab._question_profile(message, None)
+    assert profile.name == "self_contained_financial"
+    assert gw._fast_evidence_requirements(
+        [],
+        message,
+        None,
+        lane="fast",
+        mode="chat",
+        page="",
+        internals_allowed=False,
+    ) == {}
+
+
 def test_fast_family_schema_drift_fails_open(monkeypatch):
     profile = ab._question_profile(QUESTION, None)
     monkeypatch.setitem(
@@ -136,13 +182,15 @@ def test_streaming_fast_coverage_repair_retracts_premature_text(quiet_grounding)
     def dispatch(name, _params, *_args, **_kwargs):
         return {"ok": True, "source": name, "as_of": "2026-09-21T20:00:00Z"}
 
+    answer_out: list[str] = []
     with patch.object(gw, "_dispatch_brain_tool", side_effect=dispatch):
-        events = _drive_stream(root, client, QUESTION)
+        events = _drive_stream(root, client, QUESTION, answer_out=answer_out)
 
     assert len(client.stream_kwargs) == 3
     visible = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
     assert "Premature answer." not in visible
     assert "Covered final answer." in visible
+    assert answer_out == ["Covered final answer."]
 
 
 def test_contradiction_read_is_metadata_not_a_false_coverage_witness():
@@ -216,7 +264,13 @@ def test_negated_status_tokens_do_not_create_false_adverse_conditions():
         required,
         [(
             "get_curve_detail",
-            {"status": "no_conflict_not_stale_no_partial_gaps", "error": "no_error"},
+            {
+                "status": (
+                    "data_not_unavailable_unavailable_false_"
+                    "no_conflict_not_stale_no_partial_gaps"
+                ),
+                "error": "no_error",
+            },
         )],
     )
     row = receipt["families"][0]
@@ -272,10 +326,14 @@ def test_stream_repair_textless_end_turn_ships_evidence_gap_not_degraded_stub(qu
             _Resp([_Block("thinking", "")], "end_turn"),
         ]
     )
-    events = _drive_stream(root, client, QUESTION)
+    answer_out: list[str] = []
+    events = _drive_stream(root, client, QUESTION, answer_out=answer_out)
     visible = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
     done = [e for e in events if e.get("type") == "done"][-1]
     assert len(client.stream_kwargs) == 2
     assert "Premature answer." not in visible
     assert "Evidence status" in visible
     assert done.get("degraded") is False
+    assert len(answer_out) == 1
+    assert "Premature answer." not in answer_out[0]
+    assert "Evidence status" in answer_out[0]
