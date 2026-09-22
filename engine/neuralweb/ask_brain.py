@@ -661,7 +661,13 @@ def _fast_required_evidence_families(
     families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
     if not families:
         return None
-    return {name: _FAST_EVIDENCE_FAMILY_WITNESSES[name] for name in families}
+    required: dict[str, tuple[str, ...]] = {}
+    for name in families:
+        witnesses = _FAST_EVIDENCE_FAMILY_WITNESSES.get(name)
+        if witnesses is None:
+            return None
+        required[name] = witnesses
+    return required
 
 
 def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | None:
@@ -677,7 +683,13 @@ def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | Non
     families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
     if not families:
         return None
-    return _merge_seed_tools(*(_FAST_VISIBLE_TOOL_FAMILIES[name] for name in families))
+    tool_families: list[tuple[str, ...]] = []
+    for name in families:
+        tools = _FAST_VISIBLE_TOOL_FAMILIES.get(name)
+        if tools is None:
+            return None
+        tool_families.append(tools)
+    return _merge_seed_tools(*tool_families)
 
 
 def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
