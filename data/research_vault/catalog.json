@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T21:37:05.174432+00:00",
-  "count": 2665,
+  "generated_at": "2026-09-22T22:07:10.199279+00:00",
+  "count": 2666,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -129,6 +129,26 @@
         "Restructuring & Buyback Acceleration: FY26 earnings pressured by >€1bn FX/raw-material headwinds; buyback accelerated (€625m tranche) via balance sheet strength, with CMD (29-30 Sept) to define restructuring scope and mid-term margin targets.",
         "European Neue Klasse Validation: Record iX3 order book (>100k units) and margin parity with Gen6 batteries offset cost inflation; China pricing differences and workforce restructuring remain near-term risks.",
         "CMD Catalyst for Capital Allocation: Upcoming CMD (29-30 Sept) to set mid-term margin ambition and China profitability trajectory (lower cost base from 2028), driving near-term capital return strategy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uw3dozsfktm-d8c8dd",
+      "title": "AutoZone Inc. (AZO) First Take 4Q SSS were much softer than expected; EPS beat driven by tariff refunds",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:33Z",
+      "summary_points": [
+        "EPS Beat Distorted by Tariff Refunds: Reported 4Q EPS $56.05 (beat $54.11) driven by tariff refunds; excluding refunds, EPS ~$51.46 vs. estimate $54.11.",
+        "Margin Inflation from Refunds: Gross margin 53.3% (beat 51.3%) and EBIT margin 20.0% (beat 19.5%) inflated by tariff refunds; excluding refunds, gross margin ~51.9% and EBIT margin ~18.5%.",
+        "Robust Capital Allocation: $698mn share repurchase (vs.",
+        "GS $500mn) and strong EBIT margin (20.0%) signal disciplined capital allocation amid inventory growth +10% y/y."
       ],
       "tags": [],
       "tickers": [],
