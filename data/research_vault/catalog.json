@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T02:05:07.806915+00:00",
-  "count": 2608,
+  "generated_at": "2026-09-22T02:36:17.010788+00:00",
+  "count": 2609,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -131,6 +131,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4rpywbeajvi-a3313f",
+      "title": "Monday Kick off",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:44:38Z",
+      "summary_points": [
+        "Central Bank Policy Shifts: Fed rate hike reinforcing credibility (10-yr yield <5.0%) and BoJ’s 1.25% rate with cautious guidance signal global policy normalization, weighing on yen and growth stocks.",
+        "Commodity & Geopolitical Tensions: Brent crude at $103.69 amid supply concerns; oil prices reflect easing geopolitical premium but US rate peak expectations add uncertainty.",
+        "EOM Exposure Shift: Global equity exposure reduced to 64% (from 83%) due to broad downgrades; regime score at 64% drives weaker exposure, with all indices except Shenzhen in “bear” mode.",
+        "Regional Factor Scores: US dominates with high regime (66) and flows (50) scores; Asia (Shenzhen index at 8) shows extreme weakness in flows (0) and low index levels, signaling US strength and Asia vulnerability.",
+        "Market Environment Indicator (MEI): Only three of eight conditions satisfied, implying reduced market resilience and heightened correction risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
