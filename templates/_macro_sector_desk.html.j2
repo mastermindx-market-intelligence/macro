@@ -2,7 +2,7 @@
    The card consumes a full-population, source-dated descriptive velocity view. #}
 {%- set _desk = (sector_heat.get('desk') or {}) if (sector_heat is defined and sector_heat) else {} -%}
 {%- set _leader = _desk.get('leader') -%}
-<a id="macro-sector-desk" class="wnx-card" style="--wnx-c:var(--isle-evidence)"
+<a id="macro-sector-desk" class="wnx-card" style="--wnx-c:var(--isle-evidence);"
    href="{{ (_desk.get('href') or 'sector_central.html') | e }}"
    data-desk-status="{{ (_desk.get('status') or 'unavailable') | e }}"
    {% if _leader %}data-desk-id="{{ _leader.id | e }}"
