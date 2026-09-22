@@ -50,6 +50,27 @@ def test_deep_dashboard_keeps_major_clickthrough_dialogs() -> None:
         assert dialog_id in TPL
 
 
+def test_dialog_triggers_expose_controls_to_assistive_tech() -> None:
+    for dialog_id in (
+        "cnx-dlg-markets",
+        "cnx-dlg-playbook",
+        "cnx-dlg-events",
+        "cnx-dlg-risk",
+        "cnx-dlg-sentiment",
+        "cnx-dlg-sector",
+        "cnx-dlg-policy",
+        "cnx-dlg-flows",
+        "cnx-dlg-news",
+        "cnx-dlg-property",
+        "cnx-dlg-aibrief",
+        "cnx-dlg-alerts",
+    ):
+        assert f'aria-controls="{dialog_id}"' in TPL
+
+    # Every explicit dialog trigger should advertise the popup relationship.
+    assert TPL.count('aria-haspopup="dialog"') >= 12
+
+
 def test_dashboard_header_keeps_effective_date_visible() -> None:
     assert (
         '<div class="cnx-secbar"><b>{{ t(\'CHINA DASHBOARD\',\'中国看板\') }}</b>'
