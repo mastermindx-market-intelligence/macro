@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T22:37:37.352617+00:00",
-  "count": 2668,
+  "generated_at": "2026-09-22T23:22:27.406632+00:00",
+  "count": 2670,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,45 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-g9h7iunik4a-f14141",
+      "title": "Emerging market bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:33:42Z",
+      "summary_points": [
+        "Geopolitical & policy pressures dominate sukuk dynamics: Elevated oil prices, Strait of Hormuz disruptions, and September Fed/ECB/BoJ rate hikes drove yield volatility; Saudi USD 3.25bn sukuk oversubscribed 5x despite JPMorgan MECI Sukuk Index returning only 0.3%.",
+        "Credit concentration risk critical: Islamic Development Bank (12 issuers), Qatar Islamic Bank (5), and Indonesia (15 issuers, 10/15 Baa2/BBB) dominate; 90% of Saudi sukuk rated \"fair\" but EU investors face MiFID/PRIIPS restrictions.",
+        "Sovereign valuation risks signal portfolio shifts: Bahrain, Egypt, UAE, and Turkey show \"Expense\" ratings (total return below average due to credit risk), indicating divergent market risk perceptions for sovereign bonds.",
+        "CIO valuation framework guides allocation: \"Preferred\" (attractive valuation vs peers), \"Core\" (liquid, stable credit), and \"Avoid\" (less attractive) categories directly inform bond selection beyond credit ratings."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wbsaxpmzkwt-3b0a76",
+      "title": "USDSGD",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:32:17Z",
+      "summary_points": [
+        "USD SGD Target: 1.25 by Sept 2027, underpinned by MAS tightening (1.5% NEER appreciation), SGD resilience, and repriced Fed expectations implying softer USD.",
+        "SGD Policy Drivers: MAS policy (1.5% NEER increase, 4.5-5.5% GDP growth, firm inflation) and Fed hike pricing (Dec 2026) driving SORA rate hikes to 1.3% through 2027.",
+        "Bond Yield Risk: 10-year Singapore bond yield raised to 2.5% (from 2.1%) due to elevated oil prices, fiscal sustainability concerns, and AI-linked bond issuance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-tizdevlqjtq-9a0ceb",
       "title": "GS Equities Color US EQUITIES COLOR CONSUMER INERTIA 22 Sep 2026",
