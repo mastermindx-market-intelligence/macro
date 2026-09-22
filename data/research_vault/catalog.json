@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T11:20:38.912957+00:00",
-  "count": 2635,
+  "generated_at": "2026-09-22T12:05:43.195046+00:00",
+  "count": 2637,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -62,6 +62,7 @@
     "Nuveen",
     "One River",
     "PNC",
+    "Piper Sandler",
     "RBC",
     "Rabobank",
     "Raymond James",
@@ -96,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-4zyqktnbhxh-4e9797",
+      "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:47Z",
+      "summary_points": [
+        "KOSPI Flow Reversal: Local net sellers (-US$1,182mn) overwhelmed foreign buyers (-US$34mn), reversing AM joint buying; tech sector dipped as institutional bids cooled post-gain.",
+        "Semiconductor Divergence: SEC (+0.9%) outperformed SK HYNIX (-1.5%) amid META AI hype; foreign buyers in SEC vs. sellers in SK HYNIX, with technical resistance at 100DMAs.",
+        "Nuclear Catalyst: HD E&C (+4.5%) surged on US Westinghouse stake talks (5-10%) and S.",
+        "Korea nuclear project plans (gas/LNG), driven by local institutional/retail buying."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nv8h2kfaxkk-465160",
       "title": "JPM Delta One Flows",
@@ -415,6 +436,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wabnep7ud4y-b995a9",
+      "title": "dcm092126",
+      "institution": "Piper Sandler",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:59:48Z",
+      "summary_points": [
+        "Yield Spread Collapse: Sharp decline in Leveraged Loan & HY Yield Spread (200 bps to near 0) signals imminent market correction risk, critical for tactical positioning.",
+        "Loan Fund Outflows: $2.483B net outflows from leveraged loan funds, indicating severe liquidity stress and risk aversion among investors.",
+        "Leveraged Loan Contraction: 13.5% YoY decline in Total Leveraged Loans (SMM), reflecting reduced appetite for riskier debt amid economic uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
