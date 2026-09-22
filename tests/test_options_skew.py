@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import json  # noqa: E402
+from datetime import date  # noqa: E402
 
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
@@ -255,3 +256,228 @@ def test_fwd_ic_hac_t_is_finite_not_nan():
         "This indicates the t_hac key is still wrong (ic_summary returns 't_hac', "
         "not 't' or 'hac_t')."
     )
+
+
+# --------------------------------------------------------------------------- #
+# A-F03-W2-1b — ledger upsert, accrue/emit split, legacy pin on render hosts
+# --------------------------------------------------------------------------- #
+
+def _patch_dirs(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    site = tmp_path / "site"
+    data.mkdir()
+    site.mkdir()
+    monkeypatch.setattr("lib.config.data_dir", lambda: data)
+    monkeypatch.setattr("lib.config.site_dir", lambda: site)
+    monkeypatch.delenv(S._LEGACY_CHAIN_ENV, raising=False)
+    return data, site
+
+
+def _ledger_row(underlying, date, skew, source=None):
+    row = {
+        "date": date,
+        "underlying": underlying,
+        "asof": date,
+        "spot": 100.0,
+        "tenor_days": 30.0,
+        "otm_put_iv": round(0.30 + skew, 4),
+        "atm_call_iv": 0.30,
+        "skew": skew,
+        "n_strikes": 8,
+    }
+    if source is not None:
+        row["source"] = source
+    return row
+
+
+def _sha256(path):
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_snapshot_upsert_canonical_wins_and_atomic_write(tmp_path, monkeypatch):
+    """Missing source reads as polygon_gex; theta replaces it; polygon never replaces theta.
+
+    The write goes through os.replace in the ledger's own directory. A failed
+    temp write leaves the previous bytes in place.
+    """
+    import os
+
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    pd.DataFrame([_ledger_row("XYZ", "2026-06-21", 0.10)]).to_parquet(ledger)
+
+    # No source column → treated as polygon_gex, so a polygon upsert replaces it.
+    replaced = S.snapshot(
+        today=date(2026, 6, 21),
+        chain=_chain("XYZ", put_iv=0.55, call_iv=0.30),
+        source="polygon_gex",
+    )
+    assert replaced == 1
+    after_polygon = pd.read_parquet(ledger)
+    assert list(after_polygon["source"]) == ["polygon_gex"]
+    assert after_polygon.iloc[0]["skew"] == pytest.approx(0.25, abs=1e-9)
+
+    # Theta replaces polygon for the same (date, underlying).
+    theta_n = S.snapshot(
+        today=date(2026, 6, 21),
+        chain=_chain("XYZ", put_iv=0.50, call_iv=0.30),
+        source="thetadata",
+    )
+    assert theta_n == 1
+    after_theta = pd.read_parquet(ledger)
+    assert after_theta.iloc[0]["source"] == "thetadata"
+    assert after_theta.iloc[0]["skew"] == pytest.approx(0.20, abs=1e-9)
+    pinned = _sha256(ledger)
+
+    calls = {}
+    real_replace = os.replace
+
+    def _spy(src, dst):
+        calls["src"] = str(src)
+        calls["dst"] = str(dst)
+        assert Path(src).parent == Path(dst).parent
+        real_replace(src, dst)
+
+    monkeypatch.setattr(os, "replace", _spy)
+    inserted = S.snapshot(
+        today=date(2026, 6, 21),
+        chain=_chain("AAA", put_iv=0.42, call_iv=0.30),
+        source="polygon_gex",
+    )
+    assert inserted == 1
+    assert calls["dst"] == str(ledger)
+    assert Path(calls["src"]).name.startswith(".snapshots.parquet.")
+    assert not Path(calls["src"]).exists()
+    both = pd.read_parquet(ledger)
+    by_name = {str(r.underlying): r for r in both.itertuples(index=False)}
+    assert by_name["XYZ"].source == "thetadata"
+    assert by_name["XYZ"].skew == pytest.approx(0.20, abs=1e-9)
+    assert by_name["AAA"].source == "polygon_gex"
+
+    # A polygon row must not replace the thetadata row, and must not rewrite the file.
+    pinned = _sha256(ledger)
+    blocked = S.snapshot(
+        today=date(2026, 6, 21),
+        chain=_chain("XYZ", put_iv=0.90, call_iv=0.30),
+        source="polygon_gex",
+    )
+    assert blocked == 0
+    assert _sha256(ledger) == pinned
+    still = pd.read_parquet(ledger)
+    xyz = still[still["underlying"].astype(str) == "XYZ"].iloc[0]
+    assert xyz["source"] == "thetadata"
+    assert xyz["skew"] == pytest.approx(0.20, abs=1e-9)
+
+    # A failed temp write must not replace the ledger.
+    pinned = _sha256(ledger)
+    real_to_parquet = pd.DataFrame.to_parquet
+
+    def _boom(self, path, *args, **kwargs):
+        if ".tmp" in Path(path).name:
+            raise OSError("temp write failed")
+        return real_to_parquet(self, path, *args, **kwargs)
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", _boom)
+    with pytest.raises(OSError, match="temp write failed"):
+        S.snapshot(
+            today=date(2026, 6, 22),
+            chain=_chain("BBB", put_iv=0.45, call_iv=0.30),
+            source="thetadata",
+        )
+    assert _sha256(ledger) == pinned
+    assert not any(p.name.endswith(".tmp") for p in ledger.parent.iterdir())
+
+
+def test_accrue_skips_unresolved_store_without_rewriting_ledger(tmp_path, monkeypatch, capsys):
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    pd.DataFrame([_ledger_row("XYZ", "2026-06-21", 0.10)]).to_parquet(ledger)
+    pinned = _sha256(ledger)
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: None
+    )
+    from scripts.build_options_skew import main
+
+    assert main(["--accrue"]) == 0
+    assert _sha256(ledger) == pinned
+    out = capsys.readouterr().out
+    assert any(
+        line.startswith("::warning title=options-skew-source::")
+        for line in out.splitlines()
+    )
+    # --emit of that same untouched ledger still renders the stored row.
+    assert main(["--emit"]) == 0
+    assert _sha256(ledger) == pinned
+
+
+def test_emit_renders_fixture_ledger_without_touching_the_chain(tmp_path, monkeypatch):
+    data, site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    pd.DataFrame([
+        _ledger_row("OLD", "2026-06-20", 0.01, source="polygon_gex"),
+        _ledger_row("XYZ", "2026-06-21", 0.10, source="polygon_gex"),
+    ]).to_parquet(ledger)
+    pinned = _sha256(ledger)
+
+    def _boom(*args, **kwargs):
+        raise AssertionError("emit constructed a chain provider")
+
+    monkeypatch.setattr("engine.thetadata_store.make_chain_provider", _boom)
+    monkeypatch.setattr(S, "_legacy_chain", _boom)
+    from scripts.build_options_skew import main
+
+    assert main(["--emit"]) == 0
+    assert _sha256(ledger) == pinned
+    payload = json.loads((site / "options_skew" / "latest.json").read_text())
+    assert payload["schema"] == "options_skew.v1"
+    assert payload["accrual_state"] == "ledger_only"
+    assert payload["ledger_asof"] == "2026-06-21"
+    assert set(payload["names"]) == {"XYZ"}
+    assert payload["names"]["XYZ"]["skew"] == pytest.approx(0.10, abs=1e-9)
+    assert payload["n"] == 1
+    for key in ("source", "source_state", "source_detail"):
+        assert key in payload
+
+
+def test_legacy_flag_reaches_legacy_path(tmp_path, monkeypatch):
+    _patch_dirs(monkeypatch, tmp_path)
+    monkeypatch.setenv(S._LEGACY_CHAIN_ENV, "1")
+    seen = {}
+
+    def _legacy():
+        seen["legacy"] = True
+        return _chain("XYZ", put_iv=0.40, call_iv=0.30)
+
+    def _boom(*args, **kwargs):
+        raise AssertionError("legacy flag still reached ThetaData")
+
+    monkeypatch.setattr(S, "_legacy_chain", _legacy)
+    monkeypatch.setattr("engine.thetadata_store.make_chain_provider", _boom)
+    from scripts.build_options_skew import main
+
+    assert main(["--accrue"]) == 0
+    assert seen.get("legacy") is True
+
+
+def test_render_workflows_pin_legacy_skew_source():
+    """The cutover to --emit is a visible edit: both render brun lines export the legacy flag."""
+    root = Path(__file__).resolve().parents[1]
+    for rel in (
+        ".github/workflows/engine-render.yml",
+        ".github/workflows/closing-bell.yml",
+    ):
+        lines = (root / rel).read_text().splitlines()
+        hits = [
+            i for i, line in enumerate(lines)
+            if "brun options_skew" in line and "scripts.build_options_skew" in line
+        ]
+        assert hits, rel
+        for i in hits:
+            window = "\n".join(lines[max(0, i - 6): i + 3])
+            assert "export OPTIONS_SKEW_LEGACY_CHAIN=1" in window, window
+            assert "A-F03-W2-1b (2026-09-22)" in window, window
+            assert "unset OPTIONS_SKEW_LEGACY_CHAIN" in window, window
