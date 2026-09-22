@@ -46,7 +46,8 @@ feeds the options-skew forward ledger (MO-PAID-013 F03).
                 ┌────────────────────────────────┐
                 │ step 4: python -m scripts.     │
                 │   publish_r2 --dirs            │
-                │   options_skew --no-manifest   │
+                │   options_skew                │
+                │   (writes manifest every run) │
                 │ → data/options_skew/ on R2     │
                 │   key prefix: options_skew/    │
                 └──────────────┬─────────────────┘
@@ -147,8 +148,10 @@ launchctl print gui/$(id -u)/com.macro.skewaccrual | head -40
 ```
 
 The plist is OFF by default until this command runs. Once bootstrapped, it
-fires weekdays at **04:30 PST / 05:30 PDT** (= 12:30 UTC, ~1 hour after the
-observed 11:30Z ThetaData EOD refresh).
+fires weekdays at **05:30 LOCAL** (= 13:30Z during PST / 12:30Z during PDT,
+both safely AFTER the observed 11:30Z ThetaData EOD refresh year-round).
+launchd has no UTC mode; the local time is the tightest safe point that
+buys at minimum one hour of headroom on either side of the DST switch.
 
 ### 3.4 First-run smoke (dry-run)
 
@@ -188,8 +191,12 @@ SKEW_FRESHNESS_BYPASS=1 \
     /Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh
 ```
 
-The publish leg uses `--no-manifest` on the first run (no remote manifest to
-shrink-guard against). Subsequent runs (steady state) write a manifest.
+The publish leg runs `python -m scripts.publish_r2 --dirs options_skew`
+with no manifest flag. The M1 ops host holds the FULL
+`data/options_skew/` tree (snapshots.parquet + tracked sidecars), so
+the publish_r2 manifest guard's shrink-guard cannot trip on a full
+tree. Every run writes a real manifest, which is what bulk consumers
+(`fetch_r2` / `audit_r2`) read for the freshness anchor.
 
 ### 3.6 Uninstall
 
@@ -214,7 +221,7 @@ Failure receipts name the failing step explicitly:
 | `ERROR: git fetch origin failed` | Network blip / GitHub rate limit | Wait 5 min and let the next scheduled launchd retry fire (ThrottleInterval 60) |
 | `ERROR: store resolve failed` | THETADATA_STORE points at a tree with no `eod/SPY/<YYYY>.parquet` | Confirm the store path; this is an operator-fixable path problem, NOT a stale-data retry condition |
 | `ERROR: store still not fresh after 6 attempts` | ThetaData EOD store did not refresh in 2 h | Check `com.macro.thetadata-r2sync` — that lane is the upstream producer and a missed nightly would cause this |
-| `ERROR: --accrue flag is unrecognized` | W2-1b has not landed on `origin/main` yet | Confirm `git ls-remote origin claude/mo-a-2-a-f03-w2-1`; this lane cannot run until W2-1b merges |
+| `ERROR: --accrue flag is unrecognized` (or W2-1b precheck rc=4) | W2-1b has not landed on `origin/main` yet | Confirm `git ls-remote origin claude/mo-a-2-a-f03-w2-1`; this lane cannot run until W2-1b merges |
 | `ERROR: build_options_skew --accrue failed` | Accrue step returned non-zero | Check the builder's own log; the runner does not modify the ledger on a non-zero exit |
 | `ERROR: publish_r2 --dirs options_skew failed` | R2 upload rejected (quota? bytes floor?) | Check `scripts/publish_r2._DATA_DIR_MIN_BYTES['options_skew']` (= 10_000) — a bare-tree publish would be refused |
 
@@ -272,7 +279,9 @@ All tests use `tmp_path` fixtures only — no real store / R2 / network access.
 | File | Asserts |
 |------|---------|
 | `tests/test_skew_accrual_gate.py` | `scripts/skew_accrual_gate.py` resolves fresh / stale / resolve-error / usage-error paths against a synthetic `eod/SPY/<YYYY>.parquet`; respects `--required-date` override; respects T+1 floor (T-1 calendar) |
-| `tests/test_skew_accrual_launchd.py` | Plist parses (plutil), pins runner path / env keys / schedule; runner script `sh -n` clean; ProgramArguments chain resolves to files that will exist in the dedicated checkout; refresh-checkout refuses on a dirty / stale tree; freshness gate retry loop honours bypass; accrue step fails loud with a named reason on `--accrue` unknown; dry-run skip publish_r2 |
+| `tests/test_skew_accrual_launchd.py` | Plist parses (plutil), pins runner path / env keys / schedule (Hour==5 after BLOCKER-4 fix); runner script `sh -n` clean; ProgramArguments chain resolves to files that will exist in the dedicated checkout; refresh-checkout refuses on a dirty / stale tree; freshness gate retry loop honours bypass; precheck step fails loud (rc=4) when `--accrue` is unknown; accrue step fails loud (rc=1) on a non-zero exit; verify-ledger step fails loud (rc=5) on missing/empty ledger; publish step fails loud (rc=1) on a non-zero exit; dry-run skip publish_r2; happy-path emits the documented line-start receipts |
+| `tests/test_skew_accrual_precheck.py` | RED-first tests for the W2-1b precheck helper: detects/accepts the literal `'--accrue'` token in `scripts/build_options_skew.py` source; refuses a docstring-only mention; CLI exit codes are load-bearing (0=ok, 4=flag-missing) |
+| `tests/test_skew_accrual_verify_ledger.py` | RED-first tests for the post-accrue ledger verifier: refuses missing/empty/zero-row parquets; exit codes are load-bearing (0=ok, 5=no-ledger) |
 | `tests/test_audit_options_skew_overlap.py` | Synthetic ledger + synthetic chain provider produces expected agreement numbers and the markdown receipt; `--limit N` caps the input; MISSING_ENGINE branch reports without crashing; bare/empty ledger reports honestly |
 
 ## 8. What this packet did NOT change
