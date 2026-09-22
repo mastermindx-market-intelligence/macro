@@ -1,29 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-22T18:55:27.609731+00:00",
-  "posts_seen": 15,
-  "seen_total": 220,
-  "evaluated": 3,
+  "as_of": "2026-09-22T22:14:25.610640+00:00",
+  "posts_seen": 9,
+  "seen_total": 221,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-22-first-lady-melania-trump-unveils-new-fostering-the-future-together-technology-al",
+      "id": "wh-2026-09-22-president-trump-inks-historic-arctic-security-agreement",
       "importance": 0,
       "activated": false,
       "degraded_reason": "served_by:codex"
-    },
-    {
-      "id": "wh-2026-09-22-president-trump-at-the-united-nations-while-others-have-talked-i-have-acted",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-22-agreement-between-the-government-of-the-united-states-of-america-and-the-governm",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
     }
   ]
 }
