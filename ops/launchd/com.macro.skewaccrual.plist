@@ -94,7 +94,19 @@
       "/Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh"
 
   LOG TAILING:
-    tail -f /tmp/skewaccrual.stdout.log /tmp/skewaccrual.stderr.log
+    tail -f /Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log \
+            /Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log
+
+  All run-state files (logs, receipts, locks, .skew_pre_rows) live under
+  /Users/chriswong/skew-ops-state — the SAME sibling state directory the
+  runner defaults to ($SKEW_STATE_DIR). launchd paths are literal (no
+  env-var expansion), so the destination is hardcoded to the default; if
+  the operator overrides $SKEW_STATE_DIR at install time they must update
+  StandardOutPath / StandardErrorPath to match. NEVER /tmp/* — the round-1
+  /tmp/skewaccrual.*.log pair was inside the disposable /tmp tree but the
+  launchd-managed files still outrank the runner's "all run-state files
+  live outside $REPO under a sibling state directory" contract, so both
+  halves of the contract now point at $SKEW_STATE_DIR.
 -->
 <plist version="1.0">
 <dict>
@@ -177,10 +189,10 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/tmp/skewaccrual.stdout.log</string>
+  <string>/Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log</string>
 
   <key>StandardErrorPath</key>
-  <string>/tmp/skewaccrual.stderr.log</string>
+  <string>/Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log</string>
 
   <key>KeepAlive</key>
   <false/>
