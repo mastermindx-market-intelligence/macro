@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T21:22:01.497046+00:00",
-  "count": 2664,
+  "generated_at": "2026-09-22T21:37:05.174432+00:00",
+  "count": 2665,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -154,6 +154,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-myupfoq2jra-432a53",
+      "title": "CATL (300750.SZ) ESS Open Day Takeaways Deepening Moat in the System Integration Transition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:09Z",
+      "summary_points": [
+        "System Integration Moat: CATL’s shift to full-stack system intelligence (chemistry, thermal management, BMS/EMS, grid simulation) creates defensible differentiation beyond cell quality, validated by 3,000+ BESS projects and 10,000+ annual cell tests, reducing system-level risk.",
+        "Sodium-Ion as Strategic Catalyst: CATL’s RMB 10bn sodium-ion investment targets low-maintenance, long-duration ESS via resource self-sufficiency (25-year wind PPA win), addressing lithium volatility and enabling grid-forming tech for AIDC load volatility (50-100% fluctuations).",
+        "IRR Impact from Performance Metrics: 5ppt outperformance across key metrics (e.g., 0-100% DoD vs industry 5-95%) delivers 47ppt IRR uplift, directly linking technical differentiation to portfolio returns.",
+        "Policy-Driven Volatility Risk: Battery tax negotiations cause near-term demand timing volatility despite 40-50% global ESS growth (2027), with finalized projects facing implementation hurdles.",
+        "ESVL Framework for Reliability: CATL’s empirical validation (ESVL) enables 20-year BESS reliability via full-system stress-testing, de-risking projects and shifting ESS from demonstration to predictable returns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
