@@ -164,3 +164,48 @@ tests/test_market_ontology_half_b_rights_docket.py: >-
   `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
   triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
   if a market-ontology-records CI step is ever commissioned.
+tests/test_skew_accrual_gate.py: >-
+  Records-only regression for the W2-2 freshness gate helper
+  (scripts/skew_accrual_gate.py). The helper is a single Python script that
+  reads only the `date` column of one SPY EOD shard and resolves the T-1
+  NYSE session via lib.nyse_calendar.expected_last_session(); it is
+  exercised end-to-end by the run_skew_accrual.sh runner on the M1 ops
+  host at 12:30Z daily. Listing this file in .github/ci/legacy-jobs.yml
+  is a global CI invalidator (full 194-job suite, ci-authority hit) and
+  the suite reads only the local THETADATA_STORE pointer — it does not
+  own a signal-contract or render subject. Run directly via
+  `python -m pytest tests/test_skew_accrual_gate.py -q` in CI triage /
+  local verification. Owner: META-CEO A, lane A-F03-W2-2. Delete this row
+  when a store-host-side ops CI step is commissioned.
+
+tests/test_skew_accrual_launchd.py: >-
+  Records-only regression for the W2-2 launchd lane (plist parses, runner
+  is sh-clean, publish_r2 registry registers options_skew). The lane is
+  loaded only when the operator explicitly bootstraps
+  ~/Library/LaunchAgents/com.macro.skewaccrual.plist on the M1 ops host
+  (off by default; install runbook in
+  research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md). Listing
+  this file in .github/ci/legacy-jobs.yml is a global CI invalidator
+  (full 194-job suite, ci-authority hit) and the suite does not own a
+  signal-contract or render subject — it pins plist shape, runner
+  syntax, and the publish_r2 options_skew registration only. Run
+  directly via
+  `python -m pytest tests/test_skew_accrual_launchd.py -q` in CI
+  triage / local verification. Owner: META-CEO A, lane A-F03-W2-2.
+  Delete this row when a store-host-side ops CI step is commissioned.
+
+tests/test_audit_options_skew_overlap.py: >-
+  Records-only regression for the W2-2 real-overlap audit tool
+  (scripts/audit_options_skew_overlap.py). The audit recomputes the
+  ThetaData skew against the legacy polygon_gex ledger rows and emits a
+  one-line JSON summary plus a markdown receipt; it is meant to be
+  re-runnable on a pre-W2-1b tree and uses a SKEW_AUDIT_FAKE_ENGINE=1
+  env-var hook for CI exercise. Listing this file in
+  .github/ci/legacy-jobs.yml is a global CI invalidator (full 194-job
+  suite, ci-authority hit) and the suite does not own a signal-contract
+  or render subject — it pins exit codes, MISSING_ENGINE branch shape,
+  delta_stats quantiles, and the receipt markdown shape only. Run
+  directly via
+  `python -m pytest tests/test_audit_options_skew_overlap.py -q` in CI
+  triage / local verification. Owner: META-CEO A, lane A-F03-W2-2.
+  Delete this row when a store-host-side ops CI step is commissioned.
