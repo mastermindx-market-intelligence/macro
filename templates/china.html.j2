@@ -2173,7 +2173,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</div>
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
-  <div class="cnx-rack2">
+  <div class="cnx-rack2" role="region" aria-labelledby="cnx-focus-action">
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
@@ -2222,7 +2222,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</div>
   <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-markets">
     {# Pullback Risk vs Top Stocks conditional #}
     {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
     {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
@@ -2383,7 +2383,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</div>
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-drivers">
     {# Policy Monitor card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
       <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
@@ -2450,7 +2450,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</div>
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-deep">
     {# Property card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
