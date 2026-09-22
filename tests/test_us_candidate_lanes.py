@@ -1738,3 +1738,34 @@ def test_rs_threshold_inference_refuses_wrong_schema_or_authority(tmp_path):
     }))
     with pytest.raises(ValueError):
         load_frozen_study(p)
+
+
+def test_direct_extension_challenger_matches_incumbent_atr_geometry():
+    import numpy as np
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_direct_extension_challenger import (
+        assert_live_extension_parity,
+    )
+
+    idx = pd.bdate_range("2024-01-02", periods=140)
+    base = np.linspace(80.0, 110.0, len(idx))
+    wiggle = np.sin(np.arange(len(idx)) / 5.0) * 1.7
+    lvl = pd.Series(base + wiggle, index=idx)
+    assert_live_extension_parity(lvl)
+
+
+def test_direct_extension_challenger_uses_frozen_rs_and_atr_boundaries():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_direct_extension_challenger import (
+        _cohort_states,
+    )
+
+    otherwise = pd.Series([True] * 6)
+    rs = pd.Series([0.74, 0.80, 0.80, 0.8499, 0.85, 0.80])
+    ext = pd.Series([1.49, 1.49, 1.50, 1.50, 1.00, float("nan")])
+    states = _cohort_states(otherwise, rs, ext)
+
+    assert states["rs085_atr_normal"].tolist() == [True, True, False, False, False, False]
+    assert states["rs085_atr_extended"].tolist() == [False, False, True, True, False, False]
+    assert states["middle_075_085_atr_normal"].tolist() == [False, True, False, False, False, False]
+    assert states["middle_075_085_atr_extended"].tolist() == [False, False, True, True, False, False]
