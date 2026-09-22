@@ -9,7 +9,7 @@ const root=path.join(__dirname,'..');
 const read=name=>fs.readFileSync(path.join(root,'research/reference_rethink_20260921',name),'utf8');
 const fixtureJSON=require('node:child_process').execFileSync(process.env.PYTHON||'python3',[path.join(__dirname,'fixtures/market-guide/compile_fixture.py')],{encoding:'utf8'});
 const fixture=()=>JSON.parse(fixtureJSON);
-function harness(url='https://review.invalid/reference.html',data=fixture()){
+function harness(url='https://review.invalid/reference.html',data=fixture(),options={}){
   let doc,context;
   class Element {
     constructor(tag){this.tagName=tag.toUpperCase();this.children=[];this.attrs={};this.dataset={};this.handlers={};this.parent=null;this.hidden=false;this.open=false;this._text='';this.value='';}
@@ -39,7 +39,8 @@ function harness(url='https://review.invalid/reference.html',data=fixture()){
     remove(){if(this.parent){this.parent.children=this.parent.children.filter(c=>c!==this);this.parent=null;}}
     prepend(...items){for(const item of items)item.parent=this;this.children=[...items,...this.children];}
   }
-  doc={body:new Element('body'),documentElement:{lang:'en',dataset:{theme:'light'}},createElement:tag=>new Element(tag)};
+  doc=Object.assign(new Element('document'),{body:new Element('body'),documentElement:new Element('html'),createElement:tag=>new Element(tag),title:'Macro dashboard'});
+  doc.documentElement.lang='en';doc.documentElement.setAttribute('data-theme','light');
   doc.querySelector=selector=>doc.body.querySelector(selector);
   doc.getElementById=id=>doc.body.querySelector('#'+id);
   doc.activeElement=doc.body;
@@ -53,7 +54,7 @@ function harness(url='https://review.invalid/reference.html',data=fixture()){
   };
   context.window=context;vm.createContext(context);vm.runInContext(read('guide-client.js'),context);vm.runInContext(read('guide-view.js'),context);
   const host=doc.getElementById('app'),dialog=doc.getElementById('help');
-  const app=context.MastermindGuideView.mount({host,dialog,manifest:data,ownerOrigin:context.location.origin});
+  const app=context.MastermindGuideView.mount({host,dialog,manifest:data,ownerOrigin:context.location.origin,...options});
   return {context,doc,host,dialog,app,history,click:e=>{assert.ok(e,'click target exists');e.fire('click');},find:(selector)=>host.querySelector(selector),all:(selector)=>host.all(selector),fire:type=>[...(handlers[type]||[])].forEach(fn=>fn())};
 }
 test('mounts three source-defined questions and preserves fallback until valid data',()=>{
@@ -126,4 +127,30 @@ test('back-forward handler rehydrates query and language without extra requests'
 });
 test('dispose removes owned listeners and restores the fallback',()=>{
  const h=harness();h.app.dispose();assert.equal(h.host.children.length,0);assert.equal(h.doc.getElementById('fallback').hidden,false);h.fire('popstate');assert.equal(h.host.children.length,0);
+});
+
+test('home does not instantiate a hidden full catalog before the user asks',()=>{
+ const h=harness();assert.equal(h.all('article').length,0);h.click(h.find('[data-browse]'));assert.ok(h.all('article').length>0);
+});
+test('Enter opens an exact alias, not an arbitrary search result',()=>{
+ const h=harness(),input=h.find('#search');input.value='Regime Badge';input.fire('input');input.fire('keydown',{key:'Enter'});assert.equal(h.find('h1').textContent,'Market Regime');
+});
+test('context-only mounting leaves the host title, URL, language and page controls alone',()=>{
+ const url='https://review.invalid/macro.html?desk=us#regime-radar';const h=harness(url,fixture(),{mode:'context'});
+ assert.equal(h.context.location.href,url);assert.equal(h.doc.title,'Macro dashboard');assert.equal(h.host.textContent,'');assert.equal(h.doc.documentElement.lang,'en');
+ assert.equal(h.doc.getElementById('language').handlers.click,undefined);assert.equal(h.history.length,0);
+});
+test('context help reads the same source and links to the full guide without seizing navigation',()=>{
+ const url='https://review.invalid/macro.html#regime-radar';const h=harness(url,fixture(),{mode:'context'});const opener=h.doc.getElementById('theme');
+ h.app.openHelp('risk-radar',opener);assert.equal(h.dialog.open,true);assert.equal(h.dialog.querySelector('#help-title').textContent,'Risk Radar');
+ assert.equal(h.dialog.querySelector('[data-entry-link="risk-radar"]').getAttribute('href'),'https://review.invalid/reference.html#risk-radar');
+ assert.equal(h.context.location.href,url);assert.equal(h.doc.title,'Macro dashboard');h.dialog.close();assert.equal(h.doc.activeElement,opener);
+});
+test('context help follows existing language events without changing the document title',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});h.app.openHelp('market-state-score',h.doc.body);
+ h.doc.documentElement.setAttribute('data-lang','zh');h.doc.fire('langchange');assert.equal(h.dialog.querySelector('#help-title').textContent,h.app.model.get('market-state-score').label.zh);
+ assert.equal(h.doc.title,'Macro dashboard');assert.match(h.dialog.querySelector('[data-entry-link="market-state-score"]').getAttribute('href'),/lang=zh/);
+});
+test('context mode rejects unsafe full-guide destinations before binding controls',()=>{
+ assert.throws(()=>harness('https://review.invalid/macro.html',fixture(),{mode:'context',guidePath:'//attacker.invalid/guide'}),/Unsafe/);
 });
