@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T11:51:15.147465+00:00",
-  "count": 2636,
+  "generated_at": "2026-09-22T12:05:43.195046+00:00",
+  "count": 2637,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-4zyqktnbhxh-4e9797",
+      "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:47Z",
+      "summary_points": [
+        "KOSPI Flow Reversal: Local net sellers (-US$1,182mn) overwhelmed foreign buyers (-US$34mn), reversing AM joint buying; tech sector dipped as institutional bids cooled post-gain.",
+        "Semiconductor Divergence: SEC (+0.9%) outperformed SK HYNIX (-1.5%) amid META AI hype; foreign buyers in SEC vs. sellers in SK HYNIX, with technical resistance at 100DMAs.",
+        "Nuclear Catalyst: HD E&C (+4.5%) surged on US Westinghouse stake talks (5-10%) and S.",
+        "Korea nuclear project plans (gas/LNG), driven by local institutional/retail buying."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nv8h2kfaxkk-465160",
       "title": "JPM Delta One Flows",
