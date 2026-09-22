@@ -3,7 +3,7 @@
   "source_path": "site/basketdata/baskets.json",
   "source_sha256": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
   "source_as_of": "2026-09-18",
-  "candidate_engine_sha256": "ea963a42c96946d88c26fafc654fbf89157cd905278f5c82fc7bc353782d3b5d",
+  "candidate_engine_sha256": "18dfb9bcbe030674b362262147dc6b77d9b8375a53f51c9188c5be892b800fcc",
   "policy_parity": {
     "cases": 10584,
     "mismatches": 0,
@@ -22,8 +22,8 @@
       "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
       "after": {
         "code": "relative_strength_limit",
-        "en": "Relative strength hits the entry limit; price stretch is not established.",
-        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89e6\u53ca\u6a21\u578b\u5165\u573a\u9650\u5236\uff1b\u8fd9\u4e0d\u4ee3\u8868\u4ef7\u683c\u5df2\u8fc7\u5ea6\u5ef6\u4f38\u3002"
+        "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89c4\u5219\u9650\u5236\u5165\u573a\uff1b\u8be5\u89c4\u5219\u5e76\u4e0d\u8861\u91cf\u4ef7\u683c\u504f\u79bb\u81ea\u8eab\u8d8b\u52bf\u7684\u5e45\u5ea6\u3002"
       },
       "base_reason": "relative_strength_limit"
     },
@@ -70,8 +70,8 @@
       "before_en": "In play but no fresh edge here \u2014 keep, don't chase.",
       "after": {
         "code": "relative_strength_limit",
-        "en": "Relative strength hits the entry limit; price stretch is not established.",
-        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89e6\u53ca\u6a21\u578b\u5165\u573a\u9650\u5236\uff1b\u8fd9\u4e0d\u4ee3\u8868\u4ef7\u683c\u5df2\u8fc7\u5ea6\u5ef6\u4f38\u3002"
+        "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+        "zh": "\u76f8\u5bf9\u5f3a\u52bf\u89c4\u5219\u9650\u5236\u5165\u573a\uff1b\u8be5\u89c4\u5219\u5e76\u4e0d\u8861\u91cf\u4ef7\u683c\u504f\u79bb\u81ea\u8eab\u8d8b\u52bf\u7684\u5e45\u5ea6\u3002"
       },
       "base_reason": "relative_strength_limit"
     },

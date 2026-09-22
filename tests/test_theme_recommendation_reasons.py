@@ -48,8 +48,11 @@ def test_relative_outperformance_is_not_called_absolute_extension():
     assert legacy == ("hold", "relative_strength_limit")
     assert measured == ("accumulate", "leading_checks_clear")
     explanation = ts._recommendation_explanation(*legacy)
-    assert "Relative strength" in explanation["en"]
-    assert "not established" in explanation["en"]
+    assert "Relative-strength filter" in explanation["en"]
+    assert "does not measure" in explanation["en"]
+    # Another canonical texture can independently show genuine price extension.
+    # This explanation must bound THIS filter, not deny that separate evidence.
+    assert "price stretch is not established" not in explanation["en"]
     assert "相对" in explanation["zh"]
     assert "price_extension" != explanation["code"]
 
@@ -218,3 +221,158 @@ def test_legacy_relative_strength_texture_is_not_presented_as_price_stretch(path
     assert "very extended (RS ≥95%ile)" not in source
     assert "not an own-price extension measure" in source
     assert "${L('WAIT FOR ENTRY','等待入场')}" in source
+
+
+# Real-source attribution reuses the native owner; this suite is already in CI.
+def _entry_audit_fixture(rs=.845, accel=.5, pct50=.8):
+    import numpy as np
+    import pandas as pd
+    from engine import basket_score
+    dates = pd.bdate_range(end="2026-09-18", periods=300)
+    level = pd.Series(np.linspace(100, 150, 300), index=dates)
+    level.iloc[-1] = 145
+    fp = {"accel_z": accel, "rs_pctile": rs}
+    breadth = {"pct50": pct50, "nh": 1, "nl": 0}
+    stored = basket_score.clean_entry(level, fp, breadth, basket_score._rsi(level))
+    row = {"id": "test_theme", "name": "Test theme", "n_members": 5,
+           "reco": "accumulate", **fp, "breadth": breadth,
+           "textures": {"clean_entry": stored}}
+    payload = {"as_of": "2026-09-18", "theme_intel": {"as_of": "2026-09-18", "themes": [row]},
+               "chart": {"dates": dates.strftime("%Y-%m-%d").tolist(),
+                         "baskets": {"test_theme": level.tolist()}}}
+    extension = {"as_of": "2026-09-18", "region": "us", "themes": [
+        {"id": "test_theme", "atr_ext": .9, "band_en": "normal", "n_live": 5}]}
+    return payload, extension
+
+
+def _entry_audit(payload, extension=None):
+    from research.sector_pulse.recommendation_reasons_20260921.audit_entry import audit
+    return audit(payload, extension)
+
+
+def test_native_entry_audit_identifies_a_veto_without_changing_the_input():
+    payload, extension = _entry_audit_fixture()
+    before = deepcopy((payload, extension))
+    result = _entry_audit(payload, extension)
+    row = result["records"][0]
+    assert row["attribution"] == "relative_strength_veto_only"
+    assert not row["native_entry"]["flag"] and row["research_counterfactual"]["flag"]
+    assert row["native_entry"]["quality"] >= .6
+    assert row["extension_context"]["band"] == "normal"
+    assert result["constructive_attribution_counts"] == {"relative_strength_veto_only": 1}
+    assert not result["policy_change_applied"]
+    assert (payload, extension) == before
+
+
+def test_native_entry_audit_does_not_call_a_quality_penalty_a_sole_veto():
+    payload, extension = _entry_audit_fixture(accel=.2)
+    row = _entry_audit(payload, extension)["records"][0]
+    assert row["attribution"] == "relative_strength_veto_and_quality_penalty"
+    assert row["native_entry"]["quality"] < .6
+
+
+def test_native_entry_audit_preserves_breaking_breadth():
+    payload, extension = _entry_audit_fixture(pct50=.2)
+    row = _entry_audit(payload, extension)["records"][0]
+    assert row["attribution"] == "other_entry_conditions"
+    assert not row["research_counterfactual"]["flag"]
+
+
+def test_native_entry_audit_separates_entry_permission_from_extension_context():
+    payload, extension = _entry_audit_fixture(rs=.5)
+    extension["themes"][0].update(atr_ext=3.4, band_en="stretched")
+    row = _entry_audit(payload, extension)["records"][0]
+    assert row["attribution"] == "entry_already_clear"
+    assert row["extension_context"]["band"] == "stretched"
+    assert not row["extension_context"]["trade_authority"]
+    assert not row["extension_context"]["same_generation_and_membership_proven"]
+
+
+@pytest.mark.parametrize("change", ["wrong_date", "wrong_region", "duplicate", "missing_id",
+                                     "bad_number", "bad_count", "wrong_count", "wrong_band"])
+def test_native_entry_audit_rejects_bad_extension_joins_only(change):
+    payload, extension = _entry_audit_fixture()
+    if change == "wrong_date": extension["as_of"] = "2026-09-17"
+    elif change == "wrong_region": extension["region"] = "china"
+    elif change == "duplicate": extension["themes"] *= 2
+    elif change == "missing_id": extension["themes"] = []
+    elif change == "bad_number": extension["themes"][0]["atr_ext"] = float("nan")
+    elif change == "bad_count": extension["themes"][0]["n_live"] = True
+    elif change == "wrong_count": extension["themes"][0]["n_live"] = 6
+    else: extension["themes"][0]["band_en"] = "parabolic"
+    row = _entry_audit(payload, extension)["records"][0]
+    assert row["status"] == "reproduced"
+    assert row["attribution"] == "relative_strength_veto_only"
+    assert row["extension_context"]["status"] == "unavailable"
+
+
+@pytest.mark.parametrize("change", ["missing_rs", "nan_accel", "bool_rs", "missing_breadth",
+                                     "bad_nh", "missing_quality", "nonboolean_flag", "bad_textures"])
+def test_native_entry_audit_cannot_turn_missing_inputs_into_favorable_evidence(change):
+    payload, extension = _entry_audit_fixture()
+    row = payload["theme_intel"]["themes"][0]
+    if change == "missing_rs": row.pop("rs_pctile")
+    elif change == "nan_accel": row["accel_z"] = float("nan")
+    elif change == "bool_rs": row["rs_pctile"] = True
+    elif change == "missing_breadth": row["breadth"] = None
+    elif change == "bad_nh": row["breadth"]["nh"] = -1
+    elif change == "missing_quality": row["textures"]["clean_entry"].pop("quality")
+    elif change == "nonboolean_flag": row["textures"]["clean_entry"]["flag"] = 0
+    else: row["textures"] = []
+    result = _entry_audit(payload, extension)
+    assert result["unavailable_rows"] == 1 and result["reproduced_rows"] == 0
+    assert result["records"][0]["attribution"] is None
+
+
+@pytest.mark.parametrize("change", ["missing_last", "length", "negative", "infinite"])
+def test_native_entry_audit_refuses_bad_price_tape(change):
+    payload, extension = _entry_audit_fixture()
+    values = payload["chart"]["baskets"]["test_theme"]
+    if change == "missing_last": values[-1] = None
+    elif change == "length": values.pop()
+    elif change == "negative": values[20] = -5
+    else: values[-1] = float("inf")
+    result = _entry_audit(payload, extension)
+    assert result["unavailable_rows"] == 1
+    assert result["records"][0]["reason"] == "missing_invalid_or_unaligned_price_series"
+
+
+@pytest.mark.parametrize("change", ["future_date", "duplicate_date", "unsorted_dates", "duplicate_id", "date_mismatch"])
+def test_native_entry_audit_refuses_incoherent_frames(change):
+    payload, extension = _entry_audit_fixture()
+    if change == "future_date": payload["chart"]["dates"][-1] = "2026-09-21"
+    elif change == "duplicate_date": payload["chart"]["dates"][-2] = payload["chart"]["dates"][-1]
+    elif change == "unsorted_dates": payload["chart"]["dates"].reverse()
+    elif change == "duplicate_id": payload["theme_intel"]["themes"] *= 2
+    else: payload["as_of"] = "2026-09-17"
+    with pytest.raises(ValueError):
+        _entry_audit(payload, extension)
+
+
+def test_native_entry_audit_discloses_unreproduced_export_instead_of_overwriting_it():
+    payload, extension = _entry_audit_fixture()
+    payload["theme_intel"]["themes"][0]["textures"]["clean_entry"]["flag"] = True
+    result = _entry_audit(payload, extension)
+    row = result["records"][0]
+    assert row["status"] == "unavailable" and row["attribution"] is None
+    assert row["reason"] == "rounded_export_does_not_reproduce_native_entry"
+    assert row["stored"]["flag"] and not row["replayed"]["flag"]
+
+
+def test_native_entry_audit_does_not_recommend_out_of_favour_rows():
+    payload, extension = _entry_audit_fixture()
+    payload["theme_intel"]["themes"][0]["reco"] = "avoid"
+    result = _entry_audit(payload, extension)
+    assert result["reproduced_rows"] == 1
+    assert result["constructive_reproduced_rows"] == 0
+    assert result["constructive_attribution_counts"] == {}
+    assert result["records"][0]["reco"] == "avoid"
+
+
+def test_native_entry_audit_literals_remain_bound_to_the_existing_owner():
+    from engine import basket_score
+    source = (ROOT / "engine/basket_score.py").read_text()
+    function = next(n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name == "clean_entry")
+    native = ast.get_source_segment(source, function)
+    assert "rs_p < 0.75" in native and "q >= 0.6" in native
+    assert basket_score.clean_entry.__module__ == "engine.basket_score"

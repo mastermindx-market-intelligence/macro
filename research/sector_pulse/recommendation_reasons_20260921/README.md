@@ -141,3 +141,94 @@ publication proof. A requested review is not execution or approval. The merged
 #7478 dependency is complete and must not be recreated. Its successful production
 sweep still disclosed an independent baseline/capacity backlog, not an excuse to
 create a second release controller or launch duplicate baseline runs.
+
+
+## Continuation: actual clean-entry attribution, not a threshold guess
+
+Protected source was re-pinned to `Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e`
+(protected master, compatible 1.0.1/bootstrap 1). Current Macro input pin is
+`f98f57f4ec7c2cc30cbd90d9a7a759d5ea69144c`; the relevant recommendation, clean-entry,
+relative-strength, pulse, calendar and template owners have no semantic movement
+from the previously recorded baseline. Original #7650 still has complete green CI
+and no independent approval. #7669's earlier docs-head CI is not proof of this new
+semantic change. The existing source carrier is preserved.
+
+### New executable research capability
+
+`audit_entry.py` invokes the **unchanged native `basket_score.clean_entry`** on the
+exported price series, fingerprint and breadth of every theme in one immutable
+snapshot. It first requires reproduction of the stored flag AND quality. Only then
+it makes a second, copied research call changing the relative-strength input to
+the closest representable float below the incumbent .75 boundary. It distinguishes
+a lone boolean veto from a veto plus a quality-score penalty, and from other entry
+conditions. No output changes any recommendation, score, ranking, entry permission
+or data publication.
+
+The existing `theme_extension` artifact supplies a separate own-price context,
+using its existing close-based volatility units. It joins only on exact date,
+identity and population count, and refuses mismatched/duplicate/missing/bad-band
+input. **That does not prove an atomic generation or an identical member roster.**
+No extension context receives trade authority, and a missing extension source does
+not invalidate an otherwise reproducible entry decision.
+
+The CLI output `entry-attribution.json` binds the two input files and both native
+owners by SHA-256. Its data session is **September 18**, not today's tape:
+
+- 49/49 native entry flags and quality scores reproduced; 0 unreproduced rows.
+- Seven themes have an existing Enter/Accumulate recommendation.
+- Three of those seven already pass clean entry: Mag7, Crypto & Digital Rails,
+  and AI Neoclouds.
+- Three are blocked solely by the relative-strength boolean gate despite quality
+  already exceeding .6: AI Semiconductors (.7), Memory/HBM/Storage (.8), AI
+  Infrastructure (.8). The other existing safeguards do not block these copied
+  calls when the isolated research input is changed.
+- The remaining constructive theme, AI Software, fails another native condition;
+  removing the relative-strength veto would NOT clear it.
+
+Separate source-published median-member extension observations for that date are
+1.77 for AI Semiconductors, 1.83 for Memory/Storage, .87 for AI Infrastructure,
+3.33 for Crypto & Digital Rails and 3.11 for Cybersecurity. The first two are labeled
+`extended`, Infrastructure `normal`, and the last two `stretched` by their existing
+owner. Crypto Rails nevertheless has a clean-entry flag. This establishes that
+these existing measures answer different questions; it does **not** prove that a
+particular extension cutoff is a better entry rule or that a basket-wide entry
+read establishes an individual CPU stock's executable setup.
+
+### Correction to the previous explanation
+
+A relative-strength gate does not measure distance from a price trend, but another
+source may independently establish price extension. Therefore the previous phrase
+'price stretch is not established' was too broad. The source-bound explanation now
+says: **'Relative-strength filter blocks entry; it does not measure distance above
+the price trend.'** The regression first failed on the old wording and now passes.
+Both language versions preserve this scope. This does not erase genuine price-risk
+evidence or promote a counterfactual into production.
+
+### Verification and next decision
+
+169 Python 3.14 tests and an overlapping 161-test Python 3.12 subset pass. The
+original 10,584-case recommendation comparison still has zero verb changes. The
+32 added attribution tests cover source/frame identity, mismatched dates, duplicate
+identities, missing/nonfinite/bool inputs, missing last prices, contradictory
+stored verdicts, regional/coverage mismatches and unchanged underlying inputs.
+The existing hosted test job runs these cases; its trigger allowlist now also
+covers the research module. Fresh original-versus-candidate browser proof again
+covers 48 cells with no page errors or page-wide horizontal overflow.
+
+Reproduce:
+
+```sh
+python3 research/sector_pulse/recommendation_reasons_20260921/audit_entry.py \
+  --source-ref f98f57f4ec7c2cc30cbd90d9a7a759d5ea69144c \
+  --output /tmp/theme-entry-attribution.json
+```
+
+The next model experiment is now specific: independently evaluate the .75 entry
+veto and the .85 recommendation veto against own-price risk measurements on the
+same decision-time population. Reuse the existing calibration and episode/evaluation
+owners; no new ranker, factor score or trial ledger. Freeze alternatives before
+reading their outcomes, distinguish hindsight-curated theme evidence from a valid
+point-in-time universe, count independent episodes rather than repeated dates, and
+report false-breakout/adverse-excursion/turnover/cost outcomes as well as leader
+capture. **This single snapshot is neither that evaluation nor authority to change
+live thresholds.** Current CI/review/publication gates remain open.

@@ -23,7 +23,7 @@ changed:
   - path: templates/basket_detail.html.j2
     what: Same reason contract on the real detail route; shorter non-entry badge fixes observed mobile wrapping.
   - path: tests/test_theme_recommendation_reasons.py
-    what: Forty new gate, parity, native JavaScript, missingness and translation cases.
+    what: Seventy-two gate, parity, native JavaScript, missingness, translation and native-entry attribution cases.
   - path: research/sector_pulse/recommendation_reasons_20260921/
     what: Source-bound policy replay, original-versus-candidate browser evidence and exact limitations.
   - path: .github/ci/legacy-jobs.yml
@@ -33,10 +33,10 @@ changed:
 verified:
   - claim: Theme, reason, native consumer and detail contracts pass locally.
     command: python3 -m pytest -q tests/test_theme_recommendation_reasons.py tests/test_theme_scoring.py tests/test_theme_scoring_conflicted.py tests/test_theme_scoring_leadership_split.py tests/test_basket_detail_glance_copy.py
-    result: 137 passed.
+    result: 169 passed.
   - claim: Python 3.12 core and native consumer subset passes.
     command: python3.12 -m pytest -q tests/test_theme_recommendation_reasons.py tests/test_theme_scoring.py tests/test_theme_scoring_conflicted.py tests/test_theme_scoring_leadership_split.py
-    result: 129 passed.
+    result: 161 passed.
   - claim: Frozen incumbent policy is preserved and real source explanations reproduce existing final verbs.
     command: python3 research/sector_pulse/recommendation_reasons_20260921/prove.py --source-ref 7c6e35163c9f67087ffe174a7ab3810f47ce6a45 --out /tmp/mmx-theme-reasons-proof-20260921
     result: 10584 policy cases unchanged; 49 of 49 stored themes reproduced; non-explanation data unchanged.
@@ -46,6 +46,9 @@ verified:
   - claim: Paired plain-copy assets are synchronized.
     command: python3 scripts/check_template_site_sync.py
     result: 99 pairs checked successfully.
+  - claim: The native clean-entry flag and quality reproduce for every dated theme, isolating three constructive themes blocked solely by relative strength.
+    command: python3 research/sector_pulse/recommendation_reasons_20260921/audit_entry.py --source-ref f98f57f4ec7c2cc30cbd90d9a7a759d5ea69144c --output /tmp/theme-entry-attribution.json
+    result: 49 reproduced, zero unavailable; seven constructive themes comprise three entry-clear, three relative-strength-only vetoes and one other-condition veto. No live policy changed.
 unverified:
   - claim: Exact-head hosted CI, independent approval and production publication of this new slice.
     what_would_verify: Source-carrier concluded checks and review, then authorized deployed producer-to-consumer evidence.
@@ -128,3 +131,68 @@ next unit is source review/release and production proof, followed by the separat
 behavior-bearing two-gate evaluation; source custody stays with these exact PRs.
 Resume on a lawful CEO continuation with fresh procedure and same-carrier
 reconciliation. No autonomous wake or background reasoning is asserted.
+
+
+## Latest continuation: source-scoped explanation and native entry attribution
+
+Protected procedure: `Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e`.
+Input/code compatibility observation: `macro@f98f57f4ec7c2cc30cbd90d9a7a759d5ea69144c`.
+Current same-carrier modification advances #7669; #7650 and all other source
+writers remain untouched. No worker, watcher, alternate review identity or
+production operation was started here. Direct work reason: PRINCIPAL_JUDGMENT /
+LOWER_TOTAL_OVERHEAD for exact-source attribution and correction of its user claim.
+
+The main new capability is executable **native clean-entry attribution** in
+`research/sector_pulse/recommendation_reasons_20260921/audit_entry.py`, consumed by
+its CLI report and 32 new tests in the existing hosted suite. It replays the actual
+native clean-entry owner, requires the stored flag AND quality to match, and isolates
+a single relative-strength-input change in a copied research call. The CLI also
+requires the native owner bytes to match the immutable input revision. The
+independently date/count-matched extension artifact remains context without
+atomic-generation or identical-roster proof and receives no trade authority.
+
+`entry-attribution.json`: 49 native rows reproduced, zero unavailable. Of seven
+existing Enter/Accumulate themes, three are already clean-entry, three are blocked
+only by the relative-strength veto (AI Semiconductors, Memory/Storage, AI
+Infrastructure), and one fails other conditions (AI Software). Actual own-price
+extension context is not uniformly absent or benign: the source calls Cybersecurity
+and Crypto Rails stretched. Accordingly, the prior global wording 'price stretch
+is not established' was corrected to say what this relative-strength filter does
+NOT measure. Other evidence is not denied or overwritten.
+
+The frozen 10,584-case recommendation comparison still has zero verb changes.
+Updated local suites pass 169 tests on Python 3.14 and 161 overlapping tests on
+Python 3.12. A fresh 48-cell original/candidate browser run completed with every
+candidate reason visible and no page errors or page-wide horizontal overflow.
+The original held implementation, hypothesis limitations and release dependency
+receipts above remain historical evidence, not current-head CI or live proof.
+
+Current boundary: source correction and one-snapshot diagnosis are proven locally;
+full exact-head CI, independent review, production publication and multi-episode
+model comparison remain owed. The earlier #7650 CI is green but its requested
+independent reviewer has not returned approval. #7669 remains DRAFT/HOLD; no
+self-review or old-head check is a substitute for new semantic acceptance.
+
+Next action: consume this same-carrier review/CI and integrate the tested reason
+contract through the existing publisher. The next separate model experiment must
+freeze and compare the .75 entry versus .85 recommendation gates against own-price
+risk on a same-decision-time population using existing calibration/evaluation
+owners. Do not change live thresholds from this single snapshot, relabel it a
+forward-return study, hard-code CPUs, or redo the already merged #7478 cleanup.
+
+MISSION_COMPLETE: false
+CAPABILITY_STATE: BUILT_NOT_PROVEN
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+
+Final pre-push compatibility read: `origin/main` and GitHub main both returned
+`912feaa2b13959a6cca4d3f1472188b4a4d702bb`. The first fetch encountered a shared
+remote-ref race; it was reconciled by reading the same ref, not re-running or
+resetting it. No material differences from the input pin were found in AGENTS,
+CLAUDE, theme_scoring, basket_score, theme_extension or the two template consumers.
+Agent OS validation returned 0 errors / 125 existing warnings; paired assets
+remain identical across 99 checked pairs. Current source-proof SHA-256 is
+`13259397082e95ca50466074ef6a3cfe31588fbf83c781a2de7daa4132bdee06`;
+entry-attribution SHA-256 is
+`5ce749aa1810d7e0aa66a73c779980e4fc6d4b94a846d3fb51e28e7fce443049`.
+The exact final source head and new CI identity belong in the same PR's read-back
+checkpoint comment, avoiding an ancestry-only or self-referencing docs commit.

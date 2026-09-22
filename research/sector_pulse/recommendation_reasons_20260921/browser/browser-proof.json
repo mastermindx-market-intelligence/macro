@@ -5,7 +5,7 @@
     "source_path": "site/basketdata/baskets.json",
     "source_sha256": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
     "source_as_of": "2026-09-18",
-    "candidate_engine_sha256": "ea963a42c96946d88c26fafc654fbf89157cd905278f5c82fc7bc353782d3b5d",
+    "candidate_engine_sha256": "18dfb9bcbe030674b362262147dc6b77d9b8375a53f51c9188c5be892b800fcc",
     "policy_parity": {
       "cases": 10584,
       "mismatches": 0,
@@ -24,8 +24,8 @@
         "before_en": "In play but no fresh edge here — keep, don't chase.",
         "after": {
           "code": "relative_strength_limit",
-          "en": "Relative strength hits the entry limit; price stretch is not established.",
-          "zh": "相对强势触及模型入场限制；这不代表价格已过度延伸。"
+          "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+          "zh": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。"
         },
         "base_reason": "relative_strength_limit"
       },
@@ -72,8 +72,8 @@
         "before_en": "In play but no fresh edge here — keep, don't chase.",
         "after": {
           "code": "relative_strength_limit",
-          "en": "Relative strength hits the entry limit; price stretch is not established.",
-          "zh": "相对强势触及模型入场限制；这不代表价格已过度延伸。"
+          "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+          "zh": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。"
         },
         "base_reason": "relative_strength_limit"
       },
@@ -692,12 +692,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-1440-dark-en.png",
-      "visible_reason": "Relative strength hits the entry limit; price stretch is not established.",
-      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative strength hits the entry limit; price stretch is not established.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -818,12 +818,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-390-dark-en.png",
-      "visible_reason": "Relative strength hits the entry limit; price stretch is not established.",
-      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative strength hits the entry limit; price stretch is not established.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -944,12 +944,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-1440-dark-zh.png",
-      "visible_reason": "相对强势触及模型入场限制；这不代表价格已过度延伸。",
-      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势触及模型入场限制；这不代表价格已过度延伸。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -1070,12 +1070,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-390-dark-zh.png",
-      "visible_reason": "相对强势触及模型入场限制；这不代表价格已过度延伸。",
-      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势触及模型入场限制；这不代表价格已过度延伸。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -1196,12 +1196,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-1440-light-en.png",
-      "visible_reason": "Relative strength hits the entry limit; price stretch is not established.",
-      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative strength hits the entry limit; price stretch is not established.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -1322,12 +1322,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-390-light-en.png",
-      "visible_reason": "Relative strength hits the entry limit; price stretch is not established.",
-      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative strength hits the entry limit; price stretch is not established.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -1448,12 +1448,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-1440-light-zh.png",
-      "visible_reason": "相对强势触及模型入场限制；这不代表价格已过度延伸。",
-      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势触及模型入场限制；这不代表价格已过度延伸。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {
@@ -1574,12 +1574,12 @@
         "overflow": false
       },
       "file": "cybersecurity-candidate-390-light-zh.png",
-      "visible_reason": "相对强势触及模型入场限制；这不代表价格已过度延伸。",
-      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势触及模型入场限制；这不代表价格已过度延伸。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
       "page_errors": [],
       "input": "site/basket/cybersecurity.html",
       "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
-      "rendered_sha256": "2d0c65dc83d8eb27f7f31bda59d2f6e5c4b0c9e76d64d9f4afbd68cb86ad6d8c",
+      "rendered_sha256": "7969081ef1394a71ebdf600ac6b3b479b5e20b56d4013b49428ae35d0b46087b",
       "source_as_of": "2026-09-18"
     },
     {

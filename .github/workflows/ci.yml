@@ -718,6 +718,7 @@ on:
       - "tests/test_theme_scoring.py"
       - "tests/test_theme_recommendation_reasons.py"
       - "tests/fixtures/theme_recommendation_reasons/**"
+      - "research/sector_pulse/recommendation_reasons_20260921/**"
       # MLC-W4: histogram-fade leg in rollover_risk + cooling demotion.
       - "engine/basket_score.py"
       - "tests/test_basket_score_rollover_w4.py"
