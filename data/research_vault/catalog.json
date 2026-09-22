@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T00:21:50.488991+00:00",
-  "count": 2603,
+  "generated_at": "2026-09-22T00:49:34.558940+00:00",
+  "count": 2604,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -93,6 +93,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-18eq6v5baum-321e40",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:26:54Z",
+      "summary_points": [
+        "GSCPI Moderation: GSCPI elevated but below pre-pandemic highs, signaling moderating supply chain stress despite energy disruptions; Asia manufacturing shutdowns remain a key fundamental risk for global trade flows.",
+        "Asia Manufacturing Disruptions: Frequent shutdowns in Asia’s manufacturing hubs directly impact supply chain resilience, creating near-term volatility for portfolio managers monitoring global trade fundamentals.",
+        "Critical Data Releases: Eurozone Consumer Confidence (-5.5), US New Home Sales (-10.5%), and PMI readings (Eurozone 52, US 56) drive immediate market sentiment and economic outlook assessments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7txfyttnrvb-bc54b6",
       "title": "Gms midterms 2026 insights",
