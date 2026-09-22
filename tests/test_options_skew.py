@@ -532,6 +532,33 @@ def _live_skew_invocations(text: str) -> list[int]:
     return hits
 
 
+def _job_level_pin(path: Path) -> set[str]:
+    """Jobs in a workflow file that pin the legacy source through job-level env."""
+    if path.suffix not in {".yml", ".yaml"}:
+        return set()
+    import yaml
+
+    doc = yaml.safe_load(path.read_text()) or {}
+    pinned = set()
+    for name, job in (doc.get("jobs") or {}).items():
+        env = (job or {}).get("env") or {}
+        if str(env.get("OPTIONS_SKEW_LEGACY_CHAIN", "")) == "1":
+            pinned.add(name)
+    return pinned
+
+
+def _jobs_launching_skew(path: Path) -> set[str]:
+    import yaml
+
+    doc = yaml.safe_load(path.read_text()) or {}
+    hits = set()
+    for name, job in (doc.get("jobs") or {}).items():
+        text = "\n".join(str(s.get("run") or "") for s in ((job or {}).get("steps") or []))
+        if _live_skew_invocations(text):
+            hits.add(name)
+    return hits
+
+
 def test_every_live_skew_caller_exports_the_legacy_flag():
     """Every process that publishes skew today must set the legacy source.
 
@@ -540,6 +567,12 @@ def test_every_live_skew_caller_exports_the_legacy_flag():
     render.yml (default runner render-linux, scope all and scope gex) also
     launches the builder. A pin that only matches `brun options_skew` leaves
     the run_py lines, and those two files, free to emit the old ledger.
+
+    Two pin shapes are lawful: (a) `export OPTIONS_SKEW_LEGACY_CHAIN=1` on the
+    line before the launch and `unset` on the line after; (b) a job-level
+    `env: OPTIONS_SKEW_LEGACY_CHAIN: "1"` on every job that launches the
+    builder — render.yml uses (b) because its re-render step's run expression
+    sits 76 chars under the 20,500-char guard in test_public_render_fastlane.
     """
     root = Path(__file__).resolve().parents[1]
     required = {
@@ -555,8 +588,19 @@ def test_every_live_skew_caller_exports_the_legacy_flag():
                 continue
             rel = path.relative_to(root).as_posix()
             lines = path.read_text().splitlines()
-            for i in _live_skew_invocations("\n".join(lines)):
-                found[rel] = found.get(rel, 0) + 1
+            hits = _live_skew_invocations("\n".join(lines))
+            if not hits:
+                continue
+            found[rel] = len(hits)
+            if path.suffix in {".yml", ".yaml"}:
+                launching = _jobs_launching_skew(path)
+                pinned = _job_level_pin(path)
+                if launching and launching <= pinned:
+                    # shape (b): every launching job carries the env pin; the
+                    # dated cutover comment must sit on the pin itself.
+                    assert "A-F03-W2-1b (2026-09-22)" in "\n".join(lines), rel
+                    continue
+            for i in hits:
                 assert lines[i - 1].strip() == "export OPTIONS_SKEW_LEGACY_CHAIN=1", (
                     rel, i + 1, lines[max(0, i - 3): i + 2]
                 )

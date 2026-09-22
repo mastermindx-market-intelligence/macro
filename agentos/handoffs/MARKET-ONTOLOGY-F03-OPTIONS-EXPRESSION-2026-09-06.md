@@ -1,5 +1,5 @@
 ---
-workstream: "WS:MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION"
+workstream: "WS:MARKET-OS"
 session: claude/mo-a-2-a-f03-w2-1
 model: local
 ended_because: complete
@@ -56,7 +56,7 @@ unresolved:
   - GitHub checks on the pushed head are not claimed green.
   - W2-2 M1 launchd ThetaData accrual is not installed.
   - W2-3 cutover (drop the legacy flag, switch render to --emit) is not done.
-  - agentos validate reports one dangling-ref. No workstream record exists for WS:MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION, and this packet does not invent one.
+  - This record's workstream is WS:MARKET-OS (the F03 lane's owner per the F00C granular closure ledger, MO-PAID-013 `current_owner`); an earlier draft cited a non-existent WS:MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION, which agentos validate rejected as a dangling-ref (seat cure 2026-09-22).
 next_actions:
   - W2-2 installs the M1 launchd ThetaData accrual. The store host accrues and commits the parquet ledger. Do not do that on a render host.
   - W2-3 removes OPTIONS_SKEW_LEGACY_CHAIN=1 from engine-render.yml, closing-bell.yml, render.yml, and scripts/ci/daily_engine_regional_desk_builders.sh, and switches those calls to --emit.
