@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T02:49:44.508552+00:00",
-  "count": 2610,
+  "generated_at": "2026-09-22T03:19:43.447214+00:00",
+  "count": 2612,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -33,6 +33,7 @@
     "DoubleLine",
     "Doubleline",
     "Dragon Capital",
+    "EFG",
     "Eastspring",
     "Fidelity",
     "Franklin",
@@ -94,6 +95,27 @@
   ],
   "items": [
     {
+      "id": "marketdesk-ihuigovalkl-fb636d",
+      "title": "GM Market Rhythm",
+      "institution": "EFG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T01:05:27Z",
+      "summary_points": [
+        "Small Cap Failure: Russell 2000 rejected breakout despite oversold conditions, 200dma exposure confirms persistent downtrend; small caps rarely precede broader market recovery.",
+        "NYSE Breadth Deterioration: % of stocks above 200dma at 4-month low, signaling declining market participation and heightened downside risk.",
+        "MAGS Resistance Rejection: Mega caps rejected 71.16 resistance; break below 69.72 risks weak breadth and bearish momentum.",
+        "EFG FX & Metals Report: Critical analysis of central bank policies and metals demand ahead of policy shifts for hedging and allocation.",
+        "Stoxx Europe Breakdown: Key pivot broken post-relief rally, confirming bearish momentum and weakening trend structure in European equities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
       "institution": "Westpac",
@@ -152,6 +174,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2opo5iktnlc-94ffac",
+      "title": "weekly 21sep26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:32:58Z",
+      "summary_points": [
+        "Fed Policy Stance: Fed hiked rates 25bps to 3.75% amid resilient labor market and AI investment; consumer spending rose 1.2% MoM, complicating near-term cut expectations despite housing data misses.",
+        "China Demand Gap: Retail sales YoY at 0.4% (vs prior 0.6%) despite industrial output gains, signaling persistent consumption weakness and demand-side supply gap risk.",
+        "Saudi mBridge Exit: Saudi Arabia withdrew from China-backed mBridge digital currency initiative, intensifying U.S.",
+        "concerns over bypassing SWIFT and reshaping cross-border financial infrastructure.",
+        "Middle East Escalation: Houthi strikes triggered U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
