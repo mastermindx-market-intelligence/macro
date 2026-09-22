@@ -3520,9 +3520,10 @@ CURATED_EXCLUSIVE = {
     # the migration test was dark on every pull request. Curated for
     # COVERAGE: paths are the measured import closure (options_skew,
     # thetadata_store, the builder, and the validate_options_skew import
-    # the suite already reaches) plus the two render workflows whose
-    # legacy-source pin the suite reads. Exclusivity drops the data/**
-    # filesystem fallback and loses no owner.
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
     "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
