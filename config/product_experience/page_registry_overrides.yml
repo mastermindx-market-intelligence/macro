@@ -77,6 +77,8 @@ pages:
 
   macro:bonds:
     archetype: "regime_dashboard"
+    evidence: [templates/bonds.html.j2, scripts/build_bonds.py]
+    note: "Archetype-D regime_dashboard; six L1 blocks per frozen spec"
 
   macro:canada:
     archetype: "regime_dashboard"
@@ -238,6 +240,11 @@ pages:
     primary_user_question: "Which names line up across the signal stack today?"
     evidence: [config/site_access.yml]
     note: "free signal-stack lead magnet: rank 1 exposed, paid rows omitted server-side"
+
+  macro:research_screener:
+    archetype: "discovery_board"
+    primary_user_question: "Which names deserve a look first, and why?"
+    note: "research_priority_only; four plain-word lenses; never a ranker"
 
   macro:discovery:
     archetype: "discovery_board"
@@ -683,6 +690,13 @@ pages:
   # ── intelligence_desk · named research desks ──────────────────────────────────
   # A standing desk over one domain: policy, flow, alt-data, smart money, China.
 
+  macro:sanctions_map:
+    priority: "P0"
+    archetype: "intelligence_desk"
+    primary_user_question: "Where do US sanctions point today, and which countries is our coverage silent about?"
+    evidence: [engine/sanctions_map.py, config/sanctions_ofac_programs.yml, templates/sanctions_map.html.j2]
+    note: "base map + OFAC sanctions overlay, display-only leaf (packet A-F02-1)"
+
   macro:advanced:
     archetype: "intelligence_desk"
     why: "renders the Quant Lab surface (page title is 'Quant Lab'), so it takes the desk archetype"
@@ -826,6 +840,10 @@ pages:
   macro:aibrief:
     archetype: "editorial"
     why: "a daily BRIEF is a reading artifact, even though the AI desk generates it"
+
+  macro:am_edition:
+    archetype: "editorial"
+    why: "a distinct before-the-US-open reading surface — tape, clock, regime, calendar — plain words, no scores"
 
   macro:blog_family:
     archetype: "editorial"
@@ -1125,6 +1143,10 @@ pages:
   macro:support:
     archetype: "utility"
 
+  macro:help:
+    archetype: "utility"
+    why: "public help directory over existing product owners — a utility surface, not a product board"
+
   macro:terms:
     archetype: "utility"
 
@@ -1161,6 +1183,10 @@ pages:
     access_shell: "anonymous"
     payload_tier: "public"
     evidence: [terminal/app/login/page.tsx]
+
+  macro:macro_monetary:
+    archetype: "command_center"
+    why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
 
   macro:macro_liquidity_regime:
     archetype: "regime_dashboard"

@@ -1,174 +1,180 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-05T22:47:37.795064+00:00",
+  "as_of": "2026-09-18",
+  "generated_at": "2026-09-21T09:43:17.316771+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-04-AN-20260905224737-1",
-      "ticker": "AN",
-      "name": null,
+      "id": "2026-09-18-EGBN-20260921094317-1",
+      "ticker": "EGBN",
+      "name": "Eagle Bancorp Inc",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict and unblocked entry support a modest relative-positive lean, with the residual-alpha selection leg slightly favorable. Conviction stays low because the tape is mixed and prior constructive calls have only 32% directional accuracy.",
+      "thesis": "The constructive base-building verdict is supported by the validated risk framework allowing entry and a fresh daily turn above the 10-day average. Conviction stays low because the weekly trend is unresolved and weak quality and accounting signals leave little margin for error.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Entry 63rd percentile; cycle not blocked",
-        "Selection z 0.35 with positive SUE and revisions",
-        "Accounting flag: clean"
+        "Entry axis unblocked; turn signaled",
+        "Above 50-day and 200-day averages",
+        "Quality z -0.68; accounting watch",
+        "Negative net income and ROE"
       ],
-      "dissent": "Weak quality and tailwind readings could keep the base from resolving upward despite the favorable entry setup.",
+      "dissent": "The apparent turn may fail inside a trendless weekly structure, especially given negative profitability and weak accounting quality.",
       "falsifier": {
-        "text": "AN breaks its base and underperforms the S&P 500 over the next 20 trading days.",
+        "text": "EGBN falls back below both its 50-day and 200-day averages and underperforms the S&P 500 over the 20-day window.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "AN",
+          "subject_ticker": "EGBN",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-02",
+      "check_by": "2026-10-16",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-04-F-20260905224737-2",
-      "ticker": "F",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The turn signal is offset by a neutral verdict, negative recent earnings surprise and a below-trend industry basket. The validated risk controls therefore support waiting for clearer relative strength rather than taking a directional view.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Recent SUE z -0.89",
-        "Entry 51st percentile; cycle not blocked",
-        "Accounting: watch; industry basket below long-term trend"
-      ],
-      "dissent": "Positive momentum, improving revisions and an active turn signal could develop into sustained outperformance.",
-      "falsifier": {
-        "text": "F establishes sustained relative strength or weakness versus the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-02",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-04-WFC-20260905224737-3",
-      "ticker": "WFC",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh-buy entry is favorable, but the deterministic verdict remains neutral and the crowded, stretched financials basket activates a meaningful don't-add-aggressively risk brake. With mixed selection inputs and weak quality, there is not enough support for a relative direction.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry 62nd percentile; FRESH BUY",
-        "Selection z -0.05 with momentum z -0.64",
-        "Quality 36th percentile; accounting watch",
-        "Financials basket crowded and stretched"
-      ],
-      "dissent": "The positive recent earnings surprise and favorable entry could sustain the uptrend and produce relative outperformance.",
-      "falsifier": {
-        "text": "WFC develops sustained outperformance or underperformance versus the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-02",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-04-SMP-20260905224737-4",
-      "ticker": "SMP",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh-buy entry is constructive, but the profile's neutral verdict is supported by essentially flat selection, below-median quality and weak tailwind. Without a validated directional edge, the appropriate read is watchful neutrality.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry 62nd percentile; FRESH BUY",
-        "Selection z -0.03",
-        "Quality 45th percentile and tailwind 45th percentile",
-        "Accounting flag: clean"
-      ],
-      "dissent": "The uptrend, favorable entry and positive momentum context could turn the setup into relative outperformance.",
-      "falsifier": {
-        "text": "SMP establishes sustained relative strength or weakness versus the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-02",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-04-NX-20260905224737-5",
-      "ticker": "NX",
-      "name": null,
+      "id": "2026-09-18-COIN-20260921094317-2",
+      "ticker": "COIN",
+      "name": "Coinbase",
       "lean": "cautious",
-      "conviction": "medium",
+      "conviction": "low",
       "horizon_d": 20,
-      "thesis": "This is not an extension-only short: the lagging verdict, deeply unfavorable entry risk, weak residual-alpha selection and accounting warning jointly support expected underperformance. The current uptrend limits conviction because momentum can persist even when the risk profile is poor.",
+      "thesis": "The relative-weakness verdict supplies an actual bearish signal rather than a mere extension warning: COIN remains below its 200-day average with negative MACD and broadly weak selection inputs. The bottoming attempt and bullish larger-picture read limit conviction.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Entry 18th percentile with extension and lottery-spike risks",
-        "Selection z -0.77; revisions z -1.07",
-        "Quality 42nd percentile; accounting warn",
-        "At its high and HOLD \u2014 EXTENDED"
+        "8.2% below 200-day average",
+        "MACD negative and still below 10-day average",
+        "Selection z -1.52; revisions and momentum negative",
+        "Low-vol and low-beta z-scores show elevated market sensitivity"
       ],
-      "dissent": "The intact uptrend and position at the high could overwhelm the weak profile as momentum persists.",
+      "dissent": "A confirmed daily turn in a bullish larger trend and expanding liquidity could produce a sharp rebound that outruns the index.",
       "falsifier": {
-        "text": "NX sustains outperformance versus the S&P 500 over the next 20 trading days.",
+        "text": "COIN reclaims its 200-day average with positive MACD and outperforms the S&P 500 over the 20-day window.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "NX",
+          "subject_ticker": "COIN",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-02",
+      "check_by": "2026-10-16",
       "engine_verdict": "Lagging \u2014 relative weakness"
     },
     {
-      "id": "2026-09-04-PCRX-20260905224737-6",
-      "ticker": "PCRX",
-      "name": null,
+      "id": "2026-09-18-REXR-20260921094317-3",
+      "ticker": "REXR",
+      "name": "Rexford Industrial Realty",
       "lean": "cautious",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The lagging verdict and weak residual-alpha selection, especially sharply negative revisions, provide an actual bearish signal beyond the extension brake. Favorable entry, quality and tailwind readings keep this only a low-conviction relative-underperformance lean.",
+      "horizon_d": 15,
+      "thesis": "The risk controls identify a mature, late-cycle move with momentum already rolling over, while the larger trend remains mixed; that is a genuine topping signal rather than extension alone. Low conviction reflects the intact moving-average trend and supportive liquidity backdrop.",
       "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection z -0.91; revisions z -1.53",
-        "Momentum context z -0.17",
-        "Board state: HOLD \u2014 EXTENDED",
-        "Quality 55th percentile; accounting clean"
+        "Ladder: TOP WATCH / TAKE PROFITS",
+        "Investor phase: late",
+        "Daily momentum rolling over after a mature run",
+        "Verdict: Neutral \u2014 no clear edge",
+        "Still above 50-day and 200-day averages"
       ],
-      "dissent": "The intact uptrend plus favorable entry, quality and tailwind could allow momentum to persist and reverse the relative weakness.",
+      "dissent": "The right-translated cycle and intact trend above both major averages could extend further despite the late entry warning.",
       "falsifier": {
-        "text": "PCRX sustains outperformance versus the S&P 500 over the next 20 trading days.",
+        "text": "REXR resumes rising momentum, makes a new 52-week high, and outperforms the S&P 500 over the 15-day window.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "PCRX",
+          "subject_ticker": "REXR",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
+          "horizon_d": 15
+        }
+      },
+      "check_by": "2026-10-09",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-18-PRU-20260921094317-4",
+      "ticker": "PRU",
+      "name": "Prudential Financial",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The base-building verdict, unblocked entry control and clean quality profile support a tentative constructive lean, with improving earnings and positive cash flow providing fundamental support. The read remains low-conviction because price has not reclaimed its 10-day or 50-day average and the financials basket is deteriorating.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Entry axis unblocked",
+        "Quality z 0.55; accounting clean",
+        "Net income growth 31.1% and positive CFO",
+        "Below 10-day and 50-day averages; sector basket deteriorating"
+      ],
+      "dissent": "The overdue cycle, negative short-term momentum and weakening sector tape could turn the attempted bottom into continued relative underperformance.",
+      "falsifier": {
+        "text": "PRU remains below its 50-day average and underperforms the S&P 500 over the 20-day window.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PRU",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-02",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-10-16",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-18-GDS-20260921094317-5",
+      "ticker": "GDS",
+      "name": "GDS Holdings (ADR)",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The deterministic verdict finds no clear edge, and the risk picture is unresolved: a fresh daily rebound is forming, but GDS remains below both major moving averages with negative MACD and no quality data. The unblocked entry control supports watching the turn, not assuming relative outperformance.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh swing low and back above 10-day average",
+        "2.9% below 50-day and 17.1% below 200-day average",
+        "MACD negative",
+        "Quality axis unavailable"
+      ],
+      "dissent": "A confirmed momentum turn in the calm, liquidity-supportive regime could develop into a substantial recovery from the depressed trend position.",
+      "falsifier": {
+        "text": "GDS reclaims its 50-day average with positive MACD and then outperforms the S&P 500 over the 20-day window.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-16",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-18-EBAY-20260921094317-6",
+      "ticker": "EBAY",
+      "name": "Ebay Inc",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The no-clear-edge verdict and validated risk controls argue against extrapolating the board rank: EBAY's trend is intact, but the cycle is already approaching its upper band and the sector and accounting cautions weaken the setup. This supports watchfulness without either chasing or shorting an intact leader.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Above 50-day and 200-day averages with positive MACD",
+        "Daily phase approaching band; RSI 63",
+        "Accounting watch",
+        "Consumer Discretionary equal-weight basket below long-term trend"
+      ],
+      "dissent": "Strong price structure, profitability and repurchases could sustain momentum and produce continued relative gains despite the sector caution.",
+      "falsifier": {
+        "text": "EBAY decisively breaks its 50-day average with negative MACD and underperforms the S&P 500 over the 20-day window.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-16",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
