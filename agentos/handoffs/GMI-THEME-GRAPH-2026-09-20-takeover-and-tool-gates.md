@@ -31,6 +31,8 @@ changed:
 - path: tests/test_theme_graph_local_plane.py
   what: Add 32 integrity/structural/boundary cases; repair raw-reader fixture IDs using the owner generator
     without removing cutoff, filtering or round-trip assertions.
+- path: research/prophet_v4/d2/curation/lithium-storage-2026-09-21/
+  what: Preserve the incumbent 24-file research packet while binding five exact THS definition receipts; final synthesis is two nonexclusive EXPRESSES candidates (sodium-ion, vanadium), one solid-state application-scope hold, and two source-membership gaps (lithium batteries, power-battery recycling). No canonical admission, ratification or graph write.
 verified:
 - claim: Input integrity failures reproduce and are repaired.
   command: structural-navigation-20260921/red.log, integrity-green.log, parent-family-red.log and owner-final.log
@@ -48,6 +50,9 @@ verified:
   result: 17 actual CLI commands exit 0; exact SEC:US-XNAS-NVDA resolves to co:us:NVDA, one recorded sector
     basket and 38 local membership references across 17 source-parent groups. All 11 registered sector baskets
     open and return member queries.
+- claim: Updated lithium/storage packet remains reproducible through the existing portable verifier.
+  command: PYTHONDONTWRITEBYTECODE=1 python3 research/prophet_v4/d2/curation/lithium-storage-2026-09-21/check_review.py
+  result: 16 preserved schema-valid exports; 2 retained proposal drafts; 2 detached worklist-to-review round trips; 7 mutation traps detected; 11 canonical input hashes unchanged; 234 canonical queue rows; 9 attributed external sources; zero graph/queue writes; review_accepted false.
 unverified:
 - claim: Current candidate independent acceptance, latest-base integration and release.
   what_would_verify: Independent exact-head review, applicable concluded CI and immutable integration proof
@@ -62,16 +67,16 @@ unresolved:
 - CI/review/latest-base integration deferred, not waived.
 - Four prior identity-owner baseline failures remain unwaived.
 - Stored THS map has 375 codes versus 376 graph nodes; graph-only ltheme:ths:309263 remains preserved.
-- Two bounded source lookups were platform-blocked with no mutation; internal cause unknown. Broader industry
-  owner discovery remains unqualified.
+- The prior source-update refusal was reconciled after the Chairman changed the session to Extra High: the same Remote Desktop Commander carrier executed the authorized source update with no ambiguous effect. Broader industry owner discovery remains unqualified.
+- Exact THS definitions do not supply dated local memberships; lithium-battery and power-battery-recycling remain membership gaps. Solid-state remains an application-scope hold.
 next_actions:
-- Continue inventory-gap to evidence-backed curation review for a bounded THS/Finviz cohort using existing
-  proposal identity and graph evidence; do not auto-ratify or force mapping.
+- Independently curate the two retained nonexclusive EXPRESSES candidates (sodium-ion and vanadium); keep solid-state on hold unless exact application evidence resolves grid relevance, and obtain lawful dated membership receipts for lithium-battery/recycling before any membership inference. Do not auto-admit, ratify or force mapping.
 - Consume actual new-head independent review and qualify latest-base integration and applicable checks before
   release.
 do_not_redo:
 - Original preserved work and published strict reader/worklist/inventory/note/security/history/overlap capabilities.
 - This exact structural navigation and source-integrity repair absent a material invalidator.
+- The 16 captured exact-node exports, three mapped controls, null/not-comparable treatment for missing member paths, and the five source-code/displayed-index identity pairs; do not regenerate or relabel them merely to refresh the packet.
 - Merged 6809/7458 and accepted PIT replay; no replacement GMI graph, queue, taxonomy or identity authority.
 danger_areas:
 - Sector-context basket membership is not a complete official issuer classification.
@@ -87,9 +92,8 @@ prs:
 ---
 
 MISSION_COMPLETE: false. Sol retains gmi-theme-ontology-d2d-20260827-sol-001, WS:GMI-THEME-GRAPH,
-original workspace/branch and macro PR7462. Protected pin a3bcfdbb4d99f6af7c3a86a7fed730cbd0184465;
-compatible Skillpack1.0.1/bootstrap1. Current laws were fetched from that same commit and compared
-against the preceding compatible pin. Direct owner-seam adjudication was PRINCIPAL_JUDGMENT;
+original workspace/branch and macro PR7462. Protected pin ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e;
+compatible Skillpack1.0.1/bootstrap1. INDEX, COLD_START, ACTIVE_EXECUTION, RECONCILE_STATE and CLOSEOUT were fetched from that same protected commit before the source-bound update. Direct owner-seam adjudication was PRINCIPAL_JUDGMENT;
 the bounded repair/build stayed on the incumbent source carrier with LOWER_TOTAL_OVERHEAD.
 
 Evidence root: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/structural-navigation-20260921/.
@@ -105,8 +109,6 @@ sector-leg conventions and unregistered prefixes cannot originate a classificati
 references stay source-local, with original membership evidence/rights and no new parent graph node.
 Missing industry/subindustry binding is explicit OWNER_NOT_BOUND, not an invented classification.
 
-Stored graph generation remains2026-09-18T17:42:29Z. No graph-data or crosswalk write, producer,
-curation act, force mapping, public display or downstream ThemeState/cohort wave was invoked.
-This bounded structural slice is a context-safe continuation boundary, not full D2D acceptance.
-Chairman prioritized build-forward work: CI was not polled or rerun; release stays Draft/HOLD.
-Resume from5755209687 and fresh minimum owner state, not this chat history.
+Stored graph generation remains2026-09-18T17:42:29Z. The lithium/storage packet now records exact THS definition receipts for 300733/885710, 307822/885944, 308294/886032, 301096/885928 and 301174/886003. Sodium-ion and vanadium remain research-only nonexclusive EXPRESSES candidates; solid-state is held; lithium/recycling still require dated source membership. No graph-data or crosswalk write, producer, curation act, queue admission, ratification, force mapping, public display or downstream ThemeState/cohort wave was invoked.
+The existing portable verifier passes on the updated packet. CI was not polled or rerun; release gates remain owed and Draft/HOLD remains until their normal acceptance path completes.
+Resume from the current PR/checkpoint state and fresh protected procedure, not chat history.
