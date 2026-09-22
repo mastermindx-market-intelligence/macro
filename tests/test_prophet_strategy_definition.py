@@ -6,6 +6,7 @@ import pytest
 
 from engine.prophet_entry_policy import (
     EntryPolicyContractError,
+    SESSION_POLICY_ERA,
     SESSION_POLICY_VERSION,
     evaluate_session_eligibility,
 )
@@ -417,6 +418,13 @@ def test_b4_session_policy_passes_only_inside_actual_rth_window():
     assert out["session_close"].endswith("16:00:00-04:00")
     assert out["extended_hours_eligible"] is False
     assert out["session_policy_version"] == SESSION_POLICY_VERSION
+    assert out["session_policy_era"] == SESSION_POLICY_ERA
+    assert out["calendar_owner"] == "lib.nyse_calendar.is_session"
+    assert out["execution_window_owner"] == "engine.prophet_entry_policy._execution_session_window_et"
+    assert out["execution_schedule_source"] == "NYSE_HOLIDAYS_AND_TRADING_HOURS_2026"
+    assert out["execution_schedule_verified_on"] == "2026-09-22"
+    assert out["supported_session_years"] == [2026]
+    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24"]
     assert out["policy_receipt"].startswith("pep:")
     assert out["session_receipt"].startswith("pes:")
     assert out["fact_receipt"].startswith("pepf:")
@@ -445,6 +453,10 @@ def test_b4_session_policy_uses_actual_early_close_not_a_hardcoded_1600():
     assert at_close["verdict"] == "FAIL"
     assert at_close["session_phase"] == "AFTER_HOURS"
 
+    christmas_eve = _session_policy("2026-12-24T18:00:00Z", "2026-12-24")  # 13:00 ET
+    assert christmas_eve["verdict"] == "FAIL"
+    assert christmas_eve["session_close"].endswith("13:00:00-05:00")
+
 
 def test_b4_session_policy_rejects_non_session_and_wrong_session_clocks():
     holiday = _session_policy("2026-11-26T15:00:00Z", "2026-11-26")
@@ -453,6 +465,10 @@ def test_b4_session_policy_rejects_non_session_and_wrong_session_clocks():
     )
     assert holiday["session_open"] is None
     assert holiday["session_close"] is None
+
+    july_observed = _session_policy("2026-07-03T15:00:00Z", "2026-07-03")
+    assert (july_observed["verdict"], july_observed["session_phase"]) == ("FAIL", "NON_SESSION")
+    assert july_observed["session_close"] is None
 
     wrong = _session_policy("2026-09-22T14:00:00Z", "2026-09-23")
     assert (wrong["verdict"], wrong["session_phase"], wrong["reason"]) == (
@@ -472,3 +488,6 @@ def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition
             decision_at="2026-09-22T14:00:00Z",
             market_session="2026-09-22",
         )
+
+    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026"):
+        _session_policy("2027-01-04T15:00:00Z", "2027-01-04")
