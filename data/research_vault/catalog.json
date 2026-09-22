@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T20:06:47.499202+00:00",
-  "count": 2660,
+  "generated_at": "2026-09-22T20:21:48.688586+00:00",
+  "count": 2661,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i3gcewyka2j-849e6e",
+      "title": "BMW (BMWG.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:38Z",
+      "summary_points": [
+        "China EV Product Momentum: New iX3 (Nov 2026), i3 LWB (Q1 2027), iX5 launches target resilient BEV segment; >100k iX3 order book extends to 2027, countering ICE mix-driven 20% YTD China volume decline.",
+        "Restructuring & Buyback Acceleration: FY26 earnings pressured by >€1bn FX/raw-material headwinds; buyback accelerated (€625m tranche) via balance sheet strength, with CMD (29-30 Sept) to define restructuring scope and mid-term margin targets.",
+        "European Neue Klasse Validation: Record iX3 order book (>100k units) and margin parity with Gen6 batteries offset cost inflation; China pricing differences and workforce restructuring remain near-term risks.",
+        "CMD Catalyst for Capital Allocation: Upcoming CMD (29-30 Sept) to set mid-term margin ambition and China profitability trajectory (lower cost base from 2028), driving near-term capital return strategy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
