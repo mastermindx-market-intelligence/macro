@@ -415,7 +415,12 @@ def _build_fake_repo(tmp_path: Path, *,
         "  status) exit 0 ;;\n"
         "  fetch) exit 0 ;;\n"
         "  checkout) exit 0 ;;\n"
-        "  rev-parse) echo \"$(git rev-parse --short HEAD 2>/dev/null || echo 0000000)\" ;;\n"
+        # rev-parse must NOT call `git` again: stub_bin is first on PATH, so the
+        # original `$(git rev-parse --short HEAD ...)` recursed into this very
+        # stub until the process table filled — 60s TimeoutExpired on every
+        # test that reached the refresh receipt (measured 2026-09-22 on the M2;
+        # on hosts where fork fails fast the `|| echo` branch hid it).
+        "  rev-parse) echo 0000000 ;;\n"
         "  *) exit 0 ;;\n"
         "esac\n",
         encoding="utf-8",
