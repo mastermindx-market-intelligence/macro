@@ -9,11 +9,11 @@
   },
   "verifier": {
     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
-    "sha256": "ca8e4b79699c53e26c819193d506ee8f0deff1420931f38a8e82feac405561d0"
+    "sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.12"
+    "version": "151.0.7922.34"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -540,8 +540,8 @@
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
-    "site/theme.css": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
-    "site/theme.js": "a5808ca021c7d934fc1bc6ffaa4a8634de49f1d4ef5113a36e5912cc2513d67a"
+    "site/theme.css": "d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478",
+    "site/theme.js": "3ffc953ffc84a76ac09687034b428004e7c7cfde70b43db5c35ac1da16c98b10"
   },
   "viewport": {
     "width": 390,
@@ -3193,7 +3193,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "301243ec77e07fbb90f9477d22232763100f9b0e5f8233ec8406d42466c1f8c9",
+          "sha256": "f6637be43854c4f452ee9db3459212d3d826c3146ea86e59ff8f882ca60132f4",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4577,7 +4577,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "96795c1ffc823dcab4ad7602af508af0529ab1632dc7ccb8c78dd7938fee4b7d",
+          "sha256": "448c62c2ad972817da1009d58fe3039b55ebf072c9708c008f68654681538c5b",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -5961,7 +5961,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "964199da036fa399405a49285026a678d5039e5d774162ea2f2a5739dbf35cb3",
+          "sha256": "72a97a788fd12cdddf373524e75b48076712a6549d7be706d6cb1fad8c45dcd7",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7345,7 +7345,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "c1828b98b81e3804ec8516eeb059f0db71ee9cfe334bfc4d2f3dce5f68de587a",
+          "sha256": "1bbc6cde0b48405614a1ff4e663acd7f43231640bbe3ed5754a3e10ec66d7bce",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -8729,7 +8729,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "ec06da259c5b746a77439f255f850c848347655f09cec5049e9303aaaf634b69",
+          "sha256": "eaa71f9564aa4922e6ed87da4c3f9ecbc27da489d9cd6fafbaabbc64e391a8e5",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10113,7 +10113,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "8b982318f3c32544083c992439e8f7f6851727a06fc5b5cadc11bd6d7acb3e0b",
+          "sha256": "bc52d67112a33a9d1909bb62da19966bc2e5c9a920ca2e62f0a7285f746b2fcf",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11497,7 +11497,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "b45b665ff3f7c4df5289eed0939c2ffbb9fee7ea2786d3be176cf199a15fbd84",
+          "sha256": "bc54559a905972e17584bd0af0b832b583d9524906df78611cb5bc6e4bb932c3",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -12881,7 +12881,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "1637b64307b0b13cc5c60fb362c4b96cf694f435914a8b53caf0c2bf829f0f3f",
+          "sha256": "84433044c57e88b3160e51a0fca3c4e15951a8f5bfeb46042f2922054cf8fb64",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
