@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T17:51:31.877925+00:00",
-  "count": 2654,
+  "generated_at": "2026-09-22T21:22:01.497046+00:00",
+  "count": 2664,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,186 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7keplmv3s4b-371985",
+      "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:57:31Z",
+      "summary_points": [
+        "Macro & Rate Hike Catalysts: August core CPI above expectations raised September FOMC rate hike probability to 85% (GIR), with market pricing 25bp hike driven by Fed's desire to avoid surprise markets, not inflation shift.",
+        "Crypto Policy & Performance Divergence: CLARITY Act procedural vote (15 Sept) boosted passage odds to 32% (Polymarket); ETH ETFs attracted $216m inflows vs BTC’s $463m outflows, with ETH outperforming BTC intraday (2.56% vs 2.72% drop).",
+        "Funding Rate Dynamics: Aggregated 8H funding rate remains positive since Feb 2026, indicating sustained long positioning and liquidity flow into BTC/USD, contrasting prior bearish sentiment.",
+        "ETH Delta Risk Reversal Spike: Late 2026 spike in 25 delta risk reversals across tenors signals heightened volatility skew, potential directional moves, or liquidation pressure in ETH derivatives."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i3gcewyka2j-849e6e",
+      "title": "BMW (BMWG.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:38Z",
+      "summary_points": [
+        "China EV Product Momentum: New iX3 (Nov 2026), i3 LWB (Q1 2027), iX5 launches target resilient BEV segment; >100k iX3 order book extends to 2027, countering ICE mix-driven 20% YTD China volume decline.",
+        "Restructuring & Buyback Acceleration: FY26 earnings pressured by >€1bn FX/raw-material headwinds; buyback accelerated (€625m tranche) via balance sheet strength, with CMD (29-30 Sept) to define restructuring scope and mid-term margin targets.",
+        "European Neue Klasse Validation: Record iX3 order book (>100k units) and margin parity with Gen6 batteries offset cost inflation; China pricing differences and workforce restructuring remain near-term risks.",
+        "CMD Catalyst for Capital Allocation: Upcoming CMD (29-30 Sept) to set mid-term margin ambition and China profitability trajectory (lower cost base from 2028), driving near-term capital return strategy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4td7o6oqoil-9942ad",
+      "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:29Z",
+      "summary_points": [
+        "Brent Price Revisions: Goldman Sachs raises 2027 Brent estimate to $80/b (2028: $75/b, $5/b Brent-WTI spread) and crack spreads to $29/b in 2028, citing tight refining fundamentals (low inventory, supply disruptions, resilient demand).",
+        "XOM/CVX Valuation Catalysts: XOM target $169 (9.0x EV/DCF, 6.5% FCF yield) and CVX target $228 (8.0x EV/DAF, 7.5% FCF yield) driven by Middle East/Russia-Ukraine supply disruptions boosting refining margins.",
+        "COP Growth Projects: COP Buy rating with $146 target fueled by NFE/NFS/Willow projects, $1bn cost reductions, and 20-25% CAGR, though exposed to Qatar LNG delays and Middle East geopolitics.",
+        "Core Risk Factors: Persistent commodity price volatility, refining margin pressure, operational execution risks across all majors, and geopolitical shocks (West Qurna 2/Nasriyah, Qatar LNG) remain critical portfolio vulnerabilities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eyw3d7vi5sw-7c4a46",
+      "title": "Caris Life Sciences Inc. (CAI) CMS Releases Preliminary 2027 CLFS Rates; Positive Revision for CAI",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:04Z",
+      "summary_points": [
+        "Reimbursement Surge: +44% reimbursement for Caris Assure (blood) to $5,250, driving $15–20M annual revenue upside and eliminating reimbursement risk for blood-based portfolio.",
+        "Policy Catalyst: CMS revision directly addresses prior reimbursement uncertainty, a critical structural risk for oncology diagnostics revenue streams.",
+        "Key Risk Exposure: Therapy competition, MCEC trial execution, FDA approval uncertainty, and multi-channel sales challenges remain top near-term threats to valuation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vdofpcc0nwp-d84556",
+      "title": "South Korea Banks The sweet spot widens amid favorable macro; Ug IBK and BNK to Buy from Sell",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:00Z",
+      "summary_points": [
+        "Macro Tailwinds Drive Bank Fundamentals: BoK’s 2026 GDP forecast revised up to 3.3%, current account surplus widening, chip exports fueling trade growth, and rising property prices outweigh near-term delinquency concerns.",
+        "ROE Expansion as Core Value Driver: Banks’ ROE trajectory (recovery to 9.1% by 2028) is value-creative, not destructive; narrowing ROE discount to 20% (vs. 40% prior) and improved asset quality justify valuation upside.",
+        "IBK & BNK Upgraded to Buy: IBK (83% SME loan exposure vs. 46% sector avg) and BNK (57% SME loans) upgraded due to SME credit deterioration normalization, adding 4-5% to net profit vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qujjbovqigu-bb1c5b",
+      "title": "Porsche AG (P911 p.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:40:50Z",
+      "summary_points": [
+        "Porsche FY26 Guidance Resilience: Unchanged revenue (€35bn-36bn) and RoS (5.5-7.5%) despite VW impairment, but FY27 faces mid-triple-digit EBIT headwind from Macan gap, €400m restructuring (vs €1.2bn FY26), and China volumes dropping to 10% of group.",
+        "Strategic Recovery Catalysts: U-shaped recovery driven by 718 BEV launch (2027), ICE Macan return (mid-2028), top-end product availability, and restructuring savings (mid-triple-digit €m by 2030), with BEV supplier cost roll-off by 2030.",
+        "CMD Strategy Valuation Risks: Conservative Sportwagenschmiede 2035 targets 10-15% margins (no China recovery) at 20x P/E (£53); critical risks include China decline (tax adjustments, competition), competitive pressure, and supply-demand mismatch.",
+        "Investor Focus on Credibility: October 7 CMD meeting pivotal for validating Sportwagenschmiede 2035 strategy, with China contribution at ~25k units (weaker than FY26) and management’s U-shaped recovery plan."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iqhxacsrrrq-0053a5",
+      "title": "HubSpot Inc",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:09Z",
+      "summary_points": [
+        "Price Target Deterioration: $276 target (29.1% upside) vs.",
+        "$783 peak (04-Feb-25), reflecting severe valuation erosion; closing price below target signals potential upside but confirms deteriorating outlook.",
+        "Breeze Adoption Momentum: 57% Pro+ customer adoption (up from 37% in 2026), 4.4x agent actions growth, and 3,000+ custom agents deployed—validating core AI monetization path.",
+        "Three-Layer API Monetization: Context-driven AI (Data/Context/Work layers) anchors revenue growth; integration with OpenAI/ChatGPT reinforces ecosystem control and 2027 margin target (23-24%).",
+        "Critical Financial Scalability: $4.545B revenue (12/28E), $1.045B operating cash flow (12/27E), and $17.55 FCF/share (12/28E) confirm scalable model despite SMB budget pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c2moug1j7fy-a11139",
+      "title": "GS MidDay Color US Equities Mid Day Color 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:29:08Z",
+      "summary_points": [
+        "Index Dispersion & AI Momentum: NDX +38bps (AI-driven new highs) vs SPX flat; Semis/memory/AI big tech (AAPL/MU/NVDA) leading, while MSFT/AMZN/JPM lagging; Consumer Agentic AI (META Muse) driving momentum.",
+        "AI Spillover Impact: Negative AI spillover in Financials/Insurance sectors despite stable crude (<$100), with AGENTS (e.g., GOOGL Gemini 4.0) becoming key conversation drivers.",
+        "Sector Rotation: Clear divergence between AI-focused semiconductors/memory (up) and traditional big tech/financials (down), signaling structural AI trade dominance.",
+        "Geopolitical Neutrality: Iran headlines (UN SoH, Saudi pipeline) failed to disrupt crude prices (<$100), indicating minimal near-term market impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2epn3wi13zi-01313a",
+      "title": "GS DeGrasse What's happening TODAY in Financials .. 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:29:06Z",
+      "summary_points": [
+        "Agentic Risk Dominates Financials: Consumer-facing sectors (Personal Insurance: PGR, TRV; Insurance Brokers: GSHD; Wealth Managers: SCHW, AMP) face volatility due to \"agents narrowing monetization,\" while banks with consumer deposits/wealth mix outperform fee-dependent small/mid-caps.",
+        "Payments (Visa/Mastercard) benefit from agentic positioning and PayPal partnerships.",
+        "Defensive Shift & Uncertainty Discount: Market shifted to defensive plays (CBRE/JLL underperforming ~2%), with JPM as tech hedge and Visa as agentic beneficiary.",
+        "Investors price in uncertainty, assessing fundamentals against AI-driven volatility, with \"agentic economy\" acting as a structural headwind.",
+        "Sector-Specific Monetization Pressure: Lead generators (small-cap insurance) and fee-driven wealth managers (LPPA, RJF) face heightened risk from agent-led revenue compression, contrasting with banks leveraging deposit/wealth mix resilience."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-1c6ij86icrc-10d4e0",
       "title": "Mexico Weak Jul Retail Sales",
@@ -232,6 +412,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-byxbajnfkdi-8bc450",
+      "title": "Global Economics Analyst Where in the World Is There Still an Inflation Problem",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:16Z",
+      "summary_points": [
+        "US Inflation Drivers: US core goods inflation elevated temporarily by tariffs (2.4pp, fading H2 2024) and mismeasured AI (1pp, fading 2027), while global peers face persistent services inflation; US is less severe outlier than perceived.",
+        "China Trade Impact: Stronger Chinese exports lower global goods prices by 0.6-0.8% (non-US DMs/EMs), offsetting energy spillovers and creating structural disinflationary tailwinds.",
+        "Rental Inflation Dynamics: US rental inflation below DMs/EMs ex-China due to immigration slowdown; positive correlation (R²=0.46) between migration declines and rent reduction, highlighting policy sensitivity.",
+        "Global Inflation Divergence: Unit labor costs elevated outside US (sustained inflation risk), while US labor costs near pre-pandemic average; non-shelter services inflation overshooting target globally except US (harmonized basis)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
