@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T03:49:48.615915+00:00",
-  "count": 2613,
+  "generated_at": "2026-09-22T04:22:01.768763+00:00",
+  "count": 2615,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -94,6 +94,47 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-rl8okinfetg-a70482",
+      "title": "GS Saboureault Positioning Mondays Week 38 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:40:16Z",
+      "summary_points": [
+        "CTA Equity Selling: $47bn global equity sell-off (including $38bn last week), models predict 1-month flip to buyers; CTAs reduced exposure to $91bn (62nd percentile).",
+        "Hedge Fund Positioning: Europe equities net bought fastest in 5 months (Industrials/Info Tech/Cons Disc bought; Energy/Financials/Staples sold); global book leverage at 309.2% (4.6 pts higher).",
+        "AAII Sentiment Extreme: Bears at 53.3% (vs historical 31%), bulls at 28.8% (vs 37.5%), most bearish since May 2025 (Neutrals 17.9%).",
+        "Trump/Xi Summit: Critical geopolitical event driving near-term market volatility and positioning shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4sbyh6neglf-9d895c",
+      "title": "GS Stankard Eq Positioning and Key Levels 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:40:13Z",
+      "summary_points": [
+        "CTA Sell Pressure & SPX Dynamics: Systematic trend could trigger $10bn equity sell (vs.",
+        "SPX’s $8.5bn buy baseline), with US equities at 5-week high net buying driven by Macro Products short covers and Single Stocks long buys.",
+        "SPX Key Levels & Buyback Blackout: SPX pivots at 7643 (short), 7420 (mid), 6944 (long); ~64% S&P500 in blackout (rising to ~85% by week-end), with 10b5-1s increasing ahead of earnings.",
+        "Down 2.5 STD 1-Month Flow Risk: Total expected flows under Down 2.5 STD for 1 Month are -$184,907M, with S&P 500 E-mini, DAX 30, and FTSE 100 showing severe negative flows (-$2,596M, -$5,797M, -$7,521M).",
+        "Health Care Sentiment Shift: Long/short ratio at 2.32 (26th percentile, lowest since Jul '25), indicating extreme short positioning and potential reversal risk; net selling for fifth consecutive week at fastest pace in six months."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-xnayvnhgbuu-7d2285",
       "title": "Pulp & Paper Monthly Tracker — September 2026",
