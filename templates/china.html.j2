@@ -1028,6 +1028,8 @@
   /* tiles rack */
   body.page-china .cnx-secbar{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
   body.page-china .cnx-secbar b{color:var(--text);font-weight:700}
+  body.page-china .cnx-page-heading{margin:0;font:inherit;color:var(--text);font-weight:700}
+  body.page-china .cnx-zone-heading{font-weight:650}
   body.page-china .cnx-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
   @media(max-width:1100px){body.page-china .cnx-tiles{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){body.page-china .cnx-tiles{grid-template-columns:1fr}}
@@ -2089,7 +2091,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {# /hero #}
 
   <!-- =============== MARKET TILES (C · US mx5 combined index face: SSE / CSI300 / ChiNext / HSI) =============== -->
-  <div class="cnx-secbar"><b>{{ t('CHINA DASHBOARD','中国看板') }}</b><span>{{ latest.date }}</span></div>
+  <div class="cnx-secbar"><h1 class="cnx-page-heading">{{ t('CHINA DASHBOARD','中国看板') }}</h1><span>{{ latest.date }}</span></div>
   {# ── C · One glass face → markets dialog (ported from dashboard.html.j2 9959–10042).
      All four tiles are live-wired (nb-px price + nb-chg delta, patched by live.js).
      SSE + HSI additionally bake the nightly store level/pct as initial content; CSI 300
@@ -2177,9 +2179,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="#cnx-focus-research">{{ t('Research','研究') }}</a>
   </nav>
 
-  <div class="cnx-lbl" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</h2>
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
-  <div class="cnx-rack2">
+  <div class="cnx-rack2" role="region" aria-labelledby="cnx-focus-action">
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
@@ -2226,9 +2228,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</h2>
   <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-markets">
     {# Pullback Risk vs Top Stocks conditional #}
     {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
     {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
@@ -2387,9 +2389,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</h2>
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-drivers">
     {# Policy Monitor card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
       <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
@@ -2454,9 +2456,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</h2>
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-deep">
     {# Property card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
@@ -2529,8 +2531,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
-  <div class="cnx-lbl" id="cnx-focus-research">{{ t('Go deeper','深入研究') }}</div>
-  <div class="cnx-links">
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-research">{{ t('Go deeper','深入研究') }}</h2>
+  <nav class="cnx-links" aria-labelledby="cnx-focus-research">
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
@@ -2539,7 +2541,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
-  </div>
+  </nav>
   {% if health %}
   <div class="cnx-dh">
     <span class="d"></span>
