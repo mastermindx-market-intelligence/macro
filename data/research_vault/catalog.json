@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T19:22:41.117555+00:00",
-  "count": 2658,
+  "generated_at": "2026-09-22T19:36:45.746337+00:00",
+  "count": 2659,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7keplmv3s4b-371985",
+      "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:57:31Z",
+      "summary_points": [
+        "Macro & Rate Hike Catalysts: August core CPI above expectations raised September FOMC rate hike probability to 85% (GIR), with market pricing 25bp hike driven by Fed's desire to avoid surprise markets, not inflation shift.",
+        "Crypto Policy & Performance Divergence: CLARITY Act procedural vote (15 Sept) boosted passage odds to 32% (Polymarket); ETH ETFs attracted $216m inflows vs BTC’s $463m outflows, with ETH outperforming BTC intraday (2.56% vs 2.72% drop).",
+        "Funding Rate Dynamics: Aggregated 8H funding rate remains positive since Feb 2026, indicating sustained long positioning and liquidity flow into BTC/USD, contrasting prior bearish sentiment.",
+        "ETH Delta Risk Reversal Spike: Late 2026 spike in 25 delta risk reversals across tenors signals heightened volatility skew, potential directional moves, or liquidation pressure in ETH derivatives."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-4td7o6oqoil-9942ad",
       "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
