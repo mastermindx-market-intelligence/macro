@@ -510,3 +510,44 @@ def test_settings_focus_restore_executes_without_reopening_shared_nav() -> None:
         old = _run_settings_focus_runtime(source, old_focus_restore=True)
         assert old["afterEscape"]["open"] is True
         assert old["afterCloseButton"]["open"] is True
+
+
+def test_settings_narrow_phone_reflow_is_in_wired_nav_contract() -> None:
+    """The 320px fix must execute under the wired shared-nav CI owner."""
+    for source in (TEMPLATE_THEME_JS, SITE_THEME_JS):
+        settings_css = source.split("  var SETTINGS_CSS = [", 1)[1].split(
+            "  ].join('');", 1
+        )[0]
+        assert "@media (max-width:360px){" in settings_css
+        assert (
+            ".settings-row:not(.settings-acct){display:grid;"
+            "grid-template-columns:18px minmax(0,1fr);column-gap:11px;"
+            "row-gap:8px;align-items:center}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct)>.sr-ctrl{grid-column:1 / -1;"
+            "width:100%;min-width:0}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .set-theme-seg{width:100%;"
+            "box-sizing:border-box;min-width:0}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .set-seg-btn{flex:1 1 0;"
+            "min-width:40px;padding-left:6px;padding-right:6px}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .lang-toggle{width:100%;"
+            "box-sizing:border-box}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;"
+            "min-width:0}"
+        ) in settings_css
+        # The reflow is deliberately preference-only; account actions keep the
+        # compact incumbent row so the 320x568 popover does not grow unnecessarily.
+        narrow = settings_css.split("@media (max-width:360px){", 1)[1].split(
+            "'}',", 1
+        )[0]
+        assert ".settings-acct .sa-btns" not in narrow
+        assert ".settings-acct-in" not in narrow
