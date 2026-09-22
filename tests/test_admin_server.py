@@ -33,6 +33,12 @@ def _get_with_headers(port, path):
         return r.status, r.read(), dict(r.headers)
 
 
+def _head_with_headers(port, path):
+    req = urllib.request.Request(f"http://127.0.0.1:{port}{path}", method="HEAD")
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return r.status, r.read(), dict(r.headers)
+
+
 def test_static_and_local_api_routes():
     httpd, port = _server()
     try:
@@ -58,6 +64,20 @@ def test_static_and_local_api_routes():
             raise AssertionError("expected 404")
         except urllib.error.HTTPError as e:
             assert e.code == 404
+    finally:
+        httpd.shutdown(); httpd.server_close()
+
+
+def test_head_mirrors_public_get_without_response_body():
+    httpd, port = _server()
+    try:
+        for path in ("/", "/app.js", "/styles.css", "/healthz", "/api/session"):
+            get_code, get_body, get_headers = _get_with_headers(port, path)
+            head_code, head_body, head_headers = _head_with_headers(port, path)
+            assert head_code == get_code == 200
+            assert head_body == b""
+            assert head_headers.get("Content-Type") == get_headers.get("Content-Type")
+            assert head_headers.get("Content-Length") == str(len(get_body))
     finally:
         httpd.shutdown(); httpd.server_close()
 
@@ -536,3 +556,33 @@ def test_the_one_live_analytics_reading_is_still_never_cached():
     the operator watches for freshness, so the longer TTL above must not reach it."""
     assert not _cacheable_api_get("/api/analytics/fp/realtime", {})
     assert _cacheable_api_get("/api/analytics/fp/visitors", {})
+
+def test_semantic_failure_response_is_not_cached(monkeypatch):
+    from admin import server
+
+    calls = 0
+
+    def flaky_health():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return {"ok": False, "error": "transient upstream timeout"}
+        return {"ok": True, "healthy": True, "call": calls}
+
+    monkeypatch.setattr(server.health, "summary", flaky_health)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, first, first_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, second, second_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, third, third_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        assert json.loads(first)["ok"] is False
+        assert json.loads(second)["call"] == 2
+        assert json.loads(third)["call"] == 2
+        assert calls == 2
+        assert "X-Admin-Cache" not in first_headers
+        assert second_headers["X-Admin-Cache"] == "MISS"
+        assert third_headers["X-Admin-Cache"] == "HIT"
+    finally:
+        _clear_response_cache()
+        httpd.shutdown(); httpd.server_close()

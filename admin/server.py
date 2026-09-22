@@ -491,7 +491,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
             key, generation, ttl = cache_key
             _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
@@ -519,7 +523,8 @@ class Handler(BaseHTTPRequestHandler):
         for c in (cookies or []):
             self.send_header("Set-Cookie", c)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _csv(self, filename: str, body: bytes) -> None:
         """A real file download, not a JSON envelope the client re-wraps.
@@ -545,7 +550,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _file(self, name: str) -> None:
         p = (STATIC / name).resolve()
@@ -576,7 +582,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _body(self) -> dict:
         try:
@@ -747,6 +754,15 @@ class Handler(BaseHTTPRequestHandler):
             if not self._origin_ok():
                 return ("cross-origin request rejected", 403)
         return None
+
+    def do_HEAD(self):
+        """Mirror GET status and headers without writing a response body.
+
+        External monitors and HTTP clients routinely probe web surfaces with HEAD.
+        BaseHTTPRequestHandler otherwise answers 501, which made a healthy admin
+        console look unavailable even though GET / was 200.
+        """
+        return self.do_GET()
 
     # ---- GET ----------------------------------------------------------------
     _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
@@ -935,7 +951,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'none'; style-src 'unsafe-inline'; sandbox")
                 self.end_headers()
-                self.wfile.write(body)
+                if getattr(self, "command", None) != "HEAD":
+                    self.wfile.write(body)
                 return
             # Allies (ecosystem) cockpit — MKT-D11. Read-only; the page never
             # contacts anyone. Status is folded from the operator ledger.
