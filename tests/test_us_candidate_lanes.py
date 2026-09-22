@@ -1674,3 +1674,67 @@ def test_rs_threshold_release_requires_other_evidence_to_stay_clean():
 
     deteriorated = np.array([True, True, False, False], dtype=bool)
     assert first_threshold_release(deteriorated, rs, 0, 0.75) is None
+
+
+def test_rs_threshold_inference_pairs_months_not_episode_rows():
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        paired_monthly_difference,
+    )
+
+    episodes = [
+        {"date": "2020-01-03", "cohort": "incremental_075_085", "rel_21d": 0.10},
+        {"date": "2020-01-10", "cohort": "incremental_075_085", "rel_21d": 0.20},
+        {"date": "2020-01-07", "cohort": "allowed_lt075", "rel_21d": 0.05},
+        {"date": "2020-02-03", "cohort": "incremental_075_085", "rel_21d": -0.02},
+        {"date": "2020-02-05", "cohort": "allowed_lt075", "rel_21d": 0.01},
+        {"date": "2020-03-03", "cohort": "incremental_075_085", "rel_21d": 0.90},
+    ]
+    diff = paired_monthly_difference(
+        episodes, "rel_21d", "incremental_075_085", "allowed_lt075",
+    )
+    assert len(diff) == 2
+    assert diff.index.strftime("%Y-%m").tolist() == ["2020-01", "2020-02"]
+    assert diff.iloc[0] == pytest.approx(0.10)
+    assert diff.iloc[1] == pytest.approx(-0.03)
+
+
+def test_rs_threshold_inference_bootstrap_is_deterministic():
+    import pandas as pd
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        moving_block_mean_ci,
+    )
+
+    values = pd.Series(
+        [((i % 7) - 3) / 100 for i in range(36)],
+        index=pd.date_range("2020-01-01", periods=36, freq="MS"),
+    )
+    a = moving_block_mean_ci(values)
+    b = moving_block_mean_ci(values)
+    assert a == b
+    assert a["n"] == 36
+    assert a["block"] == 3
+    assert a["draws"] == 5000
+    assert a["seed"] == 20260921
+    assert len(a["mean_ci95"]) == 2
+
+
+def test_rs_threshold_inference_refuses_wrong_schema_or_authority(tmp_path):
+    import json
+    from research.prophet.cpu_leadership.entry_rs_threshold_inference import (
+        load_frozen_study,
+    )
+
+    p = tmp_path / "study.json"
+    p.write_text(json.dumps({"schema": "wrong", "episodes": []}))
+    with pytest.raises(ValueError):
+        load_frozen_study(p)
+
+    p.write_text(json.dumps({
+        "schema": "prophet.cpu_leadership.rs_threshold_study.v1",
+        "authority": {
+            "can_rank": True, "can_gate": False, "can_size": False, "can_trade": False,
+        },
+        "episodes": [],
+    }))
+    with pytest.raises(ValueError):
+        load_frozen_study(p)
