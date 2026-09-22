@@ -532,6 +532,23 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
 
 @needs_node
 @US_PAGES
+def test_us_legacy_feed_keeps_safe_verdict_fallback_copy(js):
+    # Older payloads without display presentation fields retain safe copy.
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert out["thesis"].startswith(
+        "Risk-on — the overall backdrop is supportive."
+    )
+    assert out["subline"] == "GREEN — Risk-on backdrop"
+    assert out["action"] == "Stay selective. Add where setups confirm."
+    assert "breadth and cross-asset signals line up" not in out["thesis"]
+
+
+@needs_node
+@US_PAGES
 def test_us_feed_prefers_canonical_participation_aware_headline(js):
     feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
     feed["display"]["headline_en"] = (
