@@ -297,6 +297,16 @@ producer-on-the-M1-store-host choice with three rejected alternatives:
 Confidence is high; reversibility is easy (delete the plist + the dedicated
 checkout). The decision date is 2026-09-22.
 
+The DEC record's evidence block is the load-bearing test-count quote the
+seat and the runner reference. The round-6 amendment (commit `d8eb9219bc`)
+refreshed the count from 71 → 73 and named the two round-6 test additions
+explicitly (`test_plist_log_paths_live_outside_repo_in_sibling_state_dir`
+for MAJOR-1, `test_run_with_env_wrapper_exists_on_origin_main` for
+MINOR-1) so the DEC record's evidence block matches the pytest tail in the
+PR body and the §7 test-surface table above. Without that refresh the DEC
+record would claim 71 while the suite reports 73 — a discrepancy the
+seat-install runbook's §1 install-receipt would surface.
+
 ## 7. Test surface
 
 All tests use `tmp_path` fixtures only — no real store / R2 / network access.
