@@ -208,7 +208,7 @@
           "applied_theme": "dark",
           "captured": true,
           "file": "desktop-en-dark-link-hover.png",
-          "force_state": "hover",
+          "force_state": "link-hover",
           "locale": "en",
           "theme": "dark",
           "viewport": "desktop",
@@ -218,7 +218,7 @@
           "sha256": "d9e2f2c36589aae5af0da9a8cf012bc26f905bda454e40696e20ca40611b080c",
           "width": 1440,
           "height": 900,
-          "applied_force_state": "hover"
+          "applied_force_state": "link-hover"
         },
         {
           "access": "local_fixture",
@@ -226,7 +226,7 @@
           "applied_theme": "dark",
           "captured": true,
           "file": "desktop-en-dark-link-focus.png",
-          "force_state": "focus",
+          "force_state": "link-focus",
           "locale": "en",
           "theme": "dark",
           "viewport": "desktop",
@@ -236,7 +236,7 @@
           "sha256": "ebb472469dec0b60354f5ba93f54ebfcc1e872dd01ed7fa16a14363effa80006",
           "width": 1440,
           "height": 900,
-          "applied_force_state": "focus"
+          "applied_force_state": "link-focus"
         },
         {
           "access": "local_fixture",
@@ -244,7 +244,7 @@
           "applied_theme": "light",
           "captured": true,
           "file": "desktop-en-light-link-hover.png",
-          "force_state": "hover",
+          "force_state": "link-hover",
           "locale": "en",
           "theme": "light",
           "viewport": "desktop",
@@ -254,7 +254,7 @@
           "sha256": "188503007df33565444f82d165c55ecafef4afb481211865b7f00d991b97aa15",
           "width": 1440,
           "height": 900,
-          "applied_force_state": "hover"
+          "applied_force_state": "link-hover"
         },
         {
           "access": "local_fixture",
@@ -262,7 +262,7 @@
           "applied_theme": "light",
           "captured": true,
           "file": "desktop-en-light-link-focus.png",
-          "force_state": "focus",
+          "force_state": "link-focus",
           "locale": "en",
           "theme": "light",
           "viewport": "desktop",
@@ -272,7 +272,7 @@
           "sha256": "73d924310d00fdff919aaed36ab26b3bd860938a97bbb8fc4342ce2f3733d7d1",
           "width": 1440,
           "height": 900,
-          "applied_force_state": "focus"
+          "applied_force_state": "link-focus"
         }
       ]
     }
