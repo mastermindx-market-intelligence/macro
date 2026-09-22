@@ -506,6 +506,18 @@ def test_a_spurious_only_red_is_still_mergeable():
     assert verdict == "clean" and names == []
 
 
+def test_vercel_build_rate_limit_status_is_non_binding():
+    """Vercel quota state is external to the repository-owned CI proof."""
+    assert MOG.VERCEL_STATUS_CONTEXT == "Vercel"
+    assert MOG.is_non_binding_check("Vercel")
+    assert MOG.decide_verdict(
+        [
+            _run("ci-pack-1", conclusion="success"),
+            _run("Vercel", conclusion="failure"),
+        ]
+    ) == ("clean", [])
+
+
 def test_a_genuine_red_is_blocked_and_named():
     verdict, names = MOG.decide_verdict(
         [_run("ci-pack-1", conclusion="failure"), _run("tier-gate", conclusion="timed_out")]

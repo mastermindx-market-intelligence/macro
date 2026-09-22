@@ -1,0 +1,10 @@
+{
+  "head": "914a9063a1cf094af45c9ad73513aa485e338fee",
+  "base": "4f4f64931d6e33d61b901c313132a5116e3f0c32",
+  "canonical_feature_css": "578611ed",
+  "feature_template_unchanged": true,
+  "inline_data_scripts_unchanged_by_asset_normalization": true,
+  "no_unrelated_history_override": true,
+  "recovered_canonical_merge_base": "a98cb19b420e22f744c7a6ae961cf8724382b3c5",
+  "html_sha256": "8ad72830c26a96316b6ba08dfe61abd28e6b123455c505533df0a3f95f68ca17"
+}
