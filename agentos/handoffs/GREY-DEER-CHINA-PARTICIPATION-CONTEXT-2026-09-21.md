@@ -127,28 +127,34 @@ prs:
 # Current cumulative continuation
 Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
 Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f, compatible1.0.1/bootstrap1.
-Current Chairman intent continues accuracy work; CI/release deferred, Draft/HOLD.
-Base4c3fdf2e1a63397086751f73fbe4be470ce2a4fc already contains combined7592,
-participation/cohort/optional weights, missing-member explanation and incumbent6860.
-DO_NOT_REDO:these integrations/measurements and their historical evidence.
+Chairman continues accuracy work; CI/release deferred, Draft/HOLD unchanged.
+DO_NOT_REDO:combined7592 integrity, participation/cohort/optional weight consumers,
+missing-member explanation, source-current72bb integration and incumbent6860.
 
-Current delta:only four quadrant definitions and four bilingual regime reasons in
-engine/china_playbook.py change. Full-page Jinja proves the old bottom/hit-rate
-claims no longer return in the playbook dialog. Existing scoring and non-regime
-reasons are unchanged across405 synthetic scenarios; non-string AST identical.
-12 RED cases/36 controls preceded repair; final373 tests pass,50 new cases.
-Exact evidence:research/grey_deer/CHINA_REGIME_COPY_20260922.json.
-Current source is committed before the normal offline publication-artifact check.
-No source worker, watcher or source-effect uncertainty exists.
+New source:e91a7313dc4635b013e162affbf049984c2dbc61 changes16 text literals only in
+china_playbook. Four quadrant definitions separate model directions from economic
+levels; four bilingual regime reasons no longer certify a bottom, hit rate or entry.
+373 tests pass across4 owning suites;50 new cases, including12 RED before repair.
+405 synthetic old/new scenarios preserve numeric/posture outputs and non-regime
+reasons. Non-string AST identical. The actual full-page Jinja dialog is covered.
+Evidence:research/grey_deer/CHINA_REGIME_COPY_20260922.json; current research section
+in research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md.
 
-Frozen gates remain:post-Lens browser safety-status refusal; source-clock edit
-with15 pending cases; protective automatic-weight-supply append; prior7029 review;
-optional weight name/residual augmentation. This turn's separate macro-detail/
-latest-payload compound read was also refused, not repeated or rerouted.
-RDC0.2.50 preflight shows allowed worktree and commands, not platform-gate recovery.
-No new risk model, probability, sizing, authority or collection is introduced.
-No official weight artifact is connected. Prior source branches/controllers untouched.
+The normal offline builder returned0 but recomputed derived latest.json:19 leaves
+changed under conditions/fear_euphoria/market_drivers. The input assertion caught
+this, so its refreshed page was NOT accepted/published. Its artifact/diff remain
+operation-local;27 owned generated files were restored. Six pinned input/ledger
+files and the existing page a7b1ea68... are byte-identical to their original state.
+Do not claim the changed analytical readings were caused by text or validated.
 
-Next:finish source-bound offline page proof and publish this same candidate;
-then resolve exact original platform gates before final browser/CI/live acceptance.
-MISSION_COMPLETE:false. No background work or custody transfer is claimed.
+Frozen gates:post-Lens browser refusal; original clock edit/15 pending cases;
+protective automatic-weight-supply append; prior7029 review; weight name/residual
+augmentation. This turn's distinct macro-detail/latest-payload read was refused;
+it was not rerouted. Later reads reconciled the actual builder effect on its own carrier.
+No effect uncertainty, worker, watcher, fresh collection, policy or deployment.
+
+Next:qualify the raw-input/derived-summary vintage difference before accepting a
+new rendered page, then exact original platform gates and normal release proof.
+Intended resume:fresh conversation, this current same-PR checkpoint plus fresh INDEX.
+CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false. Context-heavy source-and-artifact
+phase preserved; source custody is retained, not transferred or automatically awakened.

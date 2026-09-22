@@ -166,3 +166,26 @@ and recovery refusals remain held. Current RDC preflight confirms permitted path
 and process configuration, not recovery of the platform safety-status gate.
 Next bounded action:normal offline builder and source-bound artifact check;
 post-Lens browser/public acceptance and hosted CI remain explicitly unproven.
+
+### Regime-copy artifact gate: additional analytical drift excluded
+Semantic source:e91a7313dc4635b013e162affbf049984c2dbc61.
+The actual no-network builder returned0 and its generated playbook contains the
+corrected copy. Its normal engine.china_run.run() entry nevertheless recomputed
+and wrote the derived data/china_regime/latest.json. The frozen-input assertion
+caught19 changed leaves in conditions, fear_euphoria and market_drivers, including
+copper-related readings. This is not evidence those changes were caused by copy,
+nor proof that the source-clock problem has been resolved. No empirical conclusion
+or newly calibrated reading is accepted from this attempted rebuild.
+The regenerated page was therefore NOT accepted into this copy-only repair.
+Its bytes and exact derived-summary difference are preserved operation-locally;
+27 specifically identified owned generated outputs were restored. All six pinned
+input/ledger files and the previous committed page match their original hashes.
+The existing model and risk-score text also compared equal before this rejection.
+The373-test source/template result and405-case posture comparison remain valid;
+no final browser run was attempted and no old refusal was bypassed.
+Next acceptance work must distinguish raw input clocks from derived-summary build
+vintages before accepting a refreshed page. Do not merely drop the input assertion
+or call a successful process exit an accepted analytical output.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false.
+The source-copy repair is preserved; generated-page and full accuracy acceptance
+remain open at this context-heavy, evidence-qualified continuation boundary.
