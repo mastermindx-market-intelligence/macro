@@ -1319,6 +1319,7 @@ jobs:
       - "collectors/edgar_facts.py"
       # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
       - "engine/debt_maturity.py"
+      - "engine/capital_need.py"
       - "scripts/build_debt_maturity.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_scenario.py"
@@ -11043,6 +11044,7 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
