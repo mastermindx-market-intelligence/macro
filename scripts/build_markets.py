@@ -272,12 +272,19 @@ def main() -> int:
     site.mkdir(parents=True, exist_ok=True)
 
     # ---- 0. Emit the shared regime prior artifact (W4.5 — additive, cheap, never fatal) ----
+    # Snapshot first. The emit rewrites regime_prior.js from live data, and this
+    # page does not ship that rewrite. The bytes go back before the stamp below
+    # so markets.html's ?v= names the file that remains.
+    _prior_path = site / "regimedata" / "regime_prior.js"
+    _prior_kept = _prior_path.read_bytes() if _prior_path.is_file() else None
     try:
         from scripts.build_regime_prior import emit as _emit_prior
         from lib import config as _cfg
         _emit_prior(data_dir=_cfg.data_dir(), site_dir=site)
     except Exception as _rp_exc:  # noqa: BLE001
         log.warning("build_markets: regime_prior emit failed (non-fatal): %s", _rp_exc)
+    if _prior_kept is not None:
+        _prior_path.write_bytes(_prior_kept)
 
     # ---- 1. Load country_cycles engine data ----
     country_sectors = _load_country_cycles(site)

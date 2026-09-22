@@ -6,6 +6,7 @@ copy that belongs to that verdict. They print the branch they exercised.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import subprocess
@@ -418,6 +419,19 @@ def _restore_bake_side_effects():
                 path.unlink()
         else:
             path.write_bytes(blob)
+
+
+def test_committed_regime_prior_stamp_matches_shipped_file():
+    """markets.html ?v= must be the sha256 prefix of the regime_prior.js that ships.
+
+    The bake emits a live script, then the side-effect fixture puts the shipped
+    file back. Byte-identity of the page does not see that restore. This checks
+    the committed pair directly.
+    """
+    prior = ROOT / "site/regimedata/regime_prior.js"
+    digest = hashlib.sha256(prior.read_bytes()).hexdigest()[:8]
+    stamps = set(re.findall(r"regime_prior\.js\?v=([0-9a-f]{8})", PAGE.read_text(encoding="utf-8")))
+    assert stamps == {digest}, (stamps, digest)
 
 
 def test_fresh_render_byte_matches_committed_markets_html(_restore_bake_side_effects):
