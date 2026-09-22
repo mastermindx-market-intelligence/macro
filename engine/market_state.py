@@ -614,6 +614,9 @@ def _radar_to_rd(rr: dict) -> dict:
         "gross": _num(rr.get("gross_factor")),
         "dd5": _num(dp.get("h5")), "dd10": _num(dp.get("h10")), "dd21": _num(dp.get("h21")),
         "dd_lift": _num(dp.get("lift_h21")),
+        # Display-only calibration provenance from the accepted post-parity audit.
+        # It never feeds score/state/authority and is absent on markets without this study.
+        "dd_evidence": dp.get("calibration_evidence"),
         # unconditional "normal" base rates per horizon — the reference the radar card draws the
         # escalating odds against (so a small near-term bar can't be misread as "no risk").
         "dd_base": {"h5": _num(dp.get("base_h5")), "h10": _num(dp.get("base_h10")),
@@ -859,6 +862,7 @@ def _calm_radar() -> dict:
     return {"state": None, "top_score": None, "label_en": "calm", "label_zh": "平静",
             "state_zh": "", "do_en": "", "do_zh": "", "gross": None,
             "dd5": None, "dd10": None, "dd21": None, "dd_lift": None,
+            "dd_evidence": None,
             "dd_base": {"h5": None, "h10": None, "h21": None},
             "is_warning": False, "is_loud": False, "can_force": False, "binding": False,
             "authority": None,
