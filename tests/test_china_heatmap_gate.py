@@ -220,6 +220,38 @@ def test_summary_mirrors_the_js_arithmetic():
     assert [r["code"] for r in b["gainers"]] == [r["code"] for r in s["gainers"]]
 
 
+def test_ssr_observation_coverage_is_validated_and_bilingual():
+    """The crawler-visible disclosure must use the current-membership denominator
+    and must fail closed when the accounting does not reconcile."""
+    summary = dict(_summary("china"))
+    summary["tf"] = "1D"
+    summary["observation_coverage"] = {
+        "basis": "current_membership",
+        "membership_count": 1706,
+        "current_observation_count": 1700,
+        "timeframes": {
+            "1D": {
+                "denominator": 1706,
+                "valid_count": 1700,
+                "missing_count": 6,
+                "fraction": 1700 / 1706,
+            }
+        },
+    }
+    html = _render("china", summary=summary, gated=False)
+    assert "1700 / 1706 names have observed endpoint pairs · 6 unavailable." in html
+    assert "1700 / 1706 个标的具备有效区间行情 · 6 个不可用。" in html
+
+    broken = dict(summary)
+    broken["observation_coverage"] = {
+        **summary["observation_coverage"],
+        "membership_count": 1705,
+    }
+    bad_html = _render("china", summary=broken, gated=False)
+    assert "Observation coverage unavailable." in bad_html
+    assert "观测覆盖率不可用。" in bad_html
+
+
 def test_minus_sign_is_the_typographic_minus_not_a_hyphen():
     """heatmap.js prints U+2212. A hyphen here would make the SSR and the live
     copy differ by one glyph on every negative number on the page."""
@@ -440,9 +472,15 @@ def test_tile_map_carries_the_free_market_facts():
     assert len(with_px) / len(tiles) > 0.95, "most tiles carry no last price"
     assert len(with_p200) / len(tiles) > 0.8, "most tiles carry no 200-day distance"
     assert all(t["px"] > 0 for t in with_px)
-    # The card renders both from the tile, with the per-ticker file only as the
-    # fallback for maps whose tiles do not carry them (the US map).
-    assert re.search(r"var p2 = t\.p200 != null \? t\.p200 : tech\.pct_vs_200dma", HEATMAP_JS)
+    # The card renders both facts directly from the tile. The per-ticker file
+    # remains a fallback for maps whose tiles do not carry them, but an enhanced
+    # China observation snapshot must not mix in an unbound nightly 200-day fact.
+    assert re.search(
+        r'var p2 = t\.p200 != null \? t\.p200 : '
+        r'\(\(data\.market === ["\']china["\'] && t\.observation\) '
+        r'\? null : tech\.pct_vs_200dma\);',
+        HEATMAP_JS,
+    )
     assert re.search(r"var px = t\.px != null", HEATMAP_JS)
     assert "hm-c-meta" not in TEMPLATE_SRC          # built by the card, not the page
 
