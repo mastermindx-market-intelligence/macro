@@ -1,0 +1,237 @@
+{
+  "mode": "local immutable public-shell fixture, no protected payloads or response interception",
+  "cells": [
+    {
+      "cell": "desktop-en-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53812/fonts/Inter-500.woff2",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53812/fonts/Inter-500.woff2",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/fonts/Inter-500.woff2",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/fonts/Inter-500.woff2",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "narrow-en-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "narrow-en-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "narrow-zh-dark",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    },
+    {
+      "cell": "narrow-zh-light",
+      "http": 200,
+      "html_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+      "funds": 108,
+      "native_disclosures": true,
+      "locale_and_fund_order_preserved": true,
+      "help_height": 40,
+      "overflow": 0,
+      "page_errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:53812/premiumdata/etfs.json",
+          "status": 404
+        }
+      ],
+      "passed": true
+    }
+  ]
+}

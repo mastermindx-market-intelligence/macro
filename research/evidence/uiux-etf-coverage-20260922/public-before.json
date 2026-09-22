@@ -1,0 +1,15 @@
+{
+  "width": 320,
+  "http": 200,
+  "overflow": 0,
+  "help": 0,
+  "coverage": "108\nfunds tracked\n65\nfiled in the last three days\n14\nsponsors\ncurrent\na few days behind\nstale",
+  "asof": null,
+  "errors": [],
+  "failed": [
+    {
+      "url": "https://www.mastermind-x.com/premiumdata/etfs.json",
+      "status": 401
+    }
+  ]
+}

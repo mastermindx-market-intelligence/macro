@@ -1,0 +1,57 @@
+def fund_coverage() -> list[dict]:
+    """Every tracked fund with its snapshot depth + freshness, so the page can
+    show the full coverage universe and surface any feed that has gone stale.
+    Spans both stores (curated etf_holdings + active watchlist)."""
+    cfg = config.load()
+    out: list[dict] = []
+    latest_seen: list[pd.Timestamp] = []
+
+    def _scan(root: Path, spec_map: dict, active: bool) -> None:
+        for fund, spec in spec_map.items():
+            d = root / fund
+            snaps = sorted(d.glob("*.parquet")) if d.exists() else []
+            asof = snaps[-1].stem if snaps else None
+            ts = None
+            if asof:
+                try:
+                    ts = pd.to_datetime(asof)
+                    latest_seen.append(ts)
+                except Exception:  # noqa: BLE001
+                    ts = None
+            out.append({
+                "fund": fund,
+                "fund_name": spec.get("name", fund),
+                "sponsor": spec.get("sponsor", "watchlist" if active else ""),
+                "category": spec.get("category", "Active / Innovation" if active else ""),
+                "is_active": active,
+                "unofficial": bool(spec.get("sponsor") == "stockanalysis"),
+                "n_snapshots": len(snaps),
+                "latest_asof": asof,
+                "_ts": ts,
+            })
+
+    try:
+        _scan(config.data_dir() / "etf_holdings",
+              cfg.get("etf_holdings", {}).get("universe", {}), active=False)
+    except Exception as e:  # noqa: BLE001
+        log.error("fund_coverage etf_holdings scan failed: %s", e)
+    try:
+        _scan(config.ROOT / cfg["storage"]["holdings_dir"],
+              cfg.get("holdings", {}).get("watchlist", {}), active=True)
+    except Exception as e:  # noqa: BLE001
+        log.error("fund_coverage watchlist scan failed: %s", e)
+
+    # freshness relative to the newest snapshot anywhere (avoids clock/timezone
+    # arguments about "today" — staleness is measured against the fleet's own edge)
+    fleet_latest = max(latest_seen) if latest_seen else None
+    for r in out:
+        ts = r.pop("_ts", None)
+        if ts is not None and fleet_latest is not None:
+            r["stale_days"] = int((fleet_latest - ts).days)
+        else:
+            r["stale_days"] = None
+    # order: freshest & deepest first, dead feeds (0 snapshots) last
+    out.sort(key=lambda r: (r["n_snapshots"] == 0,
+                            r["stale_days"] if r["stale_days"] is not None else 1e9,
+                            -r["n_snapshots"]))
+    return out

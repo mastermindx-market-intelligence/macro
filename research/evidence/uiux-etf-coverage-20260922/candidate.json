@@ -1,0 +1,9 @@
+{
+  "source_base": "49fd490f88e1acb8a050397cc8612f2c68c765d0",
+  "css": "bf4337e2",
+  "page_sha256": "5d113df94eeaf16e6c94c01008613011bcad1ed8856a37bb2424997cb460f356",
+  "fund_records_unchanged": 108,
+  "all_scripts_unchanged": true,
+  "help_words": 40,
+  "accepted_asset_query_update": "theme.js c907a6b8 -> 3ffc953f; underlying shared script bytes unchanged vs pickup"
+}

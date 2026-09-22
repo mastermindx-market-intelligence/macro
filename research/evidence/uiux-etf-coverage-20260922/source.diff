@@ -1,0 +1,147 @@
+diff --git a/templates/etfs.html.j2 b/templates/etfs.html.j2
+--- a/templates/etfs.html.j2
++++ b/templates/etfs.html.j2
+@@ -504,0 +505,14 @@
++
++/* Comparative coverage dates and optional help share the existing shelf. */
++.shelf summary.fl-sum{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
++.fl-sum .fl-title{grid-column:1;min-width:0}
++.fl-sum .sh-sub{grid-column:1;grid-row:2}
++.fl-sum .sh-caret{grid-column:2;grid-row:1 / span 2}
++.shelf details.fl-help{margin:8px 0 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
++.shelf details.fl-help>summary{min-height:40px;padding:7px 0;font-size:12px;color:var(--link);border:0;border-radius:0;background:transparent;touch-action:manipulation}
++.fl-help>summary::after{content:'+';margin-left:auto}
++.fl-help[open]>summary::after{content:'−'}
++.fl-help>summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
++.fl-help p{margin:0 0 12px;color:var(--muted);font-size:12px;line-height:1.6;max-width:70ch}
++.fl-stats .fl-s{max-width:100%;flex-wrap:wrap}
++.fl-lg{flex-wrap:wrap}
+@@ -764,2 +778 @@
+-      <summary>{{ t('Coverage & freshness', '覆盖范围与新鲜度') }} <span class="sh-sub">— {{ t('every tracked fund; any stale feed surfaces here', '所有已追踪基金；任何陈旧数据源都会在此暴露') }}{% if coverage %} · {{ t('all', '共显示') }} {{ coverage | length }} {{ t('shown', '只') }}{% endif %}</span>{{ help('The small figure after each fund is how many daily holdings reads we hold for it: a shallow history means that fund’s numbers exist but have no context yet, a deep one means a streak on that fund is meaningful. Freshness is measured against the newest fund in the fleet rather than against the clock, because sponsors publish on different calendars and a timezone would otherwise manufacture staleness. A fund with no reads at all is a broken feed, not a quiet fund.',
+-      '每只基金后的小数字，是我们为其保存的每日持仓读取次数：历史越浅，说明该基金的数字虽然存在但尚无参照；历史越深，其连续动作才具备意义。新鲜度以基金阵容中最新的一只为基准衡量，而非以时钟为准——各发行商的披露日历不同，按时钟计会凭空制造出「陈旧」。完全没有读取记录的基金代表数据源中断，而不是该基金没有动作。') }}<span class="sh-caret">▶</span></summary>
++      <summary class="fl-sum"><span class="fl-title">{{ t('Coverage & freshness', '覆盖范围与新鲜度') }}</span><span class="sh-sub">{% if coverage %}{{ coverage | length }} {{ t('tracked funds', '只跟踪基金') }}{% else %}{{ t('Holdings snapshots', '持仓快照') }}{% endif %}</span><span class="sh-caret">▶</span></summary>
+@@ -779 +792 @@
+-          <span class="fl-s"><b>{{ fl_current | length }}</b>{{ t('filed in the last three days', '近三日已披露') }}</span>
++          <span class="fl-s"><b>{{ fl_current | length }}</b>{{ t('near latest snapshot', '接近最新快照') }}</span>
+@@ -781 +794 @@
+-          <span class="fl-lg"><span class="fdot fresh"></span>{{ t('current', '最新') }}<span class="fdot aging"></span>{{ t('a few days behind', '落后数日') }}<span class="fdot stale"></span>{{ t('stale', '陈旧') }}</span>
++          <span class="fl-lg"><span class="fdot fresh"></span>{{ t('near latest', '接近最新') }}<span class="fdot aging"></span>{{ t('behind', '落后') }}<span class="fdot stale"></span>{{ t('older', '较旧') }}</span>
+@@ -782,0 +796 @@
++        <details class="fl-help"><summary>{{ t('How to read coverage', '如何解读覆盖数据') }}</summary><p>{{ t('Snapshot counts show saved daily holdings records. Age is the gap from the newest saved fund snapshot, not from today. Near latest means no more than three days behind that reference. Missing or undated records do not count as current.', '数字表示已保存的每日持仓快照数。时间差以最新保存的基金快照为基准，并非距今天的天数。“接近最新”表示落后该基准不超过三天。缺失或无日期的记录不计入当前覆盖。') }}</p></details>
+@@ -797 +811 @@
+-          <span class="fu {% if not c.n_snapshots %}s0{% elif c.stale_days is not none and c.stale_days <= 3 %}s1{% elif c.stale_days is not none and c.stale_days <= 10 %}s2{% else %}s3{% endif %}"><b>{{ c.fund }}</b><span>{% if c.fund_name and c.fund_name != c.fund %}{{ c.fund_name }}{% endif %}</span>{% if c.unofficial %}<u>{{ t('3rd', '第三方') }}</u>{% endif %}{% if c.stale_days and c.stale_days > 3 %}<u>{{ c.stale_days }}d</u>{% endif %}<i>{{ c.n_snapshots }}</i></span>
++          <span class="fu {% if not c.n_snapshots or c.stale_days is none %}s0{% elif c.stale_days <= 3 %}s1{% elif c.stale_days is not none and c.stale_days <= 10 %}s2{% else %}s3{% endif %}"><b>{{ c.fund }}</b><span>{% if c.fund_name and c.fund_name != c.fund %}{{ c.fund_name }}{% endif %}</span>{% if c.unofficial %}<u>{{ t('3rd', '第三方') }}</u>{% endif %}{% if c.stale_days and c.stale_days > 3 %}<u>{{ c.stale_days }}d</u>{% endif %}{% if not c.n_snapshots %}<u>{{ t('No snapshots', '暂无快照') }}</u>{% elif c.stale_days is none %}<u>{{ t('Date unknown', '日期未知') }}</u>{% endif %}<i>{{ c.n_snapshots }}</i></span>
+diff --git a/site/etfs.html b/site/etfs.html
+--- a/site/etfs.html
++++ b/site/etfs.html
+@@ -56 +56 @@
+-<link rel="stylesheet" href="assets/css/e259995b.css?v=e259995b">
++<link rel="stylesheet" href="assets/css/bf4337e2.css?v=bf4337e2">
+@@ -653 +653 @@
+-      <summary><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span> <span class="sh-sub">— <span class="l-en">every tracked fund; any stale feed surfaces here</span><span class="l-zh">所有已追踪基金；任何陈旧数据源都会在此暴露</span> · <span class="l-en">all</span><span class="l-zh">共显示</span> 108 <span class="l-en">shown</span><span class="l-zh">只</span></span><span class="txq" tabindex="0">?<span class="txq-tip"><span class="l-en">The small figure after each fund is how many daily holdings reads we hold for it: a shallow history means that fund’s numbers exist but have no context yet, a deep one means a streak on that fund is meaningful. Freshness is measured against the newest fund in the fleet rather than against the clock, because sponsors publish on different calendars and a timezone would otherwise manufacture staleness. A fund with no reads at all is a broken feed, not a quiet fund.</span><span class="l-zh">每只基金后的小数字，是我们为其保存的每日持仓读取次数：历史越浅，说明该基金的数字虽然存在但尚无参照；历史越深，其连续动作才具备意义。新鲜度以基金阵容中最新的一只为基准衡量，而非以时钟为准——各发行商的披露日历不同，按时钟计会凭空制造出「陈旧」。完全没有读取记录的基金代表数据源中断，而不是该基金没有动作。</span></span></span><span class="sh-caret">▶</span></summary>
++      <summary class="fl-sum"><span class="fl-title"><span class="l-en">Coverage &amp; freshness</span><span class="l-zh">覆盖范围与新鲜度</span></span><span class="sh-sub">108 <span class="l-en">tracked funds</span><span class="l-zh">只跟踪基金</span></span><span class="sh-caret">▶</span></summary>
+@@ -657 +657 @@
+-          <span class="fl-s"><b>65</b><span class="l-en">filed in the last three days</span><span class="l-zh">近三日已披露</span></span>
++          <span class="fl-s"><b>65</b><span class="l-en">near latest snapshot</span><span class="l-zh">接近最新快照</span></span>
+@@ -659,3 +659,4 @@
+-          <span class="fl-lg"><span class="fdot fresh"></span><span class="l-en">current</span><span class="l-zh">最新</span><span class="fdot aging"></span><span class="l-en">a few days behind</span><span class="l-zh">落后数日</span><span class="fdot stale"></span><span class="l-en">stale</span><span class="l-zh">陈旧</span></span>
+-        </div>
+-        <div class="fl-g">
++          <span class="fl-lg"><span class="fdot fresh"></span><span class="l-en">near latest</span><span class="l-zh">接近最新</span><span class="fdot aging"></span><span class="l-en">behind</span><span class="l-zh">落后</span><span class="fdot stale"></span><span class="l-en">older</span><span class="l-zh">较旧</span></span>
++        </div>
++        <details class="fl-help"><summary><span class="l-en">How to read coverage</span><span class="l-zh">如何解读覆盖数据</span></summary><p><span class="l-en">Snapshot counts show saved daily holdings records. Age is the gap from the newest saved fund snapshot, not from today. Near latest means no more than three days behind that reference. Missing or undated records do not count as current.</span><span class="l-zh">数字表示已保存的每日持仓快照数。时间差以最新保存的基金快照为基准，并非距今天的天数。“接近最新”表示落后该基准不超过三天。缺失或无日期的记录不计入当前覆盖。</span></p></details>
++<div class="fl-g">
+@@ -667 +668 @@
+-          <div class="fl-list"><span class="fu s1"><b>AIQ</b><span>Global X AI &amp; Technology</span><i>42</i></span><span class="fu s3"><b>BATT</b><span>Amplify Lithium &amp; Battery Technology</span><u>18d</u><i>192</i></span><span class="fu s1"><b>BETZ</b><span>Roundhill Sports Betting &amp; iGaming</span><i>112</i></span><span class="fu s1"><b>BKCH</b><span>Global X Blockchain</span><i>109</i></span><span class="fu s1"><b>BOTZ</b><span>Global X Robotics &amp; AI</span><i>103</i></span><span class="fu s1"><b>BUG</b><span>Global X Cybersecurity</span><i>103</i></span><span class="fu s1"><b>CIBR</b><span>First Trust NASDAQ Cybersecurity</span><i>26</i></span><span class="fu s1"><b>CLOU</b><span>Global X Cloud Computing</span><i>103</i></span><span class="fu s2"><b>CNRG</b><span>SPDR S&amp;P Kensho Clean Power</span><u>4d</u><i>25</i></span><span class="fu s1"><b>COPJ</b><span>Sprott Junior Copper Miners</span><i>35</i></span><span class="fu s1"><b>COPP</b><span>Sprott Copper Miners</span><i>58</i></span><span class="fu s1"><b>COPX</b><span>Global X Copper Miners</span><i>103</i></span><span class="fu s1"><b>CTEC</b><span>Global X CleanTech</span><i>109</i></span><span class="fu s2"><b>DAPP</b><span>VanEck Digital Transformation</span><u>4d</u><i>42</i></span><span class="fu s1"><b>DRIV</b><span>Global X Autonomous &amp; Electric Vehicles</span><i>109</i></span><span class="fu s1"><b>DTCR</b><span>Global X Data Center &amp; Digital Infra</span><i>42</i></span><span class="fu s1"><b>EBIZ</b><span>Global X E-commerce</span><i>42</i></span><span class="fu s2"><b>EMET</b><span>VanEck Copper and Electrification</span><u>4d</u><i>25</i></span><span class="fu s1"><b>FAN</b><span>First Trust Global Wind Energy</span><i>26</i></span><span class="fu s1"><b>FINX</b><span>Global X FinTech</span><i>42</i></span><span class="fu s2"><b>GDX</b><span>VanEck Gold Miners</span><u>4d</u><i>42</i></span><span class="fu s2"><b>GDXJ</b><span>VanEck Junior Gold Miners</span><u>4d</u><i>42</i></span><span class="fu s1"><b>GNOM</b><span>Global X Genomics &amp; Biotechnology</span><i>109</i></span><span class="fu s1"><b>GRID</b><span>First Trust Clean Edge Smart Grid</span><i>26</i></span><span class="fu s2"><b>HAIL</b><span>SPDR S&amp;P Kensho Smart Mobility</span><u>4d</u><i>25</i></span><span class="fu s1"><b>HERO</b><span>Global X Video Games &amp; Esports</span><i>103</i></span><span class="fu s2"><b>HTEC</b><span>ROBO Global Healthcare Technology &amp; Innovation</span><u>4d</u><i>25</i></span><span class="fu s1"><b>HYDR</b><span>Global X Hydrogen</span><i>42</i></span><span class="fu s2"><b>IBOT</b><span>VanEck Robotics</span><u>4d</u><i>25</i></span><span class="fu s1"><b>IZRL</b><span>ARK Israel Innovative Technology</span><i>40</i></span><span class="fu s1"><b>LIT</b><span>Global X Lithium &amp; Battery Tech</span><i>103</i></span><span class="fu s1"><b>LITP</b><span>Sprott Lithium Miners</span><i>58</i></span><span class="fu s1"><b>MARS</b><span>Roundhill Space</span><i>112</i></span><span class="fu s1"><b>MEME</b><span>Roundhill MEME</span><i>112</i></span><span class="fu s1"><b>METV</b><span>Roundhill Ball Metaverse</span><i>112</i></span><span class="fu s1"><b>MLPX</b><span>Global X MLP &amp; Energy Infrastructure</span><i>103</i></span><span class="fu s2"><b>MOAT</b><span>VanEck Morningstar Wide Moat</span><u>4d</u><i>42</i></span><span class="fu s1"><b>NERD</b><span>Roundhill Video Games</span><i>41</i></span><span class="fu s2"><b>NLR</b><span>VanEck Uranium &amp; Nuclear</span><u>4d</u><i>42</i></span><span class="fu s2"><b>NODE</b><span>VanEck Onchain Economy</span><u>4d</u><i>25</i></span><span class="fu s2"><b>NUKZ</b><span>Range Nuclear Renaissance</span><u>4d</u><i>42</i></span><span class="fu s1"><b>PAVE</b><span>Global X U.S. Infrastructure Dev</span><i>103</i></span><span class="fu s1"><b>PBW</b><span>Invesco WilderHill Clean Energy</span><i>45</i></span><span class="fu s1"><b>PRNT</b><span>The 3D Printing ETF</span><i>40</i></span><span class="fu s1"><b>QCLN</b><span>First Trust NASDAQ Clean Edge Green Energy</span><i>26</i></span><span class="fu s0"><b>QTUM</b><span>Defiance Quantum</span><i>0</i></span><span class="fu s2"><b>REMX</b><span>VanEck Rare Earth &amp; Strategic Metals</span><u>4d</u><i>42</i></span><span class="fu s2"><b>ROBO</b><span>ROBO Global Robotics &amp; Automation</span><u>4d</u><i>25</i></span><span class="fu s1"><b>ROBT</b><span>First Trust Nasdaq AI &amp; Robotics</span><i>26</i></span><span class="fu s2"><b>ROKT</b><span>SPDR S&amp;P Kensho Final Frontiers</span><u>4d</u><i>25</i></span><span class="fu s1"><b>SETM</b><span>Sprott Critical Materials</span><i>35</i></span><span class="fu s1"><b>SGDJ</b><span>Sprott Junior Gold Miners</span><i>35</i></span><span class="fu s1"><b>SGDM</b><span>Sprott Gold Miners</span><i>35</i></span><span class="fu s1"><b>SHLD</b><span>Global X Defense Tech</span><i>42</i></span><span class="fu s1"><b>SIL</b><span>Global X Silver Miners</span><i>103</i></span><span class="fu s3"><b>SILJ</b><span>Amplify Junior Silver Miners</span><u>18d</u><i>192</i></span><span class="fu s2"><b>SIMS</b><span>SPDR S&amp;P Kensho Intelligent Structures</span><u>4d</u><i>25</i></span><span class="fu s1"><b>SKYY</b><span>First Trust Cloud Computing</span><i>26</i></span><span class="fu s1"><b>SLVR</b><span>Sprott Silver Miners &amp; Physical Silver</span><i>35</i></span><span class="fu s1"><b>SNSR</b><span>Global X Internet of Things</span><i>42</i></span><span class="fu s1"><b>TAN</b><span>Invesco Solar</span><i>45</i></span><span class="fu s2"><b>THNQ</b><span>ROBO Global Artificial Intelligence</span><u>4d</u><i>25</i></span><span class="fu s1"><b>UFO</b><span>Procure Space</span><i>43</i></span><span class="fu s1"><b>URA</b><span>Global X Uranium</span><i>103</i></span><span class="fu s1"><b>URNJ</b><span>Sprott Junior Uranium Miners</span><i>58</i></span><span class="fu s1"><b>URNM</b><span>Sprott Uranium Miners</span><i>58</i></span><span class="fu s2"><b>WARP</b><span>VanEck Space</span><u>4d</u><i>25</i></span><span class="fu s2"><b>WGMI</b><span>CoinShares Bitcoin Mining (WGMI)</span><u><span class="l-en">3rd</span><span class="l-zh">第三方</span></u><u>4d</u><i>12</i></span></div>
++          <div class="fl-list"><span class="fu s1"><b>AIQ</b><span>Global X AI &amp; Technology</span><i>42</i></span><span class="fu s3"><b>BATT</b><span>Amplify Lithium &amp; Battery Technology</span><u>18d</u><i>192</i></span><span class="fu s1"><b>BETZ</b><span>Roundhill Sports Betting &amp; iGaming</span><i>112</i></span><span class="fu s1"><b>BKCH</b><span>Global X Blockchain</span><i>109</i></span><span class="fu s1"><b>BOTZ</b><span>Global X Robotics &amp; AI</span><i>103</i></span><span class="fu s1"><b>BUG</b><span>Global X Cybersecurity</span><i>103</i></span><span class="fu s1"><b>CIBR</b><span>First Trust NASDAQ Cybersecurity</span><i>26</i></span><span class="fu s1"><b>CLOU</b><span>Global X Cloud Computing</span><i>103</i></span><span class="fu s2"><b>CNRG</b><span>SPDR S&amp;P Kensho Clean Power</span><u>4d</u><i>25</i></span><span class="fu s1"><b>COPJ</b><span>Sprott Junior Copper Miners</span><i>35</i></span><span class="fu s1"><b>COPP</b><span>Sprott Copper Miners</span><i>58</i></span><span class="fu s1"><b>COPX</b><span>Global X Copper Miners</span><i>103</i></span><span class="fu s1"><b>CTEC</b><span>Global X CleanTech</span><i>109</i></span><span class="fu s2"><b>DAPP</b><span>VanEck Digital Transformation</span><u>4d</u><i>42</i></span><span class="fu s1"><b>DRIV</b><span>Global X Autonomous &amp; Electric Vehicles</span><i>109</i></span><span class="fu s1"><b>DTCR</b><span>Global X Data Center &amp; Digital Infra</span><i>42</i></span><span class="fu s1"><b>EBIZ</b><span>Global X E-commerce</span><i>42</i></span><span class="fu s2"><b>EMET</b><span>VanEck Copper and Electrification</span><u>4d</u><i>25</i></span><span class="fu s1"><b>FAN</b><span>First Trust Global Wind Energy</span><i>26</i></span><span class="fu s1"><b>FINX</b><span>Global X FinTech</span><i>42</i></span><span class="fu s2"><b>GDX</b><span>VanEck Gold Miners</span><u>4d</u><i>42</i></span><span class="fu s2"><b>GDXJ</b><span>VanEck Junior Gold Miners</span><u>4d</u><i>42</i></span><span class="fu s1"><b>GNOM</b><span>Global X Genomics &amp; Biotechnology</span><i>109</i></span><span class="fu s1"><b>GRID</b><span>First Trust Clean Edge Smart Grid</span><i>26</i></span><span class="fu s2"><b>HAIL</b><span>SPDR S&amp;P Kensho Smart Mobility</span><u>4d</u><i>25</i></span><span class="fu s1"><b>HERO</b><span>Global X Video Games &amp; Esports</span><i>103</i></span><span class="fu s2"><b>HTEC</b><span>ROBO Global Healthcare Technology &amp; Innovation</span><u>4d</u><i>25</i></span><span class="fu s1"><b>HYDR</b><span>Global X Hydrogen</span><i>42</i></span><span class="fu s2"><b>IBOT</b><span>VanEck Robotics</span><u>4d</u><i>25</i></span><span class="fu s1"><b>IZRL</b><span>ARK Israel Innovative Technology</span><i>40</i></span><span class="fu s1"><b>LIT</b><span>Global X Lithium &amp; Battery Tech</span><i>103</i></span><span class="fu s1"><b>LITP</b><span>Sprott Lithium Miners</span><i>58</i></span><span class="fu s1"><b>MARS</b><span>Roundhill Space</span><i>112</i></span><span class="fu s1"><b>MEME</b><span>Roundhill MEME</span><i>112</i></span><span class="fu s1"><b>METV</b><span>Roundhill Ball Metaverse</span><i>112</i></span><span class="fu s1"><b>MLPX</b><span>Global X MLP &amp; Energy Infrastructure</span><i>103</i></span><span class="fu s2"><b>MOAT</b><span>VanEck Morningstar Wide Moat</span><u>4d</u><i>42</i></span><span class="fu s1"><b>NERD</b><span>Roundhill Video Games</span><i>41</i></span><span class="fu s2"><b>NLR</b><span>VanEck Uranium &amp; Nuclear</span><u>4d</u><i>42</i></span><span class="fu s2"><b>NODE</b><span>VanEck Onchain Economy</span><u>4d</u><i>25</i></span><span class="fu s2"><b>NUKZ</b><span>Range Nuclear Renaissance</span><u>4d</u><i>42</i></span><span class="fu s1"><b>PAVE</b><span>Global X U.S. Infrastructure Dev</span><i>103</i></span><span class="fu s1"><b>PBW</b><span>Invesco WilderHill Clean Energy</span><i>45</i></span><span class="fu s1"><b>PRNT</b><span>The 3D Printing ETF</span><i>40</i></span><span class="fu s1"><b>QCLN</b><span>First Trust NASDAQ Clean Edge Green Energy</span><i>26</i></span><span class="fu s0"><b>QTUM</b><span>Defiance Quantum</span><u><span class="l-en">No snapshots</span><span class="l-zh">暂无快照</span></u><i>0</i></span><span class="fu s2"><b>REMX</b><span>VanEck Rare Earth &amp; Strategic Metals</span><u>4d</u><i>42</i></span><span class="fu s2"><b>ROBO</b><span>ROBO Global Robotics &amp; Automation</span><u>4d</u><i>25</i></span><span class="fu s1"><b>ROBT</b><span>First Trust Nasdaq AI &amp; Robotics</span><i>26</i></span><span class="fu s2"><b>ROKT</b><span>SPDR S&amp;P Kensho Final Frontiers</span><u>4d</u><i>25</i></span><span class="fu s1"><b>SETM</b><span>Sprott Critical Materials</span><i>35</i></span><span class="fu s1"><b>SGDJ</b><span>Sprott Junior Gold Miners</span><i>35</i></span><span class="fu s1"><b>SGDM</b><span>Sprott Gold Miners</span><i>35</i></span><span class="fu s1"><b>SHLD</b><span>Global X Defense Tech</span><i>42</i></span><span class="fu s1"><b>SIL</b><span>Global X Silver Miners</span><i>103</i></span><span class="fu s3"><b>SILJ</b><span>Amplify Junior Silver Miners</span><u>18d</u><i>192</i></span><span class="fu s2"><b>SIMS</b><span>SPDR S&amp;P Kensho Intelligent Structures</span><u>4d</u><i>25</i></span><span class="fu s1"><b>SKYY</b><span>First Trust Cloud Computing</span><i>26</i></span><span class="fu s1"><b>SLVR</b><span>Sprott Silver Miners &amp; Physical Silver</span><i>35</i></span><span class="fu s1"><b>SNSR</b><span>Global X Internet of Things</span><i>42</i></span><span class="fu s1"><b>TAN</b><span>Invesco Solar</span><i>45</i></span><span class="fu s2"><b>THNQ</b><span>ROBO Global Artificial Intelligence</span><u>4d</u><i>25</i></span><span class="fu s1"><b>UFO</b><span>Procure Space</span><i>43</i></span><span class="fu s1"><b>URA</b><span>Global X Uranium</span><i>103</i></span><span class="fu s1"><b>URNJ</b><span>Sprott Junior Uranium Miners</span><i>58</i></span><span class="fu s1"><b>URNM</b><span>Sprott Uranium Miners</span><i>58</i></span><span class="fu s2"><b>WARP</b><span>VanEck Space</span><u>4d</u><i>25</i></span><span class="fu s2"><b>WGMI</b><span>CoinShares Bitcoin Mining (WGMI)</span><u><span class="l-en">3rd</span><span class="l-zh">第三方</span></u><u>4d</u><i>12</i></span></div>
+diff --git a/tests/test_etfs_gate.py b/tests/test_etfs_gate.py
+--- a/tests/test_etfs_gate.py
++++ b/tests/test_etfs_gate.py
+@@ -754,0 +755,87 @@
++
++# UIUX: coverage age is comparative to the newest stored snapshot, not the clock.
++def _coverage_fixture(rows):
++    source = (ROOT / 'templates/etfs.html.j2').read_text(encoding='utf-8')
++    start = source.index('<details open>\n      <summary')
++    end = source.index('\n  </section>', start)
++    return _env().from_string(
++        '{% from "_etf_macros.html.j2" import t, help %}' + source[start:end]
++    ).render(coverage=rows)
++
++
++def _coverage_row(**overrides):
++    row = {'fund': 'EXAMPLE', 'fund_name': 'Illustrative fund', 'sponsor': 'Fixture',
++           'n_snapshots': 25, 'stale_days': 0, 'latest_asof': '2020-01-10',
++           'unofficial': False, 'fleet_group': 'theme'}
++    row.update(overrides)
++    return row
++
++
++def test_coverage_age_is_relative_not_a_claim_of_recent_filing():
++    html = _coverage_fixture([_coverage_row(), _coverage_row(fund='OLDER', stale_days=8)])
++    assert 'near latest snapshot' in html
++    assert '接近最新快照' in html
++    assert 'filed in the last three days' not in html
++    assert 'not from today' in html
++    assert re.search(r'<b>1</b>\s*<span class="l-en">near latest snapshot', html)
++
++
++def test_coverage_help_is_a_native_optional_disclosure_not_a_nested_hover_target():
++    html = _coverage_fixture([_coverage_row()])
++    main_summary = html[html.index('<summary class="fl-sum">'):html.index('</summary>')]
++    assert 'txq' not in main_summary
++    assert '<details class="fl-help">' in html
++    assert 'How to read coverage' in html and '如何解读覆盖数据' in html
++    assert 'class="fl-help" open' not in html
++    assert 'Snapshot counts show saved daily holdings records.' in html
++
++
++@pytest.mark.parametrize('snapshots,age,label,state', [
++    (0, None, 'No snapshots', 's0'),
++    (25, None, 'Date unknown', 's0'),
++    (25, 0, None, 's1'),
++    (25, 3, None, 's1'),
++    (25, 4, None, 's2'),
++    (25, 10, None, 's2'),
++    (25, 11, None, 's3'),
++])
++def test_coverage_missing_dates_never_look_current_or_proven_stale(snapshots, age, label, state):
++    html = _coverage_fixture([_coverage_row(n_snapshots=snapshots, stale_days=age)])
++    assert f'class="fu {state}"' in html
++    assert f'<i>{snapshots}</i>' in html
++    assert '<b>EXAMPLE</b>' in html
++    if label:
++        assert label in html
++    else:
++        assert 'No snapshots' not in html and 'Date unknown' not in html
++
++
++def test_coverage_without_funds_keeps_the_real_empty_directory_state():
++    html = _coverage_fixture([])
++    assert 'No funds registered in the coverage directory yet.' in html
++    assert 'near latest snapshot' not in html
++    assert 'fl-help' not in html
++
++
++def test_coverage_current_count_excludes_missing_and_undated_snapshots():
++    html = _coverage_fixture([_coverage_row(), _coverage_row(fund='UNDATED',stale_days=None),
++                              _coverage_row(fund='MISSING',n_snapshots=0,stale_days=None)])
++    assert re.search(r'<b>3</b>\s*<span class="l-en">funds tracked', html)
++    assert re.search(r'<b>1</b>\s*<span class="l-en">near latest snapshot', html)
++    assert html.count('class="fu ') == 3
++
++
++def test_coverage_published_css_matches_source_and_native_focus_rules():
++    import hashlib
++    source = (ROOT / 'templates/etfs.html.j2').read_text(encoding='utf-8')
++    html = SHELL.read_text(encoding='utf-8')
++    fingerprint = re.search(r'href="assets/css/([a-f0-9]{8})\.css\?v=\1"',html)
++    assert fingerprint
++    raw = (ROOT/'site/assets/css'/f'{fingerprint.group(1)}.css').read_bytes()
++    assert hashlib.sha256(raw).hexdigest()[:8] == fingerprint.group(1)
++    css = raw.decode('utf-8')
++    canonical = re.search(r'<style>(.*?)</style>',source,re.S).group(1)
++    assert ''.join(canonical.split()) == ''.join(css.split())
++    assert '.fl-help>summary:focus-visible' in css and 'min-height:40px' in css
++    assert 'filed in the last three days' not in html
++    assert 'How to read coverage' in html
