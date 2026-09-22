@@ -303,3 +303,13 @@ Reused existing unrun-subsector-themes job; no new CI/control plane. It now regi
 3. Re-check current main and remote #7664 for material movement.
 4. Push the same branch without force; require fresh exact-head hosted fences + CI and fresh independent exact-head source review.
 5. Only after source acceptance may merge/release and serialized route mounting proceed. Real deployed-browser proof on all four routes remains owed.
+
+
+### Immutable source/composition proof — 2026-09-22 continuation
+
+- Lane E source-repair commit: e29c1d5dfb8a684805027436fcf58ce6af8323f3; tree bf6bc94d9d55e927996e6f995c0790a0296badea.
+- The unchanged frozen Lane E acceptance test passes 5/5 in a non-owning overlay built from that exact source commit plus only the four previously compatible Tracker/Foresight/Radar mount seams. Overlay receipt hash: a643617c9652b69e456aa839eafb0e6649bd5c6a8a20146c4ce99ea51e242ecd.
+- No route-owner file is committed to #7664 by this proof.
+- Fresh remote reconciliation immediately before push: #7664 remote still a82e98f23589a4f0eda0f326d980505fb3b86755.
+- Macro main advanced to 8b533225517d786bec7939d1d8fbd966ded511dd after the earlier ea194c5d composition. The four new main commits change 514 paths but intersect zero of the 42 Lane E/Lane C source paths; no source-semantic invalidator was found, so no gratuitous re-merge is required.
+- Next effect: push the same #7664 branch without force, then require fresh exact-head hosted fences + CI and independent exact-head source review before merge consideration.
