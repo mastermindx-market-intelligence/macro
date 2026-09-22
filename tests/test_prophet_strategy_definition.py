@@ -529,6 +529,35 @@ def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_mint
     assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
 
 
+def test_b4_runtime_adapter_binds_accepted_session_policy_without_widening_other_gates():
+    strategy = build_early_leadership_sector_rotation_definition()
+    facts = compose_runtime_owner_facts(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        strategy_definition=strategy,
+        **_b4_runtime_kwargs(),
+    )
+    gates = facts["deterministic_gates"]
+    assert gates["session_eligibility"] == "PASS"
+    assert gates["risk_ceiling"] == "UNKNOWN"
+    assert gates["liquidity_fillability"] == "UNKNOWN"
+    assert gates["gap_velocity"] == "UNKNOWN"
+    assert any(str(receipt).startswith("pepf:") for receipt in facts["source_receipts"])
+
+    out = evaluate_runtime_entry_availability(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        strategy_definition=strategy,
+        **_b4_runtime_kwargs(),
+    )
+    assert out["state"] == "UNAVAILABLE_DATA"
+    assert out["entry_open"] is False
+    assert "SESSION_ELIGIBILITY_UNKNOWN" not in out["blockers"]
+    assert "RISK_CEILING_UNKNOWN" in out["blockers"]
+    assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
+    assert "GAP_VELOCITY_UNKNOWN" in out["blockers"]
+
+
 def test_b4_runtime_adapter_has_no_ticker_equality_fallback():
     kwargs = _b4_runtime_kwargs()
     kwargs["alias_table"] = _B4Aliases("RENAMED")

@@ -20,6 +20,7 @@ from math import isfinite
 from typing import Mapping, Sequence
 
 from engine.prophet_entry_availability import evaluate_entry_availability
+from engine.prophet_entry_policy import evaluate_session_eligibility
 from engine.prophet_live.interval import ADJUSTED, UNADJUSTED
 from engine.signal_gate import is_buyable as signal_gate_is_buyable
 
@@ -242,6 +243,7 @@ def compose_runtime_owner_facts(
     live_state_artifact: Mapping[str, object],
     entry_rows_by_symbol: Mapping[str, object],
     metric_inputs: Mapping[str, object],
+    strategy_definition: Mapping[str, object] | None = None,
     signal_gate_artifact: Mapping[str, object] | None = None,
     owner_gate_facts: Mapping[str, object] | None = None,
     owner_source_receipts: Sequence[str] = (),
@@ -311,6 +313,23 @@ def compose_runtime_owner_facts(
     gates["owner_confluence"] = owner_confluence
     event_status, event_status_receipt = _bind_event_status_from_candidate(row)
     gates["event_status"] = event_status
+
+    session_receipt: str | None = None
+    if strategy_definition is not None:
+        session_fact = evaluate_session_eligibility(
+            strategy_definition=strategy_definition,
+            decision_at=decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
+            market_session=market_session,
+        )
+        session_verdict = session_fact.get("verdict")
+        if session_verdict not in {"PASS", "FAIL"}:
+            raise RuntimeOwnerFactError("session policy owner returned an invalid verdict")
+        gates["session_eligibility"] = session_verdict
+        session_receipt = _text(
+            session_fact.get("fact_receipt"),
+            "session_policy.fact_receipt",
+        )
+
     if owner_gate_facts not in (None, {}):
         raise RuntimeOwnerFactError(
             "owner_gate_facts cannot inject gate verdicts without native owner evidence"
@@ -346,6 +365,8 @@ def compose_runtime_owner_facts(
         receipts.append(confluence_receipt)
     if event_status_receipt is not None:
         receipts.append(event_status_receipt)
+    if session_receipt is not None:
+        receipts.append(session_receipt)
 
     return {
         "decision_at": decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
@@ -383,6 +404,7 @@ def evaluate_runtime_entry_availability(
     facts = compose_runtime_owner_facts(
         candidate_projection,
         episode_id=episode_id,
+        strategy_definition=strategy_definition,
         **source_kwargs,
     )
     return evaluate_entry_availability(
