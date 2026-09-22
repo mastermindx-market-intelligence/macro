@@ -214,6 +214,64 @@
   color: var(--ink-2);
 }
 html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
+
+/* UD-B2-W3 Drivers fold (R1 leadership tile, #33+#34 sentiment counterpart,
+   R6 breadth chip). Token-scoped only: every value is a var() reference.
+   Dark: luminance step on --panel2 rails. Light: hairline ring on the same
+   rails so the two treatments are not a token recolour. Scope-narrowed to
+   this hero so THEME-CLOSURE does not pull templates/theme.css into the PR. */
+.ud-driver-chip{ align-self:flex-start; margin-top:auto; }
+.ud-driver-leg{ display:flex; flex-direction:column; gap:var(--sp-2,8px); }
+/* Spec §7: 390 hides the locked fourth card so the swipe is 1 / 3.
+   theme.css already declares this under body.page-macro; repeat it here
+   so the isolated evidence fixture (hero partial + theme.css) cannot
+   lose the hide if the live class ever drifts. */
+@media (max-width:390px){
+  .ud-driver--locked{ display:none; }
+}
+.ud-sent-lenses{ display:flex; flex-direction:column; gap:var(--sp-2,8px); }
+.ud-sent-lens{ display:flex; flex-direction:column; gap:4px; }
+.ud-sent-lens-name{
+  font-size:var(--fs-micro);
+  font-weight:700;
+  color:var(--ink-3);
+}
+.ud-sent-rail{
+  position:relative;
+  height:6px;
+  background:var(--panel2);
+  border-radius:var(--r-ctl);
+}
+.ud-sent-pin{
+  position:absolute;
+  top:-2px;
+  width:2px;
+  height:10px;
+  background:var(--ink-1);
+}
+html[data-theme="light"] .ud-sent-rail{
+  background:var(--panel);
+  box-shadow:0 0 0 1px var(--line);
+}
+.ud-froth-row{ display:flex; align-items:center; gap:8px; }
+.ud-froth-lbl{
+  font-size:var(--fs-micro);
+  color:var(--ink-3);
+  flex:0 0 auto;
+}
+.ud-froth-track{
+  flex:1;
+  height:4px;
+  background:var(--panel2);
+  border-radius:var(--r-ctl);
+  overflow:hidden;
+}
+.ud-froth-fill{ height:100%; background:var(--warn); }
+.ud-froth-fill--b{ background:var(--act); }
+html[data-theme="light"] .ud-froth-track{
+  background:var(--panel);
+  box-shadow:0 0 0 1px var(--line);
+}
 </style>
 
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
@@ -698,8 +756,39 @@ html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          <p class="ud-driver-body l-en">{{ _null_word_en }} — tape read re-draws nightly.</p>
-          <p class="ud-driver-body l-zh">{{ _null_word_zh }}——盘面读数每晚重绘。</p>
+          {# R1 / census #6: leadership context folds INTO this breadth
+             driver as the defense-vs-cyclical read — one of three live
+             tiles, not a fourth card. Spec §6/§7 driver 4 stays TierLock.
+             SIGNAL-ORIGINATION LAW: no dedicated leadership view-model
+             key exists. The live strip in templates/dashboard.html.j2
+             reads MS.radar.cycle.sector_bias (favor/avoid lists with
+             .en + .zh), composed by engine.election_cycle.sector_bias()
+             → risk_radar.cycle_context →
+             engine.market_state._radar_to_rd()['cycle']. When that key
+             is absent the leg is designed-null — never an invented
+             rotation read. #}
+          {%- set _radar = _ms.get('radar') or {} -%}
+          {%- set _cyc = _radar.get('cycle') or {} -%}
+          {%- set _sb = _cyc.get('sector_bias') -%}
+          {%- set _sb_favor_en = (_sb.favor | map(attribute='en') | join(' / ')) if (_sb and _sb.favor) else '' -%}
+          {%- set _sb_avoid_en = (_sb.avoid | map(attribute='en') | join(' / ')) if (_sb and _sb.avoid) else '' -%}
+          {%- set _sb_favor_zh = (_sb.favor | map(attribute='zh') | join('／')) if (_sb and _sb.favor) else '' -%}
+          {%- set _sb_avoid_zh = (_sb.avoid | map(attribute='zh') | join('／')) if (_sb and _sb.avoid) else '' -%}
+          <div class="ud-driver-leg" data-driver="leadership" data-contract="market_state.radar.cycle.sector_bias"{% if not (_sb and _sb_favor_en) %} data-designed-null="1"{% endif %}>
+            {%- if _sb and _sb_favor_en and _sb_avoid_en %}
+            <p class="ud-driver-body l-en">Under the surface: {{ _sb_favor_en }} have held while {{ _sb_avoid_en }} faded — a rotation read, not a chase cue.</p>
+            <p class="ud-driver-body l-zh">表面之下：{{ _sb_favor_zh }}相对坚挺，{{ _sb_avoid_zh }}走弱 — 这是轮动观察，并非追高的信号。</p>
+            {%- else %}
+            <p class="ud-driver-body l-en">{{ _null_word_en }} — rotation read re-draws nightly.</p>
+            <p class="ud-driver-body l-zh">{{ _null_word_zh }}——轮动观察每晚重绘。</p>
+            {%- endif %}
+          </div>
+          {# R6: AI / non-AI breadth split relocated to advanced.html. The hero
+             keeps a chip link from this breadth driver surface; the module
+             itself is not duplicated here. #}
+          <a class="ud-depth ud-driver-chip" href="advanced.html#vsb-breadth-split-section">
+            <span class="l-en">See how AI names compare with everyone else.</span><span class="l-zh">查看 AI 相关个股与其他个股相比如何。</span>
+          </a>
         </div>
 
         {# Driver 2 — Risk envelope. R-K: risk_envelope publishes
@@ -721,11 +810,26 @@ html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——下方为三项读数，非融合评分。</p>
         </div>
 
-        {# Driver 3 — Sentiment. R-K: prefer the published `label_en` /
-           `label_zh` over any caller-supplied `stance_en`. The hero leg reads
-           THE SAME word the page renders elsewhere. #}
+        {# Driver 3 — Sentiment. Census #33 Fear/Euphoria dial + #34 Froth/Fragility
+           bar fold into ONE tile (#34 is the counterpart inside #33). Display-tier;
+           never a signal. Head still reads fear_greed.label_en/label_zh (B1 R-K);
+           the body binds the live fear_euphoria + froth_fragility keys the isle
+           already renders. Glance prints WORDS only (one-integer law); rail/bar
+           geometry is not a competing integer. #}
         {%- set _fg = fear_greed or {} -%}
-        <div class="panel ud-driver" data-driver="fear_greed">
+        {%- set _fe = fear_euphoria if (fear_euphoria is defined and fear_euphoria) else {} -%}
+        {%- set _ff = froth_fragility if (froth_fragility is defined and froth_fragility) else {} -%}
+        {%- set _fe_sc = _fe.get('fe_score') if _fe else none -%}
+        {%- set _fe_band = _fe.get('band') if _fe else none -%}
+        {%- set _fe_band_zh = {'Panic':'恐慌','Fear':'恐惧','Neutral':'中性','Greed':'贪婪','Euphoria':'欣喜'}.get(_fe_band, _fe_band) if _fe_band else none -%}
+        {%- set _ff_quad_en = _ff.get('quadrant_en') if _ff else none -%}
+        {%- set _ff_quad_zh = (_ff.get('quadrant_zh') or _ff_quad_en) if _ff else none -%}
+        {%- set _ff_band = _ff.get('band') if _ff else none -%}
+        {%- set _ff_band_en = {'calm':'Calm','watch':'Watch','elevated':'Elevated','high':'High','extreme':'Extreme'}.get(_ff_band, _ff_band) if _ff_band else none -%}
+        {%- set _ff_band_zh = (_ff.get('band_zh') or _ff_band) if _ff else none -%}
+        {%- set _ff_a = ((_ff.get('face_a') or {}).get('score')) if _ff else none -%}
+        {%- set _ff_b = ((_ff.get('face_b') or {}).get('score')) if _ff else none -%}
+        <div class="panel ud-driver" data-driver="fear_greed" data-fold="sentiment-33-34">
           <b class="ud-driver-head">
             {%- if _fg.get('label_en') -%}
             <span class="l-en">{{ _fg.label_en }}</span><span class="l-zh">{{ _fg.get('label_zh') or _fg.label_en }}</span>
@@ -733,18 +837,53 @@ html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
+          {%- if _fe_band or _ff_band or _ff_quad_en %}
+          <div class="ud-sent-lenses">
+            {%- if _fe_band %}
+            <div class="ud-sent-lens" data-driver-leg="fear_euphoria"
+                 data-tip-en="Fear and euphoria context — display only, not a signal."
+                 data-tip-zh="恐惧与亢奋背景——仅供展示，不是信号。">
+              <span class="ud-sent-lens-name"><span class="l-en">{{ _fe_band }}</span><span class="l-zh">{{ _fe_band_zh }}</span></span>
+              {%- if _fe_sc is not none %}
+              <div class="ud-sent-rail" aria-hidden="true"><span class="ud-sent-pin" style="left:{{ _fe_sc }}%"></span></div>
+              {%- endif %}
+            </div>
+            {%- endif %}
+            {%- if _ff_band or _ff_quad_en %}
+            <div class="ud-sent-lens" data-driver-leg="froth_fragility"
+                 data-tip-en="{{ _ff_quad_en or 'Froth and fragility context — display only, not a signal.' }}"
+                 data-tip-zh="{{ _ff_quad_zh or '狂热与脆弱背景——仅供展示，不是信号。' }}">
+              <span class="ud-sent-lens-name"><span class="l-en">{{ _ff_band_en if _ff_band_en else _null_word_en }}</span><span class="l-zh">{{ _ff_band_zh if _ff_band_zh else _null_word_zh }}</span></span>
+              {%- if _ff_a is not none and _ff_b is not none %}
+              <div class="ud-froth-row" aria-hidden="true">
+                <span class="ud-froth-lbl"><span class="l-en">Euphoria</span><span class="l-zh">亢奋度</span></span>
+                <div class="ud-froth-track"><div class="ud-froth-fill" style="width:{{ [_ff_a,100]|min }}%"></div></div>
+              </div>
+              <div class="ud-froth-row" aria-hidden="true">
+                <span class="ud-froth-lbl"><span class="l-en">Hidden selling</span><span class="l-zh">暗中派发</span></span>
+                <div class="ud-froth-track"><div class="ud-froth-fill ud-froth-fill--b" style="width:{{ [_ff_b,100]|min }}%"></div></div>
+              </div>
+              {%- endif %}
+            </div>
+            {%- endif %}
+          </div>
+          {%- else %}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — sentiment context, display only.</p>
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——情绪背景，仅展示。</p>
+          {%- endif %}
         </div>
 
-        {# Driver 4 — TierLock / sector narrative. locked tier preview per spec §11 item 4. #}
-        <div class="panel ud-driver ud-driver--locked" aria-label="locked depth">
+        {# Driver 4 — TierLock / sector narrative. locked tier preview per
+           spec §4 / §7 (driver 4 = TierLock; 390 hides .ud-driver--locked,
+           counter 1 / 3). R1 folds leadership into the breadth tile above,
+           not into this locked slot. #}
+        <div class="panel ud-driver ud-driver--locked">
           <div class="mx-tier-blurred--spec" aria-hidden="true">
             <div class="ud-driver"><b class="ud-driver-head">██████</b><p class="ud-driver-body">████ ████ ████████ ████ ███████</p></div>
           </div>
           <div class="ud-driver-lock">
-            <span class="l-en">Full sector narrative is locked.</span>
-            <span class="l-zh">完整板块叙事已锁定。</span>
+            <span class="l-en" aria-label="Full sector narrative is locked.">Full sector narrative is locked.</span>
+            <span class="l-zh" aria-label="完整板块叙事已锁定。">完整板块叙事已锁定。</span>
           </div>
         </div>
 
