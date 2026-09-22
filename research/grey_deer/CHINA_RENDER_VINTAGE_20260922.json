@@ -223,5 +223,56 @@
     "tests/test_china_archetype_d_s1.py": "676c7de1ff833af15f868af09997face688db60eb37bbae67caed234fa32c4b2"
   },
   "clock_pending_excluded": 15,
-  "browser_proof": false
+  "browser_proof": false,
+  "actual_builder": {
+    "source_commit": "060ea6b9a2905f5687c397f6802fc126a2c57a08",
+    "builder_returned_zero": true,
+    "proof_exit": 1,
+    "failure": "view-model whole-dictionary equality assertion; meaning unresolved",
+    "engine_run_forbidden_assertion_passed": true,
+    "eight_persisted_inputs_unchanged": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "original_19_leaf_disk_drift_reproduced_after_fix": false,
+    "unaccepted_page_sha256": "4b0ebd372d29a205be627bb6544b77389a3a98d64ca5cb82d3984f08fcf23dfb",
+    "restored_generated_paths": [
+      "data/risk_radar/scorecard.json",
+      "site/china.html",
+      "site/china_allocation.html",
+      "site/china_history.html",
+      "site/china_lookup.html",
+      "site/china_news.html",
+      "site/china_stocks.html",
+      "site/factordata/china_reversal.json",
+      "site/riskdata/scorecard.json",
+      "site/sectors/159928.SZ.html",
+      "site/sectors/159992.SZ.html",
+      "site/sectors/512170.SS.html",
+      "site/sectors/512200.SS.html",
+      "site/sectors/512400.SS.html",
+      "site/sectors/512660.SS.html",
+      "site/sectors/512690.SS.html",
+      "site/sectors/512760.SS.html",
+      "site/sectors/512800.SS.html",
+      "site/sectors/512880.SS.html",
+      "site/sectors/512980.SS.html",
+      "site/sectors/515000.SS.html",
+      "site/sectors/515030.SS.html",
+      "site/sectors/515220.SS.html",
+      "site/sectors/515250.SS.html",
+      "site/sectors/515790.SS.html"
+    ],
+    "retained_page_sha256": "a7b1ea685ecf48f697527ab742606c32a9636e071a269c1826552f70f8d25a34",
+    "vm_diff_diagnostic": "OpenAI safety-status refusal; not retried or rerouted",
+    "normalized_page_created": false,
+    "browser_proof": false,
+    "production": false
+  }
 }

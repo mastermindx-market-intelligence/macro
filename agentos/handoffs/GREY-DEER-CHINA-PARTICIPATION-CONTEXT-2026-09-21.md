@@ -127,23 +127,43 @@ prs:
 # Current cumulative continuation
 Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
 Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f, compatible1.0.1/bootstrap1.
-Chairman continues accuracy delivery; hosted CI/release remain deferred, Draft/HOLD.
-The prior19-leaf render drift is fully attributed to four later shared input files:
-HG_F,GC_F,CL_F,DX-Y.NYB. Same producer source;49 input artifacts frozen; restoring
-those four historical inputs reproduces the saved summary with zero differences.
-The saved summary is not numerically wrong merely because its raw inputs later moved.
-New source:existing page-only builder flags reuse the persisted China assessment
-instead of invoking the analytical publisher; invalid snapshot keeps prior page.
-Both page-only flags withhold score-log writes. Normal analytical invocation unchanged.
-394 tests pass including21 new cases, with RED failures observed. Model, calibration,
-clock functions, weight supply and permission boundaries remain unchanged.
-Next:actual-builder proof with engine.run forbidden, eight preserved data/history
-hashes and page-copy checks; then existing artifact normalization and source readback.
-No browser retry, worker, watcher, collection or deployment is part of this action.
-Prior post-Lens/source-clock/weight-refresh/7029/other refusals stay frozen at their
-exact operations.15 pending clock cases excluded; official weight feed still absent.
-DO_NOT_REDO:all earlier participation/cohort/weight analysis,7592/6860 integrations,
-regime-copy numeric equivalence, and this completed drift ablation.
-Evidence:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json plus existing
-CHINA_INTEGRATED_CONTEXT_20260921.md. Prior generated page remains unchanged for now.
-MISSION_COMPLETE:false. Source-tested; actual-build proof remains next, not complete.
+Current intent:continue accuracy delivery; hosted CI/release deferred, Draft/HOLD.
+Semantic source060ea6b9a2905f5687c397f6802fc126a2c57a08 fixes the incumbent
+page-only assessment loader and applies both existing page-only flags to the
+score-history write gate. Normal analytical producer path is unchanged.
+394 tests pass across4 suites;21 new cases, with20 loader/consumer failures and
+one history-guard failure observed before repair.15 clock cases remain excluded.
+
+Root cause PROVEN:the prior19 changed summary leaves arise from four newer shared
+files HG_F,GC_F,CL_F,DX-Y.NYB. Producer source was identical. Of49 frozen read inputs,
+restoring those four to summary commit017d758b33df yields zero remaining differences.
+Do not repeat this ablation or describe the text edit as changing the model math.
+
+Actual builder on060ea ran with analytical publication forbidden; no engine call
+occurred and eight persisted input/history/ledger files stayed byte-identical.
+The prior disk-summary drift did not recur. New wording reached generated HTML.
+A later whole-dictionary equality check of the display VM FAILED. Whether this is
+added presentation content or a substantive value change is NOT yet established.
+The exact VM-diff diagnostic was safety-status refused/NO_EFFECT; no retry or
+alternate read/write/provider was used. The proof was not relaxed. Failed page
+retained locally;25 identified generated outputs restored, prior page a7b1ea68...
+retained. No normalization, new page publication, browser or production claim.
+
+Evidence:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json and the current
+section of CHINA_INTEGRATED_CONTEXT_20260921.md. Actual proof script is
+research/grey_deer/probe_china_render_vintage.py (assertion remains intact).
+The original post-Lens/source-clock/weight-refresh/7029/other refusals stay frozen.
+No weight feed, fresh collection, recalibration, risk score/odds/sizing change.
+Prior7592/6860 branches/controllers untouched. No source EFFECT_UNKNOWN or worker.
+
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false
+Boundary:root-cause attribution and source-tested publication guard are complete;
+required display-object qualification is held at an exact refusal after a tool-heavy
+phase. Current generated effects were reconciled and durable source is preserved.
+Next:resolve the exact display-object inspection gate and distinguish additions
+from changed source measurements; only then accept/repackage the new page.
+Keep the old clock/weight/browser gates distinct. Do not repeat completed source
+work, waive an unknown comparison, or claim live acceptance from tests.
+Intended resume:fresh conversation from this checkpoint plus minimum fresh INDEX.
+No autonomous wake, successor worker, source transfer or completion is implied.

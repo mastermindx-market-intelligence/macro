@@ -221,3 +221,29 @@ page-only flags now withhold the history append; the normal producer is unchange
 Next proof invokes the actual builder with the analytical publisher forbidden,
 checks the saved three payloads and eight input/history fingerprints, then validates
 the emitted copy. This is not the held post-Lens browser invocation.
+
+### Actual builder result and remaining display-object qualification
+Semantic source060ea6b9a2905f5687c397f6802fc126a2c57a08 ran the real builder.
+Its log confirms the persisted September21 assessment was selected without
+regime recompute. The proof's forbidden-engine assertion passed and all eight
+persisted input/history/ledger hashes remained unchanged, including latest.json.
+The previous19-leaf disk-summary drift did not recur. Normal page and auxiliary
+outputs were emitted, and the corrected regime text reached the resulting HTML.
+
+The proof nevertheless FAILED its later whole-dictionary comparison between the
+saved three summary fields and their in-memory view-model copies. That is not
+assumed to be changed financial measurements: added presentation fields, NaN
+comparison, or a substantive mutation remain hypotheses until the diff is read.
+The bounded VM-difference diagnostic was OpenAI safety-status refused. It was
+not retried, delegated, or accessed through another carrier. No final view-model,
+browser or production acceptance is inferred. The normalizer was prepared but
+not run because the prerequisite proof receipt was not completed.
+
+The failed page was retained only as local diagnostic evidence. The exact owned
+generated outputs were restored, and the previously committed page was retained.
+The source fix and394-test evidence remain published; no revised market values,
+new forecast calibration, clock repair, weights feed or live deployment is claimed.
+Receipt:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json.
+Next:resolve the exact display-object comparison gate, qualify its differences,
+then accept the corrected page only through the existing production/build checks.
+Do not repeat the now-proven four-input ablation or re-open any earlier refused lane.
