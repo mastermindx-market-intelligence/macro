@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T22:07:10.199279+00:00",
-  "count": 2666,
+  "generated_at": "2026-09-22T22:37:37.352617+00:00",
+  "count": 2668,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-tizdevlqjtq-9a0ceb",
+      "title": "GS Equities Color US EQUITIES COLOR CONSUMER INERTIA 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T21:50:37Z",
+      "summary_points": [
+        "Geopolitical Oil Relief: Iran Strait of Hormuz negotiations driving WTI down 124bps, with Trump's UN remarks on Iran deal amplifying near-term oil market relief.",
+        "Agentic AI Sector Pressure: \"Consumer Inertia\" basket (GSXUSWCH) down 2.58% as Agentic AI impacts PLNT (-9.45%) and NYT (-7.16%), signaling sector-specific risk.",
+        "NDX Record Divergence: NDX at record high (30,732) while SPX flat, VIX at 14.27, indicating tech outperformance amid mixed broader market technicals.",
+        "Hedge Fund Flow Shift: $953mm net sell by hedge funds in comms/consumer discretionary/financials vs. health care, reflecting sector rotation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7keplmv3s4b-371985",
       "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
@@ -253,6 +273,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-stru6ycbnaa-2d5181",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:26Z",
+      "summary_points": [
+        "Regional Valuation Discount: Korea (iPE 5.2) and Indonesia (iPE 8.7) trade at significant discounts vs.",
+        "Australia (iPE 18.1) and Singapore (iPE 17.6), driving divergent return expectations and potential re-rating catalysts.",
+        "Extreme Performance Divergence: Korea (101% YTD) and Taiwan (69% YTD) outperform sharply vs.",
+        "Indonesia (-40% YTD) and Philippines (-4% YTD), highlighting concentrated risk in emerging markets and sector-specific opportunities.",
+        "Equity-Bond Yield Gap: MXAPJ’s 440bp gap (-0.25 s.d.) signals mid-cycle valuations; stabilization could trigger re-rating, while Japan’s 150bp gap (-1.8s.d.) indicates overvaluation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
