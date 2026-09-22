@@ -104,8 +104,14 @@ evidence:
   - "Verify: `python3 -m pytest tests/test_skew_accrual_gate.py
     tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py
     tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py
-    -q` exits 0 with all 71 tests passing across the five suites
-    (round-5 Meta-CEO A binding ruling added 2 B2 repeatability tests:
+    -q` exits 0 with all 73 tests passing across the five suites
+    (round-6 Meta-CEO A binding ruling added 2 tests in
+    tests/test_skew_accrual_launchd.py:
+    test_plist_log_paths_live_outside_repo_in_sibling_state_dir (MAJOR-1)
+    pins the launchd stdout/stderr pair under $SKEW_STATE_DIR, and
+    test_run_with_env_wrapper_exists_on_origin_main (MINOR-1) pins the
+    wrapper the plist's ProgramArguments chain references. Round-5
+    Meta-CEO A binding ruling added 2 B2 repeatability tests:
     test_two_run_cycle_is_admitted_via_real_git +
     test_runstate_files_live_outside_repo, plus 1 MINOR-2 receipt-line
     test: test_main_receipt_writer_emits_exactly_one_physical_line; the
