@@ -349,6 +349,47 @@
           "left_censored": false,
           "classification": "SILENT",
           "error": null
+        },
+        {
+          "leg": "corr_floor_break",
+          "coverage_start": "2006-01-03",
+          "is_validated_tier": false,
+          "states": {
+            "T-21": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-5": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-1": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T0": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T+5": {
+              "pctile": 0.0,
+              "elevated": false
+            }
+          },
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "SILENT",
+          "error": null
+        },
+        {
+          "leg": "ai_breadth_divergence",
+          "coverage_start": "2025-05-28",
+          "is_validated_tier": false,
+          "states": {},
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "NO DATA",
+          "error": null
         }
       ],
       "composite_spark": [
@@ -622,8 +663,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -635,8 +676,8 @@
             "state": "calm",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -648,8 +689,8 @@
             "state": "calm",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -661,8 +702,8 @@
             "state": "watch",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -674,8 +715,8 @@
             "state": "calm",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1081,6 +1122,47 @@
           "left_censored": false,
           "classification": "SILENT",
           "error": null
+        },
+        {
+          "leg": "corr_floor_break",
+          "coverage_start": "2006-01-03",
+          "is_validated_tier": false,
+          "states": {
+            "T-21": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-5": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-1": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T0": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T+5": {
+              "pctile": 0.0,
+              "elevated": false
+            }
+          },
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "SILENT",
+          "error": null
+        },
+        {
+          "leg": "ai_breadth_divergence",
+          "coverage_start": "2025-05-28",
+          "is_validated_tier": false,
+          "states": {},
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "NO DATA",
+          "error": null
         }
       ],
       "composite_spark": [
@@ -1354,8 +1436,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1367,8 +1449,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1380,8 +1462,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1393,8 +1475,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1406,8 +1488,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -1813,6 +1895,47 @@
           "left_censored": false,
           "classification": "SILENT",
           "error": null
+        },
+        {
+          "leg": "corr_floor_break",
+          "coverage_start": "2006-01-03",
+          "is_validated_tier": false,
+          "states": {
+            "T-21": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-5": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-1": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T0": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T+5": {
+              "pctile": 0.0,
+              "elevated": false
+            }
+          },
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "SILENT",
+          "error": null
+        },
+        {
+          "leg": "ai_breadth_divergence",
+          "coverage_start": "2025-05-28",
+          "is_validated_tier": false,
+          "states": {},
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "NO DATA",
+          "error": null
         }
       ],
       "composite_spark": [
@@ -2086,8 +2209,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2099,8 +2222,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2112,8 +2235,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2125,8 +2248,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2138,8 +2261,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2524,6 +2647,47 @@
           "left_censored": false,
           "classification": "NO DATA",
           "error": null
+        },
+        {
+          "leg": "corr_floor_break",
+          "coverage_start": "2006-01-03",
+          "is_validated_tier": false,
+          "states": {
+            "T-21": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-5": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-1": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T0": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T+5": {
+              "pctile": 0.0,
+              "elevated": false
+            }
+          },
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "SILENT",
+          "error": null
+        },
+        {
+          "leg": "ai_breadth_divergence",
+          "coverage_start": "2025-05-28",
+          "is_validated_tier": false,
+          "states": {},
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "NO DATA",
+          "error": null
         }
       ],
       "composite_spark": [
@@ -2797,8 +2961,8 @@
             "state": "risk-off",
             "gate": "open",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2810,8 +2974,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2820,11 +2984,11 @@
           },
           "T-1": {
             "date": "2023-02-01",
-            "state": "caution",
+            "state": "watch",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2836,8 +3000,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2846,11 +3010,11 @@
           },
           "T+5": {
             "date": "2023-02-09",
-            "state": "caution",
+            "state": "watch",
             "gate": "closed",
             "coverage": {
-              "signals_known": 10,
-              "signals_total": 11,
+              "signals_known": 11,
+              "signals_total": 13,
               "subscores_known": 6,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -2864,22 +3028,22 @@
             "through": "2023-02-02",
             "sessions_total": 22,
             "sessions_known": 22,
-            "warning_sessions": 18,
-            "loud_sessions": 2,
-            "warning_fraction": 0.8182,
-            "loud_fraction": 0.0909,
-            "consecutive_warning_to_t0": 10
+            "warning_sessions": 14,
+            "loud_sessions": 1,
+            "warning_fraction": 0.6364,
+            "loud_fraction": 0.0455,
+            "consecutive_warning_to_t0": 1
           },
           "T-5..T0": {
             "start": "2023-01-26",
             "through": "2023-02-02",
             "sessions_total": 6,
             "sessions_known": 6,
-            "warning_sessions": 6,
+            "warning_sessions": 2,
             "loud_sessions": 0,
-            "warning_fraction": 1.0,
+            "warning_fraction": 0.3333,
             "loud_fraction": 0.0,
-            "consecutive_warning_to_t0": 6
+            "consecutive_warning_to_t0": 1
           }
         },
         "forward_outcomes": {
@@ -3256,6 +3420,47 @@
           "left_censored": false,
           "classification": "SILENT",
           "error": null
+        },
+        {
+          "leg": "corr_floor_break",
+          "coverage_start": "2006-01-03",
+          "is_validated_tier": false,
+          "states": {
+            "T-21": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-5": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T-1": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T0": {
+              "pctile": 0.0,
+              "elevated": false
+            },
+            "T+5": {
+              "pctile": 0.0,
+              "elevated": false
+            }
+          },
+          "first_elevated": "2024-04-15",
+          "left_censored": true,
+          "classification": "EARLY",
+          "error": null
+        },
+        {
+          "leg": "ai_breadth_divergence",
+          "coverage_start": "2025-05-28",
+          "is_validated_tier": false,
+          "states": {},
+          "first_elevated": null,
+          "left_censored": false,
+          "classification": "NO DATA",
+          "error": null
         }
       ],
       "composite_spark": [
@@ -3529,8 +3734,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -3542,8 +3747,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -3555,8 +3760,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -3568,8 +3773,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -3581,8 +3786,8 @@
             "state": "caution",
             "gate": "closed",
             "coverage": {
-              "signals_known": 11,
-              "signals_total": 11,
+              "signals_known": 12,
+              "signals_total": 13,
               "subscores_known": 7,
               "subscores_total": 7,
               "tier_a_subscores_known": 4,
@@ -3805,6 +4010,36 @@
       },
       "flag_all_late_or_silent": true,
       "note": "All episodes with data: late or silent \u2014 worth a second look"
+    },
+    {
+      "leg": "corr_floor_break",
+      "coverage_start": "2006-01-03",
+      "is_validated_tier": false,
+      "episodes_with_data": 5,
+      "counts": {
+        "EARLY": 1,
+        "JUST-IN-TIME": 0,
+        "LATE": 0,
+        "SILENT": 4,
+        "NO DATA": 0
+      },
+      "flag_all_late_or_silent": false,
+      "note": ""
+    },
+    {
+      "leg": "ai_breadth_divergence",
+      "coverage_start": "2025-05-28",
+      "is_validated_tier": false,
+      "episodes_with_data": 0,
+      "counts": {
+        "EARLY": 0,
+        "JUST-IN-TIME": 0,
+        "LATE": 0,
+        "SILENT": 0,
+        "NO DATA": 5
+      },
+      "flag_all_late_or_silent": false,
+      "note": ""
     }
   ],
   "all_detect_events": [
@@ -4013,10 +4248,10 @@
   },
   "provenance": {
     "script": "scripts/research/risk_radar_episode_atlas.py",
-    "generated": "2026-09-21T05:43:24.832092+00:00",
+    "generated": "2026-09-22T01:11:09.951394+00:00",
     "sigs_shape": [
       8467,
-      11
+      13
     ],
     "sigs_date_range": [
       "1993-01-29",
@@ -4033,7 +4268,9 @@
       "growth_cyc_def",
       "vol_term",
       "jpy_carry",
-      "nh_contraction"
+      "nh_contraction",
+      "corr_floor_break",
+      "ai_breadth_divergence"
     ],
     "leg_coverage": {
       "credit_oas_roc": "1998-01-29",
@@ -4046,7 +4283,9 @@
       "growth_cyc_def": "2000-01-20",
       "vol_term": "2011-12-30",
       "jpy_carry": "1994-01-26",
-      "nh_contraction": "1994-02-09"
+      "nh_contraction": "1994-02-09",
+      "corr_floor_break": "2006-01-03",
+      "ai_breadth_divergence": "2025-05-28"
     },
     "bands": {
       "watch": 55.0,
