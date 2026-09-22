@@ -1319,6 +1319,7 @@ jobs:
       - "collectors/edgar_facts.py"
       # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
       - "engine/debt_maturity.py"
+      - "engine/capital_need.py"
       - "scripts/build_debt_maturity.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_scenario.py"
@@ -2294,6 +2295,8 @@ jobs:
       - "engine/cycles.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -2965,6 +2968,9 @@ jobs:
       # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
       # engine.cash_runway is a pure module under this job's engine/*.py glob and the
       # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
+      # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
+      # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
+      # engine.capital_need plus the same debt-maturity render boundary. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2974,6 +2980,7 @@ jobs:
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
           tests/test_cash_runway.py
+          tests/test_capital_need.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -7964,6 +7971,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -8594,6 +8603,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -11033,6 +11044,7 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -12366,6 +12378,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -13634,7 +13648,7 @@ jobs:
       # Full checkout verified 66 passed with no skips.  This job declares no scope key,
       # so it is not exclusive and needs no paths import-closure declaration.
       - name: live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes
-        run: python -m pytest tests/test_attention_deterministic.py tests/test_build_live_quotes.py tests/test_cboe_chain_coverage.py tests/test_clinicaltrials_themes.py tests/test_daily_engine_setup_retry.py tests/test_event_priors.py tests/test_foresight_ledger_lane_gates.py tests/test_gex_archive_snapshot.py tests/test_grade_cortex_attention.py tests/test_grade_factor_attention.py tests/test_grade_thematic.py tests/test_live_delay_labeling.py tests/test_options_flow_attention_reflex.py tests/test_prophet_bridge.py tests/test_prophet_bridge_order_invariance.py tests/test_prophet_durable_checkpoint.py tests/test_prophet_earnings_split_brain.py tests/test_prophet_stage_shadow.py tests/test_prophet_stage_tilt.py tests/test_prophet_w1_intake_repair.py tests/test_tape_flow.py tests/test_tape_flow_stamp.py tests/test_tech_events_export.py tests/test_techlab_p0_fixes.py tests/test_thematic_state.py tests/test_theme_adoption.py tests/test_theme_clinical.py tests/test_theme_options_witness.py tests/test_theme_trade_flows.py tests/test_thetadata_resolver.py tests/test_validate_gex.py tests/test_chain_session_hole_disclosure.py tests/test_prophet_arena_clock_parity.py tests/test_prophet_plan_clock.py tests/test_prophet_lifecycle_state.py -q
+        run: python -m pytest tests/test_attention_deterministic.py tests/test_build_live_quotes.py tests/test_cboe_chain_coverage.py tests/test_clinicaltrials_themes.py tests/test_daily_engine_setup_retry.py tests/test_event_priors.py tests/test_foresight_ledger_lane_gates.py tests/test_gex_archive_snapshot.py tests/test_grade_cortex_attention.py tests/test_grade_factor_attention.py tests/test_grade_thematic.py tests/test_live_delay_labeling.py tests/test_options_flow_attention_reflex.py tests/test_prophet_bridge.py tests/test_prophet_bridge_order_invariance.py tests/test_prophet_durable_checkpoint.py tests/test_prophet_earnings_split_brain.py tests/test_prophet_earnings_source_restore.py tests/test_prophet_stage_shadow.py tests/test_prophet_stage_tilt.py tests/test_prophet_w1_intake_repair.py tests/test_tape_flow.py tests/test_tape_flow_stamp.py tests/test_tech_events_export.py tests/test_techlab_p0_fixes.py tests/test_thematic_state.py tests/test_theme_adoption.py tests/test_theme_clinical.py tests/test_theme_options_witness.py tests/test_theme_trade_flows.py tests/test_thetadata_resolver.py tests/test_validate_gex.py tests/test_chain_session_hole_disclosure.py tests/test_prophet_arena_clock_parity.py tests/test_prophet_plan_clock.py tests/test_prophet_lifecycle_state.py -q
       # Daily engine setup-race recovery (2026-08-09): GitHub delivered engine and
       # factor_panel to one busy self-hosted runner one second apart; the runner
       # cancelled engine before checkout and the tail kept going.  The two suites
@@ -14471,6 +14485,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -16075,6 +16091,43 @@ jobs:
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip
         run: python -m pytest tests/test_markets_regime_strip.py -q
+
+  options-skew-engine:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # A-F03-W2-1b (2026-09-22). tests/test_options_skew.py used to be a step on
+    # flow-surface, which is gate:data and never runs in a PR pack. This job is
+    # the gate:code home. scope: exclusive — the paths below are the measured
+    # import closure of that one pytest file, plus every live caller the
+    # legacy-source pin reads (engine-render, closing-bell, render.yml, and
+    # the nightly engine shell). No data/** fallback.
+    scope: exclusive
+    paths:
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/render.yml"
+      - "engine/__init__.py"
+      - "engine/options_skew.py"
+      - "engine/thetadata_store.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_skew.py"
+      - "scripts/ci/daily_engine_regional_desk_builders.sh"
+      - "scripts/validate_options_skew.py"
+      - "tests/test_options_skew.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install options-skew engine test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: options skew engine
+        run: python -m pytest tests/test_options_skew.py -q
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}

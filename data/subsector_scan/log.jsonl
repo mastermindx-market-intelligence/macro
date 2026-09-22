@@ -145,3 +145,7 @@
 {"sub_industry":"Medical Devices","sector":"Healthcare","asof":"2026-09-17","ts":"2026-09-17T07:14:49.483209+00:00","stage":"BROADENING","breadth":0.227,"n_scarcity":2}
 {"sub_industry":"Semiconductors","sector":"Technology","asof":"2026-09-18","ts":"2026-09-18T05:43:19.260099+00:00","stage":"BROADENING","breadth":0.5,"n_scarcity":5}
 {"sub_industry":"Medical Devices","sector":"Healthcare","asof":"2026-09-18","ts":"2026-09-18T05:43:19.260099+00:00","stage":"BROADENING","breadth":0.227,"n_scarcity":2}
+{"sub_industry":"Semiconductors","sector":"Technology","asof":"2026-09-19","ts":"2026-09-22T16:31:18.867278+00:00","stage":"BROADENING","breadth":0.473,"n_scarcity":5}
+{"sub_industry":"Medical Devices","sector":"Healthcare","asof":"2026-09-19","ts":"2026-09-22T16:31:18.867278+00:00","stage":"BROADENING","breadth":0.193,"n_scarcity":2}
+{"sub_industry":"Semiconductors","sector":"Technology","asof":"2026-09-22","ts":"2026-09-22T18:18:14.423581+00:00","stage":"BROADENING","breadth":0.473,"n_scarcity":5}
+{"sub_industry":"Medical Devices","sector":"Healthcare","asof":"2026-09-22","ts":"2026-09-22T18:18:14.423581+00:00","stage":"BROADENING","breadth":0.193,"n_scarcity":2}

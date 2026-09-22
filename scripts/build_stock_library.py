@@ -25,6 +25,13 @@ try:
 except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
     _dm_load = None
 
+try:
+    # Pure derived adapter; an import fault must remain additive to the
+    # stock-library build and degrade at its call site below.
+    from engine.capital_need import assemble_capital_need as _cn_assemble
+except Exception:  # noqa: BLE001 -- additive panel
+    _cn_assemble = None
+
 
 def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
     """Resolve the ``debt_maturity.v1`` block for one ticker (packet
@@ -87,7 +94,9 @@ def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
             }
         if _dm_state == "confirmed_no_filings":
             return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
-        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block = _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block["fetched_at"] = _dm_facts.get("fetched_at")
+        return block
     except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
         # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
         # reached the else branch), so a transient fault here (import
@@ -147,7 +156,9 @@ def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
             }
         if _cr_state == "confirmed_no_filings":
             return _cr_extract(None, cik=_cr_cik, as_of=cr_asof, ladder=None)
-        return _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block = _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block["fetched_at"] = _cr_facts.get("fetched_at")
+        return block
     except Exception as _cr_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
         print(
             f"::warning title=stock-library cash-runway producer fault::{ticker} "
@@ -162,6 +173,44 @@ def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
             "monthly_burn_usd": None, "runway_months": None,
             "runway_display": None, "near_term_cover_pct": None,
             "period": None, "as_of": cr_asof.isoformat(),
+        }
+
+
+def _resolve_capital_need(
+    ticker: str,
+    sector: str,
+    cn_asof,
+    debt_maturity: dict,
+    cash_runway: dict,
+) -> dict:
+    """Compose ``capital_need.v1`` from the existing issuer read models.
+
+    Ticker and sector only preserve the existing non-filer taxonomy; they are
+    never promoted into an issuer identity by this adapter.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "capital_need.v1", "version": 1, "status": "not_applicable"}
+    try:
+        if _cn_assemble is None:
+            raise RuntimeError("engine.capital_need import failed at module load")
+        return _cn_assemble(debt_maturity, cash_runway, as_of=cn_asof)
+    except Exception as _cn_exc:  # noqa: BLE001 -- additive; never break stockdata
+        print(
+            f"::warning title=stock-library capital-need producer fault::{ticker} "
+            f"capital-need composition raised {type(_cn_exc).__name__}: {_cn_exc} -- "
+            "degrading to unknown",
+            flush=True,
+        )
+        return {
+            "schema": "capital_need.v1",
+            "version": 1,
+            "status": "unknown",
+            "coverage": {"state": "unknown", "reasons": ["producer_fault"]},
+            "issuer": {"issuer_id": None, "security_id": None, "cik": None, "scope": "issuer"},
+            "as_of": cn_asof.isoformat(),
+            "reported": {},
+            "derived": {},
+            "authority": {"class": "context_only", "display_only": True},
         }
 
 
@@ -4161,6 +4210,16 @@ def main() -> int:
         # Taxonomy mirrors _resolve_debt_maturity above.
         rec["cash_runway"] = _resolve_cash_runway(
             ticker, sector, _dt.date.today(), rec["debt_maturity"]
+        )
+        # ---- capital need read model (bounded F09 derived adapter) ------------
+        # This composes only the two blocks above.  It does not widen the
+        # Capital Structure projection or open another cache/source path.
+        rec["capital_need"] = _resolve_capital_need(
+            ticker,
+            sector,
+            _dt.date.today(),
+            rec["debt_maturity"],
+            rec["cash_runway"],
         )
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
