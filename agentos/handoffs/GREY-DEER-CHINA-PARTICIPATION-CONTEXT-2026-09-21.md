@@ -91,38 +91,32 @@ prs:
 
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001. Sol retains source ownership.
-Procedure:Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f, compatible1.0.1/bootstrap1.
-Current source combines PR7622 e7e59f1ba188 with PR7592 51db6f0ab393.
-Two source conflicts were reconciled: preserve probability scope + slowdown/null
-semantics and concatenate the independent test additions. No source changes to
-PR7592 itself, no CI polling/cancellation/rerun or controller mutation.
-PR7622 remains Draft/HOLD; the final source head is the current same-branch commit.
+Operation: china-participation-context-20260921-sol-001. Sol retains source custody.
+Procedure: Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e (1.0.1/bootstrap1).
+Same PR7622/branch/worktree; CI/release deferred, no arming or deployment.
+DO_NOT_REDO: the combined page/integrity/participation/risk-meaning source at
+6bf539301af18afb7030fec645bd141696d282cf,389-test integration and16/8 browser proof
+remain accepted offline evidence in CHINA_INTEGRATED_CONTEXT_20260921.md.
+PR7592 remains untouched. No forecast calibration, risk score or policy change.
 
-Accepted historical proof: participation, dated300-member cohort and scoped risk
-reading in CHINA_PARTICIPATION_CONTEXT_20260921.md and CHINA_RISK_READING_SCOPE_20260921.md.
-Current integration evidence:research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md.
-386-test original join passed; two extreme-integer counterexamples failed; final
-integrated ten-suite run389 passed after bounds-before-conversion repair.
-Final combined page is0d75fe73...;16 captures/8 interactions passed after auxiliary cleanup.
-The actual page and new content-addressed stylesheet are included, not only templates.
+New bounded source: official CSI300 close-weight parser, pure fixed-start basket,
+read-only optional artifact reader and existing expandable-page consumer. The
+once-retrieved official file is datedAugust31,300 names,sum100%,top10=23.18%.
+ThroughSeptember18 the fixed-start basket is-2.4174%,ETF-2.1985%,median-2.6424%.
+This is after-the-fact evidence, not official cash-index contribution or PIT data.
+Current three-suite verification:220 tests pass,31 new cases,10 inherited warnings.
+Exact source/input receipts:CHINA_INDEX_WEIGHT_CONTEXT_20260921.md and
+CHINA_INDEX_WEIGHT_REAL_INPUT_20260921.json in research/grey_deer/.
 
-Clock lane: original implementation safety-status refusal remains NO_EFFECT/frozen.
-Do not rerun or delegate it through another carrier;15 pending cases are in
-research/grey_deer/china_participation_clock_pending_tests.py, not active PASS claims.
-The current terminal compound skill-fetch was also refused; it was not repeated.
-Protected read-only GitHub source reads succeeded at the exact pinned SHA.
-No shared risk formula/calibration/recovery authority has changed. Official start
-weights and historical membership remain unproven; library cap placeholders are forbidden.
-No child or watcher is running. No fresh collection/deployment/forecast validation.
-MISSION_COMPLETE:false. Parent/source custody retained; do not replay old history.
+Supply is NOT enabled: the protective refresh-runner test append was safety-refused;
+readback proves it absent and no automatic refresh method was implemented. Do not
+retry/delegate that operation. The new reader truthfully handles an absent artifact.
+The older clock edit remains refused/NO_EFFECT;15 pending tests remain excluded.
+This turn's compound7029 fetch/diff/review request was refused; no alternate path
+or recovery implementation was attempted. Existing recovery owner remains7029.
 
-FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE:false
-Boundary:two formerly separate source candidates now compose one verified
-publication-format page. Its source, inputs, raw/normalized page and browser result
-are bound in the existing research/evidence owners. CI and production are deferred,
-not bypassed; no worker/watcher is running. Continue on this same PR7622 from this
-record plus minimum fresh canonical state. Do not redo this integration or restart
-PR7592; next qualify the unresolved clock and official-source/model evidence, then
-normal current-main/release/public-browser gates when authorized.
+Next:run the checked-in proof entry with the genuine local workbook injected only
+at the existing store.read seam, explicitly not production ingestion; inspect
+browser evidence, restore only this build's generated artifacts, publish receipts.
+No official dataset is committed; raw workbook stays local. No worker/watcher.
+MISSION_COMPLETE:false. Current work remains in progress; no autonomous wake claimed.

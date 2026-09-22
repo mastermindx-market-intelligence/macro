@@ -76,8 +76,9 @@
       {% endfor %}
       {% else %}<p class="cnx-part-note">{{ bl('Constituent comparison unavailable — check membership and price coverage.','成分股对比暂不可用，请核对成员名单与价格覆盖。') }}</p>{% endif %}
       <p class="cnx-part-note">{{ bl('One observed snapshot, not a historical membership archive. Applying these names to earlier returns does not reconstruct past index membership. The comparator is an ETF, not a reconstruction of the cash index.','单次观察快照，并非历史成分股档案。将这些成员用于较早的收益计算，不代表重建历史指数成员。比较对象是ETF，而非重建的现货指数。') }}</p>
-      <p class="cnx-part-note">{{ bl('Starting index weights unavailable in this view — no weighted attribution. Market-cap placeholders and end-date capitalization cannot substitute for official starting weights.','本视图未提供期初指数权重，不进行加权归因。市值占位值与期末市值均不可替代官方期初权重。') }}</p>
+      {% if not (ctx.get('index_weights') or {}).get('weight_date') %}      <p class="cnx-part-note">{{ bl('Starting index weights unavailable in this view — no weighted attribution. Market-cap placeholders and end-date capitalization cannot substitute for official starting weights.','本视图未提供期初指数权重，不进行加权归因。市值占位值与期末市值均不可替代官方期初权重。') }}</p>{% endif %}
     </div>
+    {{ weight_panel(ctx.get('index_weights') or {}) }}
     {% if sector.get('rows') %}
     <div class="cnx-lbl">{{ bl('Sector ETFs · absolute returns','行业ETF · 绝对收益') }} · {{ ctx.get('assessment_asof') or sample.get('requested_asof') or '—' }}</div>
     <p class="cnx-part-note">{% if sector.eligible %}{{ sector.rising }} / {{ sector.eligible }} {{ bl('current eligible sector proxies rose over 20 sessions;','只当期有效行业代理在20个交易日内上涨；') }} {{ sector.declared }} {{ bl('configured. Outperforming a falling benchmark can still mean losing money.','只已配置。跑赢下跌的基准，仍可能是负收益。') }}{% else %}{{ bl('Sector participation unavailable.','行业参与度暂不可用。') }}{% endif %}</p>
@@ -88,4 +89,25 @@
     <p class="cnx-part-note">{{ bl('Long-trend changes use the same eligible names at both endpoints; changes in percentage points are not stock returns. Wide dispersion is descriptive, not automatically bearish and not a pullback probability.','长期趋势变化使用前后同一组有效成分；百分点变化不是个股收益。收益分化仅描述差异，不自动代表看跌，更非回撤概率。') }}</p>
   </details>
 </section>
+{%- endmacro %}
+
+{% macro weight_panel(w) -%}
+{% if w and w.get('weight_date') %}
+<div class="cnx-index-weights">
+  <div class="cnx-lbl">{{ bl('Official weights · dated context','官方权重 · 日期背景') }}</div>
+  <p class="cnx-part-note">{{ bl('Weight date','权重日期') }} {{ w.weight_date }} · {{ bl('Prices through','价格截至') }} {{ w.get('end') or '—' }}</p>
+  <div class="cnx-kv"><span class="k">{{ bl('Ten largest weights','前十大权重合计') }}</span><span class="v">{{ pct(w.get('top10_weight_pct')) }}</span></div>
+  <div class="cnx-kv"><span class="k">{{ bl('Fixed-start basket estimate','期初权重篮子估算') }}</span><span class="v">{{ pct(w.get('basket_return_pct'),true) }}</span></div>
+  <div class="cnx-kv"><span class="k">{{ bl('Typical basket member','篮子中典型个股') }}</span><span class="v">{{ pct(w.get('median_return_pct'),true) }}</span></div>
+  <div class="cnx-kv"><span class="k">{{ bl('CSI 300 ETF · same dates','沪深300 ETF · 同期') }}</span><span class="v">{{ pct(w.get('benchmark_return_pct'),true) }}</span></div>
+  <div class="cnx-part-sub">{{ w.get('eligible',0) }} / {{ w.get('expected_members',300) }} {{ bl('complete price histories','只价格历史完整') }} · {{ w.get('start') or '—' }} → {{ w.get('end') or '—' }}</div>
+  {% if w.get('top_contributors') or w.get('top_detractors') %}
+  <table class="cnx-part-table"><thead><tr><th>{{ bl('Basket member','篮子成员') }}</th><th>{{ bl('Stock return','个股收益') }}</th><th>{{ bl('Basket contribution (pp)','篮子贡献（百分点）') }}</th></tr></thead><tbody>
+  {% for row in (w.get('top_contributors') or []) + (w.get('top_detractors') or []) %}
+    <tr><td>{{ bl(row.ticker,row.get('name_zh') or row.ticker) }}</td><td>{{ pct(row.return_pct,true) }}</td><td>{{ '%+.2f'|format(row.contribution_pp) }}</td></tr>
+  {% endfor %}</tbody></table>{% endif %}
+  <p class="cnx-part-note">{{ bl('Buy-and-hold arithmetic from the reported weight date; not official index attribution. Stored price adjustments, later constituent changes, index divisors and ETF tracking can differ. We do not renormalize reported weights.','从公布权重日期起计算买入持有篮子，并非官方指数归因。存储价格调整、后续成分变更、指数除数及ETF跟踪均可能存在差异；不重新归一化公布权重。') }}</p>
+  <p class="cnx-part-note">{{ bl('File observed','文件观察时间') }} {{ w.get('observed_at') or '—' }}{% if w.get('known_after_window') %} · {{ bl('obtained after this return window; retrospective only, not point-in-time evidence.','在此收益窗口结束后获得，仅供回顾，不是当时可得证据。') }}{% endif %}</p>
+</div>
+{% endif %}
 {%- endmacro %}

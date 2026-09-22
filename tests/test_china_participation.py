@@ -1205,3 +1205,127 @@ def test_index_member_builder_adds_cohort_without_mutating_original_context(monk
     assert r['index_members'] == member
     assert 'index_members' not in original
     assert r['sample']['status'] == 'delayed'
+
+
+# A fixed starting-weight basket is descriptive, not official index attribution.
+def _weighted_context_fixture():
+    members = [f'{600000+i:06d}.SS' for i in range(300)]
+    dates = pd.bdate_range('2026-08-31','2026-09-18')
+    prices = pd.DataFrame(100.0,index=dates,columns=members)
+    prices.iloc[-1,0] = 110
+    prices.iloc[-1,1:] = 99
+    weights = pd.DataFrame({'symbol':'000300','ticker':members,'name_zh':members,
+        'weight_date':'2026-08-31','observed_at':'2026-09-22T00:00:00+00:00',
+        'source':'csindex_closeweight','weight_pct':[10.0]+[90/299]*299})
+    benchmark = pd.Series(100.0,index=dates)
+    return weights,prices,benchmark
+
+
+def test_weighted_context_uses_actual_start_weights_not_equal_weights_or_end_caps():
+    from engine.china_participation import index_weight_context
+    weights,prices,bench = _weighted_context_fixture()
+    r = index_weight_context(weights,prices,bench,asof='2026-09-18')
+    assert r['status'] == 'available' and r['eligible'] == 300
+    assert r['basket_return_pct'] == pytest.approx(.1)
+    assert r['median_return_pct'] == pytest.approx(-1)
+    assert r['top_contributors'][0]['contribution_pp'] == pytest.approx(1)
+    assert r['official_index_attribution'] is False
+    assert r['start'] == '2026-08-31' and r['end'] == '2026-09-18'
+    assert r['known_after_window'] is True
+
+
+@pytest.mark.parametrize('fault',['missing','gap','before_weights','bad_total','duplicate','foreign'])
+def test_weighted_context_refuses_false_attribution(fault):
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    if fault == 'missing': p = p.iloc[:,:-1]
+    elif fault == 'gap': p.iloc[3,3] = np.nan
+    elif fault == 'before_weights': w['weight_date'] = '2026-09-30'
+    elif fault == 'bad_total': w['weight_pct'] = 1
+    elif fault == 'duplicate': w.loc[1,'ticker'] = w.loc[0,'ticker']
+    elif fault == 'foreign': w['source'] = 'market_caps'
+    r = index_weight_context(w,p,b,asof='2026-09-18')
+    assert r['basket_return_pct'] is None
+    assert r['official_index_attribution'] is False
+    assert r['data_gaps']
+
+
+def test_weighted_context_keeps_concentration_when_price_coverage_is_incomplete():
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    r = index_weight_context(w,p.iloc[:,:-1],b,asof='2026-09-18')
+    assert r['top10_weight_pct'] == pytest.approx(10+9*90/299)
+    assert r['eligible'] == 299 and r['basket_return_pct'] is None
+
+
+def test_weighted_context_is_input_immutable_and_json_finite():
+    import json
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    before = (w.copy(),p.copy(),b.copy())
+    json.dumps(index_weight_context(w,p,b,asof='2026-09-18'),allow_nan=False)
+    pd.testing.assert_frame_equal(w,before[0]); pd.testing.assert_frame_equal(p,before[1])
+    pd.testing.assert_series_equal(b,before[2])
+
+
+@pytest.mark.parametrize('bad_ticker',['510300.SS','00700.HK','notreal.X'])
+def test_weighted_context_rejects_nonmember_symbol_classes(bad_ticker):
+    from engine.china_participation import index_weight_context
+    w,p,b = _weighted_context_fixture()
+    w.loc[0,'ticker'] = bad_ticker
+    p = p.rename(columns={p.columns[0]:bad_ticker})
+    r = index_weight_context(w,p,b,asof='2026-09-18')
+    assert r['basket_return_pct'] is None and r['data_gaps']
+
+
+def test_weight_reader_is_read_only_and_absence_is_not_fabricated(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    seen=[]
+    def read(g,n):
+        seen.append((g,n)); return None
+    monkeypatch.setattr(store,'read',read)
+    r=pc.load_index_weight_context(asof='2026-09-18')
+    assert r['basket_return_pct'] is None and r['official_index_attribution'] is False
+    assert set(seen)=={('china_search','index_weights'),('china_search','closes'),('china','510300.SS')}
+    assert r['data_gaps']
+
+
+def test_weight_reader_consumes_the_official_snapshot_without_network(monkeypatch):
+    from engine import china_participation as pc
+    from lib import store
+    w,p,b=_weighted_context_fixture()
+    inputs={('china_search','index_weights'):w,('china_search','closes'):p,('china','510300.SS'):b.to_frame('close')}
+    monkeypatch.setattr(store,'read',lambda g,n:inputs[(g,n)])
+    assert pc.load_index_weight_context(asof='2026-09-18')['basket_return_pct']==pytest.approx(.1)
+
+
+def test_weight_view_names_the_basket_and_never_claims_cash_index_attribution():
+    from engine.china_participation import index_weight_context
+    w,p,b=_weighted_context_fixture()
+    html=_render_participation_context({'index_weights':index_weight_context(w,p,b,asof='2026-09-18')})
+    assert 'Official weights' in html and '官方权重' in html
+    assert '2026-08-31' in html and '2026-09-18' in html
+    assert 'Fixed-start basket estimate' in html
+    assert 'not official index attribution' in html
+    assert '+0.10%' in html and '300 / 300' in html
+    assert 'obtained after this return window' in html
+
+
+def test_weight_view_preserves_incomplete_price_coverage_without_zero_return():
+    from engine.china_participation import index_weight_context
+    w,p,b=_weighted_context_fixture()
+    html=_render_participation_context({'index_weights':index_weight_context(w,p.iloc[:,:-1],b,asof='2026-09-18')})
+    assert '299 / 300' in html and 'Unavailable' in html
+    assert '+0.00%' not in html
+
+
+def test_weight_builder_attaches_optional_read_without_mutating_other_context(monkeypatch):
+    from engine import china_participation as pc
+    from scripts import build_china
+    base={'authority':'context_only'}
+    monkeypatch.setattr(pc,'load_breadth_context',lambda **kw:base)
+    monkeypatch.setattr(pc,'load_index_member_breadth_context',lambda **kw:{})
+    monkeypatch.setattr(pc,'load_index_weight_context',lambda **kw:{'status':'unavailable'})
+    assert build_china._participation_context('2026-09-18')['index_weights']['status']=='unavailable'
+    assert base=={'authority':'context_only'}

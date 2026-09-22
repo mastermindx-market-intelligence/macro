@@ -1181,3 +1181,112 @@ def load_index_member_breadth_context(*, asof: str) -> dict:
     result = index_member_breadth_context(membership,closes,benchmark,asof=asof)
     result['data_gaps'].extend(errors)
     return result
+
+
+def index_weight_context(weights: pd.DataFrame, closes: pd.DataFrame,
+                         benchmark: pd.Series, *, asof: str) -> dict:
+    """Dated concentration and fixed-start-weight arithmetic, not the cash index.
+
+    Current/end-date market caps never enter. The file's own weight date is the
+    only allowed starting point; no 5/20-session attribution is manufactured.
+    """
+    from math import fsum
+    from numbers import Real
+    r = {'authority':'context_only','status':'unavailable','expected_members':300,
+         'eligible':0,'weight_date':None,'observed_at':None,'weight_sum_pct':None,
+         'top10_weight_pct':None,'basket_return_pct':None,'median_return_pct':None,
+         'benchmark_return_pct':None,'start':None,'end':None,'observed_sessions':None,
+         'top_contributors':[],'top_detractors':[],'known_after_window':None,
+         'official_index_attribution':False,'data_gaps':[]}
+    try:
+        when = pd.Timestamp(asof)
+        if pd.isna(when) or when.tz is not None or when != when.normalize():
+            raise ValueError('invalid assessment date')
+        required = {'ticker','symbol','source','weight_date','weight_pct','observed_at'}
+        if (not isinstance(weights,pd.DataFrame) or weights.columns.has_duplicates
+                or not required.issubset(weights) or len(weights) != 300):
+            raise ValueError('complete official 300-member weight snapshot required')
+        if set(weights.symbol) != {'000300'} or set(weights.source) != {'csindex_closeweight'}:
+            raise ValueError('official CSI300 weight source required; no market caps')
+        names = weights.ticker.tolist()
+        def ashare(t):
+            return (isinstance(t,str) and len(t)==9 and t[:6].isdigit()
+                    and ((t.endswith('.SS') and t.startswith(('60','68')))
+                         or (t.endswith('.SZ') and t.startswith(('00','30')))))
+        if len(set(names)) != 300 or any(not ashare(t) for t in names):
+            raise ValueError('invalid or duplicate weighted membership')
+        values = weights.weight_pct.tolist()
+        if any(isinstance(v,bool) or not isinstance(v,Real) or not 0 <= v <= 100 for v in values):
+            raise ValueError('invalid reported weights')
+        total = fsum(values)
+        if abs(total-100) > .15000001:
+            raise ValueError('incomplete weight total; weights are not renormalized')
+        dates = [pd.Timestamp(d) for d in weights.weight_date]
+        observations = [pd.Timestamp(d) for d in weights.observed_at]
+        if (len(set(dates))!=1 or any(pd.isna(d) or d.tz is not None or d!=d.normalize() for d in dates)
+                or len(set(observations))!=1 or any(pd.isna(d) or d.tz is None for d in observations)):
+            raise ValueError('mixed or invalid weight-source dates')
+        start = dates[0]; observed = observations[0].tz_convert('UTC')
+        if start > when or start.date() > observed.date():
+            raise ValueError('weights postdate the requested assessment or observation')
+        r.update(status='partial',weight_date=str(start.date()),observed_at=observed.isoformat(),
+                 weight_sum_pct=total,top10_weight_pct=fsum(sorted(values,reverse=True)[:10]),
+                 start=str(start.date()))
+        prices = _context_daily_frame(closes)
+        bench = _context_daily_frame(benchmark.to_frame('benchmark'))
+        calendar = bench.index[(bench.index>=start)&(bench.index<=when)]
+        if len(calendar)<2 or calendar[0]!=start:
+            raise ValueError('exact weight-date price and a later observed session required')
+        end = calendar[-1]
+        r.update(end=str(end.date()),observed_sessions=len(calendar)-1,
+                 known_after_window=observed.date()>end.date())
+        panel = _context_prices(prices.reindex(index=calendar,columns=names))
+        valid = panel.notna().all()
+        r['eligible'] = int(valid.sum())
+        if r['eligible']!=300:
+            raise ValueError('complete unfilled prices for all 300 weighted members required')
+        with np.errstate(over='ignore',invalid='ignore'):
+            returns = (panel.iloc[-1]/panel.iloc[0]-1)*100
+        if not np.isfinite(returns).all():
+            raise ValueError('nonfinite constituent returns')
+        parts = [float(w/100*returns[t]) for t,w in zip(names,values)]
+        b = _context_prices(bench.reindex(calendar))['benchmark']
+        br = float((b.iloc[-1]/b.iloc[0]-1)*100) if b.notna().all() else np.nan
+        labels = weights.get('name_zh',weights.ticker).astype(str).tolist()
+        rows = [{'ticker':t,'name_zh':label,'weight_pct':float(w),
+                 'return_pct':float(returns[t]),'contribution_pp':part}
+                for t,label,w,part in zip(names,labels,values,parts)]
+        r.update(status='available' if end==when else 'delayed',
+                 basket_return_pct=fsum(parts),median_return_pct=float(returns.median()),
+                 benchmark_return_pct=br if np.isfinite(br) else None,
+                 top_contributors=sorted([x for x in rows if x['contribution_pp']>0],
+                     key=lambda x:(-x['contribution_pp'],x['ticker']))[:3],
+                 top_detractors=sorted([x for x in rows if x['contribution_pp']<0],
+                     key=lambda x:(x['contribution_pp'],x['ticker']))[:3])
+        if end!=when:
+            r['data_gaps'].append('benchmark observations predate the assessment')
+    except (ValueError,TypeError,AttributeError,IndexError,OverflowError) as exc:
+        r['data_gaps'].append(str(exc))
+    return r
+
+
+def load_index_weight_context(*, asof: str) -> dict:
+    """Read the optional incumbent source artifact; never fetch or write weights.
+
+    The source collection is not enabled by this reader. Absence remains explicit.
+    """
+    from lib import store
+    errors=[]
+    def read(group,name):
+        try:
+            value=store.read(group,name)
+            return value if isinstance(value,pd.DataFrame) else pd.DataFrame()
+        except Exception as exc:
+            errors.append(f'{group}/{name}: {type(exc).__name__}')
+            return pd.DataFrame()
+    weights=read('china_search','index_weights')
+    prices=read('china_search','closes')
+    benchmark=read('china','510300.SS')
+    result=index_weight_context(weights,prices,benchmark.get('close',pd.Series(dtype=float)),asof=asof)
+    result['data_gaps'].extend(errors)
+    return result
