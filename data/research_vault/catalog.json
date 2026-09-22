@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T17:36:28.438418+00:00",
-  "count": 2653,
+  "generated_at": "2026-09-22T17:51:31.877925+00:00",
+  "count": 2654,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -212,6 +212,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jss1fygo6mb-0ce1cf",
+      "title": "Auto1 Group (AG1G.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:21Z",
+      "summary_points": [
+        "Structural Advantage: Vertically integrated tech-led model (14y data, 170+ logistics centers, 300+ partners) creates structural edge over traditional dealers; Q4 re-acceleration expected post-inventory rebuilds and new trading system benefits (GPUs, faster inventory turns).",
+        "GPU Efficiency Focus: Prioritizing inventory efficiency (reducing excess stock, improving turns) over unit growth in Autohero, alternating quarterly; directly impacts margins and liquidity.",
+        "Key Risk Catalysts: Slower online car adoption (Autohero revenue), lower merchant market share gains, used car volatility, rising interest rates (inventory financing costs), and slower profitability ramp-up.",
+        "Cross-Border Expansion: Launching German stock in Poland (first cross-listed inventory) to broaden assortment, improve liquidity, and expand buyer base; long-term growth driver with minimal near-term impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
