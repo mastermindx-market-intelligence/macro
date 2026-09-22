@@ -29,6 +29,7 @@ import logging
 import math
 
 from engine import valuation_event_bridge as _veb
+from engine import valuation_event_proposal as _vep
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
 
 log = logging.getLogger(__name__)
@@ -109,6 +110,89 @@ def _issuer_event_class(v1_blob: dict) -> str | None:
     return latest_issuer_spine_event_class(v1_blob.get("ticker"))
 
 
+def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
+    """(latest event record, reader_ok).
+
+    ``reader_ok`` is False only when the readers themselves failed. A healthy
+    reader that simply has no events for this issuer returns ``(None, True)``,
+    so "we could not look" and "there is nothing" stay distinguishable —
+    collapsing them is what makes a silent degradation read as a confident
+    "nothing on file".
+    """
+    if not isinstance(ticker, str) or not ticker.strip():
+        return None, True
+    wanted = ticker.strip().upper()
+    try:
+        from engine.chronicle import spine as chronicle_spine
+        from engine.capital_structure.event_versions_io import iter_classified_spine_events
+        from engine.capital_structure.spine_paths import chronicle_events_path
+
+        events = [
+            e for e in chronicle_spine.load_events_jsonl(chronicle_events_path())
+            if isinstance(e, dict) and wanted in {
+                str(x).strip().upper() for x in (e.get("tickers") or [])
+            }
+        ]
+        for event in iter_classified_spine_events(wanted):
+            events.append({
+                "id": event["event_id"],
+                "tickers": [event["issuer"]["ticker"]],
+                "kind": event["event"]["subtype"],
+                "ts": event["point_in_time"]["available_at"],
+            })
+    except Exception as exc:
+        log.warning("valuation: issuer event record lookup failed: %s", exc)
+        return None, False
+    dated = [e for e in events if (e.get("ts") or e.get("date"))]
+    if not dated:
+        return None, True
+    return max(dated, key=lambda e: str(e.get("ts") or e.get("date"))), True
+
+
+def issuer_guidance_hits(ticker: object) -> list[dict]:
+    """SEC 8-K directional guidance hits for one issuer.
+
+    Delegates to engine.guidance_gap, which already owns that parquet. No new
+    collector, no second store, and no direct file access from this module.
+    """
+    try:
+        from engine.guidance_gap import hits_for_ticker
+
+        return hits_for_ticker(ticker)
+    except Exception as exc:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation: guidance hits unreadable: %s", exc)
+        return []
+
+
+def _attach_event_proposal(blob: dict, as_of: object = None) -> dict:
+    """Attach the typed AssumptionChange proposal and its shadow evaluation.
+
+    Additive and never fatal: a failure here leaves the rest of the panel
+    exactly as it was.
+    """
+    try:
+        ticker = blob.get("ticker")
+        record, reader_ok = latest_issuer_event_record(ticker)
+        if not reader_ok:
+            proposal = _vep.proposal_reader_unavailable(blob)
+        else:
+            proposal = _vep.best_proposal(
+                blob,
+                chronicle_events=[record] if record else (),
+                guidance_hits=issuer_guidance_hits(ticker),
+                as_of=as_of,
+            )
+        blob["event_assumption_proposal"] = proposal
+        blob["event_assumption_scenario"] = (
+            _vep.evaluate_proposal(blob, proposal) if proposal else None
+        )
+    except Exception as exc:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation: event assumption proposal failed: %s", exc)
+        blob.setdefault("event_assumption_proposal", None)
+        blob.setdefault("event_assumption_scenario", None)
+    return blob
+
+
 def round2(v):
     """Half-up to two decimals for v > 0. Matches JS Math.floor(v*100+0.5)/100."""
     if v is None:
@@ -180,7 +264,7 @@ def _control_defaults():
     return {c["key"]: c["default"] for c in CONTROLS}
 
 
-def controls_blob(v1_blob):
+def controls_blob(v1_blob, as_of=None):
     """Build valuation_scenario_controls.v1 from a V1 compute() blob, or None.
 
     Returns None when the V1 blob is missing, when net income is missing or
@@ -215,7 +299,7 @@ def controls_blob(v1_blob):
 
     latest_event_class = _issuer_event_class(v1_blob)
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
-        return {
+        return _attach_event_proposal(as_of=as_of, blob={
             "schema": "valuation_scenario_controls.v1",
             "ticker": ticker,
             "tier": "research_display_only",
@@ -231,7 +315,7 @@ def controls_blob(v1_blob):
             },
             "margin_base_floor": _MARGIN_BASE_FLOOR,
             "latest_event_bridge": _veb.bridge_for_issuer(latest_event_class),
-        }
+        })
 
     scenarios = v1_blob.get("scenarios") or []
     by_key = {s.get("key"): s for s in scenarios if isinstance(s, dict)}
@@ -277,7 +361,7 @@ def controls_blob(v1_blob):
     # and no network access are introduced.
     _latest_event_bridge = _veb.bridge_for_issuer(latest_event_class)
 
-    return {
+    return _attach_event_proposal(as_of=as_of, blob={
         "schema": "valuation_scenario_controls.v1",
         "ticker": ticker,
         "tier": "research_display_only",
@@ -300,4 +384,4 @@ def controls_blob(v1_blob):
             "per_share": default_ps,
         },
         "latest_event_bridge": _latest_event_bridge,
-    }
+    })

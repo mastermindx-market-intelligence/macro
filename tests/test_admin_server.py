@@ -556,3 +556,33 @@ def test_the_one_live_analytics_reading_is_still_never_cached():
     the operator watches for freshness, so the longer TTL above must not reach it."""
     assert not _cacheable_api_get("/api/analytics/fp/realtime", {})
     assert _cacheable_api_get("/api/analytics/fp/visitors", {})
+
+def test_semantic_failure_response_is_not_cached(monkeypatch):
+    from admin import server
+
+    calls = 0
+
+    def flaky_health():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return {"ok": False, "error": "transient upstream timeout"}
+        return {"ok": True, "healthy": True, "call": calls}
+
+    monkeypatch.setattr(server.health, "summary", flaky_health)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, first, first_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, second, second_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, third, third_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        assert json.loads(first)["ok"] is False
+        assert json.loads(second)["call"] == 2
+        assert json.loads(third)["call"] == 2
+        assert calls == 2
+        assert "X-Admin-Cache" not in first_headers
+        assert second_headers["X-Admin-Cache"] == "MISS"
+        assert third_headers["X-Admin-Cache"] == "HIT"
+    finally:
+        _clear_response_cache()
+        httpd.shutdown(); httpd.server_close()
