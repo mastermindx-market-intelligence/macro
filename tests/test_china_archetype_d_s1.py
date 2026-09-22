@@ -188,6 +188,13 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_mobile_section_index_stays_available_during_long_scrolls() -> None:
+    assert "body.page-china .cnx-links.cnx-mobile-index{display:flex;position:sticky;top:8px;z-index:30" in TPL
+    assert "background:var(--panel)" in TPL
+    assert "border-bottom:1px solid var(--line)" in TPL
+    assert '.cnx-wrap [id^="cnx-focus-"]{scroll-margin-top:84px}' in TPL
+
+
 def test_mobile_density_tightens_spacing_without_hiding_cards() -> None:
     assert "body.page-china .cnx-rack2," in TPL
     assert "body.page-china .cnx-rack3{gap:10px;margin-bottom:10px}" in TPL
