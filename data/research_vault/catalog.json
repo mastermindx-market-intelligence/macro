@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T13:05:45.297322+00:00",
-  "count": 2640,
+  "generated_at": "2026-09-22T13:50:52.263873+00:00",
+  "count": 2642,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -155,6 +155,41 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lkkrf3coi5f-a06a83",
+      "title": "GS Wijaya GS SECTOR SPECIALISTS Energy, Natural Resources and Utilities Monday Thoughts 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:58Z",
+      "summary_points": [
+        "HAL Valuation Edge: HAL outperforms peers with 7.2x EBITDA vs SLB’s 9x, leveraging ME market share gains amid cheap valuation.",
+        "VG Supply Risk: VG faces demand destruction from Qatar downtime and Venezuela, contrasting with TTF bullishness.",
+        "Geopolitical Flow Impact: Qatar downtime + Venezuela headlines pressure XOM, while EQT/EXE underperform despite refining tailwinds.",
+        "HAL De-escalation Caution: HAL maintains inbound caution despite potential de-escalation tape, balancing risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rhdcclisqiz-5702e6",
+      "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:51Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
