@@ -2955,21 +2955,81 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--prune",
-            "--tags",
-            "--depth=2147483647",
-            "origin",
-            "+refs/heads/*:refs/remotes/origin/*",
-        ],
-        cwd=root,
-        env=_trusted_git_environment(root),
-        check=True,
-    )
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--prune",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/*:refs/remotes/origin/*",
+            ],
+            cwd=root,
+            env=_trusted_git_environment(root),
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        # One broken sibling ref must not fail every fetch-depth-0 job. On
+        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
+        # missing blob object ..." / "error: remote did not send all
+        # necessary objects" — a ref whose objects the server could not
+        # serve — and every design-governance run after it red as
+        # "infrastructure unknown". The checks behind this contract diff
+        # against main and the PR's own refs (already present in the
+        # workspace), so full main history is the part that must succeed.
+        print(
+            "::warning title=run-ci-pack::all-branches deepen failed; "
+            "retrying with refs/heads/main only",
+            flush=True,
+        )
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--tags",
+                    "--depth=2147483647",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            # 2026-09-21 16:08Z: even the main-only full deepen died the same
+            # way ("fatal: missing blob object 9cd3bb31..."), while the
+            # all-branches fetch had SUCCEEDED on sibling runs minutes
+            # earlier — the failures are intermittent server-side pack
+            # assembly on these enormous full-history fetches, not one
+            # broken ref. The checks behind this contract only ever diff
+            # against a merge base that is hours-to-days old, so a bounded
+            # window is always sufficient in practice and is orders of
+            # magnitude smaller to assemble. Tags are dropped on this rung:
+            # none of the gated checks read tags, and a tag pinning
+            # unreachable history would re-break the fetch.
+            print(
+                "::warning title=run-ci-pack::main-only deepen failed; "
+                "retrying refs/heads/main with --shallow-since=30 days",
+                flush=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--shallow-since=30 days ago",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
 
 
 def _run_job(
