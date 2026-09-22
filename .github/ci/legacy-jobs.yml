@@ -16154,6 +16154,7 @@ jobs:
     # tests/** catch-all.
     paths:
       - "ops/launchd/run_skew_accrual.sh"
+      - "ops/launchd/run_with_env.sh"
       - "ops/launchd/com.macro.skewaccrual.plist"
       - "scripts/skew_accrual_gate.py"
       - "scripts/skew_accrual_precheck.py"
