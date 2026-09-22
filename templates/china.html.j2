@@ -1807,7 +1807,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div class="cnx-hero-left">
       <div class="cnx-hero-meta">
         <span class="cnx-regime-pill"><span class="dot"></span>
-          {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
+          {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span>
+          {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}<span style="opacity:.75"> · <span class="l-en">watch → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span><span class="l-zh">预警 → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span></span>{% endif %}</span>
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
           <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
@@ -2128,6 +2129,20 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
+  {# Compact driver synthesis: reuse the incumbent link-pill vocabulary instead of
+     introducing another card system. Each pill opens an existing deep dialog; the
+     accepted rows below remain the full information architecture. #}
+  {% set _credit_impulse = I.credit.credit_impulse if I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse is not none else none %}
+  {% set _risk_state_driver = (latest.risk_radar.state if latest.risk_radar else 'unknown') %}
+  {% set _risk_face = {'calm':['Calm','平稳'],'caution':['Caution','谨慎'],'elevated':['Elevated','偏高'],'risk-off':['Risk-off','避险']}.get(_risk_state_driver, ['Unclear','待确认']) %}
+  <div class="cnx-lbl">{{ t('Why this regime','为什么这样判断') }}</div>
+  <div class="cnx-links" data-cn-driver-rail>
+    <a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% elif _credit_impulse is not none %}{{ '%+.1f'|format(_credit_impulse) }}%{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {% if I.southbound and I.southbound.net is defined %}{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+    <a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>
+    <a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {% if P and P.regime %}{{ t(P.regime.label_en, P.regime.label_zh) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+  </div>
+
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">
     {# What To Do card — keep the deep-card interaction, but use the retired
@@ -2141,7 +2156,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
             {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
-          {% if not face.empty %}<button type="button" class="cnx-lens" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}">?</button>{% endif %}</div>
+          {% if not face.empty %}<button type="button" class="cnx-lens lens-q" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}">?</button>{% endif %}</div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}
@@ -2476,11 +2491,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
+  <div class="cnx-lbl">{{ t('Go deeper','深入研究') }}</div>
   <div class="cnx-links">
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
     <a href="china_policy_watch.html">{{ t('Policy & Credit','政策与信贷') }}</a>
+    <a href="flow_velocity.html">{{ t('Flow Velocity','资金流速') }}</a>
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
