@@ -51,7 +51,7 @@ def test_parse_polygon_snapshot_trade_basis_uses_trade_time():
         {"ticker": "AAPL", "updated": upd_ns,
          "lastTrade": {"p": 201.25, "t": trade_ns},
          "lastQuote": {"p": 201.20, "P": 201.30, "t": nbbo_ns},
-         "day": {"c": 200.0}, "prevDay": {"c": 198.0}},
+         "day": {"o": 199.50, "c": 200.0}, "prevDay": {"c": 198.0}},
         {"ticker": "NODATA", "day": {}, "prevDay": {}},
     ]}
     out = lq.parse_polygon_snapshot(payload, now=now)
@@ -59,6 +59,7 @@ def test_parse_polygon_snapshot_trade_basis_uses_trade_time():
     q = out["AAPL"]
     assert q["price"] == 201.25 and q["price_basis"] == "trade"
     assert q["prev_close"] == 198.0
+    assert q["day_open"] == 199.50              # same incumbent Polygon day bucket
     assert q["delay_min"] == 10.0               # from TRADE time, not the 1m-old `updated`
     assert q["bid_price"] == 201.20 and q["ask_price"] == 201.30
     assert q["nbbo_ts"] == "2026-06-21T14:50:01+00:00"
