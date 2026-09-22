@@ -647,12 +647,13 @@ def test_acquisition_cannot_precede_known_source_availability():
     assert result['derived']['near_term_cash_cover'] is None
 
 
-def test_product_context_rebuilds_debt_displays_and_order(tmp_path):
+@pytest.mark.parametrize('status', ['reported', 'no_maturity_facts', 'unresolved'])
+def test_product_context_rebuilds_debt_displays_and_order(tmp_path, status):
     from jinja2 import Environment, FileSystemLoader
     from engine import i18n
     from scripts.build_ticker_pages import build_page_context, load_all_aggregates
     debt, cash, cutoff = _control()
-    debt.update(near_share_pct=999, total_display='$0', buckets_reported=99,
+    debt.update(status=status, near_share_pct=999, total_display='$0', buckets_reported=99,
                 buckets_total=99)
     debt['period']['label'] = 'FORGED PERIOD'
     for row in debt['buckets']:
@@ -664,18 +665,25 @@ def test_product_context_rebuilds_debt_displays_and_order(tmp_path):
         load_all_aggregates(tmp_path), '2025-06-01 10:00 UTC',
     )
     projected = ctx['debt_maturity']
-    assert projected['buckets'][0]['key'] == 'y1'
-    assert projected['buckets'][0]['display'] == '$10.0M'
-    assert projected['total_display'] == '$10.0M'
-    assert projected['near_share_pct'] == 100
-    assert projected['buckets_reported'] == projected['buckets_total'] == 6
+    if status == 'reported':
+        assert projected['buckets'][0]['key'] == 'y1'
+        assert projected['buckets'][0]['display'] == '$10.0M'
+        assert projected['total_display'] == '$10.0M'
+        assert projected['near_share_pct'] == 100
+        assert projected['buckets_reported'] == projected['buckets_total'] == 6
+    else:
+        assert projected['period'] is None
+        assert all(not row['reported'] for row in projected['buckets'])
     env = Environment(loader=FileSystemLoader('templates'), autoescape=True)
     env.globals['t'] = i18n.t
     html = env.get_template('_debt_maturity.html.j2').render(**ctx)
     for poisoned in ('$999T', '999%', 'FORGED PERIOD', 'FORGED BUCKET', '99/99'):
         assert poisoned not in html
-    assert 'it reported $10.0M due' in html
-    assert '6/6' in html
+    if status == 'reported':
+        assert 'it reported $10.0M due' in html
+        assert '6/6' in html
+    else:
+        assert 'it reported $10.0M due' not in html
 
 
 @pytest.mark.parametrize('y1', [0, 10_000_000])

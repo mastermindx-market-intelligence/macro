@@ -5665,15 +5665,25 @@ def _capital_need_for_page(blob: dict | None, generated_utc: str) -> dict | None
 
 def _debt_maturity_for_page(raw: dict | None, capital_need: dict | None) -> dict | None:
     """Project validated facts in canonical order; discard cached display claims."""
-    if not isinstance(raw, dict) or raw.get("status") != "reported":
-        return raw
+    if not isinstance(raw, dict):
+        return None
+    from engine.debt_maturity import BUCKETS, _usd_dollars
+
+    if raw.get("status") != "reported":
+        result = {"status": raw.get("status"), "period": None, "buckets": []}
+        if raw.get("status") == "no_maturity_facts":
+            result["buckets"] = [
+                {"key": key, "tag": tag, "label_en": en, "label_zh": zh,
+                 "reported": False, "usd": None, "display": None,
+                 "share_pct": None, "drop_reason": "absent"}
+                for key, tag, en, zh in BUCKETS
+            ]
+        return result
     view = ((capital_need or {}).get("reported") or {}).get("debt_due")
     if not view:
         # Keep the verification-unavailable state without exposing unvalidated
         # period labels or cached numeric presentation.
         return {"status": "reported", "period": None, "buckets": []}
-    from engine.debt_maturity import BUCKETS, _usd_dollars
-
     by_key = {row["key"]: row for row in view["buckets"]}
     buckets = []
     for key, tag, en, zh in BUCKETS:
