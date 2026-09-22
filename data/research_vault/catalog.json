@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T11:20:38.912957+00:00",
-  "count": 2635,
+  "generated_at": "2026-09-22T14:35:58.885378+00:00",
+  "count": 2644,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -62,6 +62,7 @@
     "Nuveen",
     "One River",
     "PNC",
+    "Piper Sandler",
     "RBC",
     "Rabobank",
     "Raymond James",
@@ -96,6 +97,162 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vbtfpvlbyyy-e96bb5",
+      "title": "GS Utilities Daily Snam sells c.5 stake in Industrie De Nora to institutional investors European Commission launches com...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:38Z",
+      "summary_points": [
+        "Europe Electrification Acceleration: Power demand growth to +5% pa (vs prior 1-1.5%), investments in PowerGen tripling to €2 trn, reinforcing \"earnings super-cycle\" with 2025-30 EPS CAGR of +9% for utilities.",
+        "Agentic AI Power Demand Catalyst: +10pp AI queries (20-30% by 2030-35) boost datacenter needs by +25%, creating tailwinds for renewables growth and FlexGen margins in utilities.",
+        "Ireland Offshore Wind Grid Delays: 3GW of pending grid connections for 5GW installed offshore wind, posing critical risk to renewable deployment timelines and project viability.",
+        "Electric Utilities Valuation Target Increase: Goldman Sachs raises target P/E to above mid-cycle (c. 16x), signaling elevated sector valuation expectations amid strong balance sheets (RWE, Orsted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gqsjbmhkacp-ba2aaa",
+      "title": "Global Views Lower Inflation, Limited Hikes",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:30Z",
+      "summary_points": [
+        "Fed's Hawkish Mispricing: GS probability-weighted path shows 50% chance of two hikes/cuts to 3.25-3.5% by late 2027, contradicting market pricing and signaling overestimation of Fed tightening.",
+        "Middle East Oil Supply Constraints: Persian Gulf exports at 16.8 mb/d (Method 2) with 80% recovery despite Strait disruptions; refining shortages and escalation risks sustain Brent at $85 by December.",
+        "China's Demand-Supply Divergence: Exports surge (5% YoY, industrial robots) but domestic retail sales weak (small retailers-driven); 2026 GDP forecast cut to 4.5%, requiring policy shifts to boost consumption.",
+        "S&P 500 Tech Earnings Risk: AI investment peak causes EPS growth to slow from 36% (2026) to 11% (2027), with private investment contributing 15 pp in 2026 vs. 11 pp in 2027—critical for AI/semiconductor portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-exsysnswyle-8b6574",
+      "title": "GS Crook GS MORNING NBH Preview US Inflation Path US Equities Update Brandon Brown Views and KRW Update 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:31Z",
+      "summary_points": [
+        "Hungarian Central Bank Meeting: MNB expected to hold rates and revise inflation target to 2.5% (from 3%), signaling dovish surprise vs hawkish expectations; key data release for FX positioning.",
+        "Geopolitical Inflation Risks: Russia threat and Iran War (Oct-25) cited as offshore inflation drivers, triggering PCE spike and policy tightening risk; critical for FX volatility (e.g., EUR/HUF).",
+        "Samsung/Hynix Concentration Risk: Combined MSCI Korea weight at 64% (vs 67% peak); each 1% concentration rise triggers $2bn rebalancing outflow, amplifying equity flow volatility.",
+        "US Equity Breadth Weakness: Only 31% of S&P stocks above 50-day MA (vs 80%+ peak), signaling severe breadth deterioration and short-term correction risk despite YTD gains.",
+        "Korean FX Policy Triggers: USDKRW range (1350-1400) sensitive to KOSPI momentum and BOK reserve actions; break above 1400 on KOSPI rally/gov't USD conversion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tdu9auuayaf-e90682",
+      "title": "GS Quinn MSCI EM Futures Widespread Selling in Mid September 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:05Z",
+      "summary_points": [
+        "EM Positioning Surge: MSCI EM non-dealer net positioning surged from ~$30B (Oct 2024) to >$50B (Sep 2026), driven by accelerating institutional inflows, particularly in late 2025–2026.",
+        "EM Funding Liquidity Shock: Sharp 85-point drop in MSCI EM funding (Mar 2026, ~95→~10) signals acute liquidity stress, with persistent pressure (Jul–Sep 2026 decline to ~25) raising debt sustainability and currency risk concerns.",
+        "Funding Recovery Reversal: Temporary post-Mar 2026 recovery to ~80 (Jun 2026) reversed sharply to ~25 by Sep 2026, indicating deteriorating conditions despite short-term relief."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7p4af43rjrt-f17192",
+      "title": "GS Garber GS Global Equities Call 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:46:01Z",
+      "summary_points": [
+        "Geopolitical Oil Volatility: Iran's Hormuz reopening offer, Saudi pipeline restart, WTI down 2.6% ($93.30), Gulf diplomacy, and Trump's UN speech driving Treasury yield declines (2yr-3bps, 10yr-2.5bps).",
+        "Fed Hawkish Drivers: Strong GDP (3.3% Q3), payrolls (162k Aug), core PCE at 0.27%—data releases fueling 25bp Fed hike expectation in October amid bifurcated economy (softening consumer spending).",
+        "Inflation Upside Risk: Oil peak $120+ in 2027H1 could surge PCE Energy Inflation to 25%+, adding 3-5bp to core PCE through 2024 (critical hedging risk).",
+        "S&P Rebalance Flows: $1.6tn decline from S&P rebalance, Q3 2026 trading volume surge (27.9bn vs 17.3bn avg), driving rebalance-driven technical flows.",
+        "Energy Cost Inflation: Refined products down 10% (2024), energy costs boosting core PCE by 3-5bp through end 2024, contributing to 15% energy inflation before falling to 3% in March."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lkkrf3coi5f-a06a83",
+      "title": "GS Wijaya GS SECTOR SPECIALISTS Energy, Natural Resources and Utilities Monday Thoughts 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:58Z",
+      "summary_points": [
+        "HAL Valuation Edge: HAL outperforms peers with 7.2x EBITDA vs SLB’s 9x, leveraging ME market share gains amid cheap valuation.",
+        "VG Supply Risk: VG faces demand destruction from Qatar downtime and Venezuela, contrasting with TTF bullishness.",
+        "Geopolitical Flow Impact: Qatar downtime + Venezuela headlines pressure XOM, while EQT/EXE underperform despite refining tailwinds.",
+        "HAL De-escalation Caution: HAL maintains inbound caution despite potential de-escalation tape, balancing risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rhdcclisqiz-5702e6",
+      "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:51Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4zyqktnbhxh-4e9797",
+      "title": "GS Jee GS KOREA FINAL LATE SESSION RETREAT 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:47Z",
+      "summary_points": [
+        "KOSPI Flow Reversal: Local net sellers (-US$1,182mn) overwhelmed foreign buyers (-US$34mn), reversing AM joint buying; tech sector dipped as institutional bids cooled post-gain.",
+        "Semiconductor Divergence: SEC (+0.9%) outperformed SK HYNIX (-1.5%) amid META AI hype; foreign buyers in SEC vs. sellers in SK HYNIX, with technical resistance at 100DMAs.",
+        "Nuclear Catalyst: HD E&C (+4.5%) surged on US Westinghouse stake talks (5-10%) and S.",
+        "Korea nuclear project plans (gas/LNG), driven by local institutional/retail buying."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nv8h2kfaxkk-465160",
       "title": "JPM Delta One Flows",
@@ -415,6 +572,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wabnep7ud4y-b995a9",
+      "title": "dcm092126",
+      "institution": "Piper Sandler",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:59:48Z",
+      "summary_points": [
+        "Yield Spread Collapse: Sharp decline in Leveraged Loan & HY Yield Spread (200 bps to near 0) signals imminent market correction risk, critical for tactical positioning.",
+        "Loan Fund Outflows: $2.483B net outflows from leveraged loan funds, indicating severe liquidity stress and risk aversion among investors.",
+        "Leveraged Loan Contraction: 13.5% YoY decline in Total Leveraged Loans (SMM), reflecting reduced appetite for riskier debt amid economic uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
