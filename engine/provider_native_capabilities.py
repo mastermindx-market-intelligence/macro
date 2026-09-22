@@ -325,21 +325,20 @@ def _load_registry_bytes(raw: bytes, *, code: str) -> dict[str, Any]:
     return document
 
 
-def _current_registry(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / REGISTRY_PATH
-    if path.is_symlink():
+def _registry_at_commit(repo_root: Path, commit: str) -> dict[str, Any]:
+    """Load the exact registry blob from one already-grounded repository commit."""
+
+    if not _SHA_RE.fullmatch(commit):
+        raise ProviderNativeCapabilityError("REPOSITORY_IDENTITY_UNAVAILABLE")
+    proc = _git(
+        repo_root,
+        "show",
+        f"{commit}:{REGISTRY_PATH}",
+        allow_failure=True,
+    )
+    if proc.returncode:
         raise ProviderNativeCapabilityError("REGISTRY_SOURCE_INVALID")
-    try:
-        resolved = path.resolve(strict=True)
-        root = repo_root.resolve(strict=True)
-        if root not in resolved.parents or not resolved.is_file():
-            raise ProviderNativeCapabilityError("REGISTRY_SOURCE_INVALID")
-        raw = resolved.read_bytes()
-    except ProviderNativeCapabilityError:
-        raise
-    except (OSError, RuntimeError) as exc:
-        raise ProviderNativeCapabilityError("REGISTRY_SOURCE_INVALID") from exc
-    return _load_registry_bytes(raw, code="REGISTRY_SOURCE_INVALID")
+    return _load_registry_bytes(proc.stdout, code="REGISTRY_SOURCE_INVALID")
 
 
 def _previous_registry(repo_root: Path, current_commit: str) -> dict[str, Any] | None:
@@ -375,10 +374,10 @@ def current_registration_facts(
 ) -> tuple[dict[str, Any], ...]:
     """Return exact current registration facts from committed Provider Control source."""
     root = (repo_root or _repo_root()).resolve(strict=True)
-    current = _current_registry(root)
     receipt = material_source_receipt(root)
     if not receipt.material_sources_match_commit:
         raise ProviderNativeCapabilityError("MATERIAL_SOURCE_UNGROUNDED")
+    current = _registry_at_commit(root, receipt.repository_commit)
     previous = _previous_registry(root, receipt.repository_commit)
     validate_transition(previous, current)
     return _registration_facts(current, material_source_digest=receipt.material_source_digest)

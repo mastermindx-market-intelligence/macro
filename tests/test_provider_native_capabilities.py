@@ -231,6 +231,39 @@ def test_uncommitted_material_source_refuses(tmp_path: Path) -> None:
         pnc.current_registration_facts(repo_root=repo)
 
 
+def test_current_facts_refuse_registry_aba_restore_before_material_proof(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    committed = _registry(_row(generation=1))
+    repo = _init_fixture_repo(tmp_path, committed)
+    path = repo / REGISTRY_PATH
+    committed_text = path.read_text()
+    transient = _registry(_row(generation=999))
+    path.write_text(json.dumps(transient, sort_keys=True, indent=2) + "\n")
+
+    original_read_bytes = Path.read_bytes
+    target = path.resolve()
+    restored = False
+
+    def aba_read_bytes(self: Path) -> bytes:
+        nonlocal restored
+        data = original_read_bytes(self)
+        if not restored and self.resolve() == target:
+            restored = True
+            path.write_text(committed_text)
+        return data
+
+    monkeypatch.setattr(Path, "read_bytes", aba_read_bytes)
+
+    with pytest.raises(pnc.ProviderNativeCapabilityError, match="MATERIAL_SOURCE_UNGROUNDED"):
+        pnc.current_registration_facts(repo_root=repo)
+
+    assert restored is True
+    assert json.loads(path.read_text()) == committed
+    assert _git(repo, "status", "--porcelain") == ""
+
+
 def test_v1_provider_capacity_material_source_is_byte_exact() -> None:
     assert hashlib.sha256((ROOT / "engine/provider_capacity.py").read_bytes()).hexdigest() == V1_ENGINE_SHA256
     assert hashlib.sha256((ROOT / "scripts/build_provider_capacity.py").read_bytes()).hexdigest() == V1_CLI_SHA256
