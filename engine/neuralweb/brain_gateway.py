@@ -3960,17 +3960,17 @@ def _fast_evidence_requirements(
     return required
 
 
-def _evidence_result_state(result: Any) -> str:
-    """Normalize one attempted read into the existing coverage vocabulary.
+def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
+    """Return every adverse producer condition encoded by one attempted read.
 
-    Successful empty answers remain AVAILABLE: "no events/no holdings" can be a valid
-    observed negative. Only an explicit producer state/error turns an attempted read into
-    unavailable/stale/not-applicable/conflicted/partial.
+    A primary witness can be simultaneously partial/stale/conflicted.  Preserve every
+    condition so a sibling AVAILABLE witness may satisfy coverage without erasing the
+    adverse evidence the synthesis still needs to disclose.
     """
     if result is None:
-        return "UNAVAILABLE"
+        return ("UNAVAILABLE",)
     if not isinstance(result, dict):
-        return "AVAILABLE"
+        return ()
 
     probes: list[str] = []
     for key in (
@@ -3982,24 +3982,36 @@ def _evidence_result_state(result: Any) -> str:
             probes.append(val.strip().lower().replace("-", "_").replace(" ", "_"))
     joined = " ".join(probes)
 
-    if "not_applicable" in joined:
-        return "NOT_APPLICABLE"
-    if "stale" in joined:
-        return "STALE"
+    found: set[str] = set()
     if "conflict" in joined:
-        return "CONFLICTED"
+        found.add("CONFLICTED")
     if "partial" in joined:
-        return "PARTIAL"
+        found.add("PARTIAL")
+    if "stale" in joined:
+        found.add("STALE")
+    if "not_applicable" in joined:
+        found.add("NOT_APPLICABLE")
     if "not_covered" in joined:
-        return "NOT_COVERED"
+        found.add("NOT_COVERED")
     if result.get("error") or any(
         token in joined for token in (
             "unavailable", "source_unavailable", "rights_blocked",
             "producer_degraded", "fetch_failed", "read_failed",
         )
     ):
-        return "UNAVAILABLE"
-    return "AVAILABLE"
+        found.add("UNAVAILABLE")
+
+    order = (
+        "CONFLICTED", "PARTIAL", "STALE", "NOT_APPLICABLE",
+        "UNAVAILABLE", "NOT_COVERED",
+    )
+    return tuple(state for state in order if state in found)
+
+
+def _evidence_result_state(result: Any) -> str:
+    """One primary state for coverage while retaining compound conditions separately."""
+    conditions = _evidence_result_conditions(result)
+    return conditions[0] if conditions else "AVAILABLE"
 
 
 def _evidence_coverage_receipt(
@@ -4024,6 +4036,7 @@ def _evidence_coverage_receipt(
         witness_set = set(witnesses)
         attempted: list[str] = []
         states: list[str] = []
+        conditions_seen: set[str] = set()
         as_of: list[str] = []
         contradicted = False
         contradiction_reads = set(_EVIDENCE_FAMILY_CONTRADICTION_READS.get(family, ()))
@@ -4035,8 +4048,11 @@ def _evidence_coverage_receipt(
             if tool_name not in witness_set:
                 continue
             attempted.append(tool_name)
-            state_i = _evidence_result_state(result)
+            conditions_i = _evidence_result_conditions(result)
+            conditions_seen.update(conditions_i)
+            state_i = conditions_i[0] if conditions_i else "AVAILABLE"
             states.append(state_i)
+            contradicted = contradicted or "CONFLICTED" in conditions_i
             if isinstance(result, dict):
                 for key in ("as_of", "generated_at", "updated_at"):
                     val = result.get(key)
@@ -4047,14 +4063,20 @@ def _evidence_coverage_receipt(
                 )
         state = max(states, key=lambda x: precedence.get(x, -1)) if states else "NOT_COVERED"
         freshness = (
-            "STALE_PRESENT" if "STALE" in states
+            "STALE_PRESENT" if "STALE" in conditions_seen
             else ("CURRENT_OR_UNSPECIFIED" if states else "NOT_OBSERVED")
         )
+        condition_order = (
+            "CONFLICTED", "PARTIAL", "STALE", "NOT_APPLICABLE",
+            "UNAVAILABLE", "NOT_COVERED",
+        )
+        conditions = [c for c in condition_order if c in conditions_seen]
         rows.append({
             "family": family,
             "label": _EVIDENCE_FAMILY_LABELS.get(family, family.replace("_", " ")),
             "state": state,
             "freshness": freshness,
+            "conditions": conditions,
             "attempted": sorted(set(attempted)),
             "as_of": as_of[:3],
             "contradicted": contradicted,
@@ -4091,9 +4113,10 @@ def _evidence_coverage_synthesis_message(receipt: dict) -> str:
         if not isinstance(row, dict):
             continue
         item = f"{row.get('label') or row.get('family')}: {row.get('state', 'NOT_COVERED')}"
-        if row.get("freshness") == "STALE_PRESENT" and row.get("state") != "STALE":
-            item += " + STALE_PRESENT"
-        if row.get("contradicted"):
+        for condition in row.get("conditions", []):
+            if condition != row.get("state"):
+                item += f" + {condition}_PRESENT"
+        if row.get("contradicted") and "CONFLICTED" not in row.get("conditions", []):
             item += " + CONTRADICTION_PRESENT"
         parts.append(item)
     summary = "; ".join(parts)
@@ -6383,6 +6406,9 @@ def _run_brain_loop(
                     "role": "user",
                     "content": _evidence_coverage_gate_message(receipt),
                 })
+                # The previous text was explicitly rejected as under-covered. Never let a
+                # textless repair response resurrect it as the final non-stream answer.
+                answer_text = ""
                 evidence_gate_issued = True
                 _timing_round(timing, _round_model_ms, _round_tools)
                 continue

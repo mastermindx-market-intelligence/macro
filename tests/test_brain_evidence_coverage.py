@@ -149,3 +149,65 @@ def test_mixed_fresh_and_stale_witnesses_keep_stale_presence_metadata():
     assert row["state"] == "AVAILABLE"
     assert row["freshness"] == "STALE_PRESENT"
     assert row["as_of"] == ["2026-09-21T21:00:00Z", "2026-09-19T21:00:00Z"]
+
+
+
+def test_available_witness_preserves_all_adverse_sibling_conditions():
+    required = {
+        "macro_rates": (
+            "read_world_state",
+            "get_curve_detail",
+            "read_inflation_intelligence",
+            "read_liquidity_plumbing",
+            "read_mechanism_pathways",
+        ),
+    }
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [
+            ("read_world_state", {"ok": True}),
+            ("get_curve_detail", {"status": "conflicted"}),
+            ("read_inflation_intelligence", {"status": "partial"}),
+            ("read_liquidity_plumbing", {"status": "not_applicable"}),
+            ("read_mechanism_pathways", {"error": "upstream unavailable"}),
+        ],
+    )
+    row = receipt["families"][0]
+    assert row["state"] == "AVAILABLE"
+    assert row["conditions"] == [
+        "CONFLICTED",
+        "PARTIAL",
+        "NOT_APPLICABLE",
+        "UNAVAILABLE",
+    ]
+    assert row["contradicted"] is True
+    synth = gw._evidence_coverage_synthesis_message(receipt)
+    for condition in row["conditions"]:
+        assert f"{condition}_PRESENT" in synth
+
+
+def test_compound_producer_state_preserves_each_condition():
+    required = {"macro_rates": ("get_curve_detail",)}
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [("get_curve_detail", {"status": "partial_stale_conflict"})],
+    )
+    row = receipt["families"][0]
+    assert row["state"] == "CONFLICTED"
+    assert row["freshness"] == "STALE_PRESENT"
+    assert row["conditions"] == ["CONFLICTED", "PARTIAL", "STALE"]
+    assert row["contradicted"] is True
+
+
+def test_nonstream_repair_cannot_resurrect_rejected_text_on_textless_end_turn(quiet_grounding):
+    root = _root()
+    client = _CaptureClient(
+        [
+            _Resp([_Block("text", "Premature answer.")], "end_turn"),
+            _Resp([_Block("thinking", "")], "end_turn"),
+        ]
+    )
+    answer, *_rest = _drive_loop(root, client, QUESTION)
+    assert len(client.create_kwargs) == 2
+    assert answer == ""
+    assert "Premature answer." not in answer
