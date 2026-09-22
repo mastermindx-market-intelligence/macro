@@ -2253,6 +2253,8 @@ jobs:
       - "engine/cycles.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -2924,6 +2926,9 @@ jobs:
       # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
       # engine.cash_runway is a pure module under this job's engine/*.py glob and the
       # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
+      # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
+      # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
+      # engine.capital_need plus the same debt-maturity render boundary. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2933,6 +2938,7 @@ jobs:
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
           tests/test_cash_runway.py
+          tests/test_capital_need.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -7740,6 +7746,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -8370,6 +8378,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -11785,6 +11795,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -13889,6 +13901,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
