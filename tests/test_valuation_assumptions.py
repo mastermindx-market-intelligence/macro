@@ -164,6 +164,8 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
         "inputs",
         "margin_base_floor",
         "latest_event_bridge",
+        "event_assumption_proposal",
+        "event_assumption_scenario",
     }
     assert "controls" not in thin
     assert "server_default" not in thin
@@ -814,6 +816,8 @@ def test_artifact_schema_shape():
         "presets",
         "server_default",
         "latest_event_bridge",
+        "event_assumption_proposal",
+        "event_assumption_scenario",
     }
     assert set(blob) == expected_keys
     assert blob["schema"] == "valuation_scenario_controls.v1"
