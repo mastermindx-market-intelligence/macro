@@ -1,0 +1,166 @@
+{
+  "scope": "actual candidate producer plus consumer partial in committed full-page shell; not live",
+  "upstream_head": "ad4a8c32a79e1e919021fa9efce9beea33fc2c7c",
+  "upstream_sha256": "969a94a79d1f2713e8104fa532b73557e0ab0e2c7492b8773f916f374f94cc9e",
+  "view": {
+    "status": "ready",
+    "leader": {
+      "id": "ai_semiconductors",
+      "name": "AI Semiconductors",
+      "name_zh": "AI半导体",
+      "reco": "accumulate",
+      "reco_en": "Accumulate",
+      "reco_zh": "增持",
+      "rank_delta_5d": 14,
+      "rank_delta_1d": -1
+    },
+    "as_of": "2026-09-18",
+    "as_of_label": "Sep 18",
+    "sessions_behind": 1,
+    "href": "basket/ai_semiconductors.html"
+  },
+  "history": {
+    "basis": "nyse_sessions",
+    "comparison_as_of": {
+      "1d": "2026-09-17",
+      "5d": "2026-09-11",
+      "20d": "2026-08-20"
+    },
+    "expected_comparison_as_of": {
+      "1d": "2026-09-17",
+      "5d": "2026-09-11",
+      "20d": "2026-08-20"
+    }
+  },
+  "shell_parent": "5b6c01b5ecb5624dc16568e79fe00ed77cbe8c1e",
+  "candidate_html_sha256": "901d60ffc13388b611f679518969765f978566c7b25e4c2512a4776c3709909c",
+  "browser_checks": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "card_bounds": {
+        "x": 504.328125,
+        "y": 437.875,
+        "width": 431.328125,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-1440-light-en.png",
+      "text": "OPPORTUNITY WATCH · ACCUMULATE RATING\nAI Semiconductors\nUp 14 places over 5 sessions · Sep 18\nExplore this desk\n→",
+      "sha256": "cfb6744a7bd9596e8b8856caf6ff56f332a69e26bdda22b277bd8e76018b0333"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "card_bounds": {
+        "x": 504.328125,
+        "y": 438.796875,
+        "width": 431.328125,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-1440-light-zh.png",
+      "text": "机会观察 · 增持评级\nAI半导体\n5个交易日上升14位 · 9月18日\n查看此板块\n→",
+      "sha256": "48f91e8800119600d91bdc907bd6daaa8db014d6f26abfc8c697befb6f37262a"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "card_bounds": {
+        "x": 504.328125,
+        "y": 437.875,
+        "width": 431.328125,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-1440-dark-en.png",
+      "text": "OPPORTUNITY WATCH · ACCUMULATE RATING\nAI Semiconductors\nUp 14 places over 5 sessions · Sep 18\nExplore this desk\n→",
+      "sha256": "57aebe363815e23f976d9b4e1edf229e9e6682d174243805894ef695c077609c"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "card_bounds": {
+        "x": 504.328125,
+        "y": 438.796875,
+        "width": 431.328125,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-1440-dark-zh.png",
+      "text": "机会观察 · 增持评级\nAI半导体\n5个交易日上升14位 · 9月18日\n查看此板块\n→",
+      "sha256": "39d85e90129111ce75fed23e71ae6ecba4b926907bff43a9fc4fec897ed95082"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "card_bounds": {
+        "x": 39,
+        "y": 394.890625,
+        "width": 312,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-390-light-en.png",
+      "text": "OPPORTUNITY WATCH · ACCUMULATE RATING\nAI Semiconductors\nUp 14 places over 5 sessions · Sep 18\nExplore this desk\n→",
+      "sha256": "db70f65d98b3d73fe493895da2754f274c57966b75d13c028180ab8ff8a6e3b2"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "card_bounds": {
+        "x": 39,
+        "y": 394.21875,
+        "width": 312,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-390-light-zh.png",
+      "text": "机会观察 · 增持评级\nAI半导体\n5个交易日上升14位 · 9月18日\n查看此板块\n→",
+      "sha256": "59a40af463c9a2db02df70f56e4e41be30353f5a2da9b3d5f86dc87407cdc124"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "card_bounds": {
+        "x": 39,
+        "y": 394.890625,
+        "width": 312,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-390-dark-en.png",
+      "text": "OPPORTUNITY WATCH · ACCUMULATE RATING\nAI Semiconductors\nUp 14 places over 5 sessions · Sep 18\nExplore this desk\n→",
+      "sha256": "8955d7089e909dd9be17021371615f1185423b1d2ee2ac46fde29ed3b1cfa827"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "card_bounds": {
+        "x": 39,
+        "y": 394.21875,
+        "width": 312,
+        "height": 110.8125
+      },
+      "first_action_route": "/basket/ai_semiconductors.html",
+      "image": "card-390-dark-zh.png",
+      "text": "机会观察 · 增持评级\nAI半导体\n5个交易日上升14位 · 9月18日\n查看此板块\n→",
+      "sha256": "f463a695035897995c45aec89e1d73bc2bb19b6f21c08d93ac7d4ac52c1bf804"
+    }
+  ],
+  "validation": {
+    "broad_regression_passed": 142,
+    "final_card_suite_passed": 55,
+    "canonical_browser_states_captured": 8,
+    "first_action_navigations_passed": 8,
+    "scope": "candidate component integration; no live or full-data-build claim"
+  }
+}

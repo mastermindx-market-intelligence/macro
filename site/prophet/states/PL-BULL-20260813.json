@@ -13,18 +13,18 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 42.3,
-    "overlay": 67.0
+    "retention": 41.9,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.311,
+    "dist_to_stop_r": -0.389,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 88.9,
-    "p1": -0.8737,
-    "p2": -0.4369,
+    "p1": -0.9258,
+    "p2": -0.4629,
     "p3": null,
-    "move_r": -1.311,
+    "move_r": -1.389,
     "mfe_r": 0.0,
     "mae_r": -1.49
   },
