@@ -135,6 +135,12 @@ the freshness-gate Python snippet (the .env value wins because
 ### 3.3 Install the plist
 
 ```sh
+# The plist's StandardOutPath/StandardErrorPath live under the sibling state
+# dir. launchd opens those log files BEFORE it executes the runner and does
+# not create parent directories, so the logs dir must exist at install time
+# (the runner's own `mkdir -p` only runs once launchd has already started it).
+mkdir -p /Users/chriswong/skew-ops-state/logs
+
 cp /Users/chriswong/skew-ops-wt/ops/launchd/com.macro.skewaccrual.plist \
    ~/Library/LaunchAgents/
 
@@ -163,10 +169,13 @@ to a non-default path, also update `StandardOutPath` and `StandardErrorPath`
 in the plist to match — otherwise launchd writes to the default path while
 the runner reads from your override, and the operator-actionable tail
 (`tail -f $SKEW_STATE_DIR/logs/skewaccrual.stdout.log`) misses the launchd
-log entirely. The directory itself does not need to be created at install
-time — the runner's `mkdir -p "$STATE_DIR"` (line 159 of
-`run_skew_accrual.sh`) creates it on the first run, and launchd writes
-append-style so a missing parent dir is fatal until the first run.
+log entirely. The logs directory MUST exist before `launchctl bootstrap`
+(the `mkdir -p /Users/chriswong/skew-ops-state/logs` line above): launchd
+opens `StandardOutPath`/`StandardErrorPath` before it executes the runner
+and never creates parent directories, so a missing dir fails the very first
+scheduled launch before `run_skew_accrual.sh` gets to run its own
+`mkdir -p "$STATE_DIR" "$STATE_DIR/logs"` (which covers every LATER run and
+any `SKEW_STATE_DIR` override the runner sees).
 
 ### 3.4 First-run smoke (dry-run)
 

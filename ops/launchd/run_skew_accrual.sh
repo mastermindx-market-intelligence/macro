@@ -119,8 +119,10 @@
 #   SKEW_FRESHNESS_BYPASS=1 \
 #     /Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh
 #
-# LOG TAILING (when installed as com.macro.skewaccrual):
-#   tail -f /tmp/skewaccrual.stdout.log /tmp/skewaccrual.stderr.log
+# LOG TAILING (when installed as com.macro.skewaccrual — launchd writes into
+# the sibling state dir, the same $SKEW_STATE_DIR default this runner uses):
+#   tail -f /Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log \
+#           /Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log
 #
 # HOST CHECKOUT
 # ─────────────────────────────────────────────────────────────────────────────
@@ -152,11 +154,13 @@ LEDGER="${SKEW_LEDGER_PATH:-$LEDGER_DEFAULT}"
 STATE_DIR_DEFAULT="/Users/chriswong/skew-ops-state"
 STATE_DIR="${SKEW_STATE_DIR:-$STATE_DIR_DEFAULT}"
 
-# Ensure the state dir exists — every run-state file write below targets it.
-# On the M1 ops host the install runbook (research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE
-# _2026-09-22.md §3.1) creates it once; tests that exercise the runner under
-# tmp_path may set SKEW_STATE_DIR to a path that does not yet exist.
-mkdir -p "$STATE_DIR"
+# Ensure the state dir (and its logs/ child, the launchd StandardOut/ErrPath
+# parent) exist — every run-state file write below targets it. On the M1 ops
+# host the install runbook (research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE
+# _2026-09-22.md §3.3) creates logs/ BEFORE `launchctl bootstrap`, because
+# launchd opens its log files before this script runs; this mkdir covers every
+# later run and tests that point SKEW_STATE_DIR at a not-yet-existing tmp_path.
+mkdir -p "$STATE_DIR" "$STATE_DIR/logs"
 
 # Per-pid run-state files. Using $$ means two launches of the runner can run
 # in parallel without clobbering; old files in $STATE_DIR from a prior process
