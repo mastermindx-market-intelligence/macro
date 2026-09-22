@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T01:49:53.780987+00:00",
-  "count": 2607,
+  "generated_at": "2026-09-22T02:05:07.806915+00:00",
+  "count": 2608,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -191,6 +191,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zbr5jvjf49p-6ab26e",
+      "title": "The utility divide in the data center led power infrastructure buildout VP735",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:02:21Z",
+      "summary_points": [
+        "Structural Demand Shift: AI data centers drive >3% annual U.S.",
+        "electricity demand growth through 2030 (80% from data centers), creating structural opportunity for utilities with integrated models to capture disproportionate earnings growth.",
+        "Vertical Integration Advantage: Vertically integrated utilities (VIUs) outperform T&D peers by ~16% (10% vs. 6% EPS) due to control over generation, transmission, and tariffs, enabling faster infrastructure deployment for hyperscalers and capturing regulated returns on capital-intensive generation investments.",
+        "Capital Intensity Mechanics: Generation investments ($3k vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
