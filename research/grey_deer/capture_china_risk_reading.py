@@ -12,7 +12,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as capture
-OUT = ROOT / 'mockups/evidence/china-risk-reading-20260921'
+INTEGRATED = '--integrated' in sys.argv
+OUT = ROOT / ('mockups/evidence/china-integrated-context-20260921' if INTEGRATED else 'mockups/evidence/china-risk-reading-20260921')
 OUT.mkdir(parents=True, exist_ok=True)
 PAGE = ROOT / 'site/china.html'
 BEFORE = hashlib.sha256(PAGE.read_bytes()).hexdigest()
@@ -72,6 +73,9 @@ try:
                             assert '大盘股参与偏弱' in card_text and '94' in card_text and '50%' in card_text
                             assert 'Historical stress' in card_text and 'not a probability' in card_text
                             assert 'all-boats' not in card_text
+                            if INTEGRATED:
+                                assert 'Economic slowdown' in card_text and '疲弱' in card_text
+                                assert 'Deep-drawdown gauge' not in card_text
                             page.locator('button[onclick*="cnx-pop-risk"]').click()
                             pop = page.locator('#cnx-pop-risk')
                             pop.wait_for(state='visible')
@@ -94,12 +98,34 @@ try:
                             dialog.wait_for(state='visible')
                             page.keyboard.press('Escape')
                             dialog.wait_for(state='hidden')
+                            if INTEGRATED:
+                                panel = page.locator('#cnx-participation')
+                                panel.locator('summary').click()
+                                assert panel.locator('details').get_attribute('open') is not None
+                                assert '1711 / 1816' in panel.text_content()
+                                cohort = panel.locator('.cnx-index-members')
+                                assert '300 / 300' in cohort.text_content()
+                                assert '-0.67%' in cohort.text_content() and '+0.07%' in cohort.text_content()
+                                assert panel.locator('tbody tr').count() == 16
+                                panel.locator('summary').click()
+                                from tests.test_china_archetype_d_s1 import _render_china_risk_case, _risk_card
+                                # Explicitly synthetic missing-input component, rendered
+                                # by the real full-page template then inspected in Chrome.
+                                fragment = str(_risk_card(_render_china_risk_case(None)))
+                                card.evaluate('(el,html)=>{el.outerHTML=html}', fragment)
+                                missing = page.locator('.cnx-rack3 > .cnx-card').filter(has_text='Pullback Risk')
+                                assert 'Unavailable' in missing.text_content()
+                                footer = missing.locator('.cnx-foot').text_content()
+                                assert 'size down' not in footer and '缩仓' not in footer
+                                assert 'unavailable' in footer and '暂不可用' in footer
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             assert not errors, errors
                             cases.append({'width':width,'theme':theme,'locale':lang,
                                 'score':94,'state_probability_pct':50,'scoped_card':True,
                                 'scoped_popover':True,'scoped_shared_dialog':True,
-                                'both_entrypoints_open':True,'escape_closes':True,'page_errors':errors})
+                                'both_entrypoints_open':True,'escape_closes':True,'page_errors':errors,
+                                'integrated_participation_and_slowdown':INTEGRATED,
+                                'synthetic_missing_guidance_and_slowdown':INTEGRATED})
                         finally:
                             ctx.close()
         finally:
