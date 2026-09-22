@@ -1,11 +1,11 @@
 {
  "meta": {
-  "fingerprint": "7662cbfcdcc9cc7a",
-  "computed_at": "2026-09-20T12:17:47.002881+00:00",
+  "fingerprint": "58fc0c0d5483e79a",
+  "computed_at": "2026-09-22T12:08:24.334325+00:00",
   "max_date": "2026-09-18",
   "version": "m2.v1",
-  "universe_n": 245,
-  "computed_n": 245,
+  "universe_n": 247,
+  "computed_n": 247,
   "skipped_n": 0,
   "failed_n": 0,
   "note": "Daily-bar approximation over typical price (H+L+C)/3 \u2014 not intraday-true VWAP. Display-tier context; not a signal."
@@ -3595,6 +3595,38 @@
     }
    }
   },
+  "HST": {
+   "as_of": "2026-09-18",
+   "close": 21.84,
+   "vwap_w": 21.9919,
+   "profile": {
+    "poc": 23.1907,
+    "va_low": 21.0072,
+    "va_high": 25.3741,
+    "window": 126,
+    "poc_dist_pct": -5.82,
+    "in_value_area": true
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 21.82,
+     "anchor_date": "2026-09-18",
+     "sessions_since": 0,
+     "sessions_held": 1,
+     "dist_pct": 0.09
+    },
+    "ytd": {
+     "value": 21.0224,
+     "anchor_date": "2026-01-02",
+     "dist_pct": 3.89
+    },
+    "low_52w": {
+     "value": 20.2003,
+     "anchor_date": "2025-10-31",
+     "dist_pct": 8.12
+    }
+   }
+  },
   "HSY": {
    "as_of": "2026-09-18",
    "close": 169.79,
@@ -6056,6 +6088,38 @@
      "value": 287.0169,
      "anchor_date": "2026-05-20",
      "dist_pct": -14.36
+    }
+   }
+  },
+  "RDDT": {
+   "as_of": "2026-09-18",
+   "close": 150.85,
+   "vwap_w": 155.3475,
+   "profile": {
+    "poc": 158.1112,
+    "va_low": 141.465,
+    "va_high": 174.7575,
+    "window": 126,
+    "poc_dist_pct": -4.59,
+    "in_value_area": true
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 157.6738,
+     "anchor_date": "2026-08-17",
+     "sessions_since": 23,
+     "sessions_held": 0,
+     "dist_pct": -4.33
+    },
+    "ytd": {
+     "value": 163.7423,
+     "anchor_date": "2026-01-02",
+     "dist_pct": -7.87
+    },
+    "low_52w": {
+     "value": 162.5395,
+     "anchor_date": "2026-03-30",
+     "dist_pct": -7.19
     }
    }
   },

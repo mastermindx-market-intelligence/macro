@@ -2985,20 +2985,51 @@ def _prepare_provided_actions(
             "retrying with refs/heads/main only",
             flush=True,
         )
-        subprocess.run(
-            [
-                "git",
-                "fetch",
-                "--no-recurse-submodules",
-                "--tags",
-                "--depth=2147483647",
-                "origin",
-                "+refs/heads/main:refs/remotes/origin/main",
-            ],
-            cwd=root,
-            env=_trusted_git_environment(root),
-            check=True,
-        )
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--tags",
+                    "--depth=2147483647",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            # 2026-09-21 16:08Z: even the main-only full deepen died the same
+            # way ("fatal: missing blob object 9cd3bb31..."), while the
+            # all-branches fetch had SUCCEEDED on sibling runs minutes
+            # earlier — the failures are intermittent server-side pack
+            # assembly on these enormous full-history fetches, not one
+            # broken ref. The checks behind this contract only ever diff
+            # against a merge base that is hours-to-days old, so a bounded
+            # window is always sufficient in practice and is orders of
+            # magnitude smaller to assemble. Tags are dropped on this rung:
+            # none of the gated checks read tags, and a tag pinning
+            # unreachable history would re-break the fetch.
+            print(
+                "::warning title=run-ci-pack::main-only deepen failed; "
+                "retrying refs/heads/main with --shallow-since=30 days",
+                flush=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--shallow-since=30 days ago",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
 
 
 def _run_job(
