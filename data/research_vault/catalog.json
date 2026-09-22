@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T20:36:52.315014+00:00",
-  "count": 2662,
+  "generated_at": "2026-09-22T21:07:40.401915+00:00",
+  "count": 2663,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -227,6 +227,27 @@
         "AI Spillover Impact: Negative AI spillover in Financials/Insurance sectors despite stable crude (<$100), with AGENTS (e.g., GOOGL Gemini 4.0) becoming key conversation drivers.",
         "Sector Rotation: Clear divergence between AI-focused semiconductors/memory (up) and traditional big tech/financials (down), signaling structural AI trade dominance.",
         "Geopolitical Neutrality: Iran headlines (UN SoH, Saudi pipeline) failed to disrupt crude prices (<$100), indicating minimal near-term market impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2epn3wi13zi-01313a",
+      "title": "GS DeGrasse What's happening TODAY in Financials .. 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:29:06Z",
+      "summary_points": [
+        "Agentic Risk Dominates Financials: Consumer-facing sectors (Personal Insurance: PGR, TRV; Insurance Brokers: GSHD; Wealth Managers: SCHW, AMP) face volatility due to \"agents narrowing monetization,\" while banks with consumer deposits/wealth mix outperform fee-dependent small/mid-caps.",
+        "Payments (Visa/Mastercard) benefit from agentic positioning and PayPal partnerships.",
+        "Defensive Shift & Uncertainty Discount: Market shifted to defensive plays (CBRE/JLL underperforming ~2%), with JPM as tech hedge and Visa as agentic beneficiary.",
+        "Investors price in uncertainty, assessing fundamentals against AI-driven volatility, with \"agentic economy\" acting as a structural headwind.",
+        "Sector-Specific Monetization Pressure: Lead generators (small-cap insurance) and fee-driven wealth managers (LPPA, RJF) face heightened risk from agent-led revenue compression, contrasting with banks leveraging deposit/wealth mix resilience."
       ],
       "tags": [],
       "tickers": [],
