@@ -1,0 +1,23 @@
+{
+  "audit_source_sha256": "eb9d4bfd75a18199789a8306ea948aba17e84693ad24e081134feba0751c09ea",
+  "authority_partition_preserved": true,
+  "candidate_brier_minus_current": {
+    "h10": -0.0007458440121804848,
+    "h21": 0.0009005815201080708,
+    "h5": -4.533198121556058e-05
+  },
+  "holdout_population_matches": {
+    "h10": true,
+    "h21": true,
+    "h5": true
+  },
+  "live_write": false,
+  "method_commit": "293b19626d426d1812b5a88a574773fc1dca9d63",
+  "promotion_eligible": false,
+  "protocol_commit": "c64d72e14446f6f2e89924873aba7df2a67a9e02",
+  "report_sha256": "15bcd8dfdedf571a38733d6579b1ad628ee6ffda42d242fbf887e52725f80821",
+  "result_sha256": "fda111a565af85a5e4b2bb90a0d5f36329fc5c2bd48771820141d02635f60dd4",
+  "schema": "risk_radar_probability_recal_oos_verification.v1",
+  "script_sha256": "d46e5a87acf9644fa3f3eae72550cc4b58c534e5a73cbc06302e576f9a12f10c",
+  "test_file_sha256": "81acdec7e1d72fb26d1238b1258c692dd319ba19e65edaf21ef1df3b61ab20bd"
+}

@@ -1,0 +1,1693 @@
+{
+  "schema": "risk_radar_probability_recal_oos.v1",
+  "protocol_commit": "c64d72e14446f6f2e89924873aba7df2a67a9e02",
+  "source_base": "9e9da53a671f3420b2cab9cca20b131c811a05df",
+  "fit": {
+    "window": "pre_2020",
+    "method": "Jeffreys(0.5,0.5) per shipped state + weighted PAV",
+    "state_only": true,
+    "conjunction_bump_changed": false,
+    "candidate_surface": {
+      "h5": {
+        "calm": 0.02038534319628419,
+        "watch": 0.02038534319628419,
+        "caution": 0.02038534319628419,
+        "elevated": 0.15088757396449703,
+        "risk-off": 0.15670289855072464
+      },
+      "h10": {
+        "calm": 0.06338028169014084,
+        "watch": 0.06338028169014084,
+        "caution": 0.06491051172170406,
+        "elevated": 0.2514792899408284,
+        "risk-off": 0.26358695652173914
+      },
+      "h21": {
+        "calm": 0.12892741061755147,
+        "watch": 0.12892741061755147,
+        "caution": 0.15490294933198892,
+        "elevated": 0.4188626907073509,
+        "risk-off": 0.4188626907073509
+      }
+    },
+    "training": {
+      "h5": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2019-12-31T00:00:00",
+        "n": 6529,
+        "states": [
+          {
+            "state": "calm",
+            "n": 1156,
+            "events": 28,
+            "jeffreys_rate": 0.024632670700086432,
+            "candidate_rate": 0.02038534319628419
+          },
+          {
+            "state": "watch",
+            "n": 688,
+            "events": 10,
+            "jeffreys_rate": 0.015239477503628448,
+            "candidate_rate": 0.02038534319628419
+          },
+          {
+            "state": "caution",
+            "n": 3966,
+            "events": 79,
+            "jeffreys_rate": 0.020040332745147466,
+            "candidate_rate": 0.02038534319628419
+          },
+          {
+            "state": "elevated",
+            "n": 168,
+            "events": 25,
+            "jeffreys_rate": 0.15088757396449703,
+            "candidate_rate": 0.15088757396449703
+          },
+          {
+            "state": "risk-off",
+            "n": 551,
+            "events": 86,
+            "jeffreys_rate": 0.15670289855072464,
+            "candidate_rate": 0.15670289855072464
+          }
+        ]
+      },
+      "h10": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2019-12-31T00:00:00",
+        "n": 6529,
+        "states": [
+          {
+            "state": "calm",
+            "n": 1156,
+            "events": 76,
+            "jeffreys_rate": 0.06611927398444252,
+            "candidate_rate": 0.06338028169014084
+          },
+          {
+            "state": "watch",
+            "n": 688,
+            "events": 40,
+            "jeffreys_rate": 0.05878084179970972,
+            "candidate_rate": 0.06338028169014084
+          },
+          {
+            "state": "caution",
+            "n": 3966,
+            "events": 257,
+            "jeffreys_rate": 0.06491051172170406,
+            "candidate_rate": 0.06491051172170406
+          },
+          {
+            "state": "elevated",
+            "n": 168,
+            "events": 42,
+            "jeffreys_rate": 0.2514792899408284,
+            "candidate_rate": 0.2514792899408284
+          },
+          {
+            "state": "risk-off",
+            "n": 551,
+            "events": 145,
+            "jeffreys_rate": 0.26358695652173914,
+            "candidate_rate": 0.26358695652173914
+          }
+        ]
+      },
+      "h21": {
+        "from": "1994-01-26T00:00:00",
+        "through": "2019-12-31T00:00:00",
+        "n": 6529,
+        "states": [
+          {
+            "state": "calm",
+            "n": 1156,
+            "events": 158,
+            "jeffreys_rate": 0.13699222126188418,
+            "candidate_rate": 0.12892741061755147
+          },
+          {
+            "state": "watch",
+            "n": 688,
+            "events": 79,
+            "jeffreys_rate": 0.11538461538461539,
+            "candidate_rate": 0.12892741061755147
+          },
+          {
+            "state": "caution",
+            "n": 3966,
+            "events": 614,
+            "jeffreys_rate": 0.15490294933198892,
+            "candidate_rate": 0.15490294933198892
+          },
+          {
+            "state": "elevated",
+            "n": 168,
+            "events": 75,
+            "jeffreys_rate": 0.4467455621301775,
+            "candidate_rate": 0.4188626907073509
+          },
+          {
+            "state": "risk-off",
+            "n": 551,
+            "events": 226,
+            "jeffreys_rate": 0.41032608695652173,
+            "candidate_rate": 0.4188626907073509
+          }
+        ]
+      }
+    }
+  },
+  "current_surface": {
+    "h5": {
+      "calm": 0.02,
+      "watch": 0.02,
+      "caution": 0.03,
+      "elevated": 0.05,
+      "risk-off": 0.08
+    },
+    "h10": {
+      "calm": 0.06,
+      "watch": 0.06,
+      "caution": 0.08,
+      "elevated": 0.12,
+      "risk-off": 0.17
+    },
+    "h21": {
+      "calm": 0.13,
+      "watch": 0.13,
+      "caution": 0.16,
+      "elevated": 0.25,
+      "risk-off": 0.33
+    }
+  },
+  "conjunction_bump": {
+    "h5": 0.012,
+    "h10": 0.02,
+    "h21": 0.03
+  },
+  "authority_partition": {
+    "base_h21": 0.178,
+    "checks": {
+      "calm": true,
+      "watch": true,
+      "caution": true,
+      "elevated": true,
+      "risk-off": true
+    },
+    "preserved": true
+  },
+  "surface_validity": {
+    "horizons": {
+      "h5": {
+        "monotonic": true,
+        "bounded_0_0p60": true
+      },
+      "h10": {
+        "monotonic": true,
+        "bounded_0_0p60": true
+      },
+      "h21": {
+        "monotonic": true,
+        "bounded_0_0p60": true
+      }
+    },
+    "valid": true
+  },
+  "holdout": {
+    "h5": {
+      "current": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-11T00:00:00",
+        "n": 1682,
+        "events": 60,
+        "base_rate": 0.0356718192627824,
+        "mean_displayed_probability": 0.040971462544589776,
+        "calibration_in_large_gap": 0.005299643281807376,
+        "calibration_in_large_gap_ci90": [
+          -0.007623,
+          0.016878
+        ],
+        "brier_score": 0.032745186682520806,
+        "brier_score_ci90": [
+          0.022488,
+          0.044415
+        ],
+        "base_rate_brier_score": 0.034399340573265796,
+        "brier_skill_score": 0.04808679071105659,
+        "weighted_absolute_calibration_error": 0.022945303210463733,
+        "root_weighted_squared_calibration_error": 0.028766700332594923,
+        "population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+        "cells": {
+          "0.02": {
+            "probability": 0.02,
+            "n": 310,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.02,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 148
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 162
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.03": {
+            "probability": 0.03,
+            "n": 752,
+            "events": 8,
+            "observed_rate": 0.010638297872340425,
+            "observed_minus_displayed": -0.019361702127659572,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 101
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 651
+              }
+            ],
+            "observed_rate_ci90": [
+              0.003826,
+              0.018626
+            ]
+          },
+          "0.042": {
+            "probability": 0.042,
+            "n": 270,
+            "events": 13,
+            "observed_rate": 0.04814814814814815,
+            "observed_minus_displayed": 0.006148148148148146,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.022026,
+              0.082806
+            ]
+          },
+          "0.05": {
+            "probability": 0.05,
+            "n": 24,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.05,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.054": {
+            "probability": 0.054,
+            "n": 66,
+            "events": 3,
+            "observed_rate": 0.045454545454545456,
+            "observed_minus_displayed": -0.008545454545454544,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              }
+            ],
+            "observed_rate_ci90": [
+              0.010983,
+              0.105303
+            ]
+          },
+          "0.062": {
+            "probability": 0.062,
+            "n": 8,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.062,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.066": {
+            "probability": 0.066,
+            "n": 10,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.066,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.074": {
+            "probability": 0.074,
+            "n": 1,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.074,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.08": {
+            "probability": 0.08,
+            "n": 46,
+            "events": 8,
+            "observed_rate": 0.17391304347826086,
+            "observed_minus_displayed": 0.09391304347826086,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.04,
+              0.333333
+            ]
+          },
+          "0.092": {
+            "probability": 0.092,
+            "n": 95,
+            "events": 12,
+            "observed_rate": 0.12631578947368421,
+            "observed_minus_displayed": 0.034315789473684216,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.041041,
+              0.214463
+            ]
+          },
+          "0.104": {
+            "probability": 0.104,
+            "n": 100,
+            "events": 16,
+            "observed_rate": 0.16,
+            "observed_minus_displayed": 0.05600000000000001,
+            "thin": false,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0625,
+              0.265966
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 5,
+          "draws": 1000,
+          "seed": 260972,
+          "ci": 0.9
+        }
+      },
+      "candidate": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-11T00:00:00",
+        "n": 1682,
+        "events": 60,
+        "base_rate": 0.0356718192627824,
+        "mean_displayed_probability": 0.047735583657503675,
+        "calibration_in_large_gap": 0.012063764394721274,
+        "calibration_in_large_gap_ci90": [
+          -0.000246,
+          0.023496
+        ],
+        "brier_score": 0.03269985470130525,
+        "brier_score_ci90": [
+          0.02337,
+          0.042802
+        ],
+        "base_rate_brier_score": 0.034399340573265796,
+        "brier_skill_score": 0.04940460612437836,
+        "weighted_absolute_calibration_error": 0.01814960429093433,
+        "root_weighted_squared_calibration_error": 0.02770237013086759,
+        "population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+        "cells": {
+          "0.02038534319628419": {
+            "probability": 0.02038534319628419,
+            "n": 1062,
+            "events": 8,
+            "observed_rate": 0.007532956685499058,
+            "observed_minus_displayed": -0.012852386510785133,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 148
+              },
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 101
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 651
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 162
+              }
+            ],
+            "observed_rate_ci90": [
+              0.00276,
+              0.013164
+            ]
+          },
+          "0.032385343196284194": {
+            "probability": 0.032385343196284194,
+            "n": 270,
+            "events": 13,
+            "observed_rate": 0.04814814814814815,
+            "observed_minus_displayed": 0.015762804951863954,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.020322,
+              0.084046
+            ]
+          },
+          "0.04438534319628419": {
+            "probability": 0.04438534319628419,
+            "n": 66,
+            "events": 3,
+            "observed_rate": 0.045454545454545456,
+            "observed_minus_displayed": 0.0010692022582612648,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.102041
+            ]
+          },
+          "0.056385343196284195": {
+            "probability": 0.056385343196284195,
+            "n": 10,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.056385343196284195,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.15088757396449703": {
+            "probability": 0.15088757396449703,
+            "n": 24,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.15088757396449703,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.15670289855072464": {
+            "probability": 0.15670289855072464,
+            "n": 46,
+            "events": 8,
+            "observed_rate": 0.17391304347826086,
+            "observed_minus_displayed": 0.017210144927536225,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.032208,
+              0.333333
+            ]
+          },
+          "0.16288757396449705": {
+            "probability": 0.16288757396449705,
+            "n": 8,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.16288757396449705,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.16870289855072465": {
+            "probability": 0.16870289855072465,
+            "n": 95,
+            "events": 12,
+            "observed_rate": 0.12631578947368421,
+            "observed_minus_displayed": -0.042387109077040436,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.040534,
+              0.223386
+            ]
+          },
+          "0.17488757396449703": {
+            "probability": 0.17488757396449703,
+            "n": 1,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.17488757396449703,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.18070289855072463": {
+            "probability": 0.18070289855072463,
+            "n": 100,
+            "events": 16,
+            "observed_rate": 0.16,
+            "observed_minus_displayed": -0.02070289855072463,
+            "thin": false,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.064482,
+              0.266667
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 5,
+          "draws": 1000,
+          "seed": 260973,
+          "ci": 0.9
+        }
+      },
+      "paired_brier_delta": {
+        "n": 1682,
+        "delta": -4.533198121556058e-05,
+        "ci90": [
+          -0.001542,
+          0.001292
+        ]
+      },
+      "accepted_population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+      "accepted_population_match": true
+    },
+    "h10": {
+      "current": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-03T00:00:00",
+        "n": 1677,
+        "events": 138,
+        "base_rate": 0.08228980322003578,
+        "mean_displayed_probability": 0.0988133571854502,
+        "calibration_in_large_gap": 0.016523553965414425,
+        "calibration_in_large_gap_ci90": [
+          -0.007056,
+          0.038273
+        ],
+        "brier_score": 0.07016106141920098,
+        "brier_score_ci90": [
+          0.052565,
+          0.088645
+        ],
+        "base_rate_brier_score": 0.07551819150604358,
+        "brier_skill_score": 0.07093827301748723,
+        "weighted_absolute_calibration_error": 0.047495527728085865,
+        "root_weighted_squared_calibration_error": 0.056337837078156275,
+        "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+        "cells": {
+          "0.06": {
+            "probability": 0.06,
+            "n": 310,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.06,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 148
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 162
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.08": {
+            "probability": 0.08,
+            "n": 747,
+            "events": 28,
+            "observed_rate": 0.03748326639892905,
+            "observed_minus_displayed": -0.04251673360107095,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 97
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 650
+              }
+            ],
+            "observed_rate_ci90": [
+              0.021842,
+              0.056101
+            ]
+          },
+          "0.1": {
+            "probability": 0.1,
+            "n": 270,
+            "events": 32,
+            "observed_rate": 0.11851851851851852,
+            "observed_minus_displayed": 0.018518518518518517,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.06092,
+              0.183566
+            ]
+          },
+          "0.12": {
+            "probability": 0.12,
+            "n": 90,
+            "events": 10,
+            "observed_rate": 0.1111111111111111,
+            "observed_minus_displayed": -0.00888888888888889,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              },
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              }
+            ],
+            "observed_rate_ci90": [
+              0.042254,
+              0.202134
+            ]
+          },
+          "0.14": {
+            "probability": 0.14,
+            "n": 18,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.14,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              },
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.16": {
+            "probability": 0.16,
+            "n": 1,
+            "events": 1,
+            "observed_rate": 1.0,
+            "observed_minus_displayed": 0.84,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              }
+            ],
+            "observed_rate_ci90": [
+              1.0,
+              1.0
+            ]
+          },
+          "0.17": {
+            "probability": 0.17,
+            "n": 46,
+            "events": 12,
+            "observed_rate": 0.2608695652173913,
+            "observed_minus_displayed": 0.09086956521739128,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.057143,
+              0.500714
+            ]
+          },
+          "0.19": {
+            "probability": 0.19,
+            "n": 95,
+            "events": 25,
+            "observed_rate": 0.2631578947368421,
+            "observed_minus_displayed": 0.07315789473684209,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.119243,
+              0.425401
+            ]
+          },
+          "0.21": {
+            "probability": 0.21,
+            "n": 100,
+            "events": 30,
+            "observed_rate": 0.3,
+            "observed_minus_displayed": 0.09,
+            "thin": false,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.146306,
+              0.456412
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 10,
+          "draws": 1000,
+          "seed": 261022,
+          "ci": 0.9
+        }
+      },
+      "candidate": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-09-03T00:00:00",
+        "n": 1677,
+        "events": 138,
+        "base_rate": 0.08228980322003578,
+        "mean_displayed_probability": 0.10564004157755079,
+        "calibration_in_large_gap": 0.023350238357515013,
+        "calibration_in_large_gap_ci90": [
+          0.000279,
+          0.046188
+        ],
+        "brier_score": 0.06941521740702046,
+        "brier_score_ci90": [
+          0.053015,
+          0.086877
+        ],
+        "base_rate_brier_score": 0.07551819150604358,
+        "brier_skill_score": 0.08081462197799993,
+        "weighted_absolute_calibration_error": 0.03630025478156582,
+        "root_weighted_squared_calibration_error": 0.04942839294431326,
+        "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+        "cells": {
+          "0.06338028169014084": {
+            "probability": 0.06338028169014084,
+            "n": 310,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.06338028169014084,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 148
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 162
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.06491051172170406": {
+            "probability": 0.06491051172170406,
+            "n": 747,
+            "events": 28,
+            "observed_rate": 0.03748326639892905,
+            "observed_minus_displayed": -0.02742724532277501,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 97
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 650
+              }
+            ],
+            "observed_rate_ci90": [
+              0.021953,
+              0.054548
+            ]
+          },
+          "0.08491051172170407": {
+            "probability": 0.08491051172170407,
+            "n": 270,
+            "events": 32,
+            "observed_rate": 0.11851851851851852,
+            "observed_minus_displayed": 0.03360800679681446,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.060741,
+              0.180826
+            ]
+          },
+          "0.10491051172170407": {
+            "probability": 0.10491051172170407,
+            "n": 66,
+            "events": 8,
+            "observed_rate": 0.12121212121212122,
+            "observed_minus_displayed": 0.016301609490417146,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              }
+            ],
+            "observed_rate_ci90": [
+              0.027361,
+              0.228589
+            ]
+          },
+          "0.12491051172170406": {
+            "probability": 0.12491051172170406,
+            "n": 10,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.12491051172170406,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.2514792899408284": {
+            "probability": 0.2514792899408284,
+            "n": 24,
+            "events": 2,
+            "observed_rate": 0.08333333333333333,
+            "observed_minus_displayed": -0.1681459566074951,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.266667
+            ]
+          },
+          "0.26358695652173914": {
+            "probability": 0.26358695652173914,
+            "n": 46,
+            "events": 12,
+            "observed_rate": 0.2608695652173913,
+            "observed_minus_displayed": -0.002717391304347838,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.068926,
+              0.46875
+            ]
+          },
+          "0.2714792899408284": {
+            "probability": 0.2714792899408284,
+            "n": 8,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.2714792899408284,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.28358695652173915": {
+            "probability": 0.28358695652173915,
+            "n": 95,
+            "events": 25,
+            "observed_rate": 0.2631578947368421,
+            "observed_minus_displayed": -0.020429061784897062,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.115738,
+              0.427338
+            ]
+          },
+          "0.2914792899408284": {
+            "probability": 0.2914792899408284,
+            "n": 1,
+            "events": 1,
+            "observed_rate": 1.0,
+            "observed_minus_displayed": 0.7085207100591716,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              }
+            ],
+            "observed_rate_ci90": [
+              1.0,
+              1.0
+            ]
+          },
+          "0.3035869565217391": {
+            "probability": 0.3035869565217391,
+            "n": 100,
+            "events": 30,
+            "observed_rate": 0.3,
+            "observed_minus_displayed": -0.0035869565217391264,
+            "thin": false,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.140594,
+              0.46466
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 10,
+          "draws": 1000,
+          "seed": 261023,
+          "ci": 0.9
+        }
+      },
+      "paired_brier_delta": {
+        "n": 1677,
+        "delta": -0.0007458440121804848,
+        "ci90": [
+          -0.003688,
+          0.002417
+        ]
+      },
+      "accepted_population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+      "accepted_population_match": true
+    },
+    "h21": {
+      "current": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-08-19T00:00:00",
+        "n": 1666,
+        "events": 294,
+        "base_rate": 0.17647058823529413,
+        "mean_displayed_probability": 0.19424369747899162,
+        "calibration_in_large_gap": 0.017773109243697488,
+        "calibration_in_large_gap_ci90": [
+          -0.029008,
+          0.066211
+        ],
+        "brier_score": 0.1325982593037215,
+        "brier_score_ci90": [
+          0.102808,
+          0.161225
+        ],
+        "base_rate_brier_score": 0.14532871972318337,
+        "brier_skill_score": 0.08759769193391631,
+        "weighted_absolute_calibration_error": 0.060978391356542615,
+        "root_weighted_squared_calibration_error": 0.07192564669952992,
+        "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+        "cells": {
+          "0.13": {
+            "probability": 0.13,
+            "n": 300,
+            "events": 4,
+            "observed_rate": 0.013333333333333334,
+            "observed_minus_displayed": -0.11666666666666667,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 141
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 159
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.039289
+            ]
+          },
+          "0.16": {
+            "probability": 0.16,
+            "n": 746,
+            "events": 91,
+            "observed_rate": 0.12198391420911528,
+            "observed_minus_displayed": -0.038016085790884724,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 96
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 650
+              }
+            ],
+            "observed_rate_ci90": [
+              0.077086,
+              0.171596
+            ]
+          },
+          "0.19": {
+            "probability": 0.19,
+            "n": 270,
+            "events": 67,
+            "observed_rate": 0.24814814814814815,
+            "observed_minus_displayed": 0.05814814814814814,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.143459,
+              0.357958
+            ]
+          },
+          "0.22": {
+            "probability": 0.22,
+            "n": 66,
+            "events": 16,
+            "observed_rate": 0.24242424242424243,
+            "observed_minus_displayed": 0.02242424242424243,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              }
+            ],
+            "observed_rate_ci90": [
+              0.053571,
+              0.44908
+            ]
+          },
+          "0.25": {
+            "probability": 0.25,
+            "n": 34,
+            "events": 11,
+            "observed_rate": 0.3235294117647059,
+            "observed_minus_displayed": 0.0735294117647059,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              },
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.639087
+            ]
+          },
+          "0.28": {
+            "probability": 0.28,
+            "n": 8,
+            "events": 0,
+            "observed_rate": 0.0,
+            "observed_minus_displayed": -0.28,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.0
+            ]
+          },
+          "0.31": {
+            "probability": 0.31,
+            "n": 1,
+            "events": 1,
+            "observed_rate": 1.0,
+            "observed_minus_displayed": 0.69,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              }
+            ],
+            "observed_rate_ci90": [
+              1.0,
+              1.0
+            ]
+          },
+          "0.33": {
+            "probability": 0.33,
+            "n": 46,
+            "events": 17,
+            "observed_rate": 0.3695652173913043,
+            "observed_minus_displayed": 0.03956521739130431,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.086182,
+              0.666667
+            ]
+          },
+          "0.36": {
+            "probability": 0.36,
+            "n": 95,
+            "events": 38,
+            "observed_rate": 0.4,
+            "observed_minus_displayed": 0.040000000000000036,
+            "thin": true,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.173789,
+              0.612245
+            ]
+          },
+          "0.39": {
+            "probability": 0.39,
+            "n": 100,
+            "events": 49,
+            "observed_rate": 0.49,
+            "observed_minus_displayed": 0.09999999999999998,
+            "thin": false,
+            "composition": [
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.230769,
+              0.673536
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 21,
+          "draws": 1000,
+          "seed": 261132,
+          "ci": 0.9
+        }
+      },
+      "candidate": {
+        "from": "2020-01-02T00:00:00",
+        "through": "2026-08-19T00:00:00",
+        "n": 1666,
+        "events": 294,
+        "base_rate": 0.17647058823529413,
+        "mean_displayed_probability": 0.20690913632029498,
+        "calibration_in_large_gap": 0.03043854808500085,
+        "calibration_in_large_gap_ci90": [
+          -0.018413,
+          0.074042
+        ],
+        "brier_score": 0.13349884082382957,
+        "brier_score_ci90": [
+          0.105951,
+          0.163929
+        ],
+        "base_rate_brier_score": 0.14532871972318337,
+        "brier_skill_score": 0.08140083337888693,
+        "weighted_absolute_calibration_error": 0.06174520807262321,
+        "root_weighted_squared_calibration_error": 0.08108593170209724,
+        "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+        "cells": {
+          "0.12892741061755147": {
+            "probability": 0.12892741061755147,
+            "n": 300,
+            "events": 4,
+            "observed_rate": 0.013333333333333334,
+            "observed_minus_displayed": -0.11559407728421814,
+            "thin": false,
+            "composition": [
+              {
+                "state": "calm",
+                "hot_count": 0,
+                "n": 141
+              },
+              {
+                "state": "watch",
+                "hot_count": 0,
+                "n": 159
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              0.040007
+            ]
+          },
+          "0.15490294933198892": {
+            "probability": 0.15490294933198892,
+            "n": 746,
+            "events": 91,
+            "observed_rate": 0.12198391420911528,
+            "observed_minus_displayed": -0.03291903512287364,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 0,
+                "n": 96
+              },
+              {
+                "state": "caution",
+                "hot_count": 1,
+                "n": 650
+              }
+            ],
+            "observed_rate_ci90": [
+              0.075606,
+              0.17316
+            ]
+          },
+          "0.18490294933198892": {
+            "probability": 0.18490294933198892,
+            "n": 270,
+            "events": 67,
+            "observed_rate": 0.24814814814814815,
+            "observed_minus_displayed": 0.06324519881615923,
+            "thin": false,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 2,
+                "n": 270
+              }
+            ],
+            "observed_rate_ci90": [
+              0.137091,
+              0.358086
+            ]
+          },
+          "0.21490294933198892": {
+            "probability": 0.21490294933198892,
+            "n": 66,
+            "events": 16,
+            "observed_rate": 0.24242424242424243,
+            "observed_minus_displayed": 0.027521293092253513,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 3,
+                "n": 66
+              }
+            ],
+            "observed_rate_ci90": [
+              0.054297,
+              0.446612
+            ]
+          },
+          "0.24490294933198892": {
+            "probability": 0.24490294933198892,
+            "n": 10,
+            "events": 8,
+            "observed_rate": 0.8,
+            "observed_minus_displayed": 0.5550970506680111,
+            "thin": true,
+            "composition": [
+              {
+                "state": "caution",
+                "hot_count": 4,
+                "n": 10
+              }
+            ],
+            "observed_rate_ci90": [
+              0.0,
+              1.0
+            ]
+          },
+          "0.4188626907073509": {
+            "probability": 0.4188626907073509,
+            "n": 70,
+            "events": 20,
+            "observed_rate": 0.2857142857142857,
+            "observed_minus_displayed": -0.13314840499306518,
+            "thin": true,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 1,
+                "n": 24
+              },
+              {
+                "state": "risk-off",
+                "hot_count": 1,
+                "n": 46
+              }
+            ],
+            "observed_rate_ci90": [
+              0.058824,
+              0.51565
+            ]
+          },
+          "0.44886269070735085": {
+            "probability": 0.44886269070735085,
+            "n": 103,
+            "events": 38,
+            "observed_rate": 0.36893203883495146,
+            "observed_minus_displayed": -0.0799306518723994,
+            "thin": false,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 2,
+                "n": 8
+              },
+              {
+                "state": "risk-off",
+                "hot_count": 2,
+                "n": 95
+              }
+            ],
+            "observed_rate_ci90": [
+              0.15373,
+              0.58622
+            ]
+          },
+          "0.4788626907073509": {
+            "probability": 0.4788626907073509,
+            "n": 101,
+            "events": 50,
+            "observed_rate": 0.49504950495049505,
+            "observed_minus_displayed": 0.016186814243144165,
+            "thin": false,
+            "composition": [
+              {
+                "state": "elevated",
+                "hot_count": 3,
+                "n": 1
+              },
+              {
+                "state": "risk-off",
+                "hot_count": 3,
+                "n": 100
+              }
+            ],
+            "observed_rate_ci90": [
+              0.258409,
+              0.680024
+            ]
+          }
+        },
+        "bootstrap": {
+          "method": "circular_moving_block",
+          "block_observations": 21,
+          "draws": 1000,
+          "seed": 261133,
+          "ci": 0.9
+        }
+      },
+      "paired_brier_delta": {
+        "n": 1666,
+        "delta": 0.0009005815201080708,
+        "ci90": [
+          -0.003731,
+          0.005536
+        ]
+      },
+      "accepted_population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+      "accepted_population_match": true
+    }
+  },
+  "audit_source": {
+    "path": "research/grey_deer/evidence/displayed-probability-audit-20260922/result.json",
+    "sha256": "eb9d4bfd75a18199789a8306ea948aba17e84693ad24e081134feba0751c09ea"
+  },
+  "authority": {
+    "live_write": false,
+    "calibration_json_written": false,
+    "review_log_written": false,
+    "forward_ledger_written": false
+  },
+  "promotion": {
+    "checks": {
+      "authority_partition": true,
+      "surface_valid": true,
+      "h5_point_brier_no_worse": true,
+      "h5_wace_no_material_harm": true,
+      "h5_population_match": true,
+      "h10_point_brier_no_worse": true,
+      "h10_wace_no_material_harm": true,
+      "h10_population_match": true,
+      "h21_point_brier_no_worse": false,
+      "h21_wace_no_material_harm": true,
+      "h21_population_match": true,
+      "h21_ci_upper_nonpositive": false,
+      "h5_ci_upper_within_0p002": true,
+      "h10_ci_upper_within_0p002": false
+    },
+    "promotion_eligible": false
+  }
+}
