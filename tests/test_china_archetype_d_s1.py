@@ -142,6 +142,18 @@ def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert "e.preventDefault();card.click();" in TPL
 
 
+def test_driver_rail_suppresses_missing_driver_noise() -> None:
+    assert "{% set _driver_policy = I.pboc or _credit_impulse is not none %}" in TPL
+    assert "{% set _driver_flows = I.southbound and I.southbound.net is defined %}" in TPL
+    assert "{% set _driver_risk = _risk_state_driver in ('calm','caution','elevated','risk-off') %}" in TPL
+    assert "{% set _driver_property = P and P.regime %}" in TPL
+    assert "{% if _driver_policy or _driver_flows or _driver_risk or _driver_property %}" in TPL
+
+    driver = TPL.split('data-cn-driver-rail', 1)[1].split("</div>", 1)[0]
+    assert "Unavailable" not in driver
+    assert "暂不可用" not in driver
+
+
 def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
     assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
     assert "watch →" in TPL
