@@ -1,6 +1,6 @@
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
-**Head SHA:** `62726ad61a5d48119cf548484625865d81e850a8` (W2-2 packet deliverable head — round 3/3 refresh: BLOCKER 1/2/3/4 + MINOR 1/2 fixes + waiver refresh)
+**Head SHA:** `8af70703caf1ac1abff4f06b4456625b9de7ce0b` (W2-2 packet deliverable head — round 3/3 refresh: BLOCKER 1/2/3/4 + MINOR 1/2 fixes + waiver refresh + final body SHA update)
 **Base:** `origin/main` @ `6ea475723e85480b4411d53f4b4c1e3fdf3d7039`
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
 
@@ -33,14 +33,14 @@ The lane adds files, tests, and an `options_skew` data-dir registration in `scri
 ## Files changed (true list — scoped diff vs `origin/main`)
 
 ```
-.claude/PR_BODY_W2-2.md                                            | 117 +++++
+.claude/PR_BODY_W2-2.md                                            | 133 +++++
 agentos/decisions/DEC-SKEW-ACCRUAL-ON-THE-STORE-HOST.md          | 135 ++++++
-config/unrun_test_waivers.yml                                      |  45 ++   (waivers for the 5 new test suites — see "Contract delta" below)
+config/unrun_test_waivers.yml                                      |  73 +++   (waivers for the 5 new test suites — see "Contract delta" below)
 ops/launchd/com.macro.skewaccrual.plist                            | 199 +++++++++
 ops/launchd/run_skew_accrual.sh                                    | 346 +++++++++++++++
 research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md       | 296 +++++++++++++
 scripts/audit_options_skew_overlap.py                              | 379 +++++++++++++++
-scripts/publish_r2.py                                              |  36 +-
+scripts/publish_r2.py                                              |  34 ++-
 scripts/skew_accrual_gate.py                                       | 201 +++++++++
 scripts/skew_accrual_precheck.py                                   | 132 ++++++
 scripts/skew_accrual_verify_ledger.py                              | 106 +++++
@@ -49,7 +49,7 @@ tests/test_skew_accrual_gate.py                                    | 221 +++++++
 tests/test_skew_accrual_launchd.py                                 | 474 +++++++++++++++++++++
 tests/test_skew_accrual_precheck.py                                | 186 ++++++++
 tests/test_skew_accrual_verify_ledger.py                           | 120 ++++++
-16 files changed, 3410 insertions(+), 2 deletions(-)
+16 files changed, 3454 insertions(+), 2 deletions(-)
 ```
 
 ## Install runbook
@@ -66,10 +66,10 @@ See `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md`. Highlights:
 ### `pytest` — all 5 new test files
 ```
 python3 -m pytest tests/test_skew_accrual_gate.py tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py -q
-49 passed in 33.85s
+49 passed in 51.03s
 
 python3 -m pytest tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py -q
-13 passed in 1.10s
+13 passed in 1.24s
 ```
 
 ### `python3 scripts/agentos.py validate`
