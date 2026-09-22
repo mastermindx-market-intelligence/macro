@@ -12,8 +12,8 @@ falsifier: >-
   Demonstrate an older completed
   unowned Door row silently omitted, changed prior source bytes accepted, duplicate
   events on retry, rewritten history, premature future ingestion, or a manufactured
-  anchor/trade. The last real-input probe preceded final clock hardening; exact-final
-  full-writer/natural-run qualification remains explicitly owed.
+  anchor/trade. Exact-final nonwriting full-writer qualification now records an immutable-source
+  refusal. That failure is not waived by local or composed test success.
 so_what: >-
   Early economic leadership cannot become a useful workflow when its research sightings
   are silently skipped. Repair retention in the existing B1 writer, without replacing
@@ -26,7 +26,8 @@ verified_by: >-
   research/prophet/cpu_leadership/door_retention_20260922/verification.json;
   research/prophet/cpu_leadership/door_retention_20260922/owner-tests.txt;
   research/prophet/cpu_leadership/door_retention_20260922/real-input-probe.json;
-  tests/test_us_candidate_episode_reconciler.py.
+  tests/test_us_candidate_episode_reconciler.py;
+  research/prophet/cpu_leadership/door_retention_20260922/final-qualification.json.
 scope: [macro]
 ---
 # Bounded retention continuation
@@ -34,7 +35,8 @@ scope: [macro]
 Parent remains WS:PROPHET-US-V4-RECOVERY under the Chairman's main-CEO Prophet commission.
 Operation: prophet-door-intake-retention-20260922-sol-001.
 Carrier: claude/prophet-door-intake-retention-20260922, based on 758b052ff0278e9842fd1b392e0b04617124d1bb.
-Procedure: Mastermind@ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e / Skillpack1.0.1/bootstrap1.
+Current procedure: Mastermind@9a7ed19091dd82609f8ee405687f16c861c4d8c1 / Skillpack1.0.1/bootstrap1.
+Current semantic repair: d2ec700e98b584e25db695711db8f1655f2e9c6f, same PR #7684.
 
 ## Material effects
 
@@ -81,3 +83,36 @@ After retention is accepted, qualify a context-conditioned early-continuation tr
 under the existing strategy owner. The four market names are regression examples, never
 a validation cohort or a CPU-always-first rule. Existing safeguards and original parent
 ambition both remain. MISSION_COMPLETE: false; BUILT_NOT_PROVEN.
+
+
+## Latest verified unit — precision and full-writer convergence
+
+Seven new tests reproduced premature consumption of future fractional timestamps,
+including offset timestamps and an unresolved identity. Source admission now compares
+precise instants; source identity, normalizer and date-only exchange closes remain.
+The final four-owner battery is155 passed/zero failures/skips. Prior148 remains its
+own historical-source result. No entry/rank/size, source schema or core owner changed.
+
+Exact-final-source nonwriting full-writer execution is no longer untested: it REFUSED
+`ordinary source key reused with different committed bytes` on pinned current data
+1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee. The harness reported2312 receipt conflicts
+and preserved its original input/history bytes. Exit0 is NOT a pipeline PASS.
+The detailed report extraction was separately platform-blocked, not retried/rerouted;
+no per-source conflict attribution is inferred from that blocked read. Compact observed
+result is committed as final-writer-status.json; the detailed report remains at the
+named local path for a later lawful reviewer, not a fabricated remote receipt.
+
+The #7227 owner has now published its preserved calendar repair at
+1f7aa1bb4e067a9a6fecd783857f984a8b6a2e87 with green exact-head CI; its prior request
+for changes requires non-author re-review. Its own current return identifies the v1
+whole-document/row-key conflict. Our unchanged source plus #7227 automatically compose
+as tree426d996b454c18f5b7d4617784d41a7ebdf0178f and passed256 tests across five suites,
+zero failures/skips. Full composition IDs and logs are in final-qualification.json.
+This does not activate v2 or retire existing v1 receipts. No peer source was modified.
+
+The authenticated GitHub account is also #7227 author: no self-approval/account switch
+was attempted. Exact external reviews, lawful new-session protocol/registry adoption,
+full-pipeline nonwriting PASS and natural production proof remain the release gates.
+Do not redo the155/256 source-bound proofs unless a material change occurs. Do not
+replay or weaken immutable history to turn the full-writer refusal green.
+MISSION_COMPLETE:false. No new worker, watcher, runtime write or autonomous wake.

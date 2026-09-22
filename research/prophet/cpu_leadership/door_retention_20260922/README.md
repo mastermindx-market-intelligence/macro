@@ -39,3 +39,40 @@ That probe preceded final explicit-clock hardening. Its attempted final repeat w
 `BUILT_NOT_PROVEN / HOLD-FOR-SOL`. Independent exact-head review, complete hosted CI/current-base proof and source-bound nonwriting full-writer acceptance precede source release. Natural production consumption is separate. No nightly dispatch, immutable-conflict erasure, registry change, rank/entry/size/order change, provider request, worker or watcher occurred. #7227, #7180 and #6992 retain their own gates.
 
 Primary next action: qualify and release this retention leaf through B1, then evaluate context-conditioned continuation entries under the existing strategy/promotion owner. Saved research is not Buy Now. `MISSION_COMPLETE: false`.
+
+
+## September 22 exact-source continuation
+
+Semantic source `d2ec700e98b584e25db695711db8f1655f2e9c6f` fixes an independently
+reproduced future-clock leak: the incumbent normalizer emits whole seconds, so
+using its normalized value for admission could consume a fractional-second
+future observation early. The intake now compares the original precise instant
+while retaining date-only exchange-close resolution and unchanged source
+normalization/identity semantics. Seven new RED cases now pass. Final four-suite
+owner battery: **155 passed, zero failures/skips**.
+
+The bounded proof runner now records its implementation hashes and can exercise
+all pinned sources through the real `reconcile(... nightly=False, replay=False)`
+path. On data source `1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee`, the complete writer
+REFUSED `ordinary source key reused with different committed bytes`. The harness
+reported 2,312 source-receipt conflicts; its successful process exit records the
+refusal, not writer acceptance. Source/history preservation assertions passed.
+A subsequent diagnostic extraction of the detailed report was platform-blocked
+and was not rerouted. No per-source attribution or new cohort counts are claimed
+from that unread diagnostic. See `final-writer-status.json`.
+
+Complementary staged TURN WATCH #7227 is now at
+`1f7aa1bb4e067a9a6fecd783857f984a8b6a2e87`, with its requested calendar repair and
+concluded hosted CI. Its own current return independently identifies a changing
+v1 document receipt as a full-writer blocker. This candidate and #7227 compose
+without conflicts on the source above: tree
+`426d996b454c18f5b7d4617784d41a7ebdf0178f`. Five combined B1/TURN WATCH suites:
+**256 passed, no failures/skips**. This is compatibility evidence, not v2 activation,
+independent GitHub approval, or natural production proof. Neither source branch
+was replaced or rewritten. Both remain governed by their original release holds.
+
+Primary next action: independent exact-head reviews, then the accepted TURN WATCH
+new-session protocol/registry transition and a nonwriting full-pipeline PASS before
+any natural-run retention activation. Do not weaken the immutable conflict check,
+rewrite old v1 events, replay the cancelled nightly, or claim a retained observation
+as a buy. The raw current-archive publication issue remains with #7180.
