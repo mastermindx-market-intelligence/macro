@@ -717,6 +717,8 @@ on:
       - "tests/test_theme_scoring_conflicted.py"
       - "tests/test_theme_scoring.py"
       - "tests/test_theme_recommendation_reasons.py"
+      - "tests/test_basket_score.py"
+      - "tests/test_basket_entry_explanations.py"
       - "tests/test_theme_entry_gate_comparison.py"
       - "tests/fixtures/theme_recommendation_reasons/**"
       - "research/sector_pulse/recommendation_reasons_20260921/**"

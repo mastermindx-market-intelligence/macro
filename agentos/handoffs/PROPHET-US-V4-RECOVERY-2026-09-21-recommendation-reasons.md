@@ -14,6 +14,10 @@ state_before: >
   room to add without a clean entry, and basket renderers replaced explanations
   with an unsupported assertion that no constituent had an entry.
 changed:
+  - path: engine/basket_score.py
+    what: Expose native stock-entry reasons and complete member diagnostics while preserving admission and fixing contradictory watch explanations.
+  - path: tests/test_basket_entry_explanations.py
+    what: Twenty-four producer, frozen-parity, complete-roster, native JavaScript and escaping cases; prior non-stock functions remain source-hash frozen.
   - path: engine/theme_scoring.py
     what: Return the existing verb with its actual deciding reason; explain the final safeguard and entry-quality state.
   - path: templates/baskets_desk.js
@@ -270,3 +274,66 @@ Final source head, source/data hashes and hosted run identities are recorded by
 read-back comments on the same PR, without a self-referential commit loop.
 MISSION_COMPLETE: false
 PRODUCTION_POLICY_CHANGED: false
+
+
+## Latest continuation — stock-level entry workflow, 2026-09-22
+
+Protected procedure: `Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f`,
+same-pin Skillpack 1.0.1/bootstrap 1. Current Chairman intent is to advance the
+actual product and stock-entry path, not accumulate another historical study.
+Source before this unit: `4e01f20e2dc5ee66634ed51ec127ba8b8630b860` on the same
+#7669 branch. Direct reason: PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD.
+
+**Implemented capability:** the theme hero now opens a complete stock-by-stock
+entry-check disclosure in the existing detail page. The native stock admission
+owner returns a deciding reason alongside the unchanged admission; buy and watch
+projections share that same result. No score, entry threshold, price/target,
+portfolio allocation or new trade authority was introduced. No duplicate state,
+candidate or publication owner. Missing conviction remains unavailable, not a
+negative price verdict. Every member remains visible even beyond the existing
+12-row actionable presentation cap. Qualified legacy records no longer appear
+simultaneously in the non-actionable fast-turn watch; a low-score rejection cannot
+print BUY as its own blocking reason.
+
+Proof: 242 Python 3.14 owner/consumer/research regression tests pass; 37 stock-owner
+and JavaScript consumer tests pass on Python 3.12. A 2,160-case frozen native
+comparison preserves status/buys/uncovered exactly. All 49 existing US detail pages
+replay their original status, buy rows and missing coverage (1,017 member rows,
+including repeated stocks across different baskets, not 1,017 distinct securities).
+All pre-existing basket-score functions other than the stock projection are
+source-hash unchanged. Frozen historical research artifacts remain tied to their
+old commits; do not rerun them against a changed module by weakening hash guards.
+
+The final browser proof contains 48 original/candidate viewport/theme/language
+captures plus 24 interactive entry-disclosure captures. All candidate reasons and
+stock link targets pass, the 40px action targets pass, and keyboard focus/open state
+survive a real rerender. A real anchor-default focus defect was found and repaired
+before the accepted rerun. Zero page errors and page-level horizontal overflow.
+This is stored-input local browser proof, NOT a current market or deployed proof.
+Source engine SHA-256: `4a34515ec6ec790e9fc69b97efa2281999774c2f82770a4dec46ec2080f15bb0`.
+Browser proof SHA-256: `c88a937d1dfbba2804d850b716bc91e0153167bdd30c1852117cda3dcfb93c57`.
+The complete workflow/proof boundaries are in `STOCK_ENTRY_WORKFLOW.md` beside the
+source-bound `stock-entry-proof.json` and updated existing browser evidence.
+
+**Release reconciliation:** #7650 is now independently approved and fully green
+at integrated head `e0e996381af1494e3c201078fddb472ad75b8061`, but OPEN. Its one
+integration update is accepted history, DO_NOT_REDO. Shared source-main failure
+remains with incumbent #7693 at `9e74c33d3f6c22b1e41f4dc7f100baf32a050734`;
+comments 5774384105/5774440956 bind the current inherited hub-marker/theme-receipt
+repairs. No competing main-red PR, threshold waiver or writer takeover occurred.
+#7478 cleanup remains complete. No Vercel action, deployment, trade or watcher.
+
+A bounded invocation of the existing native Opus reviewer was BLOCKED by the
+platform before a process receipt. No review execution was proven; no retry,
+other-provider/account route or self-approval was used. The existing GitHub review
+request remains with mastermindx-3. #7669 stays Draft/HOLD pending actual review,
+current exact-head checks and lawful normal production publication. Source writes
+and browser work remained available and advanced independently.
+
+Primary continuation: consume same-carrier source review and release gates, then
+obtain normal deployed producer → reason → stock-navigation proof. The next
+behavioral model decision must use the revealed stock-cycle/conviction/entry
+conditions, not assume the basket .75 gate was every CPU stock's only blocker.
+No new historical threshold sweep is needed to accept this product correction.
+MISSION_COMPLETE: false. CAPABILITY_STATE: BUILT_NOT_PROVEN.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.

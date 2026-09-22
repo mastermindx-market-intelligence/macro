@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 from prove import read_blob, replay
+from engine import basket_score
 
 
 def main():
@@ -53,6 +54,9 @@ def main():
             if version == "candidate":
                 for key in ("reco_why_en", "reco_why_zh", "reco_reason_code", "reco_base_reason_code"):
                     source["theme"][key] = themes[name][key]
+                source["act_now"] = basket_score.act_now_stocks(source["members"], source["theme"])
+                for key in ("status", "buys", "uncovered"):
+                    assert source["act_now"][key] == detail["act_now"][key], (name, key)
             chosen_template = template if version == "candidate" else baseline_template
             generated = chosen_template.render(
                 detail_json=json.dumps(source, separators=(",", ":"), ensure_ascii=False),
@@ -117,10 +121,39 @@ def main():
                             assert attrs["theme"] == theme and attrs["lang"] == language
                             filename = f"{name}-{version}-{width}-{theme}-{language}.png"
                             page.screenshot(path=str(args.out / filename), full_page=False)
+                            stock_check_proof = None
+                            if version == "candidate":
+                                details = page.locator("#stock-entry-checks")
+                                hero_link = page.locator("[data-stock-entry-link]")
+                                assert hero_link.bounding_box()["height"] >= 40
+                                hero_link.focus()
+                                page.keyboard.press("Enter")
+                                assert details.evaluate("el => el.open")
+                                assert details.locator("summary").bounding_box()["height"] >= 40
+                                before_text = details.inner_text()
+                                page.evaluate("render()")
+                                details = page.locator("#stock-entry-checks")
+                                assert details.evaluate("el => el.open")
+                                assert details.inner_text() == before_text
+                                assert page.evaluate("document.activeElement === document.querySelector('#stock-entry-checks > summary')")
+                                expected_checks = page.evaluate("DETAIL.act_now.entry_checks")
+                                assert details.locator("tbody tr").count() == len(expected_checks)
+                                for check in expected_checks:
+                                    assert check["reason_" + language] in before_text
+                                links = details.locator("tbody a").evaluate_all("els => els.map(a => a.getAttribute('href'))")
+                                assert len(links) == len(expected_checks)
+                                assert all(link.startswith("../stock.html#") for link in links)
+                                entry_file = filename.replace(".png", "-entries.png")
+                                details.screenshot(path=str(args.out / entry_file))
+                                stock_check_proof = {"file": entry_file, "members": len(expected_checks),
+                                                     "reasons_visible": True, "keyboard_open": True,
+                                                     "refresh_state_and_focus_preserved": True,
+                                                     "stock_links": links, "visible_text": before_text}
                             observations.append({"name": name, "version": version, "width": width,
                                                  "theme": theme, "language": language, "applied": attrs,
                                                  "file": filename, "visible_reason": wanted if version == "candidate" else None,
                                                  "hero_text": actual, "page_errors": list(errors),
+                                                 "stock_entry_checks": stock_check_proof,
                                                  **page_sources[path]})
                             errors.clear()
                     context.close()
@@ -129,12 +162,14 @@ def main():
               "baseline_template_sha256": hashlib.sha256(baseline_source).hexdigest(),
               "live_feeds": "unavailable_by_fixture; never substituted with old tracked quotes",
               "template_sha256": hashlib.sha256((ROOT / "templates/basket_detail.html.j2").read_bytes()).hexdigest(),
+              "stock_entry_owner_sha256": hashlib.sha256(Path(basket_score.__file__).read_bytes()).hexdigest(),
               "cells": observations,
               "limitations": ["Local browser only; no production or authentication proof.",
-                              "Real stored holdings/history with matched explanatory-field replay, not a full nightly.",
+                              "Real stored holdings/history with native stock-check replay, not a full nightly.",
                               "Baseline uses the pinned original template and original stored explanation; shared assets are unchanged."]}
     (args.out / "browser-proof.json").write_text(json.dumps(result, indent=2, ensure_ascii=False))
     print(json.dumps({"cells": len(observations), "candidate_reasons_visible": True,
+                      "interactive_stock_check_cells": sum(x["stock_entry_checks"] is not None for x in observations),
                       "cells_with_page_errors": sum(bool(x["page_errors"]) for x in observations),
                       "cells_with_page_overflow": sum(x["applied"]["overflow"] for x in observations)}))
 
