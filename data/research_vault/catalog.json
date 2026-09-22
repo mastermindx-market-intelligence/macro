@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T22:07:10.199279+00:00",
-  "count": 2666,
+  "generated_at": "2026-09-22T22:22:09.943879+00:00",
+  "count": 2667,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-tizdevlqjtq-9a0ceb",
+      "title": "GS Equities Color US EQUITIES COLOR CONSUMER INERTIA 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T21:50:37Z",
+      "summary_points": [
+        "Geopolitical Oil Relief: Iran Strait of Hormuz negotiations driving WTI down 124bps, with Trump's UN remarks on Iran deal amplifying near-term oil market relief.",
+        "Agentic AI Sector Pressure: \"Consumer Inertia\" basket (GSXUSWCH) down 2.58% as Agentic AI impacts PLNT (-9.45%) and NYT (-7.16%), signaling sector-specific risk.",
+        "NDX Record Divergence: NDX at record high (30,732) while SPX flat, VIX at 14.27, indicating tech outperformance amid mixed broader market technicals.",
+        "Hedge Fund Flow Shift: $953mm net sell by hedge funds in comms/consumer discretionary/financials vs. health care, reflecting sector rotation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7keplmv3s4b-371985",
       "title": "GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
