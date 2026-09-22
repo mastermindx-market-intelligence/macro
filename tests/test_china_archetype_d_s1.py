@@ -71,6 +71,14 @@ def test_dialog_triggers_expose_controls_to_assistive_tech() -> None:
     assert TPL.count('aria-haspopup="dialog"') >= 12
 
 
+def test_data_health_footer_is_signal_only() -> None:
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
+    assert 'class="cnx-dh warn" role="status"' in TPL
+    assert "{{ t('Data health warning','数据健康警告') }}" in TPL
+    assert "{{ _health_ok }} of {{ _health_n }} feeds fresh" in TPL
+    assert "cnx-dh.warn .d{background:var(--warn)}" in TPL
+
+
 def test_deep_cards_fail_closed_to_truthful_empty_states() -> None:
     sector = TPL.split("{# Sector Temperature card #}", 1)[1].split("ROW 3: Policy Monitor", 1)[0]
     assert "Sector read unavailable." in sector
