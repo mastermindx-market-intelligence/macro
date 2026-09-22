@@ -11,22 +11,22 @@
   "human_state": "Invalidated",
   "components": {
     "validity": 0.0,
-    "progress": 8.6,
+    "progress": 0.0,
     "pace": 0.0,
-    "retention": 21.7,
-    "overlay": 64.0
+    "retention": 0.0,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.904,
-    "dist_to_t1_r": 1.404,
-    "dist_to_t2_r": 2.904,
+    "dist_to_stop_r": -1.084,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
     "horizon_pct_used": 55.6,
-    "p1": 0.0638,
-    "p2": 0.0319,
+    "p1": -0.0557,
+    "p2": -0.0279,
     "p3": null,
-    "move_r": 0.096,
+    "move_r": -0.084,
     "mfe_r": 0.441,
-    "mae_r": -0.0
+    "mae_r": -0.084
   },
   "rr_ratio": null,
   "rr_grade": null,
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.4299999999999997,
-  "_mae": -3.051757815342171e-07,
+  "_mae": -0.27079994201660185,
   "_max_p1": 0.294238683127572,
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,

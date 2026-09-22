@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T17:36:28.438418+00:00",
-  "count": 2653,
+  "generated_at": "2026-09-22T18:21:34.491413+00:00",
+  "count": 2655,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -212,6 +212,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jss1fygo6mb-0ce1cf",
+      "title": "Auto1 Group (AG1G.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:21Z",
+      "summary_points": [
+        "Structural Advantage: Vertically integrated tech-led model (14y data, 170+ logistics centers, 300+ partners) creates structural edge over traditional dealers; Q4 re-acceleration expected post-inventory rebuilds and new trading system benefits (GPUs, faster inventory turns).",
+        "GPU Efficiency Focus: Prioritizing inventory efficiency (reducing excess stock, improving turns) over unit growth in Autohero, alternating quarterly; directly impacts margins and liquidity.",
+        "Key Risk Catalysts: Slower online car adoption (Autohero revenue), lower merchant market share gains, used car volatility, rising interest rates (inventory financing costs), and slower profitability ramp-up.",
+        "Cross-Border Expansion: Launching German stock in Poland (first cross-listed inventory) to broaden assortment, improve liquidity, and expand buyer base; long-term growth driver with minimal near-term impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-byxbajnfkdi-8bc450",
+      "title": "Global Economics Analyst Where in the World Is There Still an Inflation Problem",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:16Z",
+      "summary_points": [
+        "US Inflation Drivers: US core goods inflation elevated temporarily by tariffs (2.4pp, fading H2 2024) and mismeasured AI (1pp, fading 2027), while global peers face persistent services inflation; US is less severe outlier than perceived.",
+        "China Trade Impact: Stronger Chinese exports lower global goods prices by 0.6-0.8% (non-US DMs/EMs), offsetting energy spillovers and creating structural disinflationary tailwinds.",
+        "Rental Inflation Dynamics: US rental inflation below DMs/EMs ex-China due to immigration slowdown; positive correlation (R²=0.46) between migration declines and rent reduction, highlighting policy sensitivity.",
+        "Global Inflation Divergence: Unit labor costs elevated outside US (sustained inflation risk), while US labor costs near pre-pandemic average; non-shelter services inflation overshooting target globally except US (harmonized basis)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
