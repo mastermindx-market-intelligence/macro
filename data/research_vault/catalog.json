@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T14:05:57.524815+00:00",
-  "count": 2643,
+  "generated_at": "2026-09-22T14:51:00.458423+00:00",
+  "count": 2645,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,24 @@
   ],
   "items": [
     {
+      "id": "marketdesk-uo882snx41f-078e66",
+      "title": "LATAM Today September 22, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:40Z",
+      "summary_points": [
+        "Brazil Copom Policy Update: 25bp rate cut to Selic 13.75%, neutral stance with data-dependent policy; demand-driven inflation persists despite moderation, supply shocks (oil/climate) and election outcome critical for next move - Key Risks: Unanchored inflation expectations, geopolitical tensions (Middle East), election outcome, high oil prices, rising Dollar yields—directly impacting commodity flows and policy trajectory - Mexico Retail Sales Miss: Jul retail sales declined 0.1% mom sa vs.",
+        "+0.1% consensus (annual growth 1.8% yoy vs. 1% consensus), signaling weak consumption momentum amid domestic/external uncertainty - Inflation Policy Alignment: Mexico’s headline inflation (4.3% Dec-26) and policy rate (8.25% Dec-26) decelerated in line with prior peak (10.2% inflation, 11.45% rate), but Goldman Sachs’ forecast overestimation post-Jun-22 indicates misaligned rate expectations - Brazil Inflation Risks: Producer price inflation acceleration and services sector resilience pose upside risks; supply constraints (oil/climate) and demand stimulus could trigger second-round effects despite headline moderation"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vbtfpvlbyyy-e96bb5",
       "title": "GS Utilities Daily Snam sells c.5 stake in Industrie De Nora to institutional investors European Commission launches com...",
       "institution": "Goldman Sachs",
@@ -114,6 +132,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gqsjbmhkacp-ba2aaa",
+      "title": "Global Views Lower Inflation, Limited Hikes",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:30Z",
+      "summary_points": [
+        "Fed's Hawkish Mispricing: GS probability-weighted path shows 50% chance of two hikes/cuts to 3.25-3.5% by late 2027, contradicting market pricing and signaling overestimation of Fed tightening.",
+        "Middle East Oil Supply Constraints: Persian Gulf exports at 16.8 mb/d (Method 2) with 80% recovery despite Strait disruptions; refining shortages and escalation risks sustain Brent at $85 by December.",
+        "China's Demand-Supply Divergence: Exports surge (5% YoY, industrial robots) but domestic retail sales weak (small retailers-driven); 2026 GDP forecast cut to 4.5%, requiring policy shifts to boost consumption.",
+        "S&P 500 Tech Earnings Risk: AI investment peak causes EPS growth to slow from 36% (2026) to 11% (2027), with private investment contributing 15 pp in 2026 vs. 11 pp in 2027—critical for AI/semiconductor portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
