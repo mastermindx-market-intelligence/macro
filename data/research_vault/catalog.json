@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T21:07:40.401915+00:00",
-  "count": 2663,
+  "generated_at": "2026-09-22T21:22:01.497046+00:00",
+  "count": 2664,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -212,6 +212,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iqhxacsrrrq-0053a5",
+      "title": "HubSpot Inc",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:09Z",
+      "summary_points": [
+        "Price Target Deterioration: $276 target (29.1% upside) vs.",
+        "$783 peak (04-Feb-25), reflecting severe valuation erosion; closing price below target signals potential upside but confirms deteriorating outlook.",
+        "Breeze Adoption Momentum: 57% Pro+ customer adoption (up from 37% in 2026), 4.4x agent actions growth, and 3,000+ custom agents deployed—validating core AI monetization path.",
+        "Three-Layer API Monetization: Context-driven AI (Data/Context/Work layers) anchors revenue growth; integration with OpenAI/ChatGPT reinforces ecosystem control and 2027 margin target (23-24%).",
+        "Critical Financial Scalability: $4.545B revenue (12/28E), $1.045B operating cash flow (12/27E), and $17.55 FCF/share (12/28E) confirm scalable model despite SMB budget pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
