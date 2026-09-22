@@ -137,24 +137,21 @@
     "status": "ABSENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "business_cycle:leading_tier_index:c11e88c0a02f52a6",
-      "business_cycle:leading_tier_momentum_6m:48957028fedca727"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-0e8bcd0c4eaac13a"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
+    "predecessor_generation_id": "business_activity-US-30ab4706bad44812"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-09-16T05:43:51Z",
+    "built_at": "2026-09-18T15:39:55Z",
     "calculation_as_of": "2026-09-30",
-    "code_version": "8110f934029c142571927f5214ac12e1fc242508",
-    "content_sha256": "1fb2fc05990bb6314e48e2c9178b0c35095e671d287aa26401890e8f99636ac6",
-    "generation_id": "business_activity-US-1fb2fc05990bb631",
+    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
+    "content_sha256": "a8d8b3d3eb3a7bb5f409e5977c2344a01e5c03b31440c0bc459e53b3394cd9b9",
+    "generation_id": "business_activity-US-a8d8b3d3eb3a7bb5",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -243,8 +240,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.6573014648551379, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.6573014648551379，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.751994048026063, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.751994048026063，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -290,8 +287,8 @@
         "horizon": "current",
         "implication_id": "lagging_tier_read",
         "text": {
-          "en": "Lagging tier: 6-month momentum 0.17561141310950745, direction rising, breadth 50.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "滞后层：6个月动量 0.17561141310950745，方向 rising，广度 50.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Lagging tier: 6-month momentum 0.38692722352149644, direction rising, breadth 50.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "滞后层：6个月动量 0.38692722352149644，方向 rising，广度 50.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.lagging"
       },
@@ -414,7 +411,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.1591371903215,
+        "value": 95.25382977349243,
         "value_type": "index"
       },
       {
@@ -450,7 +447,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.6573014648551379,
+        "value": 0.751994048026063,
         "value_type": "number"
       },
       {
@@ -486,7 +483,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.7027001322818783,
+        "value": 0.7490611314254784,
         "value_type": "number"
       },
       {
@@ -846,7 +843,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 92.70791626351604,
+        "value": 92.91923207392803,
         "value_type": "index"
       },
       {
@@ -882,7 +879,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.17561141310950745,
+        "value": 0.38692722352149644,
         "value_type": "number"
       },
       {
@@ -918,7 +915,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.2038112861606681,
+        "value": 0.30731290758694846,
         "value_type": "number"
       },
       {
@@ -1062,7 +1059,7 @@
           "value": null
         },
         "unit": "ratio_pt",
-        "value": -0.45966219589795543,
+        "value": -0.5836507564298685,
         "value_type": "number"
       },
       {

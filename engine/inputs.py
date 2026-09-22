@@ -170,6 +170,14 @@ def build_features(pit_basis: str | None = None,
     end = closes["SPY"].last_valid_index() if "SPY" in closes else closes.index.max()
     idx = pd.bdate_range(closes.index.min(), end)
     f = pd.DataFrame(index=idx)
+    # Same-read origin evidence for the display-only rates consumer. Keep this
+    # outside attrs until assembly ends; every numeric feature remains unchanged.
+    from engine.yield_momentum import ORIGIN_ATTR, SERIES, capture_rate_observations
+    rate_columns = set(SERIES.values())
+    rate_observations: dict[str, dict] = {}
+    rate_source_ids = {alias: sid for sid, alias in
+                       flatten_fred_aliases(cfg["fred"]["series"]).items()
+                       if alias in rate_columns}
 
     # SHADOW PIT re-router: when pit_basis is set, the named revision-prone FRED econ
     # columns are supplied by engine.pit on the requested basis instead of the live
@@ -199,10 +207,21 @@ def build_features(pit_basis: str | None = None,
         s = s[~s.index.duplicated(keep="last")].sort_index()
         # fill on the union first: monthly series stamped on weekends/holidays
         # (e.g. PAYEMS on a Sunday the 1st) must survive the business-day reindex
+        raw_rate = s.copy() if name in rate_columns else None
         union = idx.union(s.index)
         s = s.reindex(union)
         s = s.ffill(limit=ffill_limit) if ffill_limit else s
         f[name] = s.reindex(idx)
+        if raw_rate is not None:
+            overridden = overrides is not None and name in overrides
+            try:
+                rate_observations[name] = capture_rate_observations(
+                    raw_rate, f[name], source_column=name,
+                    source_id=None if overridden else rate_source_ids.get(name),
+                    source_basis="caller_override" if overridden else "captured_source_rows",
+                    ffill_limit=ffill_limit)
+            except Exception:  # Optional evidence cannot break the numeric builder.
+                rate_observations[name] = {"status": "capture_unavailable"}
 
     # --- price levels & ratios -------------------------------------------------
     for t in ["SPY", "IWM", "RSP", "QQQ", "XLY", "XLP", "XLE", "XLK", "XLU",
@@ -463,4 +482,5 @@ def build_features(pit_basis: str | None = None,
         for col in ["net_gex_bn", "flip_strike", "spot_vs_flip_pct"]:
             f[col] = np.nan
 
+    f.attrs[ORIGIN_ATTR] = rate_observations
     return f

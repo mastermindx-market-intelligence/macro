@@ -131,7 +131,14 @@ waves:
       WorkerExecutionAdapter/broker boundary without breaking current Codex P1B/OHF semantics: extract
       truly common execution request/receipt law, keep provider homes/auth/session mechanics
       adapter-private, prove one synthetic non-Codex adapter through the same broker lifecycle, and
-      create no provider-specific broker or lifecycle plane.
+      create no provider-specific broker or lifecycle plane. #581 has since MERGED as
+      27a5d893ca28f7006c1007dffa51e677c9c7a4ab ("[HF1-D] Add fixed-profile Claude subscription worker").
+      Despite its title it is the Claude Code HARNESS for the three third-party subscription providers in
+      config/subscription_provider_profiles.v1.json — glm-coding-plan, alibaba-token-plan-personal,
+      minimax-token-plan — registered as adapter `claude-compatible-subscription`. It is NOT the native
+      Anthropic vertical and is NOT PF1 progress (Sol R21: never treat a #581 merge as native readiness).
+      Record each remaining carrier's merge the same way, and for any carrier whose title says Claude,
+      state in its row whether it is compatible-provider or native.
   - id: HF1-A
     title: Provider-neutral worker execution contract (HF1 slice A)
     status: done
@@ -153,6 +160,53 @@ waves:
       non-Codex proof, and prove one bounded Executive child Job through the real adapter before
       making that provider generally routable. Cursor/Grok and other provider verticals remain V1.x
       expansion and may be researched in parallel, but do not block the first V1 operating proof.
+      NATIVE OWNERSHIP AND EXACT NEXT DEPENDENCY (Sol rulings R21/R22, 2026-09-16; see
+      DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC): native Anthropic Fable/Opus capacity is
+      PF1's alone, as `claude-code` / `ClaudeCodeWorkerAdapter` under plan
+      docs/superpowers/plans/2026-08-27-hybrid-workforce-pf1-claude-worker.md. It is NOT BUILT at
+      protected Mastermind master 7642aea155d2817219135b24246b55c1d7611c66: no `claude-code` descriptor
+      exists in control_plane/worker_adapter.py, and control_plane/claude_worker.py plus
+      tests/test_executive_claude_worker.py are absent. The exact next dependency is, in order, (1)
+      PF1-F0 custody and its current protocol gate — operation
+      pf1f0-nested-cache-consistency-repair-20260907-sol-001, carrier C0BSBM78V1N/1788797971.486229,
+      retained owner /root/wbr_f1_native_eligibility, retained candidate 545b9176…, live carrier PR #455
+      "[PF1-F0][HOLD] Provider-free Claude CLI protocol falsifier" OPEN/DRAFT/HOLD at
+      0a368935ece318c1b7f3301337f75d3a58d61006, which is a provider-free falsifier and not an
+      implemented worker — and (2) the missing native `ClaudeCodeWorkerAdapter` carrying a dedicated
+      native-auth worker principal with NO token-in-environment shortcut, through the existing common
+      broker and with no provider-specific broker or lifecycle plane. Tracked in the capability matrix
+      alongside the #7114 skill/profile integration and the real realm/capacity producer. Resolved only
+      through the existing PF1 owner: never open a replacement worker, carrier or second native writer,
+      and never satisfy this wave with the merged compatible-provider harness.
+      2026-09-17 BOUNDARY (see DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY and handoff
+      EXECUTIVE-CAPACITY-FABRIC-2026-09-17): the native adapter is now BUILT but UNMERGED and
+      UNARMED — branch claude/ssd-pf1-native-claude-worker-adapter at
+      0df5e985c85ca4d3e16dcee075086d101ed0e722, no pull request, with the claude-code descriptor in
+      control_plane/worker_adapter.py carrying implementation=
+      "control_plane.claude_worker.ClaudeCodeWorkerAdapter" and implemented=False so the broker
+      cannot execute it. PR #455 is still OPEN/DRAFT/unmerged at 0a368935 under its ratified hold,
+      with its ordered repair already implemented and independently confirmed adversarially. Two
+      further architecture constraints are now measured, and they collapse the remaining gap into
+      ONE wall rather than two: the Executive work leg refuses every non-Codex execution surface at
+      four independent sites with _EXECUTION_SURFACES a CLOSED enum, leaving a profile-less Job as
+      the only lawful seam; and on that seam the fake-only PF1-F0 falsifier's fixed two-key
+      sealed-evidence result can never satisfy the supervisor's twelve-key closed per-Job schema, so
+      no COMPLETED Job is reachable while the effect ceiling holds. A Job-conformant result requires
+      a real model turn, which is exactly what the adjudicated dedicated-principal decision
+      withholds. Spend the next effort on that authority question, not on more adapter or test work,
+      and do not mirror tests/test_w6b_native_round_trip.py — it proves the PLAN leg and records in
+      its own source that the work leg cannot complete hermetically for any provider.
+      A THIRD constraint narrows the seam further: the supervisor's complete-launch-attestation gate
+      (executive_supervisor.py:1072-1075) requires the CODEX contract's
+      LAUNCH_ATTESTATION_SCHEMA_VERSION, lazily imported at :85-92, and fires whenever a Job carries
+      an effective grant regardless of its flag — so the lawful seam is profile-less AND grant-less,
+      and no non-Codex worker can serve a Job with an effective grant. LaunchAttestation is still
+      codex_worker.py-local and absent from worker_execution_contract.py. PF1 must NOT close this by
+      claiming the Codex schema version; the remedy is an HF1 promotion of the type plus a
+      provider-neutral schema version. One integration proof does exist and is green on the adapter
+      branch at 5b461fb2 (tests/test_executive_claude_lifecycle_integration.py, 3 passed): the real
+      adapter drives the live supervisor through a real subprocess to measured JobStatus.FAILED /
+      AttemptStatus.FAILED on the result-content refusal, which is the designed outcome.
   - id: MH1
     title: Authenticated multi-host Executive worker transport
     status: todo
@@ -165,8 +219,13 @@ waves:
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
+discoveries:
+  - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
+  - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
+  - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
   - agentos/discoveries/DSC-AGENT-DISPATCH-CURRENTLY-HAS-NO-WORKER-RECEIVER.md
   - agentos/discoveries/DSC-ASTRA-FABRIC-LIVE-CLIENT-AND-SUBSCRIPTION-GATES.md
@@ -174,6 +233,8 @@ artifacts:
   - agentos/handoffs/OPERATOR-CONTINUITY-2026-08-28-SOL-CONTINUATION-CHECKPOINT.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-29-CF2-H0-SOURCE-RELEASED.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-13.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16.md
+  - agentos/discoveries/DSC-CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_ARCHITECTURE_2026-08-22.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_PLACEMENT_AMENDMENT_2026-08-22.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_SEMANTIC_IDENTITY_AMENDMENT_2026-08-22.md
@@ -184,6 +245,8 @@ artifacts:
 landmines:
   - "Macro `shared-ai-provider-control` already owns provider availability, auth pools, cooling and quota state; do not create ProviderAccount/QuotaHorizon truth tables in Executive OS."
   - "Current native Claude realm identity and Macro claude_code_oauth_N capability IDs are not equivalent by ordinal/name/config path/plan type. Family A failed closed because no supported rotation-safe secret-free enrollment equality witness currently exists. Do not resurrect ordinal binding."
+  - "A compatible-provider alias is never native Anthropic capacity (Sol rejection class E11). The file control_plane/claude_subscription_worker.py, the descriptor id `claude-compatible-subscription` and PR titles saying 'Claude subscription worker' all name the Claude Code HARNESS, whose providers are exactly glm/alibaba/minimax. `compatible` is load-bearing; read config/subscription_provider_profiles.v1.json before believing any file name."
+  - "#581-era and #676-era fixture corpora, static check counts, killed mutants and proposed-scenario counts are engineering evidence about source. None is an executed provider canary and none may be relabelled as native capacity or production proof; proposed scenarios are not executed canaries."
   - "A protected-master descendant that leaves H0 authenticated material unchanged is not automatically the H0 source-closure repair identity. Current carrier identity and immutable repair provenance are separate concepts; do not falsify one to satisfy the other."
   - "`usage_snapshot()` is a display aggregate, not a normalized truth contract. Its numeric defaults and fail-soft joins cannot be mapped 1:1 into provider_capacity.v1."
   - "Current Claude `discover_present_keys()` applies enablement filtering/fallback, so `usage_snapshot().present` can hide a disabled-but-installed credential. CF1 obtained unfiltered secret-free presence through the existing Provider Control owner; do not regress to the display field as source truth."
@@ -228,12 +291,36 @@ do_not_redo:
   - "Do not reopen CF2-F; Mastermind #150 is the accepted source law."
   - "Do not patch `mastermind.provider_capacity.v1` in place to add native Claude realm semantics. OCR-2C Family B, if approved, is a new versioned Provider Control evolution."
   - "Do not widen Capacity Fabric into Wake, Slack dispatch, Control Room, browser/devserver resources, host arming, merge/deploy authority or capital/trading authority."
+  - "Do not treat the merged Mastermind #581 (27a5d893ca28f7006c1007dffa51e677c9c7a4ab) as native Anthropic capacity or as PF1 progress, and never treat a #581 merge as native readiness (Sol R21)."
+  - "Do not build a native Claude worker, adapter or carrier outside PF1. Native ownership is PF1 `claude-code` / `ClaudeCodeWorkerAdapter`; PF1-F0 custody is PR #455 and it stays held. A second native writer for one operation is the error, not a shortcut around a slow one."
 next_action: >
-  Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001,
-  Wave 1 (root refresh, #578 amendment per R1, #581 rebase per R3, capacity-source shape) under ruling
-  orch/fabric/INTEGRATION_RULING_W1.md (Fable, 2026-09-13); the seven open Mastermind carriers are
-  pinned in "Wave 1 open carriers" below. Protected Mastermind master at this record repair is
-  89d890f0ae526205e762ad2924b6590f35847e8f and accepted Macro CF1 remains
+  VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
+  C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
+  sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance
+  ruling on that root. (1) Macro PR #7280, branch claude/provider-production-modes-20260918, head
+  284bd893f5fb2085d597611d065017494f3275db — production API usage modes. (2) Mastermind PR #804, branch
+  claude/executive-service-principal-20260918, head 3b5182e2545cab671f2da2db6735b51c926baf18 — tier A1
+  executive service principal, which reports NOT_YET_ADMITTED by design because the intent sink refuses a
+  typed schema, a provenance key and constraints.task_kind. A2 (actor-aware CEO gate in
+  executive_runtime.py) and B (OpenCode native Worker) are NOT started: they collide with open PR #699
+  and PR #762/#590 respectively. Read DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY — the CEO provenance
+  gate is schema-only, so an actor-aware CEO branch is a security prerequisite before any non-CEO
+  principal is armed beyond READ/RESEARCH — and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md
+  before touching either vertical. Protected Mastermind master is now
+  320f586126b7c82c843ef17612f12d40d20a42e0; executive generation 8b231e82 is installed but
+  UNARMED/STOPPED and the next gate is HUMAN_AUTH/CREDENTIAL_READINESS.
+  Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
+  Protected Mastermind master at the 2026-09-16 record repair was 7642aea155d2817219135b24246b55c1d7611c66
+  (`git -C /Users/chriswong/Documents/Cluade/Mastermind rev-parse origin/master`, 2026-09-16), the pin
+  Sol rulings R17/R19/R21/R22 were issued against. Principal critical path is W1-H3 (Mastermind #677,
+  OPEN/DRAFT at 2575c111210b1f6e51b4c900087a95331284b173, repair round in progress for Sol R17 B1-B3 on
+  the SAME child/worktree/writer) and H0 prestage attempt 2 on the existing runner. Before sizing,
+  routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric, read
+  DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands at the
+  then-current protected master: the merged Claude subscription worker is a compatible-provider harness,
+  the native path is PF1's and is NOT BUILT. The Wave 1 carriers previously pinned below were read at
+  2026-09-13 and have moved (#581 merged as 27a5d893ca28f7006c1007dffa51e677c9c7a4ab); re-read every
+  head before acting on it. Accepted Macro CF1 remains
   dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the
   CF2-H0 wave: re-pin CURRENT protected Mastermind, keep the immutable repair release
   229aebce5e8d0c1c7372f5fead9c24516b027cc1, and require repair ancestry plus exact mode/blob equality
@@ -305,6 +392,30 @@ acting on it, and never merge, rebase, label or ready one of these carriers from
 `status: ahead, ahead_by: 1, behind_by: 0`. The one added commit is the ruling-R1 amendment
 "fix(exec): decouple provider profiles from harness selection" — purchased-plan profiles no longer pin a
 global adapter — so R1 is already on the branch as a fast-forward descendant, not a divergent rewrite.
+
+## Native versus compatible Claude capacity (Sol R21/R22, pinned 2026-09-16)
+
+Verified at protected Mastermind master `7642aea155d2817219135b24246b55c1d7611c66`. Full receipts,
+falsifier and consequence: `DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC` and
+`agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16.md`.
+
+The merged "Claude subscription worker" (#581, merge `27a5d893ca28f7006c1007dffa51e677c9c7a4ab`) is the
+**Claude Code harness** used to reach third-party subscription providers. It is not native Anthropic
+Fable/Opus capacity, and its merge is not PF1 progress.
+
+| Question | Answer at `7642aea1` | Command |
+|---|---|---|
+| Which providers does the catalog carry? | Exactly three: `glm-coding-plan` (glm), `alibaba-token-plan-personal` (alibaba), `minimax-token-plan` (minimax). No Anthropic profile. | `git show origin/master:config/subscription_provider_profiles.v1.json` |
+| Is there a `claude-code` adapter descriptor? | No. The only `claude` hits are one entry, `claude-compatible-subscription` → `control_plane.claude_subscription_worker.ClaudeSubscriptionWorkerAdapter`. | `git show origin/master:control_plane/worker_adapter.py \| grep -n claude` |
+| Does a native Claude worker module exist? | No. Both paths return empty. | `git ls-tree origin/master control_plane/claude_worker.py tests/test_executive_claude_worker.py` |
+| Does the PF1 plan exist? | Yes, blob `5ec3b062264c4146a7c92e1576f1753f788bd440`. | `git ls-tree origin/master docs/superpowers/plans/2026-08-27-hybrid-workforce-pf1-claude-worker.md` |
+
+The grep in row 2 fires on that file, so the absence of `claude-code` is an instrument-verified null
+rather than an empty pattern. Native capacity remains the PF1 wave's, whose exact next dependency is
+recorded in that wave's `next_action`: PF1-F0 custody and its current protocol gate (PR #455,
+OPEN/DRAFT/HOLD at `0a368935ece318c1b7f3301337f75d3a58d61006` — a provider-free falsifier, not a
+worker), then the missing native `ClaudeCodeWorkerAdapter` with a dedicated native-auth worker principal
+and no token-in-environment shortcut, through the existing common broker.
 
 ## 10/10 end-state
 

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DAVE-BULL-20260824",
-  "asof": "2026-09-16",
+  "asof": "2026-09-22",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 58.9,
-  "raw_confidence": 62.2,
-  "delta_vs_base": -1.1,
+  "management_confidence": 34.4,
+  "raw_confidence": 36.9,
+  "delta_vs_base": -25.6,
   "recommended_action": "hold",
-  "human_state": "On Track",
+  "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 35.9,
-    "pace": 48.5,
+    "validity": 80.8,
+    "progress": 0.0,
+    "pace": 4.3,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.64,
-    "dist_to_t1_r": 0.86,
-    "dist_to_t2_r": 2.36,
-    "horizon_pct_used": 51.1,
-    "p1": 0.4264,
-    "p2": 0.2132,
+    "dist_to_stop_r": 0.854,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 64.4,
+    "p1": -0.0972,
+    "p2": -0.0486,
     "p3": null,
-    "move_r": 0.64,
+    "move_r": -0.146,
     "mfe_r": 1.045,
-    "mae_r": -0.187
+    "mae_r": -0.597
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 29.729998779296864,
-  "_mae": -5.329998779296886,
+  "_mae": -16.97999267578126,
   "_max_p1": 0.696539997265779,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 29,
+  "tau": 0.6444
 }
