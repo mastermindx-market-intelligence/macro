@@ -1,6 +1,7 @@
 """Chairman-directed placement: international overview, never stock boards."""
 from pathlib import Path
 
+import pytest
 from jinja2 import Environment, FileSystemLoader
 
 from engine import i18n
@@ -109,19 +110,104 @@ def test_fragment_rejects_unqualified_or_duplicate_hero(tmp_path):
         write_global_regime_fragment(tmp_path, '<section id="ud-hero"></section>' * 2)
 
 
-def test_committed_intl_projection_contains_exact_shared_fragment():
-    from pathlib import Path
+def _assert_exact_fragment_publication(site: Path, html: str, fragment: str) -> None:
+    """Allow the canonical CSS lift, never missing or substituted hero styles."""
+    from hashlib import sha256
+    from lib.pages import externalize_css_text
+    from scripts.externalize_css import MIN_BYTES
+
+    if fragment in html:
+        return
+    assets = {}
+
+    def stylesheet_href(css, index, media):
+        data = css.encode("utf-8")
+        if len(data) < MIN_BYTES:
+            return None
+        digest = sha256(data).hexdigest()[:8]
+        relative = f"assets/css/{digest}.css"
+        assets[relative] = data
+        return f"{relative}?v={digest}"
+
+    published_fragment = externalize_css_text(fragment, stylesheet_href)
+    assert published_fragment in html, "Published hero lost or changed its markup/styles"
+    for relative, expected in assets.items():
+        asset = site / relative
+        assert asset.is_file(), f"Missing hero stylesheet: {relative}"
+        assert asset.read_bytes() == expected, f"Changed hero stylesheet: {relative}"
+
+
+def test_committed_intl_projection_preserves_shared_fragment_through_css_externalization():
     from lib.global_regime_fragment import read_global_regime_fragment
-    site = Path(__file__).resolve().parent.parent / "site"
+
+    site = ROOT / "site"
     html = (site / "intl.html").read_text()
     fragment = read_global_regime_fragment(site)
     assert 'data-source-status="unavailable"' not in fragment
-    assert fragment in html
+
+    # Keep the entire fragment exact, including either its inline stylesheet or
+    # the normal publisher's content-addressed link AND its physical CSS bytes.
+    _assert_exact_fragment_publication(site, html, fragment)
     assert html.count('id="ud-hero"') == 1
+
     stocks = (site / "intl_stocks.html").read_text()
     assert 'id="ud-hero"' not in stocks
     assert '<body>' in stocks
     assert 'page-intl' not in stocks
+
+
+def test_committed_projection_guard_rejects_removed_hero_styles(monkeypatch):
+    import pytest
+    from lib.global_regime_fragment import read_global_regime_fragment
+
+    page_path = ROOT / "site" / "intl.html"
+    fragment = read_global_regime_fragment(ROOT / "site")
+    without_styles = "<html><body>" + fragment[fragment.index("<section "):] + "</body></html>"
+    original_read = Path.read_text
+
+    def read_with_missing_styles(path, *args, **kwargs):
+        if path == page_path:
+            return without_styles
+        return original_read(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", read_with_missing_styles)
+    with pytest.raises(AssertionError):
+        test_committed_intl_projection_preserves_shared_fragment_through_css_externalization()
+
+
+@pytest.mark.parametrize("case", [
+    "inline", "externalized", "missing-link", "preload-only", "missing-file", "changed-file",
+])
+def test_projection_guard_binds_externalized_stylesheet_bytes(tmp_path, case):
+    from hashlib import sha256
+    from lib.pages import externalize_css_text
+
+    css = "#ud-hero{color:var(--text);}\n" * 48
+    body = '<section id="ud-hero" data-regime-scope="us-reference">Snapshot</section>'
+    fragment = f"<style>{css}</style>{body}"
+    digest = sha256(css.encode()).hexdigest()[:8]
+    href = f"assets/css/{digest}.css?v={digest}"
+    asset = tmp_path / "assets" / "css" / f"{digest}.css"
+    asset.parent.mkdir(parents=True)
+    asset.write_text(css, encoding="utf-8")
+    html = externalize_css_text(fragment, lambda *_: href)
+
+    if case == "inline":
+        html = fragment
+    elif case == "missing-link":
+        html = body
+    elif case == "preload-only":
+        html = html.replace('rel="stylesheet"', 'rel="preload" as="style"')
+    elif case == "missing-file":
+        asset.unlink()
+    elif case == "changed-file":
+        asset.write_text(css + "/* wrong bytes */", encoding="utf-8")
+
+    if case in ("inline", "externalized"):
+        _assert_exact_fragment_publication(tmp_path, html, fragment)
+    else:
+        with pytest.raises(AssertionError):
+            _assert_exact_fragment_publication(tmp_path, html, fragment)
 
 
 def test_both_builders_keep_the_shared_presentation_handoff():
