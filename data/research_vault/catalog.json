@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T23:07:11.940262+00:00",
-  "count": 2669,
+  "generated_at": "2026-09-22T23:22:27.406632+00:00",
+  "count": 2670,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wbsaxpmzkwt-3b0a76",
+      "title": "USDSGD",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:32:17Z",
+      "summary_points": [
+        "USD SGD Target: 1.25 by Sept 2027, underpinned by MAS tightening (1.5% NEER appreciation), SGD resilience, and repriced Fed expectations implying softer USD.",
+        "SGD Policy Drivers: MAS policy (1.5% NEER increase, 4.5-5.5% GDP growth, firm inflation) and Fed hike pricing (Dec 2026) driving SORA rate hikes to 1.3% through 2027.",
+        "Bond Yield Risk: 10-year Singapore bond yield raised to 2.5% (from 2.1%) due to elevated oil prices, fiscal sustainability concerns, and AI-linked bond issuance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
