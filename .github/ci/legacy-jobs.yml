@@ -1221,6 +1221,7 @@ jobs:
       - "engine/i18n.py"
       - "engine/indicators.py"
       - "engine/indicators_m2.py"
+      - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/marketing/__init__.py"
       - "engine/marketing/accounts.py"
@@ -7880,6 +7881,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/market_state.py"
       - "engine/market_state_audit.py"
@@ -11572,8 +11574,22 @@ jobs:
       # venv is pytest/pyyaml/jinja2/fastapi/httpx and would error, not fail.
       # The boundary half is pinned in tier-gate by test_site_access_boundary.py
       # and test_regwall.py, which read the same three mirrors.
-      - name: china_heatmap tier preview (SSR content layer + hover-card gate)
-        run: python -m pytest tests/test_china_heatmap_gate.py -q
+      - name: china_heatmap tier preview + exact observation payload contracts
+        run: >-
+          python -m pytest
+          tests/test_china_heatmap_gate.py
+          tests/test_china_heatmap_observations.py
+          -q
+      - name: coherent China heatmap browser refresh contracts (source + shipped mirror)
+        run: |
+          node --test \
+            tests/test_china_heatmap_observations_ui.cjs \
+            tests/test_china_heatmap_refresh.cjs \
+            tests/test_china_heatmap_observation_refresh.cjs
+          HEATMAP_SOURCE=site/heatmap.js REFRESH_SOURCE=site/heatmap.js node --test \
+            tests/test_china_heatmap_observations_ui.cjs \
+            tests/test_china_heatmap_refresh.cjs \
+            tests/test_china_heatmap_observation_refresh.cjs
 
   unrun-picks-boards:
     # pick lab runners + US/CN board surfaces — shipped picks, their outcome
@@ -12030,6 +12046,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/market_state.py"
       - "engine/market_state_audit.py"
