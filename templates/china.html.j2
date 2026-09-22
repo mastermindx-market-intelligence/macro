@@ -932,8 +932,9 @@
      own stacking context at level 0; without this the popover — trapped in the hero's
      own backdrop-filter context — renders BEHIND the later cards. Stays below dialogs (60). */
   body.page-china .cnx-hero{display:grid;grid-template-columns:minmax(360px,2fr) minmax(400px,3fr);gap:0;padding:0;position:relative;z-index:30}
-  body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:1fr}
-  body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}
+  body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:2fr 1fr}
+  body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:block}
+  @media(max-width:1000px){body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}}
   body.page-china .cnx-hero-left{padding:22px 26px;border-right:1px solid rgba(255,255,255,.12);position:relative}
   body.page-china .cnx-hero-right{padding:18px 24px 14px}
   body.page-china .cnx-regime-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:4px 12px;font-size:11.5px;background:rgba(208,69,69,.10)}
@@ -1964,6 +1965,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
        so it flips in zh (operator ruling 2026-07-21), matching macro.html + HK/Canada. #}
     {% set _path_col = 'var(--up)' if _ms_color == 'green' else ('var(--down)' if _ms_color == 'red' else 'var(--warn)') %}
     <div class="cnx-hero-right mx5-sc-right">
+      {% if _mx5_hist %}
       <div class="mx5-path-header">
         <span class="mx5-path-title">
           <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
@@ -1971,7 +1973,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         </span>
         <span class="mx5-path-meta"><span class="l-en">Score vs time</span><span class="l-zh">综合评分 · 时序</span></span>
       </div>
-      {% if _mx5_hist %}
       {% set _ph_n = _mx5_hist | length %}
       {% set PX0 = 44 %}{% set PXW = 944 %}{% set PY0 = 10 %}{% set PYB = 194 %}
       {% set _mx5_mos_en = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
@@ -2068,10 +2069,30 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
       </div>{# /mx5-path-plot #}
       {% else %}
-      {# Honest placeholder when ms_history absent or <2 points #}
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:12px;color:var(--muted)">{{ t('Building score history…','评分历史积累中…') }}</span>
+      {# Use otherwise-empty desktop hero space for the retired design's useful
+         "what we're watching" idea while the score path honestly lacks 2+ points. #}
+      {% set _watch_state = (latest.risk_radar.state if latest.risk_radar else 'unknown') %}
+      {% set _watch_face = {'calm':['Calm','平稳'],'caution':['Caution','谨慎'],'elevated':['Elevated','偏高'],'risk-off':['Risk-off','避险']}.get(_watch_state, ['Unclear','待确认']) %}
+      <div class="mx5-path-header">
+        <span class="mx5-path-title">{{ t("What we're watching",'我们在盯什么') }}</span>
+        <span class="mx5-path-meta">{{ t('while score history builds','评分历史积累中') }}</span>
       </div>
+      <div class="cnx-row">
+        <span class="ic" aria-hidden="true">↗</span>
+        <div class="tx"><b>{{ t('Next high-impact print','下一项高影响数据') }}</b>
+          <span class="sub">{% if imminent %}<span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span>{% else %}{{ t('No high-impact print surfaced for this window.','当前窗口暂无高影响数据。') }}{% endif %}</span></div>
+      </div>
+      <div class="cnx-row">
+        <span class="ic" aria-hidden="true">↔</span>
+        <div class="tx"><b>{{ t('Regime watch','周期预警') }}</b>
+          <span class="sub">{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}{{ t('Building toward','正在累积至') }} {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}{% else %}{{ t('No transition is building.','暂无周期切换累积。') }}{% endif %}</span></div>
+      </div>
+      <div class="cnx-row">
+        <span class="ic" aria-hidden="true">△</span>
+        <div class="tx"><b>{{ t('Pullback-risk context','回撤风险背景') }}</b>
+          <span class="sub"><span class="l-en">{{ _watch_face[0] }}</span><span class="l-zh">{{ _watch_face[1] }}</span></span></div>
+      </div>
+      <div class="cnx-foot">{{ t('The score path returns after two or more history points.','累计至少两个历史点后恢复评分路径图。') }}</div>
       {% endif %}
     </div>
   </div>
