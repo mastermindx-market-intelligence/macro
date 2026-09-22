@@ -30,6 +30,20 @@ from lib import config
 log = logging.getLogger(__name__)
 
 SCHEMA = "options_skew.v1"
+# The nine ledger columns, in the order the pre-packet writer emitted them.
+# `source` is additive (polygon_gex | thetadata). A ledger written before this
+# column existed is read as polygon_gex — it is not rewritten just to backfill.
+_LEDGER_COLUMNS = (
+    "date", "underlying", "asof", "spot", "tenor_days",
+    "otm_put_iv", "atm_call_iv", "skew", "n_strikes", "source",
+)
+_SOURCE_POLYGON = "polygon_gex"
+_SOURCE_THETA = "thetadata"
+_DISCLAIMER = (
+    "Single-name IV skew (25Δ OTM put − 50Δ ATM call, ~30d). "
+    "DISPLAY-ONLY context: the chain panel is too narrow/short to "
+    "validate as a return predictor — accruing toward a verdict."
+)
 _TARGET_DAYS = 30.0            # ~1-month tenor (Xing-Zhang-Zhao)
 _MIN_DAYS = 7.0
 _PUT_DELTA = -0.25            # OTM put target
@@ -253,34 +267,171 @@ def load_chain(asof: str | None = None, store=None, roots: list[str] | None = No
     return frame, "ok"
 
 
-def snapshot(today: date | None = None, chain=None) -> int:
-    """Append today's per-underlying skew to the ledger (idempotent by (date, underlying)).
-    Returns the number of rows added. This is what accrues the history a validation needs."""
+def _iso_date(value) -> str:
+    """Calendar day as YYYY-MM-DD. Timestamps and date objects collapse to that day."""
+    if value is None:
+        return ""
+    try:
+        import pandas as pd
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    if hasattr(value, "isoformat") and not isinstance(value, str):
+        return str(value.isoformat())[:10]
+    return str(value).strip()[:10]
+
+
+def _source_of(value) -> str:
+    """A missing source column (or a blank cell) is the legacy polygon ledger."""
+    if value is None:
+        return _SOURCE_POLYGON
+    try:
+        import pandas as pd
+        if pd.isna(value):
+            return _SOURCE_POLYGON
+    except (TypeError, ValueError):
+        pass
+    text = str(value).strip()
+    if text in ("", "None", "nan", "NaN", "<NA>"):
+        return _SOURCE_POLYGON
+    return text
+
+
+def _atomic_write_parquet(df, path) -> None:
+    """Write `path` via temp file + os.replace in the same directory.
+
+    A crash mid-write leaves the previous ledger in place. os.replace on the
+    same directory is atomic on POSIX, which is what the render hosts are.
+    """
+    import os
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.parent / f".{path.name}.{os.getpid()}.tmp"
+    try:
+        df.to_parquet(tmp)
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+
+
+def _ledger_frame(rows: list[dict]):
     import pandas as pd
+    return pd.DataFrame([{col: rec.get(col) for col in _LEDGER_COLUMNS} for rec in rows],
+                        columns=list(_LEDGER_COLUMNS))
+
+
+def _ledger_unchanged(prev, proposed) -> bool:
+    """True when the proposed upsert would not change a single stored value.
+
+    The source column is compared after the missing-column → polygon_gex read,
+    so a legacy file is left untouched until a row actually changes.
+    """
+    import numpy as np
+    if len(prev) != len(proposed):
+        return False
+    left = _normalize_ledger(prev).sort_values(["date", "underlying"]).reset_index(drop=True)
+    right = _normalize_ledger(proposed).sort_values(["date", "underlying"]).reset_index(drop=True)
+    if len(left) != len(right):
+        return False
+    for col in ("spot", "tenor_days", "otm_put_iv", "atm_call_iv", "skew"):
+        if not np.allclose(left[col].astype(float), right[col].astype(float),
+                           rtol=0, atol=1e-9, equal_nan=True):
+            return False
+    if list(left["n_strikes"].astype(int)) != list(right["n_strikes"].astype(int)):
+        return False
+    for col in ("date", "underlying", "asof", "source"):
+        if list(left[col].astype(str)) != list(right[col].astype(str)):
+            return False
+    return True
+
+
+def _normalize_ledger(df):
+    """Project a ledger frame onto the contract columns. Missing source → polygon_gex."""
+    import pandas as pd
+    rows = []
+    for rec in df.to_dict(orient="records"):
+        rows.append({
+            "date": _iso_date(rec.get("date")),
+            "underlying": str(rec.get("underlying", "")).upper(),
+            "asof": _iso_date(rec.get("asof")),
+            "spot": float(rec.get("spot")),
+            "tenor_days": float(rec.get("tenor_days")),
+            "otm_put_iv": float(rec.get("otm_put_iv")),
+            "atm_call_iv": float(rec.get("atm_call_iv")),
+            "skew": float(rec.get("skew")),
+            "n_strikes": int(rec.get("n_strikes")),
+            "source": _source_of(rec.get("source")),
+        })
+    return pd.DataFrame(rows, columns=list(_LEDGER_COLUMNS))
+
+
+def snapshot(today: date | None = None, chain=None, source: str | None = None) -> int:
+    """UPSERT today's per-underlying skew, keyed by (date, underlying).
+
+    `source` is `polygon_gex` or `thetadata`. A thetadata row replaces a
+    polygon_gex row for the same key. A polygon_gex row never replaces a
+    thetadata row. Returns the number of rows inserted or replaced. The file
+    is replaced atomically and is not rewritten when nothing changed.
+
+    The date key is the chain's own as-of, not wall-clock `today` — a stale
+    chain must not be recorded under today's date.
+    """
     today = today or date.today()
-    if chain is None:
-        chain = _legacy_chain() if _legacy_enabled() else load_chain()[0]
-    if chain is None:
+    if chain is None and source is None:
+        if _legacy_enabled():
+            chain = _legacy_chain()
+            source = _SOURCE_POLYGON
+        else:
+            chain, state = load_chain()
+            if state == "thetadata_store_unresolved" or chain is None:
+                return 0
+            source = _SOURCE_THETA
+    if source is None:
+        source = _SOURCE_POLYGON if _legacy_enabled() else _SOURCE_THETA
+    if source not in (_SOURCE_POLYGON, _SOURCE_THETA):
+        raise ValueError(f"ledger source must be polygon_gex or thetadata, got {source!r}")
+    if chain is None or getattr(chain, "empty", True):
         return 0
-    # key each row by the chain's OWN as-of date, not wall-clock `today` — a stale chain
-    # must not be recorded under today's date (that would duplicate content across two date
-    # keys and corrupt any forward-IC computed off the ledger).
-    rows = [{"date": (m.get("asof") or today.isoformat()), **m}
+    rows = [{"date": (m.get("asof") or today.isoformat()), **m, "source": source}
             for m in skew_map(chain).values()]
     if not rows:
         return 0
-    fresh = pd.DataFrame(rows)
+    fresh = _normalize_ledger(_ledger_frame(rows))
     p = _snap_path()
     if p.exists():
-        prev = pd.read_parquet(p)
-        key = set(zip(prev["date"], prev["underlying"]))
-        fresh = fresh[~fresh.apply(lambda r: (r["date"], r["underlying"]) in key, axis=1)]
-        if fresh.empty:
+        import pandas as pd
+        prev = _normalize_ledger(pd.read_parquet(p))
+        by_key: dict[tuple[str, str], dict] = {}
+        order: list[tuple[str, str]] = []
+        for rec in prev.to_dict(orient="records"):
+            key = (rec["date"], rec["underlying"])
+            if key not in by_key:
+                order.append(key)
+            by_key[key] = rec
+        changed = 0
+        for rec in fresh.to_dict(orient="records"):
+            key = (rec["date"], rec["underlying"])
+            old = by_key.get(key)
+            if old is None:
+                by_key[key] = rec
+                order.append(key)
+                changed += 1
+                continue
+            if source == _SOURCE_POLYGON and old["source"] == _SOURCE_THETA:
+                continue
+            if rec == old:
+                continue
+            by_key[key] = rec
+            changed += 1
+        if changed == 0:
             return 0
-        combined = pd.concat([prev, fresh], ignore_index=True)
-    else:
-        combined = fresh
-    combined.to_parquet(p)
+        proposed = _ledger_frame([by_key[key] for key in order])
+        if _ledger_unchanged(prev, proposed):
+            return 0
+        _atomic_write_parquet(proposed, p)
+        return changed
+    _atomic_write_parquet(fresh, p)
     return int(len(fresh))
 
 
@@ -288,6 +439,79 @@ def load_history():
     import pandas as pd
     p = _snap_path()
     return pd.read_parquet(p) if p.exists() else None
+
+
+def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_only") -> dict:
+    """Display payload read from the committed ledger. Never opens a chain store.
+
+    `accrual_state` is `accrued_today` when this process just wrote the ledger,
+    otherwise `ledger_only`. Names are the rows on the ledger's newest date.
+    """
+    if accrual_state not in ("accrued_today", "ledger_only"):
+        raise ValueError(f"accrual_state must be accrued_today or ledger_only, got {accrual_state!r}")
+    today = today or date.today()
+    hist = load_history()
+    names: dict[str, dict] = {}
+    ledger_asof = None
+    source = None
+    stale_days = None
+    if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
+        norm = _normalize_ledger(hist)
+        dates = [d for d in norm["date"].tolist() if d]
+        if dates:
+            ledger_asof = max(dates)
+            latest = norm[norm["date"] == ledger_asof].sort_values("underlying")
+            sources = []
+            for rec in latest.to_dict(orient="records"):
+                metric = {
+                    "underlying": rec["underlying"],
+                    "asof": rec["asof"] or ledger_asof,
+                    "spot": float(rec["spot"]),
+                    "tenor_days": float(rec["tenor_days"]),
+                    "otm_put_iv": float(rec["otm_put_iv"]),
+                    "atm_call_iv": float(rec["atm_call_iv"]),
+                    "skew": float(rec["skew"]),
+                    "n_strikes": int(rec["n_strikes"]),
+                }
+                names[metric["underlying"]] = metric
+                sources.append(rec["source"])
+            uniq = set(sources)
+            source = sources[0] if len(uniq) == 1 else None
+            try:
+                stale_days = (today - date.fromisoformat(ledger_asof)).days
+            except ValueError:
+                stale_days = None
+    if not names:
+        source_state = "empty_ledger"
+    elif stale_days is not None and stale_days > _STALE_DAYS:
+        source_state = "stale_chain"
+    elif source == _SOURCE_POLYGON:
+        source_state = "legacy_polygon"
+    else:
+        source_state = "ok"
+    gate = load_gate() or {}
+    ranked = sorted(names.values(), key=lambda m: m["skew"], reverse=True)
+    return {
+        "schema": SCHEMA, "is_context_only": True,
+        "scored": bool(gate.get("scored")),
+        "as_of": today.isoformat(),
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "names": names, "ranked": ranked, "n": len(names),
+        "gate_status": gate.get("status", "measuring"),
+        "disclaimer": _DISCLAIMER,
+        "source": source,
+        "source_state": source_state,
+        "source_detail": {
+            "asof": ledger_asof,
+            "roots_seen": len(names),
+            "roots_with_iv": len(names),
+            "names_dropped_no_25d_put": [],
+            "names_dropped_no_atm_call": [],
+            "stale_days": stale_days,
+        },
+        "ledger_asof": ledger_asof,
+        "accrual_state": accrual_state,
+    }
 
 
 def load_gate() -> dict | None:
@@ -327,9 +551,7 @@ def build_snapshot(today: date | None = None) -> dict:
     gate = load_gate() or {}
     ranked = sorted(names.values(), key=lambda m: m["skew"], reverse=True)
 
-    disclaimer = ("Single-name IV skew (25Δ OTM put − 50Δ ATM call, ~30d). "
-                  "DISPLAY-ONLY context: the chain panel is too narrow/short to "
-                  "validate as a return predictor — accruing toward a verdict.")
+    disclaimer = _DISCLAIMER
     if state != "ok":
         disclaimer += " Source unavailable — no skew reading published for this date."
 
