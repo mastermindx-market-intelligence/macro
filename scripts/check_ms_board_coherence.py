@@ -106,7 +106,7 @@ NOTE_CAPPED_GENERIC = "capped at mixed"
 
 _SECTION = re.compile(r'<section class="ms-verdict">(.*?)</section>', re.S)
 _WORD = re.compile(r'id="ms-word"><span class="l-en">([^<]*)</span>')
-_SCORE = re.compile(r'id="ms-score">(\d+)<')
+_SCORE = re.compile(r'id="ms-score"[^>]*>(\d+)<')
 _TICK = re.compile(r'id="ms-tick" style="left:\s*([0-9.]+)%')
 _THESIS = re.compile(r'class="v-thesis"><span class="l-en">([^<]*)</span>')
 _OVERRIDE = re.compile(
