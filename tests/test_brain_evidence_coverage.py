@@ -44,6 +44,17 @@ def test_specialist_profile_has_no_deterministic_coverage_gate():
     assert ab._fast_required_evidence_families(profile) is None
 
 
+def test_fast_family_schema_drift_fails_open(monkeypatch):
+    profile = ab._question_profile(QUESTION, None)
+    monkeypatch.setitem(
+        ab._FAST_VISIBLE_PROFILE_COMPOSITIONS,
+        profile.name,
+        ("single_name_current", "future_family"),
+    )
+    assert ab._fast_required_evidence_families(profile) is None
+    assert ab._fast_visible_tool_names(profile) is None
+
+
 def test_coverage_receipt_preserves_unavailable_and_stale_states():
     required = {
         "portfolio_current": ("get_portfolio_brief",),
@@ -199,6 +210,44 @@ def test_compound_producer_state_preserves_each_condition():
     assert row["contradicted"] is True
 
 
+def test_negated_status_tokens_do_not_create_false_adverse_conditions():
+    required = {"macro_rates": ("get_curve_detail",)}
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [(
+            "get_curve_detail",
+            {"status": "no_conflict_not_stale_no_partial_gaps", "error": "no_error"},
+        )],
+    )
+    row = receipt["families"][0]
+    assert row["state"] == "AVAILABLE"
+    assert row["conditions"] == []
+    assert row["freshness"] == "CURRENT_OR_UNSPECIFIED"
+
+
+def test_conflicted_precedence_is_consistent_across_sibling_witnesses():
+    required = {"macro_rates": ("read_world_state", "get_curve_detail")}
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [
+            ("read_world_state", {"status": "partial"}),
+            ("get_curve_detail", {"status": "conflicted"}),
+        ],
+    )
+    row = receipt["families"][0]
+    assert row["state"] == "CONFLICTED"
+    assert row["conditions"] == ["CONFLICTED", "PARTIAL"]
+
+
+def test_empty_read_payload_is_available_not_missing():
+    required = {"macro_rates": ("get_curve_detail",)}
+    receipt = gw._evidence_coverage_receipt(
+        required,
+        [("get_curve_detail", {})],
+    )
+    assert receipt["families"][0]["state"] == "AVAILABLE"
+
+
 def test_nonstream_repair_cannot_resurrect_rejected_text_on_textless_end_turn(quiet_grounding):
     root = _root()
     client = _CaptureClient(
@@ -209,5 +258,24 @@ def test_nonstream_repair_cannot_resurrect_rejected_text_on_textless_end_turn(qu
     )
     answer, *_rest = _drive_loop(root, client, QUESTION)
     assert len(client.create_kwargs) == 2
-    assert answer == ""
+    assert answer
+    assert "Evidence status" in answer
+    assert "not covered" in answer
     assert "Premature answer." not in answer
+
+
+def test_stream_repair_textless_end_turn_ships_evidence_gap_not_degraded_stub(quiet_grounding):
+    root = _root()
+    client = _CaptureClient(
+        [
+            _Resp([_Block("text", "Premature answer.")], "end_turn"),
+            _Resp([_Block("thinking", "")], "end_turn"),
+        ]
+    )
+    events = _drive_stream(root, client, QUESTION)
+    visible = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
+    done = [e for e in events if e.get("type") == "done"][-1]
+    assert len(client.stream_kwargs) == 2
+    assert "Premature answer." not in visible
+    assert "Evidence status" in visible
+    assert done.get("degraded") is False
