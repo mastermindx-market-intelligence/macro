@@ -71,6 +71,24 @@ def test_dialog_triggers_expose_controls_to_assistive_tech() -> None:
     assert TPL.count('aria-haspopup="dialog"') >= 12
 
 
+def test_policy_and_property_copy_follows_actual_state() -> None:
+    policy = TPL.split("{# Policy Monitor card #}", 1)[1].split("{# Connect Flows card #}", 1)[0]
+    assert "Policy context." not in policy
+    assert "Policy is easing, but credit impulse remains negative." in policy
+    assert "Policy is tightening while credit impulse remains positive." in policy
+    assert "I.pboc.bias == 'easing'" in policy
+    assert "I.pboc.bias == 'tightening'" in policy
+
+    prop = TPL.split("{# Property card #}", 1)[1].split("{# AI Brief card", 1)[0]
+    assert "{% set _prop_impact =" in prop
+    assert "'neg':['growth drag','增长拖累']" in prop
+    assert "'warn':['growth headwind','增长逆风']" in prop
+    assert "'neutral':['stabilizing','筑底企稳']" in prop
+    assert "'pos':['recovery','回暖复苏']" in prop
+    assert "Still the economy's main drag." not in prop
+    assert "easing at the margin" not in prop
+
+
 def test_data_health_footer_is_signal_only() -> None:
     assert "{% if _health_n and _health_ok < _health_n %}" in TPL
     assert 'class="cnx-dh warn" role="status"' in TPL
