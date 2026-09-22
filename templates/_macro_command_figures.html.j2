@@ -1,0 +1,68 @@
+{#
+  Macro Command — the page's ONE data device (F01 Macro Command P3).
+
+  `movement()` renders the archetype's canonical change row (MPDS §10 row A,
+  theme.css:1969-1981 `.mx-chg-row`) at two scales:
+    * Overview  — one row per workspace change  (`show_source=True`)
+    * a section — one row per metric of one workspace (`show_source=False`)
+
+  It is NOT `_macro_suite_shell.html.j2:what_changed()`. That macro's own chrome
+  carries "accepted snapshot" / "method version" / "method-comparable", three
+  entries on the frozen spec §5 banned list that P1's copy guard fails on, plus
+  a duplicate <h3> of the panel's own <h2>. The workspace's table is unchanged
+  and one click away on its own page (§6.3). See the P3 pin §B/D2.
+
+  `t`/`bl` are local copies, per this repo's macro-library idiom
+  (_macro_suite_shell.html.j2:35-42, _macro_command_macros.html.j2:9-13).
+
+  Scale note (P3 addendum §0): on Overview this macro is the panel's ONE
+  figure. The fourteen-card directory is NOT a figure — it is the panel's
+  destination block and lives after `.mc-watch` (addendum DELTA 2).
+#}
+{%- macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{%- macro bl(node) -%}
+{%- if node %}{{ t(node.en, node.zh) }}{% endif -%}
+{%- endmacro %}
+
+{% macro movement(block) -%}
+<div class="mc-move" data-mc-move data-mc-fragment>
+  {%- if block.state_line %}<p class="mc-move-state">{{ bl(block.state_line) }}</p>{% endif %}
+  <ul class="mc-move-list">
+    {%- for row in block.rows %}
+    <li class="mx-chg-row mc-move-row{{ ' mc-move-current-only' if row.kind == 'current' else '' }}">
+      {%- if row.href %}
+      <a class="mx-chg-name mc-move-name" href="{{ row.href }}">{{ bl(row.name) }}</a>
+      {%- else %}
+      <span class="mx-chg-name mc-move-name">{{ bl(row.name) }}</span>
+      {%- endif %}
+      {%- if row.source %}<span class="mc-move-source">{{ bl(row.source) }}</span>{% endif %}
+      {%- if row.kind == 'current' %}
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current">{{ t((row.current ~ ' ' ~ (row.scale.en if row.scale else 'index reading')), (row.current ~ ' ' ~ (row.scale.zh if row.scale else '指数读数'))) }}</strong>
+        {%- if row.as_of_month %}<span class="mc-move-asof">{{ bl(row.as_of_month) }}</span>{% endif %}
+      </span>
+      {%- else %}
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current">{{ t((row.current ~ ' ' ~ (row.scale.en if row.scale else 'index reading')), (row.current ~ ' ' ~ (row.scale.zh if row.scale else '指数读数'))) }}</strong>
+        {%- if row.move_words %}<span class="mc-move-words">{{ bl(row.move_words) }}</span>{% endif %}
+      </span>
+      {%- endif %}
+    </li>
+    {%- endfor %}
+  </ul>
+  {%- if block.count_text %}<p class="mc-move-count">{{ bl(block.count_text) }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro empty(state, hide_title=False) -%}
+<div class="mc-empty" role="note" data-mc-empty="{{ state.id }}" data-mc-fragment>
+  {%- if not hide_title %}<p class="mc-empty-title">{{ bl(state.title) }}</p>{% endif %}
+  <p class="mc-empty-why">{{ bl(state.why) }}</p>
+  {%- if state.stance %}<p class="mc-empty-stance">{{ bl(state.stance) }}</p>{% endif %}
+  {%- if state.unlock %}<p class="mc-empty-unlock">{{ bl(state.unlock) }}</p>{% endif %}
+  {%- if state.next %}<p class="mc-empty-next">{{ bl(state.next) }}</p>{% endif %}
+  {%- if state.cta %}<a class="mc-empty-cta" href="{{ state.cta.href }}">{{ bl(state.cta.label) }}</a>{% endif %}
+</div>
+{%- endmacro %}
