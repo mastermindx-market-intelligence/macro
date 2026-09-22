@@ -352,6 +352,10 @@ def _packet_field_payload(body: str, marker: re.Pattern[str]) -> str:
     for line in body[match.end():].splitlines():
         if _PACKET_NUMBERED_FIELD_RE.match(line):
             break
+        if not line.strip():
+            continue
+        if line[0] not in " \t":
+            break
         parts.append(line.strip())
     value = " ".join(part for part in parts if part)
     value = re.sub(r"[\x60*_>#]+", " ", value)
