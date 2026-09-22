@@ -75,6 +75,15 @@ def test_alert_center_css_uses_shared_palette_tokens_not_local_color_functions()
     assert '.acx-next-action{padding:var(--sp-3,12px);border:1px solid var(--line);' in css
 
 
+def test_short_landscape_prioritizes_triage_without_hiding_partial_evidence_warning():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert '@media(max-height:450px) and (min-width:701px) and (max-width:1000px) and (orientation:landscape)' in css
+    assert '.page-alerts .acx-brief{display:none}' in css
+    assert '.page-alerts .acx[data-coverage-state="partial"] .acx-brief{display:flex;' in css
+    assert '.page-alerts .acx-context-strip{display:none}' in css
+    assert '.page-alerts .acx-stale{' in css
+
+
 def test_shared_html_never_inlines_account_specific_legacy_rows():
     from engine import i18n
     env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)

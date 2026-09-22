@@ -472,6 +472,11 @@ def main():
                         page.locator('#ac-more-filters').evaluate('(d) => {d.open = false}')
                         first_row = page.locator('#ac-results .acx-row').first.bounding_box()
                         assert first_row, f'Missing first alert row: {size}/{theme}/{lang}'
+                        tabs_box = page.locator('.acx-tabs').bounding_box()
+                        stale_box = page.locator('#ac-stale').bounding_box() if page.locator('#ac-stale').is_visible() else None
+                        if size == 'mobile-landscape':
+                            assert tabs_box and tabs_box['y'] + tabs_box['height'] <= height, f'Landscape workspace tabs offscreen: {theme}/{lang}'
+                            assert first_row['y'] < height, f'Landscape triage row does not enter first viewport: {theme}/{lang}'
                         name = f'{size}-{theme}-{lang}.png'
                         page.screenshot(path=str(out / name))
                         report['screenshots'].append(name)
@@ -480,6 +485,8 @@ def main():
                             'width': width,
                             'height': height,
                             'first_row': first_row,
+                            'tabs': tabs_box,
+                            'stale_notice': stale_box,
                             'browse_height': browse_box['height'],
                             'reset_height': reset_box['height'],
                             'quick_filter_min_height': min(chip_boxes),

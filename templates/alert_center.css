@@ -190,6 +190,30 @@ body.page-alerts{margin:0;padding:var(--sp-6,24px);background:var(--bg);color:va
   .page-alerts .acx-row-limit{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 }
 
+/* Short landscape keeps the triage queue in view without hiding stale/partial evidence truth. */
+@media(max-height:450px) and (min-width:701px) and (max-width:1000px) and (orientation:landscape){
+  body.page-alerts{padding:var(--sp-2,8px) var(--sp-4,16px)}
+  .page-alerts .site-nav{margin-top:0;margin-bottom:var(--sp-2,8px)}
+  .page-alerts .acx-header{padding:var(--sp-1,4px) 0 var(--sp-2,8px)}
+  .page-alerts .acx-eyebrow{display:none}
+  .page-alerts .acx-header h1{font-size:var(--fs-h2);margin:0}
+  .page-alerts .acx-session{font-size:var(--fs-micro);display:flex;align-items:center;gap:var(--sp-2,8px)}
+  .page-alerts .acx-session strong{display:inline;margin:0;font-size:var(--fs-sm)}
+  .page-alerts .acx-brief{display:none}
+  .page-alerts .acx[data-coverage-state="partial"] .acx-brief{display:flex;padding:var(--sp-1,4px) var(--sp-3,12px)}
+  .page-alerts .acx[data-coverage-state="partial"] .acx-brief p{font-size:var(--fs-label);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .page-alerts .acx-stale{margin:var(--sp-1,4px) 0!important;padding:var(--sp-1,4px) var(--sp-3,12px);font-size:var(--fs-label);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .page-alerts .acx-tabs{margin-top:var(--sp-1,4px)}
+  .page-alerts .acx-tabs button{padding:var(--sp-2,8px);min-height:40px}
+  .page-alerts .acx-context-strip{display:none}
+  .page-alerts .acx-layout{margin-top:var(--sp-1,4px)}
+  .page-alerts .acx-section-head{padding:var(--sp-1,4px) var(--sp-3,12px)}
+  .page-alerts .acx-section-head h2{font-size:var(--fs-h3)}
+  .page-alerts .acx-section-head p{display:none}
+  .page-alerts .acx-filters{padding:0 var(--sp-3,12px) var(--sp-1,4px);gap:var(--sp-1,4px)}
+  .page-alerts .acx-attention-head{padding:var(--sp-1,4px) var(--sp-3,12px)}
+}
+
 
 /* Structured related-observation context. */
 .page-alerts .acx-related-note{margin-bottom:var(--sp-3,12px)!important;color:var(--muted)}
