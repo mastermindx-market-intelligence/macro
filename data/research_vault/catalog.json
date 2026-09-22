@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T05:35:54.621962+00:00",
-  "count": 2618,
+  "generated_at": "2026-09-22T05:50:05.329599+00:00",
+  "count": 2619,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -154,6 +154,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jcygycn6uds-7f20ef",
+      "title": "Americas Transportation Railroads Weekly Rail Carload Snapshot — Week 37",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:45Z",
+      "summary_points": [
+        "US Rail Carload Growth Acceleration: +5.2% YoY (vs. 3.5% in Week 36), driven by intermodal (+6.9% YoY) and ex-intermodal (+3.6% YoY), with UNP (intermodal) and NSC (ex-intermodal) leading, signaling robust logistics demand recovery.",
+        "Target Price Divergence & Valuation Gaps: NSC target fell to $278 (vs.",
+        "$222 close) while CNI target rose to $132 (vs.",
+        "$129.48 close), yet both trade below targets; UNP/CSX show 10%+ target-close gaps (UNP: $317 vs $304; CSX: $48 vs $52.81), indicating potential mispricing or short-term bearish sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
