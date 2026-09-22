@@ -101,9 +101,15 @@ evidence:
     scripts/skew_accrual_gate.py + scripts/audit_options_skew_overlap.py +
     publish_r2._DATA_DIRS registration + DEC record + install runbook; this
     packet does NOT change any workflow step"
-  - "Verify: `python -m pytest tests/test_skew_accrual_gate.py
+  - "Verify: `python3 -m pytest tests/test_skew_accrual_gate.py
     tests/test_skew_accrual_launchd.py tests/test_audit_options_skew_overlap.py
-    -q` exits 0 with all 37 tests passing"
+    tests/test_skew_accrual_precheck.py tests/test_skew_accrual_verify_ledger.py
+    -q` exits 0 with all 66 tests passing across the five suites
+    (BLOCKER-2 fix added the --pre-rows end-to-end path, BLOCKER-1 fix
+    rewrote _delta_stats against pairs with the product test, MAJOR-4
+    added the recomputed-key match check, and the new measurement
+    tests pin the publish_r2 floor against the actual tracked bootstrap
+    at 238,595 bytes)."
   - "Verify: `python3 scripts/agentos.py validate` exits 0 (this DEC record
     validated by the schema)"
   - "Verify: `python3 scripts/check_contract_delta.py --base origin/main`
@@ -116,7 +122,9 @@ evidence:
   - "Verify: `plutil -lint ops/launchd/com.macro.skewaccrual.plist` reports
     OK; Python plistlib parses with Label=com.macro.skewaccrual,
     WorkingDirectory=/Users/chriswong/skew-ops-wt, Schedule weekdays 1-5
-    at 04:30 local, ThrottleInterval=60, LimitLoadToSessionType=Aqua"
+    at 05:30 local (BLOCKER-4 fix; 13:30Z during PST / 12:30Z during PDT,
+    both safely AFTER the observed 11:30Z ThetaData EOD refresh
+    year-round), ThrottleInterval=60, LimitLoadToSessionType=Aqua"
   - "Verify: `sh -n ops/launchd/run_skew_accrual.sh` reports OK"
   - "Verify: `python3 -c 'import plistlib; ...'` confirms the runner
     ProgramArguments chain resolves to /Users/chriswong/skew-ops-wt
