@@ -150,7 +150,10 @@ T11_SITE_PAGES = (
 # partials this packet never touches.
 _SUITE_REGION = ('<nav class="mq-suitenav"',
                  '<div class="mq-scrim" id="mq-scrim" hidden></div>')
-_HUB_REGION = ('<main class="mq-shell mq-hub"', "</main>")
+# Macro Command P1/P5 superseded the legacy ``mq-shell mq-hub`` container.
+# Bind T11 to the current canonical page owner without weakening the closing
+# boundary or the unconditional byte comparison below.
+_HUB_REGION = ('<main class="mc-shell" id="mc-shell"', "</main>")
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
@@ -700,6 +703,17 @@ def _t11_collapse_main_prior_label(html: str) -> str:
     )
 
 
+def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str) -> None:
+    before = _region(before_html, name)
+    after = _region(after_html, name)
+    assert before is not None and after is not None, f"{name}: no macro-suite region"
+    assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
+        f"{name}: the macro-suite region is NOT byte-identical to the committed "
+        "page. That is a regression introduced by this packet's shared-surface "
+        "edits, not main-side drift."
+    )
+
+
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     """Region-level byte identity of the macro-suite region (the slice
     enclosing <main>) on all fourteen T11 targets, unconditionally.
@@ -749,13 +763,10 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
         if committed_path.read_bytes() == rendered_path.read_bytes():
             identical.append(name)
             continue
-        before = _region(committed_path.read_text(encoding="utf-8"), name)
-        after = _region(rendered_path.read_text(encoding="utf-8"), name)
-        assert before is not None and after is not None, f"{name}: no macro-suite region"
-        assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
-            f"{name}: the macro-suite region is NOT byte-identical to the committed "
-            "page. That is a regression introduced by this packet's shared-surface "
-            "edits, not main-side drift."
+        _assert_same_macro_suite_region(
+            committed_path.read_text(encoding="utf-8"),
+            rendered_path.read_text(encoding="utf-8"),
+            name,
         )
         drifted.append(name)
     print(f"T11 identical: {identical}")
@@ -763,6 +774,25 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     print(f"T11: 14 targets — {len(identical)} whole-page identical, "
           f"{len(drifted)} region-identical with whole-page drift.")
     assert len(identical) + len(drifted) == 14
+
+
+def test_11_current_macro_command_region_is_recognized_and_mutation_fails() -> None:
+    """The current hub owner is admitted, but a real body mutation still reds T11."""
+    name = "macro_monetary.html"
+    committed = (ROOT / "site" / name).read_text(encoding="utf-8")
+    region = _region(committed, name)
+    assert region is not None
+    assert region.startswith(_HUB_REGION[0])
+
+    marker = '<h1 class="mc-title">'
+    assert marker in committed
+    mutated = committed.replace(
+        marker,
+        '<h1 class="mc-title" data-ci-mutation="true">',
+        1,
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(committed, mutated, name)
 
 
 def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> None:
