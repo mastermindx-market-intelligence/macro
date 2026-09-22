@@ -700,3 +700,50 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+# Prophet presentation code must load wherever its public HTML shell loads.
+# The ranked/graded/live JSON it may request retains its existing access gates.
+@pytest.mark.parametrize("asset", [
+    "/stock-dashboard.css", "/hk-stock-v36.js",
+    "/canada-stock-v36.js",
+])
+def test_prophet_shell_clients_are_public_without_opening_signal_payloads(asset):
+    assert asset in POLICY["public"]["exact"]
+    assert asset not in POLICY["free_registered"]["exact"]
+    assert asset in _caddy_public_exclusions()
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy error-path registration matcher missing"
+    assert asset in set(shlex.split(error_matcher.group(1)))
+    assert asset in _caddy_path_list("public_static")
+
+
+@pytest.mark.parametrize("asset,immutable", [
+    ("/stock-dashboard.css", True),
+    ("/china_risk_state_live.js", True),
+    ("/hk-stock-v36.js", False), ("/canada-stock-v36.js", False),
+])
+def test_prophet_shell_cache_class_matches_content_hash_or_date_stamp(asset, immutable):
+    versioned = _caddy_path_list("public_versioned")
+    short_ttl = _caddy_path_list("watchlist_shell_versioned")
+    assert (asset in versioned) is immutable
+    assert (asset in short_ttl) is not immutable
+
+
+@pytest.mark.parametrize("payload", [
+    "/factordata/hk_standouts.json", "/factordata/canada_standouts.json",
+    "/factordata/china_standouts.json", "/premiumdata/us_stocks.json",
+    "/hkbasketdata/baskets.json", "/canadabasketdata/baskets.json",
+    "/marketdata/rotation_events_hk.json", "/live/cn_prophet_live.json",
+    "/hkstockdata/0700.HK.json", "/canadastockdata/RY.TO.json",
+    "/chinastockdata/600519.SS.json",
+])
+def test_prophet_shell_repair_keeps_analytical_payloads_private(payload):
+    public = set(POLICY["public"]["exact"])
+    public.update(p.rstrip("/") + "/*" for p in POLICY["public"]["prefixes"])
+    assert not _matches(payload, public)
+    assert not _matches(payload, _caddy_public_exclusions())
+    for matcher in ("public_static", "public_versioned", "watchlist_shell_versioned"):
+        assert not _matches(payload, _caddy_path_list(matcher))

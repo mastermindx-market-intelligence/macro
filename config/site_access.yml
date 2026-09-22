@@ -259,6 +259,11 @@ public:
     # Presentation/runtime code required by the three public dashboard shells.
     # The signal-bearing JSON endpoints these scripts request remain outside
     # this allowlist and therefore keep their existing account/tier gates.
+    # Presentation-only Prophet shell assets; analytical JSON remains gated.
+    # Date-stamped regional clients use revalidation, not immutable cache.
+    - /stock-dashboard.css
+    - /hk-stock-v36.js
+    - /canada-stock-v36.js
     - /dashboard-icons.css
     - /dashboard-icons.js
     - /chart_i18n.js
