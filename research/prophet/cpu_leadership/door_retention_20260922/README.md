@@ -76,3 +76,46 @@ new-session protocol/registry transition and a nonwriting full-pipeline PASS bef
 any natural-run retention activation. Do not weaken the immutable conflict check,
 rewrite old v1 events, replay the cancelled nightly, or claim a retained observation
 as a buy. The raw current-archive publication issue remains with #7180.
+
+## Accepted-source full-pipeline control — 2026-09-22
+
+The current input files remain byte-identical to the previously refused input set;
+repeating that unchanged refusal is not a qualification step. The accepted generation's
+seven source hashes instead identify exact original bytes in Git snapshot
+`4b2928bdf02ea181d8f28ea411370b9c8922b058`. The existing `prove.py` now accepts an explicit
+`--accepted-input-ref` only together with `--full-writer`. It verifies every original
+input hash before materializing a temporary fixture, first runs the frozen incumbent
+against that complete accepted input set, and requires zero appended events plus exact
+ledger, projection and source hashes. Only then does it change the fixture's Door ledger
+to the separate current pinned source and exercise the candidate's complete nonwriting
+reconciler. Production sources and old generations are never replaced.
+
+This is a controlled historical-input rehearsal, NOT current-source acceptance, protocol
+activation, a production rollback, historical recommendation credit or permission to
+ignore immutable conflicts. Results must name both input revisions and the actual
+implementation hashes. The separate #7227 source transition and independent reviews
+remain required. The unchanged current input refusal is not superseded by a successful
+control.
+
+The runner is now import-safe and emits nonzero exit status when full-writer qualification
+is refused; harness success can no longer silently stand in for writer acceptance.
+Ten new owner-suite cases cover exact/missing/extra source sets, changed bytes, escaping
+paths, count limits, import safety and failed/unknown writer exit states. The four B1 owner
+suites pass 165 tests with no failures or skips. Earlier test counts remain bound to their
+original revisions; they are not added together as independent validation samples.
+
+Recorded control result: PASS. The complete nonwriting reconciler consumed 6,146
+observations (2,932 candidate /3,047 TURN WATCH /167 Door /0 Entry Radar), computing
+115 new observation events and31 additional suppressions. The exact Intel/Micron
+September10 and AMD September18 sightings are included. The complete writer's append
+count equals the isolated Door-core result; all six non-Door source hashes remain
+identical to the accepted generation. The fixture and original history are unchanged.
+No current-source, deployment, trade-entry or return-performance claim follows.
+
+Reproduce this precise control from the reviewed candidate source:
+```
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 research/prophet/cpu_leadership/door_retention_20260922/prove.py /absolute/noncanonical/output.json --source-ref d0a5ca2e717e9bc85744f551687bf47f7c7a6f34 --full-writer --accepted-input-ref 4b2928bdf02ea181d8f28ea411370b9c8922b058
+```
+The actual run, input revisions, implementation hashes, counts and limitations are in
+`accepted-source-rehearsal.json` and `accepted-source-verification.json`. Do not replace
+the original `final-writer-status.json` refusal with this control result.

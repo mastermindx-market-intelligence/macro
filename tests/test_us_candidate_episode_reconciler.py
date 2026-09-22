@@ -1595,3 +1595,51 @@ def test_door_backlog_fractional_future_identity_stays_unconsumed(tmp_path, monk
     assert _door_owned(tmp_path) == []
     _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00.000001Z")
     assert _door_owned(tmp_path)[0]["reason"] == "IDENTITY_UNRESOLVED"
+
+
+# The release rehearsal must never accept a convenient same-date substitute.
+def _retention_proof_module():
+    path = Path(__file__).resolve().parents[1] / "research/prophet/cpu_leadership/door_retention_20260922/prove.py"
+    spec = importlib.util.spec_from_file_location("retention_rehearsal", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_retention_rehearsal_requires_exact_accepted_source_bytes():
+    helper = _retention_proof_module().verify_fixture_inputs
+    path = "data/prophet_doors/flags.jsonl"
+    raw = b"recorded evidence\n"
+    expected = {path: "sha256:" + sha256(raw).hexdigest()}
+    bodies = {path: raw}
+    assert helper(expected, bodies)[path] == expected[path]
+    assert bodies == {path: raw}
+    with pytest.raises(ValueError, match="hash"):
+        helper(expected, {path: b"same date, different values\n"})
+    with pytest.raises(ValueError, match="exact"):
+        helper(expected, {})
+    with pytest.raises(ValueError, match="exact"):
+        helper(expected, {**bodies, "data/extra.json": b"extra"})
+
+
+@pytest.mark.parametrize("path", ["../outside", "data/../outside", "/data/absolute", "scripts/run.py"])
+def test_retention_rehearsal_rejects_escaping_source_paths(path):
+    raw = b"evidence"
+    with pytest.raises(ValueError, match="path"):
+        _retention_proof_module().verify_fixture_inputs(
+            {path: "sha256:" + sha256(raw).hexdigest()}, {path: raw})
+
+
+def test_retention_rehearsal_resource_limits_never_truncate_inputs():
+    helper = _retention_proof_module().verify_fixture_inputs
+    bodies = {f"data/input-{i}.json": b"x" for i in range(61)}
+    expected = {p: "sha256:" + sha256(b).hexdigest() for p, b in bodies.items()}
+    with pytest.raises(ValueError, match="bound"):
+        helper(expected, bodies)
+    with pytest.raises(ValueError, match="bytes"):
+        helper({"data/x": "sha256:" + "0" * 64}, {"data/x": "not bytes"})
+
+
+@pytest.mark.parametrize("state,expected", [("passed", 0), ("not_requested", 0), ("refused", 1), ("unknown", 1)])
+def test_retention_rehearsal_refusal_is_nonzero_not_acceptance(state, expected):
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected

@@ -116,3 +116,42 @@ full-pipeline nonwriting PASS and natural production proof remain the release ga
 Do not redo the155/256 source-bound proofs unless a material change occurs. Do not
 replay or weaken immutable history to turn the full-writer refusal green.
 MISSION_COMPLETE:false. No new worker, watcher, runtime write or autonomous wake.
+
+## Controlled full-pipeline qualification — 2026-09-22 continuation
+
+Protected procedure: Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f,
+Skillpack1.0.1/bootstrap1, atomic source blobs verified. Original PR#7684 head at
+pickup:90a65055f4d55a0766f4f5469e6928a8b27bf0e0; hosted CI/fences/contract concluded
+green, independent review still absent. No source writer, runtime or activation transfer.
+
+A bounded accepted-input control is now implemented in the existing proof runner.
+All seven source hashes named by the accepted generation match the historical Git
+snapshot4b2928bdf02ea181d8f28ea411370b9c8922b058. The rehearsal requires zero incumbent
+appends and exact accepted ledger/projection/source hashes before replacing ONLY its
+temporary Door input with current pinned data. It does not replace production inputs or
+relabel historical evidence as current. The current source files are unchanged from the
+prior refused input set, so that known refusal has not been pointlessly replayed.
+
+The proof is import-safe and fails with nonzero exit status on full-writer refusal.
+Ten added source-control/exit-status tests and the four owner suites pass165 tests with
+zero failures/skips. Runtime writer, core, intake, schemas and workflows are unchanged
+in this continuation. The controlled full-data run now PASSES: the baseline appends zero
+and exactly reproduces the accepted ledger/projection/source hashes; the candidate's
+complete nonwriting reconciler processes6,146 source observations and computes115 new
+observation events plus31 additional suppressions. The full-writer115 agrees with the
+isolated Door-core result. All non-Door input hashes remain exactly accepted, every
+fixture file is unchanged after execution, and the repeated core adds zero duplicates.
+INTC/MU September10 and AMD September18 are retained with their original source dates
+and current ingestion knowledge; no ARM flag or historical entry is invented. This is
+NOT current-source acceptance: the conflicting current source set is still held for
+#7227 adoption and its separate full-writer proof. No natural production run, backdated
+opportunity, recommendation, trade or performance claim is authorized. New exact evidence:
+accepted-source-verification.json and accepted-source-rehearsal.json in this leaf's
+existing research evidence directory.
+
+Source and semantic head for the broad #7572 research carrier have independently moved
+to5e43db462b5ffa4912874c0be32549f8e26baeda; its accepted RS comparison and blocked
+source-admission challenger are not reproduced or rerouted onto this retention carrier.
+#7227 remains1f7aa1bb4e067a9a6fecd783857f984a8b6a2e87 pending non-author re-review.
+The existing new-session protocol adoption and current-source full-writer proof remain
+separate from this historical-input control. MISSION_COMPLETE:false.
