@@ -1315,6 +1315,16 @@ class TestOutboxPanel:
         assert posted_h["receipt"] is not None
         assert posted_h["receipt"].get("tweet_id") == "1234567890"
 
+    def test_seeded_terminal_item_is_not_duplicated_in_account_working_set(self, tmp_path):
+        """Closed posts stay in totals/history but do not bloat the live review payload."""
+        id1, id2, id3 = self._seed_outbox(tmp_path)
+        r = marketing.outbox(tmp_path)
+        research = next(a for a in r["accounts"] if a["id"] == "research_a")
+        assert research["counts"]["posted"] == 1
+        assert all(i["id"] != id3 for i in research["items"])
+        assert any(h["id"] == id3 for h in r["history"])
+        assert r["summary"]["posted"] == 1
+
     def test_seeded_accounts_grouped_and_ordered(self, tmp_path):
         id1, id2, id3 = self._seed_outbox(tmp_path)
         r = marketing.outbox(tmp_path)
@@ -1810,6 +1820,10 @@ class TestOutboxHistoryHonesty:
         assert len(r["history"]) == 50          # the window is unchanged
         assert r["history_total"] == 55         # the truth is now reported
         assert r["history"][0]["note"] == "operator batch rejection"
+        # Terminal archive rows belong to the bounded history window, not the
+        # account review working set.  This is the payload-size performance law.
+        assert sum(len(a["items"]) for a in r["accounts"]) == 0
+        assert sum(a["counts"]["quarantined"] for a in r["accounts"]) == 55
 
 
 class TestOutboxActivityPayload:

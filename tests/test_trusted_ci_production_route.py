@@ -17,7 +17,7 @@ def named_step(job: dict, name: str) -> dict:
     return next(step for step in job["steps"] if step.get("name") == name)
 
 
-def test_p3bb_same_repo_pr_calls_only_the_exact_main_owned_executor() -> None:
+def test_hosted_first_keeps_exact_main_owned_executor_as_pc_opt_in() -> None:
     jobs = workflow("ci.yml")["jobs"]
     trusted = jobs["trusted-ci"]
 
@@ -26,7 +26,8 @@ def test_p3bb_same_repo_pr_calls_only_the_exact_main_owned_executor() -> None:
         "needs": "ci-plan",
         "if": (
             "needs.ci-plan.outputs.has_work == 'true' && "
-            "github.event.pull_request.head.repo.full_name == github.repository"
+            "github.event.pull_request.head.repo.full_name == github.repository && "
+            "vars.CI_EXECUTION_ROUTE == 'pc'"
         ),
         "uses": (
             "mastermindx-market-intelligence/macro/.github/workflows/"
@@ -38,7 +39,7 @@ def test_p3bb_same_repo_pr_calls_only_the_exact_main_owned_executor() -> None:
     assert "secrets" not in trusted
 
 
-def test_p3bb_keeps_hosted_pack_names_as_trusted_relays_or_fork_executors() -> None:
+def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> None:
     job = workflow("ci.yml")["jobs"]["ci-pack"]
 
     assert job["name"] == "ci-pack-${{ matrix.pack }}"
@@ -52,14 +53,17 @@ def test_p3bb_keeps_hosted_pack_names_as_trusted_relays_or_fork_executors() -> N
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
 
     same_repo_guard = (
-        "github.event.pull_request.head.repo.full_name == github.repository"
+        "github.event.pull_request.head.repo.full_name == github.repository && "
+        "vars.CI_EXECUTION_ROUTE == 'pc'"
     )
-    fork_guard = (
-        "github.event.pull_request.head.repo.full_name != github.repository"
+    hosted_guard = (
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     relay = named_step(job, "relay the trusted pack fragment under the existing check contract")
     assert relay["if"] == same_repo_guard
@@ -96,9 +100,9 @@ def test_p3bb_keeps_hosted_pack_names_as_trusted_relays_or_fork_executors() -> N
         "${{ runner.temp }}/ci-semantic-fragments/pack-${{ matrix.pack }}.json"
     )
 
-    # Candidate-authored code may retain the hosted fork implementation, but every
-    # heavyweight checkout/setup/execute step must be mechanically unreachable for
-    # a same-repository PR after the main-defined executor has run.
+    # Every heavyweight checkout/setup/execute step must be reachable on the hosted
+    # default for ordinary same-repository PRs and forks. The PC route is reachable
+    # only through the explicit repository-variable opt-in above.
     for step in job["steps"]:
         if step is relay or step is parity or step is upload:
             continue
@@ -114,10 +118,10 @@ def test_p3bb_keeps_hosted_pack_names_as_trusted_relays_or_fork_executors() -> N
             "validate and run legacy CI pack",
             "fail-safe full suite when no authoritative plan was produced",
         }:
-            assert fork_guard in step["if"]
+            assert hosted_guard in step["if"]
 
 
-def test_p3bb_keeps_the_existing_hosted_semantic_gate_and_fork_path() -> None:
+def test_hosted_first_keeps_the_existing_semantic_gate_and_full_hosted_path() -> None:
     jobs = workflow("ci.yml")["jobs"]
     gate = jobs["ci-gate"]
     assert gate["needs"] == ["ci-plan", "ci-pack", "contract-delta"]
@@ -127,20 +131,21 @@ def test_p3bb_keeps_the_existing_hosted_semantic_gate_and_fork_path() -> None:
     pack = jobs["ci-pack"]
     checkout = next(step for step in pack["steps"] if step.get("uses") == "actions/checkout@v4")
     assert checkout["if"] == (
-        "github.event.pull_request.head.repo.full_name != github.repository"
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     execute = named_step(pack, "validate and run legacy CI pack")
     assert "scripts/run_ci_pack.py" in execute["run"]
 
 
-def test_p3bb_policy_declares_only_same_repo_production_on_pc() -> None:
+def test_policy_declares_hosted_default_with_pc_fallback_available() -> None:
     registry = yaml.safe_load(
         (ROOT / ".github" / "runner-policy.yml").read_text(encoding="utf-8")
     )
     assert registry["phase"] == "p3b-b-production-route"
     assert registry["repository_visibility"] == "public"
     assert registry["scenario_routes"] == {
-        "same_repo_ordinary_pr": "pc-ci-via-main-executor",
+        "same_repo_ordinary_pr": "github-hosted",
         "fork_pr": "github-hosted",
         "trusted_dispatch_canary": "pc-ci-canary",
         "trusted_executor_dispatch": "pc-ci",

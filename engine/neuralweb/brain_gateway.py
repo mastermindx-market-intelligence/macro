@@ -3838,6 +3838,60 @@ def _all_brain_tool_schemas(
     return schemas
 
 
+def _fast_visible_tool_schemas(
+    full_schemas: list[dict],
+    message: str,
+    context_ticker: str | None,
+    *,
+    lane: str,
+    mode: str,
+    page: str,
+    internals_allowed: bool,
+) -> list[dict]:
+    """Narrow model visibility for qualified Fast/chat profiles only.
+
+    Authorization is deliberately upstream: ``full_schemas`` must already be the complete
+    entitlement/page/session-gated surface from ``_all_brain_tool_schemas``.  This helper
+    only removes names from what the model sees.  It can never add a withheld tool.
+
+    Unknown/specialist profiles, Terminal, Pro/Research, and internals sessions fail open
+    to the byte-equivalent full authorized list.  If a qualified family drifts and names a
+    tool absent from the current authorized surface, fail open rather than partially narrow.
+    """
+    if (
+        lane != "fast"
+        or mode != "chat"
+        or str(page).lower() == "terminal"
+        or internals_allowed
+    ):
+        return full_schemas
+
+    from engine.neuralweb.ask_brain import (  # noqa: PLC0415
+        _fast_visible_tool_names,
+        _question_profile,
+    )
+
+    profile = _question_profile(message, context_ticker)
+    visible_names = _fast_visible_tool_names(profile)
+    if visible_names is None:
+        return full_schemas
+
+    authorized_names = {
+        schema.get("name") for schema in full_schemas if isinstance(schema, dict)
+    }
+    missing = [name for name in visible_names if name not in authorized_names]
+    if missing:
+        log.warning(
+            "brain_gateway: Fast visibility fail-open for profile %s; missing schemas=%s",
+            profile.name,
+            ",".join(missing),
+        )
+        return full_schemas
+
+    allowed = set(visible_names)
+    return [schema for schema in full_schemas if schema.get("name") in allowed]
+
+
 _CHART_COMMAND_SYSTEM_DIRECTIVE = """
 CHART CONTROL (Terminal only):
 You can drive the user's chart with client-side DISPLAY ACTIONS: set_chart_symbol,
@@ -5967,6 +6021,15 @@ def _run_brain_loop(
         internals_allowed=internals_ok,
         user_id=user_id,
     )
+    tool_schemas = _fast_visible_tool_schemas(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
@@ -6825,6 +6888,15 @@ def _run_brain_loop_stream(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+    )
+    tool_schemas = _fast_visible_tool_schemas(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
     )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
