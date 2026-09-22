@@ -73,6 +73,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # noqa: E402
 
+# Use libyaml when available: same PyYAML safe-subset semantics, but the live
+# synapse/overlay files are large enough that the pure-Python scanner dominates a
+# cold derived Intelligence OS rebuild. This is the same loader choice used by
+# admin/config_store.py and falls back to SafeLoader when the C extension is absent.
+_YAML_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+
 from engine.output_health import (  # noqa: E402
     governing_watermark_field,
     resolve_output_health,
@@ -276,7 +282,7 @@ def _load_yaml(root: Path, rel: Path) -> tuple[dict | None, str]:
     if text is None:
         return None, source
     try:
-        data = yaml.safe_load(text)
+        data = yaml.load(text, Loader=_YAML_LOADER)
     except yaml.YAMLError:
         return None, "unparseable"
     return (data, source) if isinstance(data, dict) else (None, "unparseable")
@@ -620,6 +626,23 @@ def provider_events(root: Path, synapse: dict) -> dict[str, list[dict[str, Any]]
             rows.append(row)
     if not rows:
         return {}
+
+    # Index the diagnostics once. The previous implementation rescanned every failed
+    # provider row for every artifact (O(artifacts × rows)); provider_health is a
+    # growing JSONL ledger, so that made a read-only admin health view slower as both
+    # the estate and diagnostic history grew. Exact string membership and source order
+    # are preserved. A row whose lane == context is indexed only once, matching the old
+    # boolean membership test that could include that row only once.
+    by_subject: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        subjects = {
+            str(row.get("lane") or ""),
+            str(row.get("context") or ""),
+        }
+        for subject in subjects:
+            if subject:
+                by_subject.setdefault(subject, []).append(row)
+
     out: dict[str, list[dict[str, Any]]] = {}
     for aid, entry in (synapse.get("artifacts") or {}).items():
         if not isinstance(entry, dict):
@@ -627,13 +650,10 @@ def provider_events(root: Path, synapse: dict) -> dict[str, list[dict[str, Any]]
         stem = Path(str(entry.get("producer") or "").split(":")[0]).stem
         if not stem:
             continue
-        hits = [
-            row
-            for row in rows
-            if stem in (str(row.get("lane") or ""), str(row.get("context") or ""))
-        ]
+        hits = by_subject.get(stem)
         if hits:
-            out[str(aid)] = hits
+            # Preserve the old per-artifact list identity as well as row order/content.
+            out[str(aid)] = list(hits)
     return out
 
 
