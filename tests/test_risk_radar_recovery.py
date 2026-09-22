@@ -255,3 +255,74 @@ def test_drivers_absent_is_none_on_old_artifact():
     assert rec and rec["present"] is True
     # drivers key should be None (not present in old trajectory)
     assert rec.get("drivers") is None
+
+
+
+def test_state_duration_separates_same_state_from_caution_plus_streak():
+    idx = pd.bdate_range("2026-01-01", periods=8)
+    states = pd.Series(
+        ["watch", "caution", "caution", "elevated", "elevated", "risk-off", "risk-off", "risk-off"],
+        index=idx,
+    )
+    out = risk_radar._state_duration(states)
+    assert out["state"] == "risk-off"
+    assert out["state_sessions"] == 3
+    assert out["state_since"] == str(idx[5].date())
+    assert out["caution_plus_sessions"] == 7
+    assert out["caution_plus_since"] == str(idx[1].date())
+    assert out["caution_persisted_5_sessions"] is True
+    assert out["display_only"] is True
+    assert out["authority"] == "duration_context_only"
+
+
+def test_state_duration_below_caution_has_zero_caution_streak():
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    states = pd.Series(["calm", "watch", "watch", "watch", "watch"], index=idx)
+    out = risk_radar._state_duration(states)
+    assert out["state"] == "watch"
+    assert out["state_sessions"] == 4
+    assert out["caution_plus_sessions"] == 0
+    assert out["caution_plus_since"] is None
+    assert out["caution_persisted_5_sessions"] is False
+
+
+def test_trajectory_exposes_display_only_state_duration(monkeypatch):
+    from engine import risk_radar_backtest
+
+    vals = list(np.linspace(30, 80, 20))
+    subs = _subs(vals)
+    idx = subs.index
+    states = pd.Series(
+        ["watch"] * 15 + ["caution"] * 3 + ["elevated"] * 2,
+        index=idx,
+    )
+    monkeypatch.setattr(
+        risk_radar_backtest,
+        "state_series",
+        lambda subs, calib, sigs=None: states,
+    )
+    sigs = pd.DataFrame(index=idx)
+    out = risk_radar.trajectory(subs, risk_radar._calib(), sigs=sigs)
+    assert out is not None
+    duration = out["duration"]
+    assert duration["state"] == "elevated"
+    assert duration["state_sessions"] == 2
+    assert duration["caution_plus_sessions"] == 5
+    assert duration["caution_persisted_5_sessions"] is True
+    assert duration["display_only"] is True
+
+
+
+def test_state_duration_unknown_breaks_streak_instead_of_bridging():
+    idx = pd.bdate_range("2026-01-01", periods=7)
+    states = pd.Series(
+        ["caution", "caution", None, "caution", "caution", "caution", "caution"],
+        index=idx,
+        dtype=object,
+    )
+    out = risk_radar._state_duration(states)
+    assert out["state"] == "caution"
+    assert out["state_sessions"] == 4
+    assert out["caution_plus_sessions"] == 4
+    assert out["state_since"] == str(idx[3].date())
+    assert out["caution_plus_since"] == str(idx[3].date())

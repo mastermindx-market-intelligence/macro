@@ -1408,6 +1408,59 @@ def _trajectory_from_series(win, states, odds, caution_band: float) -> dict:
     }
 
 
+
+def _state_duration(states: pd.Series | None) -> dict | None:
+    """Descriptive persistence of the current gated state.
+
+    Consecutive same-state duration and caution-or-higher duration are display
+    context only. Unknown/invalid observations break a streak. This helper has
+    no authority to change state, probability, alert, sizing, or policy.
+    """
+    if states is None or states.empty:
+        return None
+    series = states
+    last = series.iloc[-1]
+    if last is None or pd.isna(last):
+        return None
+    current = str(last)
+    if current not in _STATE_ORDER:
+        return None
+
+    same = 0
+    same_since = None
+    for day, value in reversed(list(series.items())):
+        if value is None or pd.isna(value) or str(value) != current:
+            break
+        same += 1
+        same_since = day
+
+    caution_i = _STATE_ORDER.index("caution")
+    caution_plus = 0
+    caution_since = None
+    for day, value in reversed(list(series.items())):
+        if value is None or pd.isna(value):
+            break
+        name = str(value)
+        if name not in _STATE_ORDER or _STATE_ORDER.index(name) < caution_i:
+            break
+        caution_plus += 1
+        caution_since = day
+
+    def _date(value):
+        return str(pd.Timestamp(value).date()) if value is not None else None
+
+    return {
+        "state": current,
+        "state_sessions": int(same),
+        "state_since": _date(same_since),
+        "caution_plus_sessions": int(caution_plus),
+        "caution_plus_since": _date(caution_since),
+        "caution_persisted_5_sessions": bool(caution_plus >= 5),
+        "display_only": True,
+        "authority": "duration_context_only",
+    }
+
+
 def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
                window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None) -> dict | None:
     """Recent PATH of the radar — has its intensity peaked and turned down, and how fast are the
@@ -1436,10 +1489,11 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
         # faithful daily gated+escalated STATE over the recent window (reuse the backtest replica;
         # lazy import avoids a module cycle) + the conjunction count, so the pullback-odds SERIES
         # matches what the card would have shown. Only the window is mapped to odds (not all history).
-        states = odds = None
+        states = odds = full_states = None
         try:
             from engine.risk_radar_backtest import state_series
-            states = state_series(subs, calib, sigs=sigs).reindex(intensity.index).tail(window)
+            full_states = state_series(subs, calib, sigs=sigs).reindex(intensity.index)
+            states = full_states.tail(window)
             # Calendar context is sizing-only; the measured caution cut is identical in the
             # live engine and this causal replica.
             nhot = sum((subs[s] >= bands["caution"]).astype(int) for s in tierA
@@ -1448,8 +1502,9 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
                 [_drawdown_prob(st, int(n), calib)["h21"] for st, n in zip(states, nhot)],
                 index=win.index)
         except Exception:  # noqa: BLE001 — odds series is best-effort
-            states = odds = None
+            states = odds = full_states = None
         result = _trajectory_from_series(win, states, odds, bands["caution"])
+        result["duration"] = _state_duration(full_states)
         # RRX2 WA-3: drivers line — "which scares faded, what is still warm?"
         # Uses the same causal scare sub-score window (leak-free). peak=max of scare in window,
         # now=today's sub-score. Faded = peak>=50 AND (peak-now)>=10, sorted by drop desc, cap 3.
