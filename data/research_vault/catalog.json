@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T15:56:07.568333+00:00",
-  "count": 2648,
+  "generated_at": "2026-09-22T16:21:12.820574+00:00",
+  "count": 2650,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-1c6ij86icrc-10d4e0",
+      "title": "Mexico Weak Jul Retail Sales",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:44Z",
+      "summary_points": [
+        "Retail Sales Miss & Q3 Trend: July retail sales fell 0.1% mom sa (vs.",
+        "+0.1% consensus), with Q3 2026 sales at -0.3% qoq sa, signaling persistent consumption weakness.",
+        "Services Sector Funding Pressure: Negative 2026 carry (-1.3%) amid declining services employment (-0.1% mom sa) and mixed real wage growth (1.0% mom sa), indicating rising funding risks.",
+        "Retail Resilience vs.",
+        "Services Divergence: Retail Sales index (122) outperformed Non-Financial Services (100) since Jun-20, highlighting consumer spending resilience despite services sector softness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-uo882snx41f-078e66",
       "title": "LATAM Today September 22, 2026",
@@ -308,6 +329,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2z5r4rjqtuu-4fe779",
+      "title": "GS Biswas Credit MarketStrats In Spotlight iTraxx S46 index tranches TRADING 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:49Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
