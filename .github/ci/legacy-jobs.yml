@@ -13703,15 +13703,20 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
-      - "site/theme_opportunity_card.css"
-      - "site/theme_opportunity_card.js"
-      - "templates/_theme_opportunity_card.html.j2"
-      - "templates/theme_opportunity_card.css"
-      - "templates/theme_opportunity_card.js"
-      - "tests/fixtures/theme_opportunity_owner_envelopes.json"
-      - "tests/test_theme_opportunity_card.py"
-      - "tests/test_theme_opportunity_current_base.py"
-      - "tests/test_theme_opportunity_owner_adapters.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "site/theme_opportunity_context.css"
+      - "site/theme_opportunity_context.js"
+      - "templates/_theme_opportunity_visibility.html.j2"
+      - "templates/theme_opportunity_context.css"
+      - "templates/theme_opportunity_context.js"
+      - "tests/fixtures/theme_intelligence_consumer_v1.json"
+      - "tests/fixtures/theme_opportunity_visibility.json"
+      - "tests/test_theme_opportunity_context.py"
+      - "tests/test_theme_opportunity_visibility.py"
+      - "tests/test_theme_leadership_consumer_bridge.py"
+      - "tests/test_build_subsector_closed_session_leadership.py"
+      - "tests/test_subsector_closed_session_leadership.py"
+      - "tests/test_thematic_state_leadership_receipt.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -13740,12 +13745,18 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
-        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py -q
-      - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
-      - name: Theme Intelligence opportunity card — owner-contract presentation
-        run: python -m pytest tests/test_theme_opportunity_card.py tests/test_theme_opportunity_current_base.py tests/test_theme_opportunity_owner_adapters.py -q
+      - name: subsector rotation family — turn engine, state machine, Lane C leadership, alerts, scan, confluence
+        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_subsector_closed_session_leadership.py tests/test_build_subsector_closed_session_leadership.py tests/test_thematic_state_leadership_receipt.py -q
+      - name: themes heatmap + Theme Tracker + Lane C→Lane A consumer bridge
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py tests/test_theme_leadership_consumer_bridge.py -q
+      - name: Theme Intelligence visibility source contract — pre-mount package
+        run: >-
+          python -m pytest tests/test_theme_opportunity_context.py -q &&
+          python -m pytest tests/test_theme_opportunity_visibility.py -q
+          -k "not owned_surfaces_consume_one_component_contract_and_keep_deep_links"
+        # The excluded frozen assertion is the serialized route-owner mount boundary.
+        # It is not weakened or rewritten; integration proof must run the unchanged
+        # full file against the composed route overlay before source acceptance.
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
