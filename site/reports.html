@@ -33,10 +33,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Research Reports — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=63df1679">
-<link rel="stylesheet" href="assets/css/a665da12.css?v=a665da12">
+<link rel="stylesheet" href="theme.css?v=f483abf2">
+<link rel="stylesheet" href="assets/css/b219cddc.css?v=b219cddc">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
+<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 
 
 
@@ -63,7 +63,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=c299c324">
+    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -280,7 +280,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f7bdf7cc" defer></script>
+  <script src="live.js?v=4c6fe392" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -433,7 +433,7 @@
       <div class="rc-search">
         <span class="mag" aria-hidden="true">🔎</span>
         <input id="repSearch" type="text" autocomplete="off"
-          placeholder="Search reports…" data-ph-en="Search reports…" data-ph-zh="搜索报告…" aria-label="Search reports">
+          placeholder="Search reports…" data-ph-en="Search reports…" data-ph-zh="搜索报告…" aria-label="Search reports" data-label-en="Search reports" data-label-zh="搜索报告">
         <kbd>/</kbd>
       </div>
       <label class="rc-sort"><span class="l-en">Sort</span><span class="l-zh">排序</span>
@@ -442,13 +442,13 @@
           <option value="old" data-en="Oldest first" data-zh="最早优先">Oldest first</option>
         </select>
       </label>
-      <span class="rc-count" id="repCount"></span>
+      <span class="rc-count" id="repCount" role="status" aria-live="polite" aria-atomic="true"></span>
       <button type="button" class="rc-clear" id="repClear">✕ <span class="l-en">Clear</span><span class="l-zh">清除</span></button>
     </div>
-    <div class="rc-tagbar" id="tagBar" role="group" aria-label="Filter by topic">
-      <span class="chip on" data-tag="all" tabindex="0" role="button"><span class="l-en">All</span><span class="l-zh">全部</span></span>
-      <span class="chip tag-macro" data-tag="macro" tabindex="0" role="button"><span class="l-en">Macro</span><span class="l-zh">宏观</span> <span class="n">7</span></span><span class="chip tag-ai" data-tag="ai" tabindex="0" role="button"><span class="l-en">AI</span><span class="l-zh">AI</span> <span class="n">4</span></span><span class="chip tag-crypto" data-tag="crypto" tabindex="0" role="button"><span class="l-en">Crypto</span><span class="l-zh">加密</span> <span class="n">4</span></span><span class="chip tag-equities" data-tag="equities" tabindex="0" role="button"><span class="l-en">Equities</span><span class="l-zh">股票</span> <span class="n">4</span></span><span class="chip tag-china" data-tag="china" tabindex="0" role="button"><span class="l-en">China</span><span class="l-zh">中国</span> <span class="n">3</span></span><span class="chip tag-fed" data-tag="fed" tabindex="0" role="button"><span class="l-en">Fed</span><span class="l-zh">美联储</span> <span class="n">3</span></span><span class="chip tag-rates" data-tag="rates" tabindex="0" role="button"><span class="l-en">Rates</span><span class="l-zh">利率</span> <span class="n">3</span></span><span class="chip tag-credit" data-tag="credit" tabindex="0" role="button"><span class="l-en">Credit</span><span class="l-zh">信用</span> <span class="n">2</span></span><span class="chip tag-energy" data-tag="energy" tabindex="0" role="button"><span class="l-en">Energy</span><span class="l-zh">能源</span> <span class="n">1</span></span><span class="chip tag-event" data-tag="event" tabindex="0" role="button"><span class="l-en">Midterms</span><span class="l-zh">中期选举</span> <span class="n">1</span></span>
-    </div>
+    <div aria-label="Filter by topic" class="rc-tagbar" data-label-en="Filter by topic" data-label-zh="按主题筛选" id="tagBar" role="group">
+<button aria-pressed="true" class="chip on" data-tag="all" type="button"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+<button aria-pressed="false" class="chip tag-macro" data-tag="macro" type="button"><span class="l-en">Macro</span><span class="l-zh">宏观</span> <span class="n">7</span></button><button aria-pressed="false" class="chip tag-ai" data-tag="ai" type="button"><span class="l-en">AI</span><span class="l-zh">AI</span> <span class="n">4</span></button><button aria-pressed="false" class="chip tag-crypto" data-tag="crypto" type="button"><span class="l-en">Crypto</span><span class="l-zh">加密</span> <span class="n">4</span></button><button aria-pressed="false" class="chip tag-equities" data-tag="equities" type="button"><span class="l-en">Equities</span><span class="l-zh">股票</span> <span class="n">4</span></button><button aria-pressed="false" class="chip tag-china" data-tag="china" type="button"><span class="l-en">China</span><span class="l-zh">中国</span> <span class="n">3</span></button><button aria-pressed="false" class="chip tag-fed" data-tag="fed" type="button"><span class="l-en">Fed</span><span class="l-zh">美联储</span> <span class="n">3</span></button><button aria-pressed="false" class="chip tag-rates" data-tag="rates" type="button"><span class="l-en">Rates</span><span class="l-zh">利率</span> <span class="n">3</span></button><button aria-pressed="false" class="chip tag-credit" data-tag="credit" type="button"><span class="l-en">Credit</span><span class="l-zh">信用</span> <span class="n">2</span></button><button aria-pressed="false" class="chip tag-energy" data-tag="energy" type="button"><span class="l-en">Energy</span><span class="l-zh">能源</span> <span class="n">1</span></button><button aria-pressed="false" class="chip tag-event" data-tag="event" type="button"><span class="l-en">Midterms</span><span class="l-zh">中期选举</span> <span class="n">1</span></button>
+</div>
   </div>
 
   <div class="rc-arch-h">
@@ -646,13 +646,19 @@
 
   function langSync(){ // keep non-span UI (placeholder, <option>s) in sync with language
     var zh=isZh();
-    if(search) search.placeholder=zh?(search.getAttribute('data-ph-zh')||''):(search.getAttribute('data-ph-en')||'');
+    if(search){
+      search.placeholder=search.getAttribute(zh?'data-ph-zh':'data-ph-en')||'';
+      search.setAttribute('aria-label',search.getAttribute(zh?'data-label-zh':'data-label-en'));
+    }
+    if(tagBar) tagBar.setAttribute('aria-label',tagBar.getAttribute(zh?'data-label-zh':'data-label-en'));
     if(sortSel)[].forEach.call(sortSel.options,function(o){ o.textContent=zh?(o.getAttribute('data-zh')||o.textContent):(o.getAttribute('data-en')||o.textContent); });
   }
 
   function syncTagUI(){
     [].forEach.call(tagBar.querySelectorAll('.chip'),function(x){
-      x.classList.toggle('on',(x.getAttribute('data-tag')||'all')===activeTag);
+      var selected=(x.getAttribute('data-tag')||'all')===activeTag;
+      x.classList.toggle('on',selected);
+      x.setAttribute('aria-pressed',String(selected));
     });
     if(cov)[].forEach.call(cov.querySelectorAll('.rc-cov-row'),function(x){
       x.setAttribute('aria-pressed',(x.getAttribute('data-tag')===activeTag)?'true':'false');
@@ -686,7 +692,7 @@
   }
 
   function setTag(tag){ activeTag=tag||'all'; apply(); writeURL(true); }
-  function reset(){ activeTag='all'; q=''; if(search) search.value=''; apply(); writeURL(true); }
+  function reset(){ activeTag='all'; q=''; if(search) search.value=''; apply(); writeURL(true); if(search) search.focus(); }
 
   // ── shareable state: reflect search/topic/sort in the URL, restore on load + back/fwd ──
   function writeURL(push){
@@ -715,11 +721,6 @@
     var c=e.target.closest('.chip'); if(!c) return;
     setTag(c.getAttribute('data-tag'));
   });
-  tagBar.addEventListener('keydown',function(e){
-    if(e.key!=='Enter'&&e.key!==' ') return;
-    var c=e.target.closest('.chip'); if(!c) return;
-    e.preventDefault(); setTag(c.getAttribute('data-tag'));
-  });
   if(cov) cov.addEventListener('click',function(e){
     var r=e.target.closest('.rc-cov-row'); if(!r) return;
     var tag=r.getAttribute('data-tag');
@@ -741,13 +742,12 @@
   });
 
   // re-sync non-span UI + count when the global language toggle flips
-  document.addEventListener('click',function(e){ if(e.target.closest('.lang-toggle')) setTimeout(function(){ langSync(); apply(); },0); });
+  document.addEventListener('langchange',function(){ langSync(); apply(); });
 
   langSync(); readState(); writeURL(false);   // restore any shared ?q=/?tag=/?sort= then canonicalize
 })();
 </script>
 
-<script src="theme.js?v=53939d13" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
+<script src="theme.js?v=3ffc953f" defer></script>
 </body>
 </html>

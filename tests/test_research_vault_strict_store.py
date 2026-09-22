@@ -1,13 +1,19 @@
 """Fail-closed object reads used by immutable research snapshot publication."""
 from __future__ import annotations
 
+import copy
+import hashlib
+import json
 import multiprocessing
+import subprocess
 import sys
 from types import ModuleType
 from pathlib import Path
 
 import pytest
 
+from engine.research_intelligence.extractor import PROMPT_VERSION, SYSTEM_PROMPT, build_prompt
+from engine.research_intelligence.schema import SCHEMA
 from engine.research_vault import r2_store as store_mod
 from engine.research_vault.r2_store import (
     BoundedStrictReadStore,
@@ -1770,3 +1776,1040 @@ def test_rio_invalid_model_output_is_typed_without_raw_detail():
     assert out["error_class"] == "ValueError"
     assert "error" not in out
     assert "sk-model-output" not in json.dumps(out)
+
+# --------------------------------------------------------------------------- #
+# Qualitative Research Intelligence W2 private artifact persistence
+# --------------------------------------------------------------------------- #
+ROOT = Path(__file__).resolve().parents[1]
+BODY = "Rates rose 2.1%. Higher rates pressure duration assets."
+
+
+def _sha(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _rio(document_id: str = "vault/desk/report-1", *, body: str = BODY) -> dict:
+    return {
+        "schema": SCHEMA,
+        "document": {
+            "id": document_id,
+            "source_type": "institutional_research",
+            "source_name": "GS",
+            "institution": "Goldman Sachs",
+            "desk": "Macro",
+            "title": "Rates",
+            "published_at": "2026-09-16T12:00:00Z",
+            "content_sha256": _sha(body),
+        },
+        "claims": [
+            {
+                "statement": "Rates rose 2.1%.",
+                "evidence": [{"quote_span": "Rates rose 2.1%."}],
+                "numbers": ["2.1%"],
+                "entities": ["rates"],
+                "horizon": "current",
+                "explicit": True,
+            }
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "Rates are a headwind for duration assets.",
+                "direction": "bearish",
+                "mechanism": ["rates -> financial conditions -> duration"],
+                "conviction": "moderate",
+                "support_claim_indices": [0],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {"statement": "", "support_claim_indices": []},
+            "consensus_relation": {"statement": "", "support_claim_indices": []},
+            "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def _analysis(
+    document_id: str = "vault/desk/report-1",
+    *,
+    body: str = BODY,
+    rio: dict | None = None,
+) -> dict:
+    payload = copy.deepcopy(rio or _rio(document_id, body=body))
+    system, user = build_prompt(payload["document"], body)
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    return {
+        "state": "ok",
+        "document": json.loads(identity_text),
+        "rio": payload,
+        "provider": "fake-provider",
+        "model": "served-model",
+        "requested_model": "requested-model",
+        "prompt_version": PROMPT_VERSION,
+        "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),
+        "prompt_sha256": _sha(system + "\n" + user),
+    }
+
+
+def _rio_from_prompt(user: str) -> dict:
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    identity = json.loads(identity_text)
+    return _rio(identity["id"], body=BODY) | {"document": identity}
+
+
+class _GuardedStore(LocalStore):
+    def __init__(self, root: Path):
+        super().__init__(root)
+        self.block_writes = False
+
+    def put_bytes_strict_conditional(self, *args, **kwargs):
+        if self.block_writes:
+            raise AssertionError("idempotent persistence must not write again")
+        return super().put_bytes_strict_conditional(*args, **kwargs)
+
+
+class _AmbiguousPointerStore(LocalStore):
+    def __init__(self, root: Path):
+        super().__init__(root)
+        self.raise_after_pointer_write = False
+
+    def put_bytes_strict_conditional(self, key, data, **kwargs):
+        result = super().put_bytes_strict_conditional(key, data, **kwargs)
+        if self.raise_after_pointer_write and key.endswith("/latest.json"):
+            self.raise_after_pointer_write = False
+            raise OSError("reply lost after committed pointer write")
+        return result
+
+
+class _RejectPointerStore(LocalStore):
+    def __init__(self, root: Path):
+        super().__init__(root)
+        self.reject_pointer = False
+        self.pointer_calls = 0
+
+    def put_bytes_strict_conditional(self, key, data, **kwargs):
+        if self.reject_pointer and key.endswith("/latest.json"):
+            self.pointer_calls += 1
+            return False
+        return super().put_bytes_strict_conditional(key, data, **kwargs)
+
+
+def test_artifact_store_create_and_latest_round_trip(tmp_path):
+    from engine.research_intelligence.store import (
+        artifact_object_key,
+        latest_pointer_key,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = LocalStore(tmp_path / "store")
+    receipt = persist_analysis(store, _analysis(), source_body=BODY)
+    assert receipt.state == "created"
+    assert receipt.previous_artifact_sha256 is None
+    assert receipt.reconciled is False
+    assert receipt.pointer_key == latest_pointer_key("vault/desk/report-1")
+    assert "vault/desk/report-1" not in receipt.pointer_key
+    assert receipt.artifact_key == artifact_object_key(
+        "vault/desk/report-1",
+        receipt.artifact_sha256,
+    )
+
+    stored = load_latest_research_intelligence(store, "vault/desk/report-1")
+    assert stored is not None
+    assert stored.rio == _rio()
+    assert stored.receipt["requested_model"] == "requested-model"
+    assert stored.receipt["provider"] == "fake-provider"
+    assert stored.receipt["model"] == "served-model"
+    assert stored.artifact_sha256 == receipt.artifact_sha256
+    assert stored.rio_sha256 == receipt.rio_sha256
+    assert stored.artifact_key == receipt.artifact_key
+    assert stored.pointer_key == receipt.pointer_key
+    assert stored.is_latest is True
+    assert isinstance(stored.pointer_version, str) and stored.pointer_version
+
+
+def test_artifact_store_same_content_is_noop_without_second_write(tmp_path):
+    from engine.research_intelligence.store import persist_analysis
+
+    store = _GuardedStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    store.block_writes = True
+    second = persist_analysis(store, copy.deepcopy(_analysis()), source_body=BODY)
+    assert second.state == "unchanged"
+    assert second.artifact_sha256 == first.artifact_sha256
+    assert second.previous_artifact_sha256 == first.artifact_sha256
+
+
+def test_artifact_store_correction_requires_exact_predecessor_and_preserves_versions(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceConflict,
+        ResearchIntelligenceCorrectionRequired,
+        load_latest_research_intelligence,
+        load_research_intelligence_version,
+        persist_analysis,
+    )
+
+    store = LocalStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"][
+        "summary"
+    ] = "Corrected duration-pressure interpretation."
+
+    with pytest.raises(ResearchIntelligenceCorrectionRequired) as missing:
+        persist_analysis(store, corrected, source_body=BODY)
+    assert missing.value.code == "correction_requires_predecessor"
+
+    with pytest.raises(ResearchIntelligenceConflict) as stale:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256="0" * 64,
+        )
+    assert stale.value.code == "predecessor_mismatch"
+
+    second = persist_analysis(
+        store,
+        corrected,
+        source_body=BODY,
+        expected_current_artifact_sha256=first.artifact_sha256,
+    )
+    assert second.state == "corrected"
+    assert second.previous_artifact_sha256 == first.artifact_sha256
+    latest = load_latest_research_intelligence(store, corrected["rio"]["document"]["id"])
+    assert latest is not None and latest.rio == corrected["rio"]
+    historical = load_research_intelligence_version(
+        store,
+        corrected["rio"]["document"]["id"],
+        first.artifact_sha256,
+    )
+    assert historical.rio == _rio()
+    assert historical.is_latest is False
+
+
+def test_artifact_store_stale_correction_is_refused_without_rewind(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceConflict,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = LocalStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    second_analysis = _analysis()
+    second_analysis["rio"]["analysis"]["thesis"]["summary"] = "Second interpretation."
+    second = persist_analysis(
+        store,
+        second_analysis,
+        source_body=BODY,
+        expected_current_artifact_sha256=first.artifact_sha256,
+    )
+    third_analysis = _analysis()
+    third_analysis["rio"]["analysis"]["thesis"]["summary"] = "Stale third interpretation."
+
+    with pytest.raises(ResearchIntelligenceConflict) as conflict:
+        persist_analysis(
+            store,
+            third_analysis,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+    assert conflict.value.code == "predecessor_mismatch"
+    latest = load_latest_research_intelligence(store, _rio()["document"]["id"])
+    assert latest is not None and latest.artifact_sha256 == second.artifact_sha256
+
+
+def test_artifact_duplicate_replay_reconciles_after_predecessor_advanced(tmp_path):
+    from engine.research_intelligence.store import persist_analysis
+
+    store = _GuardedStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Corrected interpretation."
+    second = persist_analysis(
+        store,
+        corrected,
+        source_body=BODY,
+        expected_current_artifact_sha256=first.artifact_sha256,
+    )
+    store.block_writes = True
+
+    replay = persist_analysis(
+        store,
+        copy.deepcopy(corrected),
+        source_body=BODY,
+        expected_current_artifact_sha256=first.artifact_sha256,
+    )
+    assert replay.state == "unchanged"
+    assert replay.artifact_sha256 == second.artifact_sha256
+    assert replay.previous_artifact_sha256 == second.artifact_sha256
+
+
+def test_artifact_store_reconciles_exact_ambiguous_pointer_completion(tmp_path):
+    from engine.research_intelligence.store import (
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = _AmbiguousPointerStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Ambiguous but committed correction."
+    store.raise_after_pointer_write = True
+
+    receipt = persist_analysis(
+        store,
+        corrected,
+        source_body=BODY,
+        expected_current_artifact_sha256=first.artifact_sha256,
+    )
+    assert receipt.state == "corrected"
+    assert receipt.reconciled is True
+    latest = load_latest_research_intelligence(store, corrected["rio"]["document"]["id"])
+    assert latest is not None and latest.artifact_sha256 == receipt.artifact_sha256
+
+
+def test_artifact_pointer_conflict_is_not_retried_or_overwritten(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceConflict,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = _RejectPointerStore(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Rejected correction."
+    store.reject_pointer = True
+
+    with pytest.raises(ResearchIntelligenceConflict) as conflict:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+    assert conflict.value.code == "pointer_conflict"
+    assert store.pointer_calls == 1
+    latest = load_latest_research_intelligence(store, corrected["rio"]["document"]["id"])
+    assert latest is not None and latest.artifact_sha256 == first.artifact_sha256
+
+
+def test_artifact_store_fails_closed_on_malformed_or_dangling_state(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceInvalid,
+        latest_pointer_key,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    malformed = LocalStore(tmp_path / "malformed")
+    pointer_path = malformed.root / latest_pointer_key(_rio()["document"]["id"])
+    pointer_path.parent.mkdir(parents=True, exist_ok=True)
+    pointer_path.write_bytes(b'{"not":"a lawful pointer"}')
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        load_latest_research_intelligence(malformed, _rio()["document"]["id"])
+    assert invalid.value.code == "pointer_invalid"
+
+    dangling = LocalStore(tmp_path / "dangling")
+    receipt = persist_analysis(dangling, _analysis(), source_body=BODY)
+    (dangling.root / receipt.artifact_key).unlink()
+    with pytest.raises(ResearchIntelligenceInvalid) as missing:
+        load_latest_research_intelligence(dangling, _rio()["document"]["id"])
+    assert missing.value.code == "artifact_missing"
+
+
+def test_artifact_store_rejects_valid_but_noncanonical_pointer(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceInvalid,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = LocalStore(tmp_path / "store")
+    receipt = persist_analysis(store, _analysis(), source_body=BODY)
+    pointer_path = store.root / receipt.pointer_key
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    pointer_path.write_text(
+        json.dumps(pointer, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        load_latest_research_intelligence(store, receipt.document_id)
+    assert invalid.value.code == "pointer_noncanonical"
+
+
+def test_artifact_store_rejects_duplicate_pointer_keys(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceInvalid,
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    store = LocalStore(tmp_path / "store")
+    receipt = persist_analysis(store, _analysis(), source_body=BODY)
+    pointer_path = store.root / receipt.pointer_key
+    raw = pointer_path.read_text(encoding="utf-8")
+    pointer_path.write_text(
+        raw[:-1] + ',"schema":"mastermind.research_intelligence.pointer.v1"}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        load_latest_research_intelligence(store, receipt.document_id)
+    assert invalid.value.code == "pointer_invalid"
+
+
+def test_artifact_store_rejects_fabricated_grounding_before_io(tmp_path):
+    from engine.research_intelligence.store import ResearchIntelligenceInvalid, persist_analysis
+
+    analysis = _analysis()
+    analysis["rio"]["claims"][0]["statement"] = "The Fed cut rates immediately."
+    analysis["rio"]["claims"][0]["evidence"] = [{"quote_span": "The Fed cut rates immediately."}]
+    store = LocalStore(tmp_path / "store")
+
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        persist_analysis(store, analysis, source_body=BODY)
+    assert invalid.value.code == "grounding_invalid"
+    assert list(store.root.rglob("*.json")) == []
+
+
+def test_artifact_store_rejects_prompt_receipt_mismatch_before_io(tmp_path):
+    from engine.research_intelligence.store import ResearchIntelligenceInvalid, persist_analysis
+
+    analysis = _analysis()
+    analysis["prompt_sha256"] = "0" * 64
+    store = LocalStore(tmp_path / "store")
+
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        persist_analysis(store, analysis, source_body=BODY)
+    assert invalid.value.code == "analysis_receipt_mismatch"
+    assert list(store.root.rglob("*.json")) == []
+
+
+def test_artifact_store_rejects_non_success_analysis_before_io(tmp_path):
+    from engine.research_intelligence.store import ResearchIntelligenceInvalid, persist_analysis
+
+    analysis = _analysis()
+    analysis["state"] = "invalid_model_output"
+    analysis["rio"] = None
+    store = LocalStore(tmp_path / "store")
+
+    with pytest.raises(ResearchIntelligenceInvalid) as invalid:
+        persist_analysis(store, analysis, source_body=BODY)
+    assert invalid.value.code == "analysis_not_successful"
+    assert list(store.root.rglob("*.json")) == []
+
+
+def test_artifact_store_rejects_oversized_private_rio_before_io(tmp_path):
+    from engine.research_intelligence.store import RIO_MAX_BYTES, ResearchIntelligenceInvalid
+    from engine.research_intelligence.store import persist_analysis
+
+    sentences = [f"Claim {index} " + ("x" * 900) + "." for index in range(90)]
+    body = " ".join(sentences)
+    rio = _rio(body=body)
+    rio["claims"] = [
+        {
+            "statement": sentence,
+            "evidence": [{"quote_span": sentence}],
+            "numbers": [],
+            "entities": ["claim"],
+            "horizon": "current",
+            "explicit": True,
+        }
+        for sentence in sentences
+    ]
+    rio["analysis"]["thesis"]["support_claim_indices"] = [0]
+    analysis = _analysis(body=body, rio=rio)
+    store = LocalStore(tmp_path / "store")
+
+    with pytest.raises(ResearchIntelligenceInvalid) as too_large:
+        persist_analysis(store, analysis, source_body=body)
+    assert too_large.value.code == "rio_too_large"
+    assert RIO_MAX_BYTES <= 1024 * 1024
+    assert list(store.root.rglob("*.json")) == []
+
+
+def test_vault_adapter_persists_full_success_receipt_only(tmp_path):
+    from engine.research_intelligence.store import load_latest_research_intelligence
+    from engine.research_intelligence.vault_adapter import analyze_and_persist_vault_report
+
+    store = LocalStore(tmp_path / "store")
+
+    def good_call(_system, user, **_kwargs):
+        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+
+    result = analyze_and_persist_vault_report(
+        {
+            "id": "vault/desk/report-1",
+            "institution": "Goldman Sachs",
+            "title": "Rates",
+        },
+        BODY,
+        model_id="requested-model",
+        store=store,
+        call=good_call,
+    )
+    assert result["state"] == "ok"
+    assert result["persistence"]["state"] == "created"
+    stored = load_latest_research_intelligence(store, "vault/desk/report-1")
+    assert stored is not None
+    assert stored.receipt["requested_model"] == "requested-model"
+    assert stored.receipt["provider"] == "fake-provider"
+    assert stored.receipt["model"] == "served-model"
+
+    def bad_call(*_args, **_kwargs):
+        return "not-json", "fake-provider", "served-model"
+
+    failed = analyze_and_persist_vault_report(
+        {
+            "id": "vault/desk/report-2",
+            "institution": "Goldman Sachs",
+            "title": "Rates",
+        },
+        BODY,
+        model_id="requested-model",
+        store=store,
+        call=bad_call,
+    )
+    assert failed["state"] == "invalid_model_output"
+    assert failed["persistence"] is None
+    assert load_latest_research_intelligence(store, "vault/desk/report-2") is None
+
+
+def test_research_intelligence_store_cli_put_and_read_views(tmp_path):
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(_analysis(), ensure_ascii=False), encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+    base = [
+        sys.executable,
+        "-m",
+        "scripts.research_intelligence_store",
+        "--local",
+        str(store_dir),
+    ]
+
+    put = subprocess.run(
+        [
+            *base,
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert put.returncode == 0, put.stderr
+    receipt = json.loads(put.stdout)
+    assert receipt["state"] == "created"
+    assert receipt["document_id"] == "vault/desk/report-1"
+
+    safe = subprocess.run(
+        [*base, "show", "--document-id", "vault/desk/report-1"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert safe.returncode == 0, safe.stderr
+    safe_view = json.loads(safe.stdout)
+    assert safe_view["schema"] == "mastermind.research_intelligence.read.v1"
+    assert safe_view["view"] == "safe_summary"
+    assert safe_view["artifact_sha256"] == receipt["artifact_sha256"]
+    assert safe_view["receipt"]["provider"] == "fake-provider"
+    assert "Rates rose 2.1%." not in safe.stdout
+    assert safe_view["summary_points"]
+
+    private = subprocess.run(
+        [
+            *base,
+            "show",
+            "--document-id",
+            "vault/desk/report-1",
+            "--private-rio",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert private.returncode == 0, private.stderr
+    private_view = json.loads(private.stdout)
+    assert private_view["view"] == "private_rio"
+    assert private_view["rio"]["claims"][0]["statement"] == "Rates rose 2.1%."
+    assert private_view["receipt"]["model"] == "served-model"
+
+    historical = subprocess.run(
+        [
+            *base,
+            "show",
+            "--document-id",
+            "vault/desk/report-1",
+            "--artifact-sha256",
+            receipt["artifact_sha256"],
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert historical.returncode == 0, historical.stderr
+    historical_view = json.loads(historical.stdout)
+    assert historical_view["artifact_sha256"] == receipt["artifact_sha256"]
+    assert historical_view["is_latest"] is False
+
+
+def test_artifact_preserves_exact_prompt_identity_while_rio_stays_normalized(tmp_path):
+    from engine.research_intelligence.extractor import analyze_document
+    from engine.research_intelligence.store import (
+        load_latest_research_intelligence,
+        persist_analysis,
+    )
+
+    document = {
+        "id": "vault/desk/report-identity",
+        "source_type": "institutional_research",
+        "source_name": "GS  Global",
+        "institution": "Goldman  Sachs",
+        "desk": "Macro",
+        "title": "Rates  Outlook",
+        "published_at": "2026-09-16T12:00:00Z",
+    }
+
+    def call(_system, user, **_kwargs):
+        identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+        identity = json.loads(identity_text)
+        rio = _rio(identity["id"], body=BODY)
+        rio["document"] = identity
+        return json.dumps(rio), "fake-provider", "served-model"
+
+    analysis = analyze_document(
+        document,
+        BODY,
+        model_id="requested-model",
+        call=call,
+    )
+    assert analysis["state"] == "ok"
+    assert analysis["document"]["source_name"] == "GS  Global"
+    assert analysis["rio"]["document"]["source_name"] == "GS Global"
+
+    store = LocalStore(tmp_path / "store")
+    receipt = persist_analysis(store, analysis, source_body=BODY)
+    stored = load_latest_research_intelligence(store, document["id"])
+    assert stored is not None
+    assert stored.artifact_sha256 == receipt.artifact_sha256
+    assert stored.receipt["document"]["source_name"] == "GS  Global"
+    assert stored.rio["document"]["source_name"] == "GS Global"
+
+
+def test_artifact_store_requires_exact_w1_analyzed_body_bytes(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceInvalid,
+        persist_analysis,
+    )
+
+    padded_body = f"\n  {BODY}  \n"
+    with pytest.raises(ResearchIntelligenceInvalid) as mismatch:
+        persist_analysis(
+            LocalStore(tmp_path / "store"),
+            _analysis(body=BODY),
+            source_body=padded_body,
+        )
+    assert mismatch.value.code == "source_body_mismatch"
+
+
+def test_vault_adapter_preserves_exact_source_bytes_through_persistence(tmp_path):
+    from engine.research_intelligence.store import load_latest_research_intelligence
+    from engine.research_intelligence.vault_adapter import (
+        analyze_and_persist_vault_report,
+    )
+
+    body = f"\n  {BODY}  \n"
+    store = LocalStore(tmp_path / "store")
+
+    def good_call(_system, user, **_kwargs):
+        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+
+    result = analyze_and_persist_vault_report(
+        {
+            "id": "vault/desk/exact-bytes",
+            "institution": "Example Bank",
+            "title": "Exact bytes",
+        },
+        body,
+        model_id="requested-model",
+        store=store,
+        call=good_call,
+    )
+    assert result["state"] == "ok"
+    assert result["persistence"]["state"] == "created"
+
+    stored = load_latest_research_intelligence(store, "vault/desk/exact-bytes")
+    assert stored is not None
+    assert stored.source_content_sha256 == _sha(body)
+    assert stored.rio["document"]["content_sha256"] == _sha(body)
+
+
+def test_artifact_lost_reply_and_unavailable_status_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceEffectUnknown,
+        latest_pointer_key,
+        persist_analysis,
+    )
+
+    class LostArtifactReplyAndStatus(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.unavailable_key = None
+            self.artifact_write_calls = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            if "/objects/" not in key:
+                return super().put_bytes_strict_conditional(key, data, **kwargs)
+            self.artifact_write_calls += 1
+            result = super().put_bytes_strict_conditional(key, data, **kwargs)
+            self.unavailable_key = key
+            raise OSError("reply lost after committed artifact write")
+
+        def get_bytes_strict_bounded(self, key, maximum_bytes):
+            if key == self.unavailable_key:
+                raise OSError("artifact status unavailable")
+            return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+    store = LostArtifactReplyAndStatus(tmp_path / "store")
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(store, _analysis(), source_body=BODY)
+
+    assert unknown.value.code == "artifact_effect_unknown"
+    assert store.artifact_write_calls == 1
+    assert not (store.root / latest_pointer_key(_rio()["document"]["id"])).exists()
+
+
+def test_pointer_lost_reply_and_unavailable_status_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceEffectUnknown,
+        persist_analysis,
+    )
+
+    class LostPointerReplyAndStatus(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.trigger = False
+            self.status_unavailable = False
+            self.pointer_write_calls = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            result = super().put_bytes_strict_conditional(key, data, **kwargs)
+            if self.trigger and key.endswith("/latest.json"):
+                self.trigger = False
+                self.pointer_write_calls += 1
+                self.status_unavailable = True
+                raise OSError("reply lost after committed pointer write")
+            return result
+
+        def get_bytes_strict_bounded_versioned(self, key, maximum_bytes):
+            if self.status_unavailable and key.endswith("/latest.json"):
+                raise OSError("pointer status unavailable")
+            return super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
+
+    store = LostPointerReplyAndStatus(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Corrected interpretation."
+    store.trigger = True
+
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+
+    assert unknown.value.code == "pointer_effect_unknown"
+    assert store.pointer_write_calls == 1
+
+
+def test_pointer_lost_reply_then_different_winner_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        POINTER_MAX_BYTES,
+        ResearchIntelligenceEffectUnknown,
+        persist_analysis,
+    )
+
+    class LostPointerReplyThenSuperseded(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.trigger = False
+            self.candidate_pointer_writes = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            if not (self.trigger and key.endswith("/latest.json")):
+                return super().put_bytes_strict_conditional(key, data, **kwargs)
+            prior = super().get_bytes_strict_bounded_versioned(key, POINTER_MAX_BYTES)
+            self.candidate_pointer_writes += 1
+            accepted = super().put_bytes_strict_conditional(key, data, **kwargs)
+            assert accepted is True
+            current = super().get_bytes_strict_bounded_versioned(key, POINTER_MAX_BYTES)
+            restored = super().put_bytes_strict_conditional(
+                key,
+                prior.data,
+                expected_version=current.version,
+                content_type="application/json",
+            )
+            assert restored is True
+            self.trigger = False
+            raise OSError("candidate pointer reply lost before concurrent supersession")
+
+    store = LostPointerReplyThenSuperseded(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Transient correction."
+    store.trigger = True
+
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+
+    assert unknown.value.code == "pointer_effect_unknown"
+    assert store.candidate_pointer_writes == 1
+
+
+def test_research_intelligence_cli_rejects_duplicate_analysis_keys_before_io(tmp_path):
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    analysis_path.write_text(raw[:-1] + ',"state":"ok"}', encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.research_intelligence_store",
+            "--local",
+            str(store_dir),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert json.loads(result.stderr)["code"] == "analysis_input_invalid"
+    assert list(store_dir.rglob("*.json")) == []
+
+
+def test_research_intelligence_cli_rejects_nonfinite_json_before_io(tmp_path):
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    prompt_sha = _analysis()["prompt_sha256"]
+    analysis_path.write_text(
+        raw.replace(f'"prompt_sha256": "{prompt_sha}"', '"prompt_sha256": NaN'),
+        encoding="utf-8",
+    )
+    body_path.write_text(BODY, encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.research_intelligence_store",
+            "--local",
+            str(store_dir),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert json.loads(result.stderr)["code"] == "analysis_input_invalid"
+    assert list(store_dir.rglob("*.json")) == []
+
+
+def test_research_intelligence_cli_rejects_invalid_input_before_store_construction(
+    tmp_path, monkeypatch, capsys
+):
+    import scripts.research_intelligence_store as cli
+
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    analysis_path.write_text(raw[:-1] + ',"state":"ok"}', encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+    store_calls = []
+
+    def forbidden_store(*_args, **_kwargs):
+        store_calls.append(True)
+        raise AssertionError("invalid input must fail before store construction")
+
+    monkeypatch.setattr(cli, "build_store", forbidden_store)
+    result = cli.main(
+        [
+            "--local",
+            str(tmp_path / "store"),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ]
+    )
+
+    assert result == 2
+    assert store_calls == []
+    assert json.loads(capsys.readouterr().err)["code"] == "analysis_input_invalid"
+    assert not (tmp_path / "store").exists()
+
+
+def test_research_intelligence_cli_regrounds_before_store_construction(
+    tmp_path, monkeypatch, capsys
+):
+    import scripts.research_intelligence_store as cli
+
+    analysis = _analysis()
+    analysis["rio"]["claims"][0]["statement"] = "The Fed cut rates immediately."
+    analysis["rio"]["claims"][0]["evidence"] = [
+        {"quote_span": "The Fed cut rates immediately."}
+    ]
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(analysis), encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+    store_calls = []
+
+    def forbidden_store(*_args, **_kwargs):
+        store_calls.append(True)
+        raise AssertionError("ungrounded analysis must fail before store construction")
+
+    monkeypatch.setattr(cli, "build_store", forbidden_store)
+    result = cli.main(
+        [
+            "--local",
+            str(tmp_path / "store"),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ]
+    )
+
+    assert result == 2
+    assert store_calls == []
+    assert json.loads(capsys.readouterr().err)["code"] == "grounding_invalid"
+    assert not (tmp_path / "store").exists()
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Rates rose 2.1%.\nHigher rates pressure duration assets.\n",
+        "Rates rose 2.1%.\r\nHigher rates pressure duration assets.\r\n",
+        "Rates rose 2.1%.\rHigher rates pressure duration assets.\r",
+        "\r\nRates rose 2.1%.\rHigher rates pressure duration assets.\n東京 €\r\n",
+    ],
+    ids=["lf", "crlf", "cr", "mixed-unicode"],
+)
+def test_research_intelligence_cli_preserves_source_file_newlines(tmp_path, body):
+    """The file-path CLI must persist the bytes W1 actually analyzed."""
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(_analysis(body=body)), encoding="utf-8")
+    body_path.write_bytes(body.encode("utf-8"))
+    base = [
+        sys.executable,
+        str(ROOT / "scripts/research_intelligence_store.py"),
+        "--local",
+        str(store_dir),
+    ]
+    put_args = [
+        *base, "put", "--analysis", str(analysis_path),
+        "--source-body", str(body_path),
+    ]
+    put = subprocess.run(
+        put_args, cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert put.returncode == 0, put.stderr
+    receipt = json.loads(put.stdout)
+    assert receipt["state"] == "created"
+
+    show = subprocess.run(
+        [*base, "show", "--document-id", "vault/desk/report-1"],
+        cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert show.returncode == 0, show.stderr
+    view = json.loads(show.stdout)
+    assert view["source_content_sha256"] == hashlib.sha256(body_path.read_bytes()).hexdigest()
+    assert view["source_content_sha256"] == _sha(body)
+    assert view["artifact_sha256"] == receipt["artifact_sha256"]
+    assert view["view"] == "safe_summary"
+    assert "Rates rose 2.1%." not in show.stdout
+
+    replay = subprocess.run(
+        put_args, cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert replay.returncode == 0, replay.stderr
+    assert json.loads(replay.stdout)["state"] == "unchanged"
+    assert json.loads(replay.stdout)["artifact_sha256"] == receipt["artifact_sha256"]
+
+
+@pytest.mark.parametrize("newline", ["\r\n", "\r", "\r\n\r"], ids=["crlf", "cr", "mixed"])
+def test_research_intelligence_cli_rejects_newline_rewritten_receipt_before_io(
+    tmp_path, monkeypatch, capsys, newline
+):
+    """A receipt for normalized text must not authorize the actual file bytes."""
+    import scripts.research_intelligence_store as cli
+
+    body = f"Rates rose 2.1%.{newline}Higher rates pressure duration assets.{newline}"
+    normalized = body.replace("\r\n", "\n").replace("\r", "\n")
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(_analysis(body=normalized)), encoding="utf-8")
+    body_path.write_bytes(body.encode("utf-8"))
+    store_dir = tmp_path / "store"
+
+    def forbidden_store(*_args, **_kwargs):
+        raise AssertionError("newline-rewritten receipt reached store construction")
+
+    monkeypatch.setattr(cli, "build_store", forbidden_store)
+    result = cli.main([
+        "--local", str(store_dir), "put", "--analysis", str(analysis_path),
+        "--source-body", str(body_path),
+    ])
+    assert result == 2
+    assert json.loads(capsys.readouterr().err)["code"] == "source_body_mismatch"
+    assert not store_dir.exists()
