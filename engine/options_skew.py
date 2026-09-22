@@ -119,10 +119,9 @@ def compute_skew(rows, drops: dict | None = None) -> dict | None:
                 drops.setdefault("no_25d_put", []).append(underlying)
                 drops.setdefault("no_atm_call", []).append(underlying)
             return None
-        if len(leg) < 4:
-            if drops is not None and underlying:
-                drops.setdefault("insufficient_strikes", []).append(underlying)
-            return None
+        # No four-strike floor. The polygon builder published a name as soon as
+        # the chosen expiry had a put and a call, including a two-row expiry.
+        # A floor here drops those names from the live surface.
         put = _iv_at_delta(leg, _PUT_DELTA, want_call=False)
         call = _iv_at_delta(leg, _CALL_DELTA, want_call=True)
         if put is None or call is None:
