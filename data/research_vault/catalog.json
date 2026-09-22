@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T02:36:17.010788+00:00",
-  "count": 2609,
+  "generated_at": "2026-09-22T03:19:43.447214+00:00",
+  "count": 2612,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -33,6 +33,7 @@
     "DoubleLine",
     "Doubleline",
     "Dragon Capital",
+    "EFG",
     "Eastspring",
     "Fidelity",
     "Franklin",
@@ -93,6 +94,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-ihuigovalkl-fb636d",
+      "title": "GM Market Rhythm",
+      "institution": "EFG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T01:05:27Z",
+      "summary_points": [
+        "Small Cap Failure: Russell 2000 rejected breakout despite oversold conditions, 200dma exposure confirms persistent downtrend; small caps rarely precede broader market recovery.",
+        "NYSE Breadth Deterioration: % of stocks above 200dma at 4-month low, signaling declining market participation and heightened downside risk.",
+        "MAGS Resistance Rejection: Mega caps rejected 71.16 resistance; break below 69.72 risks weak breadth and bearish momentum.",
+        "EFG FX & Metals Report: Critical analysis of central bank policies and metals demand ahead of policy shifts for hedging and allocation.",
+        "Stoxx Europe Breakdown: Key pivot broken post-relief rally, confirming bearish momentum and weakening trend structure in European equities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
@@ -156,6 +178,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2opo5iktnlc-94ffac",
+      "title": "weekly 21sep26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:32:58Z",
+      "summary_points": [
+        "Fed Policy Stance: Fed hiked rates 25bps to 3.75% amid resilient labor market and AI investment; consumer spending rose 1.2% MoM, complicating near-term cut expectations despite housing data misses.",
+        "China Demand Gap: Retail sales YoY at 0.4% (vs prior 0.6%) despite industrial output gains, signaling persistent consumption weakness and demand-side supply gap risk.",
+        "Saudi mBridge Exit: Saudi Arabia withdrew from China-backed mBridge digital currency initiative, intensifying U.S.",
+        "concerns over bypassing SWIFT and reshaping cross-border financial infrastructure.",
+        "Middle East Escalation: Houthi strikes triggered U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-npncdqqzhjh-0261fc",
       "title": "Amundi ETF weekly pulse Europe equities",
       "institution": "Other",
@@ -191,6 +234,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-de82gqyq2zl-b9c21f",
+      "title": "ING Think the commodities feed oil cools off from the highs",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:12:46Z",
+      "summary_points": [
+        "Saudi Supply Disruption: East-West pipeline damage from drone attacks reduces Saudi supply, causing North Sea grade premiums and intensifying market tension despite geopolitical hopes.",
+        "Oil Net Long Record: Brent net longs at 282,657 lots (largest since May 2026), driven by Middle East supply risks and short covering, signaling overcrowded positioning.",
+        "Cocoa Deficit Outlook: Deteriorating crop conditions in Ivory Coast/Ghana + El Niño risk threaten 2026/27 supply deficit, despite 18% monthly price drop.",
+        "Wheat Supply Gap: 2026/27 wheat forecast raised to 10mt but remains below record 13.3mt, with heat stress (hot winds, low rainfall) posing acute supply risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
