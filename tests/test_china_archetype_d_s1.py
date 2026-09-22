@@ -185,6 +185,8 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "if c.importance == 'high'" in TPL
     assert "if c.importance != 'high'" in TPL
     assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
+    assert "{{ t(\"What we're watching\",'我们在盯什么') }}" in TPL
+    assert "{{ t('UPCOMING MACRO · NEXT 14 DAYS','近期宏观 · 未来14天') }}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
