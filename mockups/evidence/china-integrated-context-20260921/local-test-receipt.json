@@ -1,0 +1,7 @@
+{
+  "source_commit": "ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac",
+  "test_log_sha256": "1cb7a85e2fc4da59c45fb6089ff28b7f7679c317ba56ecab117d043af9e9d562",
+  "result": "389 passed",
+  "clock_pending_cases_excluded": 15,
+  "scope": "ten local suites; not hosted CI"
+}

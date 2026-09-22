@@ -36,6 +36,14 @@ verified:
   result: 389 passed; three added integration cases; extreme integer bug reproduced
     as two failures before bounds-check repair. Earlier proof remains in committed
     research/evidence.
+- claim: The final normalized combined page retains both repair streams and works
+    through its real browser controls.
+  command: RENDER_NO_DRIP=1 CHINA_FAST_RENDER=1 python -m scripts.build_china; existing
+    lib.pages normalization; python research/grey_deer/capture_china_risk_reading.py
+    --integrated
+  result: Final16 rest/focus captures and8 integrated interactions pass after auxiliary-output
+    cleanup; page0d75fe73 unchanged; source/input/asset fingerprints verified; offline
+    only.
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -48,10 +56,6 @@ unverified:
   what_would_verify: Resolve the exact platform-refused clock edit before implementing/passing
     its15 pending cases. Attribution additionally needs an accepted historical-membership
     and official starting-weight source; neither is manufactured from library caps.
-- claim: The newly combined page and its final publication-format artifact.
-  what_would_verify: Run the real no-network China builder, preserve data inputs,
-    then execute capture_china_risk_reading.py --integrated on the final normalized
-    page.
 unresolved:
 - Hosted CI, source-current-main qualification and release remain intentionally deferred;
   PR7592 retains its unchanged external release carrier.
@@ -60,8 +64,6 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Build and verify the combined page through its existing builder/normalization/browser
-  owners, preserving all existing data and thresholds.
 - Resolve the exact clock-edit gate without bypass;15 pending clock cases remain known
   failing and are excluded from passing tests.
 - Qualify official starting weights/historical membership and shared recovery/probability
@@ -87,6 +89,7 @@ prs:
 - 7592
 ---
 
+
 # Current cumulative continuation
 Operation:china-participation-context-20260921-sol-001. Sol retains source ownership.
 Procedure:Mastermind@4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f, compatible1.0.1/bootstrap1.
@@ -101,7 +104,8 @@ reading in CHINA_PARTICIPATION_CONTEXT_20260921.md and CHINA_RISK_READING_SCOPE_
 Current integration evidence:research/grey_deer/CHINA_INTEGRATED_CONTEXT_20260921.md.
 386-test original join passed; two extreme-integer counterexamples failed; final
 integrated ten-suite run389 passed after bounds-before-conversion repair.
-The final combined build/browser artifact remains the immediate next action.
+Final combined page is0d75fe73...;16 captures/8 interactions passed after auxiliary cleanup.
+The actual page and new content-addressed stylesheet are included, not only templates.
 
 Clock lane: original implementation safety-status refusal remains NO_EFFECT/frozen.
 Do not rerun or delegate it through another carrier;15 pending cases are in
@@ -112,3 +116,13 @@ No shared risk formula/calibration/recovery authority has changed. Official star
 weights and historical membership remain unproven; library cap placeholders are forbidden.
 No child or watcher is running. No fresh collection/deployment/forecast validation.
 MISSION_COMPLETE:false. Parent/source custody retained; do not replay old history.
+
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false
+Boundary:two formerly separate source candidates now compose one verified
+publication-format page. Its source, inputs, raw/normalized page and browser result
+are bound in the existing research/evidence owners. CI and production are deferred,
+not bypassed; no worker/watcher is running. Continue on this same PR7622 from this
+record plus minimum fresh canonical state. Do not redo this integration or restart
+PR7592; next qualify the unresolved clock and official-source/model evidence, then
+normal current-main/release/public-browser gates when authorized.

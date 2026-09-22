@@ -10,6 +10,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,6 +92,7 @@
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="assets/css/f7e9b02b.css?v=f7e9b02b">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="preload" as="style" href="assets/css/fd2baf90.css?v=fd2baf90">
 </head>
 <body class="page-china mx4-grid">
 <link rel="stylesheet" href="assets/css/f7e9b02b.css?v=f7e9b02b"><div class="aurora au-red" aria-hidden="true"><div class="au-a3"></div></div>
@@ -378,6 +380,8 @@
   
   
   
+  
+  
 
   <div class="cnx-wrap">
 
@@ -475,6 +479,10 @@
         
         
         
+        
+        
+        
+        
         <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
           <span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> · <span class="n" style="color:var(--ink-down, var(--down))">94</span> ▾</button>
 
@@ -537,11 +545,12 @@
         <div class="cnx-pop" id="cnx-pop-risk" style="left:auto">
           <div class="cnx-pop-h"><span class="l-en">Pullback risk radar</span><span class="l-zh">回撤风险雷达</span></div>
           
-          <div class="cnx-pop-big"><span class="n">94</span><span class="t"><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></span></div>
-          <div class="cnx-pop-sub"><span class="l-en">~50% chance of a ≥5% pullback within a month · 1.6× the usual odds</span><span class="l-zh">未来一个月内出现≥5%回撤的概率约50% · 约为平时的1.6倍</span></div>
+          <div class="cnx-pop-big"><span class="n">94</span><span class="t"><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></span></div>
+          <div class="cnx-pop-sub" data-risk-score-basis><span class="l-en">Historical stress · not a probability</span><span class="l-zh">历史压力水平 · 并非概率</span></div>
+          <div class="cnx-pop-sub"><span class="l-en">Shanghai ≥5% pullback · 21 trading sessions: 50% · state-based estimate</span><span class="l-zh">上证≥5%回撤 · 21个交易日：50% · 状态分组估计</span></div>
           
           <div class="cnx-pop-row">
-            <div class="pr-t"><span><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></span><b>99</b></div>
+            <div class="pr-t"><span><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></span><b>99</b></div>
             <div class="cnx-pop-bar"><i style="width:99%;background:var(--down)"></i></div>
           </div>
           
@@ -852,6 +861,89 @@
     </div>
   </div>
 
+  
+
+
+
+
+<link rel="stylesheet" href="assets/css/fd2baf90.css?v=fd2baf90">
+<section class="cnx-card cnx-participation" id="cnx-participation" aria-label="Market participation / 市场参与度">
+  <div class="cnx-ctitle"><span class="l-en">Market participation</span><span class="l-zh">市场参与度</span></div>
+  <div class="cnx-part-note">
+  <span class="l-en">Recent rebound, uneven recovery — the typical sampled stock is still down over 20 sessions.</span><span class="l-zh">近期反弹，修复不均——样本中典型个股在20个交易日内仍下跌。</span>
+  
+  </div>
+  <div class="cnx-part-grid">
+    <div class="cnx-part-col">
+      <div class="cnx-lbl"><span class="l-en">Latest board session</span><span class="l-zh">最近全板交易日</span></div>
+      <div class="cnx-part-data">75.6% <small><span class="l-en">rose</span><span class="l-zh">上涨</span></small></div>
+      <div class="cnx-part-sub">2026-09-18</div>
+      <div class="cnx-part-sub">3937 / 5209 <span class="l-en">traded Shanghai/Shenzhen stocks</span><span class="l-zh">只沪深有成交个股</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Typical stock</span><span class="l-zh">典型个股</span></span><span class="v">+1.04%</span></div>
+    </div>
+    <div class="cnx-part-col">
+      <div class="cnx-lbl"><span class="l-en">20-session sample</span><span class="l-zh">20个交易日样本</span></div>
+      <div class="cnx-part-data">-0.89%</div>
+      <div class="cnx-part-sub"><span class="l-en">Typical stock · Price-library sample</span><span class="l-zh">典型个股 · 价格库样本</span> · 2026-09-18</div>
+      <div class="cnx-part-sub">1711 / 1816 <span class="l-en">eligible names</span><span class="l-zh">只符合数据要求</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Five-session median</span><span class="l-zh">5个交易日中位收益</span></span><span class="v">+0.79%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">CSI 300 ETF · 20 sessions</span><span class="l-zh">沪深300 ETF · 20个交易日</span></span><span class="v">-2.09%</span></div>
+    </div>
+    <div class="cnx-part-col">
+      <div class="cnx-lbl"><span class="l-en">Above long trend</span><span class="l-zh">位于长期趋势上方</span></div>
+      <div class="cnx-part-data">28.3%</div>
+      <div class="cnx-part-sub"><span class="l-en">Above own 200-session average</span><span class="l-zh">高于自身200个交易日均线</span> · 2026-09-18</div>
+      <div class="cnx-part-sub">1670 <span class="l-en">eligible sampled stocks</span><span class="l-zh">只符合数据要求的样本股</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Five-session change</span><span class="l-zh">5个交易日变化</span></span><span class="v">+2.6 <span class="l-en">points</span><span class="l-zh">个百分点</span></span></div>
+      <div class="cnx-part-sub"><span class="l-en">Same stocks at both endpoints</span><span class="l-zh">前后使用同一组成分股</span> · 1669</div>
+    </div>
+  </div>
+  <details><summary><span class="l-en">Participation evidence & limits</span><span class="l-zh">参与度证据与限制</span></summary>
+    <p class="cnx-part-note"><span class="l-en">The daily board and the price-library sample are different populations and horizons. Neither is the CSI 300 constituent set. This comparison does not measure mega-cap contributions or prove that every sector is falling.</span><span class="l-zh">全板日度数据与价格库样本具有不同的覆盖范围和期限；两者均非沪深300成分集合。本对比不测量巨头贡献，也不能证明所有行业都在下跌。</span></p>
+    
+    <div class="cnx-lbl">5 <span class="l-en">benchmark sessions</span><span class="l-zh">个基准交易日</span> · 2026-09-11 → 2026-09-18</div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Sampled stocks rising</span><span class="l-zh">上涨样本占比</span></span><span class="v">57.4% · 1714 <span class="l-en">eligible</span><span class="l-zh">只符合要求</span></span></div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Sample mean return</span><span class="l-zh">样本平均收益</span></span><span class="v">+2.25%</span></div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Middle 80% of stock returns</span><span class="l-zh">中间80%个股收益范围</span></span><span class="v">-3.20% → +9.92%</span></div>
+    
+    <div class="cnx-lbl">20 <span class="l-en">benchmark sessions</span><span class="l-zh">个基准交易日</span> · 2026-08-21 → 2026-09-18</div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Sampled stocks rising</span><span class="l-zh">上涨样本占比</span></span><span class="v">44.0% · 1711 <span class="l-en">eligible</span><span class="l-zh">只符合要求</span></span></div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Sample mean return</span><span class="l-zh">样本平均收益</span></span><span class="v">+0.30%</span></div>
+    <div class="cnx-kv"><span class="k"><span class="l-en">Middle 80% of stock returns</span><span class="l-zh">中间80%个股收益范围</span></span><span class="v">-9.03% → +11.12%</span></div>
+    
+    
+    <div class="cnx-index-members">
+      <div class="cnx-lbl"><span class="l-en">CSI 300 members · dated snapshot</span><span class="l-zh">沪深300成分股 · 日期快照</span></div>
+      
+      <p class="cnx-part-note"><span class="l-en">Membership observed</span><span class="l-zh">成员观察日期</span> 2026-09-15 · <span class="l-en">Prices through</span><span class="l-zh">价格截至</span> 2026-09-18</p>
+      
+      <div class="cnx-lbl">5 <span class="l-en">observed benchmark sessions</span><span class="l-zh">个已观测基准交易日</span> · 2026-09-11 → 2026-09-18</div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Typical snapshot member</span><span class="l-zh">快照中典型成分股</span></span><span class="v">-0.67%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">CSI 300 ETF</span><span class="l-zh">沪深300 ETF</span></span><span class="v">+0.07%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Snapshot members rising</span><span class="l-zh">快照成分股上涨比例</span></span><span class="v">38.7%</span></div>
+      <div class="cnx-part-sub">300 / 300 <span class="l-en">eligible; full snapshot required for a return</span><span class="l-zh">只符合要求；收益计算须覆盖完整快照</span></div>
+      
+      <div class="cnx-lbl">20 <span class="l-en">observed benchmark sessions</span><span class="l-zh">个已观测基准交易日</span> · 2026-08-21 → 2026-09-18</div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Typical snapshot member</span><span class="l-zh">快照中典型成分股</span></span><span class="v">-1.23%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">CSI 300 ETF</span><span class="l-zh">沪深300 ETF</span></span><span class="v">-2.09%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Snapshot members rising</span><span class="l-zh">快照成分股上涨比例</span></span><span class="v">34.7%</span></div>
+      <div class="cnx-part-sub">300 / 300 <span class="l-en">eligible; full snapshot required for a return</span><span class="l-zh">只符合要求；收益计算须覆盖完整快照</span></div>
+      
+      
+      <p class="cnx-part-note"><span class="l-en">One observed snapshot, not a historical membership archive. Applying these names to earlier returns does not reconstruct past index membership. The comparator is an ETF, not a reconstruction of the cash index.</span><span class="l-zh">单次观察快照，并非历史成分股档案。将这些成员用于较早的收益计算，不代表重建历史指数成员。比较对象是ETF，而非重建的现货指数。</span></p>
+      <p class="cnx-part-note"><span class="l-en">Starting index weights unavailable in this view — no weighted attribution. Market-cap placeholders and end-date capitalization cannot substitute for official starting weights.</span><span class="l-zh">本视图未提供期初指数权重，不进行加权归因。市值占位值与期末市值均不可替代官方期初权重。</span></p>
+    </div>
+    
+    <div class="cnx-lbl"><span class="l-en">Sector ETFs · absolute returns</span><span class="l-zh">行业ETF · 绝对收益</span> · 2026-09-18</div>
+    <p class="cnx-part-note">4 / 16 <span class="l-en">current eligible sector proxies rose over 20 sessions;</span><span class="l-zh">只当期有效行业代理在20个交易日内上涨；</span> 16 <span class="l-en">configured. Outperforming a falling benchmark can still mean losing money.</span><span class="l-zh">只已配置。跑赢下跌的基准，仍可能是负收益。</span></p>
+    <table class="cnx-part-table"><thead><tr><th><span class="l-en">Sector proxy</span><span class="l-zh">行业代理</span></th><th><span class="l-en">20 sessions</span><span class="l-zh">20个交易日</span></th><th><span class="l-en">Gap vs CSI 300 ETF (pp)</span><span class="l-zh">相对沪深300 ETF差值（百分点）</span></th></tr></thead><tbody>
+    <tr><td><span class="l-en">Banks</span><span class="l-zh">银行</span></td><td>+2.45%</td><td>+4.55</td></tr><tr><td><span class="l-en">Securities &amp; Brokers</span><span class="l-zh">券商</span></td><td>-0.56%</td><td>+1.53</td></tr><tr><td><span class="l-en">Baijiu &amp; Liquor</span><span class="l-zh">白酒</span></td><td>-1.91%</td><td>+0.18</td></tr><tr><td><span class="l-en">Consumer Staples</span><span class="l-zh">必需消费</span></td><td>-1.06%</td><td>+1.03</td></tr><tr><td><span class="l-en">Healthcare</span><span class="l-zh">医疗</span></td><td>-2.58%</td><td>-0.48</td></tr><tr><td><span class="l-en">Innovative Drugs</span><span class="l-zh">创新药</span></td><td>-6.49%</td><td>-4.40</td></tr><tr><td><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></td><td>-0.36%</td><td>+1.73</td></tr><tr><td><span class="l-en">Technology</span><span class="l-zh">科技</span></td><td>-0.08%</td><td>+2.02</td></tr><tr><td><span class="l-en">New-Energy Vehicle</span><span class="l-zh">新能源车</span></td><td>-8.58%</td><td>-6.48</td></tr><tr><td><span class="l-en">Solar &amp; Photovoltaic</span><span class="l-zh">光伏</span></td><td>-4.34%</td><td>-2.25</td></tr><tr><td><span class="l-en">Defense &amp; Military</span><span class="l-zh">国防军工</span></td><td>+4.79%</td><td>+6.88</td></tr><tr><td><span class="l-en">Nonferrous Metals</span><span class="l-zh">有色金属</span></td><td>-7.09%</td><td>-4.99</td></tr><tr><td><span class="l-en">Coal</span><span class="l-zh">煤炭</span></td><td>-2.19%</td><td>-0.10</td></tr><tr><td><span class="l-en">Real Estate</span><span class="l-zh">房地产</span></td><td>+1.82%</td><td>+3.92</td></tr><tr><td><span class="l-en">Automobiles</span><span class="l-zh">汽车</span></td><td>-0.11%</td><td>+1.99</td></tr><tr><td><span class="l-en">Media</span><span class="l-zh">传媒</span></td><td>+0.74%</td><td>+2.84</td></tr>
+    </tbody></table>
+    <p class="cnx-part-note"><span class="l-en">Not an equal-weight index: the sample mean is an arithmetic mean of eligible stock returns, not a rebalanced portfolio. Current library membership is not a historical constituent archive. Returns use unfilled stored closes; suspensions, missing sessions and short histories reduce coverage.</span><span class="l-zh">不是等权指数：样本均值是符合要求个股收益的算术平均，并非再平衡组合。当前价格库成员并非历史成分档案。使用不填充的存储收盘价；停牌、缺失交易日和历史不足都会减少覆盖。</span></p>
+    <p class="cnx-part-note"><span class="l-en">Long-trend changes use the same eligible names at both endpoints; changes in percentage points are not stock returns. Wide dispersion is descriptive, not automatically bearish and not a pullback probability.</span><span class="l-zh">长期趋势变化使用前后同一组有效成分；百分点变化不是个股收益。收益分化仅描述差异，不自动代表看跌，更非回撤概率。</span></p>
+  </details>
+</section>
+
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">
     
@@ -923,9 +1015,10 @@
       <div class="cnx-ctitle"><span class="l-en">Pullback Risk</span><span class="l-zh">回撤风险</span> <span class="cnx-alert-pill" style="background:color-mix(in srgb,var(--down) 16%,transparent);color:var(--down)"><span class="l-en">HIGH</span><span class="l-zh">高</span></span></div>
       
       <div class="cnx-bignum" style="color:var(--down)">94<span style="font-size:14px;color:var(--muted)"> /100</span></div>
-      <div class="cnx-bigsub" style="color:var(--down)"><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></div>
+      <div class="cnx-lbl" data-risk-score-basis><span class="l-en">Historical stress · not a probability</span><span class="l-zh">历史压力水平 · 并非概率</span></div>
+      <div class="cnx-bigsub" style="color:var(--down)"><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></div>
       
-      <div class="cnx-kv"><span class="k"><span class="l-en">≥5% dip odds</span><span class="l-zh">≥5%回撤概率</span></span><span class="v">50%</span></div>
+      <div class="cnx-kv"><span class="k"><span class="l-en">Shanghai ≥5% · 21 sessions</span><span class="l-zh">上证≥5%回撤 · 21个交易日</span></span><span class="v">50%</span></div>
       
       
       <div class="cnx-kv"><span class="k"><span class="l-en">Economic slowdown</span><span class="l-zh">经济放缓</span></span>
@@ -1368,7 +1461,7 @@
       <div class="rrd-hd tone-down">
         <div class="rrd-hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div class="rrd-hd-txt">
-          <div class="rrd-hd-label"><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></div>
+          <div class="rrd-hd-label"><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></div>
           
           <div class="rrd-hd-sub"><span class="l-en">Protect capital: raise cash, no new chases.</span><span class="l-zh">保住本金：提高现金、勿追新高。</span></div>
           
@@ -1388,7 +1481,7 @@
         <span class="rrx-badge"><span class="l-en">RISK-OFF</span><span class="l-zh">避险</span> · 94/100</span>
         <span class="help">?<span class="tip"><span class="l-en">Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.</span><span class="l-zh">回撤风险仪表。高读数用于降风险，不用于选股。</span></span></span>
       </div>
-      <div class="rrx-dom"><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></div>
+      <div class="rrx-dom"><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></div>
       
       <div class="rrx-authority is-advisory">
         <span class="l-en">Advisory — sizes risk; does not override the measured tape.</span><span class="l-zh">提示性信号——仅调整仓位，不覆盖实测盘面。</span>
@@ -1594,7 +1687,7 @@
       <div class="rrd-eyebrow"><span class="l-en">Risk ladder — what to watch</span><span class="l-zh">风险梯度 — 需关注的因素</span></div>
       <div class="rrd-ladder">
         <div class="rrd-lrow tone-down">
-          <span class="rrd-lname"><span class="l-en">Breadth breakdown (all-boats)</span><span class="l-zh">广度普跌（普跌）</span></span>
+          <span class="rrd-lname"><span class="l-en">Weak large-cap participation</span><span class="l-zh">大盘股参与偏弱</span></span>
           <span class="rrd-fbar"><i style="width:99%"></i></span>
           <span class="rrd-lscore">99</span>
           <span class="rrd-lband"><span class="l-en">Risk-off</span><span class="l-zh">避险</span></span>
@@ -1781,7 +1874,7 @@
       
 
       <div class="rrd-sep"></div>
-      <div class="rrd-foot"><span class="l-en">As of 2026-09-18. </span><span class="l-zh">数据截至 2026-09-18。</span><span class="l-en">A-share pullbacks are mostly led from outside — US rates, the yuan, and how broadly the market is falling. The pull is real but modest. </span><span class="l-zh">A股回撤多由外部因素引导——美债利率、人民币汇率，以及下跌的广度。这种引导确实存在，但幅度有限。</span><span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
+      <div class="rrd-foot"><span class="l-en">As of 2026-09-18. </span><span class="l-zh">数据截至 2026-09-18。</span><span class="l-en">The score ranks composite stress against its own history; it is not a pullback probability. The breadth input is the share of a curated large-cap sample above their own 200-day averages, not a whole-market decline count. Separate state-based estimate: Shanghai Composite falling at least 5% within 21 trading sessions. It is not an exact-score probability or proof of forecast accuracy. </span><span class="l-zh">该分数表示综合压力在自身历史中的相对位置，并非回撤概率。宽度输入为精选大盘股样本中位于各自200日均线上方的比例，而非全市场下跌家数。 独立的状态分组估计：上证综指在21个交易日内下跌至少5%。它并非对应某个精确分数的概率，也不证明预测准确。</span><span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
         <span class="l-zh">这些是概率窗口而非定论——每晚重算。应对是仓位控制而非选股；前瞻记录仍在积累中。</span>
       </div>
 
@@ -2539,7 +2632,7 @@ Policy delivery is the main driver. Earlier easing has not reached credit or bro
 </div>
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-09-21 09:57 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-09-22 01:13 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 

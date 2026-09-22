@@ -1,0 +1,29 @@
+{
+  "source_commit": "ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac",
+  "unchanged_inputs_and_ledger_sha256": {
+    "data/china_search/closes.parquet": "035c045175b5400d998c300cb58f2ad73982a0c2b863afe9c9e611268b2cc07c",
+    "data/china_search/index_cons.parquet": "d95f79e71e0307a28c57209e9e7ee97d35e00ff94589b44cede640ce24d65af1",
+    "data/china_board_breadth/breadth.parquet": "fbed97a359af2aabf582d461b74351f1273ce1c435dc1775db1ba42a3930d897",
+    "data/china/510300.SS.parquet": "d9afe47dc186e7d8165e0dc3c9d07ea88397c422bd7a9bee0f78a0ea300b8cf7",
+    "data/risk_radar_intl/cn_forward_log.jsonl": "6db5eee0ac0bc8a233c581547c1a521ea7826c621cf4ab0d15c236be77cdb3da",
+    "data/china/512800.SS.parquet": "1f46154e23eabeb41eddb3d3abc0ae5fb62cbd8f3173e2405278331c3910f584",
+    "data/china/512880.SS.parquet": "b56a8a9b609429421f5ef8860fc0dba54dd1f92d6dd8dd2d7c4ca4ad7e28b875",
+    "data/china/512690.SS.parquet": "68bfb0404b54a7a64e019ea83e7fff9c634db4ac3029fa1c3938fcc707302894",
+    "data/china/159928.SZ.parquet": "94a172c626d3fd0854e173476c80df6b3a93437361c48ec44ddf57a26bef2674",
+    "data/china/512170.SS.parquet": "3982896e813903e321dcea6a9e83301bb71f0aaac642505332d767d594a795f3",
+    "data/china/159992.SZ.parquet": "1e2fd5e2ae2d94a039cb89d39f68f8a4c6c14e8c2fbd4f83edc16b33e9846bfe",
+    "data/china/512760.SS.parquet": "1d07debbc4b7d6856dbc4904f9bafd913619276c9195024e2325b194403dfa98",
+    "data/china/515000.SS.parquet": "45df8fa11defb415e3341f1280c8ee333fe67db03a4cbdd949ab3ed951786ab6",
+    "data/china/515030.SS.parquet": "d15436514812b7351dacd6735e3d8c53a1a49ccfbf9f2483cce4ed1b8eec987a",
+    "data/china/515790.SS.parquet": "d4c0308c411811067d34fb66961805026c3c8ab3c6cf0d38dd3722e6d27077d3",
+    "data/china/512660.SS.parquet": "36da89bf7a4344785d886a8b7d02168784c9995ac32d2d57c7bb87649f243e6b",
+    "data/china/512400.SS.parquet": "a077b0aaa9de2e23e04b54ca865e7c6e370071e88b1317232aa14c7c3bab885a",
+    "data/china/515220.SS.parquet": "ff2df5a7e6e24b78277e0c02013ce14b4c882805ff2700bfc9e99ebdfe1e05ae",
+    "data/china/512200.SS.parquet": "21ae9d4d3d7b4751e8486917e08b15a224a3003277bea664ee612175205c61c8",
+    "data/china/515250.SS.parquet": "1f25eb887632a3784f33553b56a7eb4cd1cd251bad4dd5bda3db726752d60a16",
+    "data/china/512980.SS.parquet": "280f92e13cbc62f8b426919a15163e2f799dab41c9f5ae5875d6dd7f46d7cbac"
+  },
+  "verified_count": 21,
+  "fresh_collection": false,
+  "production": false
+}

@@ -30,3 +30,37 @@ collection remain open. This local integration is not current-main/CI/live proof
 Final integrated ten-suite regression:389 passed in62.31s. The separate edge suite
 passed73 cases after its two RED extreme integers; no warning suppression. The
 15 pending clock cases remain excluded and are not claimed repaired.
+
+## Final combined page proof
+The real no-network builder emitted the combined page. Existing normalization
+owners externalized the original CSS and stamped references without pruning assets.
+Final page:272394 bytes; SHA256
+0d75fe73bd4dd373d4a1a70edf47de1417a75fd50c834ee9f32d0f273e505326.
+The actual site/china.html and its fd2baf90.css are included in this candidate.
+After restoring26 auxiliary generated outputs, all17 explicit JavaScript/CSS
+reference hashes matched. The complete site asset-reference guard, inline-script
+and one-page market-state coherence guards passed. Twenty input files and the
+existing CN forward ledger remained byte-identical to the committed baseline.
+
+The final Chrome pass recorded16 rest/focus captures and8 integrated interaction
+cases across1440/390, EN/ZH and dark/light. It exercised both risk entrypoints,
+Escape, the existing participation disclosure,300-member comparisons and16-sector
+detail, alongside the corrected slowdown and scoped stress/probability display.
+Explicitly synthetic null components produced unavailable guidance/slowdown rather
+than fabricated sizing or Calm. No capture console errors, failed responses or
+document-level horizontal overflow were recorded. Page hash stayed unchanged;
+server/browser closed. Desktop dark/light images were visually inspected; the
+inherited floating assistant overlay and unqualified recovery claims remain open.
+
+Build source:ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac.
+Capture source:51ebef7c121ffba7a2e8419d6105e1572566d06b (capture-only follow-up).
+Receipts:mockups/evidence/china-integrated-context-20260921/.
+This closes the split-candidate integration gap, not the complete programme.
+CI/current-main qualification, the blocked clock fix and real production acceptance
+remain owed. The15 pending clock cases are not counted among389 passing tests.
+
+Final visual-evidence guard PASS; design ratchet0 added blockers; AgentOS1170
+records/0 errors/63 existing warnings. The source-only whitespace check passed;
+generated HTML retains existing builder whitespace and is not called lint-clean.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false. Resume through the current same-PR owner record.

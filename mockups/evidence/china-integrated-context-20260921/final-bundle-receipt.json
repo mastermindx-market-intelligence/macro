@@ -1,0 +1,19 @@
+{
+  "build_source": "ab7a9fd6dafa68dce1906b8f19e25f646c6cdeac",
+  "capture_source": "51ebef7c121ffba7a2e8419d6105e1572566d06b",
+  "page_sha256": "0d75fe73bd4dd373d4a1a70edf47de1417a75fd50c834ee9f32d0f273e505326",
+  "image_hashes_verified": 16,
+  "detail_images": 2,
+  "unreferenced_own_preliminary_captures_removed": [
+    "5518d04c9df5d0c9.png",
+    "5950e9863185b726.png",
+    "5ea2a8349685873b.png",
+    "ca548123108cb89c.png",
+    "6051a57db3bb7dd4.png",
+    "1caf47e7159545ce.png",
+    "ed0d75628dd0784e.png",
+    "1d674838d55dbdf3.png"
+  ],
+  "source_clock_pending": true,
+  "production": false
+}
