@@ -135,38 +135,42 @@ def band_delta_series(idx) -> pd.Series:
     return pd.Series(0.0, index=index)
 
 
-def state_series(subs: pd.DataFrame, calib: dict) -> pd.Series:
-    """Daily engine STATE (calm..risk-off) under a given calibration — vectorized replica of
-    compute()'s tier-aware logic: Tier-A scares originate the state (max band), conjunction
-    (>=2 Tier-A >= caution) escalates one band, and Tier-B (vol) escalates a hot Tier-A. Used by
-    the do-no-harm gate so a proposed recalibration can be scored over full history.
+def state_series(subs: pd.DataFrame, calib: dict,
+                 sigs: pd.DataFrame | None = None) -> pd.Series:
+    """Daily engine state using the exact live transition owner.
 
-    Calendar context is sizing-only, so the replica uses the same fixed measured bands as live."""
-    bands = calib["bands"]
-    scares = calib["scares"]
-    tierA = [s for s, v in scares.items() if v.get("tier") == "A" and s in subs.columns]
-    tierB = [s for s, v in scares.items() if v.get("tier") == "B" and s in subs.columns]
-    if not tierA:
-        return pd.Series("calm", index=subs.index)
-    a_idx = pd.concat([_band_idx(subs[s], bands) for s in tierA], axis=1)
-    maxA = a_idx.max(axis=1)
-    n_hotA = pd.concat([(subs[s] >= bands["caution"]).astype(int) for s in tierA], axis=1).sum(axis=1)
-    conj = n_hotA >= 2
-    b_hot = (pd.concat([(subs[s] >= bands["caution"]) for s in tierB], axis=1).any(axis=1)
-             if tierB else pd.Series(False, index=subs.index))
-    esc = (conj | (b_hot & (maxA > 0)))
-    st = maxA + (esc & (maxA < 4) & (maxA > 0)).astype(int)
-    st = st.clip(0, 4)
-    # CONTEXT GATE: cap the loud (elevated+) state at caution where the broad tape isn't breaking
-    # (SPY<200dma AND breadth weak). The verified #1 false-positive lever; mirrors compute().
+    The armed+confirm conjunction and Tier-B eligibility depend on the raw
+    causal leg percentiles, so sub-scores alone are not sufficient to reproduce
+    production semantics. Canonical callers pass the same signal frame used to
+    build the sub-scores. A compatibility fallback reloads leading_signals()
+    only when older callers omit sigs.
+    """
+    from engine import risk_radar as rr
+
+    if subs is None or subs.empty:
+        return pd.Series(dtype=object, index=getattr(subs, "index", None))
+    if sigs is None:
+        try:
+            sigs = rr.leading_signals().reindex(subs.index)
+        except Exception:  # noqa: BLE001
+            sigs = pd.DataFrame(index=subs.index)
+    else:
+        sigs = sigs.reindex(subs.index)
+
     try:
-        from engine.risk_radar import context_gate_series
-        gate = context_gate_series(subs.index).reindex(subs.index).fillna(False)
-        cap = _ORDER.index("caution")
-        st = st.mask((~gate) & (st > cap), cap)
+        gate = rr.context_gate_series(subs.index).reindex(subs.index)
     except Exception:  # noqa: BLE001
-        pass
-    return st.map(lambda i: _ORDER[int(i)])
+        gate = pd.Series(False, index=subs.index)
+
+    states = []
+    for day, subrow in subs.iterrows():
+        sigrow = sigs.loc[day] if day in sigs.index else pd.Series(dtype=float)
+        gate_value = gate.loc[day] if day in gate.index else False
+        gate_met = False if pd.isna(gate_value) else bool(gate_value)
+        states.append(
+            rr._resolve_state_row(subrow, sigrow, calib, gate_met=gate_met)["state"]
+        )
+    return pd.Series(states, index=subs.index, dtype=object)
 
 
 def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
@@ -183,7 +187,8 @@ def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
     if alert_from not in _ORDER:
         raise ValueError("alert_from must name an existing Risk Radar state")
     from engine.risk_radar import subscore_series, leading_signals
-    subs = subscore_series(leading_signals(), calib)
+    sigs = leading_signals()
+    subs = subscore_series(sigs, calib)
     if subs is None or subs.empty:
         return {"f1": None}
     spy = _spy(drop_missing=False)
@@ -203,7 +208,7 @@ def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
         if np.isfinite(loss):
             losses[day], ends[day] = loss, spy.index[loc + H]
     fdd = pd.Series(losses, dtype=float).reindex(subs.index)
-    state = state_series(subs, calib).reindex(subs.index)
+    state = state_series(subs, calib, sigs=sigs).reindex(subs.index)
     known = state.isin(_ORDER) & subs.notna().any(axis=1)
     alert = state.map(lambda value: value in _ORDER and
                       _ORDER.index(value) >= _ORDER.index(alert_from))

@@ -3715,8 +3715,13 @@ def main() -> int:
         if _vs_v1 is not None:
             try:
                 from engine import valuation_assumptions as _valuation_assumptions
+                # as_of is the build's own point-in-time ceiling: an event
+                # dated after it has not happened yet as far as this build
+                # knows, and may not propose an assumption change.
                 rec.setdefault("valuation_scenario", {})["controls"] = (
-                    _valuation_assumptions.controls_blob(_vs_v1)
+                    _valuation_assumptions.controls_blob(
+                        _vs_v1, as_of=rec.get("asof")
+                    )
                 )
             except Exception as e:  # noqa: BLE001 — additive, never fatal
                 log.warning("valuation_assumptions failed for %s: %s", ticker, e)
