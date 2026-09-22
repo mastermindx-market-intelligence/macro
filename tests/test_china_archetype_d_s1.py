@@ -188,6 +188,12 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_hero_exposes_explicit_as_of_semantics() -> None:
+    assert '<span class="l-en">As of </span>' in TPL
+    assert '<span class="l-zh">截至 </span>' in TPL
+    assert '<time datetime="{{ latest.date }}">{{ latest.date }}</time>' in TPL
+
+
 def test_deep_dashboard_has_real_document_structure_without_visual_wipe() -> None:
     assert '<h1 class="cnx-page-heading">' in TPL
     assert TPL.count('class="cnx-lbl cnx-zone-heading"') >= 5
