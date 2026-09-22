@@ -163,18 +163,35 @@ def _select_legacy_rows(ledger: "object") -> "object":
 def _delta_stats(deltas: list[float]) -> dict[str, float | None]:
     """p50/p90/max of |delta skew|, plus the count and sign-flip rate.
 
-    Returns NaN-safe values (None when the input is empty).
+    Returns NaN-safe values (None when the input is empty). The sign-flip
+    count is `delta < 0` (legacy - new flipped relative to a non-zero
+    delta — i.e. the two paths disagree on direction). Zero/zero pairs
+    (delta == 0 exactly) are counted separately and reported as
+    n_zero_delta so the audit's narrative can distinguish "they agree on
+    no skew" from "they agree on the same sign".
+
+    The earlier `n_sign_flip = sum(1 for d in deltas if d * d < 0)` was
+    tautologically zero (d * d is never negative for any real d) — a
+    genuine bug, not a stylistic typo. The current implementation
+    classifies each delta into one of three buckets:
+      - n_sign_flip    — legacy and new have OPPOSITE signs.
+      - n_zero_delta   — legacy == new exactly (delta == 0).
+      - n_sign_match   — legacy and new share a non-zero sign.
+    `n_sign_flip + n_zero_delta + n_sign_match == n` always.
     """
     if not deltas:
         return {"n": 0, "p50": None, "p90": None, "max": None,
-                "sign_agreement_rate": None, "n_sign_flip": 0}
+                "sign_agreement_rate": None, "n_sign_flip": 0,
+                "n_zero_delta": 0, "n_sign_match": 0}
     abs_d = [abs(d) for d in deltas]
     s = sorted(abs_d)
     # Nearest-rank percentile; OK for an audit sample, not a published series.
     def _pct(p: float) -> float:
         idx = max(0, min(len(s) - 1, int(round(p * (len(s) - 1)))))
         return s[idx]
-    n_sign_flip = sum(1 for d in deltas if d * (deltas[deltas.index(d)]) < 0)
+    n_zero_delta = sum(1 for d in deltas if d == 0)
+    n_sign_flip = sum(1 for d in deltas if d < 0)
+    n_sign_match = sum(1 for d in deltas if d > 0)
     # Sign-agreement rate: same sign on legacy skew and recomputed skew.
     same = sum(1 for d in deltas if d >= 0)  # delta == legacy - new; >=0 means same/non-negative-newer
     sign_agreement = same / len(deltas)
@@ -183,7 +200,9 @@ def _delta_stats(deltas: list[float]) -> dict[str, float | None]:
             "p90": round(_pct(0.90), 6),
             "max": round(s[-1], 6),
             "sign_agreement_rate": round(sign_agreement, 6),
-            "n_sign_flip": n_sign_flip}
+            "n_sign_flip": n_sign_flip,
+            "n_zero_delta": n_zero_delta,
+            "n_sign_match": n_sign_match}
 
 
 def _key_iter(rows: "object"):
@@ -304,6 +323,8 @@ def main(argv: list[str] | None = None) -> int:
             "p50": stats["p50"], "p90": stats["p90"], "max": stats["max"],
         },
         "n_sign_flip": stats["n_sign_flip"],
+        "n_zero_delta": stats["n_zero_delta"],
+        "n_sign_match": stats["n_sign_match"],
         "n_skipped": len(skipped),
         "limit": args.limit,
         "ledger": args.ledger,
@@ -327,7 +348,10 @@ def main(argv: list[str] | None = None) -> int:
     lines.append(f"- Sign agreement rate: **{stats['sign_agreement_rate']}**")
     lines.append(f"- |delta skew| p50/p90/max: "
                  f"**{stats['p50']} / {stats['p90']} / {stats['max']}**")
-    lines.append(f"- Sign flips: **{stats['n_sign_flip']}**")
+    lines.append(f"- Sign buckets: match=**{stats['n_sign_match']}**, "
+                 f"flip=**{stats['n_sign_flip']}**, "
+                 f"zero=**{stats['n_zero_delta']}** "
+                 f"(match + flip + zero == keys_compared)")
     lines.append("")
     lines.append("## Top 10 worst keys (by |delta skew|)")
     lines.append("")

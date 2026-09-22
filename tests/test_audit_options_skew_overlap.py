@@ -170,6 +170,53 @@ def test_delta_stats_sign_agreement_matches_sign_of_delta():
     assert stats["sign_agreement_rate"] == pytest.approx(2 / 3)
 
 
+def test_delta_stats_counts_genuine_sign_flips():
+    """MINOR-1 RED-first regression: a negative delta means the legacy
+    path and the new ThetaData path DISAGREE on sign — the audit must
+    surface that as `n_sign_flip`. The previous implementation used
+    `d * d < 0` which is tautologically false for any real d, so it
+    always returned 0 regardless of input. Verify the fix:
+    deltas [-2.0, 3.0] must yield n_sign_flip == 1.
+    """
+    mod = _load_audit()
+    stats = mod._delta_stats([-2.0, 3.0])
+    assert stats["n"] == 2
+    assert stats["n_sign_flip"] == 1
+    assert stats["n_sign_match"] == 1
+    assert stats["n_zero_delta"] == 0
+    # The buckets must exhaust the input set: sum == n
+    assert stats["n_sign_flip"] + stats["n_sign_match"] + stats["n_zero_delta"] == stats["n"]
+
+
+def test_delta_stats_separates_zero_delta_from_sign_match():
+    """A delta of exactly 0 means legacy == new (no skew difference) —
+    that is a special agreement bucket, not a sign-match. The audit
+    surfaces it as `n_zero_delta` so the markdown receipt can distinguish
+    "they agree there is no skew" from "they agree on the same sign"."""
+    mod = _load_audit()
+    stats = mod._delta_stats([0.0, 0.5, -0.5, 0.0])
+    assert stats["n"] == 4
+    assert stats["n_zero_delta"] == 2
+    assert stats["n_sign_match"] == 1
+    assert stats["n_sign_flip"] == 1
+    assert stats["n_sign_flip"] + stats["n_sign_match"] + stats["n_zero_delta"] == 4
+
+
+def test_delta_stats_sign_agreement_includes_zero_delta():
+    """sign_agreement_rate is `delta >= 0 / n` per the existing spec —
+    zero deltas count as agreement (legacy == new). Pin the math so the
+    new bucket labels do not silently change the headline number."""
+    mod = _load_audit()
+    stats = mod._delta_stats([0.0, 0.0, -0.1])
+    assert stats["n"] == 3
+    # 2 of 3 deltas >= 0 → 2/3 sign-agreement (the same spec the prior
+    # test pin held; this confirms we did not regress the headline).
+    assert stats["sign_agreement_rate"] == pytest.approx(2 / 3)
+    assert stats["n_zero_delta"] == 2
+    assert stats["n_sign_flip"] == 1
+    assert stats["n_sign_match"] == 0
+
+
 def test_worst_keys_returns_top_k_by_abs_delta():
     mod = _load_audit()
     records = [
@@ -301,12 +348,24 @@ def test_cli_happy_path_emits_receipt_and_summary(tmp_path):
     assert summary["sign_agreement_rate"] == pytest.approx(3 / 5)
     # max |delta| is GOOG +0.26
     assert summary["abs_delta_skew"]["max"] == pytest.approx(0.26)
+    # MINOR-1 fix: bucket the deltas honestly. The five deltas are
+    # [SPY 0.0, AAPL -0.01, MSFT -0.01, GOOG +0.26, AMZN +0.24]:
+    #   n_zero_delta   = 1  (SPY)
+    #   n_sign_match   = 2  (GOOG, AMZN — both > 0)
+    #   n_sign_flip    = 2  (AAPL, MSFT — both < 0)
+    assert summary["n_zero_delta"] == 1
+    assert summary["n_sign_match"] == 2
+    assert summary["n_sign_flip"] == 2
+    assert (summary["n_sign_flip"] + summary["n_sign_match"]
+            + summary["n_zero_delta"]) == summary["keys_compared"]
     assert out_md.exists()
     body = out_md.read_text(encoding="utf-8")
     assert "Top 10 worst keys" in body
     assert "| date | underlying | legacy_skew | new_skew | delta_skew |" in body
     # Worst key is GOOG with delta 0.26
     assert "GOOG" in body
+    # MINOR-1: receipt surfaces the new sign-bucket breakdown.
+    assert "match=" in body and "flip=" in body and "zero=" in body
 
 
 def test_cli_limit_caps_input(tmp_path):
