@@ -292,6 +292,44 @@ def test_live_only_index_tiles_show_loading_geometry_until_live_quote_arrives() 
     assert 'aria-busy="true"' in TPL
 
 
+def test_deep_dashboard_capability_inventory_cannot_be_silently_compressed() -> None:
+    # Chairman-accepted production depth: a future cleanup may improve these
+    # capabilities, but must not erase them under a smaller replacement shell.
+    for marker in (
+        "{{ t('What To Do','该怎么做') }}",
+        "{{ t('Upcoming Events','近期数据') }}",
+        "{{ t('Market Sentiment','市场情绪') }}",
+        "{{ t('Sector Temperature','板块温度') }}",
+        "{{ t('Policy Monitor','政策监控') }}",
+        "{{ t('Connect Flows','互联通资金') }}",
+        "{{ t('Macro News','宏观新闻') }}",
+        "{{ t('Property','房地产') }}",
+        "{{ t('AI Brief','AI 简报') }}",
+        "{{ t('Alerts Centre','警报中心') }}",
+        "MARKET TILES (C · US mx5 combined index face",
+    ):
+        assert marker in TPL
+
+    for dialog in (
+        "cnx-dlg-playbook",
+        "cnx-dlg-events",
+        "cnx-dlg-risk",
+        "cnx-dlg-sentiment",
+        "cnx-dlg-sector",
+        "cnx-dlg-policy",
+        "cnx-dlg-flows",
+        "cnx-dlg-news",
+        "cnx-dlg-property",
+        "cnx-dlg-aibrief",
+        "cnx-dlg-alerts",
+    ):
+        assert f'id="{dialog}"' in TPL
+
+    # The rejected page-level replacement shell must not return as publication law.
+    assert "L1-4 · Why — four drivers" not in TPL
+    assert "L1-6 · Go deeper" not in TPL
+
+
 def test_index_face_and_deep_racks_remain() -> None:
     assert "MARKET TILES (C · US mx5 combined index face" in TPL
     assert '<div class="cnx-tiles">' in TPL
