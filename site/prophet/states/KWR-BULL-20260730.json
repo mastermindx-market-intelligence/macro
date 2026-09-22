@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 86.4,
+    "validity": 98.9,
     "progress": 0.0,
     "pace": 19.3,
     "retention": 0.0,
     "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.898,
+    "dist_to_stop_r": 0.992,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 117.8,
-    "p1": -0.0682,
-    "p2": -0.0341,
+    "p1": -0.0054,
+    "p2": -0.0027,
     "p3": null,
-    "move_r": -0.102,
+    "move_r": -0.008,
     "mfe_r": 0.229,
     "mae_r": -0.137
   },
