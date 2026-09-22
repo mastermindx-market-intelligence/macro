@@ -120,7 +120,7 @@
           "sha256": "31ebc71a5f798e2ccde651c6c41c6971ee73eee2316ecaa2303b361f7663789f",
           "captured": true,
           "width": 1440,
-          "height": 3238
+          "height": 3272
         },
         {
           "access": "anonymous",
@@ -156,7 +156,7 @@
           "sha256": "838448dd7c1fdf8c3588e7bbdcfa67b8a2c312b28144040b09b112fb0dac0853",
           "captured": true,
           "width": 1440,
-          "height": 3238
+          "height": 3272
         },
         {
           "access": "anonymous",
@@ -192,7 +192,7 @@
           "sha256": "f8c0aa269af246263aa7d28f33ef39e12f82643c27e3165a14bde08dd8089bf3",
           "captured": true,
           "width": 390,
-          "height": 4902
+          "height": 4738
         },
         {
           "access": "anonymous",
@@ -228,7 +228,7 @@
           "sha256": "371c2d074c69950f389077aae2671ad4c15502a0336e7be1bd0e35591f299aee",
           "captured": true,
           "width": 390,
-          "height": 4902
+          "height": 4738
         }
       ]
     }
@@ -244,7 +244,7 @@
     "gaps": "DOM measurements taken only on the dark/en render per viewport — page layout does not depend on theme/lang so a single sample is sufficient and reproducible."
   },
   "excluded": [],
-  "generated_at": "2026-09-22T06:49:13Z",
+  "generated_at": "2026-09-22T07:14:00Z",
   "capture_sha": "ea194c5d215c64158a828abdc676f47bb7723374",
   "porcelain_clean_at_capture": true,
   "outcome": "captured"
