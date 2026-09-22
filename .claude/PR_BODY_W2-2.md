@@ -1,6 +1,6 @@
 # [MO-A3] A-F03-W2-2: ThetaData skew accrual lane on the store host (launchd + R2 publish) + real-overlap audit tool
 
-**Head SHA:** `0beb85bc3ee2e7beace8f85b38aa4e31d0f739de` (W2-2 packet deliverable head — round 3/3 refresh: BLOCKER 1/2/3/4 + MINOR 1/2 fixes + waiver refresh + final body SHA update)
+**Head SHA:** `b6b8f4dfe5358fa77c67c51aeb7db7d420f86c2d` (W2-2 packet deliverable head — round 3/3 refresh: BLOCKER 1/2/3/4 + MINOR 1/2 fixes + waiver refresh + final body SHA update)
 **Base:** `origin/main` @ `6ea475723e85480b4411d53f4b4c1e3fdf3d7039`
 **Branch:** `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` (DRAFT — never label / ready / merge)
 
