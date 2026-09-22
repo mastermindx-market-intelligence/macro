@@ -3,40 +3,38 @@
   "mission": "A beautiful, intuitive Market Guide and contextual Macro explanations, powered by the existing bilingual registry",
   "mission_complete": false,
   "production_changed": false,
-  "finalization_classification": "MORE_WORK_EXISTS",
-  "boundary": "R5 CI enrollment repaired and full source-backed browser qualifier expanded; qualification running next; Macro navigation diagnosis still blocked",
+  "finalization_classification": "ALL_SCOPED_LANES_BLOCKED",
+  "boundary": "R5 current-source standalone browser qualification and actual code-gate test enrollment complete; Macro diagnostics and discovered heading repair held",
   "protected_authority_pin": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
-  "source_subject": "6c5dbe1f9b51f8ebb7ac3ef488f99b1ff57c4926",
+  "source_subject": "0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
   "view_subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
   "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
   "carrier": "claude/reference-rethink-20260921",
   "pr": 7647,
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
-  "last_material_delta": "Enrolled both Python suites and both Node suites in existing public-render-fastlane code gate with BeautifulSoup dependency and a no-waiver enrollment regression test. Expanded original browser qualifier without removing its keyboard assertions.",
+  "last_material_delta": "121 unit tests pass; real source qualifier now passes original keyboard/history/184-route checks and 48 dual-theme/locale/width views plus no-JS fallback. Existing code-gate enrollment and source-change selection verified. Independent review requested through native GitHub.",
   "local_tests": {
     "python": 68,
     "node": 53,
     "total": 121,
     "python_cleanup_warnings": 6
   },
-  "focused_browser_proof": "r4-focused-browser.json: Chromium 151.0.7922.34, 28 Tab/Shift+Tab steps contained, Escape restored opener focus, six ingredients present, zero hidden result rows, no page errors",
-  "proof_ceiling": "Source-backed local standalone review consumer. Not the full matrix, independent acceptance, deployed integration, or current-market proof",
-  "preview": "r4-preview-linked.html",
+  "focused_browser_proof": "Superseded by full current-source standalone qualifier at 0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
+  "proof_ceiling": "Standalone source-backed review consumer, not actual Macro integration, independent acceptance, hosted green or deployment",
+  "preview": "r5-evidence/browser-verified/guide.html",
   "original_r3_proof": "r3-realpath/remaining-routes.json remains historical at 49f462dc67f6ea850a77d261a8a1a6a8f810b6df; do not claim 184 R3 cases as freshly run on R4",
   "context_mode": "Built and unit-tested. Local unchanged Macro DOM injection opened the dialog but the exact navigation-HTML comparison differed. Cause remains unresolved; no embedding PASS",
   "blocked_lanes": {
     "macro_integration": "Fresh same-device navigation mutation diagnostic refused by tool safety-status check in this turn. Not retried through another tool, host or actor.",
-    "expanded_browser_qualification": "SOURCE_REPAIRED: exclusive new output path; full six-view theme/locale/width matrix and no-JS check available; execution next",
-    "ci_enrollment": "SOURCE_REPAIRED: runs in existing help/glossary code gate; new hosted proof pending",
-    "editorial_summary_changes": "Canonical definition-extraction request refused; registry content was not rewritten",
-    "independent_acceptance": "No independent return; no eligible Executive worker-submit action exposed in current discovery; CODEOWNERS not found at the integrated source; author cannot self-approve",
-    "release": "Blocked by these actual integration, CI, qualification and review obligations"
+    "independent_acceptance": "GitHub requested reviewer mastermindx-2 successfully; no review return/START or acceptance yet",
+    "release": "Requires actual Macro diagnosis/integration, heading repair, independent acceptance and current concluded CI; keep Draft/Hold",
+    "search_heading_repair": "Source-derived stale-heading defect after topic → typed global search. RED test append refused; same-file readback proves no change. Do not reroute the refused test write."
   },
-  "effects": "All successful source edits/commits are on the original carrier. Refused qualifier edit read back unchanged. No unresolved production or external-worker effect",
+  "effects": "R5 CI/test enrollment and qualifier edits are committed on this carrier. Final local evidence/checkpoint write verified by same-device readback. Refused test append left its file unchanged. No unresolved production or worker effect.",
   "active_children": [],
   "autonomous_return_path": null,
-  "principal_judgment": "PRINCIPAL_JUDGMENT: implement the already-frozen visual details and diagnosed keyboard behavior directly; no worker began and no incumbent reference/help source was overwritten",
+  "principal_judgment": "CRITICAL_PATH_SHORTCUT: repair actual test enrollment and complete the existing browser qualification directly; independent review remains separate and was requested through native GitHub. No worker began.",
   "do_not_redo": [
     "Do not recreate Paper artboards",
     "Do not create a second editorial store",
@@ -45,8 +43,20 @@
     "Do not attach R3 browser evidence to R4",
     "Do not green the unresolved Macro navigation comparison",
     "Do not waive unenrolled suites",
-    "Do not overwrite the incumbent reference builder/template or bypass refused operations"
+    "Do not overwrite the incumbent reference builder/template or bypass refused operations",
+    "Do not waive or repeat completed code-gate enrollment absent an invalidator",
+    "Do not claim standalone matrix proof as Macro embedding",
+    "Do not label requested review as START or acceptance"
   ],
-  "next_action": "Run and visually inspect the expanded real-source browser qualification at the committed subject; publish exact evidence and request independent review. Macro navigation diagnostic remains held.",
-  "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes"
+  "next_action": "After approved recovery, repair topic-to-search heading with a failing test and diagnose Macro navigation comparison; consume independent review on #7647, reconcile incumbent reference source custody, then integrate/release through existing gates. Do not rerun already-passing standalone qualification unless source changes.",
+  "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes",
+  "proof": "r5-evidence/browser-verified/qualification.json; r5-evidence/source-binding.json; r5-evidence/ci-source-selection.json",
+  "independent_review": {
+    "requested_reviewer": "mastermindx-2",
+    "carrier": "macro#7647",
+    "requested": true,
+    "started": false,
+    "acceptance": false
+  },
+  "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending"
 }
