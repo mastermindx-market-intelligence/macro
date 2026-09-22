@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T05:19:59.679274+00:00",
-  "count": 2617,
+  "generated_at": "2026-09-22T05:35:54.621962+00:00",
+  "count": 2618,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -336,6 +336,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-irfsjldm8xi-9d962a",
+      "title": "Economics Economic Update 21 09 2026",
+      "institution": "CommBank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:16:58Z",
+      "summary_points": [
+        "Net Productivity Impact: $33.8bn net benefit (1.4% GDP boost) after subtracting $24.5bn offshore AI service costs; critical factors include industry adoption rates and labor reallocation efficiency.",
+        "Labor Reallocation & Policy Risk: Initial 180k job reduction offset over 5 years via RBA policy, but healthcare/retail face largest cuts; policy missteps risk disrupting reallocation and worker incentives.",
+        "Sector-Specific Efficiency Gains: IT/telcos (5.4ppt) and finance (5.0ppt) lead in AI-driven output gains; construction/hospitality lag (1.1-0.9ppt) due to physical/regulatory constraints.",
+        "Offshore Revenue Flows: $24.5bn data center revenue flows offshore, reducing net productivity benefit and highlighting structural trade cost risk from imported AI services.",
+        "Data Center Capex Surge: $9.2bn capex (data centers) drives near-term GDP growth, with Info/Media/Telecom Capex accelerating Machinery & Equipment investment amid GPU price spikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
