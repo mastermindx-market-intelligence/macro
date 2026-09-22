@@ -1,6 +1,6 @@
 {
   "checks": [
-    "Now separates earlier high-authority events from fresh watch items",
+    "Now renders only canonical tier+freshness groups present in the current snapshot",
     "Every first-glance row has a source-bound next action instead of generic evidence copy",
     "Full-source Bonds evidence is reachable beyond the capped queue",
     "Search AND source filtering, genuine no-results, and reset",
@@ -12,7 +12,7 @@
     "Net-liquidity flips expose current-state sizing work without becoming timing signals",
     "OI crowding exposes leverage verification without becoming a crash call",
     "Vector market mode exposes trend-efficiency/risk state without becoming a directional trade call",
-    "Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call",
+    "Current real snapshot has no Vector momentum-trigger observation; browser proof does not synthesize one",
     "Current real snapshot has no Vector structure-shift observation; browser proof does not synthesize one",
     "Five theme-change families render source-bound model limits, reassessment and current-page actions",
     "Three rotation rollover families render breadth-aware limits and current-panel reassessment",
@@ -45,7 +45,6 @@
     "desktop-net-liquidity.png",
     "desktop-oi-crowding.png",
     "desktop-vector-market-mode.png",
-    "desktop-vector-momentum-trigger.png",
     "desktop-forming-narrative.png",
     "desktop-demand-ahead.png",
     "desktop-forex-residual.png",
@@ -108,6 +107,13 @@
         "width": 1098,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -122,6 +128,13 @@
         "width": 1098,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -136,6 +149,13 @@
         "width": 1098,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -150,6 +170,13 @@
         "width": 1098,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -159,11 +186,18 @@
       "width": 844,
       "height": 390,
       "first_row": {
-        "x": 25,
-        "y": 691.5,
-        "width": 794,
+        "x": 17,
+        "y": 315,
+        "width": 810,
         "height": 155.25
       },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -173,11 +207,18 @@
       "width": 844,
       "height": 390,
       "first_row": {
-        "x": 25,
-        "y": 691.5,
-        "width": 794,
+        "x": 17,
+        "y": 315,
+        "width": 810,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -187,11 +228,18 @@
       "width": 844,
       "height": 390,
       "first_row": {
-        "x": 25,
-        "y": 691.5,
-        "width": 794,
+        "x": 17,
+        "y": 315,
+        "width": 810,
         "height": 155.25
       },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -201,11 +249,18 @@
       "width": 844,
       "height": 390,
       "first_row": {
-        "x": 25,
-        "y": 691.5,
-        "width": 794,
+        "x": 17,
+        "y": 315,
+        "width": 810,
         "height": 139.3125
       },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 40
@@ -220,6 +275,13 @@
         "width": 404,
         "height": 189.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -234,6 +296,13 @@
         "width": 404,
         "height": 168.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -248,6 +317,13 @@
         "width": 404,
         "height": 189.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -262,6 +338,13 @@
         "width": 404,
         "height": 168.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -276,6 +359,13 @@
         "width": 364,
         "height": 208
       },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -290,6 +380,13 @@
         "width": 364,
         "height": 168.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -304,6 +401,13 @@
         "width": 364,
         "height": 208
       },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -318,6 +422,13 @@
         "width": 364,
         "height": 168.875
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -332,6 +443,13 @@
         "width": 294,
         "height": 226.75
       },
+      "tabs": {
+        "x": 12,
+        "y": 396,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -346,6 +464,13 @@
         "width": 294,
         "height": 208
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -360,6 +485,13 @@
         "width": 294,
         "height": 226.75
       },
+      "tabs": {
+        "x": 12,
+        "y": 396,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44
@@ -374,6 +506,13 @@
         "width": 294,
         "height": 208
       },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
       "browse_height": 40,
       "reset_height": 40,
       "quick_filter_min_height": 44

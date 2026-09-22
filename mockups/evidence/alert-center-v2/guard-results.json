@@ -1,45 +1,50 @@
 [
   {
     "check": "full-alert-regression",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
-    "output": "243 passed, 5 warnings, 0 failures"
+    "output": "244 passed, 6 warnings, 0 failures"
   },
   {
-    "check": "complete-source-bound-snapshot",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "check": "current-real-snapshot",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
-    "output": "634/634 supported, 0 fallback, 49 families"
+    "output": "630/630 supported, 0 fallback, 48 families present in current snapshot; absent Vector momentum/structure families are covered by unit contracts and are not synthesized into browser proof"
   },
   {
     "check": "browser-proof",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
-    "output": "40/40 checks PASS; 52 screenshots; 0 page errors; 320/390/430 portrait + 844x390 landscape + 1440 across dark/light EN/ZH"
+    "output": "40/40 checks PASS; 51 screenshots; 0 page errors; snapshot-honest attention/family checks"
+  },
+  {
+    "check": "short-landscape-triage",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+    "exit_code": 0,
+    "output": "844x390 dark/light EN/ZH: workspace tabs bottom=205.5px; first real triage row begins at y=315px within 390px viewport; Reset/Browse/quick filters all >=40px"
   },
   {
     "check": "trust-browser-proof",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
     "output": "14/14 adversarial cases PASS; 10 screenshots"
   },
   {
-    "check": "session-d-review-addendum",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
-    "exit_code": 0,
-    "output": "adds the missing 844x390 landscape proof; Earlier priority uses muted/line subordinate tokens; Watch next uses info; next action uses shared line/panel2 tokens; Reset/Browse/quick filters stay >=40px"
-  },
-  {
     "check": "design-system",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
-    "output": "R0 enforce-added: 0 blocking findings on exact UI delta; alert_center.css contains no color-mix()"
+    "output": "R0 enforce-added: 0 blocking findings on cumulative Session-D UI delta"
   },
   {
     "check": "runtime-style",
-    "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
+    "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "exit_code": 0,
     "output": "runtime style injection guard OK"
+  },
+  {
+    "check": "local-return-reconciliation",
+    "status": "ACCEPTED_FOR_REVIEW",
+    "output": "Two local-only Sol Integration Proof commits were reconciled rather than overwritten: 079e73b125e keeps triage visible in short landscape; e4eebf1b56f makes freshness groups snapshot-honest. Final QA repair 7aa9af9f1d1 makes absent real-snapshot Vector families non-synthetic while preserving unit coverage."
   },
   {
     "check": "prior-current-base-ci",
@@ -50,20 +55,20 @@
   },
   {
     "check": "latest-base-overlap",
-    "observed_main": "912feaa2b13959a6cca4d3f1472188b4a4d702bb",
+    "observed_main": "9e9da53a671f3420b2cab9cca20b131c811a05df",
     "status": "RELEASE_BLOCKED_CURRENT_BASE_RECONCILIATION",
-    "output": "since prior green CI base, protected main overlaps the PR only at .github/ci/legacy-jobs.yml; repeated pre-review reconciliation was stopped as NO_DELTA_LOOP. Reconcile this shared CI file once after independent semantic review, immediately before release."
+    "output": "184 protected-main commits beyond prior green base; overlap with PR #7022 remains exactly .github/ci/legacy-jobs.yml. Semantic/UI/test paths are disjoint. Reconcile shared CI once after independent semantic review, immediately before final hosted CI/release."
   },
   {
     "check": "contract-delta",
     "status": "HOSTED_EXACT_HEAD_REQUIRED",
     "prior_hosted_pass_head": "6f870e020964fbe67956ea3ba7cf769af39ea4fc",
     "prior_output": "0 introduced, 1 inherited",
-    "output": "source/QA/test head changed to 30976378622; exact-head hosted contract-delta must rerun after final current-base reconciliation push"
+    "output": "semantic/QA head changed to 7aa9af9f1d1; exact-head hosted contract-delta required after final current-base reconciliation"
   },
   {
     "check": "production-route",
     "status": "BUILT_NOT_PROVEN_IN_PRODUCTION",
-    "output": "live /alerts.html still requires post-merge render and real browser acceptance"
+    "output": "live /alerts.html still requires post-merge render + engine-render settlement and real browser acceptance"
   }
 ]
