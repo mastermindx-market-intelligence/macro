@@ -569,6 +569,64 @@ def _merge_seed_tools(*groups: list[str] | tuple[str, ...]) -> tuple[str, ...]:
     return tuple(out)
 
 
+# Qualified model-visibility families for Fast/chat.  These names do not grant
+# authorization: Brain must build the full entitlement/page-gated schema first, then
+# intersect it with this candidate surface.  None means fail open to the full authorized
+# surface.  The family shapes were adversarially qualified before gateway consumption;
+# the canonical _QuestionProfile remains the only task classifier.
+_FAST_VISIBLE_TOOL_FAMILIES: dict[str, tuple[str, ...]] = {
+    "single_name_current": (
+        "get_market_events", "get_symbol_context", "get_quote", "get_symbol_intel",
+        "read_company_intelligence", "get_fundamentals", "get_earnings", "get_house_view",
+        "query_spine", "read_contradictions",
+    ),
+    "macro_rates": (
+        "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+        "read_inflation_intelligence", "read_contradictions", "get_market_events",
+        "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "get_quote", "get_symbol_context", "get_market_events", "read_options_entry_state",
+        "explain_options_context", "query_options_confluence", "list_options_contradictions",
+    ),
+    "portfolio_current": (
+        "get_portfolio_brief", "get_watchlist", "read_world_state", "read_factor_state",
+        "list_factor_contradictions", "get_market_events", "read_contradictions",
+    ),
+    "theme_current": (
+        "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+        "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+        "read_theme_trade_flows", "get_market_events", "read_world_state",
+    ),
+}
+
+_FAST_VISIBLE_PROFILE_COMPOSITIONS: dict[str, tuple[str, ...]] = {
+    "single_name_current": ("single_name_current",),
+    "macro_rates": ("macro_rates",),
+    "options_single_name": ("options_single_name",),
+    "portfolio_current": ("portfolio_current",),
+    "theme_current": ("theme_current",),
+    "single_name_macro_rates": ("single_name_current", "macro_rates"),
+    "portfolio_options": ("portfolio_current", "options_single_name"),
+}
+
+
+def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | None:
+    """Return qualified Fast model-visible names, or None to retain full authorization.
+
+    This consumes the existing deterministic profile; it does not classify the question
+    again.  Self-contained financial scenarios intentionally expose zero tools.  Mixed
+    profiles compose already-qualified families.  Every unqualified/specialist profile
+    fails open so visibility reduction can never silently erase a required evidence lane.
+    """
+    if profile.name == "self_contained_financial":
+        return ()
+    families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
+    if not families:
+        return None
+    return _merge_seed_tools(*(_FAST_VISIBLE_TOOL_FAMILIES[name] for name in families))
+
+
 def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
     """Return (budget, seed_tool_names) for the question.
 
