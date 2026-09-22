@@ -907,7 +907,10 @@ jobs:
               brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
               brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
               brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
+              # A-F03-W2-1b (2026-09-22): explicit legacy source until the M1 ThetaData accrual lane (W2-2) lands; W2-3 cutover removes this line and switches to --emit
+              export OPTIONS_SKEW_LEGACY_CHAIN=1
               brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+              unset OPTIONS_SKEW_LEGACY_CHAIN
               brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               # OIP E8: AFTER skew/ivspread so it reads this run's snapshots; inside cl_gex
               # because build_options_skew rewrites snapshots.parquet non-atomically.
@@ -1050,7 +1053,10 @@ jobs:
               run_py "index vol-regime (build_vol_regime)"      scripts.build_vol_regime
               run_py "options flow desk (build_options_flow)"   scripts.build_options_flow
               run_py "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
+              # A-F03-W2-1b (2026-09-22): explicit legacy source until the M1 ThetaData accrual lane (W2-2) lands; W2-3 cutover removes this line and switches to --emit
+              export OPTIONS_SKEW_LEGACY_CHAIN=1
               run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew
+              unset OPTIONS_SKEW_LEGACY_CHAIN
               run_py "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               run_py "US options screener page (build_options_screener)" scripts.build_options_screener
               # flowleaders BEFORE optionscmd: options.html re-serialises
