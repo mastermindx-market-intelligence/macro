@@ -223,10 +223,20 @@ rm ~/Library/LaunchAgents/com.macro.skewaccrual.plist
 
 ## 4. Reading the receipt log
 
-The plist's `StandardOutPath` is `/tmp/skewaccrual.stdout.log`,
-`StandardErrorPath` is `/tmp/skewaccrual.stderr.log`. Every receipt line
-starts with `[<UTC>] skew_accrual: ...` so a `grep '^\\[.*\\] skew_accrual:'`
-narrows the stream to the lane's own log lines.
+The plist's `StandardOutPath` is
+`/Users/chriswong/skew-ops-state/logs/skewaccrual.stdout.log`,
+`StandardErrorPath` is
+`/Users/chriswong/skew-ops-state/logs/skewaccrual.stderr.log` — the same
+`$SKEW_STATE_DIR` default the runner uses (round-6 amendment; was
+`/tmp/skewaccrual.*.log` in round 1). Every receipt line starts with
+`[<UTC>] skew_accrual: ...` so a `grep '^\\[.*\\] skew_accrual:'` narrows
+the stream to the lane's own log lines. The launchd pair captures the
+WHOLE process lifetime (ProgramArguments chain → `run_with_env.sh` →
+`run_skew_accrual.sh`), so it includes the run_with_env wrapper's
+`.env` sourcing output AND the runner's stdout — the runner's own stderr
+status lines (`::gate-info::`, `ABORT at step_*`) are interleaved on the
+runner-stderr file under `$STATE_DIR`, not on the launchd stderr file;
+tail BOTH when chasing a failure.
 
 Failure receipts name the failing step explicitly:
 
