@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T18:21:34.491413+00:00",
-  "count": 2655,
+  "generated_at": "2026-09-22T19:06:38.885293+00:00",
+  "count": 2658,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,64 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-4td7o6oqoil-9942ad",
+      "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples; Highlight COP (Buy, on CL)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:29Z",
+      "summary_points": [
+        "Brent Price Revisions: Goldman Sachs raises 2027 Brent estimate to $80/b (2028: $75/b, $5/b Brent-WTI spread) and crack spreads to $29/b in 2028, citing tight refining fundamentals (low inventory, supply disruptions, resilient demand).",
+        "XOM/CVX Valuation Catalysts: XOM target $169 (9.0x EV/DCF, 6.5% FCF yield) and CVX target $228 (8.0x EV/DAF, 7.5% FCF yield) driven by Middle East/Russia-Ukraine supply disruptions boosting refining margins.",
+        "COP Growth Projects: COP Buy rating with $146 target fueled by NFE/NFS/Willow projects, $1bn cost reductions, and 20-25% CAGR, though exposed to Qatar LNG delays and Middle East geopolitics.",
+        "Core Risk Factors: Persistent commodity price volatility, refining margin pressure, operational execution risks across all majors, and geopolitical shocks (West Qurna 2/Nasriyah, Qatar LNG) remain critical portfolio vulnerabilities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eyw3d7vi5sw-7c4a46",
+      "title": "Caris Life Sciences Inc. (CAI) CMS Releases Preliminary 2027 CLFS Rates; Positive Revision for CAI",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:04Z",
+      "summary_points": [
+        "Reimbursement Surge: +44% reimbursement for Caris Assure (blood) to $5,250, driving $15–20M annual revenue upside and eliminating reimbursement risk for blood-based portfolio.",
+        "Policy Catalyst: CMS revision directly addresses prior reimbursement uncertainty, a critical structural risk for oncology diagnostics revenue streams.",
+        "Key Risk Exposure: Therapy competition, MCEC trial execution, FDA approval uncertainty, and multi-channel sales challenges remain top near-term threats to valuation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vdofpcc0nwp-d84556",
+      "title": "South Korea Banks The sweet spot widens amid favorable macro; Ug IBK and BNK to Buy from Sell",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:41:00Z",
+      "summary_points": [
+        "Macro Tailwinds Drive Bank Fundamentals: BoK’s 2026 GDP forecast revised up to 3.3%, current account surplus widening, chip exports fueling trade growth, and rising property prices outweigh near-term delinquency concerns.",
+        "ROE Expansion as Core Value Driver: Banks’ ROE trajectory (recovery to 9.1% by 2028) is value-creative, not destructive; narrowing ROE discount to 20% (vs. 40% prior) and improved asset quality justify valuation upside.",
+        "IBK & BNK Upgraded to Buy: IBK (83% SME loan exposure vs. 46% sector avg) and BNK (57% SME loans) upgraded due to SME credit deterioration normalization, adding 4-5% to net profit vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-1c6ij86icrc-10d4e0",
       "title": "Mexico Weak Jul Retail Sales",
