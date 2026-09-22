@@ -1,31 +1,32 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v8",
-  "observed_at": "2026-09-22T02:53:23Z",
-  "candidate_source_head": "309763786229e9f64adda90fc712f416a478bd87",
-  "latest_protected_main": "758b052ff0278e9842fd1b392e0b04617124d1bb",
-  "latest_merge_tree": "NOT_MATERIALIZED_CURRENT_BASE_OVERLAP",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v9",
+  "observed_at": "2026-09-22T09:28:02Z",
+  "candidate_source_head": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+  "latest_protected_main": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "latest_merge_tree": "RELEASE_BLOCKED_SHARED_CI_RECONCILIATION",
   "merge_conflicts": [
-    "UNRESOLVED_SHARED_CI_OVERLAP:.github/ci/legacy-jobs.yml"
+    "SHARED_CI_OVERLAP:.github/ci/legacy-jobs.yml"
   ],
   "material_movement": {
     "prior_green_ci_base": "6a165f6725e82290a336945106160baa3d874776",
-    "latest_protected_main": "758b052ff0278e9842fd1b392e0b04617124d1bb",
-    "main_commits_since_prior_green_base": 128,
+    "latest_protected_main": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+    "main_commits_since_prior_green_base": 185,
     "candidate_semantic_paths_changed_on_main": [],
     "shared_overlap_paths": [
       ".github/ci/legacy-jobs.yml"
     ],
-    "strategy": "DEFER_ONE_FINAL_SHARED_CI_RECONCILIATION_UNTIL_REVIEW_RETURN"
+    "strategy": "FREEZE_SEMANTICS_REVIEW_THEN_ONE_FINAL_SHARED_CI_RECONCILIATION"
   },
-  "skillpack_commit": "ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e",
+  "skillpack_commit": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
   "classification": "RELEASE_BLOCKED",
-  "reason": "Protected main has moved rapidly beyond the last fully green exact-head CI base. Across 128 intervening commits, the only overlap with PR #7022 is .github/ci/legacy-jobs.yml; Alert Center semantic/UI/test paths remain disjoint. Repeated pre-review reconciliation of this moving shared file produced no capability delta, so the next lawful tactic is to freeze semantic source at 30976378622, obtain independent exact-head review, then reconcile the shared CI file once against the then-current main immediately before release.",
+  "reason": "Semantic/UI/test source is now frozen at 7aa9af9f1d1 after accepting the short-landscape and snapshot-honesty repairs. Protected main is 185 commits beyond the last fully green CI base; the only overlap with PR #7022 remains .github/ci/legacy-jobs.yml. Repeated reconciliation of that fast-moving shared file before independent semantic review is a no-delta loop. Obtain exact-head independent review first, then reconcile the CI file once against then-current main and rerun hosted CI.",
   "production_acceptance": false,
-  "candidate_evidence_head": "1a88f31169cc16cc850b98f2bc7d555db9f8544c",
+  "candidate_evidence_head": "993aa205f344e09412db9b2d24fef24dc1b8704d",
   "release_blockers": [
-    "fresh independent review has not yet accepted source head 309763786229e9f64adda90fc712f416a478bd87",
+    "fresh independent review has not yet accepted source head 7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "shared .github/ci/legacy-jobs.yml must be reconciled once against current protected main after review",
     "hosted exact-head CI/contract-delta must pass after that final reconciliation",
+    "both render and engine-render publication effects must settle before final live-route acceptance",
     "production still serves the old Alert Command Center"
   ]
 }

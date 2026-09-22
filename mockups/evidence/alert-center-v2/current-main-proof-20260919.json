@@ -1,33 +1,36 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v13",
+  "schema": "mastermind.alert_center.current_main_proof.v14",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-22T02:53:23Z",
-  "skillpack_commit": "ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e",
-  "macro_origin_main_observed": "758b052ff0278e9842fd1b392e0b04617124d1bb",
-  "candidate_source_commit": "309763786229e9f64adda90fc712f416a478bd87",
-  "current_merge_tree": "NOT_MATERIALIZED_CURRENT_BASE_OVERLAP",
+  "verified_at": "2026-09-22T09:28:02Z",
+  "skillpack_commit": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "macro_origin_main_observed": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "candidate_source_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+  "current_merge_tree": "RELEASE_BLOCKED_SHARED_CI_RECONCILIATION",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
     "full_alert_regression": {
-      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
-      "passed": 243,
-      "warnings": 5,
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "passed": 244,
+      "warnings": 6,
       "failures": 0,
       "log": "mockups/evidence/alert-center-v2/full-alert-regression.log"
     },
-    "complete_source_bound_snapshot": {
-      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
-      "shared_signals": 634,
-      "supported_rows": 634,
+    "current_real_snapshot": {
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "shared_signals": 630,
+      "supported_rows": 630,
       "fallback_rows": 0,
-      "family_count": 49,
+      "family_count_present": 48,
       "failures": 0
     },
-    "session_d_surface_contract": {
-      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
-      "surface_tests_passed": 10,
-      "failures": 0
+    "absent_family_unit_contracts": {
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "families": [
+        "vector.momentum_trigger",
+        "vector.structure_shift"
+      ],
+      "browser_policy": "do not synthesize absent observations; unit tests retain semantic coverage"
     }
   },
   "builder": {
@@ -102,7 +105,7 @@
   },
   "browser": {
     "interaction_checks": 40,
-    "named_screenshots": 52,
+    "named_screenshots": 51,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
     "matrix": [
@@ -121,6 +124,11 @@
       "zh"
     ],
     "standalone_control_floor_px": 40,
+    "short_landscape": {
+      "tabs_bottom_px": 205.5,
+      "first_real_row_y_px": 315,
+      "viewport_height_px": 390
+    },
     "page_errors": 0,
     "horizontal_overflow": false,
     "production_acceptance": false
@@ -133,33 +141,33 @@
     "reuse_basis": "Prior 17-field exact legacy parity remains applicable: current semantic expansion is additive explorer brief projection and tests preserve canonical signal rows without mutation."
   },
   "guards": {
-    "full_alert_regression": "pass: 243 passed, 5 warnings, 0 failures",
-    "complete_source_bound_snapshot": "pass: 634/634 supported, 0 fallback, 49 families",
-    "session_d_review_addendum": "pass: landscape + subordinate Earlier-priority token hierarchy bound to exact source",
-    "design_system": "pass: R0 enforce-added 0 blocking findings; Alert Center CSS has no color-mix()",
+    "full_alert_regression": "pass: 244 passed, 6 warnings, 0 failures",
+    "current_real_snapshot": "pass: 630/630 supported, 0 fallback, 48 families currently present",
+    "snapshot_honesty": "pass: browser proof renders only attention/family groups present in the current real snapshot; absent Vector momentum/structure observations are not fabricated",
+    "short_landscape": "pass: 844x390 dark/light EN/ZH has tabs + first real triage row in first viewport; standalone controls >=40px",
+    "design_system": "pass: R0 enforce-added 0 blocking findings on cumulative Session-D UI delta",
     "runtime_style": "pass: runtime style injection guard OK",
-    "visual_evidence": "pass: 320/390/430 portrait + 844x390 landscape + 1440 across dark/light EN/ZH; standalone controls >=40px",
     "diff_check": "pass",
     "prior_current_base_ci": "pass on 6f870e02096: full CI run 35604374983, including ci-pack-3, ci-pack-11, ci-gate; contract-delta 0 introduced / 1 inherited",
-    "latest_base_integration": "RELEASE_BLOCKED — protected main moved 128 commits beyond prior green base and overlaps this PR only at .github/ci/legacy-jobs.yml; defer one current-main reconciliation until independent semantic review to avoid a no-delta chase",
+    "latest_base_integration": "RELEASE_BLOCKED — main moved 185 commits beyond prior green base; overlap remains exactly .github/ci/legacy-jobs.yml; semantic/UI/test paths are disjoint",
     "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED_AFTER_FINAL_CURRENT_BASE_RECONCILIATION"
   },
   "source_sha256": {
     "engine/alert_center_view.py": "b50a0c6e9b6c64411235c503c13b339494f6ffa71dd15d9f731b30e6b4378161",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
-    "templates/alert_center.css": "6ed156d210ad161d57658b7bbbb291c668642c54a0060868177699a6530b59c7",
+    "templates/alert_center.css": "c16fd6fa97356f4bbfddb2f6463845e3f878664aa111604c9112478b1fa76421",
     "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
-    "scripts/qa_alert_center_v2.py": "a7210cc79ebafcf447d064f4267065e30ba838f5a01cb52080a999e8a7cf64a9",
-    "tests/test_alert_center_surface.py": "b48fec702d46bf36b936e461e195be04391bb39de0c5036a3d95134be17bf759"
+    "scripts/qa_alert_center_v2.py": "613e9f92b6791f2496d13076f5a24165729509c960ecc786c785db6d8121b968",
+    "tests/test_alert_center_surface.py": "6ff9c50320abde6aff69e1483072e51a7fb561aada4b004f6825c64e6db950d5"
   },
   "evidence_sha256": {
-    "browser-proof.json": "f76d8a4c1f13d516b92e0cfb9ae38e960c86b23a358fd84318143e2dda889104",
+    "browser-proof.json": "0dc8f1922d21d828c849558a0ba759d570ded7807803775972399c8b272bb000",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "a8a0d4348921f18ea6d90e567d26e1f3697e9c9a84e24d87a16ecc415964764d",
-    "full-alert-regression.log": "bc39fc2c51ba3445a86dfdda915b431742d8010beb27207c95808bd49a48b647",
-    "targeted-tests.log": "bc39fc2c51ba3445a86dfdda915b431742d8010beb27207c95808bd49a48b647",
-    "guard-results.json": "5d9513fa2eef7896d0c4ee24aae4e9fe9bb0f1202698e9662bd48107d0ddb574"
+    "input-manifest.json": "9ccb7f718118af8f2f40584112093ffc6593dd018ce5be348679e819c7ac63d7",
+    "full-alert-regression.log": "7c010deea1f8d5cf8a07e225b0fbab9d2233752f2349718d10a2fc22dcdf7edd",
+    "targeted-tests.log": "7c010deea1f8d5cf8a07e225b0fbab9d2233752f2349718d10a2fc22dcdf7edd",
+    "guard-results.json": "deaffac181811c149a710b56ddb70072a3a9e54590f5c71783409d0e8ff1b7a4"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
@@ -175,7 +183,7 @@
     "customer acceptance",
     "trading edge"
   ],
-  "candidate_evidence_commit": "1a88f31169cc16cc850b98f2bc7d555db9f8544c",
+  "candidate_evidence_commit": "993aa205f344e09412db9b2d24fef24dc1b8704d",
   "rotation_source_bound_total": {
     "supported_rows": 313,
     "families": {
@@ -194,9 +202,9 @@
     }
   },
   "production_observation": {
-    "observed_at": "2026-09-22T02:53:23Z",
-    "bytes": 332928,
-    "sha256": "9b5158d084f9919816b9e59504c1e6b5f3ffc9e1b3a57fddd483ed16843e80c7",
+    "observed_at": "2026-09-22T09:28:02Z",
+    "bytes": 333307,
+    "sha256": "504e941d9f23a42acdbec16c6e3f8f677ddac2cf879897b146ba62b2bfef6703",
     "market_changes_desk_present": false,
     "old_alert_command_center_present": true
   },
@@ -212,14 +220,12 @@
     "prior_reviewer": "mastermindx-2",
     "prior_reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
     "prior_state": "DISMISSED_AS_STALE_AFTER_REPAIR",
-    "initial_repair_head": "799b5dd935504844d096f96aecc7cdd40692c924",
-    "addendum_repair_head": "309763786229e9f64adda90fc712f416a478bd87",
-    "addendum_repairs": [
-      "844x390 landscape browser proof",
-      "Earlier priority subordinate muted/line tokens",
-      "Watch next info rail",
-      "next-action shared line/panel2 tokens"
+    "session_d_source_head": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+    "accepted_local_returns": [
+      "079e73b125e07d07ca1440cc70cdf713b95a311b",
+      "e4eebf1b56ff29bc77966d111443bea9d4a768d1"
     ],
+    "final_snapshot_honesty_repair": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
     "fresh_exact_head_rereview_required": true
   }
 }
