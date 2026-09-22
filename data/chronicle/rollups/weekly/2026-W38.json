@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-19",
   "coverage": {
-    "end": "2026-09-18",
+    "end": "2026-09-19",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W38; 13 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-06-19"
+    "start": "2026-06-20"
   },
   "iso_week": "2026-W38",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,13 +11,13 @@
     {
       "clusters": [
         {
-          "n_events": 231,
+          "n_events": 300,
           "source": "research_vault",
           "theme": null,
           "top_events": []
         },
         {
-          "n_events": 36,
+          "n_events": 40,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
@@ -29,15 +29,15 @@
           "top_events": []
         },
         {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
+          "n_events": 2,
+          "source": "risk_band",
+          "theme": "risk",
           "top_events": []
         },
         {
           "n_events": 1,
-          "source": "risk_band",
-          "theme": "risk",
+          "source": "macro_release",
+          "theme": "claims",
           "top_events": []
         }
       ],
@@ -170,7 +170,7 @@
           "top_events": []
         },
         {
-          "n_events": 4,
+          "n_events": 6,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -276,7 +276,7 @@
           "top_events": []
         },
         {
-          "n_events": 130,
+          "n_events": 162,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -335,7 +335,7 @@
           "top_events": []
         },
         {
-          "n_events": 737,
+          "n_events": 745,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -382,7 +382,7 @@
     {
       "clusters": [
         {
-          "n_events": 588,
+          "n_events": 589,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -493,7 +493,7 @@
     {
       "clusters": [
         {
-          "n_events": 249,
+          "n_events": 250,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
