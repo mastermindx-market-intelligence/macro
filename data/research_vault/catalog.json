@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T13:50:52.263873+00:00",
-  "count": 2642,
+  "generated_at": "2026-09-22T14:05:57.524815+00:00",
+  "count": 2643,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vbtfpvlbyyy-e96bb5",
+      "title": "GS Utilities Daily Snam sells c.5 stake in Industrie De Nora to institutional investors European Commission launches com...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:38Z",
+      "summary_points": [
+        "Europe Electrification Acceleration: Power demand growth to +5% pa (vs prior 1-1.5%), investments in PowerGen tripling to €2 trn, reinforcing \"earnings super-cycle\" with 2025-30 EPS CAGR of +9% for utilities.",
+        "Agentic AI Power Demand Catalyst: +10pp AI queries (20-30% by 2030-35) boost datacenter needs by +25%, creating tailwinds for renewables growth and FlexGen margins in utilities.",
+        "Ireland Offshore Wind Grid Delays: 3GW of pending grid connections for 5GW installed offshore wind, posing critical risk to renewable deployment timelines and project viability.",
+        "Electric Utilities Valuation Target Increase: Goldman Sachs raises target P/E to above mid-cycle (c. 16x), signaling elevated sector valuation expectations amid strong balance sheets (RWE, Orsted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-exsysnswyle-8b6574",
       "title": "GS Crook GS MORNING NBH Preview US Inflation Path US Equities Update Brandon Brown Views and KRW Update 22 Sep 2026",
