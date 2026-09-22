@@ -142,11 +142,11 @@ body.page-alerts{margin:0;padding:var(--sp-6,24px);background:var(--bg);color:va
 .page-alerts .acx-attention-note{margin:0!important;font-size:var(--fs-label)!important}
 .page-alerts .acx-attention-count{font:600 var(--fs-sm) var(--font-mono);color:var(--muted)}
 .page-alerts .acx-attention-review_first .acx-attention-title{color:var(--ink-warn,var(--warn))}
-.page-alerts .acx-attention-earlier_priority .acx-attention-title{color:var(--ink-warn,var(--warn))}
+.page-alerts .acx-attention-earlier_priority .acx-attention-title{color:var(--muted)}
 .page-alerts .acx-attention-watch_next .acx-attention-title{color:var(--ink-info,var(--info))}
 .page-alerts .acx-row{grid-template-columns:28px minmax(0,1fr) minmax(112px,150px);min-height:96px}
 .page-alerts .acx-row.is-review_first{box-shadow:inset 3px 0 var(--warn)}
-.page-alerts .acx-row.is-earlier_priority{box-shadow:inset 2px 0 var(--warn)}
+.page-alerts .acx-row.is-earlier_priority{box-shadow:inset 2px 0 var(--line)}
 .page-alerts .acx-row.is-watch_next{box-shadow:inset 2px 0 var(--info)}
 .page-alerts .acx-row.is-for_awareness{box-shadow:inset 2px 0 var(--line)}
 .page-alerts .acx-row[aria-expanded="true"]{box-shadow:inset 3px 0 var(--info);background:var(--panel2)}
@@ -154,7 +154,7 @@ body.page-alerts{margin:0;padding:var(--sp-6,24px);background:var(--bg);color:va
 .page-alerts .acx-row-limit{font-size:var(--fs-label);line-height:1.45;color:var(--muted)}
 .page-alerts .acx-takeaway-change{display:block;font-size:var(--fs-md);line-height:1.45}
 .page-alerts .acx-takeaway-limit{border-inline-start:2px solid var(--warn);padding-inline-start:var(--sp-3,12px)}
-.page-alerts .acx-next-action{padding:var(--sp-3,12px);border:1px solid var(--info);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text)!important;font-weight:600}
+.page-alerts .acx-next-action{padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text)!important;font-weight:600}
 .page-alerts .acx-coverage,.page-alerts #ac-fallback,.page-alerts .acx>p.acx-footnote,.page-alerts .acx-footer{max-width:1100px;margin-inline:auto}
 @media(max-width:700px){
   .page-alerts .acx-context-strip{grid-template-columns:1fr;margin-top:var(--sp-3,12px)}

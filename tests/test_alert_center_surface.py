@@ -69,6 +69,10 @@ def test_standalone_alert_controls_keep_the_40px_interaction_floor():
 def test_alert_center_css_uses_shared_palette_tokens_not_local_color_functions():
     css = (ROOT / 'templates' / 'alert_center.css').read_text()
     assert 'color-mix(' not in css
+    assert '.acx-attention-earlier_priority .acx-attention-title{color:var(--muted)}' in css
+    assert '.acx-row.is-earlier_priority{box-shadow:inset 2px 0 var(--line)}' in css
+    assert '.acx-row.is-watch_next{box-shadow:inset 2px 0 var(--info)}' in css
+    assert '.acx-next-action{padding:var(--sp-3,12px);border:1px solid var(--line);' in css
 
 
 def test_shared_html_never_inlines_account_specific_legacy_rows():

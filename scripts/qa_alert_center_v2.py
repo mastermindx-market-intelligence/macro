@@ -449,6 +449,7 @@ def main():
             page.goto(url, wait_until='domcontentloaded')
             viewport_specs = [
                 (1440, 900, 'desktop'),
+                (844, 390, 'mobile-landscape'),
                 (430, 932, 'mobile-430'),
                 (390, 844, 'mobile'),
                 (320, 568, 'mobile-320'),
@@ -483,9 +484,9 @@ def main():
                             'reset_height': reset_box['height'],
                             'quick_filter_min_height': min(chip_boxes),
                         })
-                        if width >= 390:
+                        if size != 'mobile-landscape' and width >= 390:
                             assert first_row['y'] + first_row['height'] <= height, f'No first-glance signal: {size}/{theme}/{lang}'
-            report['checks'].append('320/390/430/1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls')
+            report['checks'].append('320/390/430 portrait + 844×390 landscape + 1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls')
             page.set_viewport_size({'width':1440, 'height':900})
             page.evaluate("document.documentElement.dataset.theme='dark';document.documentElement.dataset.lang='en'")
             page.click('[data-view="history"]')
