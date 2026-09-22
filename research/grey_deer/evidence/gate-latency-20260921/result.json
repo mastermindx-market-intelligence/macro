@@ -8,9 +8,9 @@
   },
   "calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
   "source_hashes": {
-    "engine/risk_radar.py": "e5bf5baa7a8d9658937fa980fd40a4d9051e8728e563cfdaf7f2253d4fb64de4",
-    "engine/risk_radar_backtest.py": "a94d467d71ba687815872fb1da6806d3691eeec16528bea0553aa4731d74a6ac",
-    "scripts/research/risk_radar_gate_latency.py": "d38afd5dce808425bdd564624fef78af20e0e3487b8671055780ff472df16255",
+    "engine/risk_radar.py": "a2c347cd726646896c48ed7a4437ae64e371e1efc689fd176998f3d2d88158e1",
+    "engine/risk_radar_backtest.py": "77c2a5b7a4547ea96fd02e8be804e4f448facdeb42b707e63478836ff3d3c46a",
+    "scripts/research/risk_radar_gate_latency.py": "a26e2c835a75e12b93e02a6ce9634b01452bdc3253a4aa0d166aade6ca25a28b",
     "research/grey_deer/RISK_RADAR_GATE_LATENCY_PREREG_2026-09-21.md": "69759142ec66e45ee25ebcd4d243867625dbbf38b6a7a7ed7ddc3a01822020c1"
   },
   "input_hashes": {
@@ -50,7 +50,9 @@
       "growth_cyc_def",
       "vol_term",
       "jpy_carry",
-      "nh_contraction"
+      "nh_contraction",
+      "corr_floor_break",
+      "ai_breadth_divergence"
     ],
     "subscore_columns": [
       "credit",
@@ -69,33 +71,33 @@
       "population_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c",
       "raw": {
         "n": 8195,
-        "precision": 0.206445,
-        "recall": 0.708852,
-        "f1": 0.319763,
-        "fire_rate": 0.605857,
+        "precision": 0.210335,
+        "recall": 0.681189,
+        "f1": 0.321423,
+        "fire_rate": 0.571446,
         "confusion": {
-          "tp": 1025,
-          "fp": 3940,
-          "fn": 421,
-          "tn": 2809
+          "tp": 985,
+          "fp": 3698,
+          "fn": 461,
+          "tn": 3051
         }
       },
       "gated": {
         "n": 8195,
-        "precision": 0.410485,
-        "recall": 0.286999,
-        "f1": 0.33781,
-        "fire_rate": 0.123368,
+        "precision": 0.419487,
+        "recall": 0.282849,
+        "f1": 0.337877,
+        "fire_rate": 0.118975,
         "confusion": {
-          "tp": 415,
-          "fp": 596,
-          "fn": 1031,
-          "tn": 6153
+          "tp": 409,
+          "fp": 566,
+          "fn": 1037,
+          "tn": 6183
         }
       },
-      "FP_removed": 3344,
-      "TP_lost": 610,
-      "FP_removed_per_TP_lost": 5.481967
+      "FP_removed": 3132,
+      "TP_lost": 576,
+      "FP_removed_per_TP_lost": 5.4375
     },
     "since_2020": {
       "from": "2020-01-02T00:00:00",
@@ -103,43 +105,43 @@
       "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
       "raw": {
         "n": 1666,
-        "precision": 0.232174,
-        "recall": 0.908163,
-        "f1": 0.369806,
-        "fire_rate": 0.690276,
+        "precision": 0.245265,
+        "recall": 0.880952,
+        "f1": 0.383704,
+        "fire_rate": 0.633854,
         "confusion": {
-          "tp": 267,
-          "fp": 883,
-          "fn": 27,
-          "tn": 489
+          "tp": 259,
+          "fp": 797,
+          "fn": 35,
+          "tn": 575
         }
       },
       "gated": {
         "n": 1666,
-        "precision": 0.392727,
+        "precision": 0.420233,
         "recall": 0.367347,
-        "f1": 0.379613,
-        "fire_rate": 0.165066,
+        "f1": 0.392015,
+        "fire_rate": 0.154262,
         "confusion": {
           "tp": 108,
-          "fp": 167,
+          "fp": 149,
           "fn": 186,
-          "tn": 1205
+          "tn": 1223
         }
       },
-      "FP_removed": 716,
-      "TP_lost": 159,
-      "FP_removed_per_TP_lost": 4.503145
+      "FP_removed": 648,
+      "TP_lost": 151,
+      "FP_removed_per_TP_lost": 4.291391
     }
   },
   "canonical_gated_crosscheck": {
     "full": {
       "n_days": 8195,
       "confusion": {
-        "tp": 415,
-        "fp": 596,
-        "fn": 1031,
-        "tn": 6153
+        "tp": 409,
+        "fp": 566,
+        "fn": 1037,
+        "tn": 6183
       },
       "outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c"
     },
@@ -147,19 +149,19 @@
       "n_days": 1666,
       "confusion": {
         "tp": 108,
-        "fp": 167,
+        "fp": 149,
         "fn": 186,
-        "tn": 1205
+        "tn": 1223
       },
       "outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
     }
   },
   "suppression_attribution": {
-    "price_only": 1077,
-    "breadth_only": 179,
-    "both_closed": 2700,
+    "price_only": 964,
+    "breadth_only": 177,
+    "both_closed": 2569,
     "unknown_gate_on_raw_loud": 0,
-    "suppressed_known_total": 3956
+    "suppressed_known_total": 3710
   },
   "event_latency": {
     "definition": "risk_radar_gate_event_latency.v1",
@@ -171,15 +173,15 @@
     "n_events": 110,
     "n_raw_pre_t0": 103,
     "raw_event_recall": 0.936364,
-    "gated_event_recall_by_t0": 0.381818,
+    "gated_event_recall_by_t0": 0.372727,
     "timing_counts_among_raw_pre_t0": {
-      "by_t0": 42,
-      "after_t0_before_breach": 10,
-      "after_breach": 11,
-      "never_through_t21": 40
+      "by_t0": 41,
+      "after_t0_before_breach": 9,
+      "after_breach": 12,
+      "never_through_t21": 41
     },
     "latency_median_sessions": 3.0,
-    "latency_p75_sessions": 27.5,
+    "latency_p75_sessions": 23.0,
     "rows": [
       {
         "anchor": "1994-03-16T00:00:00",
@@ -373,10 +375,10 @@
       },
       {
         "anchor": "2000-09-01T00:00:00",
-        "raw_first": "2000-08-04T00:00:00",
+        "raw_first": "2000-08-11T00:00:00",
         "gated_first": null,
         "breach_5pct": "2000-09-21T00:00:00",
-        "raw_offset": -20,
+        "raw_offset": -15,
         "gated_offset": null,
         "latency": null,
         "timing": "never_through_t21"
@@ -493,10 +495,10 @@
       },
       {
         "anchor": "2002-04-19T00:00:00",
-        "raw_first": "2002-04-02T00:00:00",
+        "raw_first": "2002-04-08T00:00:00",
         "gated_first": null,
         "breach_5pct": "2002-04-29T00:00:00",
-        "raw_offset": -13,
+        "raw_offset": -9,
         "gated_offset": null,
         "latency": null,
         "timing": "never_through_t21"
@@ -693,11 +695,11 @@
       },
       {
         "anchor": "2008-06-19T00:00:00",
-        "raw_first": "2008-05-23T00:00:00",
-        "gated_first": "2008-05-23T00:00:00",
+        "raw_first": "2008-05-27T00:00:00",
+        "gated_first": "2008-05-27T00:00:00",
         "breach_5pct": "2008-07-02T00:00:00",
-        "raw_offset": -18,
-        "gated_offset": -18,
+        "raw_offset": -17,
+        "gated_offset": -17,
         "latency": 0,
         "timing": "by_t0"
       },
@@ -824,19 +826,19 @@
       {
         "anchor": "2010-08-09T00:00:00",
         "raw_first": "2010-07-09T00:00:00",
-        "gated_first": "2010-08-23T00:00:00",
+        "gated_first": "2010-08-24T00:00:00",
         "breach_5pct": "2010-08-23T00:00:00",
         "raw_offset": -21,
-        "gated_offset": 10,
-        "latency": 31,
-        "timing": "after_t0_before_breach"
+        "gated_offset": 11,
+        "latency": 32,
+        "timing": "after_breach"
       },
       {
         "anchor": "2011-02-18T00:00:00",
-        "raw_first": "2011-01-20T00:00:00",
+        "raw_first": "2011-01-26T00:00:00",
         "gated_first": null,
         "breach_5pct": "2011-03-16T00:00:00",
-        "raw_offset": -21,
+        "raw_offset": -17,
         "gated_offset": null,
         "latency": null,
         "timing": "never_through_t21"
@@ -923,12 +925,12 @@
       },
       {
         "anchor": "2014-09-18T00:00:00",
-        "raw_first": "2014-08-19T00:00:00",
+        "raw_first": "2014-09-16T00:00:00",
         "gated_first": "2014-10-13T00:00:00",
         "breach_5pct": "2014-10-10T00:00:00",
-        "raw_offset": -21,
+        "raw_offset": -2,
         "gated_offset": 17,
-        "latency": 38,
+        "latency": 19,
         "timing": "after_breach"
       },
       {
@@ -993,10 +995,10 @@
       },
       {
         "anchor": "2018-03-09T00:00:00",
-        "raw_first": "2018-02-07T00:00:00",
+        "raw_first": "2018-02-09T00:00:00",
         "gated_first": null,
         "breach_5pct": "2018-03-22T00:00:00",
-        "raw_offset": -21,
+        "raw_offset": -19,
         "gated_offset": null,
         "latency": null,
         "timing": "never_through_t21"
@@ -1073,13 +1075,13 @@
       },
       {
         "anchor": "2020-06-08T00:00:00",
-        "raw_first": "2020-05-13T00:00:00",
-        "gated_first": "2020-05-13T00:00:00",
+        "raw_first": "2020-06-08T00:00:00",
+        "gated_first": null,
         "breach_5pct": "2020-06-11T00:00:00",
-        "raw_offset": -17,
-        "gated_offset": -17,
-        "latency": 0,
-        "timing": "by_t0"
+        "raw_offset": 0,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
       },
       {
         "anchor": "2020-09-02T00:00:00",
@@ -1213,12 +1215,12 @@
       },
       {
         "anchor": "2023-10-11T00:00:00",
-        "raw_first": "2023-09-14T00:00:00",
-        "gated_first": "2023-10-25T00:00:00",
+        "raw_first": "2023-10-03T00:00:00",
+        "gated_first": "2023-10-26T00:00:00",
         "breach_5pct": "2023-10-26T00:00:00",
-        "raw_offset": -19,
-        "gated_offset": 10,
-        "latency": 29,
+        "raw_offset": -6,
+        "gated_offset": 11,
+        "latency": 17,
         "timing": "after_t0_before_breach"
       },
       {

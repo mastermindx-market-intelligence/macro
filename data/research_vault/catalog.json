@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T01:49:53.780987+00:00",
-  "count": 2607,
+  "generated_at": "2026-09-22T02:49:44.508552+00:00",
+  "count": 2610,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -135,6 +135,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-4rpywbeajvi-a3313f",
+      "title": "Monday Kick off",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:44:38Z",
+      "summary_points": [
+        "Central Bank Policy Shifts: Fed rate hike reinforcing credibility (10-yr yield <5.0%) and BoJ’s 1.25% rate with cautious guidance signal global policy normalization, weighing on yen and growth stocks.",
+        "Commodity & Geopolitical Tensions: Brent crude at $103.69 amid supply concerns; oil prices reflect easing geopolitical premium but US rate peak expectations add uncertainty.",
+        "EOM Exposure Shift: Global equity exposure reduced to 64% (from 83%) due to broad downgrades; regime score at 64% drives weaker exposure, with all indices except Shenzhen in “bear” mode.",
+        "Regional Factor Scores: US dominates with high regime (66) and flows (50) scores; Asia (Shenzhen index at 8) shows extreme weakness in flows (0) and low index levels, signaling US strength and Asia vulnerability.",
+        "Market Environment Indicator (MEI): Only three of eight conditions satisfied, implying reduced market resilience and heightened correction risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-npncdqqzhjh-0261fc",
       "title": "Amundi ETF weekly pulse Europe equities",
       "institution": "Other",
@@ -174,6 +195,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-de82gqyq2zl-b9c21f",
+      "title": "ING Think the commodities feed oil cools off from the highs",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:12:46Z",
+      "summary_points": [
+        "Saudi Supply Disruption: East-West pipeline damage from drone attacks reduces Saudi supply, causing North Sea grade premiums and intensifying market tension despite geopolitical hopes.",
+        "Oil Net Long Record: Brent net longs at 282,657 lots (largest since May 2026), driven by Middle East supply risks and short covering, signaling overcrowded positioning.",
+        "Cocoa Deficit Outlook: Deteriorating crop conditions in Ivory Coast/Ghana + El Niño risk threaten 2026/27 supply deficit, despite 18% monthly price drop.",
+        "Wheat Supply Gap: 2026/27 wheat forecast raised to 10mt but remains below record 13.3mt, with heat stress (hot winds, low rainfall) posing acute supply risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-7txfyttnrvb-bc54b6",
       "title": "Gms midterms 2026 insights",
       "institution": "Other",
@@ -191,6 +232,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zbr5jvjf49p-6ab26e",
+      "title": "The utility divide in the data center led power infrastructure buildout VP735",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T00:02:21Z",
+      "summary_points": [
+        "Structural Demand Shift: AI data centers drive >3% annual U.S.",
+        "electricity demand growth through 2030 (80% from data centers), creating structural opportunity for utilities with integrated models to capture disproportionate earnings growth.",
+        "Vertical Integration Advantage: Vertically integrated utilities (VIUs) outperform T&D peers by ~16% (10% vs. 6% EPS) due to control over generation, transmission, and tariffs, enabling faster infrastructure deployment for hyperscalers and capturing regulated returns on capital-intensive generation investments.",
+        "Capital Intensity Mechanics: Generation investments ($3k vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
