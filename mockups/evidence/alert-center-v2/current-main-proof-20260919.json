@@ -1,33 +1,32 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v12",
+  "schema": "mastermind.alert_center.current_main_proof.v13",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-21T11:45:11Z",
-  "skillpack_commit": "412deca03631f9768158205bc2802b032aa0a1cc",
-  "macro_origin_main_observed": "4eafb563cecb5747c9b5414a70a7281a33bdb6e2",
-  "candidate_source_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
-  "current_merge_tree": "911970a301f13411df168be1172ef1ee9acc850f",
+  "verified_at": "2026-09-22T02:53:23Z",
+  "skillpack_commit": "ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e",
+  "macro_origin_main_observed": "758b052ff0278e9842fd1b392e0b04617124d1bb",
+  "candidate_source_commit": "309763786229e9f64adda90fc712f416a478bd87",
+  "current_merge_tree": "NOT_MATERIALIZED_CURRENT_BASE_OVERLAP",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
     "full_alert_regression": {
-      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
       "passed": 243,
       "warnings": 5,
       "failures": 0,
       "log": "mockups/evidence/alert-center-v2/full-alert-regression.log"
     },
     "complete_source_bound_snapshot": {
-      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
       "shared_signals": 634,
       "supported_rows": 634,
       "fallback_rows": 0,
       "family_count": 49,
       "failures": 0
     },
-    "interaction_floor_repair": {
-      "tested_commit": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "session_d_surface_contract": {
+      "tested_commit": "309763786229e9f64adda90fc712f416a478bd87",
       "surface_tests_passed": 10,
-      "targeted_surface_and_explorer_passed": 116,
       "failures": 0
     }
   },
@@ -103,14 +102,15 @@
   },
   "browser": {
     "interaction_checks": 40,
-    "named_screenshots": 48,
+    "named_screenshots": 52,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
     "matrix": [
-      "320x568",
-      "390x844",
-      "430x932",
-      "1440x900"
+      "320x568 portrait",
+      "390x844 portrait",
+      "430x932 portrait",
+      "844x390 landscape",
+      "1440x900 desktop"
     ],
     "themes": [
       "dark",
@@ -135,29 +135,31 @@
   "guards": {
     "full_alert_regression": "pass: 243 passed, 5 warnings, 0 failures",
     "complete_source_bound_snapshot": "pass: 634/634 supported, 0 fallback, 49 families",
-    "design_system": "pass: R0 enforce-added 0 blocking findings on exact repair diff; alert_center.css contains no color-mix()",
+    "session_d_review_addendum": "pass: landscape + subordinate Earlier-priority token hierarchy bound to exact source",
+    "design_system": "pass: R0 enforce-added 0 blocking findings; Alert Center CSS has no color-mix()",
     "runtime_style": "pass: runtime style injection guard OK",
-    "visual_evidence": "pass: 320/390/430/1440 × dark/light × EN/ZH; Reset/Browse >=40px and quick filters >=40px",
+    "visual_evidence": "pass: 320/390/430 portrait + 844x390 landscape + 1440 across dark/light EN/ZH; standalone controls >=40px",
     "diff_check": "pass",
-    "latest_base_merge_tree": "pass: conflict-free integrated tree 911970a301f13411df168be1172ef1ee9acc850f",
-    "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED_AFTER_REPAIR — prior head 8277e787fa3 passed 0 introduced / 0 inherited"
+    "prior_current_base_ci": "pass on 6f870e02096: full CI run 35604374983, including ci-pack-3, ci-pack-11, ci-gate; contract-delta 0 introduced / 1 inherited",
+    "latest_base_integration": "RELEASE_BLOCKED — protected main moved 128 commits beyond prior green base and overlaps this PR only at .github/ci/legacy-jobs.yml; defer one current-main reconciliation until independent semantic review to avoid a no-delta chase",
+    "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED_AFTER_FINAL_CURRENT_BASE_RECONCILIATION"
   },
   "source_sha256": {
     "engine/alert_center_view.py": "b50a0c6e9b6c64411235c503c13b339494f6ffa71dd15d9f731b30e6b4378161",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
-    "templates/alert_center.css": "3eca3d06ced400e4f3de543955fd14fc016e969184a67570ffce4b7ab93a53e6",
+    "templates/alert_center.css": "6ed156d210ad161d57658b7bbbb291c668642c54a0060868177699a6530b59c7",
     "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
-    "scripts/qa_alert_center_v2.py": "9a349d96e83a5297969c711324d2f2ad382e8b8452f28ceaedf9fdec4a544af0",
-    "tests/test_alert_center_surface.py": "e69b707c9831ba8e69bd0fefb5ee769a0b16c89af2d00f9cc1348115887e4872"
+    "scripts/qa_alert_center_v2.py": "a7210cc79ebafcf447d064f4267065e30ba838f5a01cb52080a999e8a7cf64a9",
+    "tests/test_alert_center_surface.py": "b48fec702d46bf36b936e461e195be04391bb39de0c5036a3d95134be17bf759"
   },
   "evidence_sha256": {
-    "browser-proof.json": "574008701ee010039acb316a7bd84a5a18954fecf5701865d24c5bc194eeb15a",
+    "browser-proof.json": "f76d8a4c1f13d516b92e0cfb9ae38e960c86b23a358fd84318143e2dda889104",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "63bce5ef07783e587354871dbbe32d628c233e0b074a1d3367017e74db0b6476",
-    "full-alert-regression.log": "039cbf9b38aa2530b5303d87ce3a25e7cdcdbbe5672f2676aa3c31ae8c052650",
-    "targeted-tests.log": "039cbf9b38aa2530b5303d87ce3a25e7cdcdbbe5672f2676aa3c31ae8c052650",
-    "guard-results.json": "df0b2cac62ae33f243cd0369dd01beac9f0ec3fd70c28d12eb3af5595a753c50"
+    "input-manifest.json": "a8a0d4348921f18ea6d90e567d26e1f3697e9c9a84e24d87a16ecc415964764d",
+    "full-alert-regression.log": "bc39fc2c51ba3445a86dfdda915b431742d8010beb27207c95808bd49a48b647",
+    "targeted-tests.log": "bc39fc2c51ba3445a86dfdda915b431742d8010beb27207c95808bd49a48b647",
+    "guard-results.json": "5d9513fa2eef7896d0c4ee24aae4e9fe9bb0f1202698e9662bd48107d0ddb574"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
@@ -165,7 +167,7 @@
     "runtime_authority": false,
     "modified_this_turn": false
   },
-  "review_state": "REPAIR_APPLIED_REREVIEW_REQUIRED",
+  "review_state": "FULL_REREVIEW_REQUIRED",
   "release_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
   "what_this_does_not_prove": [
     "deployment",
@@ -173,7 +175,7 @@
     "customer acceptance",
     "trading edge"
   ],
-  "candidate_evidence_commit": "9f319ccea63e6930cb7d185f2c4d67894d59031b",
+  "candidate_evidence_commit": "1a88f31169cc16cc850b98f2bc7d555db9f8544c",
   "rotation_source_bound_total": {
     "supported_rows": 313,
     "families": {
@@ -192,9 +194,9 @@
     }
   },
   "production_observation": {
-    "observed_at": "2026-09-21T11:45:11Z",
-    "bytes": 337228,
-    "sha256": "c0abc2ea3c29fd944aaabee6e2b0aec23f7f9ccdbd67556cd0845021d28d2148",
+    "observed_at": "2026-09-22T02:53:23Z",
+    "bytes": 332928,
+    "sha256": "9b5158d084f9919816b9e59504c1e6b5f3ffc9e1b3a57fddd483ed16843e80c7",
     "market_changes_desk_present": false,
     "old_alert_command_center_present": true
   },
@@ -207,15 +209,17 @@
     "family_count": 49
   },
   "review_return": {
-    "reviewer": "mastermindx-2",
-    "reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
-    "state": "CHANGES_REQUESTED",
-    "repair_head": "799b5dd935504844d096f96aecc7cdd40692c924",
-    "repaired_findings": [
-      "#ac-reset >=40px standalone floor",
-      "#ac-browse-all >=40px standalone floor",
-      "desktop quick filters >=40px"
+    "prior_reviewer": "mastermindx-2",
+    "prior_reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
+    "prior_state": "DISMISSED_AS_STALE_AFTER_REPAIR",
+    "initial_repair_head": "799b5dd935504844d096f96aecc7cdd40692c924",
+    "addendum_repair_head": "309763786229e9f64adda90fc712f416a478bd87",
+    "addendum_repairs": [
+      "844x390 landscape browser proof",
+      "Earlier priority subordinate muted/line tokens",
+      "Watch next info rail",
+      "next-action shared line/panel2 tokens"
     ],
-    "rereview_required": true
+    "fresh_exact_head_rereview_required": true
   }
 }
