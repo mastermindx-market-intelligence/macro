@@ -2308,7 +2308,24 @@ fi
 # import-cached after the first hit exactly like a module-level import, so a
 # deploy that changed the impact scoring would leave the panel serving the old
 # module out of sys.modules. governor.py stays out: the panel never imports it.
-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/impact\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
+#
+# The Intelligence OS evidence view (A1) adds the qledger read stack. The panel
+# derives evidence disposition per request from the CANONICAL owner, not a copy:
+# _load_evidence_providers() calls qledger.load_claims/load_grades,
+# qledger_desk_adapter.known_families(), qledger_evidence_clock.read_start() and
+# grade_qledger.compute_promotion_readiness(). Those four are panel seeds; qledger
+# itself then loads qledger_validity, session_anchor, ticker_shape and the three
+# calendars at module scope, (grade_qledger's own lib/config edge is deferred, so the declared
+# non-admin config lane stays out). Without them here
+# a deploy that retuned the promotion math or a market calendar would leave the
+# panel serving OLD readiness numbers out of sys.modules — the outbox gap
+# (2026-07-26) on the surface whose entire job is reporting how much evidence a
+# family has. The nightly SCORING tail (ai_desk, ai_desk_scorer, master_brain,
+# desk_scorer, desk_ledger, catalyst_tone) is deliberately NOT here and must not
+# be added: engine/qledger.py defers those to call time precisely so the panel
+# never caches them. If someone hoists that import back to module scope, this list
+# is wrong and tests/test_deploy_update_self_heal.py will say so.
+if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers|cn_calendar|hk_calendar|nyse_calendar)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health|chronicle/impact|qledger|qledger_validity|qledger_desk_adapter|qledger_evidence_clock|session_anchor|ticker_shape)\.py|engine/codex_lane/runner\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health|grade_qledger)\.py)$'; then
 	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
 fi
 
