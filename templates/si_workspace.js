@@ -107,7 +107,29 @@ var LAZY={
      on an Overview-only visit. */
   confluence:['subsectors.js']
 };
-var loaded={}, mounted={}, pendingTrace=null;
+var loaded={}, mounted={}, failed={}, pendingTrace=null;
+
+/* A protected/missing organ must degrade inside the active view, not make the tab
+   look dead. This state is presentation-only: it never substitutes data, retries
+   around auth, or changes the entitlement of the failed asset. */
+function showAssetFailure(view,src){
+  if(!view) return;
+  failed[view]=failed[view]||{}; failed[view][src]=true;
+  var sec=document.querySelector('.si-view[data-view="'+view+'"]');
+  if(!sec) return;
+  var box=sec.querySelector('.si-load-state');
+  if(!box){
+    box=document.createElement('div');
+    box.className='si-load-state panel pad muted sm';
+    box.setAttribute('role','status');
+    box.setAttribute('aria-live','polite');
+    if(sec.firstChild) sec.insertBefore(box,sec.firstChild); else sec.appendChild(box);
+  }
+  box.innerHTML=L(
+    '<strong>Some tools are unavailable in this view.</strong> Sign in if you have access, or try again later.',
+    '<strong>此视图的部分工具暂不可用。</strong> 如已有权限请登录，或稍后重试。'
+  );
+}
 
 /* reuse the optimizer's ?v= immutable URL from the head's preload/prefetch link */
 function vUrl(name){
@@ -117,28 +139,29 @@ function vUrl(name){
   }catch(e){}
   return name;
 }
-function inject(src,onload){
+function inject(src,onload,view){
   var s=document.createElement('script'); s.async=false; s.src=vUrl(src);
   if(onload) s.addEventListener('load',onload);
+  s.addEventListener('error',function(){ showAssetFailure(view,src); });
   document.head.appendChild(s);
 }
-function loadCycles(){
+function loadCycles(view){
   if(loaded['@cycles']) return; loaded['@cycles']=true;
   window.SC_LAZY_EXTRAS=true;                       // narr+dna wait for first sector focus
   window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];
   window.SC_SERIES_DATA='sector_cycles_series_data.js';
   var files=['sector_cycles_data.js','mm_charts.js','sector_cycles.js'];
   files.forEach(function(f,i){
-    inject(f, i===0?function(){ document.dispatchEvent(new CustomEvent('sc:cycles-data')); }:null);
+    inject(f, i===0?function(){ document.dispatchEvent(new CustomEvent('sc:cycles-data')); }:null, view);
   });
 }
 function loadAssets(view){
   var list=LAZY[view]||[];
   for(var i=0;i<list.length;i++){
     var f=list[i];
-    if(f==='@cycles'){ loadCycles(); continue; }
+    if(f==='@cycles'){ loadCycles(view); continue; }
     if(loaded[f]) continue;
-    loaded[f]=true; inject(f);
+    loaded[f]=true; inject(f,null,view);
   }
 }
 
