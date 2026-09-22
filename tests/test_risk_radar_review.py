@@ -250,3 +250,122 @@ def test_displayed_probability_audit_hot_count_only_counts_tier_a_at_caution():
     }
     out = dp.hot_tier_a_count(subs, calib)
     assert out.tolist() == [2, 1]
+
+
+
+def test_probability_recal_oos_pav_pools_only_violating_neighbors():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    out = rc.weighted_pav([.10, .20, .15, .40, .50], [10, 10, 10, 10, 10])
+    assert out == [.10, .175, .175, .40, .50]
+
+
+def test_probability_recal_oos_fit_ignores_holdout_outcomes():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    idx = pd.bdate_range("2019-12-20", periods=20)
+    states = pd.Series(
+        (["calm", "watch", "caution", "elevated", "risk-off"] * 4), index=idx
+    )
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06 if i % 3 == 0 else -.01 for i in range(len(idx))],
+        "event": [i % 3 == 0 for i in range(len(idx))],
+    }, index=idx)
+    by_h = {h: labels.copy() for h in rc.HORIZONS}
+    a, _ = rc.fit_state_surface(states, by_h)
+    mutated = {h: frame.copy() for h, frame in by_h.items()}
+    for frame in mutated.values():
+        frame.loc[frame.index >= rc.TRAIN_END, "event"] = ~frame.loc[
+            frame.index >= rc.TRAIN_END, "event"
+        ]
+    b, _ = rc.fit_state_surface(states, mutated)
+    assert a == b
+
+
+def test_probability_recal_oos_candidate_keeps_shipped_conjunction_bump():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    idx = pd.bdate_range("2026-01-01", periods=3)
+    states = pd.Series(["caution"] * 3, index=idx)
+    hot = pd.Series([1, 2, 3], index=idx)
+    surface = {
+        h: {state: .10 + i * .04 for i, state in enumerate(rc._STATE_ORDER)}
+        for h in ("h5", "h10", "h21")
+    }
+    out = rc.candidate_probability_series(states, hot, surface, 21)
+    assert round(out.iloc[1] - out.iloc[0], 12) == rc._CONJ_BUMP["h21"]
+    assert round(out.iloc[2] - out.iloc[1], 12) == rc._CONJ_BUMP["h21"]
+
+
+def test_probability_recal_oos_authority_partition_is_hard_gate():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    good = {
+        "h5": {s: .02 + i * .01 for i, s in enumerate(rc._STATE_ORDER)},
+        "h10": {s: .05 + i * .02 for i, s in enumerate(rc._STATE_ORDER)},
+        "h21": {
+            "calm": .10, "watch": .12, "caution": .16,
+            "elevated": .25, "risk-off": .35,
+        },
+    }
+    assert rc.authority_partition(good)["preserved"] is True
+    bad = {h: dict(v) for h, v in good.items()}
+    bad["h21"]["caution"] = .19
+    assert rc.authority_partition(bad)["preserved"] is False
+
+
+def test_probability_recal_oos_paired_brier_delta_is_deterministic():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    idx = pd.bdate_range("2026-01-01", periods=30)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.06 if i % 5 == 0 else -.01 for i in range(30)],
+        "event": [i % 5 == 0 for i in range(30)],
+    }, index=idx)
+    current = pd.Series(.30, index=idx)
+    candidate = pd.Series(.20, index=idx)
+    a = rc.paired_brier_delta(current, candidate, labels, block=5, seed=7, draws=100)
+    b = rc.paired_brier_delta(current, candidate, labels, block=5, seed=7, draws=100)
+    assert a == b
+    assert a["delta"] < 0
+
+
+def test_probability_recal_oos_surface_validity_rejects_nonmonotone_or_overrail():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    good = {
+        h: {s: .05 + i * .05 for i, s in enumerate(rc._STATE_ORDER)}
+        for h in ("h5", "h10", "h21")
+    }
+    assert rc.surface_valid(good)["valid"] is True
+    bad = {h: dict(v) for h, v in good.items()}
+    bad["h10"]["elevated"] = .01
+    assert rc.surface_valid(bad)["valid"] is False
+    bad2 = {h: dict(v) for h, v in good.items()}
+    bad2["h21"]["risk-off"] = .61
+    assert rc.surface_valid(bad2)["valid"] is False
+
+
+def test_probability_recal_oos_promotion_gate_requires_h21_uncertainty():
+    from scripts.research import risk_radar_probability_recal_oos as rc
+
+    def summary(brier=.10, wace=.05):
+        return {"brier_score": brier, "weighted_absolute_calibration_error": wace}
+    result = {
+        "authority_partition": {"preserved": True},
+        "surface_validity": {"valid": True},
+        "holdout": {
+            h: {
+                "current": summary(),
+                "candidate": summary(.09, .04),
+                "paired_brier_delta": {"ci90": [-.02, -.001] if h == "h21" else [-.02, .001]},
+                "accepted_population_match": True,
+            }
+            for h in ("h5", "h10", "h21")
+        },
+    }
+    assert rc.promotion_verdict(result)["promotion_eligible"] is True
+    result["holdout"]["h21"]["paired_brier_delta"]["ci90"] = [-.02, .003]
+    assert rc.promotion_verdict(result)["promotion_eligible"] is False
