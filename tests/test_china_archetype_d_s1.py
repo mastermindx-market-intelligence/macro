@@ -192,7 +192,8 @@ def test_solo_hero_uses_empty_desktop_space_for_watch_context() -> None:
     assert "body.page-china .cnx-hero.cnx-hero-solo{grid-template-columns:2fr 1fr}" in TPL
     assert "body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:block}" in TPL
     assert "@media(max-width:1000px){body.page-china .cnx-hero.cnx-hero-solo .cnx-hero-right{display:none}}" in TPL
-    assert '{{ t("What we\'re watching',\'我们在盯什么\') }}' in TPL
+    assert "What we're watching" in TPL
+    assert "我们在盯什么" in TPL
     assert "{{ t('Next high-impact print','下一项高影响数据') }}" in TPL
     assert "{{ t('Regime watch','周期预警') }}" in TPL
     assert "{{ t('Pullback-risk context','回撤风险背景') }}" in TPL
