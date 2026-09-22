@@ -394,7 +394,7 @@ def test_v2_non_session_transition_keeps_public_and_private_artifacts_unchanged(
     _identity_spine(data)
     artifact = {**_turn_artifact(), "data_session": "2026-11-25", "runtime_seconds": 10.0,
                 "coverage": {"graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
-                             "deck_by_trigger": {"dot_1d": 1}}}
+                             "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
     monkeypatch.setattr(builder.config, "data_dir", lambda: data)
     monkeypatch.setattr(builder.config, "site_dir", lambda: site)
     monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
@@ -601,7 +601,7 @@ def test_v2_real_builder_cli_requires_an_explicit_schema_choice(tmp_path, monkey
     _identity_spine(data)
     artifact = {**_turn_artifact(), "runtime_seconds": 1.0, "coverage": {
         "graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
-        "deck_by_trigger": {"dot_1d": 1}}}
+        "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
     monkeypatch.setattr(builder.config, "data_dir", lambda: data)
     monkeypatch.setattr(builder.config, "site_dir", lambda: site)
     monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
@@ -658,7 +658,7 @@ def test_rejected_schema_change_keeps_public_deck_unchanged(tmp_path, monkeypatc
     _identity_spine(data)
     artifact = {**_turn_artifact(), "runtime_seconds": 10.0, "coverage": {
         "graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
-        "deck_by_trigger": {"dot_1d": 1}}}
+        "deck_by_trigger": {"dot_1d": 1}, "source_contract": {"pass": True}}}
     monkeypatch.setattr(builder.config, "data_dir", lambda: data)
     monkeypatch.setattr(builder.config, "site_dir", lambda: site)
     monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
