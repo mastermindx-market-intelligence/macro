@@ -930,6 +930,22 @@ def test_placeholder_does_not_satisfy_editable_packet_field(
     assert finding_code in fired, sorted(fired)
 
 
+def test_unindented_following_prose_does_not_fill_empty_editable_source(tmp_path, capsys):
+    write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
+    packets = tmp_path / "research" / "migration_packets"
+    packets.mkdir(parents=True, exist_ok=True)
+    body = EDITABLE_PACKET_FIELDS.replace(
+        "3A EDITABLE SOURCE: Figma file IKqTiq7jeVBJusBfoHnPsH · frame 11:2",
+        "3A EDITABLE SOURCE:\n## Notes\nFigma exists elsewhere in this packet.",
+    )
+    (packets / "MP-001-board.md").write_text(
+        "# Migration packet\n\nRIG-RECEIPT: synthetic-ref\n" + body,
+        encoding="utf-8",
+    )
+    fired = _cli_codes(tmp_path, capsys)
+    assert "packet-without-editable-source" in fired, sorted(fired)
+
+
 def test_state_interaction_field_requires_matrix_label(tmp_path, capsys):
     write_set(tmp_path, "synthetic-ref", valid_docs("synthetic-ref"))
     packets = tmp_path / "research" / "migration_packets"
