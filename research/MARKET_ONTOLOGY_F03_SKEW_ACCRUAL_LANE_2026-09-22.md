@@ -153,6 +153,21 @@ both safely AFTER the observed 11:30Z ThetaData EOD refresh year-round).
 launchd has no UTC mode; the local time is the tightest safe point that
 buys at minimum one hour of headroom on either side of the DST switch.
 
+**Round-6 log destinations (sibling state dir):** the plist's
+`StandardOutPath` and `StandardErrorPath` point at
+`/Users/chriswong/skew-ops-state/logs/skewaccrual.{stdout,stderr}.log` —
+the SAME `$SKEW_STATE_DIR` default the runner uses (`/Users/chriswong/skew-ops-state`).
+launchd paths are literal (no env-var expansion), so the destination is
+hardcoded to the default. If you override `SKEW_STATE_DIR` at install time
+to a non-default path, also update `StandardOutPath` and `StandardErrorPath`
+in the plist to match — otherwise launchd writes to the default path while
+the runner reads from your override, and the operator-actionable tail
+(`tail -f $SKEW_STATE_DIR/logs/skewaccrual.stdout.log`) misses the launchd
+log entirely. The directory itself does not need to be created at install
+time — the runner's `mkdir -p "$STATE_DIR"` (line 159 of
+`run_skew_accrual.sh`) creates it on the first run, and launchd writes
+append-style so a missing parent dir is fatal until the first run.
+
 ### 3.4 First-run smoke (dry-run)
 
 ```sh
