@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T10:30:34.880552+00:00",
-  "count": 2632,
+  "generated_at": "2026-09-22T10:50:38.538845+00:00",
+  "count": 2633,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -151,6 +151,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c8mvk8ractp-492c01",
+      "title": "The Point for Europe Tuesday, 22 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T09:26:07Z",
+      "summary_points": [
+        "Novo Nordisk Execution & Expansion: Wegovy IO launches critical for growth; >5 multi-blockbuster launches by 2030; CagriSema 27E M&A opportunity; risk of management’s large transaction.",
+        "DSV Operational Recovery & Valuation: Road operational issues delayed synergies (c.DKK3.6bn by 2027E), but punctuality improving to 90%+; solid Air/Sea/Contract Logistics trends; current price in bottom decile (EV/EBIT 15.2x).",
+        "Volkswagen FY26 Margin & Asset Write-Downs: FY26 margin downgraded to 4.0%-5.5% (30bps); €8bn asset write-downs; EBIT/FCF annuity expected to remain stagnant longer than anticipated.",
+        "Ireland Banks: ECB Rate Hike Boost: ECB rate assumption raised to 3% (from 2.5%), lifting 2027-28E EPS by 2-3% above consensus; AIB preferred over BIRG (c.18% RoTE in 2028E)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
