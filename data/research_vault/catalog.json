@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T04:50:01.200599+00:00",
-  "count": 2616,
+  "generated_at": "2026-09-22T05:19:59.679274+00:00",
+  "count": 2617,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -19,6 +19,7 @@
     "Berenberg",
     "Bernstein",
     "Bertschis weekly chart",
+    "Bertschli Weekly Chart Outlook",
     "Binance",
     "BlackRock",
     "Canaccord",
@@ -171,6 +172,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tqztvgmpxoe-70f49b",
+      "title": "ROLFBERTSCHIS CHARTOUTLOOK",
+      "institution": "Bertschli Weekly Chart Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T01:07:20Z",
+      "summary_points": [
+        "Critical Index Support Breaches: SMI break below 13,670 triggers sell signal (coinciding with 10-yr yield breakout); SPX breakdown below 7450/7350 invalidates uptrend, targeting 7170/6850.",
+        "Sector Concentration Risk: Equal Weight Index underperforming Cap Weight Index signals uneven market support, highlighting overreliance on large-caps.",
+        "MSCI IT Breakout Catalyst: Consolidation above 1255 targets 1310-1330; breach of 1120/1090/1050 support invalidates bullish case.",
+        "Swiss Equity Structural Risks: Novartis long-term uptrend vulnerable below 105/100 (targeting 90-85); Flughafen Zurich volatility zone 78.50-76.75 dictates entry/exit.",
+        "SPX Trend Confirmation: SPX broke wedge pattern at 7817 (all-time high), wave 5 rally targets 7850-8100; resistance at 7700 (61.8% retracement)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },
