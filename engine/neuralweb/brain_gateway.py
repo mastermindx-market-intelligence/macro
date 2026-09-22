@@ -3960,21 +3960,25 @@ def _fast_evidence_requirements(
     return required
 
 
-def _evidence_probe_has_positive_token(probe: str, accepted: set[str]) -> bool:
-    """Match one positive status token without treating explicit negation as adverse."""
+def _evidence_probe_has_positive_marker(probe: str, accepted: set[str]) -> bool:
+    """Match a positive status marker without treating explicit negation as adverse."""
     tokens = tuple(part for part in str(probe or "").split("_") if part)
     neg_before = {"no", "not", "without"}
     neg_after = {"free", "false", "none", "absent"}
-    for index, token in enumerate(tokens):
-        if token not in accepted:
+    for marker in accepted:
+        marker_tokens = tuple(part for part in marker.split("_") if part)
+        if not marker_tokens:
             continue
-        previous = tokens[index - 1] if index else ""
-        following = tokens[index + 1] if index + 1 < len(tokens) else ""
-        if previous in neg_before or following in neg_after:
-            continue
-        return True
+        width = len(marker_tokens)
+        for index in range(0, len(tokens) - width + 1):
+            if tokens[index:index + width] != marker_tokens:
+                continue
+            previous = tokens[index - 1] if index else ""
+            following = tokens[index + width] if index + width < len(tokens) else ""
+            if previous in neg_before or following in neg_after:
+                continue
+            return True
     return False
-
 
 def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
     """Return every adverse producer condition encoded by one attempted read.
@@ -4000,15 +4004,15 @@ def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
             probes.append(val.strip().lower().replace("-", "_").replace(" ", "_"))
 
     found: set[str] = set()
-    if any(_evidence_probe_has_positive_token(
+    if any(_evidence_probe_has_positive_marker(
         probe, {"conflict", "conflicted", "conflicting"}
     ) for probe in probes):
         found.add("CONFLICTED")
-    if any(_evidence_probe_has_positive_token(
+    if any(_evidence_probe_has_positive_marker(
         probe, {"partial", "partially"}
     ) for probe in probes):
         found.add("PARTIAL")
-    if any(_evidence_probe_has_positive_token(probe, {"stale"}) for probe in probes):
+    if any(_evidence_probe_has_positive_marker(probe, {"stale"}) for probe in probes):
         found.add("STALE")
     if any("not_applicable" in probe for probe in probes):
         found.add("NOT_APPLICABLE")
@@ -4023,15 +4027,13 @@ def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
     has_error = bool(error_value) and normalized_error not in {
         "none", "no_error", "false", "not_applicable",
     }
-    unavailable_markers = (
+    unavailable_markers = {
         "unavailable", "source_unavailable", "rights_blocked",
         "producer_degraded", "fetch_failed", "read_failed",
-    )
+    }
     if has_error or any(
-        marker in probe
-        and not probe.startswith(("no_" + marker, "not_" + marker))
+        _evidence_probe_has_positive_marker(probe, unavailable_markers)
         for probe in probes
-        for marker in unavailable_markers
     ):
         found.add("UNAVAILABLE")
 
@@ -4083,7 +4085,7 @@ def _evidence_coverage_receipt(
             attempted.append(tool_name)
             conditions_i = _evidence_result_conditions(result)
             conditions_seen.update(conditions_i)
-            state_i = conditions_i[0] if conditions_i else "AVAILABLE"
+            state_i = _evidence_result_state(result)
             states.append(state_i)
             contradicted = contradicted or "CONFLICTED" in conditions_i
             if isinstance(result, dict):
@@ -4118,6 +4120,7 @@ def _evidence_coverage_receipt(
 
 
 def _evidence_coverage_missing(receipt: dict) -> list[dict]:
+    """Families never read at all; attempted unavailable/stale reads are disclosed, not retried."""
     return [
         row for row in receipt.get("families", [])
         if isinstance(row, dict) and row.get("state") == "NOT_COVERED"
