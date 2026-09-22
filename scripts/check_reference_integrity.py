@@ -322,7 +322,7 @@ _EDITABLE_PACKET_FIELD_SPECS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         "3C STATE + INTERACTION MATRIX",
         re.compile(
             r"^[ \t]*(?:#{1,6}[ \t]+)?3C[ \t]+STATE[ \t]*\+[ \t]*INTERACTION"
-            r"(?:[ \t]+MATRIX)?\b[ \t]*(?:[:\-–—][ \t]*)?(?P<value>[^\n]*)$",
+            r"[ \t]+MATRIX\b[ \t]*(?:[:\-–—][ \t]*)?(?P<value>[^\n]*)$",
             re.IGNORECASE | re.MULTILINE,
         ),
     ),
