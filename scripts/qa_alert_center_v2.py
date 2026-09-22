@@ -45,12 +45,27 @@ def main():
             page.goto(url, wait_until='domcontentloaded')
             page.locator('#ac-results .acx-row').first.wait_for()
             assert page.locator('#ac-results .acx-row').count() == 8
-            assert page.locator('#ac-results .acx-attention-group').count() >= 2
-            assert page.locator('#ac-results').get_by_text('Earlier priority', exact=True).count() == 1
-            assert page.locator('#ac-results').get_by_text('Watch next', exact=True).count() == 1
-            report['checks'].append('Now separates earlier high-authority events from fresh watch items')
             top_ids = [row['alert_id'] for row in payload['alerts'][:8]]
             top_briefs = [payload['explorer']['briefs'][id_] for id_ in top_ids]
+            attention_labels = {
+                'review_first': 'Review first',
+                'earlier_priority': 'Earlier priority',
+                'watch_next': 'Watch next',
+                'for_awareness': 'For awareness',
+            }
+            expected_groups = []
+            for brief in top_briefs:
+                attention = brief['attention']
+                if attention not in expected_groups:
+                    expected_groups.append(attention)
+            visible_groups = page.locator('#ac-results .acx-attention-title').evaluate_all(
+                '(nodes) => nodes.map(node => node.textContent.trim())')
+            assert visible_groups == [attention_labels[value] for value in expected_groups]
+            assert ('Earlier priority' in visible_groups) == any(
+                brief['attention'] == 'earlier_priority' for brief in top_briefs)
+            assert ('Watch next' in visible_groups) == any(
+                brief['attention'] == 'watch_next' for brief in top_briefs)
+            report['checks'].append('Now renders only canonical tier+freshness groups present in the current snapshot')
             assert all(brief['status'] == 'supported' for brief in top_briefs)
             expected_actions = [brief['next_action_label'] + ' →' for brief in top_briefs]
             visible_actions = page.locator('#ac-results .acx-row-action').evaluate_all(
