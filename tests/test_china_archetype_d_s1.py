@@ -153,6 +153,8 @@ def test_four_driver_synthesis_reuses_the_existing_link_rail_and_deep_dialogs() 
     assert "{{ t('Why this regime','为什么这样判断') }}" in TPL
     assert "cnx-driver-band" not in TPL
     assert "cnx-driver-rail" not in TPL
+    assert "cny_yi_pair" not in TPL
+    assert "{{ t('bn','亿') }}" in TPL
     for dialog in ("cnx-dlg-policy", "cnx-dlg-flows", "cnx-dlg-risk", "cnx-dlg-property"):
         assert f'href="#{dialog}"' in TPL
         assert f"cnxOpenDlg('{dialog}')" in TPL
