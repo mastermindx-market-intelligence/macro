@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T19:10:15.122008+00:00",
-  "count": 2728,
+  "generated_at": "2026-09-23T19:25:47.444273+00:00",
+  "count": 2729,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-qugizra4u2p-58f2a2",
+      "title": "GS Duttenhoefer BEST of DAY 3 at our German Corp Conference in Munich 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:57:48Z",
+      "summary_points": [
+        "German Equities Outlook: Consensus 17% EPS growth (2027) vs 9% STOXX 600, DAX at 15x P/E with under-owned positioning (20% revs from Autos/Chemicals); key growth driver: manufacturing recovery through 2027/28.",
+        "Mercedes-Benz China Risks: JV volumes down 24%, ICE market down 40% in China; pricing sensitivity and labour negotiations (40h workweek focus) threaten near-term sales.",
+        "German Defence Procurement: Budget increase drove 10x approval volumes; Iran war boosted Brenntag SE (€8.6bn MCAP) amid improved bureaucracy, though geopolitical risks (room crowding 3/10) threaten gains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-6kjignza40c-5e0949",
       "title": "GS Feiler GS Consumer Top Stocks & Trading Themes in Focus 23 Sep 2026",
