@@ -337,3 +337,32 @@ conditions, not assume the basket .75 gate was every CPU stock's only blocker.
 No new historical threshold sweep is needed to accept this product correction.
 MISSION_COMPLETE: false. CAPABILITY_STATE: BUILT_NOT_PROVEN.
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
+
+## 2026-09-23: compiled artifact repair and focused-publication data loss
+
+Current protected procedure is Mastermind@c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6.
+The original #7650/#7520 and shared #7693 are MERGED and DO_NOT_REDO.
+#7669's latest real failure was its own missing compiled template helpers, not
+those retired blockers. Main d34993def9fa00e88c930f39a498b6ecad97455b was integrated
+once at 9c81d664d1337b5214e249151ab0c343b4047dab, without changing feature blobs.
+
+Existing renderer/writer/finalizer interfaces now materialized 121 pages from
+exactly their existing source data (1,917 member rows); dates, original generated
+stamps, non-explanation data and status/buys/coverage remain identical. No old Sep18
+snapshot was restored over current Sep21/Sep22 evidence. The actual failing
+compiled-page test passes unchanged. Expanded tests:302 Python3.14,302 overlapping
+Python3.12. Canonical 40-cell captures and10 interaction checks bind actual compiled
+files. Evidence:research/sector_pulse/recommendation_reasons_20260921/publication_20260923/.
+
+The attempted new build_theme_detail helper/CLI source change was platform-refused;
+readback proved the script unchanged. It was not retried. Native existing-renderer
+page materialization was independent; no new publication or retry control exists.
+No independent reviewer was restarted or impersonated. #7669 remains DRAFT/HOLD.
+
+New critical-path invalidator: the focused #7211 publisher rewrote the Sep21
+semiconductor detail from11 available member assessments at e77ddcedfe9f to zero
+at f8bc00fe1532. It calls the stock-detail builder without rebuilding/hydrating the
+required gitignored dossier tree. Current output now explicitly exposes that gap.
+Prevent this lightweight lane from overwriting full stock-detail evidence; don't
+copy earlier isolated scores into the newer frame or bypass private-data gates.
+#7749's unpublished mixed-technical-date candidate remains separate and held.

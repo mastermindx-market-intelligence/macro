@@ -1,0 +1,58 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_basket_score_native_state_survives_render_and_reinjection ________
+
+    def test_basket_score_native_state_survives_render_and_reinjection():
+        src = _src('basket_detail.html.j2')
+        assert src.count('const scoreUi=basketScoreState(app);') == 2
+        assert src.count('restoreBasketScoreState(app,scoreUi);') == 2
+        assert 'detail.open=state.open;' in src
+        assert 'summary.focus({preventScroll:true})' in src
+        roots = ('basket', 'basket_china', 'basket_hk', 'basket_canada', 'basket_intl')
+        pages = [p for d in roots for p in (TMPL_DIR.parent/'site'/d).glob('*.html')]
+        assert len(pages) >= 121
+        helper = src[src.index('// Timing cards'):src.index('\nfunction render(){')]
+        for p in pages:
+            html = p.read_text()
+>           assert helper in html, p
+E           AssertionError: PosixPath('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/site/basket/us_sector_realestate.html')
+E           assert "// Timing cards use the producer's labels; missing evidence never becomes a verdict.\nfunction timingCardsHtml(textur...ld button[data-hold-sort]')).find(b=>b.dataset.holdSort===key);\n  if(button) button.focus({preventScroll:true});\n}\n" in '\n\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<script data-dbase>(function () {\n  window.DA...ct();}).catch(function(){});\n})();\n</script>\n<script src="../theme.js?v=3ffc953f" defer></script>\n</body>\n</html>'
+
+tests/test_ftr_w3_ui.py:498: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-d92e7de9-7900-4a38-bd01-5526526a9936/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-d92e7de9-7900-4a38-bd01-5526526a9936/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-e7cf3861-d560-4070-b276-e70f9e295c28/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-e7cf3861-d560-4070-b276-e70f9e295c28/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-df27aed3-9a93-42f4-aa47-e8c64b6c2fb5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-df27aed3-9a93-42f4-aa47-e8c64b6c2fb5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-a869064a-73d0-434e-9d9f-6f252653236e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-a869064a-73d0-434e-9d9f-6f252653236e/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-1888bbe6-36c6-42ba-a4c1-011d063d5736/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-1888bbe6-36c6-42ba-a4c1-011d063d5736/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-a4222fec-49cc-4e66-a145-1c4365452432/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-a4222fec-49cc-4e66-a145-1c4365452432/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ftr_w3_ui.py::test_basket_score_native_state_survives_render_and_reinjection
+1 failed, 6 warnings in 3.66s

@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "scripts.capture_page_evidence",
+    "--base-url",
+    "http://127.0.0.1:64157",
+    "--routes",
+    "/basket/ai_semiconductors.html,/basket_china/cn_semis.html,/basket_hk/hk_banks.html,/basket_canada/ca_asset_mgrs.html,/basket_intl/intl_automation.html",
+    "--output-dir",
+    "/tmp/mmx-leadership-next-20260923/capture/cells",
+    "--manifest",
+    "/tmp/mmx-leadership-next-20260923/capture/manifest.json",
+    "--smells",
+    "/tmp/mmx-leadership-next-20260923/capture/smells.json",
+    "--viewports",
+    "desktop,mobile",
+    "--locales",
+    "en,zh",
+    "--themes",
+    "dark,light",
+    "--max-pages",
+    "5",
+    "--settle-ms",
+    "1300",
+    "--delay-ms",
+    "0",
+    "--timeout-s",
+    "30"
+  ],
+  "returncode": 0,
+  "routes": [
+    "basket/ai_semiconductors.html",
+    "basket_china/cn_semis.html",
+    "basket_hk/hk_banks.html",
+    "basket_canada/ca_asset_mgrs.html",
+    "basket_intl/intl_automation.html"
+  ],
+  "live_feeds": "unavailable_by_fixture",
+  "compiled_files": true
+}
