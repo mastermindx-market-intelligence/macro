@@ -29,7 +29,10 @@ template is unsatisfiable until the render lane runs.
 """
 from __future__ import annotations
 
+import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -344,6 +347,79 @@ def test_subsector_detail_preserves_payload_truth_and_existing_chart_consumer():
     assert 'data-tier="' in template
     assert "AI Semiconductors" not in template
     assert ">66<" not in template
+
+
+def _execute_subsector_detail_render(detail: dict) -> str:
+    """Render the real template, execute its inline consumer, and return #app HTML."""
+    from scripts import build_subsector_confluence as bsc
+
+    html = bsc._env().get_template("subsector_detail.html.j2").render(
+        detail_json=json.dumps(detail, ensure_ascii=False),
+        group_name=detail["group"]["label"],
+        chart_key=None,
+        has_signals=False,
+        back_href="../subsectors.html",
+    )
+    scripts = re.findall(r"<script(?: [^>]*)?>(.*?)</script>", html, flags=re.S)
+    js = next(block for block in scripts if "const DETAIL =" in block)
+    node = shutil.which("node")
+    assert node is not None, "node is required to execute the intelligence-detail consumer contract"
+    harness = (
+        "const app={innerHTML:''};"
+        "global.document={getElementById:(id)=>id==='app'?app:{},addEventListener:()=>{}};"
+        "global.window={};\n"
+        + js
+        + "\nprocess.stdout.write(app.innerHTML);\n"
+    )
+    run = subprocess.run([node, "-e", harness], capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    return run.stdout
+
+
+def test_subsector_detail_render_preserves_localized_truth_all_stats_and_mobile_member_parity():
+    detail = {
+        "kind": "concept",
+        "group": {
+            "key": "demo", "basket_id": "demo", "label": "Demo", "label_zh": "示例",
+            "sector": "Technology", "sector_zh": "科技", "n_members": 1, "n_priced": 6,
+            "reliability": "med", "as_of": "2026-09-22", "class": "forming",
+            "entry": {
+                "tier": "T3", "buyable": True, "reason": "forward confirmation pending",
+                "ticks": 0, "bars_to_cross": 1.5, "above200": True,
+            },
+            "regime": {
+                "side": "tactical", "label": "English label", "label_zh": "中文标签",
+                "action": "English action", "action_zh": "中文行动",
+                "stoch_3d": 12, "rs_60d": 3.2,
+            },
+            "members": [{
+                "ticker": "AAA", "name_zh": "甲", "price": 123.45,
+                "stock_tier": "T2", "ret_20d": 4.2, "vs_basket": 1.1,
+                "stock_state": "BUY", "stock_buyable": True,
+                "behaves_as": {
+                    "home_id": "other", "home_label": "Other", "home_label_zh": "其他",
+                    "homes": [{"label": "Other", "corr20": 0.88}],
+                },
+            }],
+        },
+    }
+    rendered = _execute_subsector_detail_render(detail)
+
+    assert '<span class="l-en">English action</span><span class="l-zh">中文行动</span>' in rendered
+    assert '<span class="l-en">English label</span><span class="l-zh">中文标签</span>' in rendered
+    assert '<span class="l-en">Medium</span><span class="l-zh">中</span>' in rendered
+
+    stats = rendered.split('<div class="id-stats">', 1)[1].split(
+        '<section class="id-structure"', 1
+    )[0]
+    assert stats.count('class="id-stat"') == 5
+    for label in ("Washout", "RS60", "Cross age", "To cross", "200d trend"):
+        assert label in stats
+
+    cards = rendered.split('<div class="member-cards">', 1)[1].split('</section>', 1)[0]
+    assert "123.45" in cards
+    assert "behaves-as Other" in cards
+    assert "类同 其他" in cards
 
 
 def test_subsector_detail_adapts_visible_identity_without_builder_fork():
