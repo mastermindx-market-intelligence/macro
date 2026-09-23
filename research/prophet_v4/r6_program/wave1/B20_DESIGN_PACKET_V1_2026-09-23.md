@@ -1,6 +1,6 @@
 # B20 DESIGN PACKET V2
 
-STATUS: V2 COMPLETE
+STATUS: V2 IN PROGRESS — R6-B20-01 repairs
 
 **Operation:** `prophet-us-fable-meta-ceo-20260923-001`
 
