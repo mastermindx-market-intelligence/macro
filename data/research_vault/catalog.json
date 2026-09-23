@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T14:54:32.716835+00:00",
-  "count": 2715,
+  "generated_at": "2026-09-23T15:09:37.545777+00:00",
+  "count": 2716,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -115,6 +115,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-y7x0pveddcd-777f0f",
+      "title": "Global Markets Daily Brazilian Real (BRL) — Navigating the Election",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:35Z",
+      "summary_points": [
+        "Brazilian Election Catalyst: Oct 4 election (potential Oct 25 runoff) drives BRL volatility; historical patterns show 4.5% BRL strength post-first round (2022) and peak USD/BRL ahead of second rounds (2014, 2022).",
+        "Fiscal Deficit & BRL Risk: 9% GDP fiscal deficit (primary 0.7%) and high real rates sustain carry trade but lack sustainability; negative fiscal outcomes imply 14% BRL depreciation to ~5.80.",
+        "USD/BRL Fair Value Range: Market-friendly outcomes (tighter fiscal policy) target 4.50–4.80; fiscal premium persistence (e.g., Dec 2024) implies 5.80 (14% depreciation risk).",
+        "Election-Driven Policy Shifts: Proactive fiscal adjustment (lowering premium) boosts BRL; passive shifts or policy delivery failures amplify FX volatility (2014: Rouseff re-election + orthodox appointments spurred rally).",
+        "Critical Sensitivity: USD/BRL moves 5.3% appreciation (to 4.80) if fiscal premium reduces vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
