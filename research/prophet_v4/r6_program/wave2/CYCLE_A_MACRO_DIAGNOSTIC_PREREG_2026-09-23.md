@@ -34,7 +34,19 @@ After a distinct `ORDER` trough followed by a positive `ORDER` value within six 
 
 ## PRIMARY ENDPOINT
 
+- **Primary hypothesis:** H1. There is exactly one primary endpoint: the **publication-clock sequence concordance rate**, the proportion of distinct eligible `ORDER`-trough anchor episodes in which the H1 inventory and output conditions both hold.
+- **Estimator:** number of H1-concordant anchor episodes divided by the number of distinct eligible `ORDER`-trough anchor episodes after blocked or unavailable episodes are counted in the denominator. Use the exact one-sided binomial 95% confidence interval for the proportion.
+- **Null:** the H1 concordance probability is at most 0.50.
+- **Pass/fail threshold:** H1 passes only if there are at least 12 distinct eligible anchor episodes, the point estimate is at least 0.60, and the exact lower 95% binomial confidence bound exceeds 0.50. Otherwise it fails; no H2 or H3 result may rescue it.
+- **Honest N:** distinct episode count, not months or event fires. Each episode begins at its allocated `ORDER` trough; overlapping candidates within six months belong to the same episode; unavailable or blocked intervals remain ineligible only when the frozen transformation cannot be evaluated, and their count is reported separately without removing them from the attempted-episode census.
+- H2 and H3 are registered mechanism falsifiers and descriptive disclosures, not primary or rescue endpoints. All hypothesis-specific results and blocked episodes must be reported in one table.
+
 ## WINDOW AND ERA HANDLING
+
+- Ratified window: **2002-12 → 2025-05-15** on publication clocks, exactly as ruled by R6-B16-01a §2. The target period runs from 2002-12 through 2025-05; its first transform input is 2002-09 and its last is 2025-05. The approximately 269-month span is source-clock information, not an outcome observation.
+- Excluded era: **1997-04-15 → 2002-11**, because its pre-NAICS reconstruction regimes are mixed (`M3 2001-05`, `MTIS 2001-06`, `G.17 2002-12`); it may support diagnostic-only splicing but is excluded from this ratified window.
+- Excluded era: **2025-05-16 → latest**, because the post-2025 M3 benchmark, `INDPRO` 2022-NAICS conversion on 2025-11-24, and unknown `ISRATIO` benchmark applicability make a new, too-short, partly unknown era.
+- A required initial-release vintage row missing inside 2002-12 → 2025-05-15, or publishing later than that period's initial-release publication rule requires, blocks that month. The run must stop before endpoint reporting unless every required month is classified available or blocked under this rule; it must never substitute zero, a lagged value, interpolation, or a revised row.
 
 ## DISCLOSURES
 
