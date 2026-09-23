@@ -1,0 +1,11 @@
+# PU W1 C D5 Doc Truth Session — 2026-09-23
+
+STATUS: IN_PROGRESS
+
+## RESULT
+
+## EVIDENCE
+
+## GAPS
+
+## DEVIATIONS
