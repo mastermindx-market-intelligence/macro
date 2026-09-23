@@ -153,6 +153,7 @@ on:
       # Close and Send-reply buttons (support replies could not be sent at all).
       # Listed by name so a test-only edit still triggers the lane that runs it.
       - "tests/test_admin_inline_handler_attrs.py"
+      - "tests/test_admin_navigation_ux.py"
       # Absolute-path prune guard (#3802): a walk excluding ".claude"/"worktrees"
       # via `path.parts` also matches the checkout's own path and scans nothing.
       # Named so a test-only edit still triggers the lane that runs it.
@@ -665,6 +666,8 @@ on:
       # covered by engine/** and templates/**; name the suite so a test-only edit
       # still starts the owner job.
       - "tests/test_market_score_authority_2026_08_12.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_macro_sector_desk.py"
       # #5481 folded the China Policy Watch express-render guards into this
       # canonical suite. Name the test half explicitly beside its owner job;
       # collectors/**, engine/**, scripts/**, and templates/** cover its subjects.
@@ -1192,6 +1195,10 @@ on:
       # test pins producer (AST) + template consumer, so the builder must trigger CI.
       - "scripts/build_stock_library.py"
       - "tests/test_sector_pulse_wiring.py"
+      # Shared leadership clock: source edits and regression-only edits both run.
+      - "engine/sector_pulse.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_sector_pulse_observation_clock.py"
       # Options Alpha W1.3/W-C/W-OVC stamp + entry-state guards: engine files are
       # covered by engine/**, but the test files need explicit paths so a test-only
       # change (e.g. the 2026-07-23 W-OVC fixture re-anchor) still re-runs the
@@ -3690,6 +3697,7 @@ on:
       - "scripts/build_china_pick_lab.py"
       - "scripts/build_pick_lab.py"
       - "scripts/build_stock_board_v2.py"
+      - "engine/ledger_clock.py"
       - "scripts/grade_bottom_calls.py"
       - "engine/us_board_rank.py"
       # The CN candidate store is the SUBJECT of test_cn_prophet_candidates_schema.py,

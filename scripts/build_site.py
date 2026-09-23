@@ -2559,18 +2559,32 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2600,7 +2614,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
@@ -2613,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
@@ -4364,6 +4378,7 @@ def build_advanced_page(env: Environment, site: Path, generated: str, latest: di
         accumulation=accumulation_rows(), holdings_changes=holdings_rows(),
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
         flows_html=flows_html_table(),
+        breadth_split=_breadth_split_view(),  # UD-B2-W3 R6: relocated from macro dialog
     )
     write_page(site / "advanced.html", html)
     log.info("wrote advanced.html (%.0f KB)", (site / "advanced.html").stat().st_size / 1024)
@@ -5758,8 +5773,10 @@ def main() -> int:
     )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
-                       SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
     # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
     # template so the Setups card grid (re-sourced to the plan book, below) can
     # call it per row — the SAME function scripts/build_site.py already ships
@@ -6122,7 +6139,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -6131,20 +6150,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)
@@ -6724,6 +6745,53 @@ def main() -> int:
     except Exception:  # noqa: BLE001 — additive, never break the build
         pass
 
+    # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
+    # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
+    # their own nightly cadences) — the macro page never recomputes the blender
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
+    # ms_history is added so the spine row can compute month-ago travel the same way
+    # the US subject row does (>=22 rows → real, shorter → designed-null travel
+    # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
+    # ~:362-384 — never substitute raw_score).
+    def _persisted_ms_view(market_key: str) -> dict | None:
+        try:
+            from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+            _snap = _lp(market_key=market_key)
+            if not _snap:
+                return None
+            _view = {
+                "score": _snap.get("score"),
+                "raw_score": _snap.get("raw_score"),
+                "verdict": _snap.get("verdict"),
+                "label_en": _snap.get("label_en"),
+                "label_zh": _snap.get("label_zh"),
+                "asof": _snap.get("asof"),
+                "caveat_en": _snap.get("caveat_en") or "",
+                "caveat_zh": _snap.get("caveat_zh") or "",
+                "display_only": True,
+                "market": market_key,
+                "ms_history": [],      # filled below from the parquet log
+            }
+            # score_log.parquet is keyed by the per-market directory; CN lives
+            # under data/china_market_state/ (the existing convention used by
+            # build_china.py:1888), HK under data/hk_market_state/.
+            _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+            _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+            if _sl_path.exists():
+                _all = pd.read_parquet(_sl_path).sort_values("date")
+                _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+            return _view
+        except Exception as _e:  # noqa: BLE001 — additive, never fatal
+            log.warning("%s_market_state ingest failed (%s); degrading to None",
+                        market_key, _e)
+            return None
+
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
+
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
     # Both fail-open; skips attach entirely if no data.
@@ -6888,6 +6956,11 @@ def main() -> int:
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
+        # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
+        # build_china. Read-only on this lane; off the heavy render path.
+        hk_market_state=_hk_ms_view,
+        cn_market_state=_cn_ms_view,
         idx_spark=_idx_spark_view(),      # v5 scorecard: 20-point sparklines SPY/QQQ/^DJI/^RUT — graceful absent
         signal_stack=build_signal_stack(latest),  # consolidated cross-subsystem read (display-only)
         vol_shock=_vol_shock_view(latest, event_risk),  # forward vol-shock risk gauge (display-only)
@@ -6930,6 +7003,24 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import (
+        internationalize_hero_styles,
+        write_global_regime_fragment,
+    )
+    _intl_hero_css = internationalize_hero_styles(
+        (Path(__file__).resolve().parent.parent / "templates" / "theme.css").read_text()
+    )
+    _intl_hero_html = env.get_template("_unified_dashboard_hero.html.j2").render(
+        **vm, ud_international=True
+    )
+    write_global_regime_fragment(
+        site,
+        f"<style>\n{_intl_hero_css}\n</style>\n{_intl_hero_html}",
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
@@ -7292,40 +7383,14 @@ def main() -> int:
     # Additive — never fatal to the daily run.
     try:
         from scripts.build_market_heatmap import build_all as build_market_heatmaps
-        from engine.market_heatmap import PAGE_META as _HM_MK
-        from engine.market_heatmap import page_summary as _hm_summary
-        from engine.market_heatmap import sibling_markets as _hm_siblings
-        from lib.seo import is_public_path as _is_public
+        from scripts.build_market_heatmap import render_pages as render_market_heatmap_pages
+
         _hm_payloads = build_market_heatmaps(site, generated_utc=generated)
         _tmark("intl_heatmaps")
-        _hm_tmpl = env.get_template("market_heatmap.html.j2")
-        for _m, _mk in _HM_MK.items():
-            out_mh = site / f"{_m}_heatmap.html"
-            # Read the tile map back off disk rather than trusting the in-memory
-            # return: build_all() swallows a single market's failure so one dead
-            # feed cannot take the site down, and on that path the committed JSON
-            # from the last good run is what the browser will actually fetch — so
-            # it is what the server-rendered summary must describe.
-            _pay = _hm_payloads.get(_m)
-            if not _pay:
-                try:
-                    _pay = json.loads((site / "marketdata" / f"{_m}_heatmap.json")
-                                      .read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001 — no map, no summary; the shell still ships
-                    _pay = None
-            # The wall shows exactly when the page is anonymous-public. One source
-            # of truth (config/site_access.yml) means a sibling market adopts the
-            # tier preview by moving one line of policy — no template edit, no
-            # second flag that can disagree with the boundary.
-            _gated = _is_public(f"/{_m}_heatmap.html")
-            _sum = _hm_summary(_pay)
-            write_page(out_mh, _hm_tmpl.render(
-                mk=_mk, summary=_sum, gated=_gated,
-                n_tiles=(_sum or {}).get("n_tiles") or (_pay or {}).get("n_tiles") or 0,
-                siblings=_hm_siblings(_m),
-            ))
-            log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out_mh,
-                     out_mh.stat().st_size / 1024, bool(_sum), _gated)
+        # The shared publisher owns JSON→SSR fallback and boundary projection.
+        # Asia close calls the same owner for China alone, so no second page
+        # renderer can drift from the full-site path.
+        render_market_heatmap_pages(_hm_payloads, site=site, env=env)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market heatmaps (cn/hk/ca) failed: %s", e)
 
