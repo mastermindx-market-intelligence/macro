@@ -7568,3 +7568,11 @@
 {"id":"ob-2026-09-23-9d795fe0e9","from":"approved","to":"posting","at":"2026-09-23T17:54:37Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-23-9d795fe0e9","from":"posting","to":"posted","at":"2026-09-23T17:54:38Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab4125eae8d2f8cef184a5a","external_url":null,"at":"2026-09-23T17:54:28Z","booked_at":"2026-09-23T17:54:28Z"}}
 {"id":"ob-2026-09-23-ce96107184","from":"approved","to":"quarantined","at":"2026-09-23T17:54:38Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-23-0a9b848530","from":"queued","to":"approved","at":"2026-09-23T18:05:18Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-23-cffccf84ad","from":"queued","to":"approved","at":"2026-09-23T18:05:18Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-23-dc21de2cca","from":"queued","to":"approved","at":"2026-09-23T18:05:18Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-23-0a9b848530","from":"approved","to":"quarantined","at":"2026-09-23T18:05:19Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-23-cffccf84ad","from":"approved","to":"posting","at":"2026-09-23T18:05:25Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-23-cffccf84ad","from":"posting","to":"posted","at":"2026-09-23T18:05:26Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab414e618efc103aa48b1b0","external_url":null,"at":"2026-09-23T18:05:17Z","booked_at":"2026-09-23T18:05:17Z"}}
+{"id":"ob-2026-09-23-dc21de2cca","from":"approved","to":"posting","at":"2026-09-23T18:05:26Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-23-dc21de2cca","from":"posting","to":"posted","at":"2026-09-23T18:05:27Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab414e7e45f965f4654c0fe","external_url":null,"at":"2026-09-23T18:05:17Z","booked_at":"2026-09-23T18:05:17Z"}}
