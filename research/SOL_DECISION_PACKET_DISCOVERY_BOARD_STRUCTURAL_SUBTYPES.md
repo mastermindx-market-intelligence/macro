@@ -125,6 +125,24 @@ The broader Registry V2 question remains separate. A future accepted schema may 
 structural key (for example from template/builder/route contract) or document `archetype` as a
 product-job grouping. This packet does not pre-empt that owner.
 
+### Editable-projection follow-up
+
+The current Paper file contains an existing artboard `1RY-0` named
+`B · Discovery Board · Starter`. Its composition hardcodes the lifecycle count ladder
+(`EARLY / BUILDING / READY / ACTIVE`). That artboard is therefore a **lifecycle-board starter**,
+not a universal Discovery Board starter.
+
+After this ruling is accepted, governed editable projections MUST stop presenting that artboard as
+the generic B structural template. The lawful follow-up is to preserve the existing artboard but
+relabel/qualify it as the lifecycle subtype, and to represent `ranked_screener` as a separate
+composition variant built from existing primitives. Do not delete the lifecycle starter, do not
+invent a second token/component authority, and do not treat this projection cleanup as source-law
+acceptance by itself.
+
+Until that projection cleanup is complete, designers working on ranked screeners MUST cite this
+decision packet and MUST NOT copy the ladder from `1RY-0` merely because the route registry says
+`discovery_board`.
+
 ## 7. Effect on the current RIG and migration chain
 
 For PR #7727:
