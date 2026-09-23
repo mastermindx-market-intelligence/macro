@@ -211,6 +211,29 @@ def test_cli_backfill_prints_one_json_line_and_skips_emit(tmp_path, monkeypatch,
     assert second["rows_added"] == 0
 
 
+def test_weekend_only_ledger_does_not_claim_rows_were_excluded(tmp_path, monkeypatch):
+    """A ledger with no weekday row still emits its latest weekend row.
+
+    The older emit fixture stamps Saturday 2026-06-20 and Sunday 2026-06-21
+    and expects that Sunday row to stay. Those rows were not removed, so the
+    exclusion count is zero. A ledger that also has a weekday drops the
+    weekend rows and counts only the rows it removed.
+    """
+    ledger = tmp_path / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([
+        _polygon_row("OLD", "2026-06-20", 0.01),
+        _polygon_row("XYZ", "2026-06-21", 0.10),
+    ]).to_parquet(ledger)
+    _pin(monkeypatch, ledger)
+
+    payload = S.emit_from_ledger(today=date(2026, 6, 24))
+    assert payload["ledger_asof"] == "2026-06-21"
+    assert set(payload["names"]) == {"XYZ"}
+    assert payload["n_weekend_rows_excluded"] == 0
+    assert payload["history_sources"] == ["polygon_gex"]
+
+
 def test_unresolved_store_exits_zero_with_the_warning_line(tmp_path, monkeypatch, capsys):
     ledger = tmp_path / "snapshots.parquet"
     _seed(ledger)
