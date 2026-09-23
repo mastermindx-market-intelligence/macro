@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STEP-BULL-20260707",
-  "asof": "2026-09-19",
+  "asof": "2026-09-22",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 59.7,
-  "raw_confidence": 59.3,
-  "delta_vs_base": -0.3,
+  "management_confidence": 57.6,
+  "raw_confidence": 57.2,
+  "delta_vs_base": -2.4,
   "recommended_action": "trim",
   "human_state": "T1 Giveback Warning",
   "components": {
     "validity": 100.0,
-    "progress": 46.2,
-    "pace": 26.6,
-    "retention": 52.3,
+    "progress": 44.8,
+    "pace": 23.9,
+    "retention": 47.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.57,
-    "dist_to_t1_r": 0.93,
-    "dist_to_t2_r": 2.43,
-    "horizon_pct_used": 146.7,
-    "p1": 0.38,
-    "p2": 0.19,
+    "dist_to_stop_r": 1.512,
+    "dist_to_t1_r": 0.988,
+    "dist_to_t2_r": 2.488,
+    "horizon_pct_used": 153.3,
+    "p1": 0.3412,
+    "p2": 0.1706,
     "p3": null,
-    "move_r": 0.57,
+    "move_r": 0.512,
     "mfe_r": 1.744,
     "mae_r": -0.231
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-15",
   "_first_t1_ts": "2026-08-13",
   "_first_t2_ts": null,
-  "days_elapsed": 66,
-  "tau": 1.4667
+  "days_elapsed": 69,
+  "tau": 1.5333
 }

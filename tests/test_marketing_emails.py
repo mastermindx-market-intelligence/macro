@@ -90,7 +90,19 @@ class _Ledger:
             return None
         if method == "PATCH" and path.startswith("email_log"):
             key = path.split("idem_key=eq.", 1)[1].split("&", 1)[0]
-            self.rows.setdefault(key, {}).update(body or {})
+            if key not in self.rows:
+                return []
+            decoded = urllib.parse.unquote(path)
+            current = self.rows[key]
+            expected_status = re.search(r"(?:^|&)status=eq\.([^&]*)", decoded)
+            if expected_status and current.get("status") != expected_status.group(1):
+                return []
+            expected = re.search(r"(?:^|&)detail=eq\.([^&]*)", decoded)
+            if expected and current.get("detail") != expected.group(1):
+                return []
+            self.rows[key].update(body or {})
+            if prefer == "return=representation":
+                return [dict(self.rows[key])]
             return None
         if method == "GET" and path.startswith("email_suppression"):
             self.lookups.append(path)
@@ -115,6 +127,9 @@ class _Smtp:
 
     def __init__(self):
         self.sent: list = []
+        self.data_attempts = 0
+        self.before_send = None
+        self.send_error = None
         outer = self
 
         class _Conn:
@@ -136,7 +151,15 @@ class _Smtp:
             def login(self, *a):
                 pass
 
+            def noop(self):
+                return (250, b"ok")
+
             def send_message(self, msg):
+                outer.data_attempts += 1
+                if outer.before_send is not None:
+                    outer.before_send()
+                if outer.send_error is not None:
+                    raise outer.send_error
                 outer.sent.append(msg)
 
         self.SMTP = _Conn
@@ -648,9 +671,11 @@ def test_campaign_subject_keeps_both_languages(monkeypatch, wired):
 # ===========================================================================
 # The parked-row drain (W3's documented contract)
 # ===========================================================================
-def _parked(idem_key, template, to_email, user_id):
+def _parked(idem_key, template, to_email, user_id, *, status="queued",
+            detail="suppression_lookup_failed"):
     return {"idem_key": idem_key, "template": template, "class": "marketing",
-            "to_email": to_email, "user_id": user_id}
+            "to_email": to_email, "user_id": user_id,
+            "status": status, "detail": detail}
 
 
 def test_a_parked_row_for_a_now_suppressed_address_is_closed_not_sent(monkeypatch, wired):
@@ -686,6 +711,161 @@ def test_a_parked_row_that_is_clear_is_completed_in_place(monkeypatch, wired):
     assert len(smtp.sent) == 1 and smtp.sent[0]["To"] == "a@example.com"
     # exactly one ledger row still exists for this key — nothing was re-claimed
     assert list(led.rows) == [key]
+
+
+def test_parked_row_marks_attempt_before_data_then_closes_sent(monkeypatch, wired):
+    """The in-place recovery path uses the same write-ahead boundary as mailer.send."""
+    led, smtp, api = wired
+    _mail_on(monkeypatch)
+    _arm(monkeypatch)
+    key = f"welcome:{U1}"
+    led.rows[key] = {"idem_key": key, "status": "queued",
+                     "detail": "suppression_lookup_failed"}
+    api.parked = [_parked(key, "welcome", "a@example.com", U1)]
+
+    def _at_data_boundary():
+        row = led.rows[key]
+        assert row["status"] == "queued"
+        assert row["detail"].startswith(f"{mailer.SMTP_ATTEMPT_MARKER}@")
+
+    smtp.before_send = _at_data_boundary
+    out = me.drain_parked()
+
+    assert smtp.data_attempts == 1 and len(smtp.sent) == 1
+    assert out["sent"] == 1 and out["failed"] == 0
+    assert led.rows[key]["status"] == "sent" and led.rows[key]["detail"] == "drained"
+
+
+@pytest.mark.parametrize(
+    ("status", "detail", "expected_detail"),
+    [
+        ("queued", "suppression_lookup_failed", "suppression_lookup_failed"),
+        ("skipped_no_smtp", "MAIL_SMTP_* unset", None),
+    ],
+)
+def test_parked_marker_is_a_single_winner_conditional_claim(
+        monkeypatch, wired, status, detail, expected_detail):
+    led, _smtp, _api = wired
+    key = f"welcome:{U1}"
+    led.rows[key] = {"idem_key": key, "status": status, "detail": detail}
+
+    first = mailer._ledger_mark_attempting(
+        key, expected_status=status, expected_detail=expected_detail)
+    second = mailer._ledger_mark_attempting(
+        key, expected_status=status, expected_detail=expected_detail)
+
+    assert first is True
+    assert second is False
+    assert led.rows[key]["detail"].startswith(f"{mailer.SMTP_ATTEMPT_MARKER}@")
+
+
+def test_parked_transport_uncertainty_keeps_marker_and_cannot_reoffer(monkeypatch, wired):
+    """A DATA-phase unknown stays quarantined even when a terminal PATCH would fail."""
+    led, smtp, api = wired
+    _mail_on(monkeypatch)
+    _arm(monkeypatch)
+    key = f"welcome:{U1}"
+    led.rows[key] = {"idem_key": key, "status": "queued",
+                     "detail": "suppression_lookup_failed"}
+    api.parked = [_parked(key, "welcome", "a@example.com", U1)]
+    smtp.send_error = TimeoutError("relay outcome lost after DATA")
+    terminal_patch_attempts: list[dict] = []
+
+    def _hostile_ledger(method, path, body=None, prefer=None, timeout=6):
+        if (method == "PATCH" and path.startswith("email_log")
+                and (body or {}).get("status") != "queued"):
+            terminal_patch_attempts.append(dict(body or {}))
+            raise RuntimeError("terminal ledger patch unavailable")
+        return led.pg(method, path, body=body, prefer=prefer, timeout=timeout)
+
+    def _live_parked_query(method, path, body=None, prefer=None, timeout=8):
+        decoded = urllib.parse.unquote(path)
+        if method == "GET" and decoded.startswith("email_log?status=eq.queued"):
+            row = led.rows[key]
+            eligible = (row.get("status") == "queued"
+                        and row.get("detail") == "suppression_lookup_failed")
+            return list(api.parked) if eligible else []
+        return api.pg(method, path, body=body, prefer=prefer, timeout=timeout)
+
+    monkeypatch.setattr(mailer, "_pg", _hostile_ledger)
+    monkeypatch.setattr(me, "_pg", _live_parked_query)
+
+    first = me.drain_parked()
+    assert first["failed"] == 1 and smtp.data_attempts == 1
+    assert led.rows[key]["status"] == "queued"
+    assert led.rows[key]["detail"].startswith(f"{mailer.SMTP_ATTEMPT_MARKER}@")
+    assert terminal_patch_attempts == [], "uncertainty must not risk erasing the marker"
+
+    second = me.drain_parked()
+    assert second["scanned"] == 0
+    assert smtp.data_attempts == 1, "the durable marker excludes this row from replay"
+
+
+def test_parked_marker_failure_crosses_no_data_and_remains_retryable(monkeypatch, wired):
+    led, smtp, api = wired
+    _mail_on(monkeypatch)
+    _arm(monkeypatch)
+    key = f"welcome:{U1}"
+    led.rows[key] = {"idem_key": key, "status": "queued",
+                     "detail": "suppression_lookup_failed"}
+    api.parked = [_parked(key, "welcome", "a@example.com", U1)]
+    marker_writable = {"value": False}
+
+    def _sometimes_refuse_marker(method, path, body=None, prefer=None, timeout=6):
+        is_marker = (method == "PATCH" and path.startswith("email_log")
+                     and (body or {}).get("status") == "queued")
+        if is_marker and not marker_writable["value"]:
+            assert prefer == "return=representation"
+            return []
+        return led.pg(method, path, body=body, prefer=prefer, timeout=timeout)
+
+    monkeypatch.setattr(mailer, "_pg", _sometimes_refuse_marker)
+
+    first = me.drain_parked()
+    assert first["failed"] == 1 and smtp.data_attempts == 0
+    assert led.rows[key]["status"] == "queued"
+    assert led.rows[key]["detail"] == "suppression_lookup_failed"
+
+    marker_writable["value"] = True
+    second = me.drain_parked()
+    assert second["sent"] == 1 and smtp.data_attempts == 1
+    assert led.rows[key]["status"] == "sent"
+
+
+def test_stale_suppression_worker_cannot_overwrite_completed_delivery(monkeypatch, wired):
+    """A suppression result belongs only to the source state the worker actually read."""
+    led, smtp, _api = wired
+    _arm(monkeypatch)
+    key = f"welcome:{U1}"
+    led.rows[key] = {"idem_key": key, "status": "sent", "detail": "drained"}
+    led.suppressed = {"a@example.com": "opted_out"}
+    stale = _parked(key, "welcome", "a@example.com", U1)
+    out = {"scanned": 1, "sent": 0, "suppressed": 0, "skipped": 0,
+           "skipped_no_smtp": 0, "failed": 0}
+
+    me._complete_parked(stale, out)
+
+    assert led.rows[key] == {"idem_key": key, "status": "sent", "detail": "drained"}
+    assert out["suppressed"] == 0 and out["skipped"] == 1
+    assert smtp.data_attempts == 0
+
+
+def test_stale_mail_off_worker_cannot_erase_uncertain_attempt_marker(monkeypatch, wired):
+    """A stale no-relay decision cannot make an effect-unknown message retryable."""
+    led, smtp, _api = wired
+    _arm(monkeypatch)  # relay deliberately absent
+    key = f"welcome:{U1}"
+    marker = f"{mailer.SMTP_ATTEMPT_MARKER}@2026-09-22T12:00:00+00:00"
+    led.rows[key] = {"idem_key": key, "status": "queued", "detail": marker}
+    stale = _parked(key, "welcome", "a@example.com", U1)
+    out = {"scanned": 1, "sent": 0, "suppressed": 0, "skipped": 0,
+           "skipped_no_smtp": 0, "failed": 0}
+
+    me._complete_parked(stale, out)
+
+    assert led.rows[key] == {"idem_key": key, "status": "queued", "detail": marker}
+    assert out["skipped_no_smtp"] == 0 and out["skipped"] == 1
+    assert smtp.data_attempts == 0
 
 
 def test_a_parked_row_with_no_rebuild_rule_is_left_alone(monkeypatch, wired):
@@ -856,7 +1036,8 @@ def test_a_row_burnt_by_an_earlier_mail_off_run_is_recovered_once_smtp_exists(mo
     _arm(monkeypatch)
     key = f"welcome:{U1}"
     led.rows[key] = {"idem_key": key, "status": "skipped_no_smtp", "detail": "MAIL_SMTP_* unset"}
-    api.no_smtp = [_parked(key, "welcome", "a@example.com", U1)]
+    api.no_smtp = [_parked(key, "welcome", "a@example.com", U1,
+                           status="skipped_no_smtp", detail="MAIL_SMTP_* unset")]
 
     out = me.drain_parked()
 
@@ -873,7 +1054,8 @@ def test_the_recovery_lane_is_not_even_queried_while_the_relay_is_still_off(monk
     _arm(monkeypatch)                                    # no _mail_on
     key = f"welcome:{U1}"
     led.rows[key] = {"idem_key": key, "status": "skipped_no_smtp"}
-    api.no_smtp = [_parked(key, "welcome", "a@example.com", U1)]
+    api.no_smtp = [_parked(key, "welcome", "a@example.com", U1,
+                           status="skipped_no_smtp", detail=None)]
     assert me.drain_parked()["scanned"] == 0
 
 

@@ -204,7 +204,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-58d3317e50a05a12"
+    "predecessor_generation_id": "housing_real_estate-US-12072f1a4cf15e88"
   },
   "drivers": {
     "balance_sheet": [
@@ -311,11 +311,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-18T15:39:55Z",
+    "built_at": "2026-09-22T16:43:48Z",
     "calculation_as_of": "2026-09-17",
-    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "53514cc553771b48b4d936a0f786d492223a1c54b358bb85bc379770ac7b52b8",
-    "generation_id": "housing_real_estate-US-53514cc553771b48",
+    "code_version": "09536acb196c62d969c6c2869b4f724fe9296e30",
+    "content_sha256": "17aa9feec58c3e035c48770220a2b4ae77b6edeb8e61cd457b3bd2d01b59fdd7",
+    "generation_id": "housing_real_estate-US-17aa9feec58c3e03",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
@@ -339,7 +339,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-10",
@@ -1281,7 +1283,9 @@
         "dx": null,
         "dy": null,
         "null_reason": "COMPUTATION_REFUSED",
-        "status": "ABSENT"
+        "status": "ABSENT",
+        "x_axis_id": null,
+        "y_axis_id": null
       },
       "prior_state": {
         "effective_date": "2026-09-03",
