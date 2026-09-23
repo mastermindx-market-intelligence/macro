@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T02:37:46.327381+00:00",
-  "count": 2679,
+  "generated_at": "2026-09-23T06:53:18.145410+00:00",
+  "count": 2689,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-0xtmlwaxpfl-55fd89",
+      "title": "JPM JPM US Market Intelligence Afternoon Briefing Sept 22",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T02:31:50Z",
+      "summary_points": [
+        "Fed Inflation Focus: Barkin signals inflation may require more than one rate hike; global PMIs (France/Germany/Eurozone/UK) due tomorrow as key data catalyst.",
+        "US-Iran Oil Volatility: Oil down 1.2% amid Strait reopening framework, diesel export debate, and Trump’s peace deal rhetoric; critical risk for energy sector.",
+        "AI Sector Rotation: Hypercomputers (70% price return) and Software (25.4x NTM PE) lead; active buying in META/semis, selling AI Vulnerable (NFLX) as LOs shift.",
+        "Bank/WM Trust Erosion: Aggressive bank/WM offers lack fundamentals; Meta’s untrustworthiness and Hugging Face scenario disrupt models, driving systemic de-risking (large caps dominate volume).",
+        "Geopolitical Escalation: US-Iran tensions (Hormuz threat, flight restrictions), Trump-Xi summit, and diesel export ban amplify oil volatility and equity risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qrdfmjn6wzi-46fee1",
+      "title": "JPM Meta Platforms Inc The Models and Agents Are Here, With Muse Consumers and Businesses Coming Next",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T02:31:47Z",
+      "summary_points": [
+        "Muse Outperformance & Adoption: Muse surged 21% vs SPX +1%, #1 free US app (U.S./Canada), daily downloads exceed Meta’s core apps (Instagram, WhatsApp, Facebook), driven by agent capabilities, free tier, and Meta distribution.",
+        "Monetization Path Validated: Revenue via transaction take-rates (commerce/travel) and subscriptions; Commerce/Shopping score 10 and Travel score 10 confirm high purchase intent and habit-forming workflows.",
+        "Meta Connect Catalyst: Sept 23-24 event to showcase AI progress (agent integration, smart glasses); key for business adoption (e.g., Meta Connect event) and addressing Amazon access block risk.",
+        "Valuation Anchor: $820 target (21x 2028 EPS), overweight rating; driven by social graph moat, AI monetization path, and top-line growth (23x 2028E GAAP EPS + 16x SPX premium).",
+        "Critical Risk: Token referral program (1B tokens/referral) risks token dilution and regulatory scrutiny, potentially distorting valuation and investor sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-panyzaaoyqm-fef318",
       "title": "GERMANY: MERZ IN TROUBLE AFTER STATE ELECTION DISASTER",
@@ -228,6 +270,67 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5lfifdhclpm-bf7f8c",
+      "title": "JPM Brazil Equity Strategy",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:45:27Z",
+      "summary_points": [
+        "Election Catalyst: Opposition win in Oct election triggers +6.4% MSCI Brazil upside (vs -3.6% for government win), driven by Senate advantage and fiscal policy shifts, diverging from 2014 dynamics.",
+        "Valuation Gap: Current 12-mo fwd P/E (8.6x) implies 54% upside potential under Structural Fix scenario (P/E 13.3x), last seen in 2020, versus 28% in Deterioration.",
+        "Rate Sensitivity: 0.5% Selic yield decline drives 2% MSCI Brazil gain (bullish), with 50bp decline yielding 5.5% upside, directly linking policy outcomes to equity returns.",
+        "Structural Fix Driver: Policy implementation (e.g., finance minister candidates) during 2016-2020 \"Structural Fix\" period validated rate-driven equity gains, underscoring policy as core equity catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eeuk1gjz5sq-4670ab",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:44:43Z",
+      "summary_points": [
+        "Brazil Structural Fix Catalyst: 54% upside target (P/E 13.3x vs current 8.6x); derivatives desk active (EWZ call ladders, spreads contingent on GLD lower, D1 Brazilian Fins basket).",
+        "Fed Hawkish Tilt & Selic Correlation: Musalem/Goolsbee signal aggressive hikes; 0.5% Selic decline → 41% MSCI Brazil upside (structural fix period 2016-2020).",
+        "Iranian Escalation Risk: Houthi attacks, Iranian airlines shutdown threat (Scott Bessent), Trump-Yemen call without military support; Belarus potash deal dispute (Belarus denies Western supply).",
+        "AI Pullback as Dip-Buy: AI \"Vulnerable\" names reversing (NFLX, CPNG, APP) amid tax-loss focus; Meta Connect (Sep 23-24) pivotal for AI/cloud sentiment.",
+        "Critical Near-Term Data: US ADP Employment, Philly Fed Non-Mfg, Richmond Fed Mfg (Sep 22-25); weak readings may trigger rate cut expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5h75oo2gev-f14d90",
+      "title": "JPM US Market Intelligence | Afternoon Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:44:37Z",
+      "summary_points": [
+        "Geopolitical Oil Volatility: Iran’s conditional Strait opening (7-day timeline), Rubio’s 60-70% oil flow comment, and Trump’s peace deal remarks drive oil volatility (-1.2%) and market uncertainty amid diplomatic fragility and diesel export ban debates.",
+        "Fed Policy Shift: Tactically Cautious/Neutral stance with inflation risks now outweighing employment concerns (FEDSPEAK), directly impacting rate expectations and market positioning.",
+        "AI Sector Fundamentals: Hyper-scalers (17.2% price return, 100% YoY earnings growth) and Semiconductors (17.9% return, 58% earnings growth) outperform S&P 500 (51.3% total), driven by compute layer value accrual and chip dependency.",
+        "Banking Trust Narrative: Rob O’Dwyer rejects AI as banking risk; trust in data handling (vs. unit economics) is critical, with Meta/Hugging Face scenario underscoring distrust in friction-based models."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
@@ -510,6 +613,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kouyu2paue5-4af319",
+      "title": "Kingfisher (KGF)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:12Z",
+      "summary_points": [
+        "Earnings Beat Driven by Gross Margins: 1H27 PBT beat (+5% ex one-offs) on gross margin expansion (+70bps), led by Screwfix (+5.6% LFL) and Poland (+2.2% LFL); FY27/28 PBT revised up to £612m/£630m.",
+        "Revenue & Margin Pressure: Total revenue growth at 1.2% (1/26) and declining EBIT margin (5.0% vs 5.5% 1/2TE) signal top-line weakness and margin compression offsetting valuation discounts.",
+        "UK Consumer Confidence Risks: Persistent YoY decline in mortgage approvals and elevated UK savings index align with decelerating UK sales growth (4.7% in 2023 vs 13.3% in 2022), threatening home improvement demand.",
+        "France Division Operational Recovery: EBIT/Sales rebounded from -28.7% (2024) to +31.7% (2025), indicating potential turnaround after severe margin pressure in key European market.",
+        "Liquidity & Dividend Concerns: Net debt at £1,887m and zero DPS growth (0.0%) raise debt servicing and dividend sustainability questions amid stagnant earnings."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-iqhxacsrrrq-0053a5",
       "title": "HubSpot Inc",
       "institution": "Goldman Sachs",
@@ -527,6 +651,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-u3hcvzobcog-444b7b",
+      "title": "Atlas Copco (ATCOa.ST) Barometer and thoughts into 3Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:07Z",
+      "summary_points": [
+        "Atlas Copco EBIT/Sales Upgrade: Goldman Sachs raises FY26/27 adj.",
+        "EBIT by 1%/4% and sales by 1%/4% driven by semiconductor capex upgrades, with Vacuum Technique 2026E sales growth upgraded to 21.3% and EBIT margin to 19.2%.",
+        "EBIT & Margin Outperformance: 2026E EBIT (10,027 SEK mm) and adj.",
+        "EBIT margin (21.5%) exceed Visible Alpha consensus by 1.7% and 0.5%, reflecting stronger near-term profitability.",
+        "Semiconductor Capex Surge: GS Semis capex tracker upgraded (+5.8pp to 29% FY25-29E CAGR) directly supports Vacuum Technique revenue growth and margin expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },
@@ -730,6 +875,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-egjhcforpoa-5c6596",
+      "title": "China Property Weekly Wrap Week 38 Wrap sequentially stronger volume growth echoing seasonality, yet moderating leading in",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:11Z",
+      "summary_points": [
+        "Sellers' CAI YoY Drop (-5.5pp): Critical red flag signaling structural pricing weakness, indicating deteriorating market health and potential for further correction in China's real estate sector.",
+        "Inventory Contraction (-7.6% from end-25): Supply-side weakness confirmed with inventory months at 26.4 (vs. 2 avg Aug-26), highlighting acute oversupply pressure relative to 2025 benchmarks.",
+        "SOE vs.",
+        "Non-SOE Valuation Disparity: SOEs trade at 0.4X P/B (41% discount to NAV) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gl6r64rsfiu-5014e0",
       "title": "Alibaba Group (BABA) Alibaba Cloud APSARA Key Takeaways",
       "institution": "Goldman Sachs",
@@ -832,6 +997,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-oh0ck3oc1nk-182c7c",
+      "title": "GS Duttenhoefer BEST of DAY 1 at our German Corp Conference in Munich 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:55Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rhdcclisqiz-5702e6",
       "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
       "institution": "S&T",
@@ -878,6 +1058,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ix3dlv6adtk-f47aaf",
+      "title": "GS Johnstone GS TMT SPEC SALES Muse mania and readacross debate IFX Springer Sunrise 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:45Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },

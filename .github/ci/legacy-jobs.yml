@@ -2995,6 +2995,7 @@ jobs:
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
+          tests/test_global_regime_intl_route.py tests/test_intl_mobile_layout.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_macro_w9_r1.py
           tests/test_hub_plain_language.py
@@ -4420,6 +4421,9 @@ jobs:
       - "lib/filing_value_units.py"
       - "lib/finra_knowable.py"
       - "lib/forex_link.py"
+      - "lib/global_regime_fragment.py"
+      # #7635: internationalized hero styles are derived from the governed Macro CSS.
+      - "templates/theme.css"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
@@ -5360,6 +5364,25 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: flow-cohorts unit tests
         run: python -m pytest tests/test_flow_cohorts.py -q
+
+  uk-policy-desk:
+    if: ${{ false }}
+    gate: code
+    # A-F02-W2-4. tests/test_uk_policy_brain.py otherwise lives only on
+    # outcome-spine and unrun-register-honesty, both gate: data, so a PR pack
+    # never runs it. This is the gate: code home. Those two mentions stay.
+    # Deps measured in a clean 3.12 venv: `pip install pytest pyyaml jinja2`
+    # is sufficient. The suite imports nothing further.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2
+      - name: uk policy desk unit tests
+        run: python -m pytest tests/test_uk_policy_brain.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -8393,6 +8416,8 @@ jobs:
       - "site/prophet/**"
       - "site/qledger/**"
       - "site/vol/**"
+      # #7635: global_regime_fragment derives the International bridge from governed hero CSS.
+      - "templates/theme.css"
       # F13-X1: build_site imports the source-bound help directory, whose
       # fail-closed contract reads these exact existing owner templates.
       - "templates/_navlinks.html.j2"
@@ -10151,7 +10176,11 @@ jobs:
       # THAT fix in a clean venv, not by the round-2 review. It now runs instead in
       # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Workflow-shape pins for the lanes that commit site/ pages (2026-09-23, #7758):
+      # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
+      # live HERE (gate: code, minimal deps) because the engine suites next to them
+      # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
+        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -16028,9 +16057,12 @@ jobs:
       - "templates/theme.css"
       - "site/theme.css"
       - "site/markets.html"
+      # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
+      - "site/markets.css"
       - "scripts/build_markets.py"
       - "engine/market_state.py"
       - "tests/test_markets_regime_strip.py"
+      - "tests/test_markets_cyc_stage_mobile.py"
       - "tests/fixtures/markets_regime_strip/**"
       # Import closure beyond the page family. Listed literally so
       # exclusive scope still covers what inference would have owned.
@@ -16092,8 +16124,161 @@ jobs:
       # arrives with jinja2. Never importorskip.
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
-      - name: markets risk-regime strip
-        run: python -m pytest tests/test_markets_regime_strip.py -q
+      - name: markets risk-regime strip + cycle-stage mobile detail
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
+
+  dashboard-render-contract:
+    # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
+    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The same five
+    # suites already run in gate:data lanes — the first four as
+    # unrun-picks-boards' "dashboard.html.j2 rendered-HTML contract" step,
+    # tests/test_unified_dashboard_b2w2.py inside engine-render-guards' sweep —
+    # and those lanes keep them for data-health.yml. But scripts/run_ci_pack.py
+    # packs only gate:code jobs into the PR merge gate, so no PR ever executed
+    # them: the #7503 pins in tests/test_dashboard_template_render.py
+    # (test_macro_mode_keeps_unified_dashboard_candidate_off_primary_route,
+    # test_stocks_mode_excludes_unified_dashboard_candidate) and the HK/CN
+    # market-state binding contract (DEC-SPINE-SCALE-BINDINGS) could be
+    # re-stacked by a PR and merge green. Same migration shape as
+    # defense-rail-laws (#6454) and markets-regime-strip (#7712).
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # CURATED SCOPE (2026-09-23, same wave as the job). scope: exclusive
+    # replaces inference: the suites' jinja loaders and the render helpers in
+    # scripts/build_site.py are opaque constructs. Every pattern below is
+    # EARNED from the 574-file import closure inferred_as_if_not_exclusive
+    # derives for the five suites: build_site.py pulls the flat engine/*.py
+    # layer plus the listed engine subpackages (deliberately NOT engine/**,
+    # which would smear onto engine/prophet/**, where the closure holds
+    # nothing), the collectors/lib/config layers, and named scripts,
+    # templates, site artifacts, fixtures and research inputs the suites read.
+    # An unlisted closure file is an uncovered path. No tests/** catch-all.
+    scope: exclusive
+    paths:
+      # The five suites the step runs, plus the two helper suites they import.
+      - "tests/test_dashboard_template_render.py"
+      - "tests/test_macro_risk_dialog.py"
+      - "tests/test_risk_envelope_radar_integration.py"
+      - "tests/test_us_stocks_s2_compression.py"
+      - "tests/test_unified_dashboard_b2w2.py"
+      - "tests/test_mag7_tape_strip.py"
+      - "tests/test_theme_tape.py"
+      - "tests/test_us_board_priority_ui.py"
+      # Templates the renders load by name.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/risk_envelope_live.js"
+      - "templates/support.html.j2"
+      # Closure widening 2026-09-23 (contract-delta on the tested merge ref):
+      # main moved under this PR and the suites' closure now reaches theme.css.
+      - "templates/theme.css"
+      # Published artifacts the suites read (theme, built macro page, factor and basket data).
+      - "site/factordata/**"
+      - "site/basketdata/**"
+      - "site/flowleaders/leaders.json"
+      - "site/leaderradar/radar.json"
+      - "site/macro.html"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/qledger/track_record.json"
+      - "site/theme.css"
+      - "site/tier_preview.js"
+      # Import closure of scripts/build_site.py: flat engine layer plus the subpackages the closure reads (not engine/**).
+      - "engine/*.py"
+      - "engine/capital_structure/**"
+      - "engine/chronicle/**"
+      - "engine/close_pass/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/market_os/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/prophet_live/**"
+      - "engine/quant_lab/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/signal_foundry/**"
+      - "engine/theme_graph/**"
+      # collectors/, lib/ and config/ as the same closure layers defense-rail-laws declares.
+      - "collectors/**"
+      - "lib/**"
+      - "config/**"
+      # Closure imports under scripts/ — named files, not a tree scan.
+      - "scripts/__init__.py"
+      - "scripts/build_biocatalyst.py"
+      - "scripts/build_capital_structure_page.py"
+      - "scripts/build_chart_data.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_fundamental_forensics.py"
+      - "scripts/build_index_leadership.py"
+      - "scripts/build_live_overlay.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_market_heatmap.py"
+      - "scripts/build_market_memory_page.py"
+      - "scripts/build_market_structure_page.py"
+      - "scripts/build_risk_envelope.py"
+      - "scripts/build_rr_banner.py"
+      - "scripts/build_site.py"
+      - "scripts/build_sp500_heatmap.py"
+      - "scripts/build_state_of_themes.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_subsector_confluence.py"
+      - "scripts/build_subsector_rotation.py"
+      - "scripts/build_subsector_rotation_china.py"
+      - "scripts/build_subsector_rotation_china_pages.py"
+      - "scripts/build_subsector_rotation_pages.py"
+      - "scripts/build_themes_heatmap.py"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/capture_us_stocks_compression_evidence.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/close_pass_publish.py"
+      - "scripts/close_pass_reconcile.py"
+      - "scripts/notify.py"
+      - "scripts/regime_reliability_phase0.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/translate_profiles.py"
+      - "scripts/validate_regime_fwd.py"
+      # Contracts and research inputs the closure loads at import time.
+      - "contracts/evidence_foundation/**"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "contracts/market_os/security_state.v1.schema.json"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
+      - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
+      - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
+      - "research/US_BOARD_MEASUREMENT.md"
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Fresh-venv proof (2026-09-23, 155 passed / 1 skipped): start from
+      # pytest pyyaml jinja2, then pandas (tests/test_unified_dashboard_b2w2.py),
+      # plotly (scripts/build_site.py:22), requests (engine/live_quotes.py:39
+      # via the build_site import chain) and pyarrow (score_log.parquet in the
+      # persisted-view fixture). markupsafe arrives with jinja2, numpy with
+      # pandas. Never importorskip.
+      - name: install dashboard render-contract test dependencies
+        run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
+      - name: dashboard.html.j2 rendered-HTML contract + UD-B2-W2 spine bindings
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py tests/test_unified_dashboard_b2w2.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -16190,23 +16375,29 @@ jobs:
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
-    # The five suite runs this job names are the W2-2 test surface
-    # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
-    # test_audit_options_skew_overlap). A-F03-W2-4b adds
-    # tests/test_options_skew_backfill.py to the same gate:code job.
-    # These are end-to-end tests of the M1-host launchd lane that builds
-    # data/options_skew/snapshots.parquet and publishes it to R2; they have
-    # no signal-contract / render subject, so they were parked in
-    # config/unrun_test_waivers.yml in error. They are now wired into a real
-    # merge-gate job and the waiver rows are deleted (round 5/N, Meta-CEO A
-    # binding ruling). scope: exclusive replaces inference because every
-    # helper script has its own argparse surface and the runner is sh-only
-    # and not visible to AST inference.
+    # 2026-09-23 A-F03-W2-4 appended the methodology-parity audit
+    # (tests/test_audit_options_skew_parity.py + scripts/audit_options_skew_parity.py)
+    # and Meta-CEO A packet A-F03-W2-5a added the payoff-lab suites
+    # (tests/test_options_payoff_lab.py + tests/test_payoff_lab_launchd.py)
+    # to this same gate:code job. The eight suite runs this job names are the
+    # five W2-2 suites (test_skew_accrual_gate/launchd/precheck/verify_ledger +
+    # test_audit_options_skew_overlap), the W2-4 parity audit, and the two W2-5a
+    # suites. These are end-to-end tests of the M1-host launchd lanes that build
+    # data/options_skew/snapshots.parquet and data/options_payoff_lab/latest.json
+    # and publish them to R2; they have no signal-contract / render subject, so
+    # the W2-2 suites were parked in config/unrun_test_waivers.yml in error. They
+    # are now wired into a real merge-gate job and those waiver rows are deleted
+    # (round 5/N, Meta-CEO A binding ruling). The W2-4 and W2-5a suites were never
+    # waived. A-F03-W2-4b adds tests/test_options_skew_backfill.py to the same
+    # gate:code job (nine suite runs). scope: exclusive replaces inference because every helper script has
+    # its own argparse surface and the runner is sh-only and not visible to AST
+    # inference.
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
     scope: exclusive
     # Paths are the page-equivalent family for the W2-2 store-host lane
-    # plus the measured import closure of the five suites
+    # and the W2-5a payoff lab, plus the measured import closure of the
+    # seven suites
     # (suite_dependency_closure reports them on the merged tree). Listed
     # literally so exclusivity covers every file the suites actually
     # read or run; an unlisted closure file is an uncovered path. No
@@ -16219,6 +16410,7 @@ jobs:
       - "scripts/skew_accrual_precheck.py"
       - "scripts/skew_accrual_verify_ledger.py"
       - "scripts/audit_options_skew_overlap.py"
+      - "scripts/audit_options_skew_parity.py"
       - "scripts/publish_r2.py"
       - "scripts/fetch_r2.py"
       - "scripts/build_options_skew.py"
@@ -16231,9 +16423,59 @@ jobs:
       - "tests/test_skew_accrual_gate.py"
       - "tests/test_skew_accrual_launchd.py"
       - "tests/test_audit_options_skew_overlap.py"
-      - "tests/test_options_skew_backfill.py"
+      - "tests/test_audit_options_skew_parity.py"
       - "tests/test_skew_accrual_precheck.py"
       - "tests/test_skew_accrual_verify_ledger.py"
+      # MO-A3 W2-5a (2026-09-23): payoff lab producer. The lab imports
+      # engine/options_payoff.py, and that module imports
+      # lib/evidence_foundation.py, whose static imports pull the
+      # company-intelligence, earnings, and theme-graph modules below.
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/greeks.py"
+      - "engine/intraday_greeks.py"
+      - "engine/options_payoff.py"
+      - "engine/options_payoff_lab.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
+      - "ops/launchd/com.macro.payofflab.plist"
+      - "ops/launchd/run_options_payoff_lab.sh"
+      - "scripts/build_options_payoff_lab.py"
+      - "tests/test_options_payoff_lab.py"
+      - "tests/test_payoff_lab_launchd.py"
+      - "tests/test_options_skew_backfill.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16248,14 +16490,19 @@ jobs:
         # render deps; the launcher + argparse helpers are stdlib-only.
         # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
         # (12 publish_r2 registration tests red without it — run 35782263306).
-        run: pip install pytest pandas pyarrow pyyaml
-      - name: skew-accrual lane — gate, precheck, verify, launchd, real-overlap audit, backfill
+        # jsonschema: lib/evidence_foundation.py (imported by options_payoff).
+        # scipy: engine/intraday_greeks.py, which the payoff engine calls.
+        run: pip install pytest pandas pyarrow pyyaml jsonschema scipy
+      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap + parity audits, payoff lab, backfill
         run: |
           python -m pytest \
             tests/test_skew_accrual_gate.py \
             tests/test_skew_accrual_launchd.py \
             tests/test_audit_options_skew_overlap.py \
-            tests/test_options_skew_backfill.py \
+            tests/test_audit_options_skew_parity.py \
             tests/test_skew_accrual_precheck.py \
             tests/test_skew_accrual_verify_ledger.py \
+            tests/test_options_payoff_lab.py \
+            tests/test_payoff_lab_launchd.py \
+            tests/test_options_skew_backfill.py \
             -q
