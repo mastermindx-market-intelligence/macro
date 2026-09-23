@@ -84,4 +84,4 @@ def test_master_brain_china_lens_includes_synthesis():
         assert set(ci).issubset({"news", "policy", "altdata", "radar", "analysis",
                                  "conviction", "cross_surface", "flagged_tickers",
                                  "what_changed", "salience", "digest", "regime", "discovery",
-                                 "is_context_only", "disclaimer", "disclaimer_zh"})
+                                 "is_context_only", "disclaimer", "disclaimer_zh", "us_theme_context"})

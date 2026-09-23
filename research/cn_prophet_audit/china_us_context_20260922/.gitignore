@@ -6,3 +6,8 @@ integration-tests.txt
 integration-tests-qualified.txt
 regression-tests.txt
 test-runtime-preflight.txt
+
+briefing-red.txt
+briefing-tests.txt
+narrator-regression.txt
+live-inputs/

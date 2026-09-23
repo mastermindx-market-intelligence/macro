@@ -363,23 +363,11 @@ def compute_china_us_context(site=None, *, observed_at: datetime | None = None,
         if not regions.get("us") or not regions.get("china"):
             continue
         analogs = [us[bid] for bid in dict.fromkeys(regions["us"]) if bid in us]
-        positive = any(t["stance"] == "constructive" for t in analogs)
-        conflicting = any(t["stance"] == "conflicting" for t in analogs)
-        defensive = any(t["stance"] == "defensive" for t in analogs)
         for bid in dict.fromkeys(regions["china"]):
             local = china.get(bid)
             if local is None:
                 continue
-            if not analogs:
-                state = "US_SOURCE_UNAVAILABLE"
-            elif conflicting or (positive and defensive):
-                state = "MIXED_US_EVIDENCE"
-            elif not positive:
-                state = "NO_CONFIRMED_US_STRENGTH"
-            else:
-                suffix = {"constructive": "CONFIRMING", "unconfirmed": "UNCONFIRMED",
-                          "defensive": "DEFENSIVE", "conflicting": "CONFLICTING"}[local["stance"]]
-                state = f"US_STRENGTH_LOCAL_{suffix}"
+            state = _context_state(local, analogs)
             result["themes"][bid] = {
                 **CONTEXT_AUTHORITY, "local": local, "us_analogs": analogs,
                 "observation_state": state,
@@ -388,3 +376,118 @@ def compute_china_us_context(site=None, *, observed_at: datetime | None = None,
             }
     result["status"] = "CURRENT" if result["themes"] else "NO_MAPPED_CONTEXT"
     return result
+
+
+def _context_state(local: dict, analogs: list[dict]) -> str:
+    if not analogs:
+        return "US_SOURCE_UNAVAILABLE"
+    positive = any(t["stance"] == "constructive" for t in analogs)
+    conflicting = any(t["stance"] == "conflicting" for t in analogs)
+    defensive = any(t["stance"] == "defensive" for t in analogs)
+    if conflicting or (positive and defensive):
+        return "MIXED_US_EVIDENCE"
+    if not positive:
+        return "NO_CONFIRMED_US_STRENGTH"
+    suffix = {"constructive": "CONFIRMING", "unconfirmed": "UNCONFIRMED",
+              "defensive": "DEFENSIVE", "conflicting": "CONFLICTING"}[local["stance"]]
+    return f"US_STRENGTH_LOCAL_{suffix}"
+
+
+_CONTEXT_SENTENCES = {
+    "US_STRENGTH_LOCAL_CONFIRMING": "U.S. strength with a constructive China theme read",
+    "US_STRENGTH_LOCAL_UNCONFIRMED": "U.S. strength; Chinese confirmation is not established",
+    "US_STRENGTH_LOCAL_DEFENSIVE": "U.S. strength conflicts with a defensive China theme read",
+    "US_STRENGTH_LOCAL_CONFLICTING": "U.S. strength; Chinese inputs disagree",
+    "MIXED_US_EVIDENCE": "U.S. analogs disagree; do not treat them as uniform confirmation",
+    "NO_CONFIRMED_US_STRENGTH": "no confirmed constructive U.S. analog in this observation",
+    "US_SOURCE_UNAVAILABLE": "the mapped U.S. observation is unavailable",
+}
+
+
+def _context_projection_row(raw: dict) -> dict:
+    return _context_theme({**raw,
+        "perf": {"5d": {"rel": raw.get("rel5")}, "20d": {"rel": raw.get("rel20")}},
+        "textures": {"clean_entry": {"flag": raw.get("clean_entry")}}})
+
+
+def context_for_briefing(payload, *, observed_at: datetime | None = None) -> dict | None:
+    """Consume the published observation without trusting its cached health or prose.
+
+    This is the existing producer's projection adapter, not another score or state store.
+    Recheck sessions at consumption and reconstruct qualitative text from source fields.
+    """
+    if payload is None:
+        return None  # legacy artifact; do not fabricate an observed foreign desk
+    now = _context_utc(observed_at if observed_at is not None else datetime.now(timezone.utc))
+    def unavailable(reason):
+        return {"schema": CHINA_US_CONTEXT_SCHEMA, **CONTEXT_AUTHORITY,
+                "status": "UNAVAILABLE", "reason": reason, "themes": {},
+                "validated_lead_lag": False, "historical_availability_proven": False}
+    def authority_ok(row):
+        return isinstance(row, dict) and all(row.get(k) is v for k, v in CONTEXT_AUTHORITY.items())
+    if not authority_ok(payload) or payload.get("schema") != CHINA_US_CONTEXT_SCHEMA:
+        return unavailable("INVALID_CONTEXT_CONTRACT")
+    if payload.get("status") not in {"CURRENT", "NO_MAPPED_CONTEXT"}:
+        return unavailable("PRODUCER_CONTEXT_UNAVAILABLE")
+    crosswalk = hashlib.sha256(json.dumps(CANON, sort_keys=True).encode()).hexdigest()
+    if payload.get("crosswalk_sha256") != crosswalk:
+        return unavailable("CROSSWALK_CHANGED")
+    try:
+        producer_time = _context_utc(datetime.fromisoformat(payload["observed_at_utc"]))
+        decision_time = _context_utc(datetime.fromisoformat(payload["decision_at_utc"]))
+        if producer_time > now or decision_time != producer_time:
+            return unavailable("INVALID_OBSERVATION_RECEIPT")
+        sources = {}
+        for region, calendar in (("us", nyse_calendar), ("china", cn_calendar)):
+            receipt = payload["sources"][region]
+            expected = calendar.expected_last_session(now).isoformat()
+            if receipt.get("status") != "CURRENT" or receipt.get("observation_session") != expected:
+                return unavailable("SOURCE_SESSION_NO_LONGER_CURRENT")
+            if _context_utc(datetime.fromisoformat(receipt["observed_at_utc"])) != producer_time:
+                return unavailable("INVALID_OBSERVATION_RECEIPT")
+            if (receipt.get("path") != f"site/{_BASKETS_DATA[region]}/baskets.json"
+                    or receipt.get("expected_session") != expected
+                    or calendar.expected_last_session(producer_time).isoformat() != expected):
+                return unavailable("INVALID_OBSERVATION_RECEIPT")
+            digest = receipt["sha256"]
+            if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+                return unavailable("INVALID_OBSERVATION_RECEIPT")
+            sources[region] = {k: receipt[k] for k in (
+                "path", "sha256", "observation_session", "expected_session", "observed_at_utc", "status")}
+        themes = payload["themes"]
+        if not isinstance(themes, dict):
+            return unavailable("INVALID_THEME_ROWS")
+        allowed = {bid: (canon, spec) for canon, spec in CANON.items()
+                   if spec["regions"].get("us") for bid in spec["regions"].get("china", [])}
+        if not set(themes).issubset(allowed):
+            return unavailable("UNMAPPED_THEME_IDENTITY")
+        out, lines = {}, []
+        for bid, row in themes.items():
+            canon, spec = allowed[bid]
+            if not authority_ok(row) or row["local"]["id"] != bid:
+                return unavailable("INVALID_THEME_CONTRACT")
+            local = _context_projection_row(row["local"])
+            raw_analogs = row["us_analogs"]
+            if not isinstance(raw_analogs, list):
+                return unavailable("INVALID_THEME_CONTRACT")
+            ids = [a["id"] for a in raw_analogs]
+            if len(ids) != len(set(ids)) or not set(ids).issubset(spec["regions"]["us"]):
+                return unavailable("UNMAPPED_ANALOG_IDENTITY")
+            analogs = [_context_projection_row(a) for a in raw_analogs]
+            state = _context_state(local, analogs)
+            out[bid] = {**CONTEXT_AUTHORITY, "local": local, "us_analogs": analogs,
+                        "observation_state": state, "requires_local_confirmation": True,
+                        "foreign_scores_comparable": False,
+                        "relationship": {"kind": "theme_analog", "canon": canon, "exact_member_link": False}}
+            timing = {True: "fresh-entry texture confirmed", False: "fresh-entry texture not confirmed",
+                      None: "entry texture unavailable"}[local["clean_entry"]]
+            lines.append(f"{bid}: {_CONTEXT_SENTENCES[state]}; {timing}.")
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        return unavailable("INVALID_OBSERVATION_RECEIPT")
+    return {"schema": CHINA_US_CONTEXT_SCHEMA, **CONTEXT_AUTHORITY,
+            "status": "CURRENT" if out else "NO_MAPPED_CONTEXT", "themes": out, "sources": sources,
+            "observed_at_utc": producer_time.isoformat(), "consumed_at_utc": now.isoformat(),
+            "validated_lead_lag": False, "historical_availability_proven": False,
+            "summary": "US–CHINA THEME CONTEXT (observations, not a forecast): " + " ".join(lines) +
+                " Absence of a fresh-entry texture does not establish thesis deterioration or a pullback requirement."
+                " Theme context does not grant individual-stock entry, ranking, sizing or trade permission."}

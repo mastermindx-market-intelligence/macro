@@ -3,12 +3,15 @@
   "mission_complete": false,
   "state": "BUILT_NOT_PROVEN",
   "source_base": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
-  "procedure_pin": "0e2575cbe2d77ea09812c8cd5d532332a3eb7edb",
+  "procedure_pin": "b4493b52810a43a413e381a07e1194ca905b4851",
   "source_sha256": {
-    "engine/narrative_crossmarket.py": "bd119cc6921fd96fb38d360c8e6b0521045b8375ce4d686c476dd2a74a00f495",
+    "engine/narrative_crossmarket.py": "8ceb01e03e0946d92fc04c38600b281b46aa6dbea41cddf91cf2ba6f673c8f12",
     "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
-    "tests/test_narrative_crossmarket.py": "16a2615b9c51bd339d9d56b3fff04a8f72fcbb757faf4c25f6b333e79c122f9b",
-    "tests/test_china_intel_hub_command.py": "ff20325b4f29229b38956a1cb2e2afee98937c640089905204863d520e49d66f"
+    "engine/china_intel_bus.py": "563fafa50cefcba00e6122ddfb901a0b7ba60056b4857c791c5de2e93ab1fa41",
+    "engine/master_brain.py": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70",
+    "tests/test_narrative_crossmarket.py": "e8d653bb54be18dbbb76db449956eeb14b60f5850a83153b9bea3555dc707fb0",
+    "tests/test_china_intel_hub_command.py": "22d6529bf8cbac59c136dcc68262e1613adbe33e539faf3df9505bd5144e4eb7",
+    "tests/test_china_intel_hub.py": "9447e43f35a149f0abedc6873644b4d5ea1f0291936d3565566db298a914fd74"
   },
   "runtime": {
     "python": "3.14.7",
@@ -21,10 +24,10 @@
     "cause": "new compute_china_us_context API absent before implementation"
   },
   "final_regression": {
-    "passed": 165,
+    "passed": 229,
     "failed": 0,
-    "log": "regression-tests-qualified.txt",
-    "log_sha256": "a870436bbc5147f08beedd3d04dce19ff75cc06991cbffc5fbae7fdc9d31809d",
+    "log": "narrator-final-tests.txt",
+    "log_sha256": "07cd8ca36c6f266e2f0eb71eeae946ca92f0e25ae6a99214c50efece11b57f0e",
     "suites": [
       "tests/test_narrative_crossmarket.py",
       "tests/test_china_intel_hub_command.py",
@@ -32,17 +35,18 @@
       "tests/test_china_intel_hub_visits.py",
       "tests/test_china_intel_hub.py",
       "tests/test_cn_calendar.py",
-      "tests/test_nyse_calendar.py"
+      "tests/test_nyse_calendar.py",
+      "tests/test_master_brain.py",
+      "tests/test_master_brain_policy.py"
     ]
   },
   "git_effects": {
-    "commit_attempt": "PLATFORM_BLOCKED_NO_GIT_EFFECT_ON_READBACK",
-    "readback_head": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
-    "index_empty": true,
-    "new_commit": null,
-    "pushed": false,
-    "new_pull_request": null,
-    "source_files_saved_in_owned_worktree": true
+    "pr": 7753,
+    "first_published_head": "a449d9f1a9d152499401590db12f2922f9e6a385",
+    "prior_publication_block_reconciled": true,
+    "source_carrier": "claude/china-crossmarket-context-20260922",
+    "force_push": false,
+    "sibling_writer_transfer": false
   },
   "proof": {
     "two_existing_builders_serialize_context": true,
@@ -50,9 +54,12 @@
     "hosted_ci": "NOT_YET_OBSERVED",
     "independent_review": "NOT_YET_OBSERVED",
     "deployed": "NOT_PROVEN",
-    "live_exemplar": "NOT_PROVEN",
+    "live_exemplar": "HTTP_401_AUTHENTICATED_PROOF_OWED",
     "financial_performance": "NOT_PROVEN",
-    "buy_now_policy_changed": false
+    "buy_now_policy_changed": false,
+    "real_briefing_and_mastermind_consumer_test": true,
+    "stale_cache_rechecked_at_consumption": true,
+    "ci_owner_registration": "PLATFORM_BLOCKED_NO_MANIFEST_EFFECT_ON_READBACK"
   },
   "raw_development_log_sha256": {
     "helper-tests.txt": "beb32fa33f224e383a904824ceea4109bc73de07a65a923db0d210b4b752fd31",
@@ -61,5 +68,47 @@
     "red-tests.txt": "b450ad84bf9e5d15e7b0510e02c024cb01d6d0ce9628fead55dfadf10afb1d32",
     "regression-tests.txt": "953dc6ef31553dd4a3b79919ab1f55305b213dbe02e86e812dceafaecb51aae0",
     "test-runtime-preflight.txt": "f487fbc3c87b457fd300829dfc3f709b3bc6ddc6fbf0b2ed8c8399dc79c2b6d1"
+  },
+  "initial_producer_evidence": {
+    "source_sha256": {
+      "engine/narrative_crossmarket.py": "bd119cc6921fd96fb38d360c8e6b0521045b8375ce4d686c476dd2a74a00f495",
+      "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
+      "tests/test_narrative_crossmarket.py": "16a2615b9c51bd339d9d56b3fff04a8f72fcbb757faf4c25f6b333e79c122f9b",
+      "tests/test_china_intel_hub_command.py": "ff20325b4f29229b38956a1cb2e2afee98937c640089905204863d520e49d66f"
+    },
+    "regression": {
+      "passed": 165,
+      "failed": 0,
+      "log": "regression-tests-qualified.txt",
+      "log_sha256": "a870436bbc5147f08beedd3d04dce19ff75cc06991cbffc5fbae7fdc9d31809d",
+      "suites": [
+        "tests/test_narrative_crossmarket.py",
+        "tests/test_china_intel_hub_command.py",
+        "tests/test_china_intel_interest.py",
+        "tests/test_china_intel_hub_visits.py",
+        "tests/test_china_intel_hub.py",
+        "tests/test_cn_calendar.py",
+        "tests/test_nyse_calendar.py"
+      ]
+    },
+    "publication_block": {
+      "commit_attempt": "PLATFORM_BLOCKED_NO_GIT_EFFECT_ON_READBACK",
+      "readback_head": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
+      "index_empty": true,
+      "new_commit": null,
+      "pushed": false,
+      "new_pull_request": null,
+      "source_files_saved_in_owned_worktree": true
+    }
+  },
+  "briefing_red_first": {
+    "failed": 8,
+    "passed": 0,
+    "cause": "context_for_briefing absent before implementation",
+    "log_sha256": "1100396c321fca739c7f127225019b7c177cddfa238820030f0bb45413fc44ba"
+  },
+  "live_probe": {
+    "path": "live-probe.json",
+    "sha256": "290f68319df33425ae0d3670f2aed979bb42d8b888af19c257e9b91ea2c3e92c"
   }
 }

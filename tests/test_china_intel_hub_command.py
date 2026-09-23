@@ -929,3 +929,47 @@ def test_us_context_serializes_through_existing_command_builder(tmp_path, monkey
     assert artifact["us_theme_context"]["status"] == "CURRENT"
     assert artifact["us_theme_context"]["themes"]["cn_semis"]["local"]["clean_entry"] is False
     assert artifact["command"]
+
+
+def test_bus_and_mastermind_receive_context_even_without_local_stock_picks(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from engine import master_brain, narrative_crossmarket
+
+    _us_context_fixture(tmp_path, monkeypatch)
+    context = hub._load_us_theme_context(date(2026, 9, 21))
+    artifact = {"as_of": "2026-09-21", "command": [], "discovery": [],
+                "n_universe": 0, "us_theme_context": context}
+    monkeypatch.setattr(bus, "_read_json", lambda rel: artifact if rel == "china_intel/command.json" else None)
+    consume = narrative_crossmarket.context_for_briefing
+    now = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
+    monkeypatch.setattr(bus, "context_for_briefing", lambda payload: consume(payload, observed_at=now))
+    monkeypatch.setattr(master_brain, "_read_json", lambda *a, **kw: None)
+    briefing = bus.briefing()
+    assert briefing["us_theme_context"]["status"] == "CURRENT"
+    assert briefing["command"]["top10"] == []
+    assert "cn_semis" in briefing["digest"]
+    assert "pullback requirement" in briefing["digest"]
+    state = master_brain.gather_china_state(root=tmp_path)
+    intel = state["china_intel"]
+    assert intel["us_theme_context"] == briefing["us_theme_context"]
+    assert intel["is_context_only"] is True
+    assert intel["us_theme_context"]["may_gate"] is False
+    assert "cn_semis" in intel["digest"]
+
+
+def test_bus_stale_foreign_context_does_not_erase_local_command(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from engine import narrative_crossmarket
+
+    _us_context_fixture(tmp_path, monkeypatch)
+    artifact = hub.build(today=date(2026, 9, 21))
+    assert artifact["command"]
+    monkeypatch.setattr(bus, "_read_json", lambda rel: artifact if rel == "china_intel/command.json" else None)
+    consume = narrative_crossmarket.context_for_briefing
+    now = datetime(2026, 9, 22, 10, tzinfo=timezone.utc)
+    monkeypatch.setattr(bus, "context_for_briefing", lambda payload: consume(payload, observed_at=now))
+    result = bus.briefing()
+    assert result["command"]["top10"]
+    assert result["us_theme_context"]["status"] == "UNAVAILABLE"
+    assert "US–CHINA THEME CONTEXT" not in result["digest"]
+    assert "COMMAND TOP-2" in result["digest"]

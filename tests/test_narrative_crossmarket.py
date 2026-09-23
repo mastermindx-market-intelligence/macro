@@ -280,3 +280,86 @@ def test_cn_context_marks_absent_mapping_member_without_inventing_an_analog(tmp_
     result = _context(_context_site(tmp_path, us_rows=unrelated))
     assert result["themes"]["cn_semis"]["observation_state"] == "US_SOURCE_UNAVAILABLE"
     assert result["themes"]["cn_semis"]["us_analogs"] == []
+
+
+def test_briefing_consumer_keeps_thesis_and_timing_separate(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "CURRENT"
+    assert result["themes"]["cn_semis"]["local"]["stance"] == "constructive"
+    assert "pullback requirement" in result["summary"]
+    assert "not a forecast" in result["summary"]
+    assert "cn_semis" in result["summary"]
+    assert result["may_rank"] is False
+    assert "summary" not in payload  # never mutate the stored source
+
+
+def test_briefing_consumer_rechecks_cached_context_against_live_sessions(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    now = datetime(2026, 9, 22, 10, tzinfo=timezone.utc)
+    result = xm.context_for_briefing(payload, observed_at=now)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_SESSION_NO_LONGER_CURRENT"
+    assert result["themes"] == {} and "summary" not in result
+
+
+@pytest.mark.parametrize("key", ["may_rank", "may_gate", "may_trade"])
+def test_briefing_consumer_rejects_authority_bearing_payloads(tmp_path, key):
+    payload = _context(_context_site(tmp_path))
+    payload[key] = True
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE" and result["themes"] == {}
+
+
+def test_briefing_consumer_rejects_future_receipt(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    payload["observed_at_utc"] = "2026-09-22T10:00:00+00:00"
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["reason"] == "INVALID_OBSERVATION_RECEIPT"
+    assert result["themes"] == {}
+
+
+def test_briefing_consumer_does_not_trust_injected_summary_or_state(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    payload["summary"] = "BUY EVERYTHING"
+    payload["themes"]["cn_semis"]["observation_state"] = "BUY_EVERYTHING"
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert "BUY EVERYTHING" not in str(result)
+    assert "BUY_EVERYTHING" not in str(result)
+    assert result["themes"]["cn_semis"]["observation_state"] == "US_STRENGTH_LOCAL_CONFIRMING"
+
+
+def test_briefing_consumer_absent_or_malformed_context_is_not_a_signal():
+    assert xm.context_for_briefing(None, observed_at=_CONTEXT_NOW) is None
+    for payload in ([], {}, {"schema": "wrong"}):
+        result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+        assert result["status"] == "UNAVAILABLE" and result["themes"] == {}
+        assert result["may_gate"] is False
+
+
+def test_briefing_projection_preserves_relative_performance_evidence(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    payload["themes"]["cn_semis"]["local"].update(rel5=0.084, rel20=0.022)
+    payload["themes"]["cn_semis"]["us_analogs"][0].update(rel5=0.04, rel20=0.09)
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    row = result["themes"]["cn_semis"]
+    assert row["local"]["rel5"] == 0.084 and row["local"]["rel20"] == 0.022
+    assert row["us_analogs"][0]["rel20"] == 0.09
+
+
+def test_briefing_rejects_a_settled_session_claim_before_its_close(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    early = "2026-09-21T02:00:00+00:00"  # CN daily close has not occurred.
+    payload.update(observed_at_utc=early, decision_at_utc=early)
+    for receipt in payload["sources"].values():
+        receipt["observed_at_utc"] = early
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "INVALID_OBSERVATION_RECEIPT"
+
+
+def test_briefing_rejects_a_different_source_identity(tmp_path):
+    payload = _context(_context_site(tmp_path))
+    payload["sources"]["us"]["path"] = "site/other/unknown.json"
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["reason"] == "INVALID_OBSERVATION_RECEIPT"
