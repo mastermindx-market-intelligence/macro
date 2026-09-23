@@ -4,37 +4,40 @@
   "mission_complete": false,
   "production_changed": false,
   "finalization_classification": "ALL_SCOPED_LANES_BLOCKED",
-  "boundary": "R5 current-source standalone browser qualification and actual code-gate test enrollment complete; Macro diagnostics and discovered heading repair held",
-  "protected_authority_pin": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
-  "source_subject": "0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
+  "boundary": "R7 Studio recovered; existing heading fix pushed and targeted real-browser journey verified; production integration remains held",
+  "protected_authority_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
+  "source_subject": "d18ddc1e9623952374af670b36b6069298aac4a0",
   "view_subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
   "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
   "carrier": "claude/reference-rethink-20260921",
   "pr": 7647,
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
-  "last_material_delta": "121 unit tests pass; real source qualifier now passes original keyboard/history/184-route checks and 48 dual-theme/locale/width views plus no-JS fallback. Existing code-gate enrollment and source-change selection verified. Independent review requested through native GitHub.",
+  "last_material_delta": "Existing d18ddc1e9623 heading repair published on original carrier; four real-source Chromium cases verify heading, exact membership, input identity/focus, query URL, history and responsive fit.",
   "local_tests": {
     "python": 68,
     "node": 53,
     "total": 121,
-    "python_cleanup_warnings": 6
+    "python_cleanup_warnings": 6,
+    "fresh_this_turn": false,
+    "note": "Historical R5 Python 68/Node53; R6 Node55 passed at heading source. This turn ran four real browser cases, not those unit suites."
   },
   "focused_browser_proof": "Superseded by full current-source standalone qualifier at 0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
-  "proof_ceiling": "Standalone source-backed review consumer, not actual Macro integration, independent acceptance, hosted green or deployment",
-  "preview": "r5-evidence/browser-verified/guide.html",
+  "proof_ceiling": "Targeted real-source standalone heading journey, not full requalification, Macro embedding, independent acceptance or deployment",
+  "preview": "r7-evidence/guide.html",
   "original_r3_proof": "r3-realpath/remaining-routes.json remains historical at 49f462dc67f6ea850a77d261a8a1a6a8f810b6df; do not claim 184 R3 cases as freshly run on R4",
   "context_mode": "Built and unit-tested. Local unchanged Macro DOM injection opened the dialog but the exact navigation-HTML comparison differed. Cause remains unresolved; no embedding PASS",
   "blocked_lanes": {
-    "macro_integration": "Fresh same-device navigation mutation diagnostic refused by tool safety-status check in this turn. Not retried through another tool, host or actor.",
-    "independent_acceptance": "GitHub requested reviewer mastermindx-2 successfully; no review return/START or acceptance yet",
-    "release": "Requires actual Macro diagnosis/integration, heading repair, independent acceptance and current concluded CI; keep Draft/Hold",
-    "search_heading_repair": "Source-derived stale-heading defect after topic → typed global search. RED test append refused; same-file readback proves no change. Do not reroute the refused test write."
+    "macro_integration": "Fresh same-device real Macro navigation diagnostic explicitly refused by OpenAI safety-status check after Studio recovery; not retried through another route. Prior discrepancy remains unresolved.",
+    "reference_migration": "Independent Reference Integrity/design approval remains absent; incumbent #6792 stays OPEN/DRAFT at 7853ffeaca41d4d8f33995b1453db2be134ce8a3. No production template custody taken.",
+    "independent_acceptance": "GitHub reviewer mastermindx-2 still requested; fresh comment read found no return. No pickup, START or acceptance claimed.",
+    "hosted_ci_detail": "Exact prior download destination absent and no process; reconciled same-carrier artifact-download attempt now explicitly refused. No bypass or hosted-green claim.",
+    "release": "Requires accepted design/reference, real integration and concluded current-base CI; Draft/Hold remains."
   },
-  "effects": "R5 CI/test enrollment and qualifier edits are committed on this carrier. Final local evidence/checkpoint write verified by same-device readback. Refused test append left its file unchanged. No unresolved production or worker effect.",
+  "effects": "Original fix d18ddc1e9623 pushed once and exact remote readback verified. Prior download reconciled absent with no process; new same-carrier download and Macro diagnostic were explicitly refused before execution. No unresolved source/push/worker effect.",
   "active_children": [],
   "autonomous_return_path": null,
-  "principal_judgment": "CRITICAL_PATH_SHORTCUT: repair actual test enrollment and complete the existing browser qualification directly; independent review remains separate and was requested through native GitHub. No worker began.",
+  "principal_judgment": "CRITICAL_PATH_SHORTCUT: verify and publish the existing small repair without recreating it. Independent acceptance remains separate.",
   "do_not_redo": [
     "Do not recreate Paper artboards",
     "Do not create a second editorial store",
@@ -48,9 +51,9 @@
     "Do not claim standalone matrix proof as Macro embedding",
     "Do not label requested review as START or acceptance"
   ],
-  "next_action": "After approved recovery, repair topic-to-search heading with a failing test and diagnose Macro navigation comparison; consume independent review on #7647, reconcile incumbent reference source custody, then integrate/release through existing gates. Do not rerun already-passing standalone qualification unless source changes.",
+  "next_action": "Consume independent reference/design review and reconcile incumbent #6792 source custody; resume the Macro navigation diagnostic only after its separate safety-status boundary clears, then integrate and release through existing current-base gates.",
   "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes",
-  "proof": "r5-evidence/browser-verified/qualification.json; r5-evidence/source-binding.json; r5-evidence/ci-source-selection.json",
+  "proof": "r7-evidence/heading-browser.json; r7-evidence/source-binding.json; R7_STUDIO_RECOVERY.md",
   "independent_review": {
     "requested_reviewer": "mastermindx-2",
     "carrier": "macro#7647",
@@ -58,5 +61,47 @@
     "started": false,
     "acceptance": false
   },
-  "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending"
+  "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending",
+  "recovery": {
+    "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "local_head": "d18ddc1e9623952374af670b36b6069298aac4a0",
+    "last_remote_head": "d18ddc1e9623952374af670b36b6069298aac4a0",
+    "prior_handoff_sha": "c3b2a849f929e15043f84da2ddd89eb5efb5e4d2",
+    "sha_disagreement": "Prior PR text named an incorrect local SHA; original-carrier git log and exact two-file patch establish d18ddc1e9623 as the actual fix.",
+    "download_destination_exists": false,
+    "matching_download_processes": 0,
+    "download_reconciliation": "The exact prior hosted-plan destination is absent and no matching download runs. No source or push effect was ambiguous.",
+    "push_verified": true
+  },
+  "targeted_browser_proof": {
+    "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
+    "source_commit": "d18ddc1e9623952374af670b36b6069298aac4a0",
+    "browser": "151.0.7922.34",
+    "entries": 46,
+    "cases": [
+      {
+        "lang": "en",
+        "width": 1440,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "zh",
+        "width": 1440,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "en",
+        "width": 390,
+        "heading_membership_input_focus_url_history": true
+      },
+      {
+        "lang": "zh",
+        "width": 390,
+        "heading_membership_input_focus_url_history": true
+      }
+    ],
+    "errors": [],
+    "html_sha256": "fe650d8156971d2ef4515d3a1ead158eb724332562aff363cf11ee2b57203daf",
+    "view_sha256": "13b63fe47d63a3636d4e4b9b8b2a84906a3610859a2ce3fff5fa12f10cf52492"
+  }
 }

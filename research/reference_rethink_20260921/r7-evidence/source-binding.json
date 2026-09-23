@@ -1,0 +1,22 @@
+{
+  "source_commit": "d18ddc1e9623952374af670b36b6069298aac4a0",
+  "scope": "Existing implementation source binding and targeted R7 artifacts, not release acceptance",
+  "sources": {
+    "lib/market_guide.py": "f88c9628042e5a4d10076e0b01b43e4d160e7fca0ea52d8c6cc8eab9d7792cb3",
+    "config/market_reference.yml": "f5b752334b571f1f3577bef677db4c6752cd134a2b415989f8122eec739aa666",
+    "research/reference_rethink_20260921/guide-client.js": "fbf4c1696f06b631f8938444a1b9d45aa97cca514fda216bb00ddfe1554fbce1",
+    "research/reference_rethink_20260921/guide-view.js": "13b63fe47d63a3636d4e4b9b8b2a84906a3610859a2ce3fff5fa12f10cf52492",
+    "research/reference_rethink_20260921/guide-view.css": "c4084e49c202908dd2eb4db1dc5531213dffd0bc1da9efa4b7d491082f2f0f7c",
+    "research/reference_rethink_20260921/prototype.css": "e8ee98c61e5135c8d931ded82a3efb9425bc6adb214e4c8f82a75ad9a6f129fc",
+    "research/reference_rethink_20260921/guide-presentation.json": "39334bc8b469ece3cd4e32aa7bd28121e91f4d84ee18bf68547e454a7cbbeef2",
+    "research/reference_rethink_20260921/render_shared_preview.py": "67b152c3f580b3e88748f277b11a2935290eb54145928f14c62bfd517b832d26"
+  },
+  "artifacts": {
+    "r7-evidence/guide.html": "fe650d8156971d2ef4515d3a1ead158eb724332562aff363cf11ee2b57203daf",
+    "r7-evidence/heading-browser.json": "ca7cc85773fc3f9c42cd968fc93e61393040496710a4e1d5734a286007a0c2f6",
+    "r7-evidence/search-en-1440.png": "04d925a79d8ce382c607141cdf0156148d3ba47f8a55d70c945a40b109d105b5",
+    "r7-evidence/search-en-390.png": "ebe05d00cc2d8ba9a3ae27e8baa03b678d2f3a208755c1db525367ea0998ed6f",
+    "r7-evidence/search-zh-1440.png": "72bad90e110c7ca0afe14ee73d06fd102d6dabc95943388da5bf459b26c6950c",
+    "r7-evidence/search-zh-390.png": "528ce6bcc90ae5286ec3cc301cebaeaf0c6d8f354ef73cc0c6548baa9dfa6692"
+  }
+}

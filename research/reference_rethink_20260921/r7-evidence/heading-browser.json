@@ -1,0 +1,31 @@
+{
+  "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
+  "source_commit": "d18ddc1e9623952374af670b36b6069298aac4a0",
+  "browser": "151.0.7922.34",
+  "entries": 46,
+  "cases": [
+    {
+      "lang": "en",
+      "width": 1440,
+      "heading_membership_input_focus_url_history": true
+    },
+    {
+      "lang": "zh",
+      "width": 1440,
+      "heading_membership_input_focus_url_history": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "heading_membership_input_focus_url_history": true
+    },
+    {
+      "lang": "zh",
+      "width": 390,
+      "heading_membership_input_focus_url_history": true
+    }
+  ],
+  "errors": [],
+  "html_sha256": "fe650d8156971d2ef4515d3a1ead158eb724332562aff363cf11ee2b57203daf",
+  "view_sha256": "13b63fe47d63a3636d4e4b9b8b2a84906a3610859a2ce3fff5fa12f10cf52492"
+}
