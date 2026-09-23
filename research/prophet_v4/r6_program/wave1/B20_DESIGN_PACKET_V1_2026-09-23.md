@@ -127,3 +127,200 @@ The six destinations are one workspace, not six boards. The shared header persis
 | Group relationship ledger | **NEW-COMPONENT-NEEDED — `PropagationLedger`** | Direct/proxy/current-only relationships need a row grammar that prevents a graph from implying unmeasured history. |
 
 **NEW count: 3.** Each must land in `theme.css` and the specimen in the implementation PR that first uses it, with dark/light, EN/ZH, desktop 1440, and mobile 390 evidence.
+
+## 5. DARK TREATMENT — command center
+
+- **Material:** canvas `--bg #0f1115` holds answer panels `--panel #181b21`; nested evidence uses `--panel2 #1e222a`; hairlines `--line #3a4150` and the micro-edge `--card-shadow` create luminance depth without competing with data. The shared nav remains the only header and consumes its own navigation tokens.
+- **Hierarchy:** Action Desk owns the first answer. Its population ladder and rows receive more weight than Radar/Themes; Track Record and Health are support/accountability surfaces. Evidence is calm hairline text, estimates are quiet measurement ink, and actions are the only controls. No neon BUY badge, saturated heatmap wash, blinking state, or chart-background glow is allowed.
+- **Emphasis:** selection is a restrained focus/selection ring from `--ink-link`; a critical refusal or availability failure uses a narrow state rail, not a full-row alarm. Featured/new/trigger chips remain secondary to identity and stance. Directional change uses `--ink-up`/`--ink-down` with a sign/arrow/word because hue alone is insufficient under future language conventions.
+- **Evidence / estimate / action separation:** evidence sits in `.qual2` and receipt rows on panel surfaces; estimates/uncertainty use `.mtile` plus words and uncertainty state; actions sit in a fixed drawer/list action rail and use `.gbtn`. A price condition is never styled as a filled position or recommendation.
+- **State colors:** positive/available/healthy uses `--ink-ok`; adverse/critical uses `--ink-act`; caution/watch/protect uses `--ink-warn`; unknown/not-available/no-read uses `--muted`; research/experimental uses `--ink-info`; navigation/selection uses `--ink-link`; lock-only Prophet violet uses `--mx-tier-accent`/`--ink-tier` and never means data quality. Fill-grade tints stay ≤ the `.mx-stance`/`.mx-callout` formulas.
+- **Intentional dark mechanisms:** luminance-step depth, restrained bloom on hover only, and chart ink on transparent instrument surfaces. Critical states may use a small live pulse only when a required source/current availability genuinely changed; every other update is quiet.
+
+## 6. LIGHT TREATMENT — research workspace
+
+- **Material:** cool canvas `--bg #f7f8fa` supports white `--panel` answer surfaces; `--panel2 #eef1f6` and the light `--line` make nested evidence feel like paper layers. Light depth is `--card-shadow`, crisp rules, and whitespace, not a dark glow translation.
+- **Hierarchy:** the answer remains first, but the workspace reads as a reading/research desk: stronger typographic grouping, more white space between panels, and quieter saturated fills. The same six destinations, ordering, actions, density meanings, and state words appear; nothing is hidden merely because the theme is light.
+- **Emphasis:** hover/selection is a ring and tight shadow, never a bloom; highlight rows use ≤8% tint + 3px rail + deepened ink; gradients become airy tints or disappear. Dark lock ghosting is replaced by the governed light ghost; charts use light grid/series twins and no dark slate.
+- **Evidence / estimate / action separation:** evidence tables rely on hairlines and row-hover `--panel2`; estimates use white metric tiles with clear uncertainty labels; actions remain visually separate controls. A colored estimate can never substitute for a readable uncertainty sentence.
+- **State colors:** the same semantic families resolve through light tokens and text inks: `--ok/--ink-ok` positive/available; `--act/--ink-act` adverse/critical; `--warn/--ink-warn` caution/watch; `--muted` unknown/unavailable; `--info/--ink-info` research/experimental; `--link/--ink-link` selection/navigation. Light popover/drawer surfaces use `--glass-bg`, `--glass-brd`, `--glass-shadow`, and `--popover-shadow`.
+- **Intentional differences:** glow becomes ring+shadow; luminance hierarchy becomes canvas/surface/border/air; hero color fields become structured white cards or quiet tint bands; broad dark shadows become smaller/cooler shadows. Token substitution alone does not qualify; each light panel is judged as a design.
+
+## 7. DESKTOP 1440 and MOBILE 390 COMPOSITIONS
+
+Desktop width is 1440; mobile width is 390. Every destination uses the one authenticated nav, persistent strategy selector, and shared context strip. Drawer panels are 440px desktop / full-width mobile. Long EN/ZH reasons wrap with a minimum 44px touch target; no ellipsis hides state.
+
+### 7.1 Action Desk — desktop
+```
+┌──────────────────────── authenticated site nav ────────────────────────┐
+├────────────────────────────────────────────────────────────────────────┤
+│ MARKET ▾   STRATEGY ▾   Observation …   Quote …   [Research | Promoted] │
+│ Group context sentence ………………… limitation ………………… as-of …          │
+├───────────────────────────────────────┬────────────────────────────────┤
+│ [Population ladder / true empty]      │ EPISODE DRAWER                 │
+│ ┌───────────────────────────────────┐ │ Identity + strategy/horizon    │
+│ │ ID · strategy · availability      │ │ What changed · leading risk    │
+│ │ condition · opposing fact · next  │ │ ENTRY │ RESEARCH │ RECEIPTS    │
+│ └───────────────────────────────────┘ │ Fixed WATCH / disabled actions │
+│ …≤8 visible rows; See all N           │ Selection and filters persist  │
+└───────────────────────────────────────┴────────────────────────────────┘
+```
+
+### 7.2 Action Desk — mobile
+```
+┌──── authenticated nav / search ────┐
+│ MARKET ▾  STRATEGY ▾              │
+│ Obs … · Quote … · Research/Prom.  │
+│ Group sentence + limitation       │
+├───────────────────────────────────┤
+│ [compact population ladder]       │
+│ ┌───────────────────────────────┐ │
+│ │ Identity / strategy           │ │
+│ │ Availability + key risk       │ │
+│ │ Next action · WATCH           │ │
+│ └───────────────────────────────┘ │
+│ Answer + first 3 rows in a swipe   │
+└───────────────────────────────────┘
+```
+Opening a row covers the list with the drawer. **Back to results** restores the exact filter, scroll position, selected row, and focus.
+
+### 7.3 Early Radar — desktop
+```
+┌──────────── shared workspace header/context ─────────────┐
+├──────────────────────────────────────────────────────────┤
+│ [PRODUCER NOMINATION] [TRACKED EPISODE] accounting strip │
+├──────────────────────────────────┬───────────────────────┤
+│ Radar rows (≤6 glance fields)     │ EPISODE/PRODUCER DRAWER│
+│ origin → development → missing    │ First seen · path      │
+│ exact monitored condition         │ Group context · source │
+└──────────────────────────────────┴───────────────────────┘
+```
+
+### 7.4 Early Radar — mobile
+```
+┌──── nav/header/context ────┐
+│ Origin accounting strip     │
+│ ┌─────────────────────────┐ │
+│ │ Identity / nomination   │ │
+│ │ Strategy / availability │ │
+│ │ Key missing evidence    │ │
+│ │ Next action: watch      │ │
+│ └─────────────────────────┘ │
+│ Full-width drawer/receipts  │
+└─────────────────────────────┘
+```
+
+### 7.5 All Candidates — desktop
+```
+┌──────────── shared workspace header/context ─────────────┐
+├──────────────────────────────────────────────────────────┤
+│ Search │ strategy │ lifecycle │ source │ status │ watch  │
+├───────────────────────────────────┬──────────────────────┤
+│ Result rows: identity, lifecycle, │ REASON DRAWER        │
+│ availability, research, entry,    │ Exact layer reason   │
+│ review outcome; null stays null   │ Episode route        │
+│ [Table view] [See all N]          │ Watch readback       │
+└───────────────────────────────────┴──────────────────────┘
+```
+
+### 7.6 All Candidates — mobile
+```
+┌──── nav/header/context ────┐
+│ Search                     │
+│ Filters (sheet)            │
+│ ┌─────────────────────────┐ │
+│ │ Identity / strategy     │ │
+│ │ Availability            │ │
+│ │ Key risk / review state │ │
+│ │ WATCH or view reason    │ │
+│ └─────────────────────────┘ │
+│ Reason drawer full width   │
+└─────────────────────────────┘
+```
+
+### 7.7 Themes & Propagation — desktop
+```
+┌──────────── shared workspace header/context ─────────────┐
+├──────────────────────────────────────────────────────────┤
+│ Lead theme: participation, persistence, concentration    │
+├───────────────────────────────┬──────────────────────────┤
+│ Theme brief cards (≤6)         │ PROPAGATION LEDGER       │
+│ on-board/member · direct/proxy │ Company rows             │
+│ current-only relationship note │ relationship · date      │
+│                                │ GMI/Theme receipt route  │
+└───────────────────────────────┴──────────────────────────┘
+```
+
+### 7.8 Themes & Propagation — mobile
+```
+┌──── nav/header/context ────┐
+│ Lead theme sentence         │
+│ ┌─────────────────────────┐ │
+│ │ Theme / participation   │ │
+│ │ Concentration           │ │
+│ │ Relation type           │ │
+│ │ Next action: inspect    │ │
+│ └─────────────────────────┘ │
+│ Ledger cards + receipts     │
+└─────────────────────────────┘
+```
+
+### 7.9 Track Record — desktop
+```
+┌──────────── shared workspace header/context ─────────────┐
+├──────────────────────────────────────────────────────────┤
+│ Strategy record: population + ruler + era + coverage     │
+│ [Signals] [Ranking] [Policy] [Plans] [User outcomes]     │
+├──────────────────────────────────────┬───────────────────┤
+│ Record rows / metrics; separate       │ ORIGINAL DECISION │
+│ sample, unresolved, era, convention   │ Then-known drawer │
+│                                      │ Later development │
+└──────────────────────────────────────┴───────────────────┘
+```
+
+### 7.10 Track Record — mobile
+```
+┌──── nav/header/context ────┐
+│ Population / ruler          │
+│ [Record tabs → scrolled]    │
+│ ┌─────────────────────────┐ │
+│ │ Population / era        │ │
+│ │ Coverage / unresolved   │ │
+│ │ Key limitation          │ │
+│ │ Open original decision  │ │
+│ └─────────────────────────┘ │
+└─────────────────────────────┘
+```
+
+### 7.11 Health & Receipts — desktop
+```
+┌──────────── shared workspace header/context ─────────────┐
+├──────────────────────────────────────────────────────────┤
+│ Delivery state: owed session → accepted generation → age │
+├─────────────────────────────────────┬────────────────────┤
+│ Health rows: impact, affected view,  │ RECEIPT DRAWER     │
+│ source freshness, coverage, status   │ Source/generation  │
+│ Product correctness ≠ evidence       │ Model/method/owner │
+└─────────────────────────────────────┴────────────────────┘
+```
+
+### 7.12 Health & Receipts — mobile
+```
+┌──── nav/header/context ────┐
+│ Delivery state sentence     │
+│ ┌─────────────────────────┐ │
+│ │ What is missing         │ │
+│ │ What still works        │ │
+│ │ Affected action         │ │
+│ │ Repair owner / retry    │ │
+│ └─────────────────────────┘ │
+│ Receipt disclosures        │
+└─────────────────────────────┘
+```
+
+## 8. INTERACTION
+
+- **Keyboard:** `Tab` reaches nav, strategy selector, destination tabs, filters, rows, drawer, and actions in visual order. `↑/↓` moves list focus without scrolling selection away; `Enter` opens the highlighted drawer; `Escape` closes it and restores row focus; `Shift+?` opens keyboard help. Within the drawer, `↑/↓` move receipt sections, `Enter` activates links, `Escape` returns to the drawer header. Switching lists with `←/→` preserves selection if the identity exists and otherwise focuses the first row with a status message.
+- **Focus and updated state:** a critical availability invalidation updates the affected row and announces “Entry availability changed.” A noncritical reorder adds an `Updated` button without stealing focus; activating it applies the order and preserves the selected episode. Every dialog/drawer uses focus trapping and a labelled return target.
+- **Coherent hydration:** bind by source generation/correction identity, not date alone. Refuse a mismatched generation, duplicate tail, or partial replacement; keep the prior coherent snapshot, show “This update did not apply. The current view is still complete,” and offer retry. Same-date corrections require refresh when generation differs.
+- **Accessibility status:** use `role=status` for load, save/readback, noncritical update, and language/theme change; `role=alert` only for critical availability loss or save failure. Do not announce routine quote ticks. Preserve visible text plus non-color markers for state; tooltips/focus rings meet the system contrast/accessibility floor.
