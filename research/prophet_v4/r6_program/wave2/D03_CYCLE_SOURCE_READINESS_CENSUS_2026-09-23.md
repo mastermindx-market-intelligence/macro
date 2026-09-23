@@ -54,7 +54,34 @@ Exact closure command (not run; requires a legitimately keyed collection into th
 
 ## Q2 GRANULAR M3 SERIES
 
-TODO
+VERDICT: FOUND for machinery and capital-goods aggregates on FRED/ALFRED, with coverage and definition caveats. The prior 404 verdict was a probe defect: a multi-ID pipe query returned 404, while each valid single-ID CSV request returned 200. Whether every FRED initial-release CSV row is equivalent to the repository's keyed API output-type-4 contract remains UNKNOWN.
+
+Measured public CSV probes, 2026-09-23:
+
+- `A33SNO`, `A33SVS`, `A33SUO`, `A33STI` each returned HTTP 200 from single-ID FRED CSV and single-ID ALFRED CSV. Data begin 1992-02/1992-01 and end 2026-07; ALFRED CSV first observation dates match those dates. The erroneous combined request `https://fred.stlouisfed.org/graph/fredgraph.csv?id=A33SNO|A33SVS|A33SUO|A33STI` returned HTTP 404; it is a probe syntax result, not evidence that any component series is absent.
+- Machinery subindustry new orders `A33CNO`, `A33DNO`, `A33ENO`, `A33INO`, `A33MNO` each returned HTTP 200 and 415 FRED data rows, first 1992-02, last 2026-07; representative single-ID ALFRED CSV calls also returned HTTP 0 and first vintage/observation date 1992-02.
+- Capital-goods aggregate shipments/unfilled/inventories were not found at the tested IDs `A33XMVS`, `A33XMUO`, `A33XMTI` (HTTP 404). This does not prove Census absence; exact FRED/Census crosswalks are still needed.
+
+| Claim | Exact FRED IDs measured | FRED/ALFRED vintage status | Census status | Claim support |
+|---|---|---|---|---|
+| Machinery total orders/shipments/unfilled/inventories | `A33SNO`, `A33SVS`, `A33SUO`, `A33STI` | FOUND: FRED HTTP 200; ALFRED HTTP 0 and dated history from 1992. Titles are Manufacturers' New Orders / Value of Shipments / Unfilled Orders / Total Inventories: Machinery; all millions SA, Census source. | Census aggregate table names `33S Machinery`: downloaded `aggseries.pdf`, line 99. | Granular machinery claims are supported at category grain, not at individual machine-type grain. |
+| Construction machinery | orders `A33CNO`; tested shipment/inventory/unfilled IDs `A33CVS`, `A33CUO`, `A33CTI` all HTTP 200 | FOUND for the tested four; CSV spans 1992 through 2026 and new orders have ALFRED history from 1992-02. | `aggseries.pdf` names `33C Construction machinery manufacturing`: line 172. | Supported only as construction machinery category. |
+| Mining and oil/gas field machinery | orders `A33DNO`; tested all four `A33D*` IDs HTTP 200 | FOUND for tested four; CSV spans 1992 through 2026 and new orders have ALFRED history from 1992-02. | `aggseries.pdf` names `33D`: line 173. | Supported at mining/oil/gas machinery category grain. |
+| Industrial machinery | orders `A33ENO`; tested all four `A33E*` IDs HTTP 200 | FOUND for tested four; CSV spans 1992 through 2026 and new orders have ALFRED history from 1992-02. | `aggseries.pdf` names `33E`: line 174. | Supported at industrial machinery category grain. |
+| Metalworking machinery | orders `A33INO`; tested all four `A33I*` IDs HTTP 200 | FOUND for tested four; CSV spans 1992 through 2026 and new orders have ALFRED history from 1992-02. | `aggseries.pdf` names `33I`: line 179. | Supported at metalworking machinery category grain. |
+| Material-handling equipment | orders `A33MNO`; tested all four `A33M*` IDs HTTP 200 | FOUND for tested four; CSV spans 1992 through 2026 and new orders have ALFRED history from 1992-02. | `aggseries.pdf` names `33M`: line 183. | Supported at material-handling equipment category grain. |
+| Farm machinery | tested `A33AVS` and `A33ATI`: HTTP 200; tested `A33ANO`, `A33AUO`: HTTP 404 | PARTIALLY FOUND: shipments and inventories exist at the tested IDs; orders/unfilled orders do not exist at those exact IDs. | `aggseries.pdf` names `33A Farm machinery and equipment manufacturing`: line 232. | Do not claim a complete four-measure farm-machinery vintage set from these probes. |
+| Turbine / power transmission | tested `A33J*` orders/shipments/unfilled/inventories: HTTP 404 | UNKNOWN, not proven Census-absent: the aggregate Census label exists as `TGP TURBINES, GENERATORS, AND OTHER POWER TRANSMISSION EQUIPMENT` and subcategory `33J` (`aggseries.pdf` lines 297–298). | Exact-ID crosswalk/download contract missing. | UNSUPPORTED as an individual FRED vintage subtheme. |
+| Nondefense capital goods ex-aircraft | repository aggregate `NEWORDER`; tested exact counterpart IDs `A33XMVS`, `A33XMUO`, `A33XMTI`: HTTP 404 | FOUND for `NEWORDER` orders only in repository; shipments/unfilled/inventories remain UNKNOWN at exact crosswalk IDs. | `aggseries.pdf` names `NXA NONDEFENSE CAPITAL GOODS EXCLUDING AIRCRAFT`: line 260. | Orders-only aggregate is supported; the four-measure granular aggregate is not established. |
+| Semiconductor via M3 | no separate post-2010 M3 series claimed | UNKNOWN for any exact historical ID. | Census page states that from the April 2010 reports semiconductor estimates are no longer separately available and are included in computers/electronics and applicable aggregates: `https://www.census.gov/manufacturing/m3/historical/timeseries.html`, downloaded HTML line 719. | Semiconductor is UNSUPPORTED as a post-April-2010 M3 vintage subtheme. |
+
+Definition/benchmark breaks:
+
+- May 21, 2001: Census released revised January 1992–March 2001 data on NAICS basis, benchmarking shipments/inventories to the 1997 Economic Census and 1998–1999 ASM, and unfilled orders to the 1999 Unfilled Orders Survey; trading-day and seasonal factors were updated: downloaded `summary.pdf`, lines 1–24.
+- The conversion used product allocation and, for products split across NAICS categories, arbitrary decisions usually equal to splits; inventory and unfilled-order allocations assumed shipment factors, with documented reliability limits: downloaded `summary.pdf`, lines 153–190.
+- The 1997 product allocation was applied to 1992–2000 under an assumed stable company product mix; Census says confidence falls with distance from 1997: downloaded `summary.pdf`, lines 191–195.
+- Current-month numbers are subject to revision; dollar amounts are in millions except two-decimal IS/US files: `https://www.census.gov/manufacturing/m3/historical/timeseries.html`, downloaded HTML line 719.
+- Broad `INDPRO`, `DGORDER`, total manufacturing `AMTM*`, and aggregate capital-goods orders must not be relabeled as construction, metalworking, material-handling, turbine, farm, or other machinery subthemes.
 
 ## Q3 ISSUER-TO-DOMAIN MAPPING
 
