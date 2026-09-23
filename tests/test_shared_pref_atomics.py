@@ -171,7 +171,8 @@ def _run_settings_focus_runtime(source: str, *, old_focus_restore: bool = False)
     fragment = source[start:end]
 
     if old_focus_restore:
-        guard = """    var _gearPointerDown = false, _gearFocusRestore = false;
+        guard = """    var _gearPointerDown = false;
+    var _gearFocusRestore = false;
     function restoreGearFocus() {
       // Focus restoration is part of closing, not a fresh request to open.
       // Some browsers report relatedTarget=null on programmatic focus; without

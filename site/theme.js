@@ -4367,7 +4367,8 @@
     // Pointer focus fires before click. Suppress the focus-open path for that
     // gesture so the click remains the single toggle; keyboard/programmatic
     // focus still opens the accessible pane immediately.
-    var _gearPointerDown = false, _gearFocusRestore = false;
+    var _gearPointerDown = false;
+    var _gearFocusRestore = false;
     function restoreGearFocus() {
       // Focus restoration is part of closing, not a fresh request to open.
       // Some browsers report relatedTarget=null on programmatic focus; without
