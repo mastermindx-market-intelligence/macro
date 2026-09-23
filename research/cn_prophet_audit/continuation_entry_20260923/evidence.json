@@ -1,51 +1,65 @@
 {
   "schema": "china_continuation.implementation_evidence.v1",
   "mission_complete": false,
-  "state": "PARTIAL",
+  "state": "BUILT_NOT_PROVEN",
   "carrier": "sol/cn-act-now-coherence-20260921",
-  "source_base": "f3ba3ea60950e579f4645ee9cb4acf7d2f597a61",
-  "procedure_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
+  "source_base": "8229b1efea8f0270ad76a56e1a7634894c73f8bc",
+  "procedure_pin": "7084d7c436a991c3a9d445a1afc6bc0f0642dc62",
   "engine_implemented": true,
   "release_allowed": false,
-  "remaining_required_guard": "degraded template data-status/type and distinct settling explanation",
-  "remaining_guard_write": "PLATFORM_BLOCKED_BEFORE_EFFECT; template hash unchanged on readback",
+  "remaining_required_guard": null,
+  "remaining_guard_write": "IMPLEMENTED; SOURCE_AND_TESTS_VERIFIED",
   "source_sha256": {
-    "engine/china_act_now.py": "de95ca8791e60be7d05c857df215bb0540d3821aa97a3a67b8c72cf45a78bc67",
-    "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
-    "tests/test_china_act_now.py": "e636ffd7e1705ce24f867b7ee8c1e5c1f8191ee274f094cee7eeb080dc9d6b37"
+    "engine/china_act_now.py": "f0eb565a355d6f76f99a4b42486b5c5f1ebb0e007315c132b3853383b8b37719",
+    "templates/_china_act_now_board.html.j2": "37e231d296eebbe96aa116695bfcc8eb540c8254b0aebfd44649a73965fe29b8",
+    "tests/test_china_act_now.py": "d434baa9aff11c509a08120df614773f494c310595f65689c4b9053edf7e84c1"
   },
   "tests": {
-    "initial_continuation_contracts_passed": 8,
-    "then_full_coherence_suite_passed": 103,
-    "current_passed": 130,
-    "current_failed": 2,
+    "current_passed": 319,
+    "current_failed": 0,
     "waived": 0,
-    "final_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
-    "raw_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
-    "normalization": "trailing whitespace only",
-    "member_observation_red_failed": 20,
-    "owner_regression_passed": 290,
-    "owner_regression_failed": 0,
-    "current_action_log": "observation-tests.txt",
-    "current_action_log_sha256": "c74683671a24cb8ffaa705eb16d0b940771c4e021ec0ce04b2eadcf151e07f49",
-    "owner_log": "owner-tests.txt",
-    "owner_log_sha256": "b8f37e772013e4e7e1b5c8cac91d14e24b27b69b6721b452b259032637f9b719",
-    "observation_red_sha256": "ca56475872fe6277e0517257688d562e71d2856bfaace7867f0b04ba3c2929ff",
-    "previous_final_log": "final-tests.txt (historical 108/1, superseded)",
-    "failures": [
-      "test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads",
-      "test_unsettled_current_session_is_disclosed_without_inventing_finality"
+    "scope": "seven affected owner suites; not full repository",
+    "suites": [
+      "tests/test_china_act_now.py",
+      "tests/test_china_board_rank.py",
+      "tests/test_china_board_rank_v3.py",
+      "tests/test_china_board_rank_v4.py",
+      "tests/test_china_intel_interest.py",
+      "tests/test_cn_board_unified_grid.py",
+      "tests/test_stock_board_v2.py"
     ],
-    "final_log": "recovered-owner-tests.txt"
+    "final_log": "template-owner-tests.txt",
+    "log_sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+    "extra_degraded_cases_red_failed": 4,
+    "extra_degraded_cases_red_passed": 1,
+    "logs": {
+      "template-owner-tests.txt": {
+        "sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+        "raw_sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+        "normalization": "trailing whitespace only"
+      },
+      "neutral-status-red.txt": {
+        "sha256": "346d58f4700cbac2281708d871f05d0f81483030eb6195fc23c4f06991e4fa92",
+        "raw_sha256": "cd1b815a50ba9fb59de7b6b892aa6fde7292f5161a791bb17131afbdbf2b9a97",
+        "normalization": "trailing whitespace only"
+      },
+      "template-browser-tests.txt": {
+        "sha256": "02efba81a6a217c7993bb1bd77e1c0e00cca4a5398b00121cf44144e1e5a8d6a",
+        "raw_sha256": "02efba81a6a217c7993bb1bd77e1c0e00cca4a5398b00121cf44144e1e5a8d6a",
+        "normalization": "trailing whitespace only"
+      }
+    }
   },
   "browser": {
     "captures": 48,
+    "hover_captures": 24,
     "overflow_count": 0,
     "page_error_count": 0,
-    "proof_sha256": "9db1f40df057166e4bf050b7151b5895b898ab646d8f7cb7329a0ab239eea932",
+    "proof_sha256": "a6bc2dcde1449fd5ae3d819b9146b421c75c3c1d925f6832f15ca03966838467",
     "scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.",
     "clock_basis": "injected qualification clock; not historical availability proof",
-    "source_hashes_match": true
+    "source_hashes_match": true,
+    "interaction": "native keyboard-focus popover; responsive viewport, not touch proof"
   },
   "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
   "input_as_of": "2026-09-22",
@@ -97,13 +111,55 @@
     "source_sha": "f3ba3ea60950e579f4645ee9cb4acf7d2f597a61",
     "findings": "independent-review.md",
     "closed_session": "e7be3921-6443-4228-b0f9-fece5413a761",
-    "source_acceptance": false
+    "source_acceptance": false,
+    "new_semantic_review": "REQUIRED"
   },
   "recovery": {
     "host_read_ready": true,
     "earlier_document_effect": "RESOLVED_ABSENT_THEN_WRITTEN",
     "document": "review-adjudication.md",
-    "template_write": "REFUSED_BEFORE_EFFECT",
-    "no_new_template_test_execution_claim": true
+    "template_write": "SUCCEEDED_ON_ORIGINAL_CARRIER",
+    "no_new_template_test_execution_claim": false
+  },
+  "previous_template_hold_evidence": {
+    "source_sha256": {
+      "engine/china_act_now.py": "de95ca8791e60be7d05c857df215bb0540d3821aa97a3a67b8c72cf45a78bc67",
+      "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
+      "tests/test_china_act_now.py": "e636ffd7e1705ce24f867b7ee8c1e5c1f8191ee274f094cee7eeb080dc9d6b37"
+    },
+    "tests": {
+      "initial_continuation_contracts_passed": 8,
+      "then_full_coherence_suite_passed": 103,
+      "current_passed": 130,
+      "current_failed": 2,
+      "waived": 0,
+      "final_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
+      "raw_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
+      "normalization": "trailing whitespace only",
+      "member_observation_red_failed": 20,
+      "owner_regression_passed": 290,
+      "owner_regression_failed": 0,
+      "current_action_log": "observation-tests.txt",
+      "current_action_log_sha256": "c74683671a24cb8ffaa705eb16d0b940771c4e021ec0ce04b2eadcf151e07f49",
+      "owner_log": "owner-tests.txt",
+      "owner_log_sha256": "b8f37e772013e4e7e1b5c8cac91d14e24b27b69b6721b452b259032637f9b719",
+      "observation_red_sha256": "ca56475872fe6277e0517257688d562e71d2856bfaace7867f0b04ba3c2929ff",
+      "previous_final_log": "final-tests.txt (historical 108/1, superseded)",
+      "failures": [
+        "test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads",
+        "test_unsettled_current_session_is_disclosed_without_inventing_finality"
+      ],
+      "final_log": "recovered-owner-tests.txt"
+    },
+    "browser": {
+      "captures": 48,
+      "overflow_count": 0,
+      "page_error_count": 0,
+      "proof_sha256": "9db1f40df057166e4bf050b7151b5895b898ab646d8f7cb7329a0ab239eea932",
+      "scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.",
+      "clock_basis": "injected qualification clock; not historical availability proof",
+      "source_hashes_match": true
+    },
+    "remaining_required_guard": "degraded template data-status/type and distinct settling explanation"
   }
 }

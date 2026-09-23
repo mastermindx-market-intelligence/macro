@@ -757,6 +757,7 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                     evidence = td.get(key)
                     if isinstance(evidence, dict) and evidence.get("as_of") is not None:
                         coherent = coherent and evidence["as_of"] == session
+            coherent = coherent and final in {"enter", "accumulate", "hold", "trim", "avoid"}
             row["theme_decision"] = {
                 "source_as_of": session, "final_reco": final,
                 "final_label": td.get("label") if td else None,

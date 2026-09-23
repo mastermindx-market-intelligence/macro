@@ -1333,3 +1333,33 @@ def test_continuations_join_existing_theme_score_order_not_end_of_lane():
     rows = _continuation_board(ti)['display_lanes']['buy_now']
     assert [row['id'] for row in rows] == ['cn_example', 'cn_lower']
     assert [row['score'] for row in rows] == [75, 60]
+
+
+@pytest.mark.parametrize('final,lane', [('accumulate', 'add_on_pullback'), ('avoid', 'reduce'), ('trim', 'reduce')])
+def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
+    from bs4 import BeautifulSoup
+    ti = _continuation_fixture(final=final)
+    item = ti['act_now']['add_on_pullback'].pop()
+    item.update(action=final, action_en=final.upper())
+    ti['act_now'][lane] = [item]
+    ti['themes'][0]['observation']['aggregate_eligible'] = False
+    html = BeautifulSoup(render(_continuation_board(ti)), 'html.parser')
+    pop = html.select_one('.row-pop-decision')
+    assert pop is not None
+    assert 'Theme basket' in pop.get_text() and 'Sector pulse' not in pop.get_text()
+    assert 'Data status' in pop.get_text()
+    assert 'DATA UNAVAILABLE' in pop.select_one('.row-pop-tag').get_text()
+    assert not html.select('.anv2-chip-reco-hold, .anv2-chip-reco-avoid, .anv2-chip-reco-trim')
+
+
+@pytest.mark.parametrize('final', [None, 'unsupported'])
+def test_unknown_final_recommendation_is_unavailable_not_trend_intact(final):
+    from bs4 import BeautifulSoup
+    ti = _continuation_fixture()
+    ti['themes'][0]['reco'] = final
+    board = _continuation_board(ti)
+    row, = board['display_lanes']['wait_pullback']
+    assert row['theme_decision']['status'] == 'UNAVAILABLE'
+    pop = BeautifulSoup(render(board), 'html.parser').select_one('.row-pop-decision')
+    assert 'Current inputs unavailable' in pop.get_text()
+    assert 'Trend intact' not in pop.get_text()

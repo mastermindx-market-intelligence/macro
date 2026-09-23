@@ -52,7 +52,7 @@ report = {'proof_kind': 'repository-input component; not production or historica
           'baseline_display': {k: [r['id'] for r in v] for k, v in before['display_lanes'].items()},
           'candidate_display': {k: [r['id'] for r in v] for k, v in after['display_lanes'].items()},
           'continuations': [r['id'] for r in after['display_lanes']['buy_now'] if r.get('entry_route') == 'continuation'],
-          'captures': [], 'source_sha256': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
+          'captures': [], 'hover_captures': [], 'source_sha256': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
               for p in ('engine/china_act_now.py', 'templates/_china_act_now_board.html.j2', 'tests/test_china_act_now.py')}}
 (OUT / 'board.json').write_text(json.dumps(after, ensure_ascii=False, indent=2))
 # Negative states are controlled perturbations, NOT claims about the real market.
@@ -106,6 +106,27 @@ with sync_playwright() as pw:
                         page.locator('#act-now').screenshot(path=str(OUT / name))
                         report['captures'].append({'scenario': scenario, 'file': name, 'theme': theme, 'language': lang,
                                                    'width': width, 'page_errors': errors, **result})
+                        if scenario in ('current', 'missing-members', 'settling'):
+                            lane = '#anv2-buy' if scenario == 'current' else '#anv2-pull'
+                            page.locator(lane + ' .anv2-row a').first.focus()
+                            pop = page.locator('.row-pop[role=tooltip]')
+                            pop.wait_for(state='visible')
+                            text = pop.inner_text()
+                            expected = ('领先趋势延续' if lang == 'zh' else 'Leadership continuing') if scenario == 'current' else (
+                                ('交易日数据尚待确认' if lang == 'zh' else 'Session not yet settled') if scenario == 'settling' else
+                                ('当前输入暂缺' if lang == 'zh' else 'Current inputs unavailable'))
+                            assert expected in text, (scenario, lang, text)
+                            if scenario != 'current':
+                                assert ('数据状态' if lang == 'zh' else 'Data status').casefold() in text.casefold(), (scenario, lang, text)
+                                assert pop.locator('.row-pop-score').count() == 0
+                            box = pop.bounding_box()
+                            assert box and box['x'] >= 0 and box['x'] + box['width'] <= width
+                            popfile = f'hover-{scenario}-{theme}-{lang}-{width}.png'
+                            pop.screenshot(path=str(OUT / popfile))
+                            report['hover_captures'].append({'scenario': scenario, 'theme': theme,
+                                'language': lang, 'width': width, 'file': popfile,
+                                'interaction': 'native keyboard-focus handler at responsive viewport',
+                                'visible_text': text, 'bounds': box, 'page_errors': list(errors)})
                         page.close()
     finally:
         browser.close()
