@@ -16,6 +16,13 @@
 - ALFRED collection, initial-release reader and as-of reader: `collectors/fred.py:176@10166ad5272f`–`:195@10166ad5272f`; `:239@10166ad5272f`–`:262@10166ad5272f`.
 - Local-store depth audit contract and verdict thresholds: `scripts/audit_alfred_depth.py:1@10166ad5272f`–`:17@10166ad5272f`; `:54@10166ad5272f`–`:95@10166ad5272f`.
 
+## ANCHORS ACCOUNTED (repair r3)
+
+- `engine/cycles.py` provides the instrument-level Cycle timing machinery: multi-timeframe indicator snapshots, daily/investor cycle position, entry timing, calibrated ladder states and related technical readouts from supplied price series. It is not a candidate B16/B18 Cycle-source input: it consumes a price tape after an economic/source process has supplied it and cannot establish vintage depth, issuer mapping, failure coverage, definition tolerance or rights. It changes no Q1–Q6 verdict. Evidence: `engine/cycles.py:349@10166ad5272f`–`:394@10166ad5272f`; `:423@10166ad5272f`–`:434@10166ad5272f`; `:622@10166ad5272f`–`:723@10166ad5272f`; `:2638@10166ad5272f`–`:2685@10166ad5272f`.
+- `engine/sector_cycles.py` provides sector-ETF and generalized level-series cycle kernels: GICS-sector metadata, price-derived swings and phases, relative-strength reads, and a monthly/daily `record_series` kernel that can consume a level series. It is not a candidate B16/B18 Cycle-source input: it transforms series already provided to it. Its XLK–XLRE ETF universe is not historical industrial capital-goods/machinery issuer membership, and its transformations do not solve vintage availability, historical industry mapping, survivorship or rights. It changes no Q1–Q6 verdict. Evidence: `engine/sector_cycles.py:1@10166ad5272f`–`:25@10166ad5272f`; `:45@10166ad5272f`–`:57@10166ad5272f`; `:503@10166ad5272f`–`:555@10166ad5272f`; `:591@10166ad5272f`–`:594@10166ad5272f`.
+- `engine/vintage_stamp.py` provides a research-result stamp and refusal gate for price plane, adjustment mode, universe date, point-in-time basis, survivorship flag, coverage, dead-name coverage and era cohort. It is not a candidate B16/B18 Cycle-source input: it is a vintage-stamping and integrity utility, not a source, and does not acquire or date economic Cycle observations. It changes no Q1–Q6 verdict. Evidence: `engine/vintage_stamp.py:1@10166ad5272f`–`:23@10166ad5272f`; `:55@10166ad5272f`–`:85@10166ad5272f`; `:91@10166ad5272f`–`:177@10166ad5272f`.
+- `research/prophet_v4/r6_fable_meta_ceo_handoff/baseline_r5/inputs/PROPHET_US_EARNINGS_CYCLE_R4.md` provides the binding R4 design context for Cycle Capture: economic mechanism, issuer funding, and original-equity recovery must remain separate from technical repair/current entry; it recommends industrial capital-goods/machinery as the first source-readiness candidate subject to measured vintage, rights, issuer mapping and failed-name coverage; and it establishes failure-inclusive evaluation and lifecycle/delisting treatment. It is not a candidate B16/B18 Cycle-source input: it is a proposed design packet and consumer of revised data only, not the source clock, vintage history, membership, failure panel or rights receipt needed by D03. It changes no Q1–Q6 verdict. Evidence: `research/prophet_v4/r6_fable_meta_ceo_handoff/baseline_r5/inputs/PROPHET_US_EARNINGS_CYCLE_R4.md:13@10166ad5272f`–`:17@10166ad5272f`; `:137@10166ad5272f`–`:148@10166ad5272f`; `:151@10166ad5272f`–`:161@10166ad5272f`; `:233@10166ad5272f`–`:239@10166ad5272f`.
+
 ## Q1 VINTAGE LEG INVENTORY
 
 VERDICT: PARTIALLY FOUND. The configured legs, semantics, modeled release clocks and code revision paths are FOUND. The FIRST USABLE VINTAGE DATE for every leg is UNKNOWN because the sparse tree omits `data/fred_vintage/vintages.parquet` and no committed depth report covering this set was found.
@@ -251,24 +258,14 @@ visible text: real-time period marks when a fact was true/known; defaults to tod
 git diff --check
 rc=0
 
-python3 - <<'PY'
-from pathlib import Path
-p=Path('research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md')
-text=p.read_text()
-print('LINES', len(text.splitlines()))
-print('TODO_COUNT', text.count('TODO'))
-print('SECTIONS', sum(1 for line in text.splitlines() if line.startswith('## ')))
-PY
-LINES 249
-TODO_COUNT 0
-SECTIONS 9
+wc -l research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md
+271 research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md
+
+grep -v 'TODO_COUNT' research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | grep -c 'TODO' || true
+0
 rc=0
 
-git diff --stat 1e28f99cd110a9cfd6078baaecc7c4bae4a97a8c HEAD
-research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 239 +++++++++++++++++++++
-1 file changed, 239 insertions(+)
-
 git diff --stat origin/main...HEAD
-research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 239 +++++++++++++++++++++
-1 file changed, 239 insertions(+)
+research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 274 +++++++++++++++++++++
+1 file changed, 274 insertions(+)
 ```
