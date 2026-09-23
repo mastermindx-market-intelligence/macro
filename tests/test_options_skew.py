@@ -781,33 +781,69 @@ def test_source_break_date_is_the_first_session_after_the_older_source_ends():
 
 def test_source_break_date_uses_real_row_dates_not_span_bounds():
     """A backfill gap inside the newer source's coverage span must NOT
-    fabricate a break date — the span bounds interpolate over missing dates,
-    so a future source_break_date that walks `_date_iter(first, last)` would
-    report a break date the ledger itself never has a row for.  RED-first
-    against the prior `_date_iter` implementation.
+    fabricate a break date — the span bounds (`first_date..last_date`)
+    interpolate over missing dates, so a span-bound walk would report a
+    break date the ledger itself never has a row for.  RED-first against
+    the prior span-bound walk.
 
-    Polygon ends 2026-08-13; thetadata's coverage span runs 06-22..09-21 but
-    has no rows on 2026-08-14..2026-08-17 (a backfill gap).  The earliest
-    weekday strictly greater than 2026-08-13 that thetadata actually has a
-    row on is 2026-08-18, NOT 2026-08-14."""
+    Distinguishing fixture (the row-walk fix is real ONLY when the
+    fixture's two answers differ):
+      · polygon rows: weekdays 2026-08-03..2026-08-13 (last = 08-13)
+      · thetadata rows: 2026-06-22, 06-23, 06-24 AND 08-18, 08-19, 08-20
+                        (a backfill gap 06-25..08-17, INCLUDING the
+                        first five weekday candidates past 08-13)
+    With the OLD span-bound walk (cursor one calendar day at a time over
+    `min(last_date)..newer_source.last_date`), the cursor starts at 08-14
+    and is "in" the span immediately → returns 08-14.
+    With the NEW row-walk, the cursor starts at 08-14 and is NOT in the
+    actual row set until 08-18 → returns 08-18.  Distinct answers pin the
+    fix."""
     rows = []
     # Polygon: every weekday 2026-08-03..2026-08-13 (the older source).
     for d in ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06",
               "2026-08-07", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13"]:
         for k in ["AAA", "BBB", "CCC"]:
             rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
-    # Thetadata: rows only 2026-08-18..2026-08-21 inside the gap (no rows
-    # 2026-08-14..2026-08-17) and 2026-08-24..2026-08-28.
-    for d in ["2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21",
-              "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28"]:
+    # Thetadata: rows ONLY at the two clusters — the front cluster
+    # (06-22..06-24) and the post-gap cluster (08-18..08-20).  The gap
+    # 06-25..08-17 includes the first five weekday candidates past
+    # 08-13, so the OLD span-bound walk would happily return 08-14 even
+    # though the ledger has no row on 08-14.
+    for d in ["2026-06-22", "2026-06-23", "2026-06-24",
+              "2026-08-18", "2026-08-19", "2026-08-20"]:
         for k in ["AAA", "BBB", "CCC"]:
             rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
     df = pd.DataFrame(rows)
+    spans = S.source_windows(df)
+    # Sanity: thetadata's coverage span is one tuple 06-22..08-20 (six
+    # distinct dates); polygon ends 08-13.  The fixture's gap (06-25..08-17)
+    # is INSIDE thetadata's span bounds — exactly the case the fix guards.
+    theta_span = next(w for w in spans if w["source"] == "thetadata")
+    assert theta_span["first_date"] == "2026-06-22"
+    assert theta_span["last_date"] == "2026-08-20"
+    assert theta_span["n_dates"] == 6
+    polygon_span = next(w for w in spans if w["source"] == "polygon_gex")
+    assert polygon_span["last_date"] == "2026-08-13"
     assert S.source_break_date(df) == "2026-08-18", (
         "source_break_date must walk the ledger's actual row dates, not "
-        "the newer source's coverage span bounds — a backfill gap inside "
-        "the span would otherwise fabricate a break date the ledger "
-        "itself never has a row for"
+        "the newer source's coverage span bounds — a span-bound walk here "
+        "would return 08-14 (the first weekday the span bounds allow past "
+        "08-13), even though the ledger has no row on 08-14..08-17"
+    )
+    # HARDENING: an explicit, smaller span-bound counter-example.  Build
+    # a copy of the fixture where thetadata has a row on 08-14, and
+    # confirm the answer changes — only the row-walk code path is
+    # sensitive to that exact row (the span-bound path is blind to it).
+    rows_with_0814 = list(rows) + [
+        _ledger_row("AAA", "2026-08-14", 0.10, source="thetadata"),
+        _ledger_row("BBB", "2026-08-14", 0.10, source="thetadata"),
+        _ledger_row("CCC", "2026-08-14", 0.10, source="thetadata"),
+    ]
+    df_with = pd.DataFrame(rows_with_0814)
+    assert S.source_break_date(df_with) == "2026-08-14", (
+        "with a thetadata row on 08-14 the row-walk must return 08-14 "
+        "(the span-bound walk would also return 08-14 here, so this "
+        "double-checks the row-walk path picks up the new row)"
     )
 
 

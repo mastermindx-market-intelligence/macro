@@ -176,23 +176,61 @@ bytes).  That file is now appended to the run line of the
 line only — no job inserted).  The producer-side
 `engine/options_skew.py` additions are pinned by `tests/test_options_skew.py`
 (the same home the existing skew-emit tests already ship in).
-## Round-5 seat-ratification handoff (2026-09-23)
+## Round-5 LATEST REVIEW handoff (2026-09-23)
 
 This packet's deliverable is COMPLETE per the Meta-CEO A ruling DELIVERY
 contract ("commit → push → PR stays DRAFT; return LANE_DONE with the final
 head. The seat re-reads the PR's own ci run before ratifying"):
 
-- HEAD `e3ef6b8655a96dd396a359eed0c01cd1d6458f7f` on lane branch
+- HEAD `36ced8fe22335bd57682fbaffa0c43b9b0b8eefc` on lane branch
   `claude/mo-a-3-a-f03-w2-4c-skew-source-note` (carry: `origin`).
+  The head sits on top of three round-5 commits (`e3ef6b8655`
+  coverage-span model + `e368506743` ratification handoff record +
+  `36ced8fe22` LATEST-REVIEW fixes).  The SEAT DISARM comment was filed
+  against the merge-base `84428a8429f5` (before any round-5 commit landed).
 - PR #7783 isDraft=true; the PR body carries the round-5 measured-truth
-  table, the new exact EN/ZH sentences, the 39-test proof line, the
-  acceptance-grep table, and the seat round-5 ruling narrative.
-- 39/39 tests pass on the three test files the ruling names
+  table, the new exact EN/ZH sentences, the 41-test proof line, the
+  acceptance-grep table (re-baselined against `84428a84`), the LATEST
+  REVIEW narrative, and the seat round-5 ruling narrative.
+- 41/41 tests pass on the three test files the ruling names
   (`test_options_skew.py`, `test_options_skew_source_note.py`,
   `test_options_skew_backfill.py`); the workspace-scope pin holds
   (31/31 on `test_render_options_workspace_scope.py`).
 - All 12 acceptance greps at the expected values; `check_ui_visual_evidence.py`
-  exits 0 against the diff.
+  exits 0 against the templates+site diff (the CI-form gate is the
+  templates+site diff against the merge-base, NOT a receipt-file probe).
+- LATEST REVIEW MAJORs closed at this head:
+  · MAJOR 1 — acceptance-grep table rebaselined to actual counts at
+    `84428a8429f5` (the four rows the body misstated are corrected).
+  · MAJOR 2 — Files-changed list now equals `gh pr view --json files`
+    (the four paths the body omitted are listed).
+  · MAJOR 3 — Evidence-gate proof line now runs the CI-form gate against
+    the templates+site diff (the receipt-file probe the body quoted
+    exited 0 trivially and proved nothing; that is replaced).
+  · MAJOR 4 — `test_source_break_date_uses_real_row_dates_not_span_bounds`
+    rebuilt with a distinguishing fixture (thetadata 06-22..06-24 + 08-18..08-20,
+    polygon 08-03..08-13) where the OLD span-bound walk returns 08-14
+    and the NEW row walk returns 08-18 — distinct answers pin the fix.
+- LATEST REVIEW MINORs closed at this head:
+  · MINOR 1 — dead `_date_iter` helper deleted (no caller; the two test
+    docstring references it leaves now point to the row-walk path).
+  · MINOR 2 — this handoff section's head sha and test count are the
+    current branch head and the actual passing-test count.
+  · MINOR 3 — body §Evidence provenance corrected (the replaced evidence
+    manifest's `target.resolved_sha_or_none` was the round-1 head —
+    PNGs were captured pre-round-3, not under the round-4 sentence as
+    the round-4 body claimed).
+  · MINOR 4 — body §Evidence no longer repeats the parenthetical
+    `(see manifest.json::target.resolved_sha_or_none)` twice in one
+    sentence.
+  · MINOR 5 — `_skew_source_span` now enforces exactly-one-match
+    (returns None on zero or two-or-more), so the gate's "exactly one
+    polygon_gex span AND exactly one thetadata span" claim is the
+    code's actual contract — not just the docstring's.
+- MINOR 6 (the inherited main-side `tests/test_ci_pack.py` weight-5808
+  probe) is PR-neutral and unchanged at this head; the seat owns the
+  ratification that runs against the PR's own ci after the LATEST
+  REVIEW lands.
 
 The seat owns the ci → ratify → ready → arm → squash-merge → render →
 live chain from here.

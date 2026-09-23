@@ -244,12 +244,22 @@ def _skew_source_format_date(value, locale: str) -> str:
 
 
 def _skew_source_span(windows, source_name):
-    """The first span dict whose source matches; None when absent."""
-    for window in windows:
+    """The single span dict whose `source` matches; None when absent or non-unique.
+
+    Returns the matching span only when EXACTLY ONE span has the requested
+    source.  When zero or two-or-more spans match, returns None — the
+    producer's round-5 contract is one span per source, and any other
+    shape should stay silent rather than fabricate a sentence out of the
+    first match (which would be a non-deterministic off-spec render).
+    """
+    matches = []
+    for window in windows or []:
         if not isinstance(window, dict):
             continue
         if str(window.get("source")) == source_name:
-            return window
+            matches.append(window)
+    if len(matches) == 1:
+        return matches[0]
     return None
 
 
@@ -257,16 +267,21 @@ def skew_source_note(payload) -> tuple[str, str] | None:
     """One plain-language sentence about the source boundary in skew history.
 
     Returns (en, zh) ONLY when ALL of the following hold (per the round-5
-    ruling: coverage-span model — one polygon span + one thetadata span):
+    ruling: coverage-span model — exactly one polygon span + exactly one
+    thetadata span):
 
       · `source_break` is truthy;
       · `source_break_date` is a real YYYY-MM-DD date;
-      · exactly one polygon_gex span AND exactly one thetadata span exist
-        in the windows list.
+      · EXACTLY one polygon_gex span AND EXACTLY one thetadata span exist
+        in the windows list (count-enforced via `_skew_source_span` —
+        anything other than the producer's documented one-span-per-source
+        shape returns None).
 
     Otherwise None — no sentence when there is no break (the Directional
     read panel already explains skew through its own cards), or when the
-    payload is incomplete (missing the break date or one of the two spans).
+    payload is incomplete (missing the break date or one of the two spans),
+    or when the windows list carries zero-or-multiple spans for either
+    vendor (an off-spec payload).
 
     The vendor names "ThetaData" and "Polygon" are allowed (F03 doctrine:
     plain words, vendor names are fine; only internal slugs are banned). The

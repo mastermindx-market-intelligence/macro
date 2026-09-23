@@ -609,18 +609,6 @@ def source_break_date(df) -> str | None:
     return None
 
 
-def _date_iter(first: str, last: str):
-    """Yield the inclusive list of YYYY-MM-DD calendar dates between two ISO days.
-
-    Helper for `source_break_date` — pure; raises ValueError on bad input."""
-    from datetime import date as _date, timedelta as _td
-    cursor = _date.fromisoformat(first)
-    last_d = _date.fromisoformat(last)
-    while cursor <= last_d:
-        yield cursor.isoformat()
-        cursor += _td(days=1)
-
-
 def _chain_asof_dates(chain) -> set[str]:
     """Distinct YYYY-MM-DD stamps on a chain frame. Empty when the column is absent."""
     if chain is None or "asof" not in getattr(chain, "columns", []):
