@@ -4,74 +4,116 @@ session: sol/semiconductors-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Research semiconductor subthemes, company roles, physical BOMs, manufacturing dependencies,
-  capacity constraints and shared Themes presentation before an eventual Fable CEO implementation handoff.
+  Complete deep semiconductor subtheme, company-role, BOM, manufacturing-dependency,
+  bottleneck and economic research here before a later Fable CEO implementation handoff.
 state_before: >
-  Chairman supplied the semiconductor mission and explicitly retained the bulk of research in
-  the current conversation to conserve Fable capacity. Robotics supplied a research/design precedent.
+  Chairman commissioned semiconductor research using the Robotics methodology and shared
+  template, explicitly retaining most research in the current conversation to conserve Fable.
 changed:
+  - path: research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md
+    what: "First source-led foundation: five distinct industrial views, 24 proposed slices, 21 business roles, 38 source references and 16 future acceptance requirements."
+  - path: research/semiconductors/RESEARCH_QA_AND_RELATIONSHIP_EXAMPLES_2026-09-23.md
+    what: "Eight scoped relationship examples and the limited meaning of 17 portable-companion integrity checks."
   - path: agentos/handoffs/GMI-SEMICONDUCTOR-RESEARCH-2026-09-23.md
-    what: "Initial research continuity; no implementation or worker handoff."
+    what: "Cumulative incomplete research frontier; same carrier; no Fable commission or implementation transfer."
 verified:
-  - claim: "Protected compatible procedure was loaded at one immutable revision."
-    command: "GitHub protected master read, INDEX and companion reads at the same commit"
-    result: "Mastermind c917a75b0168a524a51b2ba0603a99118e93ef1f; Skillpack 1.0.1; bootstrap 1."
-  - claim: "The adjacent Robotics design and shared-template dependency were recovered."
-    command: "Exact-head PR #7773 handoff/spec reads and current #7669 metadata"
-    result: "Robotics head 7efdd6cdc6401b5caf8f7fd34aa683b39e108686; design approved in its parent, implementation-plan review still owed."
+  - claim: "Protected compatible procedure loaded atomically."
+    command: "GitHub protected master, INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT at one commit"
+    result: "Mastermind c917a75b0168a524a51b2ba0603a99118e93ef1f; Skillpack 1.0.1/bootstrap 1."
+  - claim: "The foundation exists at an immutable research commit."
+    command: "GitHub create_file followed by exact-commit fetch_file"
+    result: "Commit 6c2895c7799c5b9da585ccb64546caee435301dd; returned blob 4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c; intended header read back."
+  - claim: "QA limits and relationship examples are durably recorded."
+    command: "GitHub create_file followed by exact-commit fetch_file"
+    result: "Commit 591a13ee93892acb042d2e8da743d816c9446ffb; returned blob d13ca60e52905a95ba8fde0f3b56b04db92d5c13."
+  - claim: "The portable research companion passes its structural and reference checks."
+    command: "python /mnt/data/semiconductor_research/build_research_pack.py"
+    result: "17 integrity checks PASS; 0 product tests. JSON SHA-256 798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4."
+  - claim: "A single draft research carrier is discoverable."
+    command: "GitHub create_pull_request"
+    result: "Macro #7780, draft/open, initial PR head 591a13ee93892acb042d2e8da743d816c9446ffb. This checkpoint advances that same branch."
 unverified:
-  - claim: "Semiconductor research is comprehensive or ready for implementation."
-    what_would_verify: "Complete the open research families, challenge the synthesis, and review a written semiconductor specification and implementation plan."
-  - claim: "New semiconductor research is live in Themes."
-    what_would_verify: "Future accepted native source admission, shared consumer implementation, independent review and production-path browser proof."
+  - claim: "Semiconductor research is comprehensive or the final Fable implementation packet is ready."
+    what_would_verify: "Finish open research families and source validation, challenge the synthesis, then review a written semiconductor design and implementation plan."
+  - claim: "The new semiconductor intelligence works on the production Themes path."
+    what_would_verify: "Accepted native admission, incumbent template integration, independent review and deployed source-to-visible-result browser proof."
+  - claim: "Portable Markdown bytes equal the full canonical foundation."
+    what_would_verify: "A successful full artifact retrieval and byte/hash comparison; not needed to repeat the verified GitHub existence read."
 unresolved:
-  - "Qualified capacity, yield, lead-time, source rights/retention and issuer/security bindings remain incomplete."
-  - "#7669's fetched metadata and descriptive body disagree about its head; reconcile immediately before interface writes, not by guessing."
+  - "30 of 38 references are official excerpts, not fully inspected source pages."
+  - "Qualified capacity, yield, lead-time, comparable business exposure, private source retention and native security bindings remain incomplete."
+  - "JEDEC SPHBM4 direct page fetch failed; validate the original or attributable issuer publication before adoption/substitution claims."
+  - "#7669 metadata/body head discrepancy remains a future interface-write reconciliation gate."
 next_actions:
-  - "Preserve the source register and research foundation on this same records-only branch, then verify readback."
-  - "Continue source-led research here; Fable is not commissioned and no research handoff is consumed."
+  - "Continue research from this record and the foundation, not old tool history: process-to-material-to-supplier mapping plus EDA/IP dependencies."
+  - "Deepen relevant excerpt-only records with exact sections; then complete non-AI semiconductor families, qualified capacity and economic exposure."
+  - "Only after sufficient research, present the semiconductor written-design review gate and later implementation plan; do not commission Fable now."
 do_not_redo:
-  - "Do not repeat broad Robotics/template archaeology without a material invalidator."
+  - "Do not repeat broad Robotics/template/source-law archaeology without a material invalidator."
+  - "Do not recreate the 38-reference foundation or its 24/21/8/16 coverage structures; append focused evidence on this carrier."
   - "Do not create another graph, product identity master, evidence store, ingestion queue, publisher or live basket."
-  - "Do not equate catalog capability, samples, customer qualification, commercial shipment and installed capacity."
-  - "Do not change ranking, entry, sizing, execution or trade policy from thematic research."
+  - "Do not equate catalog capability, samples, qualification, commercial shipment and installed capacity."
+  - "Do not change ranking, entry, sizing, execution or trade policy from research."
 danger_areas:
-  - "Macro is public. This carrier holds editorial research proposals and bounded public-source examples, not a current paid product payload or native admitted assertions."
-  - "A supplier capability is not proof of a named procurement relationship."
-  - "Capital investment, wafer starts, good dies, HBM stacks and finished packages have different units and scopes."
+  - "Macro is public. These are editorial proposals and bounded public-source examples, not current paid product payloads or admitted native assertions."
+  - "No source-content digest or immutable retention receipt has been invented."
+  - "Company role, semantic relevance, security identity, revenue share, basket weight and investment attractiveness are different concepts."
+  - "A source-critical supplier is not automatically supply-constrained or an economic beneficiary."
 ---
 
-# Semiconductor research cumulative frontier
+# Semiconductor research cumulative continuation
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+CAPABILITY_STATE: SPEC_ONLY
 
 Operation: `gmi-semiconductors-research-20260923-sol-001`.
-Carrier: Macro `sol/semiconductors-research-20260923`, based on `668237947e016f679782e41e61c91c9133a5ea99`.
-Present intent: Chairman explicitly requested that this session perform most research before Fable implementation; latest live message reports Pro mode enabled. That report is not a platform/mode or runtime-attestation receipt.
-Direct-work rationale: PRINCIPAL_JUDGMENT. No Fable, worker, Executive Job/Attempt or watcher has been created by this operation.
+Carrier: Macro draft/HOLD PR #7780, branch `sol/semiconductors-research-20260923`.
+Original research base: `668237947e016f679782e41e61c91c9133a5ea99`.
+Protected procedure: Mastermind `c917a75b0168a524a51b2ba0603a99118e93ef1f`, compatible Skillpack 1.0.1/bootstrap 1.
+Direct-work rationale: PRINCIPAL_JUDGMENT. Chairman expressly requested that this session do most research before Fable. The user reported Pro mode; no hidden model/mode, quota or runtime attestation is inferred from that report.
 
-Research status: in progress, not an accepted architecture. Parent mission remains incomplete. This initial checkpoint is not a finalization or custody transfer.
+## Before and after
 
-## Recovered precedent and ownership
+Before: the semiconductor assignment was a broad ambition plus the Robotics precedent.
+After: the research owner has a recoverable, source-led foundation separating physical BOM, manufacturing route, commercial relationships, qualified capacity and business/security exposure, with explicit evidence limits and adversarial interpretation cases. This is research capability, not a live Themes feature or accepted production architecture.
 
-Existing parent is WS:GMI-THEME-GRAPH, as recorded by the Robotics continuation. Robotics PR #7773 at `7efdd6cdc6401b5caf8f7fd34aa683b39e108686` contains the foundation, source-scoped optional native curation assertion proposal, approved written design and eight-task implementation plan. Its plan is not automatically semiconductor acceptance. Existing F04 composes the user-facing experience; K1 remains a reference layer, not a factual warehouse. No standalone GMI W4/W5/W6 or K3-D clone is authorized.
+Coverage is exactly 38 references (8 opened relevant pages; 30 official excerpts), 21 company/business-role records, 24 proposed research slices, 8 scoped relationship examples and 16 future application acceptance requirements. Seventeen checks validated an offline companion's structure and references, not source truth or application behavior. No complete company census or quantified global shortage/qualified-capacity series exists yet.
 
-Shared paths remain with incumbents: #7462 `engine/theme_graph/store.py`; #7669 `templates/basket_detail.html.j2`; #7664 `scripts/build_state_of_themes.py`. These are navigation from the Robotics plan, not fresh custody receipts. No such path is modified here. #7669 metadata returned `2c28d950aa9448fc878bb64d92b228a8f1952bde` while its body named `79c291a40684869facb160a20341ba7340d96b04`; preserve that mismatch for the actual integration gate.
+## Material findings and falsifiers retained
 
-## Initial material findings to preserve
+- HBM records must distinguish supplier, base-die route, generation, stack configuration and shipment milestone. A sampled configuration does not inherit volume status from another configuration.
+- CoWoS-S/R/L construction differs; generic package capacity cannot be assumed fungible across variants and product requirements.
+- ABF material and fabricated package substrate are different roles; category adjacency is not a named procurement contract.
+- Ibiden's 220-billion-yen phase is included in its 500-billion-yen program; planned future mass production is not current qualified output.
+- TCB, hybrid bonding, surface preparation and test/inspection are distinct process/application dependencies, not a universal one-date replacement story.
+- Equipment supplier plans, catalog dry-cycle throughput and customer-qualified good output are distinct measures.
+- Technical criticality does not prove scarcity, pricing power, supplier revenue capture or an investment conclusion. Relevant falsifiers include qualified substitutes, differing recipes/intensity, easing allocation and realized usable capacity.
 
-1. Physical chip/package containment and manufacturing-enablement are different relation types, not one undifferentiated BOM.
-2. TSMC CoWoS-S/R/L have distinct interposer constructions. Generic CoWoS capacity is not a universal interchangeable unit.
-3. Micron's 16 March 2026 release distinguishes volume HBM4 36GB 12H from sampled 48GB 16H. Samsung's 12 February HBM4 release describes a 1c DRAM/4nm logic-base-die route. Supplier/generation/milestone must remain explicit.
-4. Ibiden's 3 February 2026 planned 220-billion-yen phase is included in the 500-billion-yen FY2026-FY2028 investment program; planned FY2027 mass production is not current qualified output.
-5. Ajinomoto ABF is an input to substrate construction, not the completed substrate. No undocumented Ajinomoto-to-named-substrate-maker procurement edge is admitted.
-6. ASML's July 2026 production-capacity plans, Besi catalog dry-cycle throughput and fab/customer-qualified output are different observations.
-7. Equipment/process criticality is not itself evidence of a shortage or investable pricing power.
+## Existing architecture and custody
 
-Key recoverable primary sources:
-- https://3dfabric.tsmc.com/english/dedicatedFoundry/technology/cowos.htm
-- https://micron.gcs-web.com/news-releases/news-release-details/micron-high-volume-production-hbm4-designed-nvidia-vera-rubin
-- https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing
-- https://www.ibiden.com/company/2026/02/notice-regarding-capital-investment-plan-for-high-performance-ic-package-substrates.html
-- https://www.asml.com/en/news/press-releases/2026/q2-2026-financial-results
-- https://www.ajinomoto.com/innovation/our_innovation/buildupfilm
+Robotics precedent: Macro #7773 at `7efdd6cdc6401b5caf8f7fd34aa683b39e108686`, including its cumulative Agent OS handoff and approved written design. Its implementation plan remained at review; no semiconductor design inherits that approval.
 
-No source-content digest or immutable native retention has been invented. Research references are not accepted GMI facts. EFFECT_UNKNOWN: none observed through branch creation; every subsequent write requires exact same-carrier reconciliation if ambiguous.
+Existing GMI evidence/curation and identity owners remain canonical. K1 references native evidence; F04 composes the existing user workflow. The Robotics optional assertion/clock proposal is a dependency to reconcile, not an enrolled semiconductor schema. No W4/W5/W6 revival or K3-D clone.
+
+Incumbent interface navigation from the Robotics plan: #7462 evidence store, #7669 shared basket-detail template, #7664 theme board builder. No interface is written here. Inspected #7669 metadata returned `2c28d950aa9448fc878bb64d92b228a8f1952bde`; its body named `79c291a40684869facb160a20341ba7340d96b04`. Preserve rather than guess; refresh only when the future write depends on it.
+
+## Evidence and artifacts
+
+Foundation: `research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md`, immutable commit `6c2895c7799c5b9da585ccb64546caee435301dd`, returned blob `4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c`.
+Supplement: `research/semiconductors/RESEARCH_QA_AND_RELATIONSHIP_EXAMPLES_2026-09-23.md`, immutable commit `591a13ee93892acb042d2e8da743d816c9446ffb`, returned blob `d13ca60e52905a95ba8fde0f3b56b04db92d5c13`.
+Portable seed digest: `798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4`.
+
+The durable Markdown register/tables/examples preserve substantive findings independently of attachments. An attempted public raw-file copy could not resolve the newly written URL; no exact full-byte local Markdown comparison is claimed. The local JSON was authored as an offline companion, not falsely labeled a downloaded canonical file. Do not retry the raw-copy lane unchanged merely to manufacture a download receipt.
+
+## Continuation boundary and effects
+
+Boundary: substantial canonical recovery and multi-pillar source retrieval have produced a first evidence-model installment. The accumulated tool/source context warrants a safe research-chunk continuation before the distinct process/material/EDA deep dive. This is not an arbitrary elapsed-time stop, mission completion or Fable handoff.
+
+Intended resume surface: a research-capable principal conversation using this cumulative record and only minimum fresh canonical state; avoid replaying earlier tool payloads. A fresh conversation changes presentation, not source custody or authority. No hard session seal or autonomous wake is asserted.
+
+Last verified effects: this same research branch contains the foundation and QA supplement; draft PR #7780 exists. This checkpoint's own committed revision is established by its tool receipt and exact-commit readback, not a self-invented SHA inside its contents.
+
+EFFECT_UNKNOWN: none observed. Active children, Executive Jobs/Attempts and reciprocal watchers: none created. No counterpart is waiting for an invented ACK/START/STOP. No product source, native data, deployment, portfolio or trading effect. No independent review, hosted CI, Agent OS validation or browser acceptance claimed.
+
+Exact next action: continue process-to-material-to-supplier and EDA/IP research here before advancing to the non-AI families and qualified capacity/economic layer. Fable remains uncommissioned until the research and reviewed implementation specification are ready. Keep this PR draft/HOLD; do not merge automatically.
