@@ -150,6 +150,7 @@ def _material() -> dict[str, object]:
                 "basis_version",
             ],
             "owner_confluence_gate_may_be_waived": False,
+            "owner_confluence_source_session_rule": "next_session_only/v1",
             "missing_or_stale_required_fact": "UNAVAILABLE_DATA",
             "definition_itself_may_set_availability": False,
         },
