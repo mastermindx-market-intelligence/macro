@@ -758,6 +758,28 @@ def test_source_windows_assigns_majority_on_mixed_source_date():
     ]
 
 
+def test_source_windows_tie_prefers_canonical_thetadata():
+    """A date split 1:1 between the two sources is a tie; the canonical source
+    (thetadata) wins deterministically — never `value_counts()` order, which
+    pandas does not guarantee (round-3 review, minor 3).  Between two
+    non-canonical leaders the lexically first wins."""
+    rows = [
+        _ledger_row("AAA", "2026-08-12", 0.10, source="polygon_gex"),
+        _ledger_row("AAA", "2026-08-12", 0.10, source="thetadata"),
+        _ledger_row("BBB", "2026-08-13", 0.10, source="polygon_gex"),
+        _ledger_row("BBB", "2026-08-13", 0.10, source="thetadata"),
+    ]
+    windows = S.source_windows(pd.DataFrame(rows))
+    assert windows == [
+        {"source": "thetadata", "first_date": "2026-08-12",
+         "last_date": "2026-08-13", "n_dates": 2},
+    ]
+    assert S._majority_source(pd.Series(["polygon_gex", "thetadata"])) == "thetadata"
+    assert S._majority_source(pd.Series(["thetadata", "polygon_gex"])) == "thetadata"
+    assert S._majority_source(pd.Series(["b_src", "a_src"])) == "a_src"
+    assert S._majority_source(pd.Series([], dtype=object)) is None
+
+
 def test_emit_payload_history_dates_agrees_with_source_windows_for_all_weekend(tmp_path, monkeypatch):
     """A degenerate all-weekend ledger has history_dates == 0 AND zero
     source_windows — the two additive keys always agree, even at the

@@ -64,12 +64,16 @@ The seat ran the one-time backfill today (2026-09-23) on the live ledger
 (restored from R2 on the render hosts).  The receipt on the ledger's
 backfill row says: 38 dates 2026-06-22..2026-08-13 recomputed from the
 ThetaData store, 3,965 rows replaced, 1,212 added, 2026-07-03 not in
-store.  The mixed-source picture the consumer now prints is:
+store.  The ledger is on R2 (not in git), so the rows below are derived
+from that receipt plus the session-only rule (`source_windows` counts weekday
+dates only — 2026-09-19 is a Saturday as-of row, so the Polygon window ends
+on Friday 2026-09-18 with 26 sessions); the third window grows by one
+session per launchd accrual.  The picture the consumer prints is:
 
 | source     | first_date  | last_date   | sessions |
 |------------|-------------|-------------|----------|
 | thetadata  | 2026-06-22  | 2026-08-13  | 37       |
-| polygon_gex| 2026-08-14  | 2026-09-19  | 27       |
+| polygon_gex| 2026-08-14  | 2026-09-18  | 26       |
 | thetadata  | 2026-09-22  | 2026-09-23  | 2        |
 
 (2026-07-03 is skipped per the backfill receipt — it is not in store, and

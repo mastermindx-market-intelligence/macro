@@ -456,21 +456,27 @@ def _is_weekend_iso(value: str) -> bool:
 def _majority_source(s):
     """Per-date majority source for source_windows().
 
-    Returns the source that owns the largest share of rows on this calendar day;
-    ties go to the first row seen (stable). A date with no rows returns None
-    (the caller skips it). Per the ruling, mixed-source dates are NOT dropped —
-    the canonical-wins row-majority is the date's source, so the helper stays
-    consistent with emit_from_ledger's session count and the sentence's ranges.
+    Returns the source that owns the largest share of rows on this calendar day.
+    A tie is resolved deterministically: the canonical source (thetadata) wins
+    when it is among the tied leaders, otherwise the lexically first leader —
+    never `value_counts()` order, which pandas does not guarantee. A date with
+    no rows returns None (the caller skips it). Per the ruling, mixed-source
+    dates are NOT dropped — the canonical-wins row-majority is the date's
+    source, so the helper stays consistent with emit_from_ledger's session
+    count and the sentence's ranges.
     """
     if s is None or len(s) == 0:
         return None
     counts = s.value_counts()
     if counts is None or len(counts) == 0:
         return None
-    top = counts.iloc[0]
-    if int(top) <= 0:
+    top = int(counts.max())
+    if top <= 0:
         return None
-    return str(counts.index[0])
+    leaders = sorted(str(k) for k, v in counts.items() if int(v) == top)
+    if _SOURCE_THETA in leaders:
+        return _SOURCE_THETA
+    return leaders[0]
 
 
 def source_windows(df) -> list[dict]:

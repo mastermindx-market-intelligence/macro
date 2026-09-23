@@ -45,19 +45,20 @@ from tests.test_build_options_command import _stores  # noqa: E402
 # A-F03-W2-4c — the three-window payload that mirrors the live backfill
 # receipt (research/…/MARKET_ONTOLOGY_F03_W2_4C_SKEW_SOURCE_NOTE_2026-09-23.md
 # §"Three windows measured today"): 2026-06-22..2026-08-13 thetadata,
-# 2026-08-14..2026-09-19 polygon_gex gap, 2026-09-22..2026-09-23 thetadata
+# 2026-08-14..2026-09-18 polygon_gex gap (2026-09-19 is a Saturday as-of
+# row — session-only windows end on the Friday), 2026-09-22..2026-09-23 thetadata
 # launchd.  The capture fixture (mockups/evidence/…/EVIDENCE.yml) writes
 # these exact same dates to the rendered page so the crops and the research
 # note table describe the same ledger picture.
 _THREE_WINDOW_PAYLOAD = {
     "schema": "options_skew.v1",
     "source_break": True,
-    "history_dates": 66,
+    "history_dates": 65,
     "source_windows": [
         {"source": "thetadata", "first_date": "2026-06-22",
          "last_date": "2026-08-13", "n_dates": 37},
         {"source": "polygon_gex", "first_date": "2026-08-14",
-         "last_date": "2026-09-19", "n_dates": 27},
+         "last_date": "2026-09-18", "n_dates": 26},
         {"source": "thetadata", "first_date": "2026-09-22",
          "last_date": "2026-09-23", "n_dates": 2},
     ],
@@ -72,13 +73,13 @@ def test_three_window_payload_yields_the_exact_sentence():
     expected_en = (
         "Put-skew history comes from two sources: ThetaData end-of-day option "
         "chains for 22 Jun 2026–13 Aug 2026 and 22 Sep 2026–23 Sep 2026, "
-        "and the earlier Polygon feed for 14 Aug 2026–19 Sep 2026. "
+        "and the earlier Polygon feed for 14 Aug 2026–18 Sep 2026. "
         "A skew change that crosses one of those boundaries is not like-for-like."
     )
     expected_zh = (
         "认沽偏度历史来自两个来源：2026年6月22日–2026年8月13日和"
         "2026年9月22日–2026年9月23日使用 ThetaData 日终期权链，"
-        "2026年8月14日–2026年9月19日使用较早的 Polygon 数据。"
+        "2026年8月14日–2026年9月18日使用较早的 Polygon 数据。"
         "跨越这些边界的偏度变化不可直接比较。"
     )
     assert en == expected_en
@@ -153,7 +154,7 @@ def test_render_with_note_emits_one_element(tmp_path):
         "when the payload carries a real break"
     )
     assert "ThetaData end-of-day option chains for 22 Jun 2026–13 Aug 2026" in html
-    assert "earlier Polygon feed for 14 Aug 2026–19 Sep 2026" in html
+    assert "earlier Polygon feed for 14 Aug 2026–18 Sep 2026" in html
     visible = re.sub(r'<[^>]+>', ' ', html)
     assert "polygon_gex" not in visible, (
         "the source slug polygon_gex must never reach the page"
