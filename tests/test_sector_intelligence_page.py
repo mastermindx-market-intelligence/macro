@@ -665,6 +665,73 @@ def test_workflow_uses_existing_main_publication_contract() -> None:
     assert "git add site/" not in src, "targeted lane must never stage the whole site"
 
 
+def test_publish_step_runs_externalize_chain_before_staging_site_pages() -> None:
+    """MO-A heal 2026-09-23: sector-intelligence's `publish scoped generation to
+    main` step MUST run the shim/externalize/stamp chain BEFORE staging
+    `site/` pages, otherwise the lane commits RAW pages (inline <style>, no
+    `assets/css/<hash>.css` ref, stale `?v=`) and every PR merge-ref reds
+    ci-pack-11 (`test_basket_detail_glance_copy` fingerprint guard) until the
+    next render-public re-stamp. Whitehouse-sentinel's `commit + push (only
+    on change)` step (P0 2026-08-04, 9a997e9da3f) is the canonical cure: three
+    idempotent passes run before `git add`, then the content-hashed assets the
+    pages now link are staged in the same commit.
+    """
+    src = WORKFLOW.read_text(encoding="utf-8")
+    # Isolate the publish step's run block by splitting on `- name:` markers.
+    chunks = src.split("- name:")
+    publish_run: str | None = None
+    for chunk in chunks:
+        head = chunk.splitlines()[0].strip()
+        if head == "publish scoped generation to main":
+            publish_run = chunk
+            break
+    assert publish_run is not None, (
+        "no step 'publish scoped generation to main' found in sector-intelligence.yml"
+    )
+
+    # Order: shim -> externalize -> stamp -> `git add -- \`. Strictly increasing.
+    pos_inject = publish_run.index("python -m scripts.inject_data_base")
+    pos_externalize = publish_run.index("python -m scripts.externalize_css")
+    pos_optimize = publish_run.index("python -m scripts.optimize_assets")
+    pos_git_add = publish_run.index("git add -- \\")
+    assert pos_inject < pos_externalize < pos_optimize < pos_git_add, (
+        "shim/externalize/stamp chain must run BEFORE `git add --`; "
+        f"got inject={pos_inject} externalize={pos_externalize} "
+        f"optimize={pos_optimize} git_add={pos_git_add}"
+    )
+
+    # The staged site paths must still cover the published surface (basket + sectors).
+    assert "site/basket" in publish_run
+    assert "site/sectors" in publish_run
+
+    # The content-hashed assets the pages now link MUST be staged AFTER `git add -- \`.
+    pos_assets_css = publish_run.index("git add --ignore-removal site/assets/css")
+    pos_assets_js = publish_run.index("git add --ignore-removal site/assets/js")
+    assert pos_git_add < pos_assets_css, (
+        "content-hashed site/assets/css must be staged AFTER `git add -- \\`"
+    )
+    assert pos_git_add < pos_assets_js, (
+        "content-hashed site/assets/js must be staged AFTER `git add -- \\`"
+    )
+
+    # Each pass MUST end on the same line with `||` so `set -euo pipefail`
+    # doesn't abort the workflow when an idempotent pass has nothing to do.
+    for needle in (
+        "python -m scripts.inject_data_base",
+        "python -m scripts.externalize_css",
+        "python -m scripts.optimize_assets",
+    ):
+        line = next(
+            (ln for ln in publish_run.splitlines() if needle in ln),
+            None,
+        )
+        assert line is not None, f"line containing {needle!r} missing"
+        assert "||" in line, (
+            f"{needle!r} must end on the same line with `||` to stay non-fatal; "
+            f"got: {line!r}"
+        )
+
+
 def test_scoped_publication_directories_are_real_and_owned_by_the_build() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     action_builder = (ROOT / "scripts" / "build_sector_action_board.py").read_text()
