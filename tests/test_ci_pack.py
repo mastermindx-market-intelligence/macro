@@ -3706,6 +3706,15 @@ CURATED_EXCLUSIVE = {
     # for templates/index.html (133 > 132). Curate the stated owner boundary;
     # do not fund that unrelated match by raising the packing ceiling.
     "research-vault-source-lineage",
+    # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
+    # is the gate:code home for the five suites that only gate:data lanes
+    # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
+    # tests/test_dashboard_template_render.py and the HK/CN spine-binding
+    # contract in tests/test_unified_dashboard_b2w2.py never gated a PR.
+    # Curated for COVERAGE: its `paths:` are the measured import closure of the
+    # suites (scripts/build_site.py pulls most of engine/ and lib/), so
+    # exclusivity loses no owner and contract-delta stays at 0 introduced.
+    "dashboard-render-contract",
 }
 
 
