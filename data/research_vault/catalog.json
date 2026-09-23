@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T05:38:26.183762+00:00",
-  "count": 2688,
+  "generated_at": "2026-09-23T05:53:26.129461+00:00",
+  "count": 2689,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1058,6 +1058,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ix3dlv6adtk-f47aaf",
+      "title": "GS Johnstone GS TMT SPEC SALES Muse mania and readacross debate IFX Springer Sunrise 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:45Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
