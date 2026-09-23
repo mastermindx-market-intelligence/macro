@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T23:52:14.488822+00:00",
-  "count": 2671,
+  "generated_at": "2026-09-23T00:07:18.245024+00:00",
+  "count": 2672,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -115,6 +115,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6sruilnbsej-98657e",
+      "title": "HF Highlights 2026.09.18",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T23:18:42Z",
+      "summary_points": [
+        "HF Rotation Trend: Hedge funds shifting capital from momentum to quality strategies, signaling a fundamental positioning shift amid market uncertainty.",
+        "Japan Outflows Dominant Risk: Japan Activity shows -4.0 Z-Score in regional flows, indicating significant outflows as the primary risk factor.",
+        "US Gross Leverage Dominance: US gross leverage at 209% exceeds Europe (177%) and Asia (127%), with 78% 5-year percentile, signaling elevated risk.",
+        "Equity L/S Outperformance: Equity Long/Short strategies outperform All Funds (MTD median 0.28 vs 0.09; YTD median 5.70 vs 5.29).",
+        "Crowded Longs Structural Favorability: Top 50 Longs outperform Top 50 Shorts by 21.18% YTD (34.50% vs 13.32%), confirming structural long bias."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
