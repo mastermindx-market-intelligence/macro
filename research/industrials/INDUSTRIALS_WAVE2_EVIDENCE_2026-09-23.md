@@ -12,7 +12,7 @@ Original Macro interface pin remains `c4da107fe729e46b4d4036b3e0e290390315d0fd`;
 
 This register tests whether automation, software, electrical equipment and infrastructure businesses can be understood using the same economic measurements. The answer is not to abandon comparability, but to preserve the business, period, definition and commercial stage before comparing.
 
-Twenty primary-source records cover thirteen company groups. Multiple documents from one issuer are not independent corroboration. Figures below are issuer-reported and generally unaudited interim results. Management explanations and forward plans remain attributed. A reported product capability establishes an offering, not customer adoption, revenue purity or a verified procurement relationship. Publication dates are stated where established; a mutable page's observation date is not its original publication date.
+Twenty-six primary-source records cover thirteen company groups. Six source records were added after the first mid-turn persistence, including the resolved SMC quarterly presentation and five product/workflow descriptions. Multiple documents from one issuer are not independent corroboration. Figures below are issuer-reported and generally unaudited interim results. Management explanations and forward plans remain attributed. A reported product capability establishes an offering, not customer adoption, revenue purity or a verified procurement relationship. Publication dates are stated where established; a mutable page's observation date is not its original publication date.
 
 Source URLs and locators make research inspectable; they do not establish immutable native source retention, publication rights for a paid product, identity admission or independent factual review. PDF pages containing relied-upon tables were visually inspected where indicated. Failed or incomplete reads are retained as limits rather than replaced with AI summaries.
 
@@ -147,7 +147,7 @@ SMC describes pneumatic factory-automation equipment and explicitly presents bro
 Source: https://www.smcworld.com/ir/ja-jp/calendar.html
 Observed: September 23, 2026. Locator: fiscal year ending March 2027 schedule.
 
-The calendar identifies August 7, 2026 as the first-quarter results event and May 14 as the preceding full-year event. English results and presentation pages returned shells without the document list. Current quarterly financial values therefore remain unverified in this wave; an automated source that labels the full-year revenue as first-quarter revenue was not promoted into the dataset. This is a bounded acquisition gap, not absence of the underlying disclosure.
+The calendar identifies August 7, 2026 as the first-quarter results event and May 14 as the preceding full-year event. English results and presentation pages returned shells without the document list. At this initial read, current quarterly financial values remained unverified; an automated source that labels the full-year revenue as first-quarter revenue was not promoted into the dataset. W2-S21 subsequently resolves the quarterly presentation gap through its original disclosure link. The earlier read limitation remains part of the acquisition history, not a current claim that the quarter is unavailable.
 
 ## W2-S20 — Powell Industries, June 2026 Form 10-Q
 
@@ -156,13 +156,55 @@ Filed: August 4, 2026. Period: fiscal Q3 ended June 30. Locators: Note D Revenue
 
 Approximately 97% of quarterly revenue was recognized over time, mainly on custom fixed-price electrical systems. Backlog was $2.4 billion; approximately $1.3 billion was expected within twelve months. The $934 million of quarterly bookings included a previously announced data-center order exceeding $400 million. Nine-month profit included $12.8 million of favorable changes in estimates on opening projects. These facts require separate accounting-progress, physical-delivery and cash views. The earlier order announcement and later booking are one commercial event at different stages, not two demand wins.
 
+## W2-S21 — SMC, original fiscal first-quarter presentation
+
+Source: https://contents.xj-storage.jp/xcontents/AS00674b/5ca9978b/e66b/49ad/92c3/7c59ebaa9441/140120260807514444.pdf
+Publication: August 7, 2026. Period: fiscal first quarter of year ending March 2027. Locators: slides 2, 3 and 8, visually inspected; original Japanese issuer presentation reached through a secondary discovery link.
+
+Reported sales grew 35.4%; the issuer's bridge attributes 22.3 percentage points to volume and 12.9 to currency, with rounded pricing of 0.1. Rounded slide values show sales of JPY270.9 billion, operating profit of JPY73.9 billion and net profit of JPY67.8 billion. The latter contradicts an automated secondary summary. The operating-profit bridge includes volume, currency, inventory valuation and expense effects. The order table is an index with FY25=100, not a disclosed growth percentage or customer count. Its July index must not be relabeled a quarterly result. The balance-sheet slide screenshot failed, so its table-specific numbers remain excluded.
+
+## W2-S22 — Siemens, electronic-design-automation description
+
+Source: https://www.siemens.com/en-gb/technology/electronic-design-automation-eda/
+Publication date: unknown; observed September 23, 2026. Locator: definition and portfolio description in official search-indexed text; direct open returned unsupported content type.
+
+Siemens describes EDA as software and specialized hardware used in electronic-system design, verification and manufacturing workflows, including chips, packaging and circuit boards. This supports separating electronic design from factory control and manufacturing operations in the research taxonomy. It does not establish revenue by product, subscription purity or independent adoption. No acquisition closing date is taken from this undated description.
+
+## W2-S23 — Emerson, automation-platform and workflow descriptions
+
+Source: https://www.emerson.com/en/automation-systems
+Publication date: unknown; observed September 23, 2026. Locator: Meet Our Brands and Product Listing.
+
+The issuer distinguishes process control, power/water control, asset reliability, industrial optimization, manufacturing execution and support. Named offerings include DeltaV, Ovation, AMS, AspenTech and Guardian. These are overlapping workflows and product descriptions, not separately disclosed financial segments or additive revenue pools. An industry application listed on a catalog page does not prove paid deployment, a specific buyer or the scale of economic exposure.
+
+## W2-S24 — ABB, condition monitoring and services
+
+Source: https://new.abb.com/us/us-motion-business-area/motion-services/abb-ability-condition-monitoring-for-drives
+Publication date: unknown; observed September 23, 2026. Locator: Powertrain Monitoring, Condition-Based Maintenance, and Expert Reports.
+
+ABB describes drive and motor monitoring, condition-based maintenance and expert-report options. This supports a proposed installed-base monitoring/service research slice distinct from the original motor/drive sale. It does not disclose standalone recurring revenue, renewal behavior, current paid penetration or independently verified savings. Regional pages with inconsistent corporate-division descriptions were not used to establish current group structure.
+
+## W2-S25 — Eaton, integrated modular-power offering
+
+Source: https://www.eaton.com/us/en-us/catalog/backup-power-ups-surge-it-power-distribution/contained-prefabricated-power-solutions.html
+Publication date: unknown; observed September 23, 2026. Locator: product overview.
+
+The catalog describes a prefabricated system that combines UPS, batteries, switchgear, cooling and safety equipment. It establishes an integrated offering, not that each component is internally manufactured or independently purchased. A market-size calculation must not add the full system selling price to all contained component prices. The chosen purchase boundary and third-party content remain explicit. Vendor claims about efficiency or installation speed are not adopted as independently verified outcomes.
+
+## W2-S26 — Eaton, coolant-distribution configurations and services
+
+Source: https://www.eaton.com/us/en-us/catalog/thermal-management-solutions/coolant-distribution-unit-cdu.html
+Publication date: unknown; observed September 23, 2026. Locators: configuration/specification table, lifetime support, liquid-to-liquid versus liquid-to-air descriptions.
+
+The same ROL2300 model is specified at 1,150 kW with a 4-degree-Celsius approach and 2,300 kW with an 8-degree approach. These are conditional ratings, not a doubled production unit or verified generation improvement. The page also distinguishes cooling configurations and commissioning/maintenance offerings. This supports preserving operating conditions and service scope, without estimating supplier revenue purity or equating rated cooling output with facility IT demand.
+
 ## Material corrections and exclusions
 
 The Wave 1 order-to-delivery-to-revenue narrative remains useful economically but must not be implemented as a universal accounting sequence. W2-S20 demonstrates recognition during manufacture. The updated rule is to preserve commercial commitment, physical progress, accounting recognition and cash collection as separate measurements linked only by supported relationships.
 
 Do not treat the official Schneider landing page's Q2 divisional rates as H1 rates. Do not treat a Keyence fiscal label as calendar-quarter identity. Do not call SMC's annual sales a quarterly result. Do not equate ABB continuing-operations cash growth with consolidated cash growth. Do not count a pending acquisition as completed exposure or add an earlier announced order to its later recognized booking.
 
-ABB's separate presentation financial-table screenshots and Schneider's presentation download were not successfully retrieved; numerical details unique to those unread visual tables are excluded. Rockwell's annual-report parsed text was malformed, so the business-description page was read visually. Original SEC documents replaced secondary discovery summaries for nVent and Powell. No failed read was filled with an invented number.
+ABB's separate presentation financial-table screenshots and Schneider's presentation download were not successfully retrieved; numerical details unique to those unread visual tables are excluded. Rockwell's annual-report parsed text was malformed, so the business-description page was read visually. Original SEC documents replaced secondary discovery summaries for nVent and Powell. No failed read was filled with an invented number. SMC quarterly disclosure retrieval subsequently succeeded through the original presentation; direct Siemens EDA retrieval remained unavailable while official indexed text was usable. Search-indexed text is visibly weaker source retention than a retained original artifact.
 
 ## What this wave establishes
 
