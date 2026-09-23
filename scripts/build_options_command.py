@@ -289,13 +289,11 @@ def skew_source_note(payload) -> tuple[str, str] | None:
         return None
     polygon_first = _skew_source_format_date(polygon_window.get("first_date"), "en")
     polygon_last = _skew_source_format_date(polygon_window.get("last_date"), "en")
-    theta_first = _skew_source_format_date(theta_window.get("first_date"), "en")
-    theta_last = _skew_source_format_date(theta_window.get("last_date"), "en")
     break_en = _skew_source_format_date(break_text, "en")
     polygon_first_zh = _skew_source_format_date(polygon_window.get("first_date"), "zh")
     polygon_last_zh = _skew_source_format_date(polygon_window.get("last_date"), "zh")
     break_zh = _skew_source_format_date(break_text, "zh")
-    if not (polygon_first and polygon_last and theta_first and theta_last and break_en and break_zh and polygon_first_zh and polygon_last_zh):
+    if not (polygon_first and polygon_last and break_en and break_zh and polygon_first_zh and polygon_last_zh):
         return None
     en = _SKEW_NOTE_EN.format(
         polygon_first=polygon_first,

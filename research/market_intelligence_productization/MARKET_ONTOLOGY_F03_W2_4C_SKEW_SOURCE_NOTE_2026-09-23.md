@@ -11,7 +11,10 @@ record for A-F03-W2-4c.
 `source_windows` (per-source coverage spans), `source_break` (True iff
 `len(source_windows) > 1`), `source_break_date` (the first session
 strictly greater than the older source's last_date on which any other
-source has rows), and `history_dates` (sum of the per-span session counts).
+source has rows), and `history_dates` (count of distinct session dates
+on the normalised ledger — the union across sources, so a mixed-source
+ledger where polygon's dates are a subset of thetadata's dates reports
+the longer span's count, NOT the overlap-aware sum).
 When `source_break` is True AND `source_break_date` is a real
 YYYY-MM-DD AND exactly one polygon_gex span AND exactly one thetadata span
 exist in `source_windows`,
@@ -92,6 +95,21 @@ weekday dates only).  The picture the consumer prints is:
 (2026-07-03 is skipped per the backfill receipt — it is not in store,
 and the backfill receipt does not move a missing date onto a neighbour.
 The first ThetaData-only session is 2026-08-14.)
+
+### Why the committed `data/options_skew/snapshots.parquet` is not the live ledger
+
+The ledger this packet writes against lives on the render hosts (R2) and
+is restored from R2 at every render — `data/options_skew/snapshots.parquet`
+in this checkout is a small legacy dev artifact that does NOT reproduce the
+numbers above.  Reading it as the head commit sees it today yields a
+different shape (thetadata has a single date; polygon has the older
+2026-06-22..2026-08-13 window; the table the user actually sees is the
+R2 ledger, not the bytes in git).  The producer tests pin the round-5
+shape against an in-memory fixture (`_round5_mixed_source_ledger`), and
+`emit_from_ledger` is what the render hosts run against the restored
+R2 ledger — so the published sentence describes the live ledger
+correctly, but the committed `data/` artifact is stale relative to R2 and
+should NOT be cited as evidence of the live numbers.
 
 ### Why the majority-run rule was abandoned
 

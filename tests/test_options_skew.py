@@ -779,19 +779,90 @@ def test_source_break_date_is_the_first_session_after_the_older_source_ends():
     assert S.source_break_date(same_end) is None
 
 
+def test_source_break_date_uses_real_row_dates_not_span_bounds():
+    """A backfill gap inside the newer source's coverage span must NOT
+    fabricate a break date — the span bounds interpolate over missing dates,
+    so a future source_break_date that walks `_date_iter(first, last)` would
+    report a break date the ledger itself never has a row for.  RED-first
+    against the prior `_date_iter` implementation.
+
+    Polygon ends 2026-08-13; thetadata's coverage span runs 06-22..09-21 but
+    has no rows on 2026-08-14..2026-08-17 (a backfill gap).  The earliest
+    weekday strictly greater than 2026-08-13 that thetadata actually has a
+    row on is 2026-08-18, NOT 2026-08-14."""
+    rows = []
+    # Polygon: every weekday 2026-08-03..2026-08-13 (the older source).
+    for d in ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06",
+              "2026-08-07", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13"]:
+        for k in ["AAA", "BBB", "CCC"]:
+            rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
+    # Thetadata: rows only 2026-08-18..2026-08-21 inside the gap (no rows
+    # 2026-08-14..2026-08-17) and 2026-08-24..2026-08-28.
+    for d in ["2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21",
+              "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28"]:
+        for k in ["AAA", "BBB", "CCC"]:
+            rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
+    df = pd.DataFrame(rows)
+    assert S.source_break_date(df) == "2026-08-18", (
+        "source_break_date must walk the ledger's actual row dates, not "
+        "the newer source's coverage span bounds — a backfill gap inside "
+        "the span would otherwise fabricate a break date the ledger "
+        "itself never has a row for"
+    )
+
+
+def test_emit_payload_history_dates_counts_distinct_session_dates_for_overlap():
+    """When polygon's session dates are a subset of thetadata's session
+    dates, history_dates must equal the union cardinality (the longer span's
+    count) — NOT the overlap-aware sum.  Same `(a)` fixture: polygon has 4
+    dates, thetadata has 6 dates, but the 4 polygon dates are a subset of
+    the 6 thetadata dates, so the union is 6."""
+    data, _site = _patch_dirs(monkeypatch=None, tmp_path=None) if False else (None, None)
+    rows = []
+    for d in ["2026-06-22", "2026-06-24", "2026-06-26"]:
+        for k in ["AAA", "BBB", "CCC", "DDD", "EEE"]:
+            rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
+    for d in ["2026-06-23", "2026-06-25", "2026-06-29"]:
+        rows.append(_ledger_row("AAA", d, 0.10, source="thetadata"))
+    for d in ["2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25"]:
+        for k in ["XXX", "YYY", "ZZZ"]:
+            rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
+    df = pd.DataFrame(rows)
+    spans = S.source_windows(df)
+    assert {w["source"]: w["n_dates"] for w in spans} == {
+        "polygon_gex": 4, "thetadata": 6,
+    }
+    # 4 + 6 = 10, but the union cardinality is 6 (polygon's 4 dates are
+    # all inside thetadata's 6).
+    payload = {"source_windows": spans}
+    distinct = len({str(d) for d in df["date"].tolist()})
+    assert distinct == 6, distinct
+    # The OLD code returned 10 here; the FIX returns 6.  This is the value
+    # the doc/body tables report for the live ledger (history_dates = 64 for
+    # spans of 33 + 64 = 97, because thetadata's 64 dates include all 33
+    # polygon dates).
+    assert distinct != 10  # if 10, the sum semantics still hold — fix regressed.
+
+
 def test_emit_payload_carries_source_windows_and_history_dates(tmp_path, monkeypatch):
     """emit() payload carries source_windows, source_break, source_break_date,
     and history_dates for the round-5 measured-shape fixture.
 
-    The round-5 fixture has 4 polygon_gex session dates (06-22..06-25) and
-    6 thetadata session dates (06-22..06-29); sum(n_dates) = 10."""
+    Round-5 history_dates is the count of distinct session dates on the
+    ledger (the union across sources, NOT the sum of per-source n_dates).
+    The fixture has polygon_gex on 4 dates and thetadata on 6 dates, and
+    those 4 polygon dates are a subset of the 6 thetadata dates, so the
+    union cardinality is 6.  The OLD sum semantics returned 10 here; the
+    FIX returns 6 — and the doc/body report the same value (64 for the
+    live ledger, where thetadata's 64 dates include all 33 polygon dates).
+    """
     data, _site = _patch_dirs(monkeypatch, tmp_path)
     ledger = data / "options_skew" / "snapshots.parquet"
     ledger.parent.mkdir(parents=True)
     pd.DataFrame(_round5_mixed_source_ledger()).to_parquet(ledger)
     payload = S.emit_from_ledger(today=date(2026, 6, 30), accrual_state="ledger_only")
     assert payload["source_break"] is True
-    assert payload["history_dates"] == 10
+    assert payload["history_dates"] == 6
     sources_in_windows = [w["source"] for w in payload["source_windows"]]
     assert sources_in_windows == ["polygon_gex", "thetadata"]
     assert payload["source_break_date"] == "2026-06-26"

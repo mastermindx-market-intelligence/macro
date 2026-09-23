@@ -544,10 +544,15 @@ def source_break_date(df) -> str | None:
         rows, or both sources end on the same day);
       · input is empty/invalid.
 
+    The "newer source has rows" check walks the ledger's ACTUAL rows for
+    each newer source — not the span bounds — so a backfill gap (a newer
+    source whose rows skip some dates inside its own coverage span) cannot
+    fabricate a break date that the ledger itself never has a row for.
     On the live ledger (2026-09-23, after the 2026-08-14..2026-09-18
     backfill): polygon_gex.last_date = 2026-08-13, thetadata.last_date =
-    2026-09-21, older_last = 2026-08-13, the earliest thetadata-only session
-    strictly greater than 2026-08-13 is 2026-08-14 → returns "2026-08-14".
+    2026-09-21, older_last = 2026-08-13, the earliest thetadata-only
+    weekday strictly greater than 2026-08-13 that actually has a row is
+    2026-08-14 → returns "2026-08-14".
 
     PURE (no I/O, no clock).
     """
@@ -560,34 +565,45 @@ def source_break_date(df) -> str | None:
         older_last = _date.fromisoformat(older_last_text)
     except (ValueError, TypeError):
         return None
-    newest_text = max(str(span["last_date"]) for span in spans)
-    try:
-        newest = _date.fromisoformat(newest_text)
-    except ValueError:
-        return None
-    # The "others" are the sources whose last_date is strictly greater than
+    # The "newer" sources are those whose last_date is strictly greater than
     # older_last — i.e. the sources still accruing past the older one's end.
-    # We then walk forward one calendar day at a time past `older_last` until
-    # we hit a weekday on which one of those others has at least one row.
     newer_source_names = {
         str(span["source"]) for span in spans
         if str(span["last_date"]) > older_last_text
     }
     if not newer_source_names:
         return None
-    # The set of dates any newer source has rows on (their full coverage
-    # span, since `_per_source_coverage` only reports one span per source
-    # with first_date/last_date as the bound).
-    newer_dates: set[str] = set()
-    for span in spans:
-        if str(span["source"]) not in newer_source_names:
-            continue
-        for d in _date_iter(str(span["first_date"]), str(span["last_date"])):
-            newer_dates.add(str(d))
+    # Walk the ledger's ACTUAL rows for newer sources, not the span bounds.
+    # A newer source's coverage span may interpolate over a backfill gap;
+    # only dates that appear in the ledger as a row count as "the newer
+    # source has rows".
+    if df is None or getattr(df, "empty", True):
+        return None
+    work = df.copy()
+    if "source" not in work.columns:
+        work["source"] = _SOURCE_POLYGON
+    else:
+        work["source"] = work["source"].map(_source_of)
+    work["date"] = work["date"].map(_iso_date)
+    work = work[work["date"].astype(str).str.len() > 0]
+    if "date" not in work.columns:
+        return None
+    weekend = work["date"].map(_is_weekend_iso)
+    work = work.loc[~weekend]
+    actual_newer_dates = {
+        str(d) for d in work.loc[work["source"].isin(newer_source_names),
+                                  "date"].astype(str).tolist()
+    }
+    if not actual_newer_dates:
+        return None
     cursor = older_last + _td(days=1)
-    while cursor <= newest:
+    # Walk at most 5 years past older_last as a safety bound (no real
+    # backfill spans longer than this, and a non-terminating walk on a
+    # bad ledger would otherwise hang the call site).
+    max_walk = older_last + _td(days=5 * 366)
+    while cursor <= max_walk:
         cursor_text = cursor.isoformat()
-        if not _is_weekend_iso(cursor_text) and cursor_text in newer_dates:
+        if cursor_text in actual_newer_dates:
             return cursor_text
         cursor += _td(days=1)
     return None
@@ -788,11 +804,26 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         # history crosses a source boundary — the consumer renders this verbatim on
         # options.html as a one-sentence footnote.  Reuses the session-only `norm`
         # frame above (weekends already excluded) so the windows match the names
-        # the panel prints.  `history_dates` is the SUM of the per-window date
-        # counts so it always agrees with `source_windows` (a degenerate all-
-        # weekend ledger has zero of both, not zero windows and >0 history_dates).
+        # the panel prints.  `history_dates` is the count of DISTINCT session
+        # dates across the normalised ledger frame (the union of dates any source
+        # has rows on), so a mixed-source ledger where polygon's dates are a
+        # subset of thetadata's dates reports the longer span's count, not the
+        # overlap-aware sum.  An all-weekend ledger has zero of both
+        # (windows == [] and history_dates == 0).  Session-only dates:
+        # `history_dates` is computed against the session frame so an
+        # all-weekend ledger reports 0, not 2.
         windows = source_windows(norm)
-        history_dates = int(sum(int(w.get("n_dates") or 0) for w in windows))
+        # Session-only dates: history_dates counts weekday dates so it
+        # agrees with windows (an all-weekend ledger has zero of both,
+        # not two of the first).  The names pick above keeps weekend rows
+        # when there is no weekday row, but the additive source-break
+        # keys must report 0 — not the all-weekend row count — when the
+        # ledger has no session to count.
+        history_dates = 0
+        if "date" in norm.columns:
+            weekend_mask = norm["date"].map(_is_weekend_iso)
+            if bool((~weekend_mask).any()):
+                history_dates = int(len({str(d) for d in norm.loc[~weekend_mask, "date"].tolist()}))
         source_break = bool(len(windows) > 1)
     if not names:
         source_state = "empty_ledger"
