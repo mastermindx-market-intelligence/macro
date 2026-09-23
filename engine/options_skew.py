@@ -22,8 +22,17 @@ load_chain().
 
 `backfill_from_store` recomputes an explicit list of dates from the ThetaData
 store and upserts them under the same canonical-wins rule as `snapshot`.
-`emit_from_ledger` drops weekend-dated rows before it chooses the latest
-snapshot when a weekday row remains, and reports that count.
+`emit_from_ledger` drops weekend-dated rows, then drops any newer ledger
+session whose row count is below `_THIN_SESSION_MIN_FRACTION × widest(count
+of the up-to-10 immediately older sessions)` — a partial newest session
+that would otherwise collapse the live surface from 372 → 12 — and reports
+the skip in `source_detail["partial_sessions_skipped"]` /
+`source_detail["partial_rows_skipped"]` (always present, possibly
+empty/zero). `complete_store_session(td)` resolves the accrual session as
+the newest date whose distinct greeks root count is at least
+`_COMPLETE_SESSION_MIN_FRACTION × widest` (the FULL S panel the T1 daily
+maintainer writes for `session_n_back(D, 1)`), with `<td>/_manifest.json`'s
+`daily_refresh.S` winning on tie.
 """
 from __future__ import annotations
 

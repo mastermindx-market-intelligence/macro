@@ -7,14 +7,17 @@ claim: >
   maintainer. A naive `max(date)` walk collapses the live surface from
   372 → 12 on any day the maintainer has not yet finished.
 falsifier: >
-  Inspect `data/options_skew/_manifest.json` and the
-  `<store>/greeks/<ROOT>/<YEAR>.parquet` histograms. If the newest date
-  in the store carries >= `_COMPLETE_SESSION_MIN_FRACTION × widest_roots`
-  distinct roots AND `daily_refresh.greeks_S_roots` matches that count,
-  the partial-priority-set hypothesis is refuted and the lane is safe
-  to use `max(date)` as the accrual asof. On the store host on
-  2026-09-23 14:40Z the newest date carried 12 distinct roots against a
-  widest panel of 372 — the hypothesis held.
+  Inspect `<store>/greeks/<ROOT>/<YEAR>.parquet` histograms and
+  `<store>/_manifest.json` (the store manifest, NOT the ledger manifest
+  at `data/options_skew/_manifest.json` — the resolver reads the store
+  manifest at `td / "_manifest.json"`). If the newest date in the store
+  carries >= `_COMPLETE_SESSION_MIN_FRACTION × widest_roots` distinct
+  roots AND `daily_refresh.greeks_S_roots` matches that count, the
+  partial-priority-set hypothesis is refuted and the lane is safe to use
+  `max(date)` as the accrual asof. The 12-vs-372 measurement that named
+  this gap was the seat's 14:40Z `max(date)` walk on the store host,
+  2026-09-23 — not a live call to `complete_store_session` (the function
+  did not exist at that timestamp; it lands in this PR).
 so_what: >
   Any consumer that resolves a "latest store date" by `max(date)` over a
   producer-written store must compare the per-date distinct-root counts
@@ -26,17 +29,22 @@ so_what: >
   rule (2026-09-23, A-F03-W2-6) is the complete-session resolver: walk
   the per-date root counts newest-first, pick the newest date whose count
   is at least 0.5× the widest, and surface the skipped partial date in a
-  `::notice title=options-skew-session::` line.
+  `::notice title=options-skew-session::` line. Note: the notice fires on
+  `load_chain()`'s default-asof path (gate/snapshot callers), NOT on
+  `--accrue`'s lane path — `scripts.build_options_skew.accrue()` calls
+  `backfill_from_store` which uses the explicit-asof path; the lane's
+  evidence of the skip is its own `accrual sessions=[...]` log line.
 kind: architecture
 verified_at: 2026-09-23
 verified_by: >
-  `engine/options_skew.complete_store_session` returning `{"session": "2026-09-21",
-  "method": "breadth", "partial_skipped": ["2026-09-22"], "roots_on_session": 372,
-  "widest_roots": 372, "newest_raw": "2026-09-22"}` against the live store
-  on 2026-09-23 14:40Z; `tests/test_options_skew.py::test_complete_store_session_skips_a_partial_newest_date`
-  pins the same shape on a synthetic store (6 roots × 2 dates, 1 root × 1
-  partial date → session = D2, partial_skipped = [D3], method = "breadth",
-  roots_on_session = 6).
+  `tests/test_options_skew.py::test_complete_store_session_skips_a_partial_newest_date`
+  on a synthetic store (6 roots × 2026-06-18/19, 1 root × 2026-06-22)
+  returning `{"session": "2026-06-19", "method": "breadth",
+  "partial_skipped": ["2026-06-22"], "roots_on_session": 6,
+  "widest_roots": 6, "newest_raw": "2026-06-22"}`. The live-store
+  12-vs-372 numbers cited above were the seat's 14:40Z `max(date)`
+  measurement on the store host, 2026-09-23, NOT a call to
+  `complete_store_session` (the function lands in this PR).
 scope:
   - "macro"
   - "engine/options_skew.py"

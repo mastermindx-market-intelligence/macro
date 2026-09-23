@@ -90,8 +90,11 @@ two sources are consulted and the newer ISO date wins; `method` is
 
 The chosen session is what `load_chain()` defaults to when called without
 an explicit argument; the partial newest date is named in a single
-`::notice title=options-skew-session::` line so the lane log shows the skip
-explicitly.
+`::notice title=options-skew-session::` line. Note: the notice fires only
+on `load_chain()`'s default-asof path (gate/snapshot callers) — the
+`--accrue` lane calls `backfill_from_store`, which uses the explicit-asof
+path. The lane's own evidence of the skip is its `accrual sessions=[…]`
+log line (the dates it actually wrote to), not a separate `::notice` line.
 
 **Catch-up cap** (`engine/options_skew.catch_up_sessions`):
 `scripts.build_options_skew --accrue` does not just write today's session —
@@ -128,6 +131,7 @@ is the durable repair.
 | Wave | Branch | Owns |
 |------|--------|------|
 | **W2-1b** (sibling, in flight) | `claude/mo-a-2-a-f03-w2-1` | `scripts/build_options_skew.py --accrue \| --emit` + source-stamped ledger upsert; pins render hosts to the legacy source |
+| **W2-2** (THIS packet) | `claude/mo-a-3-a-f03-w2-2-skew-accrual-lane` | The producer: launchd job, runner, gate helper, audit tool, R2 registry entry |
 | **W2-3** (later) | TBD | Render cutover to `--emit`; `fetch_r2 --dirs options_skew` restore |
 
 The render hosts stay pinned to `polygon_gex` (legacy) until W2-3. This packet
