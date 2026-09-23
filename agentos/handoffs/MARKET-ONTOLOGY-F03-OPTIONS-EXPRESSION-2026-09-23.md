@@ -14,7 +14,7 @@ state_before: >
   FOMC dates lived in a private list in engine/event_calendar.py.
 changed:
   - path: scripts/build_options_catalyst_links.py
-    what: Nightly builder. Reuses fetch_event_stage and discover_event_sessions. Calls bind_events. Writes site/options_catalyst_links/<session>.jsonl and latest.json. An earnings knowledge date walks trading sessions, not calendar days.
+    what: Nightly builder. Reuses fetch_event_stage and discover_event_sessions. Calls bind_events. Writes site/options_catalyst_links/<session>.jsonl and latest.json. An earnings knowledge date is the business-day inverse of the age assess returns. A Saturday or Labor Day run of a Friday row stamps Friday.
   - path: engine/event_calendar.py
     what: Added fomc_decision_dates. Pure read of the existing FOMC list. Nothing removed.
   - path: .github/workflows/daily.yml
@@ -22,7 +22,7 @@ changed:
   - path: .github/ci/legacy-jobs.yml
     what: gate code job options-catalyst-links running the three catalyst-link suites.
   - path: tests/test_build_options_catalyst_links.py
-    what: Envelope, histogram sum, no stage, empty plane, earnings conversion, FOMC calendar, data-path refusal, authority block, pure FOMC accessor, and a fresh row that stays bound when the run date is after the event.
+    what: Envelope, histogram sum, no stage, empty plane, earnings conversion, FOMC calendar, data-path refusal, authority block, pure FOMC accessor, and the age assess returns. A Saturday or Labor Day run of a Friday row stamps Friday. A Thursday event loses the earnings link.
   - path: tests/test_options_catalyst_links_nightly_shape.py
     what: Text check that the daily step and the gate code job match the packet.
   - path: agentos/decisions/DEC-F03-W3-1-CATALYST-BINDING-FIRST-PRODUCTION-CALLER.md
@@ -34,7 +34,7 @@ decisions:
 verified:
   - claim: The producer suite, the existing binder suite, and the nightly shape suite pass.
     command: "/opt/homebrew/bin/python3.14 -m pytest tests/test_build_options_catalyst_links.py tests/test_options_catalyst_link.py tests/test_options_catalyst_links_nightly_shape.py -q"
-    result: "58 passed in 1.14s"
+    result: "58 passed in 1.85s"
   - claim: Agent OS records for this packet validate.
     command: "python3 scripts/agentos.py validate"
     result: "agentos: 1208 records (69 workstreams, 341 decisions, 302 discoveries, 496 handoffs) — 0 error(s), 90 warning(s)"
@@ -61,7 +61,7 @@ danger_areas:
   - An availability receipt is not an event. Counting it as a dropped row inflates the histogram. Only decision events and bare event rows enter the binder.
   - known_symbols must be uppercase. The membership test is exact on the uppercased root.
   - stale false with no age is not fresh. fields_from_assessment turns that into no verdict, and the binder then treats the candidate as untrustworthy.
-  - The earnings age counts trading sessions. Subtracting those sessions as calendar days stamps a Saturday run on Saturday, and the binder then treats Friday's fresh row as learned after the event.
+  - The earnings age is a business-day index step. Walking NYSE sessions back from the last session stamps Thursday for a Friday row when the run is Saturday or Labor Day. A Thursday event then keeps an earnings link that was not known yet. Invert the same index assess used.
   - Do not catch the drift ValueError from bind_events. A drifted record is the contract firing.
   - FOMC candidates belong on CalendarContext.macro_catalysts. Putting them in the per-root map double-counts them.
   - The shared calendar's third-Friday flags stay None. The binder computes those from each event's expiry.

@@ -41,9 +41,9 @@ evidence:
     the dates inside the window, sorted."
   - "python3 -m pytest tests/test_build_options_catalyst_links.py
     tests/test_options_catalyst_link.py
-    tests/test_options_catalyst_links_nightly_shape.py -q → 58 passed in 1.14s."
-  - "A fresh earnings row stays bound when the run date is after the event.
-    The knowledge date walks sessions, not calendar days."
+    tests/test_options_catalyst_links_nightly_shape.py -q → 58 passed in 1.85s."
+  - "A Friday earnings row is age 1 on Saturday and on Labor Day. The stamp
+    is Friday. A Thursday event is excluded and the FOMC date wins."
   - "The nightly site commit still stages site/ with the existing git add.
     .github/workflows/daily.yml comment says git add site/ covers, and
     scripts/ci/daily_engine_commit_outputs.sh runs git add data/ site/ reports/."

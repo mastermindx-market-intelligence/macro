@@ -16,6 +16,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+import pandas as pd
+
 _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
@@ -33,7 +35,6 @@ from engine.options_catalyst_link import (
 )
 from engine.stock_identity.authority import authority_block
 from engine.stock_identity.plane import PLANE_STOCKS, symbols_on_plane
-from lib.nyse_calendar import last_session_on_or_before, session_n_back
 from scripts.build_options_signal_episode import (
     discover_event_sessions,
     fetch_event_stage,
@@ -150,17 +151,24 @@ def _age_days(age: Any) -> int | None:
     return age
 
 
-def _known_as_of_from_trading_age(asof: date, age: int) -> date | None:
-    """Session date ``age`` sessions before ``asof``.
+def _known_as_of_from_business_day_age(asof: date, age: int) -> date | None:
+    """Date ``age`` index steps before ``asof`` on the calendar ``assess`` uses.
 
-    ``as_of_age_td`` counts trading sessions, not calendar days. A weekend or
-    holiday run anchors on the last session, so age 0 on Saturday is Friday
-    and age 1 on the following holiday is the session before that Friday.
-    Subtracting the age as calendar days would stamp Saturday or Sunday, and
-    the binder would drop a fresh row as learned after the event.
+    ``as_of_age_td`` is ``searchsorted(asof) - searchsorted(known)`` on that
+    weekday index. A weekend already sits on the next weekday, and a weekday
+    holiday stays on the index, so age 1 on Saturday or on Labor Day is the
+    Friday the row was known. Walking NYSE sessions back from the last session
+    stamps the day before that Friday. ``None`` when the index cannot reach
+    the step.
     """
-    anchor = last_session_on_or_before(asof)
-    return session_n_back(anchor, age)
+    calendar = earnings_blackout._build_td_calendar()
+    if len(calendar) == 0:
+        return None
+    pos = int(calendar.searchsorted(pd.Timestamp(asof), side="left"))
+    known_pos = pos - age
+    if pos >= len(calendar) or known_pos < 0:
+        return None
+    return pd.Timestamp(calendar[known_pos]).date()
 
 
 def _earnings_candidate(root: str, asof: date, assessment: Any) -> tuple[CatalystCandidate | None, bool]:
@@ -180,7 +188,7 @@ def _earnings_candidate(root: str, asof: date, assessment: Any) -> tuple[Catalys
     stale = fields.get("stale")
     if stale not in (True, False, None):
         stale = None
-    known_as_of = _known_as_of_from_trading_age(asof, age) if age is not None else None
+    known_as_of = _known_as_of_from_business_day_age(asof, age) if age is not None else None
     return CatalystCandidate(
         kind="earnings",
         date=catalyst_date,

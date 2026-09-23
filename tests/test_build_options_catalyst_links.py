@@ -9,6 +9,7 @@ import re
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 import scripts.build_options_catalyst_links as prod
@@ -407,62 +408,108 @@ def test_no_retained_date_is_no_event_stage(monkeypatch, tmp_path, capsys):
     assert summaries == ["options_catalyst_links: session=none events=0 bound=0 unbound=0 unresolved=0"]
 
 
-def test_fresh_earnings_stays_bound_when_utc_today_is_after_the_event(monkeypatch, tmp_path):
-    """A fresh earnings row stays bound when the run date is after the event.
+def _friday_earnings_frame() -> pd.DataFrame:
+    """One fresh row whose ``as_of`` is Friday 2026-09-04. No store file."""
+    return pd.DataFrame(
+        {
+            "next_date": ["2026-09-16"],
+            "next_time": ["amc"],
+            "as_of": ["2026-09-04"],
+        },
+        index=pd.Index(["AAPL"]),
+    )
 
-    ``as_of_age_td`` counts sessions, not calendar days. Subtracting that count
-    from the run date stamps Saturday when the age is 0, and Sunday when the
-    run is Monday and the age is 1. Both dates are after Friday's event, so
-    the binder drops the earnings row as lookahead and the co-dated FOMC date
-    takes the link.
+
+def _bind_live_assessment(monkeypatch, tmp_path, rows, *, session, asof, frame):
+    """Run the producer against ``assess``, not an injected age."""
+    prod.earnings_blackout.clear_cache()
+    monkeypatch.setattr(prod.earnings_blackout, "_load_store", lambda store_path=None: frame)
+    monkeypatch.setattr(prod, "utc_today", lambda: asof)
+    monkeypatch.setattr(prod, "fetch_event_stage", lambda _session: rows)
+    monkeypatch.setattr(prod, "symbols_on_plane", lambda plane_id, repo_root=None: {"AAPL"})
+    rc = prod.main(["--session", session, "--out", str(tmp_path)])
+    envelope = json.loads((tmp_path / "latest.json").read_text())
+    records = _records(tmp_path / f"{session}.jsonl")
+    prod.earnings_blackout.clear_cache()
+    return rc, envelope, records
+
+
+def test_assess_business_day_age_stamps_friday_not_the_prior_session(monkeypatch, tmp_path):
+    """A Friday earnings row stays Friday when the run is Saturday or Labor Day.
+
+    ``assess`` reports age 1 for both dates: a weekend already sits on the next
+    weekday, and that Monday stays on the business-day index. The stamp is
+    Friday. An event on Thursday then loses the earnings link, and the FOMC
+    date on the same day wins. Walking sessions back from the last session
+    stamps Thursday and keeps the earnings link.
     """
-    event = _event("e-wknd", "AAPL", "2026-10-16")
+    frame = _friday_earnings_frame()
+    prod.earnings_blackout.clear_cache()
+    monkeypatch.setattr(prod.earnings_blackout, "_load_store", lambda store_path=None: frame)
+    try:
+        saturday = prod.earnings_blackout.assess("AAPL", today=date(2026, 9, 5))
+        labor_day = prod.earnings_blackout.assess("AAPL", today=date(2026, 9, 7))
+    finally:
+        prod.earnings_blackout.clear_cache()
+    assert saturday["as_of_age_td"] == 1
+    assert saturday["stale"] is False
+    assert labor_day["as_of_age_td"] == 1
+    assert labor_day["stale"] is False
 
     def _earnings(record):
         return [row for row in record["candidates"] if row["kind"] == "earnings"][0]
 
-    sat_rc, _sat_env, sat_rows, sat_calls = _bind(
+    friday_event = _event("e-fri", "AAPL", "2026-10-16", ts="2026-09-04T18:00:00Z")
+    thursday_event = _event("e-thu", "AAPL", "2026-10-16", ts="2026-09-03T18:00:00Z")
+
+    sat_rc, _sat_env, sat_rows = _bind_live_assessment(
         monkeypatch,
         tmp_path / "sat",
-        [event],
-        {"AAPL"},
-        {"AAPL": _fresh("2026-09-16", age=0)},
+        [friday_event, thursday_event],
         session="2026-09-04",
         asof=date(2026, 9, 5),
+        frame=frame,
     )
     assert sat_rc == 0
-    assert sat_calls["today"] == date(2026, 9, 5)
-    sat = sat_rows[0]
-    assert sat["binding_state"] == "BOUND"
-    assert sat["catalyst"]["kind"] == "earnings"
-    assert sat["catalyst"]["known_as_of"] == "2026-09-04"
-    sat_earn = _earnings(sat)
+    sat_by_id = {row["event_id"]: row for row in sat_rows}
+    sat_fri = sat_by_id["e-fri"]
+    assert sat_fri["binding_state"] == "BOUND"
+    assert sat_fri["catalyst"]["kind"] == "earnings"
+    assert sat_fri["catalyst"]["known_as_of"] == "2026-09-04"
+    assert sat_fri["catalyst"]["as_of_age_td"] == 1
+    sat_earn = _earnings(sat_fri)
     assert sat_earn["known_as_of"] == "2026-09-04"
     assert sat_earn["exclusion_reason"] is None
     assert sat_earn["trusted"] is True
-    assert any(item["kind"] == "fomc" for item in sat["catalyst"].get("co_dated", []))
+    assert any(item["kind"] == "fomc" for item in sat_fri["catalyst"].get("co_dated", []))
 
-    mon_rc, _mon_env, mon_rows, _mon_calls = _bind(
+    sat_thu = sat_by_id["e-thu"]
+    assert sat_thu["catalyst"]["kind"] == "fomc"
+    assert sat_thu["binding_state"] == "BOUND"
+    thu_earn = _earnings(sat_thu)
+    assert thu_earn["known_as_of"] == "2026-09-04"
+    assert thu_earn["exclusion_reason"] == "LOOKAHEAD_EXCLUDED"
+    assert thu_earn["trusted"] is False
+
+    mon_rc, _mon_env, mon_rows = _bind_live_assessment(
         monkeypatch,
         tmp_path / "mon",
-        [event],
-        {"AAPL"},
-        {"AAPL": _fresh("2026-09-16", age=1)},
+        [friday_event, thursday_event],
         session="2026-09-04",
         asof=date(2026, 9, 7),
+        frame=frame,
     )
     assert mon_rc == 0
-    mon = mon_rows[0]
-    assert mon["binding_state"] == "BOUND"
-    assert mon["catalyst"]["kind"] == "earnings"
-    # 2026-09-07 is a holiday. Age 1 is the session before Friday, not Sunday.
-    assert mon["catalyst"]["known_as_of"] == "2026-09-03"
-    mon_earn = _earnings(mon)
-    assert mon_earn["known_as_of"] == "2026-09-03"
-    assert mon_earn["exclusion_reason"] is None
-    assert mon_earn["trusted"] is True
+    mon_by_id = {row["event_id"]: row for row in mon_rows}
+    assert mon_by_id["e-fri"]["catalyst"]["known_as_of"] == "2026-09-04"
+    assert mon_by_id["e-fri"]["catalyst"]["kind"] == "earnings"
+    assert mon_by_id["e-thu"]["catalyst"]["kind"] == "fomc"
+    mon_earn = _earnings(mon_by_id["e-thu"])
+    assert mon_earn["known_as_of"] == "2026-09-04"
+    assert mon_earn["exclusion_reason"] == "LOOKAHEAD_EXCLUDED"
 
-    # A stamp that really is after the event clock stays excluded.
+    # A weekday age of 0 is the run date itself. That stamp is after this
+    # Wednesday event, so the earnings row stays excluded.
     early = _event("e-early", "AAPL", "2026-09-11", ts="2026-09-02T18:00:00Z")
     late_rc, _late_env, late_rows, _late_calls = _bind(
         monkeypatch,
@@ -474,12 +521,11 @@ def test_fresh_earnings_stays_bound_when_utc_today_is_after_the_event(monkeypatc
         asof=date(2026, 9, 4),
     )
     assert late_rc == 0
-    late = late_rows[0]
-    late_earn = _earnings(late)
+    late_earn = _earnings(late_rows[0])
     assert late_earn["known_as_of"] == "2026-09-04"
     assert late_earn["exclusion_reason"] == "LOOKAHEAD_EXCLUDED"
     assert late_earn["trusted"] is False
-    assert late["binding_state"] == "STALE_CATALYST"
+    assert late_rows[0]["binding_state"] == "STALE_CATALYST"
 
 
 def test_bad_strike_is_not_swallowed(monkeypatch, tmp_path):
