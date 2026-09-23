@@ -1343,7 +1343,13 @@ def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
     item.update(action=final, action_en=final.upper())
     ti['act_now'][lane] = [item]
     ti['themes'][0]['observation']['aggregate_eligible'] = False
-    html = BeautifulSoup(render(_continuation_board(ti)), 'html.parser')
+    board = _continuation_board(ti)
+    rows = [row for lane_rows in board['display_lanes'].values() for row in lane_rows]
+    row, = rows
+    assert row['reco'] is None
+    assert row['reco_en'] == 'DATA UNAVAILABLE'
+    assert row['source_reads'][0]['row']['reco'] == final
+    html = BeautifulSoup(render(board), 'html.parser')
     pop = html.select_one('.row-pop-decision')
     assert pop is not None
     assert 'Theme basket' in pop.get_text() and 'Sector pulse' not in pop.get_text()
@@ -1363,3 +1369,14 @@ def test_unknown_final_recommendation_is_unavailable_not_trend_intact(final):
     pop = BeautifulSoup(render(board), 'html.parser').select_one('.row-pop-decision')
     assert 'Current inputs unavailable' in pop.get_text()
     assert 'Trend intact' not in pop.get_text()
+
+
+@pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+    ti = _continuation_fixture()
+    ti['themes'][0]['reco'] = final
+    html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+    assert 'Session not yet settled' in html
+    assert 'not a change in the theme thesis' not in html
+    assert '不表示主题逻辑发生变化' not in html
+    assert 'No new entry is confirmed' in html

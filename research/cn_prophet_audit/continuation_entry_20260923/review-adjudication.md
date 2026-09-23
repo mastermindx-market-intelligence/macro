@@ -56,3 +56,11 @@ Current Chairman continuation; Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77
 The first exact-device readiness attempt reported Studio offline and executed no process. A subsequent device registry recovery and actual same-device source read succeeded. HEAD and the empty index remain at8229b1ef; all three source/test SHA256 values and evidence.json match the TEMPLATE-319 checkpoint. The complete saved diff was inspected; no additional application edits were made. The319-test and72-capture evidence still binds these exact bytes; it is not production acceptance.
 
 The earlier refused source-publication operation had no effect and remains historically recorded. This recovered same-carrier operation may now preserve the verified source under Draft/HOLD. Independent final-state review, current-head hosted/current-base and authentic full-path proof remain owed. No worker, reviewer, publisher or autonomous wake is assumed active.
+
+## A/B/C recovery and source publication — 2026-09-23
+
+Protected pin bf764f494b9cd0ecede6234bb472c3344c8e77cc; present Chairman continuation; direct LOWER_TOTAL_OVERHEAD for preserving the original tested repair. Original HEAD887917fb and empty index were read back. Full source/test/harness diff inspected, all three product/test hashes match the saved current browser proof. The actual 324-pass seven-suite log is preserved; no replay or source regeneration was needed.
+
+A: settling copy no longer asserts an unchanged thesis. B: unavailable display verbs are neutral in all theme lanes including reduce_avoid, while source_reads retain original observations. C: harness uses the existing real translator/member-name loader on the same immutable input; mapped Chinese names/prose are proven, numeric source fallback is not claimed translated. Native source/design reviewer of887 is terminal; the supported report, assignment and closure are preserved. Its source-major and dual-theme decisions remain bounded to887, not approval of the changed candidate.
+
+Current evidence.json now binds the actual324-test repair, source and72 existing captures. Release remains held for current-candidate review, hosted/current-base and required full production-path proof. Normal publication on this same branch is the next effect; no source transfer, retry on an alternate carrier, new reviewer or publisher is implied.

@@ -777,10 +777,9 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                     row[field] = None
                 row["reasons"] = []
                 row.pop("entry_route", None)
-                if lane == "wait_pullback":
-                    settling = status == "UNSETTLED"
-                    row.update(reco=None, reco_en="SESSION SETTLING" if settling else "DATA UNAVAILABLE",
-                               reco_zh="交易日数据待确认" if settling else "数据暂缺")
+                settling = status == "UNSETTLED"
+                row.update(reco=None, reco_en="SESSION SETTLING" if settling else "DATA UNAVAILABLE",
+                           reco_zh="交易日数据待确认" if settling else "数据暂缺")
             elif lane == "reduce_avoid":
                 pass  # a defensive source conflict can never be promoted to a buy
             elif final in {"hold", "trim", "avoid"}:

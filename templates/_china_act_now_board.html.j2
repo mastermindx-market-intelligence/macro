@@ -75,7 +75,7 @@
     {%- if _unavailable -%}{%- set _rptag_cls = "" -%}{%- endif -%}
     {%- set _read_override = (("Session not yet settled", "交易日数据尚待确认") if _settling else (("Current inputs unavailable", "当前输入暂缺") if _unavailable else
                               (("Leadership continuing", "领先趋势延续") if _continuation else none))) -%}
-    {%- set _takeaway_override = (("Wait for the completed session data. This is not a change in the theme thesis.", "请等待交易日数据确认；这不表示主题逻辑发生变化。") if _settling else (("Current theme inputs are unavailable. No new buy is confirmed.", "当前主题输入不可用，无法确认新的买入机会。") if _unavailable else
+    {%- set _takeaway_override = (("Wait for the completed session data. No new entry is confirmed.", "请等待交易日数据确认；暂无法确认新的入场机会。") if _settling else (("Current theme inputs are unavailable. No new buy is confirmed.", "当前主题输入不可用，无法确认新的买入机会。") if _unavailable else
         (("Trend accumulation remains in favour. Check each stock’s entry separately.", "趋势增持仍获支持，个股入场条件须分别判断。") if _continuation else none))) -%}
     <div class="anv2-row" data-rpop data-entry-route="{{ row.get('entry_route') or 'none' }}">
       {# PR-4: hover card payload — cloned by theme.js into a .row-pop overlay #}

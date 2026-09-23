@@ -7,13 +7,15 @@ import json
 import subprocess
 import sys
 import types
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
-from engine.china_act_now import assemble_act_now
+from engine.china_act_now import assemble_act_now, load_member_names
+from engine.i18n import tr as source_tr
 
 OUT = Path(__file__).resolve().parent / 'browser'
 OUT.mkdir(exist_ok=True)
@@ -24,14 +26,21 @@ source_path = 'site/chinabasketdata/baskets.json'
 raw = git('show', f'{source_commit}:{source_path}')
 source_blob = git('rev-parse', f'{source_commit}:{source_path}').decode().strip()
 intel = json.loads(raw)['theme_intel']
+# Use the real member-name loader on the SAME already-loaded frozen basket bytes.
+# This is temporary proof input, never a write to a product artifact.
+with tempfile.TemporaryDirectory(prefix='cn-action-proof-names-') as temp_dir:
+    name_source = Path(temp_dir) / 'baskets.json'
+    name_source.write_bytes(raw)
+    member_names = load_member_names(str(name_source))
+assert member_names, 'frozen basket member names must be present'
 # Explicit qualification clock for this frozen input, not a current/live read.
 clock = datetime.fromisoformat("2026-09-23T05:00:00+00:00")
 original = deepcopy(intel)
 baseline = types.ModuleType('baseline_china_action_board')
 baseline.__file__ = str(ROOT / 'engine/china_act_now.py')
 exec(git('show', '2f469476aefd14e6d31c4608d874f0dc20fdb0ad:engine/china_act_now.py'), baseline.__dict__)
-before = baseline.assemble_act_now([], intel, [])
-after = assemble_act_now([], intel, [], observed_at=clock)
+before = baseline.assemble_act_now([], intel, [], member_names=member_names)
+after = assemble_act_now([], intel, [], observed_at=clock, member_names=member_names)
 assert original == intel
 assert before['lanes'] == after['lanes']
 env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)
@@ -48,6 +57,8 @@ report = {'proof_kind': 'repository-input component; not production or historica
           'harness_note': 'Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.',
           'input_as_of': intel.get('as_of'), 'observed_at_utc': clock.isoformat(),
           'clock_basis': 'injected qualification clock; not historical availability proof',
+          'translation': 'real engine.i18n.tr; existing untranslated-source fallbacks remain visible',
+          'member_names': {'loader': 'engine.china_act_now.load_member_names', 'count': len(member_names), 'source': source_path},
           'raw_lanes_unchanged': True, 'input_unchanged': True,
           'baseline_display': {k: [r['id'] for r in v] for k, v in before['display_lanes'].items()},
           'candidate_display': {k: [r['id'] for r in v] for k, v in after['display_lanes'].items()},
@@ -77,11 +88,11 @@ with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
     try:
         for scenario, source, at, cycle in scenarios:
-            view = assemble_act_now([], source, cycle, observed_at=at)
+            view = assemble_act_now([], source, cycle, observed_at=at, member_names=member_names)
             for theme in ('dark', 'light'):
                 for lang in ('en', 'zh'):
                     env.globals.update(t=lambda en, zh, lng=lang: zh if lng == 'zh' else en,
-                                       tr=lambda text: text, help=lambda *a, **kw: '')
+                                       tr=source_tr, help=lambda *a, **kw: '')
                     component = env.get_template('_china_act_now_board.html.j2').render(act_now_v2=view)
                     for width in (1440, 390):
                         page = browser.new_page(viewport={'width': width, 'height': 960})
