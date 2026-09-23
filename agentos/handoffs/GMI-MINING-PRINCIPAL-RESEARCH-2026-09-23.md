@@ -4,101 +4,142 @@ session: sol/mining-principal-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Extensive principal-led Mining research and planning across multiple turns before a mature
-  Fable CEO implementation package; preserve incumbent Themes/GMI evidence and F04 ownership.
+  Extensive principal-led Mining research, analysis and product planning over multiple turns
+  before a mature Fable CEO implementation package; preserve incumbent Themes/GMI/F04 owners.
 state_before: >
   Passes 01 and 02 were preserved at 0532ed239c47f5590c19b8e5b424317650df4651.
   Battery-material conversion, product qualification and rare-earth contract economics were next.
 changed:
+  - path: research/mining/MINING_BATTERY_RARE_EARTH_ECONOMICS_2026-09-23.md
+    what: "Pass 03: 5,848 words, 17 primary-source references, nine dossiers, six persona tasks and 24 additional prospective requirements."
+  - path: research/mining/check_battery_research.py
+    what: "Reproducible arithmetic/document checks and pedagogical incompatible-input examples; no product imports, network I/O or trading output."
+  - path: research/mining/MINING_BATTERY_RESEARCH_CHECKS_2026-09-23.json
+    what: "Executed 37/37 PASS receipt with exact report/script digests and explicit verification limits."
   - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
-    what: "In-turn checkpoint of primary-source findings before further research and calculations. No final Pass 03 report or executed check receipt yet."
+    what: "Same cumulative owner record, replacing the in-turn research frontier with the verified Pass 03 boundary."
 verified:
-  - claim: "Protected procedure was freshly pinned and compatible."
-    command: "Protected branch plus exact-commit INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT reads."
-    result: "Mastermind 4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2, v1.0.1/bootstrap 1; loaded procedure blobs unchanged from the previous pin."
-  - claim: "Existing research carrier had not moved unexpectedly."
-    command: "get_pr_info and exact continuation read."
-    result: "#7795 remained draft/open/unmerged at 0532ed239c47f5590c19b8e5b424317650df4651; prior continuation blob ccd5b79583fc5d6eebbd32deeb3607dd803d2b46."
-  - claim: "Current documentation write capability was preflighted without a dummy mutation."
-    command: "get_user_login; get_repo_collaborator_permission."
-    result: "Authenticated mastermindx-2; macro permission admin. This does not grant product or runtime admission."
+  - claim: "Current compatible protected procedure and existing carrier were recovered."
+    command: "Protected master plus exact-commit INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT; exact carrier reads."
+    result: "Mastermind 4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2, v1.0.1/bootstrap 1; loaded procedure blobs unchanged. No unexpected research-head movement observed."
+  - claim: "Report, utility and executed receipt are committed and match locally checked bytes."
+    command: "GitHub create_file, immutable fetch_file and comparison with locally calculated Git blob SHA-1."
+    result: "Report e7923486007e8f98e51169636894cf045965d726 / blob 1bef33fc71eaf25f3627988ccb746bd3c827852c. Utility d9de46dfcf169a8f31ee43678f19ca3592a27a98 / blob f303bc877add96f4deece97fc97b6ae8bc1ad1bd. Receipt 1274979251c852d837495bb72ff41b1e2930218f / blob 46733c192acb84b7de2daaefa1025afc8a309963. All match."
+  - claim: "The new research checks actually ran successfully."
+    command: "python /mnt/data/mining_research/check_battery_research.py; full rerun before receipt publication."
+    result: "37 total, 37 passed, zero failed. Included receipt run 2026-09-23T11:39:56.748925+00:00. This is not an application test suite, accounting reconciliation or investment validation."
+  - claim: "Only permitted research/continuation paths changed."
+    command: "GitHub list_pr_changed_filenames."
+    result: "Ten paths: nine research documents/utilities/receipts under research/mining/ plus this exact Agent OS continuation. Prior Pass 01/02 files unchanged."
+  - claim: "Portable research package contains exact original report/check bytes and no third-party PDFs."
+    command: "zipfile integrity test and byte comparison for every included research file."
+    result: "MINING_RESEARCH_PASS03_2026-09-23.zip verified; report, utility, receipt and original README only."
 unverified:
-  - claim: "Pass 03 calculations, completed report or application behavior are verified."
-    what_would_verify: "Complete scoped primary extraction, actual local arithmetic/integrity run and exact persisted report/check readbacks. Not yet performed in this continuation."
-  - claim: "All nameplate production is qualified, saleable or profitable."
-    what_would_verify: "Product/customer/plant-specific output, acceptance, costs, contracts and time basis; company labels are insufficient."
+  - claim: "The proposed requirements, models or user journey are accepted or deployed."
+    what_would_verify: "Current-owner written design/plan acceptance, proper source admission/rights and independent real-path/browser proof after bounded implementation."
+  - claim: "Actual customer coverage, contract settlement or normalized cash flow is fully established."
+    what_would_verify: "Program-specific customer evidence, actual eligible quantities/benchmarks/settlements and complete accounting/working-capital bridges."
+  - claim: "Historical expectations or company operating claims have independent contemporaneous proof."
+    what_would_verify: "Authorized immutable contemporaneous receipts and appropriate independent validation. Present retrieval of dated primary publications is insufficient."
 unresolved:
-  - "PLS quarterly PDF web screenshots failed with InternalError; inspect original issuer PDF via local rendering before table-derived claims."
-  - "Lynas annual cash-flow and product/contract tables need selected-page visual checks; annual report cover screenshot succeeded."
-  - "Actual contract pricing lags, customer-specific approvals, full inventory/yield bridges and durable market expectations remain incomplete."
-  - "Prior Antamina zinc residual, actual stream threshold balances, full resource-overlap conventions, global cost curves and native source retention remain unresolved, without blocking independent battery research."
+  - "Windfield naive-ownership accounting residual remains NOT_RECONCILED; six-month deferral changes are not a quarter-specific bridge."
+  - "P-PLS actual current utilization, train costs, feed inventory bases and customer-specific acceptance coverage are not established."
+  - "Actual MP designation/settlement quantities and Lynas consumed annual-sharing cap are unknown; conditional examples are not bills or receivable estimates."
+  - "Neo September 14 commercial milestone is an issuer report for an initial program, not independent proof of all-program acceptance or full plant output."
+  - "PLS PDF parsed narrative was usable but screenshot/local-byte routes failed. Lynas quarterly and Neo selected pages were visually checked; inaccessible Lynas annual cash-flow imagery was excluded."
+  - "Detailed graphite/anode, nickel/cobalt, manganese, chemistry substitution and commercial DLE comparisons remain; global cost curves, historical consensus and native source rights/retention remain incomplete."
+  - "Prior Antamina zinc residual, actual stream threshold balances and full reserve/resource overlap conventions remain unresolved without blocking disjoint research."
 next_actions:
-  - "Continue this turn: visually verify selected PLS/Lynas tables, obtain distinct primary contract and plant sources, and add a processor/magnet-maker contrast when supported."
-  - "Develop a source-grounded Pass 03 report and explicit hypothetical/observed arithmetic checks; distinguish grade conformity, customer acceptance, production and conversion economics."
-  - "Persist report, actual checks and cumulative continuation on #7795; keep Fable, implementation and merge held."
+  - "Next principal tranche: uranium and fuel-cycle business economics using then-current primary disclosures, beginning with Cameco production/procurement/inventory/contracts and separating fuel services and investment interests from mine exposure."
+  - "Add a producer and conversion/enrichment-services comparator when primary evidence supports it; reconcile product units, contract-realization timing, costs, capital and issuer cash capture. Research commercial economics, not operational nuclear-process instructions."
+  - "Then extend bulk/fertilizer and specialty/by-product coverage, retaining targeted battery/rare-earth gaps for focused follow-up. Do not re-run completed cases merely to increase volume."
+  - "Keep Fable handoff, product implementation, live baskets and merge held until representative research, shared-owner reconciliation and accepted written design/plan gates."
 do_not_redo:
-  - "Do not repeat completed Pass 01/02 research or re-run historical checks merely to claim more activity."
-  - "Do not reopen Healthcare scope correction on #7787 or modify that carrier."
-  - "Do not create new graph, evidence, identity, ThemeState, runtime, publication, queue or watcher owners."
-  - "Do not convert source discovery, sample qualification or conditional floors into production acceptance or trading authority."
+  - "Do not replay prior tool history or broad template/repository archaeology; use this cumulative record and exact research artifacts."
+  - "Do not repeat Passes 01/02 or these nine dossiers without a material source change, contradiction or new research question. Historical checks were not rerun in Pass 03."
+  - "Healthcare scope correction on #7787 at da87d480adf6666583a61bb0912d6daeaeec984c remains settled; preserve that separate corpus and do not reopen it here."
+  - "Do not duplicate GMI identity/evidence/ThemeState, Robotics template, K3-D, F04, publication, lifecycle, queue or watcher owners."
+  - "Do not turn grade conformity into customer acceptance, price protection into guaranteed margin, or forecast business mix into current basket weights."
+  - "Do not declare write capability unavailable from the Pro label; required GitHub writes succeeded."
 ---
 
-# Mining principal research — Pass 03 in-turn checkpoint
+# Mining principal research — cumulative continuation after Pass 03
 
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
+CAPABILITY_STATE: SPEC_ONLY
+
 Operation: `gmi-mining-principal-research-20260923-sol-001`.
 Carrier: Macro Draft/HOLD #7795 / `sol/mining-principal-research-20260923`.
-Protected procedure: Mastermind `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`.
+Protected procedure: Mastermind `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1.
 Original Macro interface baseline: `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-Permitted effects: editorial research and local checks under `research/mining/`, this exact Agent OS
-record, and associated draft PR metadata. Direct-work reason: PRINCIPAL_JUDGMENT, as requested.
+Direct-work reason: PRINCIPAL_JUDGMENT; the Chairman wants hard domain research here before Fable.
+Permitted effects remain editorial research/local checks, this continuation and draft PR metadata.
 
-## Prior results remain preserved
+## Material intellectual delta
 
-Pass 01: foundation commit `1991c91bc6ca7678a455cabaf38bdfe14e800028`, blob
-`d107e5527a898c834c26b4869d6de7e51b254af1`; historical 20-check receipt, not rerun here.
-Pass 02: report commit `926e222335f1010c19933b88651f4acd1aa6cdcc`, blob
-`52ac589b7ab6e220c44deeb143ae33edcd550fde`, SHA-256
-`ce414e3668b56ad079603c6d4d817e9caca6554f8940fe5ee915d4f7843dd08d`.
-Its research utility/receipt at `a424c73c66e676f1f8705d46c5618e2a7bf9dea9` and
-`b63120a868f964fbf562d3c31d9ccad4119985dd` preserve 44/44 historical checks. Source counts overlap.
-The prior full boundary is recoverable at `0532ed239c47f5590c19b8e5b424317650df4651`.
+Before: the Mining framework lacked battery-conversion and customer-program stress cases.
+After: the proposed model distinguishes grade conformity, physical recovery, customer acceptance,
+commercial program launch, conversion spreads, contractual protection and issuer cash capture.
+P-PLS demonstrates that high conformity can coexist with demand/spread-controlled batching. Neo's
+September 14 disclosure is a positive update test: recognize reported commercial production for the
+initial program without expanding its scope to all programs or nameplate. MP and Lynas illustrate why
+similar floor-price headlines have different volume, benchmark, trigger and annual-cap semantics.
+Neo's EBITDA-based Free Cash Flow and operating cash less gross investment have different definitions
+and opposite signs; neither may be silently substituted for the other. Lynas aggregate versus NdPr
+output and Albemarle JV/cash timing preserve materially different economic interpretations. DLE and
+recycling remain bounded by actual process, material and commercial evidence rather than labels.
 
-## New source-backed research frontier, not accepted conclusions
+The result is source-grounded principal research and proposed product requirements, not a delivered
+Mining capability or accepted return model. The 37 checks verify arithmetic, explicit boundaries,
+indexing and pedagogical refusal examples. They do not independently validate issuer claims, prove
+accounting reconciliation or exercise the Mastermind application. No statistical, CI, canonical Agent
+OS-validator, independent-review, customer-confirmation or browser acceptance is claimed.
 
-Albemarle's Q2 2026 release attributes cash conversion partly to increased Talison dividends and
-non-recurring working-capital benefits. Its 10-Q identifies equity-method Windfield accounting,
-inventory profit deferrals and Kemerton care/maintenance. Proposed question: distinguish segment
-performance, JV earnings, distributed cash, temporary working-capital release and available capacity.
-https://investors.albemarle.com/news-and-events/news/news-details/2026/Albemarle-Reports-Second-Quarter-2026-Results/default.aspx
-https://www.sec.gov/Archives/edgar/data/915913/000091591326000102/alb-20260630.htm
+## Exact preserved artifacts
 
-MP's Q2 release labels Magnetics revenue as magnetic precursor sales and describes customer
-qualification/regulatory testing separately. Its 10-Q specifies distinct PPA elections for produced
-stockpile, affiliate sales and third-party sales, with term/benchmark/volume conditions. Proposed
-question: a price floor is not identical to firm external offtake or finished-magnet revenue.
-https://mpmaterials.com/news/mp-materials-reports-second-quarter-2026-results
-https://www.sec.gov/Archives/edgar/data/1801368/000180136826000048/mp-20260630.htm
+Pass 03 report: `e7923486007e8f98e51169636894cf045965d726`, blob
+`1bef33fc71eaf25f3627988ccb746bd3c827852c`, 44,366 bytes, SHA-256
+`15c170a918e8ed574ff3f9ac6470c34bbaa1d48c8d426effc46925affe9fc75d`.
+Its script/receipt commits and blobs are in verified above. Seventeen references overlap some earlier
+sources; do not claim a summed unique-source census.
 
-PLS's 30 July issuer report describes high battery-grade conformity at P-PLS while production is
-batched according to demand and conversion spreads. The same report separates actual concentrate
-grade/CIF prices from SC6 reference equivalents and lists financing in its cash bridge. The original
-issuer-authored PDF is hosted by a filing mirror; no mirror commentary is adopted as primary evidence.
-https://cdn.financialreports.eu/financialreports/media/filings/65576/2026/RNS/65576_rns_2026-07-29_9b2b8b54-7a79-41ef-817a-5da945d9eb62.pdf
+Pass 02 report: `926e222335f1010c19933b88651f4acd1aa6cdcc`, blob
+`52ac589b7ab6e220c44deeb143ae33edcd550fde`; utility/receipt
+`a424c73c66e676f1f8705d46c5618e2a7bf9dea9` / `b63120a868f964fbf562d3c31d9ccad4119985dd`.
+Historical 44/44 checks, seven dossiers and 20 MA requirements remain preserved.
+Pass 01 foundation: `1991c91bc6ca7678a455cabaf38bdfe14e800028`, blob
+`d107e5527a898c834c26b4869d6de7e51b254af1`; historical 20 checks and 30 MN requirements unchanged.
+The 24 new MB requirements are prospective, not implemented guards.
 
-Lynas's FY2026 annual report separates cash from term deposits, equity funding from operating cash,
-aggregate rare-earth product mix from NdPr, and contracted supply floors from available volume.
-Selected table/contract verification remains next. Source is the issuer-authored annual report, not
-independent verification of operations. Do not redistribute the full third-party document.
-https://cdn.financialreports.eu/financialreports/media/filings/65277/2026/RNS/65277_rns_2026-08-25_10795ee5-2a08-47d4-8bc6-e43e37c5949b.pdf
+## Effects, holds and continuity
 
-## Effects and continuation
+Current-turn effects: in-turn checkpoint `a7953610cd3d990fda09c34370bad26ebfd2c01c`; new report,
+utility and executed receipt at the three commits above; this same cumulative record and corresponding
+PR metadata. The final checkpoint's exact revision is established by its own receipt/readback rather
+than a self-referential hash. No ambiguous mutation has been observed; EFFECT_UNKNOWN: none observed.
 
-Only this cumulative documentation record is being changed in the current turn so far. Its receipt
-and immutable readback establish the effect. No ambiguous prior mutation observed. No worker/Fable
-commission, Executive Job/Attempt, watcher, product code/schema/data, basket, ranking, sizing, trading,
-merge, deployment or production acceptance. External runtime/custody remains unknown, not inferred.
+Active children/returns/watchers created by this operation: none. No Fable/worker commission,
+Executive Job/Attempt, product code/config/schema/data, basket, rank/entry/size/trade, merge,
+deployment or product publication. External runtime/custody remains unknown and is not inferred from
+GitHub. Technical documentation-write permission was preflighted; it is not product/runtime admission.
+No autonomous background execution, automatic wake, provider placement or custody transfer is implied.
 
-This is an in-turn checkpoint, not a stop reason or final Fable handoff. Continue substantive research
-now. Finalization must account for any subsequent report/check/metadata effects. No background work,
-automatic wake, provider placement or custody transfer is implied.
+HOLD release requires representative principal research, source rights and shared-owner reconciliation,
+accepted written design/plan and applicable implementation/proof gates. Green CI or documentation
+publication cannot supply that acceptance. Full third-party reports/images and paid datasets are not
+included in the portable package or copied into this public research carrier.
+
+## Justified boundary and exact resume
+
+This boundary follows a completed battery/rare-earth research unit: nine connected dossiers, updated
+commercial chronology, contract/economic comparisons, 17 source references, selected PDF inspection,
+written synthesis and actual reproducible checks. It is a source/context boundary before a distinct
+fuel-cycle research tranche, not an elapsed-time target or mission completion. The new artifacts and
+all material effects are recoverable; do not carry the entire source/tool transcript forward.
+
+Exact next action: principal Cameco and contrasting fuel-cycle issuer dossiers, separating extraction,
+procurement, inventory, contracts and downstream-service economics from current primary reports.
+Intended resume surface: the principal research-capable conversation in the user-selected mode.
+Refresh only current procedure and material source/custody invalidators needed next. Same-carrier
+rules remain intact. No Thinking failed event was observed; no hard seal is asserted.
