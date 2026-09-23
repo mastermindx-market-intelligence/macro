@@ -363,3 +363,42 @@ quote cannot hide insufficient20-session history, and a runtime calendar failure
 returns unavailable instead of breaking the reader. Complete rerun:438 passed,
 3 unchanged legacy presentation expectations failed; all33 new clock cases pass.
 The refused fixture/null-copy adjustment remains unapplied.
+
+### Clock reaches the actual stored-input page
+Source1e73f20025a88458cde7f2508f019c5e2718f438 passed the existing actual-builder
+saved-projection proof: engine calls0, all6592 saved values unchanged and8 protected
+input/history/ledger fingerprints unchanged. The real page now labels Sep21 data
+as a dated snapshot against expected Sep23; current comparison is suppressed.
+Existing normalization produced281748bytes, SHA256
+53f0d7099ce986649b147851b2f4b27470de819177a6b1eb5c035cd42af802f1,
+with no new assets. Twenty JS/CSS references/stamps match; inline scripts parse.
+No new market collection, weight supply, risk score or probability was introduced.
+
+Eight resting full-page captures passed across desktop/mobile, EN/ZH, dark/light;
+no capture console errors, failed responses or document-level horizontal overflow.
+Desktop-light and mobile-dark images were inspected; the dated-state and expected
+session fit both layouts. The existing floating assistant/other page labels are
+not claimed repaired or fully time-qualified by this scoped participation change.
+
+The separate clock-disclosure journey remains unaccepted: the disclosure's open
+attribute was established, then the expected visible-caption assertion failed.
+Its bounded caption diagnostic was safety-status refused, no effect; no relaxed
+assertion, alternate carrier or successful interaction receipt is claimed.
+This is separate from the older held mobile Lens diagnostic.
+The complete regression still has3 failing existing presentation tests (438 pass);
+the33 clock cases pass, but no all-tests-green or release acceptance is claimed.
+
+Qualification:mockups/evidence/china-participation-clock-20260923/qualification.json.
+Twenty-four auxiliary generated outputs remain dirty/unaccepted and excluded.
+CHECKPOINTED_CONTINUATION;MISSION_COMPLETE:false. The formerly unimplemented clock
+now has code, registered acceptance cases, real data and a built visible surface.
+Resume the exact held presentation/caption proof boundaries before release, then
+remaining source-feed and full-page clock scope through existing owners.
+
+The final scoped whitespace gate found blank indented HTML lines from the macro.
+Only whitespace-only lines were normalized; parsed element/attributes, visible
+text and exact scripts/styles/preformatted text are unchanged. Final page275646
+bytes SHA25647c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06.
+Eight new static captures passed on that exact fingerprint; old failed interaction
+evidence keeps its old page binding and remains unaccepted. No caption assertion
+was weakened or retried after its refused diagnostic.

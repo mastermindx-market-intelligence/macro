@@ -1,0 +1,8 @@
+{
+  "before_sha256": "53f0d7099ce986649b147851b2f4b27470de819177a6b1eb5c035cd42af802f1",
+  "after_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+  "after_bytes": 275646,
+  "change": "remove spaces on whitespace-only HTML lines",
+  "element_attributes_and_visible_text_equal": true,
+  "scripts_styles_preformatted_text_equal": true
+}

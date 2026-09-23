@@ -71,9 +71,11 @@ verified:
     functions.
   command: python -m pytest tests/test_china_participation.py -k 'test_timing_ or
     test_clock_' -q
-  result: '31 passed; original15 pending cases promoted to owning suite. Real September21
-    data are delayed2 sessions versus expected September23;27 existing function ASTs
-    and8 data/history/ledger hashes unchanged. Evidence: research/grey_deer/CHINA_PARTICIPATION_CLOCK_20260923.json.'
+  result: 33 clock-contract cases passed. Complete4-suite run438 passed/3 presentation
+    failures. Original15 cases promoted. Actual builder preserves6592 saved values
+    and8 input/history/ledger hashes; dated Sep21 versus expected Sep23,2 sessions
+    behind. Eight static captures passed; full clock-disclosure interaction remains
+    unaccepted.
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -83,7 +85,7 @@ unverified:
   what_would_verify: Matched-universe constituent weights/history and separate accepted
     calibration; this sample is not that evidence.
 - claim: Complete page-clock acceptance and official historical attribution.
-  what_would_verify: The participation clock is implemented and31 contract cases pass.
+  what_would_verify: The participation clock is implemented and33 contract cases pass.
     Reconcile3 old presentation expectations at the exact refused edit, then actual
     page/browser proof. This conservative calendar check is not vendor publication-time
     or official weighted-index proof.
@@ -95,6 +97,11 @@ unverified:
   what_would_verify: Resolve exact OpenAI safety-status refusal before any lawful
     same-carrier run of the preserved current-source browser command; no reroute/retry
     by another actor.
+- claim: Clock-disclosure visible-caption acceptance.
+  what_would_verify: The native disclosure opened, then its visible-caption assertion
+    failed; bounded diagnostic was safety-status refused. Resolve this exact gate,
+    establish the actual cause, and retain an executed visible-label assertion before
+    claiming interaction acceptance.
 unresolved:
 - Hosted CI, source-current-main qualification and release remain intentionally deferred;
   PR7592 retains its unchanged external release carrier.
@@ -103,12 +110,12 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Qualify the actual page with the newly implemented clock; retain3 failing legacy
-  presentation expectations until the exact edit gate is resolved.
-- Resolve the exact held touch diagnostic and automatic-weight-source gate without
-  alternate carriers.
-- When release resumes, qualify current-base CI and production publication; preserve
-  original PR7592/6860 source custody.
+- Resolve the exact refused3-test fixture/null-copy adjustment and the new caption
+  diagnostic; full regression currently438 pass/3 fail.
+- Retain the original touch-Lens and weight-supply boundaries; do not route around
+  refusals or call clock scope whole-page freshness.
+- Resume normal current-base CI/publication/live verification only when release resumes;
+  keep PR7622 Draft.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -133,26 +140,46 @@ prs:
 ---
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001; same PR7622 and Studio carrier.
-Procedure:Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc; compatible1.0.1/bootstrap1.
-Chairman continues accuracy work; CI/release deferred. No worker or source EFFECT_UNKNOWN.
-Prior saved/display6592-value proof, desktop click repair and packaged page are DO_NOT_REDO.
-Current backend71803 accepted the actual clock implementation; original refusal was41474.
+Operation:china-participation-context-20260921-sol-001; same PR7622, locked Studio carrier.
+Procedure:Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc; compatible1.0.1.
+Chairman continues accuracy capability; CI/release deferred. Sol retains source custody.
+Semantic clock source1e73f20025a88458cde7f2508f019c5e2718f438 is pushed.
 
-Independent participation clock is now implemented. The original15 RED cases pass
-and are in the registered tests.16 extra source/UI cases bring the contract to31.
-The27 existing non-loader function ASTs are unchanged. Actual stored Sep21 inputs
-read delayed versus expected Sep23 (2 sessions);8 input/history/ledger files unchanged.
-No new calendar, collector, risk score/probability, feed, sizing or release authority.
-The page's existing panel now exposes expected session and scoped input-date details.
+DO_NOT_REDO:prior integrity/cohort/weights/display6592-value and raw-vintage proofs.
+Clock now implemented on the existing reader, using existing cn_calendar, not a new
+collector/calendar/ledger. The original15 formerly pending cases were RED then pass
+unchanged in the registered suite.18 extra cases bring clock contracts to33 passing.
+Existing27 function ASTs remain unchanged. Actual read labels Sep21 delayed relative
+to expected Sep23,2 sessions behind; no stale current-comparison/sector aggregate.
+No risk score/probability, weights feed or sizing changes.
 
-Four-suite regression:436 passed,3 existing presentation expectations need reconciliation.
-Their proposed fixture/null-copy adjustment was safety-status refused, no effect.
-Do not hide those failures or reroute the refused edit. The31 current-clock contract
-cases pass separately. Real builder/browser qualification for this new source is next.
-Earlier narrower touch diagnostic and24 generated-output cleanup remain held.
-Original weight-supply gate remains; no automatic source feed or production claim.
-Evidence:research/grey_deer/CHINA_PARTICIPATION_CLOCK_20260923.json and current
-section of CHINA_INTEGRATED_CONTEXT_20260921.md. Source/tests are selectively staged;
-24 unrelated generated outputs remain excluded and dirty. No blanket staging/restore.
-MISSION_COMPLETE:false. Active continuation; next is real stored-input page qualification.
+Actual builder and normalized page are proven with saved6592 values and8 persisted
+hashes unchanged; engine calls0. Final page275646bytes, SHA256
+47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06.
+Whitespace-only HTML cleanup preserved element/attribute structure, visible text,
+all scripts/styles and preformatted text;8 final static captures bind this new hash.
+Eight anonymous static captures cover dark/light EN/ZH desktop/mobile without capture
+errors or document overflow. Clock date/readability was visually inspected on desktop
+light and mobile dark. Twenty referenced JS/CSS stamps match; no new assets.
+
+Open:complete regression438 pass/3 fail on existing presentation expectations. Its
+fixture/null-copy repair call was refused. The new clock-disclosure journey opened
+its native details then failed a visible-caption assertion; its diagnostic was also
+refused. No changed assertion, successful interaction receipt or full browser PASS.
+Older touch diagnostic, weight-source gate and24 auxiliary generated cleanup remain
+held. These24 outputs are excluded from commits; do not claim clean or blanket-stage.
+No fresh collection, model calibration, deployment, worker or watcher is claimed.
+
+Evidence:research/grey_deer/CHINA_PARTICIPATION_CLOCK_20260923.json and
+mockups/evidence/china-participation-clock-20260923/qualification.json.
+The pending clock implementation itself is no longer a blocker; the old15-case
+pending file now points to the registered tests. Proof failures remain explicit.
+
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE:false
+Boundary:one previously missing clock capability is now implemented, exercised on
+real stored inputs and visible in the built page. Context-heavy source/proof phase
+is persisted with its narrower refused corrections, not promoted to full acceptance.
+Next:exact held caption/presentation qualification, then source-feed/full-page timing
+and normal release gates. Intended resume:current checkpoint and fresh minimal
+canonical state, same original PR/carrier. No custody transfer or automatic wake.

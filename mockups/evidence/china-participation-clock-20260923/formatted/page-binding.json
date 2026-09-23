@@ -1,0 +1,171 @@
+{
+  "page_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+  "captures": 8,
+  "static_only": true,
+  "clock_interaction_accepted": false,
+  "lens_acceptance": false,
+  "production": false,
+  "timing": {
+    "status": "delayed",
+    "checked_at": "2026-09-23T10:12:16.672179+00:00",
+    "expected_session": "2026-09-23",
+    "calculation_asof": "2026-09-21",
+    "calendar_basis": "lib.cn_calendar.conservative_rules",
+    "sources": {
+      "sample": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "daily_board": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "benchmark": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512800.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512880.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512690.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:159928.SZ": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512170.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:159992.SZ": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512760.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515000.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515030.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515790.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512660.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512400.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515220.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512200.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515250.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512980.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      }
+    },
+    "data_gaps": []
+  },
+  "source_commit": "1e73f20025a88458cde7f2508f019c5e2718f438"
+}

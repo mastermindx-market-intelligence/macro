@@ -1,0 +1,264 @@
+{
+  "procedure": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "source_commit": "1e73f20025a88458cde7f2508f019c5e2718f438",
+  "clock_contract_cases": 33,
+  "whole_regression": {
+    "passed": 438,
+    "failed": 3,
+    "failures": [
+      "test_context_panel_distinguishes_recent_improvement_from_twenty_day_weakness",
+      "test_context_panel_missing_data_is_not_a_calm_or_bearish_verdict",
+      "test_context_panel_stale_sample_never_gets_a_current_rebound_headline"
+    ]
+  },
+  "builder": {
+    "source_commit": "1e73f20025a88458cde7f2508f019c5e2718f438",
+    "assessment_date": "2026-09-21",
+    "raw_page_sha256": "3a064bd8c6a2e883d52589d55b22320e2599fe6bb3cbe434cf2ab5b1b6e07f76",
+    "raw_page_bytes": 466577,
+    "engine_run_calls": 0,
+    "preserved_input_sha256": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "saved_projection_check": {
+      "saved_measurements_unchanged": true,
+      "saved_leaf_count": 6592,
+      "reviewed_additions": [
+        "conditions.breadth",
+        "conditions.drawdown_html",
+        "conditions.recession_html",
+        "conditions.roro_html",
+        "fear_euphoria.chart_html"
+      ],
+      "breadth_is_separate_derived_context": true
+    },
+    "risk_score": 94,
+    "copy_present": true,
+    "fresh_collection": false,
+    "browser_proof": false,
+    "production": false
+  },
+  "clock_page": {
+    "source_commit": "1e73f20025a88458cde7f2508f019c5e2718f438",
+    "page_sha256": "53f0d7099ce986649b147851b2f4b27470de819177a6b1eb5c035cd42af802f1",
+    "page_bytes": 281748,
+    "timing": {
+      "status": "delayed",
+      "checked_at": "2026-09-23T10:12:16.672179+00:00",
+      "expected_session": "2026-09-23",
+      "calculation_asof": "2026-09-21",
+      "calendar_basis": "lib.cn_calendar.conservative_rules",
+      "sources": {
+        "sample": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "daily_board": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "benchmark": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512800.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512880.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512690.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:159928.SZ": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512170.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:159992.SZ": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512760.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:515000.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:515030.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:515790.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512660.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512400.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:515220.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512200.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:515250.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        },
+        "sector:512980.SS": {
+          "status": "delayed",
+          "used_asof": "2026-09-21",
+          "frame_through": "2026-09-21",
+          "observed_through": "2026-09-21",
+          "after_cutoff_rows": 0,
+          "sessions_behind": 2
+        }
+      },
+      "data_gaps": []
+    },
+    "created_assets": [],
+    "builder_engine_calls": 0,
+    "saved_values_preserved": 6592,
+    "risk_score": 94,
+    "production": false
+  },
+  "captures": 8,
+  "interaction_accepted": false,
+  "interaction_failure": "After native disclosure opened, expected visible caption assertion failed. Narrow diagnostic refused; cause remains unqualified.",
+  "refused_followups": [
+    "fixture/null-copy reconciliation",
+    "visible-caption diagnostic"
+  ],
+  "lens_acceptance": false,
+  "unaccepted_auxiliary_paths": [
+    "data/risk_radar/scorecard.json",
+    "site/china_allocation.html",
+    "site/china_history.html",
+    "site/china_lookup.html",
+    "site/china_news.html",
+    "site/china_stocks.html",
+    "site/factordata/china_reversal.json",
+    "site/riskdata/scorecard.json",
+    "site/sectors/159928.SZ.html",
+    "site/sectors/159992.SZ.html",
+    "site/sectors/512170.SS.html",
+    "site/sectors/512200.SS.html",
+    "site/sectors/512400.SS.html",
+    "site/sectors/512660.SS.html",
+    "site/sectors/512690.SS.html",
+    "site/sectors/512760.SS.html",
+    "site/sectors/512800.SS.html",
+    "site/sectors/512880.SS.html",
+    "site/sectors/512980.SS.html",
+    "site/sectors/515000.SS.html",
+    "site/sectors/515030.SS.html",
+    "site/sectors/515220.SS.html",
+    "site/sectors/515250.SS.html",
+    "site/sectors/515790.SS.html"
+  ],
+  "fresh_collection": false,
+  "production": false,
+  "final_page": {
+    "sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+    "bytes": 275646,
+    "formatting_proof": "formatting.json",
+    "capture_manifest": "formatted/manifest.json",
+    "static_captures": 8,
+    "interaction_accepted": false
+  }
+}
