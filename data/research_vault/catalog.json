@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T15:39:45.125149+00:00",
-  "count": 2717,
+  "generated_at": "2026-09-23T15:54:43.324038+00:00",
+  "count": 2718,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -156,6 +156,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zh7ydul7to8-059686",
+      "title": "UBS Group (UBSG.S) Swiss parliament upper house votes for 90% CET1 backing for foreign subsidiaries",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:45Z",
+      "summary_points": [
+        "Swiss Regulatory Shift: 90% CET1 capital backing for foreign subsidiaries (vs. 50% proposal) mandates $17bn capital increase, exposing $7bn CET1 shortfall at UBS parent (Q26) and $9bn gap with mitigation, driven by foreign subs and ordinance changes.",
+        "Regulatory Timeline Risk: Bill faces lower house debate and plebiscite risk, delaying final ruling until 2027—creating prolonged uncertainty for capital-intensive banking operations and compliance planning.",
+        "Leverage Vulnerability: Leverage rises to 18.5x (from 17.9x), signaling heightened credit risk and susceptibility to interest rate volatility despite strong revenue (+10.0%) and net income growth (+47.0%).",
+        "Capital Shortfall Escalation: 90% CET1 backing scenario reveals $7bn shortfall (Q26), escalating to $9bn with mitigation; upstreaming adjustments (e.g., $3bn UK repatriation) fail to resolve critical gap."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
