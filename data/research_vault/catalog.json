@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T01:22:38.163079+00:00",
-  "count": 2676,
+  "generated_at": "2026-09-23T02:07:42.348470+00:00",
+  "count": 2678,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -100,6 +100,25 @@
   ],
   "items": [
     {
+      "id": "marketdesk-panyzaaoyqm-fef318",
+      "title": "GERMANY: MERZ IN TROUBLE AFTER STATE ELECTION DISASTER",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:49:12Z",
+      "summary_points": [
+        "CDU Collapse: CDU drops below 5% in MWP election (worst result ever), triggering leadership chaos and threatening pro-growth reform timelines amid coalition instability.",
+        "Berlin Political Shift: Left party secures 25.7% in Berlin regional election (overtaking CDU), signaling strong resistance to pension reforms and pro-growth agenda.",
+        "Reform Softening: Coalition likely delays entitlement cuts (e.g., extended early retirement transition) but accelerates defense/infrastructure spending via 2025 fiscal rules to offset political backlash."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-lld02x88wkk-044b41",
       "title": "insights india",
       "institution": "Other",
@@ -116,6 +135,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2lkcrdcowdv-f8d47e",
+      "title": "WBC MorningReport22Sep2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:26:32Z",
+      "summary_points": [
+        "Oil prices cooling: Brent down 3.6% on Saudi export signals, signaling potential supply shift - Fed rate expectations: 4.22% end-of-year rate priced in, with curve flattening and USD strength (DXY +0.2%, USD/JPY >157) - Tech-driven equity surge: Nasdaq +2.3%, S&P 500 +1.5% fueled by US-China AI/trade talks and improved sentiment - Geopolitical catalyst: Trump/Xi talks boosting tech sector sentiment amid eurozone weakness signals (EZ Consumer Confidence exp -16pts)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
