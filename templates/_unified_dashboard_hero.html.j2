@@ -196,6 +196,7 @@
 {%- set _body_zh = '若与读数相反，将改变格局判断。' -%}
 
 <style>
+#ud-hero .ud-live--snapshot i{background:var(--muted);box-shadow:none;}
 /* UD-B2-W2: spine caveat disclosure — engine-verbatim lighter-evidence note.
    Scope-narrowed to this hero template (the spine is a UD-B1 + UD-B2-W2
    construct, never re-used elsewhere). Token-scoped only: every value is
@@ -274,7 +275,7 @@ html[data-theme="light"] .ud-froth-track{
 }
 </style>
 
-<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
+<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero"{% if ud_international|default(false) %} data-regime-scope="us-reference"{% endif %} aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
 
     {# eyebrow + live chip + as-of #}
@@ -282,8 +283,8 @@ html[data-theme="light"] .ud-froth-track{
       <span class="ud-eyebrow">
         <span class="l-en">Global markets · Regime read</span><span class="l-zh">全球市场 · 状态判读</span>
       </span>
-      <span class="ud-live ud-live--{{ _live_mod }}">
-        <i aria-hidden="true"></i><span class="l-en">Live</span><span class="l-zh">实时</span>
+      <span class="ud-live ud-live--{{ 'snapshot' if ud_international|default(false) else _live_mod }}">
+        <i aria-hidden="true"></i>{% if ud_international|default(false) %}<span class="l-en">Snapshot</span><span class="l-zh">快照</span>{% else %}<span class="l-en">Live</span><span class="l-zh">实时</span>{% endif %}
       </span>
       <span class="ud-asof tnum" aria-label="{{ 'as-of' if _asof else 'as of stamp' }}"><span class="l-en">{{ _asof }}</span><span class="l-zh">{{ _asof }}</span></span>
     </header>
@@ -291,6 +292,9 @@ html[data-theme="light"] .ud-froth-track{
     {# === 1 · VerdictHero + gauge (two columns, spec §1 660 copy + 316 gauge) === #}
     <div class="ud-hero-grid">
       <div class="ud-hero-copy">
+        {% if ud_international|default(false) %}
+        <p class="ud-clause ud-scope-note"><span class="l-en">Headline and dial: US regime (SPY / QQQ / IWM), not a global composite. Each market row retains its own evidence and date.</span><span class="l-zh">标题与仪表反映美国市场状态（SPY / QQQ / IWM），并非全球综合评分。各市场行保留独立证据与日期。</span></p>
+        {% endif %}
         {# two-tone verdict word + qualifier; ONE integer lives in the gauge column.
            R-A: the EN word prints ONLY when vm["market_state"]["label_en"] is truthy.
            When the key is absent, both EN and ZH slots print the designed-null
@@ -357,7 +361,7 @@ html[data-theme="light"] .ud-froth-track{
           <span class="ud-score-num tnum" data-role="score">{{ _score if _score is not none else '—' }}</span><span class="ud-score-out tnum">/100</span>
         </div>
         <div class="ud-score-label">
-          <span class="l-en">Regime score</span><span class="l-zh">状态评分</span>
+          {% if ud_international|default(false) %}<span class="l-en">US regime score</span><span class="l-zh">美国状态评分</span>{% else %}<span class="l-en">Regime score</span><span class="l-zh">状态评分</span>{% endif %}
         </div>
 
         {# progress bar 0–100 with anchor words. The pin is geometry, not a
@@ -965,3 +969,14 @@ html[data-theme="light"] .ud-froth-track{
 
   </div>
 </section>
+
+{% if ud_international|default(false) %}
+<script>
+(function(){
+  var hero=document.getElementById('ud-hero');
+  if(hero&&window.matchMedia&&window.matchMedia('(max-width:640px)').matches){
+    hero.querySelectorAll('.ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});
+  }
+})();
+</script>
+{% endif %}
