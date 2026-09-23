@@ -75,7 +75,6 @@ The current US Prophet board route is `/us_stocks.html`, rendered from `template
 | `RAN_DONT_CHASE` | Stand aside / 观望 | Ran — don't chase / 已启动，勿追 | muted ink |
 | `INVALIDATED` | Ignore / 忽略 | Invalidated / 已失效 | struck stance, muted ink, no red alarm |
 <!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
-<!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
 | `UNAVAILABLE_DATA` or no producer row | (no stance) No read yet / 暂无判断 | No read yet / 暂无判断 | muted ink, dashed leading rule |
 
 “Protect gains” is unused because V2 has no held-position surface. Delivery health is never green: healthy uses a neutral hairline check, degraded amber, failed red. Direction uses signed-change ink and never `--ink-ok`.
@@ -376,7 +375,7 @@ Commands and outputs are recorded at final-head audit time:
 3. `rg -n 'AVAILABILITY_STATES|ENTRY_OPEN|APPROACHING_ENTRY|NOT_READY|WAIT_PULLBACK|RAN_DONT_CHASE|INVALIDATED|UNAVAILABLE_DATA' engine/prophet_entry_availability.py` → lines 35–43 and implementation lines 356–440.
 4. `git grep -n availability_state -- templates | wc -l` → `0`.
 5. Token receipts: `grep -n -- '--bg' templates/theme.css` → 63 and 210; `--panel` → 63 and 210; `--panel2` → 63; `--text` → 63 and 210; `--muted` → 64 and 211; `--line` → 69 and 218; `--card-shadow` → 236; `--ink-ok` and `--ink-warning` → 373.
-6. Ban audit uses the expression frozen in `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`; it returns only §12 or record-path lines. Count and exact lines appear immediately below after final audit.
+6. Ban audit uses the expression frozen in `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`; it returns only §12 or record-path lines: 11 hits at lines 43, 76, 84, 95, 97, 98, 99, 148, 170, 289, 389.
 
 ## 12. CHANGELOG (critique ID → repair)
 
