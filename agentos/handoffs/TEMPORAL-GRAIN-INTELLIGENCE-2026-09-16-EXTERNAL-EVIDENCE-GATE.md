@@ -2,7 +2,7 @@
 workstream: WS:TEMPORAL-GRAIN-INTELLIGENCE
 session: Web Sol / Mac-Studio / sol/temporal-grain-w1a-gakd-20260903
 model: sol
-ended_because: ci_handoff
+ended_because: records_only_closure
 mission: >
   Advance W1A from a prose-only external-data blocker to deterministic typed abstention packets for
   the motivating WMT and silver charts, without guessing chart identity, substituting a proxy feed,
@@ -104,10 +104,10 @@ verified:
       Mastermind@5ee11ab1e993616f3568cfca4069cb21fa61fd8f; schema mastermind.sol_skillpack.v1;
       skillpack 1.0.1; minimum bootstrap major 1.
 unverified:
-  - claim: Binding hosted CI and immutable independent review accept the exact final semantic head.
+  - claim: The records-only closure head is accepted and released on current main.
     what_would_verify: >
-      Commit and push normally on the existing branch, compare the immutable head to then-current main,
-      obtain exact-head independent review, and require all binding PR #6803 checks green.
+      Require exact-record-head hosted CI after the current-main CI-manifest integration repair,
+      obtain final immutable review, then release PR #6803 without strengthening the scientific claim.
   - claim: Exact WMT TradingView indicator and bar parity is known.
     what_would_verify: >
       Replace the WMT abstention with a complete exact vendor-qualified recipe, rights-safe parent CSV,
@@ -124,17 +124,19 @@ unresolved:
   - The original WMT TradingView feed/ticker identity, exact source reference, session grammar, chart type, adjustments, observed indicator and export bytes remain absent.
   - The original silver exact display symbol, product/feed/contract-or-roll/session, source reference, chart settings, observed indicator and export bytes remain absent.
   - Typed UNRESOLVED_DATA closes guessing risk but does not establish parity, usefulness, a production timeframe or a signal.
-  - W1B, structure-scale derivation, ranking, gating, sizing, trading, Prophet, Oracle, portfolio use, Ready, merge and deployment remain held.
+  - W1B, structure-scale derivation, ranking, gating, sizing, trading, Prophet, Oracle and portfolio use remain held.
+  - W1A is closed at this evidence bar as UNRESOLVED_DATA; exact external packets may reopen the incumbent W1A carrier but cannot be substituted by proxy data.
 next_actions:
   - >
-    Run the complete local proof, Agent OS validation and exact-path/current-main reconciliation; commit
-    and normally push on the existing PR #6803 branch; obtain exact-head hosted CI and immutable review.
+    Reconcile exact-record-head hosted CI and final immutable review on PR #6803 after preserving the
+    current-main session-anchor runtime test alongside the Temporal Grain suites. If accepted, release
+    the research harness and records as BUILT_NOT_PROVEN / UNRESOLVED_DATA; do not claim chart parity.
   - >
     Keep both incomplete recipes until separately authorized exact captures provide every named missing
     field and matching rights-safe parent/lower exports. Do not use a proxy feed or pool silver identities.
   - >
-    Start no W1B work unless both replacement packets survive the existing parity/attack path and Sol
-    issues a fresh same-carrier CONTINUE after a separate preregistration.
+    Start no W1B work unless both replacement packets pass exact parity and mechanically survive the
+    existing attack path, followed by a separate preregistration and fresh Sol CONTINUE.
 do_not_redo:
   - Do not create a sibling branch, PR, workstream, chart renderer, data plane, identity plane, evaluator, TrialLedger, watcher or lifecycle.
   - Do not infer WMT tickerid/feed/session metadata from listing facts or fill silver identity from XAGUSD, SI, SI1!, SLV or another product.
@@ -154,8 +156,14 @@ discoveries: []
 
 # Summary
 
-W1A can now represent the actual evidence state without guessing: WMT and silver each have a strict,
-committed incomplete recipe that deterministically emits an all-false `UNRESOLVED_DATA` receipt without
-opening a CSV or using the network. This closes a fail-open abstention gap but does not close the external
-evidence gate. The next source step is exact-head proof and review; the next scientific step remains two
-separate right-safe TradingView parent/lower packets.
+W1A is scientifically closed at the current evidence bar as `UNRESOLVED_DATA`. The repaired harness
+and typed WMT/silver abstention packets passed the complete binding hosted CI surface at semantic head
+`5af88e84df9ca095a0db02f4ef582c12941a90ae`, and independent review returned
+`PASS_SEMANTIC_HOLD`. Current main later added `tests/test_confluence_resample_runtime.py` to the
+same `session-anchor-era` CI command; the records-only closure preserves that current-main test and
+the Temporal Grain suites together rather than overwriting either owner. The new record head still
+requires exact-head CI and final review before release.
+
+No motivating chart parity is claimed. WMT and silver remain independently blocked on exact rights-safe
+TradingView identity, parent export and lower-grain evidence. W1B stays held; a future exact packet may
+reopen W1A only on the incumbent carrier.
