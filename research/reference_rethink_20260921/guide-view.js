@@ -197,8 +197,10 @@
       }
       landing.append(add(node('div','',{class:'library-footer'}),node('span',t('Looking for a specific term?','想查某个术语？'),{class:'muted'}),button(t('Browse all signals →','浏览全部指标 →'),()=>{route.browsing=true;route.query='';route.topic='';storeURL();render();},{class:'bare','data-browse':''})));
       const count=node('p','',{role:'status','aria-live':'polite',id:'result-count',class:'muted'}),list=node('div','',{class:'result-list',id:'result-list'});
-      add(rows,add(node('div','',{class:'row'}),node('h3',value(model.questions.find(q=>q.id===route.topic)?.label)||t('Signals, terms & dashboard names','指标、术语与看板名称')),button(t('Clear filters','清除筛选'),()=>{route.query='';route.topic='';route.browsing=false;storeURL();render();document.getElementById('search')?.focus();},{class:'bare','data-reset':''})),count,list);
+      const resultsHeading=node('h3','',{id:'results-title'});
+      add(rows,add(node('div','',{class:'row'}),resultsHeading,button(t('Clear filters','清除筛选'),()=>{route.query='';route.topic='';route.browsing=false;storeURL();render();document.getElementById('search')?.focus();},{class:'bare','data-reset':''})),count,list);
       function results(){
+        resultsHeading.textContent=value(model.questions.find(q=>q.id===route.topic)?.label)||t('Signals, terms & dashboard names','指标、术语与看板名称');
         landing.hidden=route.browsing;rows.hidden=!route.browsing;
         // Do not create the hidden full catalog at rest. Build only when requested.
         if(!route.browsing){list.replaceChildren();count.textContent='';return;}

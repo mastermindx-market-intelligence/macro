@@ -154,3 +154,20 @@ test('context help follows existing language events without changing the documen
 test('context mode rejects unsafe full-guide destinations before binding controls',()=>{
  assert.throws(()=>harness('https://review.invalid/macro.html',fixture(),{mode:'context',guidePath:'//attacker.invalid/guide'}),/Unsafe/);
 });
+
+for(const [lang,heading] of [['en','Signals, terms & dashboard names'],['zh','指标、术语与看板名称']]){
+ test(`topic to global search updates heading, membership and URL (${lang})`,()=>{
+  const h=harness('https://review.invalid/reference.html'+(lang==='zh'?'?lang=zh':''));
+  h.click(h.find('[data-topic="risk"]'));
+  assert.equal(h.find('#results').querySelector('h3').textContent,h.app.model.questions.find(q=>q.id==='risk').label[lang]);
+  const input=h.find('#search');input.value='Regime Badge';input.fire('input');
+  assert.equal(h.find('#results').querySelector('h3').textContent,heading);
+  assert.deepEqual(h.find('#result-list').all('[data-entry-link]').map(n=>n.getAttribute('data-entry-link')),['market-regime']);
+  assert.match(h.find('#result-count').textContent,/1/);
+  const url=new URL(h.context.location.href);assert.equal(url.searchParams.has('topic'),false);assert.equal(url.searchParams.get('q'),'Regime Badge');
+  assert.equal(h.find('#search'),input); // Typing must not replace the focused input.
+  h.click(h.find('[data-entry-link="market-regime"]'));h.click(h.find('[data-home]'));
+  assert.equal(h.find('#results').querySelector('h3').textContent,heading);
+  assert.equal(h.find('#search').value,'Regime Badge');
+ });
+}
