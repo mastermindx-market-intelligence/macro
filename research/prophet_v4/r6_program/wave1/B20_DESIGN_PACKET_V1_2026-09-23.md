@@ -74,13 +74,15 @@ The current US Prophet board route is `/us_stocks.html`, rendered from `template
 | `WAIT_PULLBACK` | Watch — don't chase / 观察，勿追 | Wait for pullback / 等待回调 | muted ink |
 | `RAN_DONT_CHASE` | Stand aside / 观望 | Ran — don't chase / 已启动，勿追 | muted ink |
 | `INVALIDATED` | Ignore / 忽略 | Invalidated / 已失效 | struck stance, muted ink, no red alarm |
+<!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
+<!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
 | `UNAVAILABLE_DATA` or no producer row | (no stance) No read yet / 暂无判断 | No read yet / 暂无判断 | muted ink, dashed leading rule |
 
 “Protect gains” is unused because V2 has no held-position surface. Delivery health is never green: healthy uses a neutral hairline check, degraded amber, failed red. Direction uses signed-change ink and never `--ink-ok`.
 
 ### Frozen lane labels
 
-The lifecycle labels and order come from `research/migration_packets/MP-1-prophet-board.md` §10 and `templates/theme.css` ladder treatment: Delivered · Delivering · Act Now · Setup · Watch · Bottoming · Invalidated, with their incumbent EN/ZH pairs preserved.
+The lifecycle labels and order come from `research/migration_packets/MP-1-prophet-board.md` §10 and `templates/theme.css` ladder treatment: Delivered · Delivering · Act Now · Setup · Watch · Bottoming · Invalidated, with their incumbent EN/ZH pairs preserved. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-F is the frozen source.
 
 ### Two-axis rule
 
@@ -145,7 +147,7 @@ Dark is a command center: calm luminance depth, restrained state color, and no g
 2. **Required-source loss:** warm-tinted `--panel` border with `--ink-warning`; border only, no glow.
 3. **Disabled action:** 40% `--text`, no border, reason always visible.
 4. **Entitlement ghost / TierLock:** frosted `--panel2` overlay one step lighter with `--line` edge.
-5. **Invalidated row:** struck stance in `--muted`; no red alarm.
+5. **Invalidated row:** struck stance in `--muted`; no red alarm. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-G.
 6. **Missing read:** em dash plus “No read yet / 暂无判断” in `--muted`; never blank.
 7. **Corrected value:** small “corrected / 已更正” mark in `--muted`; prior value remains available on hover.
 
@@ -167,7 +169,7 @@ Light is a research workspace: cool canvas, white material, hairline discipline,
 2. **Required-source loss:** pale amber fill plus `--line` hairline; no heavy shadow.
 3. **Disabled action:** 50% `--text`, dashed `--line` hairline, visible reason.
 4. **Entitlement ghost / TierLock:** white `--panel` overlay with blur and `--card-shadow` (236).
-5. **Invalidated row:** struck stance in `--muted`; no red alarm.
+5. **Invalidated row:** struck stance in `--muted`; no red alarm. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-G.
 6. **Missing read:** em dash plus “No read yet / 暂无判断” in `--muted`; never blank.
 7. **Corrected value:** small “corrected / 已更正” mark in `--muted`; prior value remains available on hover.
 
@@ -386,7 +388,7 @@ Commands and outputs are recorded at final-head audit time:
 | M1 | §3 applies the frozen seven-state table and green-only `ENTRY_OPEN`. |
 | M2 | §3/§4 separate stance from direction and define the Prophet row anatomy. |
 | M3 | §4 counts ten NEW components and names each DS-PR-0 dependency. |
-| M4 | §2 removes drawers and specifies inline expansion plus `/prophet/<T>`. |
+| M4 | §2 removes drawers and specifies inline expansion plus `/prophet/<T>`. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-B. |
 | M5 | §2 fixes four destinations, separate Track Record, and operator measurement. |
 | M6 | §7 uses the shared authenticated navigation line in every composition. |
 | M7 | §8.1 replaces the permission toggle with the read-only Research-only chip. |
