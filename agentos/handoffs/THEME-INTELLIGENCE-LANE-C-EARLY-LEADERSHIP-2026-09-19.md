@@ -73,11 +73,11 @@ danger_areas:
 
 # Theme Intelligence Lane C — Cumulative Continuation Checkpoint
 
-**FINALIZATION_CLASSIFICATION:** `CHECKPOINTED_CONTINUATION`  
-**MISSION_COMPLETE:** `false`  
-**Checkpoint date:** 2026-09-23  
-**Operation:** `theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001`  
-**Carrier:** Macro PR **#7455** / `worktree-theme-intelligence-c-early-leadership-20260919-sol-001`  
+**FINALIZATION_CLASSIFICATION:** `CHECKPOINTED_CONTINUATION`
+**MISSION_COMPLETE:** `false`
+**Checkpoint date:** 2026-09-23
+**Operation:** `theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001`
+**Carrier:** Macro PR **#7455** / `worktree-theme-intelligence-c-early-leadership-20260919-sol-001`
 **Integration lead:** Lane A / incumbent shared owners
 
 ## Current canonical frontier
