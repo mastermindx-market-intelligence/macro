@@ -1,0 +1,35 @@
+{
+  "source": "0b945c1f9cdb9c91bee67e61104651e48dc817c8",
+  "capture_cases": 16,
+  "capture_errors": [],
+  "failed_responses": [],
+  "document_overflow": false,
+  "interaction_accepted": false,
+  "failure": "Lens gone before persistence/bounds check in first touch case after desktop stage",
+  "exit_code": 1,
+  "mobile_diagnostic": "OpenAI safety-status refusal; helper readback unchanged; no retry",
+  "desktop_root_probe": [
+    {
+      "case": "fresh_page",
+      "open_checkpoints": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "after_risk_and_participation",
+      "open_checkpoints": [
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "server_process_returned": true,
+  "production": false,
+  "fresh_collection": false,
+  "log_sha256": "74e212f05fd35e0559ffd4a5f623da8ee19ca2ea3515558dff5583d71b89f419"
+}

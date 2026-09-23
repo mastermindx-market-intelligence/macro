@@ -126,44 +126,50 @@ prs:
 
 # Current cumulative continuation
 Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
-Procedure:Mastermind@0471cea4f891da1ec0c9fbeff10a9391f9cdd90f, compatible1.0.1/bootstrap1.
-Current intent:continue accuracy delivery; hosted CI/release deferred, Draft/HOLD.
-Semantic source060ea6b9a2905f5687c397f6802fc126a2c57a08 fixes the incumbent
-page-only assessment loader and applies both existing page-only flags to the
-score-history write gate. Normal analytical producer path is unchanged.
-394 tests pass across4 suites;21 new cases, with20 loader/consumer failures and
-one history-guard failure observed before repair.15 clock cases remain excluded.
+Procedure:Mastermind@89582a372aa2a57ec500868ce6d79cd156219445,1.0.1/bootstrap1.
+Chairman continues accuracy capability; CI/release deferred, Draft/HOLD retained.
+Source0b945c1f9cdb9c91bee67e61104651e48dc817c8. No foreign branch/controller change.
+DO_NOT_REDO: prior integrity, participation/cohort, optional official weights,
+missing-member, source-current, regime-copy and four-input vintage ablation.
 
-Root cause PROVEN:the prior19 changed summary leaves arise from four newer shared
-files HG_F,GC_F,CL_F,DX-Y.NYB. Producer source was identical. Of49 frozen read inputs,
-restoring those four to summary commit017d758b33df yields zero remaining differences.
-Do not repeat this ablation or describe the text edit as changing the model math.
+Saved/display mismatch RESOLVED: five additions, no changed saved measurements.
+Actual builder qualification verifies6592 saved scalar values, independently checks
+four chart renderings and one separate same-session breadth context. Enginecalls0;
+eight inputs/history/ledger hashes unchanged. Strict proof rejects changed/removed
+values, unknown additions and altered expected outputs.408 tests at this boundary.
+Qualified copy now reaches the actual normalized committed China page.
 
-Actual builder on060ea ran with analytical publication forbidden; no engine call
-occurred and eight persisted input/history/ledger files stayed byte-identical.
-The prior disk-summary drift did not recur. New wording reached generated HTML.
-A later whole-dictionary equality check of the display VM FAILED. Whether this is
-added presentation content or a substantive value change is NOT yet established.
-The exact VM-diff diagnostic was safety-status refused/NO_EFFECT; no retry or
-alternate read/write/provider was used. The proof was not relaxed. Failed page
-retained locally;25 identified generated outputs restored, prior page a7b1ea68...
-retained. No normalization, new page publication, browser or production claim.
+Actual browser then found dedicated desktop Lens clicks also opening the parent
+Playbook dialog. Its movement triggered hover dismissal. A provisional hover/focus
+change was rejected and removed; the minimal repair consumes only the dedicated
+click. Original6860 gesture guard and ordinary hover/explicit dismissal remain.
+Final seven-suite regression525 passed. Root event probe now stays open at all
+four checkpoints both initially and after the risk/participation journey.
+Final DC process46463 exited1:16 resting/focus captures passed, but the first
+touch case loses its Lens before350ms. No final interaction acceptance. The scoped
+mobile event probe was safety-status refused; helper unchanged, no retry. The
+generic old post-Lens blocker is replaced by this exact observed failure/gate.
 
-Evidence:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json and the current
-section of CHINA_INTEGRATED_CONTEXT_20260921.md. Actual proof script is
-research/grey_deer/probe_china_render_vintage.py (assertion remains intact).
-The original post-Lens/source-clock/weight-refresh/7029/other refusals stay frozen.
-No weight feed, fresh collection, recalibration, risk score/odds/sizing change.
-Prior7592/6860 branches/controllers untouched. No source EFFECT_UNKNOWN or worker.
+Runtime material invalidator:current backend71803 vs prior41474; scoped same-carrier
+inspection/browser calls now execute. Original clock source is STILL unchanged;
+its explicit15-case recheck is RED. Automatic weight supply remains absent.
+This turn's compound archival/generated-output restore was safety-refused, no
+effect;24 auxiliary generated files remain dirty and unaccepted, explicitly listed
+in mockups/evidence/china-display-boundary-20260923/qualification.json. Do not
+blanket-stage, claim clean, re-route or retry that exact cleanup. No model/ledger
+mutation, trade authority, recalibration, fresh collection or deployment is claimed.
+
+Next: resolve the exact mobile diagnostic gate; then source-clock/weight-supply work and
+normal current-main/CI/publication/live gates when release resumes. No source
+custody transfer. Mission incomplete; historical proof retains its own provenance.
 
 FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE:false
-Boundary:root-cause attribution and source-tested publication guard are complete;
-required display-object qualification is held at an exact refusal after a tool-heavy
-phase. Current generated effects were reconciled and durable source is preserved.
-Next:resolve the exact display-object inspection gate and distinguish additions
-from changed source measurements; only then accept/repackage the new page.
-Keep the old clock/weight/browser gates distinct. Do not repeat completed source
-work, waive an unknown comparison, or claim live acceptance from tests.
-Intended resume:fresh conversation from this checkpoint plus minimum fresh INDEX.
-No autonomous wake, successor worker, source transfer or completion is implied.
+Boundary:the previously unknown saved/display mismatch now has exact independent
+qualification and the actual corrected page is packaged. Subsequent cross-device
+proof exposed a narrower touch failure; its diagnostic is explicitly held after
+substantial tool-heavy debugging. Persisted state covers all effects, including
+24 dirty unaccepted auxiliary outputs. Do not claim clean/deployed/all-interactions
+passed or re-run the accepted four-input ablation. Resume on this same PR/carrier
+from this checkpoint plus minimal fresh canonical state, not the old transcript.
+No source custody transfer, active worker, watcher or autonomous wake is implied.

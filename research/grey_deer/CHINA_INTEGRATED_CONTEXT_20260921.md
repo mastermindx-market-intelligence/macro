@@ -293,3 +293,39 @@ Two paired-source counterexamples plus two pass-through controls cover that
 boundary; actual no-parent-dialog and persistence assertions remain mandatory.
 No source or controller on another PR is edited; this is an integration repair
 of the already-composed shared explanation component in the China candidate.
+
+### Qualified page and remaining touch proof boundary
+Source0b945c1f9cdb9c91bee67e61104651e48dc817c8 is pushed, no CI/release action.
+Seven-suite final regression525 passed without warnings. Fourteen projection and
+four dedicated-click cases are new; the15 old clock cases remain RED/unimplemented.
+The original delayed-hover logic is byte-preserved; only dedicated desktop-click
+propagation is consumed on both shared-theme copies. Paired source checks and
+Node syntax checks pass. A real desktop event probe now retains the explanation
+at all four checkpoints both from a fresh page and after the risk/participation
+journey. No foreign PR branch/controller or duplicate tooltip system was changed.
+
+Final committed page277206bytes SHA256
+084c4a56371d19500a6ef92a418b871f9395fa1137341ebffaa80e2ef1c6ae83.
+Its20 explicit JS/CSS references resolve and their stamps match. The saved eight
+input/history/ledger hashes remain unchanged. The actual page now contains the
+qualified regime copy without silently recalculating the saved assessment.
+
+The full final browser invocation exited1, NOT accepted:16/16 rest/focus captures
+completed, and desktop interaction reached the mobile dark-English case, where
+the Lens again disappeared before the350ms persistence/bounds check. The test's
+no-parent-dialog, second gesture, hover-only and Escape requirements remain intact.
+The narrower mobile event-diagnosis request was safety-status refused; same-carrier
+readback proves the desktop-only helper unchanged. No mobile diagnostic or
+all-eight-interactions success is claimed, and no retry/alternate carrier was used.
+The earlier generic post-Lens availability blocker is therefore superseded by an
+executed, narrower touch failure plus this specific diagnostic refusal.
+
+Current evidence:mockups/evidence/china-display-boundary-20260923/qualification.json,
+final-assets.json,final/manifest.json and browser-boundary.json. Resting images
+are not interaction acceptance. Desktop dark Lens image was visually inspected.
+Twenty-four auxiliary generated outputs remain dirty after the separate cleanup
+refusal; none is included in these selective source/evidence commits. No worker,
+watcher, production deployment, fresh source supply or forecast validation exists.
+CHECKPOINTED_CONTINUATION;MISSION_COMPLETE:false. The saved/display and qualified
+page boundary is closed; resume the exact touch diagnostic and pending independent
+clock/feed obligations from the current same-carrier record, not a replay of history.

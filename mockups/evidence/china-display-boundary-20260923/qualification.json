@@ -1,0 +1,221 @@
+{
+  "semantic_source": "0b945c1f9cdb9c91bee67e61104651e48dc817c8",
+  "procedure": "89582a372aa2a57ec500868ce6d79cd156219445",
+  "builder": {
+    "source_commit": "2b09b001a0da56b39e533dfcf4bd9d94e92574e2",
+    "assessment_date": "2026-09-21",
+    "raw_page_sha256": "e2abf62ba904fba9e6722a2fc520085b47faa0029fde89cff25ed1b8f19faa31",
+    "raw_page_bytes": 462035,
+    "engine_run_calls": 0,
+    "preserved_input_sha256": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "saved_projection_check": {
+      "saved_measurements_unchanged": true,
+      "saved_leaf_count": 6592,
+      "reviewed_additions": [
+        "conditions.breadth",
+        "conditions.drawdown_html",
+        "conditions.recession_html",
+        "conditions.roro_html",
+        "fear_euphoria.chart_html"
+      ],
+      "breadth_is_separate_derived_context": true
+    },
+    "risk_score": 94,
+    "copy_present": true,
+    "fresh_collection": false,
+    "browser_proof": false,
+    "production": false
+  },
+  "normalization": {
+    "source_commit": "2b09b001a0da56b39e533dfcf4bd9d94e92574e2",
+    "raw_page_sha256": "e2abf62ba904fba9e6722a2fc520085b47faa0029fde89cff25ed1b8f19faa31",
+    "normalized_page_sha256": "7c3e6e644e669f8b5a982b9d961c863583749945ca2f1109164ec820fe6b30b6",
+    "normalized_bytes": 277206,
+    "created_assets": [],
+    "pipeline": [
+      "lib.pages.inject_text",
+      "lib.pages.externalize_css_text",
+      "lib.pages.externalize_js_text",
+      "scripts.optimize_assets.make_optimizer"
+    ],
+    "browser_proof": false,
+    "production": false,
+    "assets_pruned": false
+  },
+  "observed_original_vm_difference": {
+    "saved_date": "2026-09-21",
+    "vm_date": "2026-09-21",
+    "differences": [
+      {
+        "path": "conditions.breadth",
+        "kind": "added",
+        "value": {
+          "above200_pctile": 0.15873015873015872,
+          "div": false
+        }
+      },
+      {
+        "path": "conditions.drawdown_html",
+        "kind": "added",
+        "value": {
+          "type": "text",
+          "chars": 3514,
+          "sha256": "77ee9da24a4acbc3e7a10657a40bea5512f0b5dc37483b29466dbb1f24193874"
+        }
+      },
+      {
+        "path": "conditions.recession_html",
+        "kind": "added",
+        "value": {
+          "type": "text",
+          "chars": 2301,
+          "sha256": "5242c828f835c8c73ae839e85fe0e86764ad49788766e6698b6bc3ac43334143"
+        }
+      },
+      {
+        "path": "conditions.roro_html",
+        "kind": "added",
+        "value": {
+          "type": "text",
+          "chars": 23678,
+          "sha256": "b22b35e5d281961e620184d35b1d14b0489d688906b9d16bb5f4cada7b5b4b33"
+        }
+      },
+      {
+        "path": "fear_euphoria.chart_html",
+        "kind": "added",
+        "value": {
+          "type": "text",
+          "chars": 3985,
+          "sha256": "0ada9f7de53f8c8163797b19e7718d1252afd818fe816f19bae7be350257315a"
+        }
+      }
+    ],
+    "vm_sha256": "d9a34a835143826737bd527bb36dd38fedbed3777fdf6194b86af359eb27a18f"
+  },
+  "root_lens_change": [
+    {
+      "path": "templates/theme.js",
+      "base_sha256": "9c811393ff19e6c7034a7963b5905fee973ddc7262d1ef57c3437e1b2c2302ff",
+      "after_sha256": "f949b5e676b5aa65b490895b86fecf9b85ce6befd67b1f8b4917b4e8c59fe9f0",
+      "only_dedicated_click_consumption_added": true,
+      "original_hover_timer_preserved": true
+    },
+    {
+      "path": "site/theme.js",
+      "base_sha256": "2c4b0b13621042d6ef9102626112b8f500b8884e09df2c55946450a03e6b40ec",
+      "after_sha256": "1f70cd39ae7dd60bbfa1e0b7f03c654d9e6f4e64c49b757f09fd57d87888279f",
+      "only_dedicated_click_consumption_added": true,
+      "original_hover_timer_preserved": true
+    }
+  ],
+  "tests": {
+    "command": "python -m pytest tests/test_lens_nested_control_taps.py tests/test_china_lens_hub.py tests/test_unsubscribe_page.py tests/test_china_archetype_d_s1.py tests/test_china_participation.py tests/test_risk_radar_dlg_country_wiring.py tests/test_risk_radar_dlg_partial.py -q",
+    "result": "525 passed",
+    "new_projection_cases": 14,
+    "new_click_cases": 4,
+    "clock_pending_cases": 15,
+    "clock_pending_result": "15 failed; no implementation in this slice"
+  },
+  "final_page_sha256": "084c4a56371d19500a6ef92a418b871f9395fa1137341ebffaa80e2ef1c6ae83",
+  "unaccepted_auxiliary_outputs": [
+    "data/risk_radar/scorecard.json",
+    "site/china_allocation.html",
+    "site/china_history.html",
+    "site/china_lookup.html",
+    "site/china_news.html",
+    "site/china_stocks.html",
+    "site/factordata/china_reversal.json",
+    "site/riskdata/scorecard.json",
+    "site/sectors/159928.SZ.html",
+    "site/sectors/159992.SZ.html",
+    "site/sectors/512170.SS.html",
+    "site/sectors/512200.SS.html",
+    "site/sectors/512400.SS.html",
+    "site/sectors/512660.SS.html",
+    "site/sectors/512690.SS.html",
+    "site/sectors/512760.SS.html",
+    "site/sectors/512800.SS.html",
+    "site/sectors/512880.SS.html",
+    "site/sectors/512980.SS.html",
+    "site/sectors/515000.SS.html",
+    "site/sectors/515030.SS.html",
+    "site/sectors/515220.SS.html",
+    "site/sectors/515250.SS.html",
+    "site/sectors/515790.SS.html"
+  ],
+  "cleanup_refusal_no_effect": true,
+  "production": false,
+  "fresh_collection": false,
+  "browser": {
+    "source": "0b945c1f9cdb9c91bee67e61104651e48dc817c8",
+    "capture_cases": 16,
+    "capture_errors": [],
+    "failed_responses": [],
+    "document_overflow": false,
+    "interaction_accepted": false,
+    "failure": "Lens gone before persistence/bounds check in first touch case after desktop stage",
+    "exit_code": 1,
+    "mobile_diagnostic": "OpenAI safety-status refusal; helper readback unchanged; no retry",
+    "desktop_root_probe": [
+      {
+        "case": "fresh_page",
+        "open_checkpoints": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "case": "after_risk_and_participation",
+        "open_checkpoints": [
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    ],
+    "server_process_returned": true,
+    "production": false,
+    "fresh_collection": false,
+    "log_sha256": "74e212f05fd35e0559ffd4a5f623da8ee19ca2ea3515558dff5583d71b89f419"
+  },
+  "finalization": "CHECKPOINTED_CONTINUATION",
+  "mission_complete": false,
+  "test_source_sha256": {
+    "tests/test_lens_nested_control_taps.py": "cd0d10fe4f0187efd36bdc13276dda630926dfc61e953832d2524ea4f18694e9",
+    "tests/test_china_archetype_d_s1.py": "b04fee94b6195536bdfa8ba6d139c07ee8cb3eb4e06e225773484c1896c1a63d",
+    "research/grey_deer/china_render_projection_check.py": "295bf8ac5f5c39d7242e1e9ad026b0acec45ff7206c436f75b2fe96f41fa4651",
+    "research/grey_deer/probe_china_render_vintage.py": "62416b917eae06535adcea1362eca738864a90048b6b885176c466333df4f373"
+  },
+  "guards": {
+    "visual_evidence": {
+      "exit": 0,
+      "scope": "receipt presence, NOT interactive acceptance"
+    },
+    "design_ratchet": {
+      "exit": 0,
+      "added_blockers": 0
+    },
+    "agentos": {
+      "errors": 0,
+      "existing_warnings": 64
+    },
+    "asset_references": {
+      "log": "OK",
+      "distinct_assets": 17
+    }
+  },
+  "source_commit": "0b945c1f9cdb9c91bee67e61104651e48dc817c8"
+}

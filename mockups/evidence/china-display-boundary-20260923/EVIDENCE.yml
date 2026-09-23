@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - site/china.html
+  - templates/theme.js
+  - site/theme.js
+manifest: mockups/evidence/china-display-boundary-20260923/final/manifest.json
