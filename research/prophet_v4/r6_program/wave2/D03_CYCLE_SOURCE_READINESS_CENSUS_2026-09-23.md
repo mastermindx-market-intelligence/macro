@@ -117,7 +117,40 @@ No credential, `.env`, key file, private executed contract text, or commercial t
 
 ## Q5 DATA-INDEPENDENT READINESS RULE + CANDIDATES
 
-TODO
+No return, trade outcome, strategy artifact or protected outcome file was opened or cited. The rule uses only source clocks, vintage depth, definition continuity, issuer mapping/coverage and rights.
+
+**Readiness rule.** A proving domain may enter pilot only if all five pass:
+
+1. **Vintage depth/clock:** at least two independent economic mechanisms have source legs with measured source-vintage history of at least 120 post-first-release months over the preregistered window. Admission uses source observation/publication clocks; a modeled lag may stress but never create an available date. Missing or late vintage rows block, not silently fall back.
+2. **Mapping at cut:** issuer or segment membership at each decision cut is genuinely observed from a dated source, or the domain is declared macro-only. Current membership/sector/concept maps may never be backdated.
+3. **Failure coverage:** the decision universe includes failed/delisted issuers at that cut, or the study is explicitly macro-only and reports survivorship as a limit.
+4. **Definition tolerance:** every NAICS/benchmark/reclassification/seasonal-method/discontinuity is dated and handled by era split, declared diagnostic-only splice, or exclusion. Broad series may never be relabeled as granular subthemes.
+5. **Rights:** acquisition, processing, storage, model use and user redistribution are each resolved; internal-only or unresolved sources support private diagnostics, never public pilots.
+
+Applications:
+
+**(a) Industrial capital goods / machinery — NOT PILOT-READY; prospective collection plus retrospective diagnostic only.**
+- Passes mechanism breadth structurally: capital-goods orders and total-manufacturing backlog/shipments/inventory context are configured: `config.yml:127@10166ad5272f`; `:155@10166ad5272f`; `:450@10166ad5272f`–`:456@10166ad5272f`. Q2 now identifies granular machinery series, but they are not repo-configured and their API-contract depth is unmeasured.
+- Fails rule 1: first usable vintages remain UNKNOWN for every configured leg (`data/fred_vintage/vintages.parquet` omitted); 120 months is unproved. The Q2 keyless single-ID history is a source-existence observation, not the repository's keyed output-type-4 store receipt.
+- Fails rules 2–3: no historical machinery/capital-goods issuer mapping or failed-issuer coverage exists; only prospective snapshots are present.
+- Conditionally passes rule 4 only after era treatment: Census SIC→NAICS and benchmark breaks are dated; machinery grain cannot be substituted by broad aggregate series.
+- Fails rule 5 for user-facing use: FRED/Census rights are partially recorded; Census redistribution and historical-segment rights remain unresolved.
+
+**(b) Alternative 1: semiconductor equipment — NOT PILOT-READY; macro-only prospective diagnostic.**
+- Mechanism breadth is incomplete: repository has semiconductor and electronics capacity, semiconductor IP/capacity, and semiconductor-device PPI (`config.yml:440@10166ad5272f`–`:445@10166ad5272f`; `:456@10166ad5272f`), but not equipment-specific orders/shipments/backlog legs.
+- Fails rule 1: detail capacity/PPI vintage coverage is explicitly plausible but unverified: `config.yml:143@10166ad5272f`–`:149@10166ad5272f`. M3 is unavailable as a post-April-2010 separate semiconductor estimate.
+- Fails rules 2–3: only prospective theme snapshots are available; no historical equipment-maker membership or failure universe.
+- Conditionally passes rule 4 by refusing the M3 semiconductor subtheme after its dated April 2010 discontinuity and refusing to relabel broad electronics/production/PPI as equipment.
+- Rights are not pilot-sufficient: FRED public-domain tags are favorable for observed economic legs, but historical issuer mapping remains unresolved.
+
+**(c) Alternative 2: building products / residential construction — NOT PILOT-READY; macro-only prospective diagnostic.**
+- Mechanism breadth exists structurally at macro level: housing permits/starts, mortgage rate, Case-Shiller HPI and an XHB building-products monitor are configured: `config.yml:211@10166ad5272f`–`:214@10166ad5272f`; `:364@10166ad5272f`; `engine/cycle_proxies.py:299@10166ad5272f`–`:302@10166ad5272f`.
+- Fails rule 1: PERMIT vintage depth is UNKNOWN; housing starts/HPI/mortgage legs are not configured in the vintage set: `config.yml:124@10166ad5272f`–`:157@10166ad5272f`.
+- Fails rules 2–3: no historical building-products issuer mapping, failed-name inclusion, or sector membership cut is observed; XHB is a current monitor, not a historical membership source.
+- Fails rule 4: benchmark/rebaseline treatment for HPI/starts/mortgage/building-product legs is not assembled.
+- Rights are not pilot-sufficient: FRED metadata is favorable for observed economic legs, but issuer mapping and ETF-derived public redistribution conditions are unresolved in this record.
+
+**No alternative is selected.** Q07 permits either one admissible domain or a documented alternative chosen by the same rule; both fail the same mapping and measured-depth gates before return inspection.
 
 ## Q6 GAPS + MUST-NOTS
 
