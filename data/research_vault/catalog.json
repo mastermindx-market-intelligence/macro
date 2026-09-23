@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T23:52:14.488822+00:00",
-  "count": 2671,
+  "generated_at": "2026-09-23T00:53:22.756730+00:00",
+  "count": 2674,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -88,6 +88,7 @@
     "The Punchline",
     "UBS",
     "Vanda Research",
+    "Vontobel",
     "WEF",
     "WGC",
     "Westpac",
@@ -98,6 +99,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lld02x88wkk-044b41",
+      "title": "insights india",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:33:42Z",
+      "summary_points": [
+        "Growth Momentum Revision: FY27 growth revised to 7.3% (from 7.8% in FY26) due to policy moderation, energy price impacts, and lagged tax cuts; FY28 forecast at 6.8-7.0%, reflecting sustainability risks from external pressures and rising inflation.",
+        "Core Inflation Acceleration: Core inflation (ex-food/fuel) hit 1.5-month high in August driven by precious metals, telecom, and transport; broadening price pressures signal inflationary acceleration against strong liquidity, necessitating RBI’s likely 50bp rate hike in H2 FY27.",
+        "Reserves & Liquidity Surge: Foreign reserves at $780bn (new high) from $133bn FCNR(B) deposits; banking surplus surged to INR 14tn, suppressing overnight rates and easing USDINR intervention bias—critical for portfolio liquidity positioning.",
+        "CAD Widening & Capital Flow Offset: Current account deficit rose to $10.5bn (Apr-Jul 2026) driven by $117.8bn merchandise trade deficit; capital flows (NRI deposits $36bn) offset deficit, pushing BoP surplus to $12.7bn, with oil prices as primary CAD swing factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-fu308f16ebn-258aff",
       "title": "US stock market A mega cap refuge",
@@ -115,6 +136,44 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6sruilnbsej-98657e",
+      "title": "HF Highlights 2026.09.18",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T23:18:42Z",
+      "summary_points": [
+        "HF Rotation Trend: Hedge funds shifting capital from momentum to quality strategies, signaling a fundamental positioning shift amid market uncertainty.",
+        "Japan Outflows Dominant Risk: Japan Activity shows -4.0 Z-Score in regional flows, indicating significant outflows as the primary risk factor.",
+        "US Gross Leverage Dominance: US gross leverage at 209% exceeds Europe (177%) and Asia (127%), with 78% 5-year percentile, signaling elevated risk.",
+        "Equity L/S Outperformance: Equity Long/Short strategies outperform All Funds (MTD median 0.28 vs 0.09; YTD median 5.70 vs 5.29).",
+        "Crowded Longs Structural Favorability: Top 50 Longs outperform Top 50 Shorts by 21.18% YTD (34.50% vs 13.32%), confirming structural long bias."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nqraqocwpcv-876a29",
+      "title": "VON32627736",
+      "institution": "Vontobel",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:55:04Z",
+      "summary_points": [
+        "OCS Production Scaling: Polatis subsidiary's automated OCS line enables 1,000+ units/year scaling, boosting follow-on orders from Google/NVIDIA (2028 adoption), driving significant upside beyond estimates for Huber+Suhner - Roches Phase 2 Results: 15.5% weight loss (48w) in T2D/obesity patients with mild GI events (2.0% discontinuation vs 0.0% placebo), supporting Phase 3 progression and 2028 launch - Roche Peak Sales Estimate: $2.5B peak sales potential (60% success probability) for enicepatide in competitive T2D/obesity market, underpinning Buy recommendation and Pharma Day catalyst"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
