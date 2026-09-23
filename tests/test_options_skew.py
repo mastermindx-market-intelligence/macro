@@ -709,7 +709,12 @@ def test_accrue_catches_up_missed_complete_sessions_and_skips_the_partial_one(
     """The daily `accrue()` resolves the complete store session, walks back
     to the ledger's newest complete thetadata session, and backfills every
     date in between. The partial newest session is left out of the result.
-    A second call on a caught-up ledger is a no-op."""
+    A second call on a caught-up ledger is a no-op.
+
+    A-F03-W2-8 (2026-09-23): the caught-up case now returns
+    `(0, "caught_up")` (not `(0, "accrued_today")` as before) so the
+    launchd runner can branch on it (rc 3 → receipt, skip verify, skip
+    publish, exit 0). The bytes-on-disk contract is unchanged."""
     _patch_dirs(monkeypatch, tmp_path)
     store = _write_theta_store_multi(tmp_path, {
         **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
@@ -736,7 +741,7 @@ def test_accrue_catches_up_missed_complete_sessions_and_skips_the_partial_one(
 
     pinned = _sha256(ledger)
     added2, state2 = accrue()
-    assert (added2, state2) == (0, "accrued_today")
+    assert (added2, state2) == (0, "caught_up")
     assert _sha256(ledger) == pinned
 
 
@@ -889,3 +894,277 @@ def test_no_live_skew_caller_pins_the_legacy_chain_and_every_caller_emits():
     assert found[".github/workflows/render.yml"] >= 2
     assert found["scripts/ci/daily_engine_regional_desk_builders.sh"] == 1
     assert found[".github/workflows/closing-bell.yml"] == 1
+
+
+# --------------------------------------------------------------------------- #
+# A-F03-W2-8 (2026-09-23) — caught-up no-op exits clean                       #
+# --------------------------------------------------------------------------- #
+
+
+def test_accrue_sole_leg_exits_3_when_caught_up(tmp_path, monkeypatch, capsys):
+    """A-F03-W2-8 (2026-09-23): `main(["--accrue"])` on a caught-up ledger
+    exits ACCRUE_NOOP_EXIT (3), prints the `::notice title=options-skew-accrual::`
+    line at line start, and writes nothing to the ledger.
+
+    The store resolves a complete session S that is already on the ledger,
+    and the ledger's stored values for that session EQUAL what the chain
+    produces (so the daily maintainer's backfill writes zero rows). The
+    builder prints the no-op notice, keeps the existing info line, returns
+    `(0, "caught_up")`; main() — with only `--accrue` selected — exits 3.
+    The bytes-on-disk contract is unchanged (ledger sha is identical
+    before and after).
+    """
+    _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Seed ledger with values that EQUAL what `compute_skew` emits for the
+    # chain (put_iv=0.40, call_iv=0.30 → otm_put_iv=0.40, atm_call_iv=0.30,
+    # skew=0.10, n_strikes=4). Caught-up is BYTE-IDENTICAL: the daily
+    # maintainer's backfill MUST observe a zero-row write to fire the
+    # no-op path. A seed with a different skew (e.g. the `0.10 + i*0.001`
+    # jitter in `test_accrue_catches_up_*`) is, by definition, NOT caught-up.
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for root in _COMPLETE_STORE_ROOTS:
+        for asof in (_D1, _D2):
+            seeded.append(dict(
+                date=asof, underlying=root, asof=asof, spot=100.0,
+                tenor_days=30.0, otm_put_iv=0.40, atm_call_iv=0.30,
+                skew=0.10, n_strikes=4, source="thetadata",
+            ))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    assert rc == 3, f"sole-leg caught-up accrue must exit ACCRUE_NOOP_EXIT (3), got {rc}"
+    out = capsys.readouterr().out
+    # Notice at LINE START — the GitHub annotation parser requirement
+    # (tests/test_gh_annotation_line_start.py).
+    notice_lines = [
+        line for line in out.splitlines()
+        if line.startswith("::notice title=options-skew-accrual::")
+    ]
+    assert len(notice_lines) == 1, notice_lines
+    assert "caught up" in notice_lines[0]
+    assert _D2 in notice_lines[0]
+    # Ledger bytes unchanged.
+    assert _sha256(ledger) == pinned
+
+
+def test_accrue_with_emit_exits_0_when_caught_up(tmp_path, monkeypatch):
+    """A-F03-W2-8 (2026-09-23): `main(["--accrue","--emit"])` on a
+    caught-up ledger exits 0, AND the emitted payload's `accrual_state`
+    is `ledger_only` (the engine contract is the legacy two-way one:
+    `accrued_today | ledger_only` — `emit()` maps the builder's
+    `caught_up` to `ledger_only` so the payload contract is unchanged).
+
+    The render hosts and the regional desk builders always run `--emit`
+    (with or without `--accrue`), and they MUST keep seeing rc 0 on a
+    caught-up ledger — `emit()`'s `accrual_state="caught_up"` maps to
+    `ledger_only` so the payload contract is unchanged. So the rc-3
+    surface is strictly `--accrue` alone.
+    """
+    data, site = _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Seed ledger with values EQUAL to what the chain produces, so the
+    # daily maintainer observes a zero-row write (caught-up).
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for root in _COMPLETE_STORE_ROOTS:
+        for asof in (_D1, _D2):
+            seeded.append(dict(
+                date=asof, underlying=root, asof=asof, spot=100.0,
+                tenor_days=30.0, otm_put_iv=0.40, atm_call_iv=0.30,
+                skew=0.10, n_strikes=4, source="thetadata",
+            ))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+
+    from scripts.build_options_skew import main
+    assert main(["--accrue", "--emit"]) == 0
+    # Ledger bytes unchanged.
+    assert _sha256(ledger) == pinned
+    # Payload: accrual_state MUST be ledger_only, not caught_up
+    # (the engine rejects any value outside the two-way vocabulary).
+    payload = json.loads((site / "options_skew" / "latest.json").read_text())
+    assert payload["accrual_state"] == "ledger_only"
+    # And the on-disk contract — every name in the seeded ledger still
+    # appears in the rendered payload, because --emit does not rewrite
+    # the ledger, it only reads it.
+    assert payload["n"] == len(_COMPLETE_STORE_ROOTS)
+    assert set(payload["names"]) == set(_COMPLETE_STORE_ROOTS)
+
+
+def test_accrue_sole_leg_exits_0_when_a_session_was_written(tmp_path, monkeypatch):
+    """A-F03-W2-8 (2026-09-23): `main(["--accrue"])` on a ledger that
+    needs new session writes exits 0 (NOT 3) and the ledger grows by
+    the catch-up rows. Pins that the rc-3 surface is strictly the
+    caught-up case — a real accrue stays at rc 0.
+
+    This is the symmetric pin to `test_accrue_sole_leg_exits_3_when_caught_up`:
+    without it, a future refactor that returns 3 on every zero-row accrue
+    (a real no-op under a fresh session) would silently downgrade the
+    runner's verify-and-publish path on the failure surface (the
+    BLOCKER-2 rule) and pollute audit_r2's freshness anchor."""
+    _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Empty ledger — `S.catch_up_sessions("D2", None)` returns ["D2"]
+    # (no D1 walk-back without a theta-history `have` to stop at; the
+    # helper treats a None / empty hist as "no prior sessions to walk
+    # back through" and yields the target itself). backfill_from_store
+    # writes 6 rows for D2, and main() falls through to rc 0.
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    assert not ledger.exists()
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    assert rc == 0, (
+        f"sole-leg accrue with rows to write must exit 0, got {rc}; "
+        "ACCRUE_NOOP_EXIT is strictly the caught-up case."
+    )
+    after = pd.read_parquet(ledger)
+    # Empty ledger → catch_up_sessions returns [D2] (no D1 walk-back
+    # without a theta-history `have` to stop at). `compute_skew` emits
+    # one row per root, so 6 rows land for D2.
+    assert set(after["date"].astype(str)) == {_D2}
+    assert set(after["underlying"].astype(str)) == set(_COMPLETE_STORE_ROOTS)
+    assert len(after) == len(_COMPLETE_STORE_ROOTS)
+
+
+def test_accrue_sole_leg_returns_0_when_store_misses_complete_session(tmp_path,
+                                                                       monkeypatch):
+    """A-F03-W2-8 BLOCKER RED (2026-09-23): a zero-row backfill is not
+    enough to declare the ledger caught-up. The store must actually
+    HAVE the complete session AND the backfill must observe a byte-equal
+    no-op. This test pins the discriminator: when the manifest claims
+    S=D2 but the store greeks cover D1 only, `complete_store_session`
+    resolves S=D2, but `backfill_from_store([D2])` reports
+    `dates_not_in_store=1, dates_backfilled=0` — that is a real failure
+    surface, NOT a caught-up no-op, and the rc-3 branch must NOT fire.
+
+    RED on the round-2 head: the prior check
+    `if dates and rows_touched == 0:` fires on store-miss too, so
+    `main(["--accrue"])` returned rc 3 (and `0, "caught_up"` from
+    `accrue()`). That mis-classified a real failure as a lawful no-op,
+    and the runner's BLOCKER-2 verify step never reached — exactly the
+    confusion the W2-8 ruling forbids ("it cannot tell 'nothing to
+    accrue' from 'something to accrue and it did not land'"). FIX:
+    tighten the check to `dates_backfilled == len(dates) AND
+    rows_touched == 0` so the rc-3 surface is STRICTLY the byte-equal
+    caught-up case."""
+    _patch_dirs(monkeypatch, tmp_path)
+    # Store greeks cover D1 only — D2 is NOT in the store.
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1] for root in _COMPLETE_STORE_ROOTS},
+    })
+    # Manifest claims S=D2 with greeks_S_roots=6 (the round-2 head
+    # round-trip: the manifest value ties or beats breadth under
+    # _COMPLETE_SESSION_MIN_FRACTION × widest=0.95×6=5.7, so the
+    # resolver picks D2 via "manifest" method).
+    (store / "_manifest.json").write_text(json.dumps({
+        "daily_refresh": {"D": _D2, "S": _D2, "greeks_S_roots": 6},
+    }))
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Ledger already has D1 (lone-date "have" makes D1 complete, so
+    # catch_up_sessions(D2, hist) stops at have and returns [D2]).
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for i, root in enumerate(_COMPLETE_STORE_ROOTS):
+        seeded.append(_ledger_row(root, _D1, 0.10 + i * 0.001, source="thetadata"))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    # Failure surface: BLOCKER-2 must still abort loud in the runner.
+    # The builder's own rc here is 0 (the caught-up discriminator no
+    # longer fires on store-miss), so `main()` falls through.
+    assert rc == 0, (
+        f"store-miss is not caught-up; main must exit 0 (BLOCKER-2 "
+        f"stays intact in the runner), got rc={rc}"
+    )
+    assert rc != 3, (
+        "ACCRUE_NOOP_EXIT was fired on a store-miss — the rc-3 surface "
+        "is reserved for the byte-equal caught-up case."
+    )
+    # Ledger unchanged: backfill's no-op write under store-miss is not
+    # a caught-up no-op, but the builder still didn't write rows because
+    # the store didn't have the requested date.
+    assert _sha256(ledger) == pinned
+    # Sanity: the receipt's failure signature must surface; this proves
+    # the store-miss reached backfill_from_store (so BLOCKER-2 in the
+    # runner has something to refuse).
+    from engine import options_skew as S
+    hist = S.load_history()
+    dates = S.catch_up_sessions(_D2, hist)
+    receipt = S.backfill_from_store(dates, store=store)
+    assert receipt["dates_not_in_store"] == 1, (
+        f"expected the store to miss S=D2, got receipt={receipt}"
+    )
+    assert receipt["dates_backfilled"] == 0
+    assert receipt["rows_added"] + receipt["rows_replaced"] == 0
+
+
+def test_accrue_sole_leg_returns_0_when_store_covers_session_but_panel_is_empty(
+        tmp_path, monkeypatch, capsys):
+    """A-F03-W2-8 seat round 4 (round-3 lane review BLOCKER): the store COVERS
+    the complete session (a chain file exists, `dates_backfilled == len(dates)`)
+    but the panel yields zero ledger rows (`skew_map(chain)` empty), so every
+    count is zero. That is "something to accrue and it did not land" — a real
+    failure the runner's BLOCKER-2 verify step must still catch — NOT a
+    caught-up no-op. The rc-3 surface additionally requires
+    `rows_unchanged > 0` (the backfill compared real rows and found them
+    byte-equal); here it must stay rc 0 with no caught-up notice."""
+    _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for root in _COMPLETE_STORE_ROOTS:
+        for asof in (_D1, _D2):
+            seeded.append(dict(
+                date=asof, underlying=root, asof=asof, spot=100.0,
+                tenor_days=30.0, otm_put_iv=0.40, atm_call_iv=0.30,
+                skew=0.10, n_strikes=4, source="thetadata",
+            ))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+    # The chain is present (store covers the date) but produces no skew rows.
+    monkeypatch.setattr(S, "skew_map", lambda chain, drops=None: {})
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    assert rc == 0, f"covered-but-empty panel must NOT exit ACCRUE_NOOP_EXIT, got {rc}"
+    out = capsys.readouterr().out
+    assert not [l for l in out.splitlines() if l.startswith("::notice title=options-skew-accrual::")]
+    assert _sha256(ledger) == pinned
