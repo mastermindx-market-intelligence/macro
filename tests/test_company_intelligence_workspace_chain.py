@@ -1182,6 +1182,7 @@ def test_d5_body_only_decision_to_issuer_release_is_observed_and_endpoint_200(
 ) -> None:
     from types import SimpleNamespace
 
+    pytest.importorskip("fastapi", reason="Prophet Lab API tests need fastapi")
     import app.prophet_lab as prophet_lab_api
 
     decision = _raw_workspace(
