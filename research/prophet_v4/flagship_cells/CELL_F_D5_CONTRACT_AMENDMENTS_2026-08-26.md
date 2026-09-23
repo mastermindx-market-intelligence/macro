@@ -422,7 +422,7 @@ beat/miss is permanently **ABSENT**: the builder emits a typed `missing_source` 
 `consensus_unlicensed` warning
 (`engine/company_intelligence/event_workspace_build.py:355-380,396-400`), and A12 forbids
 `beat`/`miss` unless `basis_match` is true
-(`CELL_F_D5_CONTRACT_AMENDMENTS_2026-08-26.md:317-320`).
+(`CELL_F_D5_CONTRACT_AMENDMENTS_2026-08-26.md:323-326`).
 
 ---
 
