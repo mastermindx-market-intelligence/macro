@@ -102,7 +102,7 @@ def _records(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
-def _bind(monkeypatch, tmp_path, rows, symbols, table, *, session=SESSION):
+def _bind(monkeypatch, tmp_path, rows, symbols, table, *, session=SESSION, asof=ASOF):
     calls = {"plane": None, "today": None, "tickers": []}
 
     def _symbols(plane_id, repo_root=None):
@@ -114,7 +114,7 @@ def _bind(monkeypatch, tmp_path, rows, symbols, table, *, session=SESSION):
         calls["tickers"].append(ticker)
         return table[ticker]
 
-    monkeypatch.setattr(prod, "utc_today", lambda: ASOF)
+    monkeypatch.setattr(prod, "utc_today", lambda: asof)
     monkeypatch.setattr(prod, "fetch_event_stage", lambda _session: rows)
     monkeypatch.setattr(prod, "symbols_on_plane", _symbols)
     monkeypatch.setattr(prod.earnings_blackout, "assess", _assess)
@@ -405,6 +405,81 @@ def test_no_retained_date_is_no_event_stage(monkeypatch, tmp_path, capsys):
     assert env["links_path"] is None
     summaries = [line for line in capsys.readouterr().out.splitlines() if line.startswith("options_catalyst_links:")]
     assert summaries == ["options_catalyst_links: session=none events=0 bound=0 unbound=0 unresolved=0"]
+
+
+def test_fresh_earnings_stays_bound_when_utc_today_is_after_the_event(monkeypatch, tmp_path):
+    """A fresh earnings row stays bound when the run date is after the event.
+
+    ``as_of_age_td`` counts sessions, not calendar days. Subtracting that count
+    from the run date stamps Saturday when the age is 0, and Sunday when the
+    run is Monday and the age is 1. Both dates are after Friday's event, so
+    the binder drops the earnings row as lookahead and the co-dated FOMC date
+    takes the link.
+    """
+    event = _event("e-wknd", "AAPL", "2026-10-16")
+
+    def _earnings(record):
+        return [row for row in record["candidates"] if row["kind"] == "earnings"][0]
+
+    sat_rc, _sat_env, sat_rows, sat_calls = _bind(
+        monkeypatch,
+        tmp_path / "sat",
+        [event],
+        {"AAPL"},
+        {"AAPL": _fresh("2026-09-16", age=0)},
+        session="2026-09-04",
+        asof=date(2026, 9, 5),
+    )
+    assert sat_rc == 0
+    assert sat_calls["today"] == date(2026, 9, 5)
+    sat = sat_rows[0]
+    assert sat["binding_state"] == "BOUND"
+    assert sat["catalyst"]["kind"] == "earnings"
+    assert sat["catalyst"]["known_as_of"] == "2026-09-04"
+    sat_earn = _earnings(sat)
+    assert sat_earn["known_as_of"] == "2026-09-04"
+    assert sat_earn["exclusion_reason"] is None
+    assert sat_earn["trusted"] is True
+    assert any(item["kind"] == "fomc" for item in sat["catalyst"].get("co_dated", []))
+
+    mon_rc, _mon_env, mon_rows, _mon_calls = _bind(
+        monkeypatch,
+        tmp_path / "mon",
+        [event],
+        {"AAPL"},
+        {"AAPL": _fresh("2026-09-16", age=1)},
+        session="2026-09-04",
+        asof=date(2026, 9, 7),
+    )
+    assert mon_rc == 0
+    mon = mon_rows[0]
+    assert mon["binding_state"] == "BOUND"
+    assert mon["catalyst"]["kind"] == "earnings"
+    # 2026-09-07 is a holiday. Age 1 is the session before Friday, not Sunday.
+    assert mon["catalyst"]["known_as_of"] == "2026-09-03"
+    mon_earn = _earnings(mon)
+    assert mon_earn["known_as_of"] == "2026-09-03"
+    assert mon_earn["exclusion_reason"] is None
+    assert mon_earn["trusted"] is True
+
+    # A stamp that really is after the event clock stays excluded.
+    early = _event("e-early", "AAPL", "2026-09-11", ts="2026-09-02T18:00:00Z")
+    late_rc, _late_env, late_rows, _late_calls = _bind(
+        monkeypatch,
+        tmp_path / "late",
+        [early],
+        {"AAPL"},
+        {"AAPL": _fresh("2026-09-08", age=0)},
+        session="2026-09-04",
+        asof=date(2026, 9, 4),
+    )
+    assert late_rc == 0
+    late = late_rows[0]
+    late_earn = _earnings(late)
+    assert late_earn["known_as_of"] == "2026-09-04"
+    assert late_earn["exclusion_reason"] == "LOOKAHEAD_EXCLUDED"
+    assert late_earn["trusted"] is False
+    assert late["binding_state"] == "STALE_CATALYST"
 
 
 def test_bad_strike_is_not_swallowed(monkeypatch, tmp_path):
