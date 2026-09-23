@@ -1,4 +1,4 @@
-# B20 — Prophet US flagship workspace design packet v1 (D09 input; document only)
+# B20 DESIGN PACKET V2
 
 **Operation:** `prophet-us-fable-meta-ceo-20260923-001`
 
