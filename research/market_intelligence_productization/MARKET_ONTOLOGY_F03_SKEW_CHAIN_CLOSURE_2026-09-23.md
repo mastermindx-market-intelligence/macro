@@ -7,22 +7,27 @@ is "not measured" — nothing is estimated.
 
 ## 0. Verdict in plain words
 
-The store-host accrual lane is live on `macstudio` M1 (`com.macro.skewaccrual`,
-weekdays 12:30Z) and is accruing thetadata rows against an R2-published ledger.
-The first scheduled day (2026-09-23) fired two incidents, both fixed the same day
-(`#7819` runner hardening, `#7827` stdout-only gate verdict). The committed
-`data/options_skew/snapshots.parquet` on `origin/main` carries 12,747 rows
-(polygon_gex 12,375 + thetadata 372); the store-host/R2 ledger after the
-2026-09-23 backfill + first scheduled accrual carries 13,971 rows across 48 dates.
-The render path is cut over (`#7743`) — render hosts hydrate `options_skew` from
-R2 and `--emit`, no longer pinned to the legacy chain. Three things remain open:
-PR `#7783` (W2-4c source-window fields + plain-language Directional sentence)
-awaits a base-side HK-state re-bake; PR `#7832` (A-F03-W2-6 complete-session
-resolver / thin-session emit guard) is lane PASS and seat RATIFIED, armed
-`merge-on-green`, merge pending its CI run; the 2026-08-14 → 2026-09-18 ledger
-hole is backfillable from the store and the seat's `--backfill` is in progress at
-the time of writing. The methodology-parity packet (`scripts/audit_options_skew_parity.py`)
-and the F00C ledger row 013 reconciliation are owed by separate lanes.
+The store-host accrual lane is live on the M1 store host (`com.macro.skewaccrual`,
+weekdays 12:30Z in PDT / 13:30Z in PST — `ops/launchd/com.macro.skewaccrual.plist`
+fires at 05:30 America/Los_Angeles) and is accruing thetadata rows against an
+R2-published ledger. The first scheduled day (2026-09-23) fired two incidents,
+both fixed the same day (`#7819` runner hardening, `#7827` stdout-only gate
+verdict). The committed `data/options_skew/snapshots.parquet` on `origin/main`
+carries 12,747 rows (polygon_gex 12,375 + thetadata 372); the store-host/R2
+ledger after the 2026-09-23 backfill + first scheduled accrual carries 13,971
+rows across 48 dates. The render path is cut over (`#7743`) — render hosts
+hydrate `options_skew` from R2 and `--emit`, no longer pinned to the legacy
+chain. Six things remain open: PR `#7783` (W2-4c source-window fields +
+plain-language Directional sentence) awaits a base-side HK-state re-bake;
+PR `#7832` (A-F03-W2-6 complete-session resolver / thin-session emit guard)
+is lane PASS and seat RATIFIED, armed `merge-on-green`, merge pending its CI
+run; the 2026-08-14 → 2026-09-18 ledger hole is backfillable from the store
+and the seat's `--backfill` is in progress at the time of writing; the
+methodology-parity packet (`scripts/audit_options_skew_parity.py`) and the F00C
+ledger row 013 reconciliation are owed by separate lanes; the `render-linux`
+self-hosted runner is offline, so engine-render push-triggered runs pend and
+page-side proofs come from the `closing-bell`, `render`, and `daily` lanes on
+`macstudio`.
 
 ## 1. What shipped
 
@@ -85,11 +90,16 @@ git clean -fd` to run BEFORE the detach in both runners, and the runbook §3.8
 discipline that prevents the dirty state in the first place.
 
 **(b) 12:50Z re-fire stuck in the freshness gate.** Symptom: "store not fresh
-yet", retried 3 × 20 min while the store was actually fresh. Cause: the runner
-was capturing the gate's stdout AND stderr into one file and matching the whole
-file; the stderr stream carried a sibling line that re-read as STALE. Fix: PR
-`#7827` reads the gate verdict from stdout only; stderr now lives in a separate
-`.err` sidecar.
+yet", retried 3 × 20 min while the store was actually fresh. Cause: the gate
+(`scripts/skew_accrual_gate.py`) prints ONE verdict word on stdout (`FRESH` /
+`STALE` / `RESOLVE_ERROR` / `USAGE_ERROR`) and ONE `::gate-info::` info line
+on stderr; the old runner capture was `>"$GATE_STATUS_FILE" 2>&1` and matched
+the WHOLE merged file with `case "$status" in FRESH|RESOLVE_ERROR)`, so the
+two-line content never matched the case pattern and every attempt fell through
+to the not-fresh branch (the info line carries `latest/required/reason`, no
+`STALE` token). Fix: PR `#7827` redirects stderr to `$GATE_STATUS_FILE.err`,
+tails the info line into the lane log as the receipt's evidence, and parses
+the verdict as the last line that IS a verdict word.
 
 **Defect found on the 14:24Z accrual receipt (14:40Z).** The accrued
 2026-09-22 session is PARTIAL — 12 names: AAPL, AMZN, AVGO, DIA, GOOGL, IWM,
@@ -134,8 +144,10 @@ armed).
 - **Parity packet** (`scripts/audit_options_skew_parity.py`). Owner: lane (not
   the F03 seat). The W2-4 overlap audit
   (`research/MARKET_ONTOLOGY_F03_SKEW_OVERLAP_RECEIPT_2026-09-22.md`) is the
-  receipt that opened this; the parity packet owes the methodology reconciliation
-  (tenor/strike selection, chain snapshot timing) per
+  receipt that opened this: **3,965** keys compared, **sign agreement 0.603279**
+  (match=2,392 / flip=1,563 / zero=0), |delta skew| p50/p90/max =
+  **0.0379 / 0.167 / 3.9529**. The parity packet owes the methodology
+  reconciliation (tenor/strike selection, chain snapshot timing) per
   `DSC:SKEW-THETADATA-RECOMPUTE-DIVERGES-FROM-POLYGON-LEDGER`. Skew stays
   display-tier until it closes.
 
@@ -150,30 +162,29 @@ armed).
 
 ## 5. Operating the lane
 
-A 10-line runbook pointer; full text lives in
-`research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md` (W2-2 install +
-runbook, never re-explained here).
+Full text lives in `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md`
+(W2-2 install + runbook). Cited by section, not re-explained.
 
-- Install surface on M1: `/Users/chriswong/skew-ops-wt` (blobless sparse clone,
-  origin = GitHub), state dir `/Users/chriswong/skew-ops-state/{logs,receipts}`,
-  plist `~/Library/LaunchAgents/com.macro.skewaccrual.plist`. See runbook §3.1.
-- Receipt log: `~/skew-ops-state/logs/skewaccrual.stdout.log` (and `.err`
-  sidecar after `#7827`); backfill receipts under `~/skew-ops-state/receipts/`.
-- Freshness verdict: read from **stdout only** (post-`#7827`); FRESH means
-  `latest` ≥ `required`.
-- §3.8 restore after ANY manual session: run the exact sequence in runbook §3.8
-  — `git fetch origin && git reset --hard && git clean -fd && git checkout
-  --detach origin/main && git reset --hard && git clean -fd`, then
-  `git status --short | wc -l` must print `0`. Durable state is on R2, never in
-  the disposable checkout.
-- Recovery kickstart (after an aborted scheduled run):
+- **Install + logs** (§3.3): M1 store host, plist `~/Library/LaunchAgents/com.macro.skewaccrual.plist`,
+  lane checkout `/Users/chriswong/skew-ops-wt` (origin = GitHub, runbook §3.1),
+  state dir `/Users/chriswong/skew-ops-state/{logs,receipts}`.
+- **Receipt logs**: `~/skew-ops-state/logs/skewaccrual.stdout.log` and the
+  long-lived stderr sibling `skewaccrual.stderr.log` (the launchd-plist
+  `StandardOutPath` / `StandardErrorPath` — both predate `#7827`); per-run gate
+  sidecar `$STATE_DIR/.skew_gate_status.$RUN_TAG.err` (post-`#7827`).
+- **Freshness verdict**: stdout only, last line that IS `FRESH|STALE|RESOLVE_ERROR|USAGE_ERROR`
+  (post-`#7827`); FRESH means `latest` ≥ `required`. Schedule: weekdays 12:30Z
+  PDT / 13:30Z PST (plist fires 05:30 America/Los_Angeles).
+- **§3.8 restore after ANY manual session**: sequence + `git status --short | wc -l`
+  must print `0`. Durable state lives on R2; the checkout is disposable.
+- **Recovery kickstart** (after an aborted run):
   `launchctl kickstart gui/$(id -u)/com.macro.skewaccrual` (runbook §3.8).
   Accrual is idempotent for the session it targets.
-- "Which session is accrued" rule: `load_chain(asof=None)` resolves the newest
-  raw date in the store. The store contract (T1 daily maintainer vs the
-  early-morning 12-root writer) means the newest raw date may be a thin session
-  and must be filtered; until W2-6 merges, the seat's stopgap is to drop rows
-  from the store-host ledger before publish (see §3 defect).
+- **"Which session is accrued" rule**: `load_chain(asof=None)` resolves the
+  newest raw date; the store contract (T1 daily maintainer vs early-morning
+  12-root writer) means that date may be a thin session and must be filtered
+  — until W2-6 (`#7832`) merges, the seat's stopgap is to drop rows from the
+  store-host ledger before publish (see §3 defect).
 
 ## 6. Do-not-redo
 
@@ -181,16 +192,25 @@ runbook, never re-explained here).
   `~/skew-ops-state/receipts/skew-backfill-2026-06-21_2026-08-13.{json,stdout}`
   and the parquet backup at
   `~/skew-ops-state/receipts/snapshots.parquet.local-after-backfill-2026-09-23.bak`
-  are the audit; re-running would double-count thetadata canonical-wins upserts.
+  are the audit; re-running is harmless (the ledger upsert is keyed by
+  `(date, underlying)` and the parquet is "not rewritten when nothing changed"
+  — `engine/options_skew.py:374–379`,`:520–521` — a second call reports no
+  replacements and no additions) but wastes store I/O and adds nothing.
 - Never pin `OPTIONS_SKEW_LEGACY_CHAIN=1` in CI, in a workflow file, or in
   `scripts/ci/`. The W2-3 cutover (`#7743`) removed every legacy pin;
   re-pinning would re-introduce the polygon path the chain is closing.
 - Never accrue from a render host. Accrual runs on the M1 store host only; the
   render path is hydrate + `--emit`, never accrue.
-- Never edit `scripts/build_options_command.py::load_stores`. The store
-  resolution order (ThetaData canonical, polygon_gex for unpriceable) is the
-  contract `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY` rests on; changing
-  it would re-break the backfill canonical-wins invariant.
+- Never edit `scripts/build_options_command.py::load_stores`. That function
+  loads render-side JSON stores only (flow_desk / screener / leaders /
+  market_structure / vol / gex / gex_index — `scripts/build_options_command.py:143–160`,
+  pinned by `tests/test_render_options_workspace_scope.py`). It has no
+  ThetaData/polygon resolution-order code; the resolution order
+  (ThetaData canonical, polygon_gex for unpriceable) lives in
+  `engine/options_skew.py` (`snapshot`, `load_chain`, `backfill_from_store`)
+  and is the contract `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY` rests
+  on. Editing `load_stores` is excluded by scope; editing `engine/options_skew.py`
+  re-breaks the backfill canonical-wins invariant.
 - Never write `site/options_skew/latest.json` by hand. The artifact is produced
   by `scripts/build_options_skew --emit` on render hosts after `scripts/fetch_r2
   --dirs options_skew` hydrates R2; hand-writing it would diverge from the
