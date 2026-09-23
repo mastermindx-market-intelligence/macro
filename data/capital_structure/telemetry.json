@@ -1,10 +1,10 @@
 {
   "artifact_hashes": {
-    "event_edges": "d52955629c34c6c54fb3328526fc3ab4e089eb9f53d3d3ab03b4f3b596838d88",
-    "event_versions": "1886461f6deb26f9438a8a5e975d63ce115b7c5f0187dd9500b349a7e22fc1cc",
-    "review_queue": "420f95a254effde82406782182906737c787fb238ddfb388213317d8dd8085d0"
+    "event_edges": "16dfa141c6fb734770016ebba6c2c930461c49fd5e58542bb972441dadcabc39",
+    "event_versions": "7b1ec94e1e806187f96e3f60343d84812fccd1db855ed826ff1294cecc3716f9",
+    "review_queue": "464f48546b0f7745953b8cb82a4d7ef68221c696c9011a2ce44607a915ce7814"
   },
-  "as_of": "2026-09-19T03:27:52.206764+00:00",
+  "as_of": "2026-09-22T15:49:46.034005+00:00",
   "authority": {
     "entry_authority": false,
     "is_context_only": true,
@@ -18,7 +18,7 @@
     "compile_failures": 0,
     "event_edges": 1914,
     "event_versions": 14007,
-    "new_event_versions": 535,
+    "new_event_versions": 0,
     "review_queue": 9103,
     "source_manifests": 43093
   },
@@ -124,7 +124,7 @@
       "PRE 14C"
     ]
   },
-  "generation_id": "generation:cs:4dc01966d6acd6c81c504b70",
+  "generation_id": "generation:cs:bfadab4f662f44b5901257da",
   "known_exclusions": [
     "424B2",
     "424B6",

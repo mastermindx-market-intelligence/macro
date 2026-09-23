@@ -1301,6 +1301,30 @@
       "at": "2026-09-21T19:30:18.651473+00:00",
       "activated": false,
       "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50678": {
+      "id": "wh-2026-09-22-first-lady-melania-trump-unveils-new-fostering-the-future-together-technology-al",
+      "at": "2026-09-22T18:54:32.617326+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50670": {
+      "id": "wh-2026-09-22-president-trump-at-the-united-nations-while-others-have-talked-i-have-acted",
+      "at": "2026-09-22T18:54:45.200046+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50648": {
+      "id": "wh-2026-09-22-agreement-between-the-government-of-the-united-states-of-america-and-the-governm",
+      "at": "2026-09-22T18:55:27.605652+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50681": {
+      "id": "wh-2026-09-22-president-trump-inks-historic-arctic-security-agreement",
+      "at": "2026-09-22T22:14:25.608372+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
