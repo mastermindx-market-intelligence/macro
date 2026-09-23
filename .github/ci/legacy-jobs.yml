@@ -5365,6 +5365,22 @@ jobs:
       - name: flow-cohorts unit tests
         run: python -m pytest tests/test_flow_cohorts.py -q
 
+  options-catalyst-links:
+    if: ${{ false }}
+    gate: code
+    # First production caller of engine/options_catalyst_link.py. Hermetic:
+    # tmp_path and injected inputs only. No data/ or site/ bytes.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: options catalyst links
+        run: python -m pytest tests/test_build_options_catalyst_links.py tests/test_options_catalyst_link.py tests/test_options_catalyst_links_nightly_shape.py -q
+
   flow-signals-ledger:
     if: ${{ false }}
     gate: code
