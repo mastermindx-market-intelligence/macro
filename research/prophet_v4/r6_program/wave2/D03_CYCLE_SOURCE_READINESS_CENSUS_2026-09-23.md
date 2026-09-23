@@ -174,7 +174,7 @@ Forbidden shortcuts considered and refused:
 
 ## EVIDENCE INDEX
 
-Evidence key: source-code citations use `path:line@5f02cd6c95ab3`. PR-head line citations use the final head SHA, recorded here after commit. Commands show the output tail and rc; no credential values were captured.
+Evidence key: source-code citations use `path:line@5f02cd6c95ab3`; no PR-head path citation is required because every source claim predates the census branch. Commands show the output tail and rc; no credential values were captured.
 
 | Claim family | Citation / command |
 |---|---|
