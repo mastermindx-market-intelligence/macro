@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T13:39:19.922061+00:00",
-  "count": 2711,
+  "generated_at": "2026-09-23T13:54:20.598000+00:00",
+  "count": 2713,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,45 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-ks7yulaakge-837989",
+      "title": "GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:05Z",
+      "summary_points": [
+        "Anthropic's Claude Opus 5.5: Competitive Shift: 40% lower cost vs Astra, stronger coding/agent capabilities, potential frontier leader status signaling superior value for AI-driven coding applications.",
+        "Muse's Second-Order Effects: Sector Impact: Agent-driven automation pressures Consumer Inertia (GSXUSWCH) and Financials, with immediate price drops in Planet Fitness, Everquote, indicating sector-wide risk.",
+        "2s-10s Spread Flattening: Sharp decline from ~98 to 89.90 (10.5% drop) coinciding with Muse I launch, signaling weakening growth expectations requiring immediate duration risk adjustment.",
+        "Yield Curve Signal for Duration Risk: Steep 2s-10s spread drop (70 to 18.257bps) demands urgent repositioning in duration and interest rate sensitivity analysis."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-movqr9urdl6-efef34",
+      "title": "GS Privorotsky GS Basics Agentic Proliferation Oil's Fragile Calm Extreme Flattening 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:59Z",
+      "summary_points": [
+        "Agentic Revolution Productivity Dividend: AI proliferation (Inference Economy) driving structural disinflation via CPU chain productivity gains, creating long-term portfolio alpha through reduced friction and productivity dividend spread.",
+        "Russia-Ukraine Conflict Risk: 30% probability of NATO-Russia clash (geopolitical risk factor), overshadowing oil diplomacy stalemate (US-Iran/Trump-XI) and elevating portfolio volatility.",
+        "Rates Flattening Growth Signal: Extreme front-end yield pressure with real rates at cycle highs reflects robust near-term growth dynamics, not persistent inflation—critical for rate-sensitive positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-cyxqyhf0iin-b93d17",
       "title": "GS Novak GS U.S. Industrials & Materials moving pieces 22 Sep 2026",
