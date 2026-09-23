@@ -7,14 +7,15 @@
 **Implementation complete:** false  
 **Fable handoff complete:** false
 
-## 0. Authority, source and exact parent
+## 0. Authority, source and exact revisions
 
 - Current Chairman intent: continue extensive principal Finance research/planning before any Fable CEO implementation handoff.
 - Protected procedure pin: `mastermindx-market-intelligence/Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`.
 - Skillpack: `mastermind.sol_skillpack.v1` v1.0.1, bootstrap major 1.
 - Original Macro research base: `668237947e016f679782e41e61c91c9133a5ea99`.
-- Exact cumulative research parent covered by this checkpoint: `8a0b42fddf90a23e70685c87708837a26f14562b`.
-- This checkpoint commit is the intended exact resume revision once GitHub returns its immutable commit SHA.
+- Exact cumulative research parent covered by the prior checkpoint revision: `8a0b42fddf90a23e70685c87708837a26f14562b`.
+- Prior immutable checkpoint revision independently read back: `d05ee3066d6ae899315fd75166e53750accaa132`.
+- This metadata-only checkpoint update preserves the same research state and becomes the intended exact resume revision once GitHub returns its immutable SHA.
 - Direct principal reason: `PRINCIPAL_JUDGMENT`.
 - No worker, Fable receiver, Executive Attempt or watcher was started.
 - No product code, production schema, canonical graph data, basket membership, rank, recommendation, trade, CI or deployment was changed.
