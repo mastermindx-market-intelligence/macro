@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T11:24:00.999042+00:00",
-  "count": 2705,
+  "generated_at": "2026-09-23T11:55:05.648503+00:00",
+  "count": 2707,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1752,6 +1752,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-1smfjyn2yor-65b836",
+      "title": "FIS WeeklyUpdate",
+      "institution": "Piper Sandler",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:59:44Z",
+      "summary_points": [
+        "Fed tightening & credit stress: Fed raised rates 25bp (median 4.1% year-end), flattening yield curve (2yr 4.76%, 10yr 5.00%), Caa yields surged to 14% signaling acute credit stress risk.",
+        "RMBS spread opportunities: NA RMBS 5.5 SEQ/PT at 6.0% yield vs Treasury (4.8%) offers 1.2% spread (largest opportunity), with steeper mid-term (5-8yr) slopes indicating structural yield curve advantage.",
+        "Yield curve steepening: Treasury yields rose 8-11bps (1-3yr) vs 3-6bps (5-7yr), signaling growth expectations and favoring short-duration portfolios.",
+        "Geopolitical supply chain risks: Houthi attacks/Saudi disruptions + Russian refinery outages tighten diesel markets, elevating crude supply risks amid heavy Treasury supply ($183bn)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
       "institution": "Westpac",
@@ -1810,6 +1830,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-relvlyiuqc4-a03142",
+      "title": "How will Fed rate hikes impact markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:40:17Z",
+      "summary_points": [
+        "Fed Policy Shift: Fed raised rates to 3.75–4.00% (first hike in 3 years); markets price 3 additional hikes by 2027 vs 1 expected in December.",
+        "Equity Resilience: Resilient growth and earnings support equities absorbing moderately higher yields despite rate hikes.",
+        "Tactical Bond Opportunities: Selective medium-to-long duration high-quality bonds offer opportunities amid higher yields; caution on longest maturities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
