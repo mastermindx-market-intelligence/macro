@@ -413,13 +413,13 @@ Add one owner entry:
     "historical_replay": ["owner_native"]
   },
   "clock_bindings": {
-    "source.published_at": {"class": "source_published", "grains": ["date", "unknown"]},
+    "source.published_at": {"class": "source_published", "grains": ["date"]},
     "source.observed_at": {"class": "observed", "grains": ["datetime"]},
     "source.retained_at": {"class": "system_recorded", "grains": ["datetime"]},
     "review.reviewed_at": {"class": "system_recorded", "grains": ["datetime"]},
-    "review.review_due_at": {"class": "review_due", "grains": ["date", "unknown"]},
-    "temporal.business_valid_from": {"class": "world_valid", "grains": ["date", "unknown"]},
-    "temporal.business_valid_to": {"class": "world_valid", "grains": ["date", "unknown"]},
+    "review.review_due_at": {"class": "review_due", "grains": ["date"]},
+    "temporal.business_valid_from": {"class": "world_valid", "grains": ["date"]},
+    "temporal.business_valid_to": {"class": "world_valid", "grains": ["date"]},
     "computed_at": {"class": "belief_or_build", "grains": ["datetime"]}
   },
   "synapse_asof_field": "computed_at",
@@ -945,6 +945,44 @@ The first vertical is \`PROVEN_OUTCOME\` only when the real accepted source reac
 8. Task 8 is the real-path acceptance slice and cannot use fixture substitution.
 
 Do not add a new worker merely because tasks are listed separately. Tasks 1/3/4 are tightly coupled around the assertion interface; if using subagents, each fresh implementer receives the spec plus this plan, and each task gets a fresh reviewer before its dependent task starts.
+
+
+## Spec/Acceptance Coverage Matrix
+
+| Acceptance case | Owning task(s) |
+|---|---|
+| RBV-01 catalog capability ≠ supply contract | Task 4 |
+| RBV-02 documented two-camera quantity/basis | Tasks 1, 4, 8 |
+| RBV-03 no generation inheritance | Task 4 |
+| RBV-04 future target ≠ delivered | Tasks 1, 4, 6 |
+| RBV-05 reciprocal roles remain separate | Tasks 4, 6 |
+| RBV-06 adjacent auto customer ≠ robotics customer | Task 4 |
+| RBV-07 corporate plants ≠ robot capacity | Task 4 |
+| RBV-08 undisclosed robotics revenue stays null | Task 4 |
+| RBV-09 incompatible financial bases refuse | Task 4 |
+| RBV-10 announcement ≠ completed ownership | Tasks 1, 4 |
+| RBV-11 unresolved listing gets no market join | Task 4 |
+| RBV-12 similar product labels do not auto-merge | Task 1 |
+| RBV-13 unsupported K1 cross-type joins refuse | Task 3 |
+| RBV-14 QLedger is not factual product evidence | Tasks 3, 4 |
+| RBV-15 source publication ≠ observation/business clocks | Tasks 1, 3, 6 |
+| RBV-16 same URL/day separate statements stay distinct | Task 1 |
+| RBV-17 corrected same URL/day appends revision | Tasks 1, 2 |
+| RBV-18 withdrawal/review expiry preserves history | Tasks 1, 4 |
+| RBV-19 later-retained evidence cannot backdate knowledge | Tasks 3, 4 |
+| RBV-20 date-only edge key is not intraday replay proof | Tasks 2, 3 |
+| RBV-21 parent/contained cost double count refuses | Task 4 |
+| RBV-22 per-hand ≠ per-robot without multiplicity | Task 4 |
+| RBV-23 backlog/sales ≠ lead time | Tasks 4, 6 |
+| RBV-24 published totals/residuals preserved | Task 4 |
+| RBV-25 non-finite/negative/basis-free quantity refuses | Task 1 |
+| RBV-26 syndicated copies are not independent confirmation | Tasks 1, 4 |
+| RBV-27 partial rights stays restricted/partial | Tasks 4, 5, 6 |
+| RBV-28 no public full-fidelity mirror | Tasks 7, 8 |
+| RBV-29 private headers on denial/error | Tasks 5, 8 |
+| RBV-30 desktop/mobile EN/ZH dark/light semantic parity | Tasks 6, 8 |
+| RBV-31 legacy decision outputs unchanged | Tasks 7, 8 |
+| RBV-32 UI build time cannot hide source-generation lag | Tasks 4, 6, 8 |
 
 ## Completion Law
 
