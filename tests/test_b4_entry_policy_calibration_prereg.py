@@ -18,7 +18,7 @@ def load_prereg():
 def resolve_cell_aliases(registration):
     aliases = registration["alias_map"]
     cell_ids = {cell["id"] for cell in registration["cells"]}
-    resolved = [aliases.get(cell_id, cell_id) for cell_id in registration["cells"]]
+    resolved = [aliases.get(cell_id, cell_id) for cell_id in (cell["id"] for cell in registration["cells"])]
     return {cell_id if cell_id in cell_ids else aliases[cell_id] for cell_id in resolved}
 
 
@@ -58,7 +58,7 @@ def test_primary_endpoint_and_horizon_are_singular():
         for metric in registration["outcomes"]["required_metrics"]
         if metric != "mae"
     ]
-    assert supporting["horizons"] == [3, 5, 15]
+    assert supporting["horizons_sessions"] == [3, 5, 15]
     assert supporting["rescue_authority"] is False
 
 

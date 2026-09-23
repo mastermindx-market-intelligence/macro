@@ -117,7 +117,24 @@
       "cost_basis",
       "nbbo_missing_or_unusable_rate"
     ],
-    "capacity_claim_allowed": false
+    "capacity_claim_allowed": false,
+    "supporting_descriptive_only": {
+      "metrics": [
+      "coverage_retained_vs_C0",
+      "net_return_after_measured_or_floor_costs",
+      "excess_vs_benchmark",
+      "excess_vs_sector",
+      "mfe",
+      "target_before_invalidation",
+      "invalidation_first",
+      "time_to_positive",
+      "cost_per_side_bps",
+      "cost_basis",
+      "nbbo_missing_or_unusable_rate"
+      ],
+      "horizons_sessions": [3, 5, 15],
+      "rescue_authority": false
+    }
   },
   "evidence_floor": {
     "verdict_grade_episodes_per_cell": 300,
