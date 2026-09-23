@@ -16388,7 +16388,8 @@ jobs:
     # the W2-2 suites were parked in config/unrun_test_waivers.yml in error. They
     # are now wired into a real merge-gate job and those waiver rows are deleted
     # (round 5/N, Meta-CEO A binding ruling). The W2-4 and W2-5a suites were never
-    # waived. scope: exclusive replaces inference because every helper script has
+    # waived. A-F03-W2-4b adds tests/test_options_skew_backfill.py to the same
+    # gate:code job (nine suite runs). scope: exclusive replaces inference because every helper script has
     # its own argparse surface and the runner is sh-only and not visible to AST
     # inference.
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -16474,6 +16475,7 @@ jobs:
       - "scripts/build_options_payoff_lab.py"
       - "tests/test_options_payoff_lab.py"
       - "tests/test_payoff_lab_launchd.py"
+      - "tests/test_options_skew_backfill.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16491,7 +16493,7 @@ jobs:
         # jsonschema: lib/evidence_foundation.py (imported by options_payoff).
         # scipy: engine/intraday_greeks.py, which the payoff engine calls.
         run: pip install pytest pandas pyarrow pyyaml jsonschema scipy
-      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap + parity audits, payoff lab
+      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap + parity audits, payoff lab, backfill
         run: |
           python -m pytest \
             tests/test_skew_accrual_gate.py \
@@ -16502,4 +16504,5 @@ jobs:
             tests/test_skew_accrual_verify_ledger.py \
             tests/test_options_payoff_lab.py \
             tests/test_payoff_lab_launchd.py \
+            tests/test_options_skew_backfill.py \
             -q
