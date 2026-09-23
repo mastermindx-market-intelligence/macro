@@ -223,13 +223,13 @@
   a.slink .sl-name { font-size:12.5px; font-weight:700; }
   a.slink .sl-desc { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
   /* Paper p-7-1 production translation */
-  .ci-vnext{font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;gap:16px;margin:0 0 24px}
+  .ci-vnext{font-family:var(--font-ui);display:flex;flex-direction:column;gap:16px;margin:0 0 24px}
   .ci-vnext *{box-sizing:border-box}
   .ci-vnext-tabs{display:flex;gap:22px;min-height:36px;align-items:center;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
   .ci-vnext-tab{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-decoration:none;padding:10px 0 9px}
   .ci-vnext-tab.active{color:var(--text);border-bottom:2px solid var(--link)}
   .ci-vnext-hero{display:grid;grid-template-columns:minmax(0,1fr) 450px 280px;gap:16px;align-items:stretch}
-  .ci-vnext-lead,.ci-vnext-readout,.ci-vnext-panel,.ci-vnext-signals,.ci-vnext-decision{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .ci-vnext-lead,.ci-vnext-readout,.ci-vnext-panel,.ci-vnext-signals,.ci-vnext-decision{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px)}
   .ci-vnext-lead{padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
   .ci-vnext-live{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ok)}
   .ci-vnext-title{font-size:28px;line-height:1.08;margin:7px 0;letter-spacing:-.02em}
@@ -237,10 +237,10 @@
   .ci-vnext-readout{padding:14px;display:flex;flex-direction:column;justify-content:center;gap:8px}
   .ci-vnext-readrow{display:flex;justify-content:space-between;gap:10px;font-size:11px;border-bottom:1px solid var(--line);padding-bottom:6px}
   .ci-vnext-readrow:last-child{border-bottom:0;padding-bottom:0}
-  .ci-map{width:450px;height:142px;max-width:100%;border-radius:10px;overflow:hidden;position:relative;background:radial-gradient(circle at 58% 48%,rgba(91,155,240,.2),transparent 42%),linear-gradient(180deg,#1b2130,#12171f)}
+  .ci-map{width:450px;height:142px;max-width:100%;border-radius:var(--r-card,12px);overflow:hidden;position:relative;background:linear-gradient(180deg,var(--panel2),var(--panel))}
   .ci-map svg{position:absolute;inset:0;width:100%;height:100%}
-  .ci-map-kicker{position:absolute;right:8px;bottom:7px;color:#6F86A8;font-size:9px;letter-spacing:.11em}
-  .ci-vnext-kpis{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .ci-map-kicker{position:absolute;right:8px;bottom:7px;color:var(--muted);font-size:9px;letter-spacing:.11em}
+  .ci-vnext-kpis{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:var(--r-card,12px);overflow:hidden;background:var(--panel)}
   .ci-vnext-kpi{min-height:64px;padding:10px 12px;border-right:1px solid var(--line)}
   .ci-vnext-kpi:last-child{border-right:0}
   .ci-vnext-kpi-label{font-size:9px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}
@@ -250,11 +250,11 @@
   .ci-vnext-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:9px;border-bottom:1px solid var(--line)}
   .ci-vnext-head b{font-size:10px;letter-spacing:.09em}
   .ci-vnext-observation{display:grid;grid-template-columns:26px 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.42}
-  .ci-vnext-num{color:var(--muted);font-family:Menlo,monospace;font-size:9px}
-  .ci-vnext-badge{border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--muted);font-size:9px;white-space:nowrap}
+  .ci-vnext-num{color:var(--muted);font-family:var(--font-mono);font-size:9px}
+  .ci-vnext-badge{border:1px solid var(--line);border-radius:var(--r-pill,999px);padding:2px 7px;color:var(--muted);font-size:9px;white-space:nowrap}
   .ci-vnext-fresh-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:10.5px}
   .ci-vnext-signal-rail{display:grid;grid-template-columns:repeat(7,minmax(128px,1fr));gap:8px;padding-top:10px}
-  .ci-vnext-signal{min-width:128px;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+  .ci-vnext-signal{min-width:128px;padding:10px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2)}
   .ci-vnext-signal strong,.ci-vnext-signal span{display:block;font-size:10px}.ci-vnext-signal span{color:var(--muted);margin-top:4px}
   .ci-vnext-decisions{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:16px}
   .ci-vnext-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:10.5px}
@@ -302,13 +302,13 @@
       </section>
       <div class="ci-map" role="img" aria-label="{{ t('China intelligence map: Beijing, Shanghai and Shenzhen','中国情报地图：北京、上海与深圳') }}">
         <svg viewBox="0 0 440 142" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs><linearGradient id="ci-map-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#10233F" stop-opacity=".82"/><stop offset="100%" stop-color="#1B3156" stop-opacity=".55"/></linearGradient><filter id="ci-map-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-          <path d="M76 55 L104 38 L132 41 L155 30 L188 34 L207 25 L238 31 L259 42 L292 41 L318 54 L332 70 L317 82 L298 86 L286 104 L261 100 L246 116 L221 110 L202 122 L179 113 L155 119 L138 108 L117 111 L103 99 L83 96 L71 84 L54 74 L63 62 Z" filter="url(#ci-map-glow)" fill="url(#ci-map-fill)" stroke="#5B9BF0" stroke-width="1.4"/>
-          <path d="M111 45 L129 67 L151 78 L170 65 M170 65 L198 74 L220 57 M198 74 L211 98 M220 57 L250 68 L277 58 M250 68 L265 92 M211 98 L238 101" fill="none" stroke="#385B88" stroke-width=".7" opacity=".7"/>
-          <circle cx="267" cy="54" r="3.3" fill="#F5C36A"/><circle cx="300" cy="77" r="3.3" fill="#F5C36A"/><circle cx="285" cy="101" r="3.3" fill="#F5C36A"/>
-          <circle cx="213" cy="88" r="2.1" fill="#7AA7E0"/><circle cx="249" cy="81" r="2.1" fill="#7AA7E0"/>
-          <g font-family="Inter" font-size="8.7" fill="#fff"><text x="274" y="52">Beijing</text><text x="307" y="76">Shanghai</text><text x="292" y="104">Shenzhen</text></g>
-          <g opacity=".75" fill="#4C89D9"><circle cx="121" cy="60" r="1.2"/><circle cx="146" cy="51" r="1"/><circle cx="169" cy="88" r="1.2"/><circle cx="188" cy="50" r="1"/><circle cx="202" cy="97" r="1.2"/><circle cx="230" cy="49" r="1"/><circle cx="240" cy="82" r="1.2"/><circle cx="274" cy="67" r="1"/><circle cx="289" cy="61" r="1"/></g>
+          <defs><linearGradient id="ci-map-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--panel2)" stop-opacity=".82"/><stop offset="100%" stop-color="var(--panel)" stop-opacity=".55"/></linearGradient><filter id="ci-map-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <path d="M76 55 L104 38 L132 41 L155 30 L188 34 L207 25 L238 31 L259 42 L292 41 L318 54 L332 70 L317 82 L298 86 L286 104 L261 100 L246 116 L221 110 L202 122 L179 113 L155 119 L138 108 L117 111 L103 99 L83 96 L71 84 L54 74 L63 62 Z" filter="url(#ci-map-glow)" fill="url(#ci-map-fill)" stroke="var(--info)" stroke-width="1.4"/>
+          <path d="M111 45 L129 67 L151 78 L170 65 M170 65 L198 74 L220 57 M198 74 L211 98 M220 57 L250 68 L277 58 M250 68 L265 92 M211 98 L238 101" fill="none" stroke="var(--muted)" stroke-width=".7" opacity=".7"/>
+          <circle cx="267" cy="54" r="3.3" fill="var(--warn)"/><circle cx="300" cy="77" r="3.3" fill="var(--warn)"/><circle cx="285" cy="101" r="3.3" fill="var(--warn)"/>
+          <circle cx="213" cy="88" r="2.1" fill="var(--link)"/><circle cx="249" cy="81" r="2.1" fill="var(--link)"/>
+          <g font-family="Inter" font-size="8.7" fill="var(--text)"><text x="274" y="52">Beijing</text><text x="307" y="76">Shanghai</text><text x="292" y="104">Shenzhen</text></g>
+          <g opacity=".75" fill="var(--info)"><circle cx="121" cy="60" r="1.2"/><circle cx="146" cy="51" r="1"/><circle cx="169" cy="88" r="1.2"/><circle cx="188" cy="50" r="1"/><circle cx="202" cy="97" r="1.2"/><circle cx="230" cy="49" r="1"/><circle cx="240" cy="82" r="1.2"/><circle cx="274" cy="67" r="1"/><circle cx="289" cy="61" r="1"/></g>
         </svg>
         <span class="ci-map-kicker">PEOPLE · MARKETS · POLICY · OPPORTUNITY</span>
       </div>
