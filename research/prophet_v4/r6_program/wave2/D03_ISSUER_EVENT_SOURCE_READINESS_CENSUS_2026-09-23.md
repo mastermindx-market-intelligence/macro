@@ -137,4 +137,11 @@
 
 ## EVIDENCE INDEX
 
-TODO
+- `git rev-parse HEAD` → `a1a0a05e6adcdf007170bceaa7fbcd3323e333fc`, rc=0. SOURCE_SHA.
+- `git fetch origin main` → rc=0; `git merge-base HEAD origin/main` → the same SOURCE_SHA.
+- `git status --short --branch` → detached HEAD, clean at the skeleton; rc=0. The exact pre-push delivery receipt is `git rev-parse HEAD`, captured after the final delivery commit and before `git push`.
+- `git ls-tree -r --name-only a1a0a05e6adcdf007170bceaa7fbcd3323e333fc | rg '^engine/(stock_identity/|institutional_census/|earnings_release/|...)'` → all named anchors resolved at SOURCE_SHA, rc=0.
+- Repeated blob/line evidence used `git show <SOURCE_SHA>:<path> | nl -ba` and targeted `git grep -n ... <SOURCE_SHA> -- <paths>`, rc=0 for every cited range; no working-tree file was substituted for a source commit blob.
+- Targeted searches covered identity, clocks, revisions, rights, closes, membership and protected-outcome avoidance. Negative searches for CUSIP/FIGI schema and general lifecycle events are reported as UNKNOWN rather than evidence of impossibility.
+- `git diff --check HEAD^ HEAD` after each content commit → no output, rc=0 (whitespace check only; no test or producer was run because this PR changes one Markdown record only).
+- Sparse-worktree guard: no `python3 scripts/worktree_sparse.py full/add`, no read or write under `data/`, `site/` or `mockups/`.
