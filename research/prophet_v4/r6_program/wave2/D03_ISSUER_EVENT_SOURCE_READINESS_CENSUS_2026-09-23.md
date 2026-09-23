@@ -117,4 +117,11 @@
 
 ## EVIDENCE INDEX
 
-TODO
+- `git rev-parse HEAD` → `a1a0a05e6adcdf007170bceaa7fbcd3323e333fc`, rc=0. SOURCE_SHA.
+- `git status --short --branch` tail → `## HEAD (no branch)`; later `git log --oneline --decorate -5` tail showed skeleton `ba138b6800 (HEAD, origin/claude/pu-w2-d03-issuer-source-census)`, rc=0.
+- `git fetch origin main` → rc=0 during the session; later `git rev-parse origin/main` → `ed4c7b0223c7436d72aea0fdf03d7fe10926d6a2`, rc=0. Remote movement did not alter SOURCE_SHA.
+- `git ls-tree -r --name-only a1a0a05e6adcdf007170bceaa7fbcd3323e333fc | rg '^engine/(stock_identity/|institutional_census/|earnings_release/|...)'` → all named anchors resolved at SOURCE_SHA, rc=0.
+- Repeated blob/line evidence used `git show <SOURCE_SHA>:<path> | nl -ba` and `git cat-file blob <SOURCE_SHA>:<path> | nl -ba`, rc=0 for every cited range; no working-tree file was substituted for a source commit blob.
+- Targeted searches: `git grep -n ... a1a0a05e6adc... -- <paths>` for membership histories, clocks, rights, CUSIP/FIGI, revenue units and protected-outcome avoidance, rc=0; negative searches for CUSIP/FIGI schema and general lifecycle events were reported as UNKNOWN rather than evidence of impossibility.
+- `git diff --check HEAD^ HEAD` after each content commit → no output, rc=0 (whitespace check only; no test or producer was run).
+- Sparse-worktree guard: no `python3 scripts/worktree_sparse.py full/add`, no read or write under `data/`, `site/` or `mockups/`.
