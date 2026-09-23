@@ -1061,6 +1061,14 @@
     body.page-china .cnx-links.cnx-mobile-index{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 0 10px;padding-bottom:2px}
     body.page-china .cnx-links.cnx-mobile-index a{flex:0 0 auto;scroll-snap-align:start}
     body.page-china .cnx-links.cnx-mobile-index::-webkit-scrollbar{display:none}
+    body.page-china .cnx-links[data-cn-driver-rail]{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:2px}
+    body.page-china .cnx-links[data-cn-driver-rail] a{flex:0 0 auto;scroll-snap-align:start}
+    body.page-china .cnx-links[data-cn-driver-rail]::-webkit-scrollbar{display:none}
+    /* Keep the deep three-card rows intact, but make mobile traversal horizontal
+       instead of turning every row into three full-height stacked cards. */
+    body.page-china .cnx-wrap > .cnx-rack3{display:flex;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;gap:10px;padding-bottom:4px}
+    body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px);scroll-snap-align:start;scroll-snap-stop:always}
+    body.page-china .cnx-wrap > .cnx-rack3::-webkit-scrollbar{display:none}
   }
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
@@ -2168,7 +2176,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</div>
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
-  <div class="cnx-rack2">
+  <div class="cnx-rack2" role="region" aria-labelledby="cnx-focus-action">
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
@@ -2217,7 +2225,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</div>
   <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-markets">
     {# Pullback Risk vs Top Stocks conditional #}
     {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
     {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
@@ -2378,7 +2386,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</div>
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-drivers">
     {# Policy Monitor card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
       <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
@@ -2445,7 +2453,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-lbl" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</div>
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-deep">
     {# Property card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
@@ -4733,6 +4741,14 @@ window.__CHART_SWAP__ = {
     var card=e.target.closest&&e.target.closest('.cnx-card[role="button"]');
     if(!card||e.target.closest('a,button,input,select,textarea'))return;
     e.preventDefault();card.click();
+  });
+  /* On narrow layouts the deep rows are swipe rails. Keyboard focus must reveal
+     the whole focused card instead of leaving only the 28px discovery peek visible. */
+  document.addEventListener('focusin',function(e){
+    if(!window.matchMedia('(max-width:760px)').matches)return;
+    var card=e.target.closest&&e.target.closest('.cnx-wrap > .cnx-rack3 > .cnx-card');
+    if(!card)return;
+    card.scrollIntoView({behavior:'auto',block:'nearest',inline:'start'});
   });
   /* close dialog on Escape key */
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
