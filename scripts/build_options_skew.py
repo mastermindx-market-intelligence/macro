@@ -3,6 +3,10 @@
   1. ACCRUE — upsert today's per-underlying skew into the forward snapshot ledger
      (data/options_skew/snapshots.parquet). This is the apparatus that, run daily,
      eventually gives scripts/validate_options_skew.py the history to earn a verdict.
+     `--accrue` resolves the COMPLETE store session (the FULL S panel, never the
+     partial newest D), walks backward through the missed sessions, and calls
+     `backfill_from_store` on every date in that range. A ledger already caught
+     up to the complete session backfills zero rows.
   2. EMIT — site/options_skew/latest.json from that ledger (display-only context;
      the gate stays closed until the panel is wide/long enough).
   3. BACKFILL — recompute an inclusive date range from the ThetaData store into
@@ -100,8 +104,11 @@ def _pin_ledger(path: str) -> None:
 def accrue(today=None) -> tuple[int, str]:
     """Upsert the ledger. Returns (rows_changed, accrual_state).
 
-    `thetadata_store_unresolved` prints the existing warning (inside load_chain)
-    and skips the write entirely — no empty row, no rewrite.
+    ThetaData branch resolves the COMPLETE store session (the FULL S panel,
+    never the partial newest D) and backfills every missed session on the
+    path from the ledger's newest complete thetadata row. A caught-up
+    ledger returns `(0, "accrued_today")`. The unresolved-store path
+    preserves the existing warning line and skips the write entirely.
     """
     if S._legacy_enabled():
         chain = S._legacy_chain()
@@ -109,11 +116,30 @@ def accrue(today=None) -> tuple[int, str]:
             return 0, "ledger_only"
         added = S.snapshot(today=today, chain=chain, source="polygon_gex")
         return added, "accrued_today"
-    chain, state = S.load_chain()
-    if state == "thetadata_store_unresolved" or chain is None:
+    from engine.thetadata_store import resolve_thetadata_store
+    td = resolve_thetadata_store(required=False, purpose="options_skew chain")
+    if td is None:
+        # Keep the existing warning line by calling load_chain() — it prints
+        # `::warning title=options-skew-source::` and returns the typed state.
+        chain, state = S.load_chain()
         return 0, "ledger_only"
-    added = S.snapshot(today=today, chain=chain, source="thetadata")
-    return added, "accrued_today"
+    info = S.complete_store_session(td)
+    session = info["session"]
+    if session is None:
+        return 0, "ledger_only"
+    dates = S.catch_up_sessions(session, S.load_history())
+    receipt = S.backfill_from_store(dates, store=td)
+    log.info(
+        "options_skew: accrual sessions=%s backfilled=%d added=%d replaced=%d "
+        "unchanged=%d not_in_store=%d",
+        dates,
+        receipt["dates_backfilled"],
+        receipt["rows_added"],
+        receipt["rows_replaced"],
+        receipt["rows_unchanged"],
+        receipt["dates_not_in_store"],
+    )
+    return receipt["rows_added"] + receipt["rows_replaced"], "accrued_today"
 
 
 def emit(today=None, accrual_state: str = "ledger_only") -> dict:

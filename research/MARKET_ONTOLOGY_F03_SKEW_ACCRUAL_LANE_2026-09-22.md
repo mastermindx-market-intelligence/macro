@@ -60,6 +60,72 @@ feeds the options-skew forward ledger (MO-PAID-013 F03).
                                ▼
 ```
 
+### 1.x Which session the lane accrues (seat ruling 2026-09-23)
+
+The store writes TWO different panels for two different sessions. The lane
+must accrue the FULL panel, never the partial one:
+
+- **Early priority set (~04:30 local)**: a 12-root priority set for the
+  newest calendar date `D`. This is the panel the lane WOULD pick if it
+  naively used `max(date)` across the greeks tier.
+- **T1 daily maintainer (13:20 / 14:30 / 16:00 / 18:00 local)**: the FULL
+  panel (372-378 roots) for `S = nyse_calendar.session_n_back(D, 1)` —
+  the session BEFORE the last completed one. The manifest
+  `_manifest.json` carries `daily_refresh.S` and `daily_refresh.greeks_S_roots`
+  so the lane can confirm the maintainer ran.
+
+The lane LAGS the store's early set by one session BY DESIGN — the live
+emit reads the FULL S panel, not the partial D panel. Measured 2026-09-23
+on the store host: 48 roots through 2026-08-20, 372-378 roots from
+2026-08-21 to 2026-09-21, 12 on 2026-09-22.
+
+**Resolver rule** (`engine/options_skew.complete_store_session`):
+two sources are consulted and the newer ISO date wins; `method` is
+`"manifest"` when the manifest value tied or won, `"breadth"` otherwise.
+
+| Source | Definition |
+|--------|------------|
+| `breadth_session` | The NEWEST date whose distinct greeks root count is at least `_COMPLETE_SESSION_MIN_FRACTION` (0.5) of the widest panel |
+| `manifest_session` | `daily_refresh.S` when it is a 10-char ISO date AND `daily_refresh.greeks_S_roots` is at least the same fraction of the widest panel (or `>= 1` when the store is empty) |
+
+The chosen session is what `load_chain()` defaults to when called without
+an explicit argument; the partial newest date is named in a single
+`::notice title=options-skew-session::` line. Note: the notice fires only
+on `load_chain()`'s default-asof path (gate/snapshot callers) — the
+`--accrue` lane calls `backfill_from_store`, which uses the explicit-asof
+path. The lane's own evidence of the skip is its `accrual sessions=[…]`
+log line (the dates it actually wrote to), not a separate `::notice` line.
+
+**Catch-up cap** (`engine/options_skew.catch_up_sessions`):
+`scripts.build_options_skew --accrue` does not just write today's session —
+it walks NYSE sessions BACKWARD from the complete store session to the
+ledger's newest COMPLETE thetadata session (exclusive), and calls
+`backfill_from_store` on every date in that range, capped at
+`_CATCH_UP_MAX_SESSIONS` (5) dates. A caught-up ledger backfills zero rows.
+Juneteenth / weekends / holidays are skipped by `session_n_back`.
+
+**Emit guard** (`engine/options_skew.emit_from_ledger`):
+the per-date row counts in the ledger are walked newest-first; any date
+whose row count is below `_THIN_SESSION_MIN_FRACTION` (0.5) of the widest
+count among the up-to-10 dates immediately older than it is dropped, and
+the skipped dates are reported in
+`source_detail["partial_sessions_skipped"]` / `partial_rows_skipped` (always
+present, possibly empty/zero).
+
+**Diagram correction**: the §1 ASCII diagram's step 3 says
+`scripts.build_options_skew --accrue` "appends to data/options_skew/
+snapshots.parquet" without naming the catch-up walk. The arrow under that
+step is the FULL catch-up: today's complete session AND every missed
+session between it and the ledger's newest complete session, up to the cap.
+A caught-up ledger's arrow is a single no-op.
+
+**Older holes** beyond the cap (a 6+ session outage, a holiday stretch)
+are the seat-owned repair: `python -m scripts.build_options_skew
+--backfill FROM TO` (the §3.7 runbook), then publish per §3.8.
+`backfill_from_store` already replaces `polygon_gex` rows with `thetadata`
+rows for the same `(date, underlying)` and skips weekends, so the command
+is the durable repair.
+
 ## 2. Sequencing law (FROZEN — DO NOT REORDER)
 
 | Wave | Branch | Owns |
