@@ -366,27 +366,27 @@
           ('stocks',t('Stocks','个股'),t('China stocks board','中国个股板')),
           ('sector',t('Sector Desk','板块台'),t('Sector momentum','板块动能'))
         ] %}
-        <div class="ci-vnext-signal" data-state="{% if key == 'news' and b.news %}{{ 'watch' if b.news.band == 'cautious' else 'active' }}{% elif key == 'policy' and b.policy %}measured{% elif key == 'altdata' and b.altdata %}measured{% elif key == 'radar' and b.radar %}measured{% elif key == 'special_situations' and b.special_situations %}watch{% elif key == 'stocks' and cmd_full and cmd_full.command %}active{% elif key == 'sector' and b.conviction %}active{% else %}unavailable{% endif %}">
+        <div class="ci-vnext-signal" data-state="{% if key == 'news' and b.news and b.news.get('band') and b.news.get('band') != 'unknown' %}{{ 'watch' if b.news.band == 'cautious' else 'active' }}{% elif key == 'policy' and b.policy and b.policy.get('pboc_stance') %}measured{% elif key == 'altdata' and b.altdata and b.altdata.get('n_triple') is not none %}measured{% elif key == 'radar' and b.radar and b.radar.get('n_active') is not none %}measured{% elif key == 'special_situations' and b.special_situations and (b.special_situations.get('n_unlocks') is not none or b.special_situations.get('n_inquiry') is not none) %}watch{% elif key == 'stocks' and cmd_full and cmd_full.get('command') is not none %}active{% elif key == 'sector' and b.get('conviction') is not none %}active{% else %}unavailable{% endif %}">
           <strong>{{ label }}</strong><span>{{ desc }}</span>
-          {% if key == 'news' and b.news %}
+          {% if key == 'news' and b.news and b.news.get('band') and b.news.get('band') != 'unknown' %}
             <span class="ci-vnext-signal-status">{{ t('WATCH','观察') if b.news.band == 'cautious' else t('ACTIVE','活跃') }} · {{ bl(b.news.band_label_en or b.news.band, b.news.band_label_zh or b.news.band) }}</span>
-            <span>{{ b.news.n_events_7d or 0 }} {{ t('events / 7d','条事件 / 7日') }} · {{ b.news.asof or t('undated','无日期') }}</span>
-          {% elif key == 'policy' and b.policy %}
-            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ bl(b.policy.stance_label_en or b.policy.pboc_stance or 'neutral', b.policy.stance_label_zh or b.policy.pboc_stance or '中性') }}</span>
+            <span>{% if b.news.get('n_events_7d') is not none %}{{ b.news.n_events_7d }} {{ t('events / 7d','条事件 / 7日') }} · {% endif %}{{ b.news.asof or t('undated','无日期') }}</span>
+          {% elif key == 'policy' and b.policy and b.policy.get('pboc_stance') %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ bl(b.policy.stance_label_en or b.policy.pboc_stance, b.policy.stance_label_zh or STANCE_ZH.get(b.policy.pboc_stance, b.policy.pboc_stance)) }}</span>
             <span>{{ b.policy.asof or t('undated','无日期') }}</span>
-          {% elif key == 'altdata' and b.altdata %}
-            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.altdata.n_triple or 0 }} {{ t('triple-signal names','个三信号名称') }}</span>
+          {% elif key == 'altdata' and b.altdata and b.altdata.get('n_triple') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.altdata.n_triple }} {{ t('triple-signal names','个三信号名称') }}</span>
             <span>{{ b.altdata.asof or t('undated','无日期') }}</span>
-          {% elif key == 'radar' and b.radar %}
-            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.radar.n_active or 0 }} {{ t('active divergences','个活跃背离') }}</span>
+          {% elif key == 'radar' and b.radar and b.radar.get('n_active') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.radar.n_active }} {{ t('active divergences','个活跃背离') }}</span>
             <span>{{ b.radar.asof or t('undated','无日期') }}</span>
-          {% elif key == 'special_situations' and b.special_situations %}
-            <span class="ci-vnext-signal-status">{{ t('WATCH','观察') }} · {{ b.special_situations.n_unlocks or 0 }} {{ t('unlocks','解禁') }} · {{ b.special_situations.n_inquiry or 0 }} {{ t('inquiry letters','问询函') }}</span>
+          {% elif key == 'special_situations' and b.special_situations and (b.special_situations.get('n_unlocks') is not none or b.special_situations.get('n_inquiry') is not none) %}
+            <span class="ci-vnext-signal-status">{{ t('WATCH','观察') }}{% if b.special_situations.get('n_unlocks') is not none %} · {{ b.special_situations.n_unlocks }} {{ t('unlocks','解禁') }}{% endif %}{% if b.special_situations.get('n_inquiry') is not none %} · {{ b.special_situations.n_inquiry }} {{ t('inquiry letters','问询函') }}{% endif %}</span>
             <span>{{ b.special_situations.asof or t('undated','无日期') }}</span>
-          {% elif key == 'stocks' and cmd_full and cmd_full.command %}
+          {% elif key == 'stocks' and cmd_full and cmd_full.get('command') is not none %}
             <span class="ci-vnext-signal-status">{{ t('ACTIVE','活跃') }} · {{ cmd_full.command|length }} {{ t('ranked names','个排序名称') }}</span>
             <span>{{ b.asof }}</span>
-          {% elif key == 'sector' and b.conviction %}
+          {% elif key == 'sector' and b.get('conviction') is not none %}
             <span class="ci-vnext-signal-status">{{ t('ACTIVE','活跃') }} · {{ b.conviction|length }} {{ t('sector reads','个板块读数') }}</span>
             <span>{{ b.asof }}</span>
           {% else %}

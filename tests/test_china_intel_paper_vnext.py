@@ -4,6 +4,9 @@ Locks the accepted 1440/820/390 information architecture to the real Jinja route
 Template-first only: no alternate data plane and no generated-page hand editing.
 """
 from pathlib import Path
+import re
+
+from scripts.build_china_intel import _env
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "china_intel.html.j2"
@@ -65,8 +68,15 @@ def test_existing_machine_inputs_are_still_consumed():
     assert "cmd_full.discovery" in src
 
 
-def test_surface_signal_cards_project_existing_live_schema_values():
+def _signal_source() -> str:
     src = _src()
+    start = src.index('<section class="ci-vnext-signals">')
+    end = src.index("</section>", start) + len("</section>")
+    return src[start:end]
+
+
+def test_surface_signal_cards_project_existing_live_schema_values():
+    src = _signal_source()
     for field in (
         "b.news.n_events_7d",
         "b.policy.stance_label_en",
@@ -78,8 +88,96 @@ def test_surface_signal_cards_project_existing_live_schema_values():
     ):
         assert field in src
     for state in ("active", "measured", "watch", "unavailable"):
-        assert f'data-state="' in src
+        assert 'data-state="' in src
         assert state in src
+    assert "b.news.get('band') != 'unknown'" in src
+    assert "b.policy.get('pboc_stance')" in src
+    assert "n_events_7d or 0" not in src
+    assert "n_triple or 0" not in src
+    assert "n_active or 0" not in src
+    assert "n_unlocks or 0" not in src
+    assert "n_inquiry or 0" not in src
+
+
+def _minimal_b() -> dict:
+    return {
+        "asof": "2026-09-22",
+        "schema": "china_intel.briefing.v6",
+        "regime": None,
+        "policy": None,
+        "news": None,
+        "max_staleness_days": None,
+        "surfaces_present": [],
+        "surface_asof": {},
+        "policy_phrase": None,
+        "narrative_divergence": None,
+        "salience": None,
+        "what_changed": None,
+        "conviction": None,
+        "analysis": None,
+        "flagged_tickers": None,
+        "special_situations": None,
+        "altdata": None,
+        "radar": None,
+        "analogs": None,
+        "digest": None,
+    }
+
+
+def _signal_html(b: dict, cmd_full: dict | None) -> str:
+    # Render the exact production source block, not a copied mini-template,
+    # while avoiding unrelated deep-page fixture requirements below it.
+    prefix = """
+{% macro bl(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% set STANCE_ZH = {'easing':'宽松','neutral':'中性','tightening':'收紧'} %}
+"""
+    return _env().from_string(prefix + _signal_source()).render(b=b, cmd_full=cmd_full)
+
+
+def test_surface_signal_missing_metrics_fail_closed_unavailable():
+    b = _minimal_b()
+    b["news"] = {"band": "unknown", "n_events_7d": None, "asof": "2026-09-22"}
+    b["policy"] = {"pboc_stance": None, "asof": "2026-09-22"}
+    b["altdata"] = {"n_triple": None, "asof": "2026-09-22"}
+    b["radar"] = {"n_active": None, "asof": "2026-09-22"}
+    b["special_situations"] = {"n_unlocks": None, "n_inquiry": None, "asof": "2026-09-22"}
+    section = _signal_html(b, {"command": None})
+    assert section.count('data-state="unavailable"') == 7
+    assert section.count("UNAVAILABLE") == 7
+    assert "0 triple-signal names" not in section
+    assert "0 active divergences" not in section
+    assert "0 unlocks" not in section
+
+
+def test_surface_signal_measured_zero_remains_zero_not_unavailable():
+    b = _minimal_b()
+    b["news"] = {
+        "band": "steady", "band_label_en": "steady", "band_label_zh": "平稳",
+        "n_events_7d": 0, "asof": "2026-09-22",
+    }
+    b["policy"] = {
+        "pboc_stance": "neutral", "stance_label_en": "neutral",
+        "stance_label_zh": "中性", "asof": "2026-09-22",
+    }
+    b["altdata"] = {"n_triple": 0, "asof": "2026-09-22"}
+    b["radar"] = {"n_active": 0, "asof": "2026-09-22"}
+    b["special_situations"] = {"n_unlocks": 0, "n_inquiry": 0, "asof": "2026-09-22"}
+    b["conviction"] = []
+    section = _signal_html(b, {"command": []})
+    assert 'data-state="unavailable"' not in section
+    text = re.sub(r"<[^>]+>", "", section)
+    for expected in (
+        "0 events / 7d",
+        "0 triple-signal names",
+        "0 active divergences",
+        "0 unlocks",
+        "0 inquiry letters",
+        "0 ranked names",
+        "0 sector reads",
+    ):
+        assert expected in text
 
 
 def test_no_page_local_duplicate_global_header():
