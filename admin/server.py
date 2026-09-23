@@ -491,7 +491,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
             key, generation, ttl = cache_key
             _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
@@ -885,7 +889,19 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/lobes":
                 return self._json(marketing.lobes())
             if path == "/api/marketing/content":
-                return self._json(marketing.content())
+                charts = (q.get("charts") or ["inline"])[0]
+                if charts not in {"inline", "metadata"}:
+                    return self._json({"ok": False, "error": "Unknown chart representation."}, 400)
+                return self._json(marketing.content(chart_mode="metadata")
+                                  if charts == "metadata" else marketing.content())
+            if path == "/api/marketing/content/chart":
+                result = marketing.content_chart(
+                    (q.get("id") or [None])[0], (q.get("revision") or [None])[0])
+                status = 200 if result.get("ok") else {
+                    "invalid_request": 400, "plan_changed": 409,
+                    "chart_ambiguous": 409, "chart_not_found": 404,
+                }.get(result.get("reason"), 503)
+                return self._json(result, status)
             if path == "/api/marketing/lab":
                 return self._json(marketing.lab())
             if path == "/api/marketing/sentinel":

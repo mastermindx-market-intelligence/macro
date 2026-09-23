@@ -50,7 +50,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=62b49cc0">
+<link rel="stylesheet" href="theme.css?v=d58d35e9">
 <link rel="stylesheet" href="tier_preview.css?v=d390f599">
 <link rel="stylesheet" href="portfolio_import.css?v=1">
 <script>
@@ -61,7 +61,7 @@
   window.WL_STARTERS   = ["SPY", "QQQ", "BTC-USD", "GC=F"];
   // L3 regime input (baked risk_radar state + dominant label + vol regime).
   // null/absent => the book-read subline stays book-only. Book-derived text is client-side.
-  window.WRI_REGIME    = {"state": "caution", "dominant_label_en": "Credit stress", "dominant_label_zh": "\u4fe1\u7528\u538b\u529b", "vol_regime": "normalizing", "asof": "2026-09-21"};
+  window.WRI_REGIME    = {"state": "calm", "dominant_label_en": "Growth scare / defensive rotation", "dominant_label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8", "vol_regime": "normalizing", "asof": "2026-09-21"};
   // Sector / theme names arrive as raw English on each index record, so the rows
   // this page paints client-side have no td() to reach. This is the glossary's
   // answer for the finite vocabulary (engine.i18n.sector_lexicon); a name it does
@@ -644,10 +644,11 @@
 <script src="portfolio.js?v=10"></script>
 <script src="portfolio_import_ui.js?v=2"></script>
 <script src="mtf.js?v=b62aea2f" defer></script>
-<script src="theme.js?v=c907a6b8" defer></script>
-<p class="muted" style="font-size:12px; text-align:center"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-21 23:19 UTC</p>
+<script src="theme.js?v=3ffc953f" defer></script>
+<p class="muted" style="font-size:12px; text-align:center"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-23 06:25 UTC</p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
+<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
