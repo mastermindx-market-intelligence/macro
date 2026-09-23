@@ -16309,6 +16309,7 @@ jobs:
       - "site/flowleaders/leaders.json"
       - "site/leaderradar/radar.json"
       - "site/macro.html"
+      - "site/marketdata/subsector_confluence.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/master_brief.json"
       - "site/qledger/track_record.json"
