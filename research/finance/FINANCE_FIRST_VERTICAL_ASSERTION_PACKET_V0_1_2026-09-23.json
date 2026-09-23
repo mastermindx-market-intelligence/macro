@@ -1,0 +1,602 @@
+{
+  "schema": "mastermind.research.finance_assertion_packet.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "created_on": "2026-09-23",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "740a3dc0a251db5bb2dada93a032d5a43a744f54"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "research_contract_refs": [
+    "research/finance/FINANCE_FIRST_VERTICAL_COMPANY_BUSINESS_CENSUS_2026-09-23.md",
+    "research/finance/FINANCE_FIRST_VERTICAL_METRIC_AND_EVIDENCE_DICTIONARY_2026-09-23.md",
+    "research/finance/FINANCE_PRODUCT_EXPERIENCE_AND_OWNER_PRESERVING_DATA_CONTRACT_2026-09-23.md",
+    "research/finance/FINANCE_SOURCE_RIGHTS_REFRESH_AND_PROVENANCE_PLAN_2026-09-23.md"
+  ],
+  "authority": {
+    "may_create_canonical_identity": false,
+    "may_write_theme_graph": false,
+    "may_admit_source": false,
+    "may_publish_current_paid_payload": false,
+    "may_create_basket_membership": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "global_limitations": [
+    "Ticker values are research hints, not validated canonical security bindings.",
+    "Values are source-native observations, not current consensus, normalized earnings or valuation conclusions.",
+    "Publication timestamps and exact native claim locators require owner review before source admission.",
+    "No current market price, valuation multiple or analyst-consensus estimate is contained in this packet.",
+    "No record is an approved graph fact, basket member, recommendation or trade signal."
+  ],
+  "metric_dictionary": "research/finance/FINANCE_FIRST_VERTICAL_METRIC_AND_EVIDENCE_DICTIONARY_2026-09-23.md",
+  "records": [
+    {
+      "record_id": "fin-research-v-2025",
+      "issuer_label": "Visa Inc.",
+      "ticker_hint": "V",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "global payment network, processing, money movement and value-added services",
+      "source": {
+        "source_family": "SEC_10K_AND_EARNINGS_RELEASE",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000089/v-20250930.htm",
+          "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000077/q42025earningsrelease.htm"
+        ],
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-v-2025-volume",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total payments and cash volume",
+          "normalized_metric_family": "PAYMENT_AND_CASH_VOLUME",
+          "value": 17.0,
+          "unit": "USD_trillions_approximately",
+          "measurement_class": "VOLUME_VALUE",
+          "period_start": "2024-10-01",
+          "period_end": "2025-09-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not equal net revenue or Visa-processed volume."
+        },
+        {
+          "assertion_id": "fin-v-2025-processed",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "Visa-processed transactions",
+          "normalized_metric_family": "PAYMENT_TRANSACTIONS_PROCESSED",
+          "value": 258.0,
+          "unit": "billions_of_transactions_approximately",
+          "measurement_class": "COUNT",
+          "period_start": "2024-10-01",
+          "period_end": "2025-09-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Narrower than the population of all Visa-branded transactions."
+        }
+      ],
+      "research_rerating_bridge": "volume, transactions, cross-border and services less incentives and operating cost to EPS and FCF per share",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ma-2025",
+      "issuer_label": "Mastercard Incorporated",
+      "ticker_hint": "MA",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "global payment network, switching and value-added services",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000013/ma-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ma-2025-crossborder",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "cross-border volume growth",
+          "normalized_metric_family": "CROSS_BORDER_PAYMENT_VOLUME_GROWTH",
+          "value": 15.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-defined population and currency basis control."
+        },
+        {
+          "assertion_id": "fin-ma-2025-incentives",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "payment network rebates and incentives",
+          "normalized_metric_family": "CLIENT_REBATES_AND_INCENTIVES",
+          "value": 20.522,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "gross_net_basis": "CONTRA_REVENUE_SOURCE_DEFINED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Requires matched gross network economics and contract mix."
+        }
+      ],
+      "research_rerating_bridge": "GDV, cross-border, transactions and services less rebates, incentives and cost to EPS and FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-cme-2025",
+      "issuer_label": "CME Group Inc.",
+      "ticker_hint": "CME",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "derivatives venue, clearinghouse and market data",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1156375/000115637526000009/cme-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-cme-2025-adv",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "futures and options average daily volume",
+          "normalized_metric_family": "DERIVATIVES_AVERAGE_DAILY_VOLUME",
+          "value": 28.1,
+          "unit": "millions_of_contracts_per_day",
+          "measurement_class": "COUNT",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Product mix and open interest remain separate."
+        },
+        {
+          "assertion_id": "fin-cme-2025-clearing-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "clearing and transaction fees",
+          "normalized_metric_family": "EXCHANGE_CLEARING_TRANSACTION_REVENUE",
+          "value": 5.2811,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes multiple product and cash-market populations."
+        },
+        {
+          "assertion_id": "fin-cme-2025-rpc",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "average rate per futures and options contract",
+          "normalized_metric_family": "EXCHANGE_RATE_PER_CONTRACT",
+          "value": 0.696,
+          "unit": "USD_per_contract",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Product and client mix control comparability."
+        }
+      ],
+      "research_rerating_bridge": "contract volume times rate/mix plus recurring data less incentives and clearing-risk cost",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ice-2025",
+      "issuer_label": "Intercontinental Exchange, Inc.",
+      "ticker_hint": "ICE",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "exchanges, clearing, data, listings and mortgage technology",
+      "source": {
+        "source_family": "SEC_10K_AND_EARNINGS_RELEASE",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1571949/000157194926000004/ice-20251231.htm",
+          "https://www.sec.gov/Archives/edgar/data/1571949/000110465926010646/tm264989d1_ex99-1.htm"
+        ],
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ice-2025-net-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net revenues",
+          "normalized_metric_family": "NET_REVENUE",
+          "value": 9.9,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "gross_net_basis": "SOURCE_DEFINED_NET",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Consolidates transaction, data, listings and mortgage-technology businesses."
+        },
+        {
+          "assertion_id": "fin-ice-2025-recurring-share",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "recurring revenue share",
+          "normalized_metric_family": "RECURRING_REVENUE_SHARE",
+          "value": 51.0,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Does not establish organic growth or retention."
+        }
+      ],
+      "research_rerating_bridge": "transaction and clearing activity plus recurring data, listings and mortgage technology less integration and financing",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ndaq-2025",
+      "issuer_label": "Nasdaq, Inc.",
+      "ticker_hint": "NDAQ",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "markets, listings/data/index and financial technology",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1120193/000162828026007703/ndaq-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ndaq-2025-net-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "revenues less transaction-based expenses",
+          "normalized_metric_family": "NET_REVENUE",
+          "value": 5.249,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "gross_net_basis": "NET_OF_TRANSACTION_BASED_EXPENSES",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Requires the gross-revenue, rebates and pass-through bridge."
+        },
+        {
+          "assertion_id": "fin-ndaq-2025-arr",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "annualized recurring revenue",
+          "normalized_metric_family": "ANNUAL_RECURRING_REVENUE",
+          "value": 3.1,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "ANNUALIZED_RUN_RATE",
+          "as_of_date": "2025-12-31",
+          "annualization_basis": "ISSUER_DEFINED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "ARR is not recognized annual revenue, cash or profit."
+        },
+        {
+          "assertion_id": "fin-ndaq-2025-index-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "AUM in ETPs tracking Nasdaq indices",
+          "normalized_metric_family": "INDEX_LINKED_ASSETS",
+          "value": 882.0,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Index-linked assets are not Nasdaq-managed AUM or index revenue."
+        }
+      ],
+      "research_rerating_bridge": "market activity net of rebates plus recurring ARR, index/listing/data and financial-technology economics to FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-fi-2025",
+      "issuer_label": "Fiserv, Inc.",
+      "ticker_hint": "FI",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "merchant acquiring/platform, issuer processing and banking technology",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/798354/000079835426000009/fi-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-fi-2025-merchant-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Merchant Solutions revenue",
+          "normalized_metric_family": "MERCHANT_SOLUTIONS_REVENUE",
+          "value": 10.140,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Small Business, Enterprise and Processing carry different economics."
+        },
+        {
+          "assertion_id": "fin-fi-2025-financial-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Financial Solutions revenue",
+          "normalized_metric_family": "FINANCIAL_SOLUTIONS_REVENUE",
+          "value": 9.664,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Digital Payments, Issuing and Banking carry different economics."
+        },
+        {
+          "assertion_id": "fin-fi-2025-total-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "total revenue",
+          "normalized_metric_family": "REVENUE",
+          "value": 21.193,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes Corporate and Other and non-ASC-606 economics."
+        }
+      ],
+      "research_rerating_bridge": "merchant volume and services plus issuer, banking, processing and interest-related economics less partner, processing and transformation cost",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-fis-2025",
+      "issuer_label": "Fidelity National Information Services, Inc.",
+      "ticker_hint": "FIS",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "banking, payments and capital-markets software/processing",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1136893/000113689326000013/fis-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-fis-2025-capital-growth",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Capital Market Solutions revenue growth",
+          "normalized_metric_family": "CAPITAL_MARKETS_TECHNOLOGY_REVENUE_GROWTH",
+          "value": 7.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "The source-native revenue level is held outside this bounded packet."
+        },
+        {
+          "assertion_id": "fin-fis-2025-capital-margin",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Capital Market Solutions adjusted EBITDA margin",
+          "normalized_metric_family": "ADJUSTED_EBITDA_MARGIN",
+          "value": 51.8,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls; not free-cash-flow margin."
+        }
+      ],
+      "research_rerating_bridge": "recurring processing/SaaS and usage plus licenses/services less implementation and support cost to FCF per share",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-bk-2025",
+      "issuer_label": "The Bank of New York Mellon Corporation",
+      "ticker_hint": "BK",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "custody/asset servicing, issuer/market services, asset management and bank",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000033/bk-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-bk-2025-auca",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under custody and/or administration",
+          "normalized_metric_family": "ASSETS_UNDER_CUSTODY_OR_ADMINISTRATION",
+          "value": 59.3,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Not a direct fee base."
+        },
+        {
+          "assertion_id": "fin-bk-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 2.2,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Product, fee and flow mix remain source-native."
+        },
+        {
+          "assertion_id": "fin-bk-2025-nii-growth",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net interest income growth",
+          "normalized_metric_family": "NET_INTEREST_INCOME_GROWTH",
+          "value": 15.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Not normalized spread earnings."
+        }
+      ],
+      "research_rerating_bridge": "servicing and client activity plus market levels, FX and NII less fee pressure and operating cost to ROTCE, EPS and tangible book",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-stt-2025",
+      "issuer_label": "State Street Corporation",
+      "ticker_hint": "STT",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "investment servicing/custody, asset management and bank balance sheet",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/93751/000009375126000124/stt-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-stt-2025-auca",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under custody and/or administration",
+          "normalized_metric_family": "ASSETS_UNDER_CUSTODY_OR_ADMINISTRATION",
+          "value": 53.80,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Not a direct fee base."
+        },
+        {
+          "assertion_id": "fin-stt-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 5.67,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Market levels and net inflows contributed; average fee base is separate."
+        },
+        {
+          "assertion_id": "fin-stt-2025-servicing-fees",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "servicing fees",
+          "normalized_metric_family": "ASSET_SERVICING_FEE_REVENUE",
+          "value": 5.324,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Pricing, activity and service mix matter."
+        },
+        {
+          "assertion_id": "fin-stt-2025-nim-change",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net interest margin change",
+          "normalized_metric_family": "NET_INTEREST_MARGIN_CHANGE",
+          "value": -10.0,
+          "unit": "basis_points",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Company balance-sheet definition controls."
+        }
+      ],
+      "research_rerating_bridge": "servicing and AUM/activity fees plus FX, securities finance and NII less pricing and operating cost to ROTCE and tangible book",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-spgi-2025",
+      "issuer_label": "S&P Global Inc.",
+      "ticker_hint": "SPGI",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "ratings, market intelligence, commodity benchmarks, indices and mobility data",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/64040/000006404026000013/spgi-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-spgi-2025-revenue-growth",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "consolidated revenue growth",
+          "normalized_metric_family": "REVENUE_GROWTH",
+          "value": 8.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Covers materially different ratings, subscription, index, commodity and mobility businesses; segment bridge remains pending."
+        }
+      ],
+      "research_rerating_bridge": "issuance-sensitive ratings plus recurring data/workflow, index-linked royalties and benchmarks less data, technology and integration cost to segment FCF and SOTP",
+      "review_state": "RESEARCH_CANDIDATE_NUMERIC_SEGMENT_EXPANSION_PENDING"
+    },
+    {
+      "record_id": "fin-research-mco-2025",
+      "issuer_label": "Moody's Corporation",
+      "ticker_hint": "MCO",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "credit ratings and recurring risk, data and decision analytics",
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1059556/000162828026009136/mco-20251231.htm",
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-mco-2025-banking-arr-growth",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "Banking ARR growth",
+          "normalized_metric_family": "ANNUAL_RECURRING_REVENUE_GROWTH",
+          "value": 8.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "ARR is a run-rate construct, not recognized revenue."
+        },
+        {
+          "assertion_id": "fin-mco-2025-banking-transaction-growth",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Banking transaction revenue growth",
+          "normalized_metric_family": "TRANSACTION_REVENUE_GROWTH",
+          "value": -18.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Cloud-migration context; recurring and transaction populations remain separate."
+        },
+        {
+          "assertion_id": "fin-mco-2025-rpo",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "Moody's Analytics remaining performance obligations",
+          "normalized_metric_family": "REMAINING_PERFORMANCE_OBLIGATION",
+          "value": 4.8,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "CONTRACTED_NOT_RECOGNIZED",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "RPO is not recognized revenue, cash or profit."
+        }
+      ],
+      "research_rerating_bridge": "issuance and ratings transactions plus monitoring and recurring Analytics subscriptions less cloud, data and acquisition cost to segment earnings, FCF and SOTP",
+      "review_state": "RESEARCH_CANDIDATE"
+    }
+  ],
+  "packet_summary": {
+    "records": 11,
+    "canonical_identity_bindings": 0,
+    "approved_basket_memberships": 0,
+    "ranking_or_trade_fields": 0,
+    "records_with_numeric_assertions": 11,
+    "current_market_valuations": 0,
+    "current_consensus_estimates": 0
+  },
+  "exact_next_action": "Validate native locators, rights, definitions and identity bindings through incumbent owners; then complete current valuation/expectation join design and the global Finance extension before the historical casebook, implementation plan and final Fable CEO handoff."
+}
