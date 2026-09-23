@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T19:55:22.781748+00:00",
-  "count": 2730,
+  "generated_at": "2026-09-23T20:25:25.855143+00:00",
+  "count": 2732,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,7 @@
     "Talos",
     "The Market Ear",
     "The Punchline",
+    "Trump Xi Preview",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -99,6 +100,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-nwnr2g0qu3c-a92c42",
+      "title": "JPM Trump Xi summit Low bar, high stakes",
+      "institution": "Trump Xi Preview",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T20:02:39Z",
+      "summary_points": [
+        "Trade Surplus & Tech Decoupling: China's $1.19tn 2025 trade surplus (vs.",
+        "US $202.7bn deficit) strengthens bargaining power; US restricts advanced chips via case-by-case licensing while China dominates rare earth processing (91% global magnet supply), with US costs 69% higher.",
+        "Energy Flow Volatility: Strait of Hormuz oil flows collapsed to 4.9mn bpd (Q2 2026) from 21.2mn bpd (2025), diverting to Bab el-Mandeb (8.1mn bpd); Brent crude at $130.80/bbl drives immediate energy equity/commodity volatility.",
+        "Managed Tariff Restraint: US maintains 25% tariffs on Lists 1-3, 7.5% on List 4A; incremental deals (aircraft, soybeans, LNG) avoid grand bargain but risk escalation amid $494.6bn US goods trade and $334.4bn services surplus.",
+        "Geopolitical Escalation Risks: Trump-Xi summit prioritizes damage control over partnership; Iran sanctions (Operation Economic Outcast) and tech/supply chain disputes threaten portfolio stability amid zero-sum AI governance contest."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ml59ivo8nvo-811324",
+      "title": "TD Cowen The China Report Trump Xi Summit Expect Optics, Not Outcomes",
+      "institution": "Trump Xi Preview",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T20:02:32Z",
+      "summary_points": [
+        "Strategic Stability Over Breakthroughs: No major policy advances; bilateral disputes (PRC purchase commitments, weapon sales to TPE) and global crises (Mideast, RUS-UKR) limit tangible outcomes, suppressing deal expectations.",
+        "US-China Summit Realities: Phase One-style agreements overhyped; focus shifts to tariff extensions beyond Nov 10, agriculture/Boeing/critical minerals \"easiest wins,\" with structural AI/chips/supply chain disagreements persisting.",
+        "Biotech Innovation Dependency: PRC’s $1T+ biotech funding (vs.",
+        "NIH’s $481B) and 2026-2030 plan targeting 25% global first-in-class drugs threaten US leadership; US firms increasingly rely on PRC for new drug candidates despite domestic manufacturing commitments.",
+        "Financial Decoupling Escalation: SEC’s FPI rule tightening and 1260H list expansion risk post-election de-listing of Chinese issuers, amplifying financial system decoupling as a key portfolio risk factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qugizra4u2p-58f2a2",
       "title": "GS Duttenhoefer BEST of DAY 3 at our German Corp Conference in Munich 23 Sep 2026",
