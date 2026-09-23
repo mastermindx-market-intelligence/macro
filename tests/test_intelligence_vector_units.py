@@ -17,7 +17,7 @@ from lib.dataos.identity import IssuerMaster
 
 
 _ANCHOR = {
-    "kind": "reset_low",
+    "kind": "turn_watch_reset_low",
     "time": "2026-07-30T20:00:00Z",
     "price": "100.0000",
     "basis": "turn_watch.reset_low",

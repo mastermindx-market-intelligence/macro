@@ -23,7 +23,6 @@
     "robotics_automation",
     "semicap_equipment",
     "silver_miners",
-    "space_economy",
     "us_sector_energy",
     "us_sector_financials",
     "us_sector_health",
@@ -31,12 +30,12 @@
     "us_sector_tech"
   ],
   "held": [
-    "cybersecurity",
     "memory_storage",
     "ai_infra",
+    "cybersecurity",
     "silver_miners"
   ],
-  "leader": "cybersecurity",
+  "leader": "memory_storage",
   "names": {
     "ai_agents": "AI Agents & Applications",
     "ai_infra": "AI Infrastructure",

@@ -1,6 +1,6 @@
 {
-  "asof": "2026-09-21",
-  "ts": "2026-09-23T09:11:36.420695+00:00",
+  "asof": "2026-09-23",
+  "ts": "2026-09-23T20:43:15.046120+00:00",
   "authority": "DISPLAY-ONLY \u2014 re-orders display surfaces; feeds no gate, size, score, or calibrated key.",
   "instruments": [
     {
@@ -32,7 +32,38 @@
         "etf_missing(IBIT)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-cybersecurity",
+      "id": "b-cybersecurity",
+      "kind": "basket",
+      "ticker": "CIBR",
+      "basket_id": "b-cybersecurity",
+      "name": "Cybersecurity",
+      "rotation_score": 14.8,
+      "rank": 2,
+      "rotation_rank": 2,
+      "components": {
+        "mom20": 15.84,
+        "fast_rs": 5.13,
+        "mom5_raw": 1.22,
+        "mom10_raw": 10.99,
+        "governor": 8,
+        "ob_penalty": 14.18,
+        "macd_demotion": 0.0
+      },
+      "state_used": "FRESH BUY",
+      "ob_etf": 0.0,
+      "ob_ew": 0.81,
+      "ob": 0.81,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "etf_missing(CIBR)",
+        "ob_etf_null"
+      ],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-ai_semiconductors",
@@ -42,8 +73,8 @@
       "basket_id": "b-ai_semiconductors",
       "name": "AI Semiconductors",
       "rotation_score": 14.0,
-      "rank": 2,
-      "rotation_rank": 2,
+      "rank": 3,
+      "rotation_rank": 3,
       "components": {
         "mom20": 8.87,
         "fast_rs": 9.37,
@@ -60,7 +91,7 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-non_ai_tech",
@@ -69,11 +100,11 @@
       "ticker": "XLK",
       "basket_id": "b-non_ai_tech",
       "name": "Non-AI Tech & Hardware",
-      "rotation_score": 8.5,
-      "rank": 3,
-      "rotation_rank": 3,
+      "rotation_score": 8.4,
+      "rank": 4,
+      "rotation_rank": 4,
       "components": {
-        "mom20": 5.21,
+        "mom20": 5.19,
         "fast_rs": 2.73,
         "mom5_raw": 2.43,
         "mom10_raw": 3.19,
@@ -88,35 +119,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-ai_infra",
-      "id": "b-ai_infra",
-      "kind": "basket",
-      "ticker": "SMH",
-      "basket_id": "b-ai_infra",
-      "name": "AI Infrastructure",
-      "rotation_score": 6.2,
-      "rank": 4,
-      "rotation_rank": 4,
-      "components": {
-        "mom20": 5.38,
-        "fast_rs": 7.83,
-        "mom5_raw": 9.5,
-        "mom10_raw": 5.31,
-        "governor": 3,
-        "ob_penalty": 5.55,
-        "macd_demotion": 4.5
-      },
-      "state_used": "RALLY ON",
-      "ob_etf": 0.246,
-      "ob_ew": 0.317,
-      "ob": 0.317,
-      "macd_x1w": false,
-      "macd_x2w": true,
-      "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xlk",
@@ -144,7 +147,38 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-ai_neoclouds",
+      "id": "b-ai_neoclouds",
+      "kind": "basket",
+      "ticker": "",
+      "basket_id": "b-ai_neoclouds",
+      "name": "AI Neoclouds & HPC Hosting",
+      "rotation_score": 5.0,
+      "rank": 6,
+      "rotation_rank": 6,
+      "components": {
+        "mom20": 0.0,
+        "fast_rs": 0.0,
+        "mom5_raw": 0.0,
+        "mom10_raw": 0.0,
+        "governor": 5,
+        "ob_penalty": 0.0,
+        "macd_demotion": 0.0
+      },
+      "state_used": "TURN SIGNALED",
+      "ob_etf": 0.0,
+      "ob_ew": 0.0,
+      "ob": 0.0,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "ew_member_null(b-ai_neoclouds)",
+        "ob_etf_null"
+      ],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-big_pharma",
@@ -154,8 +188,8 @@
       "basket_id": "b-big_pharma",
       "name": "Big Pharma",
       "rotation_score": 5.0,
-      "rank": 6,
-      "rotation_rank": 6,
+      "rank": 7,
+      "rotation_rank": 7,
       "components": {
         "mom20": 0.0,
         "fast_rs": 0.0,
@@ -176,71 +210,7 @@
         "ew_member_null(b-big_pharma)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-critical_minerals",
-      "id": "b-critical_minerals",
-      "kind": "basket",
-      "ticker": "REMX",
-      "basket_id": "b-critical_minerals",
-      "name": "Critical Minerals & Rare Earths",
-      "rotation_score": 5.0,
-      "rank": 7,
-      "rotation_rank": 7,
-      "components": {
-        "mom20": 0.0,
-        "fast_rs": 0.0,
-        "mom5_raw": 0.0,
-        "mom10_raw": 0.0,
-        "governor": 5,
-        "ob_penalty": 0.0,
-        "macd_demotion": 0.0
-      },
-      "state_used": "TURN SIGNALED",
-      "ob_etf": 0.0,
-      "ob_ew": 0.0,
-      "ob": 0.0,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [
-        "etf_missing(REMX)",
-        "ew_member_null(b-critical_minerals)",
-        "ob_etf_null"
-      ],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-pgm_miners",
-      "id": "b-pgm_miners",
-      "kind": "basket",
-      "ticker": "PPLT",
-      "basket_id": "b-pgm_miners",
-      "name": "PGM Miners",
-      "rotation_score": 5.0,
-      "rank": 8,
-      "rotation_rank": 8,
-      "components": {
-        "mom20": 0.0,
-        "fast_rs": 0.0,
-        "mom5_raw": 0.0,
-        "mom10_raw": 0.0,
-        "governor": 5,
-        "ob_penalty": 0.0,
-        "macd_demotion": 0.0
-      },
-      "state_used": "TURN SIGNALED",
-      "ob_etf": 0.0,
-      "ob_ew": 0.0,
-      "ob": 0.0,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [
-        "etf_missing(PPLT)",
-        "ew_member_null(b-pgm_miners)",
-        "ob_etf_null"
-      ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-silver_miners",
@@ -250,8 +220,8 @@
       "basket_id": "b-silver_miners",
       "name": "Silver Miners",
       "rotation_score": 5.0,
-      "rank": 9,
-      "rotation_rank": 9,
+      "rank": 8,
+      "rotation_rank": 8,
       "components": {
         "mom20": 0.0,
         "fast_rs": 0.0,
@@ -272,16 +242,47 @@
         "ew_member_null(b-silver_miners)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "b-ai_neoclouds",
-      "id": "b-ai_neoclouds",
+      "key": "b-quantum_computing",
+      "id": "b-quantum_computing",
       "kind": "basket",
-      "ticker": "",
-      "basket_id": "b-ai_neoclouds",
-      "name": "AI Neoclouds & HPC Hosting",
-      "rotation_score": 3.0,
+      "ticker": "QTUM",
+      "basket_id": "b-quantum_computing",
+      "name": "Quantum Computing",
+      "rotation_score": 2.4,
+      "rank": 9,
+      "rotation_rank": 9,
+      "components": {
+        "mom20": 0.3,
+        "fast_rs": -0.79,
+        "mom5_raw": -1.1,
+        "mom10_raw": -0.32,
+        "governor": 5,
+        "ob_penalty": 2.15,
+        "macd_demotion": 0.0
+      },
+      "state_used": "TURN SIGNALED",
+      "ob_etf": 0.0,
+      "ob_ew": 0.123,
+      "ob": 0.123,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "etf_missing(QTUM)",
+        "ob_etf_null"
+      ],
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-pgm_miners",
+      "id": "b-pgm_miners",
+      "kind": "basket",
+      "ticker": "PPLT",
+      "basket_id": "b-pgm_miners",
+      "name": "PGM Miners",
+      "rotation_score": 2.0,
       "rank": 10,
       "rotation_rank": 10,
       "components": {
@@ -289,21 +290,22 @@
         "fast_rs": 0.0,
         "mom5_raw": 0.0,
         "mom10_raw": 0.0,
-        "governor": 3,
+        "governor": 2,
         "ob_penalty": 0.0,
         "macd_demotion": 0.0
       },
-      "state_used": "RALLY ON",
+      "state_used": "BOTTOM WATCH",
       "ob_etf": 0.0,
       "ob_ew": 0.0,
       "ob": 0.0,
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [
-        "ew_member_null(b-ai_neoclouds)",
+        "etf_missing(PPLT)",
+        "ew_member_null(b-pgm_miners)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-ai_software",
@@ -331,7 +333,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-mag7",
@@ -359,38 +361,70 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "b-cybersecurity",
-      "id": "b-cybersecurity",
+      "key": "b-robotics_automation",
+      "id": "b-robotics_automation",
       "kind": "basket",
-      "ticker": "CIBR",
-      "basket_id": "b-cybersecurity",
-      "name": "Cybersecurity",
-      "rotation_score": -1.8,
+      "ticker": "BOTZ",
+      "basket_id": "b-robotics_automation",
+      "name": "Robotics & Automation",
+      "rotation_score": -0.8,
       "rank": 13,
       "rotation_rank": 13,
       "components": {
-        "mom20": 15.84,
-        "fast_rs": 1.54,
-        "mom5_raw": 1.22,
-        "mom10_raw": 10.99,
-        "governor": -5,
-        "ob_penalty": 14.18,
+        "mom20": -4.15,
+        "fast_rs": -0.22,
+        "mom5_raw": 0.5,
+        "mom10_raw": -1.29,
+        "governor": 8,
+        "ob_penalty": 4.44,
         "macd_demotion": 0.0
       },
-      "state_used": "TOP WATCH",
+      "state_used": "FRESH BUY",
       "ob_etf": 0.0,
-      "ob_ew": 0.81,
-      "ob": 0.81,
+      "ob_ew": 0.254,
+      "ob": 0.254,
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [
-        "etf_missing(CIBR)",
+        "etf_missing(BOTZ)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-critical_minerals",
+      "id": "b-critical_minerals",
+      "kind": "basket",
+      "ticker": "REMX",
+      "basket_id": "b-critical_minerals",
+      "name": "Critical Minerals & Rare Earths",
+      "rotation_score": -4.0,
+      "rank": 14,
+      "rotation_rank": 14,
+      "components": {
+        "mom20": 0.0,
+        "fast_rs": 0.0,
+        "mom5_raw": 0.0,
+        "mom10_raw": 0.0,
+        "governor": -4,
+        "ob_penalty": 0.0,
+        "macd_demotion": 0.0
+      },
+      "state_used": "COUNTERTREND BOUNCE",
+      "ob_etf": 0.0,
+      "ob_ew": 0.0,
+      "ob": 0.0,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "etf_missing(REMX)",
+        "ew_member_null(b-critical_minerals)",
+        "ob_etf_null"
+      ],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-uranium_miners",
@@ -400,8 +434,8 @@
       "basket_id": "b-uranium_miners",
       "name": "Uranium & Nuclear Fuel",
       "rotation_score": -4.0,
-      "rank": 14,
-      "rotation_rank": 14,
+      "rank": 15,
+      "rotation_rank": 15,
       "components": {
         "mom20": 0.0,
         "fast_rs": 0.0,
@@ -422,7 +456,7 @@
         "ew_member_null(b-uranium_miners)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-crypto_rails",
@@ -432,8 +466,8 @@
       "basket_id": "b-crypto_rails",
       "name": "Crypto & Digital Rails",
       "rotation_score": -4.3,
-      "rank": 15,
-      "rotation_rank": 15,
+      "rank": 16,
+      "rotation_rank": 16,
       "components": {
         "mom20": 2.29,
         "fast_rs": 0.65,
@@ -453,66 +487,35 @@
         "etf_missing(IBIT)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "xlc",
-      "id": "xlc",
-      "kind": "sector",
-      "ticker": "XLC",
-      "basket_id": "b-us_sector_comm",
-      "name": "Communication Services",
-      "rotation_score": -5.8,
-      "rank": 16,
-      "rotation_rank": 16,
-      "components": {
-        "mom20": -3.42,
-        "fast_rs": -4.11,
-        "mom5_raw": -5.24,
-        "mom10_raw": -2.4,
-        "governor": 5,
-        "ob_penalty": 3.25,
-        "macd_demotion": 0.0
-      },
-      "state_used": "TURN SIGNALED",
-      "ob_etf": 0.186,
-      "ob_ew": 0.019,
-      "ob": 0.186,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-quantum_computing",
-      "id": "b-quantum_computing",
+      "key": "b-ai_infra",
+      "id": "b-ai_infra",
       "kind": "basket",
-      "ticker": "QTUM",
-      "basket_id": "b-quantum_computing",
-      "name": "Quantum Computing",
-      "rotation_score": -6.6,
+      "ticker": "SMH",
+      "basket_id": "b-ai_infra",
+      "name": "AI Infrastructure",
+      "rotation_score": -6.3,
       "rank": 17,
       "rotation_rank": 17,
       "components": {
-        "mom20": 0.3,
-        "fast_rs": -0.79,
-        "mom5_raw": -1.1,
-        "mom10_raw": -0.32,
+        "mom20": 5.38,
+        "fast_rs": 2.35,
+        "mom5_raw": 9.5,
+        "mom10_raw": 5.31,
         "governor": -4,
-        "ob_penalty": 2.15,
-        "macd_demotion": 0.0
+        "ob_penalty": 5.55,
+        "macd_demotion": 4.5
       },
       "state_used": "COUNTERTREND BOUNCE",
-      "ob_etf": 0.0,
-      "ob_ew": 0.123,
-      "ob": 0.123,
+      "ob_etf": 0.246,
+      "ob_ew": 0.317,
+      "ob": 0.317,
       "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [
-        "etf_missing(QTUM)",
-        "ob_etf_null"
-      ],
-      "asof": "2026-09-21"
+      "macd_x2w": true,
+      "stale_flags": [],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-memory_storage",
@@ -540,35 +543,7 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-non_ai_software",
-      "id": "b-non_ai_software",
-      "kind": "basket",
-      "ticker": "IGV",
-      "basket_id": "b-non_ai_software",
-      "name": "Non-AI Software",
-      "rotation_score": -8.1,
-      "rank": 19,
-      "rotation_rank": 19,
-      "components": {
-        "mom20": -0.61,
-        "fast_rs": -4.28,
-        "mom5_raw": -5.39,
-        "mom10_raw": -2.61,
-        "governor": 5,
-        "ob_penalty": 8.2,
-        "macd_demotion": 0.0
-      },
-      "state_used": "TURN SIGNALED",
-      "ob_etf": 0.468,
-      "ob_ew": 0.432,
-      "ob": 0.468,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-energy_complex",
@@ -578,8 +553,8 @@
       "basket_id": "b-energy_complex",
       "name": "US Energy Complex",
       "rotation_score": -8.5,
-      "rank": 20,
-      "rotation_rank": 20,
+      "rank": 19,
+      "rotation_rank": 19,
       "components": {
         "mom20": -2.35,
         "fast_rs": -3.95,
@@ -596,7 +571,35 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "xlc",
+      "id": "xlc",
+      "kind": "sector",
+      "ticker": "XLC",
+      "basket_id": "b-us_sector_comm",
+      "name": "Communication Services",
+      "rotation_score": -8.8,
+      "rank": 20,
+      "rotation_rank": 20,
+      "components": {
+        "mom20": -3.42,
+        "fast_rs": -4.11,
+        "mom5_raw": -5.24,
+        "mom10_raw": -2.4,
+        "governor": 2,
+        "ob_penalty": 3.25,
+        "macd_demotion": 0.0
+      },
+      "state_used": "BOTTOM WATCH",
+      "ob_etf": 0.186,
+      "ob_ew": 0.019,
+      "ob": 0.186,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-data_center_power",
@@ -624,7 +627,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xle",
@@ -652,7 +655,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-regional_banks",
@@ -680,35 +683,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "xlf",
-      "id": "xlf",
-      "kind": "sector",
-      "ticker": "XLF",
-      "basket_id": "b-us_sector_financials",
-      "name": "Financials",
-      "rotation_score": -12.3,
-      "rank": 24,
-      "rotation_rank": 24,
-      "components": {
-        "mom20": -4.79,
-        "fast_rs": -4.36,
-        "mom5_raw": -3.99,
-        "mom10_raw": -4.91,
-        "governor": 2,
-        "ob_penalty": 5.17,
-        "macd_demotion": 0.0
-      },
-      "state_used": "BOTTOM WATCH",
-      "ob_etf": 0.499,
-      "ob_ew": 0.517,
-      "ob": 0.517,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-power_grid",
@@ -718,8 +693,8 @@
       "basket_id": "b-power_grid",
       "name": "Power & Grid Buildout",
       "rotation_score": -12.4,
-      "rank": 25,
-      "rotation_rank": 25,
+      "rank": 24,
+      "rotation_rank": 24,
       "components": {
         "mom20": -5.16,
         "fast_rs": -1.38,
@@ -736,68 +711,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-gold_miners",
-      "id": "b-gold_miners",
-      "kind": "basket",
-      "ticker": "GDX",
-      "basket_id": "b-gold_miners",
-      "name": "Gold Miners",
-      "rotation_score": -12.7,
-      "rank": 26,
-      "rotation_rank": 26,
-      "components": {
-        "mom20": -9.32,
-        "fast_rs": -3.15,
-        "mom5_raw": -1.57,
-        "mom10_raw": -5.51,
-        "governor": 5,
-        "ob_penalty": 5.2,
-        "macd_demotion": 0.0
-      },
-      "state_used": "TURN SIGNALED",
-      "ob_etf": 0.297,
-      "ob_ew": 0.0,
-      "ob": 0.297,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [
-        "ew_member_null(b-gold_miners)"
-      ],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "b-robotics_automation",
-      "id": "b-robotics_automation",
-      "kind": "basket",
-      "ticker": "BOTZ",
-      "basket_id": "b-robotics_automation",
-      "name": "Robotics & Automation",
-      "rotation_score": -12.8,
-      "rank": 27,
-      "rotation_rank": 27,
-      "components": {
-        "mom20": -4.15,
-        "fast_rs": -0.22,
-        "mom5_raw": 0.5,
-        "mom10_raw": -1.29,
-        "governor": -4,
-        "ob_penalty": 4.44,
-        "macd_demotion": 0.0
-      },
-      "state_used": "COUNTERTREND BOUNCE",
-      "ob_etf": 0.0,
-      "ob_ew": 0.254,
-      "ob": 0.254,
-      "macd_x1w": false,
-      "macd_x2w": false,
-      "stale_flags": [
-        "etf_missing(BOTZ)",
-        "ob_etf_null"
-      ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-nuclear_power",
@@ -807,8 +721,8 @@
       "basket_id": "b-nuclear_power",
       "name": "Nuclear & SMR Power",
       "rotation_score": -12.8,
-      "rank": 28,
-      "rotation_rank": 28,
+      "rank": 25,
+      "rotation_rank": 25,
       "components": {
         "mom20": -4.52,
         "fast_rs": -3.57,
@@ -827,38 +741,68 @@
       "stale_flags": [
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "b-defensives",
-      "id": "b-defensives",
+      "key": "b-gold_miners",
+      "id": "b-gold_miners",
       "kind": "basket",
-      "ticker": "XLP/XLU",
-      "basket_id": "b-defensives",
-      "name": "Defensives",
-      "rotation_score": -15.6,
-      "rank": 29,
-      "rotation_rank": 29,
+      "ticker": "GDX",
+      "basket_id": "b-gold_miners",
+      "name": "Gold Miners",
+      "rotation_score": -13.3,
+      "rank": 26,
+      "rotation_rank": 26,
       "components": {
-        "mom20": -6.74,
-        "fast_rs": -3.89,
-        "mom5_raw": -3.93,
-        "mom10_raw": -3.84,
-        "governor": -5,
-        "ob_penalty": 0.0,
+        "mom20": -10.0,
+        "fast_rs": -3.08,
+        "mom5_raw": -1.8,
+        "mom10_raw": -5.0,
+        "governor": 5,
+        "ob_penalty": 5.2,
         "macd_demotion": 0.0
       },
-      "state_used": "TOP WATCH",
-      "ob_etf": 0.0,
+      "state_used": "TURN SIGNALED",
+      "ob_etf": 0.297,
       "ob_ew": 0.0,
-      "ob": 0.0,
+      "ob": 0.297,
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [
-        "etf_missing(XLP/XLU)",
+        "ew_member_null(b-gold_miners)"
+      ],
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-defense",
+      "id": "b-defense",
+      "kind": "basket",
+      "ticker": "ITA",
+      "basket_id": "b-defense",
+      "name": "Defense & Aerospace",
+      "rotation_score": -15.4,
+      "rank": 27,
+      "rotation_rank": 27,
+      "components": {
+        "mom20": -8.37,
+        "fast_rs": -1.64,
+        "mom5_raw": -1.47,
+        "mom10_raw": -1.9,
+        "governor": -4,
+        "ob_penalty": 1.42,
+        "macd_demotion": 0.0
+      },
+      "state_used": "COUNTERTREND BOUNCE",
+      "ob_etf": 0.0,
+      "ob_ew": 0.081,
+      "ob": 0.081,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "etf_missing(ITA)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-ai_agents",
@@ -868,8 +812,8 @@
       "basket_id": "b-ai_agents",
       "name": "AI Agents & Applications",
       "rotation_score": -15.7,
-      "rank": 30,
-      "rotation_rank": 30,
+      "rank": 28,
+      "rotation_rank": 28,
       "components": {
         "mom20": 1.58,
         "fast_rs": -4.11,
@@ -886,7 +830,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-semicap_equipment",
@@ -896,8 +840,8 @@
       "basket_id": "b-semicap_equipment",
       "name": "Semiconductor Equipment (WFE)",
       "rotation_score": -15.7,
-      "rank": 31,
-      "rotation_rank": 31,
+      "rank": 29,
+      "rotation_rank": 29,
       "components": {
         "mom20": -4.51,
         "fast_rs": 1.61,
@@ -914,38 +858,63 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "b-travel",
-      "id": "b-travel",
+      "key": "b-non_ai_software",
+      "id": "b-non_ai_software",
       "kind": "basket",
-      "ticker": "JETS",
-      "basket_id": "b-travel",
-      "name": "Travel & Experiences",
-      "rotation_score": -17.0,
-      "rank": 32,
-      "rotation_rank": 32,
+      "ticker": "IGV",
+      "basket_id": "b-non_ai_software",
+      "name": "Non-AI Software",
+      "rotation_score": -18.1,
+      "rank": 30,
+      "rotation_rank": 30,
       "components": {
-        "mom20": -9.19,
-        "fast_rs": -3.22,
-        "mom5_raw": -2.7,
-        "mom10_raw": -4.0,
+        "mom20": -0.61,
+        "fast_rs": -4.28,
+        "mom5_raw": -5.39,
+        "mom10_raw": -2.61,
+        "governor": -5,
+        "ob_penalty": 8.2,
+        "macd_demotion": 0.0
+      },
+      "state_used": "TOP WATCH",
+      "ob_etf": 0.468,
+      "ob_ew": 0.432,
+      "ob": 0.468,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [],
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "xlf",
+      "id": "xlf",
+      "kind": "sector",
+      "ticker": "XLF",
+      "basket_id": "b-us_sector_financials",
+      "name": "Financials",
+      "rotation_score": -18.3,
+      "rank": 31,
+      "rotation_rank": 31,
+      "components": {
+        "mom20": -4.79,
+        "fast_rs": -4.36,
+        "mom5_raw": -3.99,
+        "mom10_raw": -4.91,
         "governor": -4,
-        "ob_penalty": 0.64,
+        "ob_penalty": 5.17,
         "macd_demotion": 0.0
       },
       "state_used": "COUNTERTREND BOUNCE",
-      "ob_etf": 0.0,
-      "ob_ew": 0.037,
-      "ob": 0.037,
+      "ob_etf": 0.499,
+      "ob_ew": 0.517,
+      "ob": 0.517,
       "macd_x1w": false,
       "macd_x2w": false,
-      "stale_flags": [
-        "etf_missing(JETS)",
-        "ob_etf_null"
-      ],
-      "asof": "2026-09-21"
+      "stale_flags": [],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-obesity_glp1",
@@ -955,8 +924,8 @@
       "basket_id": "b-obesity_glp1",
       "name": "GLP-1 & Obesity",
       "rotation_score": -18.3,
-      "rank": 33,
-      "rotation_rank": 33,
+      "rank": 32,
+      "rotation_rank": 32,
       "components": {
         "mom20": -5.05,
         "fast_rs": -0.36,
@@ -973,7 +942,38 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "b-defensives",
+      "id": "b-defensives",
+      "kind": "basket",
+      "ticker": "XLP/XLU",
+      "basket_id": "b-defensives",
+      "name": "Defensives",
+      "rotation_score": -18.6,
+      "rank": 33,
+      "rotation_rank": 33,
+      "components": {
+        "mom20": -6.74,
+        "fast_rs": -3.89,
+        "mom5_raw": -3.93,
+        "mom10_raw": -3.84,
+        "governor": -8,
+        "ob_penalty": 0.0,
+        "macd_demotion": 0.0
+      },
+      "state_used": "DECLINE",
+      "ob_etf": 0.0,
+      "ob_ew": 0.0,
+      "ob": 0.0,
+      "macd_x1w": false,
+      "macd_x2w": false,
+      "stale_flags": [
+        "etf_missing(XLP/XLU)",
+        "ob_etf_null"
+      ],
+      "asof": "2026-09-23"
     },
     {
       "key": "xlu",
@@ -1001,38 +1001,38 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
-      "key": "b-defense",
-      "id": "b-defense",
+      "key": "b-travel",
+      "id": "b-travel",
       "kind": "basket",
-      "ticker": "ITA",
-      "basket_id": "b-defense",
-      "name": "Defense & Aerospace",
-      "rotation_score": -19.4,
+      "ticker": "JETS",
+      "basket_id": "b-travel",
+      "name": "Travel & Experiences",
+      "rotation_score": -21.0,
       "rank": 35,
       "rotation_rank": 35,
       "components": {
-        "mom20": -8.37,
-        "fast_rs": -1.64,
-        "mom5_raw": -1.47,
-        "mom10_raw": -1.9,
+        "mom20": -9.19,
+        "fast_rs": -3.22,
+        "mom5_raw": -2.7,
+        "mom10_raw": -4.0,
         "governor": -8,
-        "ob_penalty": 1.42,
+        "ob_penalty": 0.64,
         "macd_demotion": 0.0
       },
       "state_used": "DECLINE",
       "ob_etf": 0.0,
-      "ob_ew": 0.081,
-      "ob": 0.081,
+      "ob_ew": 0.037,
+      "ob": 0.037,
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [
-        "etf_missing(ITA)",
+        "etf_missing(JETS)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xlv",
@@ -1060,7 +1060,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-space_economy",
@@ -1091,7 +1091,7 @@
         "etf_missing(ARKX)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-payments_fintech",
@@ -1119,7 +1119,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-insurance",
@@ -1150,7 +1150,7 @@
         "etf_missing(KIE)",
         "ob_etf_null"
       ],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-retail",
@@ -1178,7 +1178,7 @@
       "macd_x1w": true,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-reshoring",
@@ -1206,35 +1206,7 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "xly",
-      "id": "xly",
-      "kind": "sector",
-      "ticker": "XLY",
-      "basket_id": "b-us_sector_discretionary",
-      "name": "Consumer Discretionary",
-      "rotation_score": -30.2,
-      "rank": 42,
-      "rotation_rank": 42,
-      "components": {
-        "mom20": -8.97,
-        "fast_rs": -4.73,
-        "mom5_raw": -4.27,
-        "mom10_raw": -5.42,
-        "governor": -4,
-        "ob_penalty": 0.51,
-        "macd_demotion": 12.0
-      },
-      "state_used": "COUNTERTREND BOUNCE",
-      "ob_etf": 0.051,
-      "ob_ew": 0.0,
-      "ob": 0.051,
-      "macd_x1w": true,
-      "macd_x2w": false,
-      "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-industrial_distribution",
@@ -1244,8 +1216,8 @@
       "basket_id": "b-industrial_distribution",
       "name": "Industrial Distribution & Capital Goods",
       "rotation_score": -30.9,
-      "rank": 43,
-      "rotation_rank": 43,
+      "rank": 42,
+      "rotation_rank": 42,
       "components": {
         "mom20": -5.01,
         "fast_rs": -1.61,
@@ -1262,7 +1234,63 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "xli",
+      "id": "xli",
+      "kind": "sector",
+      "ticker": "XLI",
+      "basket_id": "b-us_sector_industrials",
+      "name": "Industrials",
+      "rotation_score": -33.8,
+      "rank": 43,
+      "rotation_rank": 43,
+      "components": {
+        "mom20": -7.43,
+        "fast_rs": -3.22,
+        "mom5_raw": -2.75,
+        "mom10_raw": -3.93,
+        "governor": -4,
+        "ob_penalty": 1.11,
+        "macd_demotion": 18.0
+      },
+      "state_used": "COUNTERTREND BOUNCE",
+      "ob_etf": 0.111,
+      "ob_ew": 0.056,
+      "ob": 0.111,
+      "macd_x1w": false,
+      "macd_x2w": true,
+      "stale_flags": [],
+      "asof": "2026-09-23"
+    },
+    {
+      "key": "xly",
+      "id": "xly",
+      "kind": "sector",
+      "ticker": "XLY",
+      "basket_id": "b-us_sector_discretionary",
+      "name": "Consumer Discretionary",
+      "rotation_score": -34.2,
+      "rank": 44,
+      "rotation_rank": 44,
+      "components": {
+        "mom20": -8.97,
+        "fast_rs": -4.73,
+        "mom5_raw": -4.27,
+        "mom10_raw": -5.42,
+        "governor": -8,
+        "ob_penalty": 0.51,
+        "macd_demotion": 12.0
+      },
+      "state_used": "DECLINE",
+      "ob_etf": 0.051,
+      "ob_ew": 0.0,
+      "ob": 0.051,
+      "macd_x1w": true,
+      "macd_x2w": false,
+      "stale_flags": [],
+      "asof": "2026-09-23"
     },
     {
       "key": "b-managed_care",
@@ -1272,8 +1300,8 @@
       "basket_id": "b-managed_care",
       "name": "Managed Care & Insurers",
       "rotation_score": -34.7,
-      "rank": 44,
-      "rotation_rank": 44,
+      "rank": 45,
+      "rotation_rank": 45,
       "components": {
         "mom20": -7.23,
         "fast_rs": -10.54,
@@ -1290,7 +1318,7 @@
       "macd_x1w": false,
       "macd_x2w": false,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xlre",
@@ -1300,8 +1328,8 @@
       "basket_id": "b-us_sector_realestate",
       "name": "Real Estate",
       "rotation_score": -37.5,
-      "rank": 45,
-      "rotation_rank": 45,
+      "rank": 46,
+      "rotation_rank": 46,
       "components": {
         "mom20": -6.61,
         "fast_rs": -3.35,
@@ -1318,35 +1346,7 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
-    },
-    {
-      "key": "xli",
-      "id": "xli",
-      "kind": "sector",
-      "ticker": "XLI",
-      "basket_id": "b-us_sector_industrials",
-      "name": "Industrials",
-      "rotation_score": -37.8,
-      "rank": 46,
-      "rotation_rank": 46,
-      "components": {
-        "mom20": -7.43,
-        "fast_rs": -3.22,
-        "mom5_raw": -2.75,
-        "mom10_raw": -3.93,
-        "governor": -8,
-        "ob_penalty": 1.11,
-        "macd_demotion": 18.0
-      },
-      "state_used": "DECLINE",
-      "ob_etf": 0.111,
-      "ob_ew": 0.056,
-      "ob": 0.111,
-      "macd_x1w": false,
-      "macd_x2w": true,
-      "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "b-housing",
@@ -1374,7 +1374,7 @@
       "macd_x1w": false,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xlp",
@@ -1402,7 +1402,7 @@
       "macd_x1w": true,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     },
     {
       "key": "xlb",
@@ -1411,7 +1411,7 @@
       "ticker": "XLB",
       "basket_id": "b-us_sector_materials",
       "name": "Materials",
-      "rotation_score": -52.5,
+      "rotation_score": -48.5,
       "rank": 49,
       "rotation_rank": 49,
       "components": {
@@ -1419,18 +1419,18 @@
         "fast_rs": -3.81,
         "mom5_raw": -2.76,
         "mom10_raw": -5.38,
-        "governor": -8,
+        "governor": -4,
         "ob_penalty": 2.66,
         "macd_demotion": 30.0
       },
-      "state_used": "DECLINE",
+      "state_used": "COUNTERTREND BOUNCE",
       "ob_etf": 0.106,
       "ob_ew": 0.079,
       "ob": 0.106,
       "macd_x1w": true,
       "macd_x2w": true,
       "stale_flags": [],
-      "asof": "2026-09-21"
+      "asof": "2026-09-23"
     }
   ]
 }
