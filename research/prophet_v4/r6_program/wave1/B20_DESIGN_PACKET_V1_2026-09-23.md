@@ -15,7 +15,7 @@
 7. **Incumbent payload semantics:** `templates/_prophet_card.html.j2` lines 575–677; `templates/_prophet_receipts.html.j2` lines 119–233; `templates/_us_board_cards.html.j2` lines 17–38 and 58–308; `templates/_us_prophet_plan_cards.html.j2` lines 1–136; `scripts/build_site.py` refusal generation at lines 4811–4875, stance projection at lines 4979–5039, and plan-book split at lines 5086–5127. Theme-source semantics are visible in `templates/_theme_tape.html.j2` lines 1–65 and 650–704 plus `scripts/build_site.py` lines 6089–6107.
 8. **User-action owner:** `templates/watchstore.js` is the cloud seam over the same per-list blob; `templates/watchlist.js` exposes the local store, list scope, provenance generation, and sync events. Prophet only consumes this owner and performs no second save format.
 
-STATUS: IN_PROGRESS
+STATUS: COMPLETE — packet complete; delivery steps follow
 
 ## 1. TASK FLOWS
 
@@ -324,3 +324,77 @@ Opening a row covers the list with the drawer. **Back to results** restores the 
 - **Focus and updated state:** a critical availability invalidation updates the affected row and announces “Entry availability changed.” A noncritical reorder adds an `Updated` button without stealing focus; activating it applies the order and preserves the selected episode. Every dialog/drawer uses focus trapping and a labelled return target.
 - **Coherent hydration:** bind by source generation/correction identity, not date alone. Refuse a mismatched generation, duplicate tail, or partial replacement; keep the prior coherent snapshot, show “This update did not apply. The current view is still complete,” and offer retry. Same-date corrections require refresh when generation differs.
 - **Accessibility status:** use `role=status` for load, save/readback, noncritical update, and language/theme change; `role=alert` only for critical availability loss or save failure. Do not announce routine quote ticks. Preserve visible text plus non-color markers for state; tooltips/focus rings meet the system contrast/accessibility floor.
+
+### 8.1 Bilingual plain-language copy contract
+
+ASCII labels are wireframe placeholders, not shipping strings. Production user-facing strings use these paired forms or equally plain task-specific variants. No translated text is placed in `title=`; receipts use LENS `data-tip-en`/`data-tip-zh`.
+
+| Purpose | EN | ZH |
+|---|---|---|
+| Destination tabs | Action Desk / Early Radar / All Candidates / Themes & Propagation / Track Record / Health & Receipts | 行动台 / 早期雷达 / 全部候选 / 主题与传导 / 战绩记录 / 健康与凭据 |
+| Research/promoted | Research view / Promoted view | 研究视图 / 已晋级视图 |
+| Action Desk empty: no qualifier | Nothing qualifies today. We will look again after the next close. | 今天没有符合条件的对象。下一收盘后会再看一次。 |
+| Action Desk empty: unsupported strategy | This strategy is not supported in the current market environment. You can still research its candidates. | 此策略暂不支持当前市场环境。你仍可研究其候选对象。 |
+| Action Desk empty: required source missing | A required source is unavailable, so we cannot state entry availability. Nothing here is a substitute read. | 必需数据源暂不可用，因此无法判断入场可用性。这里没有任何替代判读。 |
+| Radar empty | No new nominations passed source checks. | 没有新的提名通过数据源检查。 |
+| Themes empty | No group is turning with enough members to matter. | 没有足够多成员转强的主题。 |
+| Watch result | Saved to [list]. | 已保存到[list]。 |
+| Watch failure | Could not save to that list. Please try again. | 无法保存到该列表。请重试。 |
+| Local-only state | Saved on this browser. | 仅保存在此浏览器。 |
+| Disabled action reason | Waiting for its owner to be connected. | 等待对应功能接入。 |
+| Updated control | Results updated. | 结果已更新。 |
+| Hydration failure | This update did not apply. The current view is still complete. | 本次更新未应用。当前视图仍是完整版本。 |
+| Critical status | Entry availability changed. | 入场可用性已变化。 |
+
+## 9. USER ACTIONS
+
+- **Watch/Save (enabled):** invokes the existing list-scoped WatchStore only. The save sheet names the exact destination list before commit, waits for the actual owner result, and confirms with “Saved to [list]” or a plain failure. It never equates opening a dossier with saving, saving with a position, or a plan with a fill.
+- **Watch readback:** after save, the row button becomes **Saved**, its LENS names the list and update time, and “Manage lists” routes to the incumbent owner surface. A local-only state is labelled “Saved on this browser” and never advertised as cloud thesis persistence.
+- **Disabled actions and honest copy:** Pass (“Waiting for its owner to be connected”), Reason/Note (“Notes are local only and are not cloud thesis storage”), Thesis (“Thesis actions arrive after D05 maps their owner”), Milestone (“Milestone tracking arrives after D05 maps its owner”), Review (“Later-review tracking arrives after D05 maps its owner”). Disabled controls remain visible in the action rail with their reason; they never look like loading or entitlement upsells.
+- **No ad-hoc store:** Prophet writes only the WatchStore item/list contract and displays WatchStore provenance. Episode context, model status, strategy, or correction generation is not serialized into a Prophet-only note format.
+- **Alerts:** only meaningful state changes may link to the protected episode view; transport/preferences/deduplication remain incumbent owners. No notification reveals unlicensed facts, and quote motion alone is not an alert.
+
+## 10. COMPREHENSION ACCEPTANCE (Q24 seed)
+
+1. **Identify strategy and horizon** — From any row/drawer, the participant says the selected strategy and horizon without opening methodology. **Pass:** both are correct and no participant says a four-hour observation is a two-year thesis.
+2. **Separate research priority from entry permission** — Given a high-priority row with unavailable entry, the participant declines to call it entry-approved. **Pass:** they point to “Research only”/“Not available right now” and state that no permission exists.
+3. **Explain the leading risk** — From the row/drawer, the participant names the most consequential opposing or missing fact and what would change the decision. **Pass:** they cite the displayed fact/condition, not chart decoration or Priority alone.
+4. **Save to the intended list** — Starting with at least two lists, the participant saves the exact row to the named list and retrieves it. **Pass:** owner readback is shown and the item appears in the intended list only.
+5. **Retrieve the original decision** — After a correction, the participant opens the original decision and distinguishes then-known evidence from later developments. **Pass:** they do not describe the correction as a rewrite of the original snapshot.
+6. **Read the record without inferring a trade occurred** — Given a Track Record/episode row with Watch and disabled thesis/plan controls, the participant says no trade, fill, position, or plan is implied. **Pass:** they identify the record as research/decision history and name the separate lifecycle fact if one exists.
+
+Each test uses real source states, difficult unavailable/uncertain cases, EN and ZH, dark and light, desktop 1440, and mobile 390. Numerical pass thresholds belong to the registered usability protocol; task success is not market alpha.
+
+## 11. OPEN TASTE DECISIONS for the Fable Meta-CEO seat
+
+1. **Desk density:** (A) four rich rows with drawer comparison; (B) six compact rows with more drawer work. **Recommend A** — richer rows preserve availability, risk, and next action without hiding the limitation.
+2. **Radar provenance split:** (A) one mixed list with two provenance marks; (B) two adjacent lanes. **Recommend A** — comparison is easier and the mark remains accountable if enforced consistently.
+3. **Empty Action Desk emphasis:** (A) neutral quiet state; (B) warning-forward state for source failure only. **Recommend B** — “no opportunities” is calm; required-source loss must visibly block permission.
+4. **Forecast presentation:** (A) plain sentence plus range in drawer; (B) visual distribution at glance. **Recommend A** — until calibrated, geometry can overstate certainty.
+5. **Track Record default:** (A) population/ruler summary first; (B) outcome timeline first. **Recommend A** — comprehension depends on knowing what is measured before seeing outcomes.
+
+## RETURN
+
+STATUS: COMPLETE
+
+RESULT:
+
+- Deliverable: `research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md`
+- Head SHA: recorded in the PR body at creation.
+- NEW components: 3 — `ProvenanceMark`, `EpisodeDrawer`, `PropagationLedger`.
+- Taste decisions: Desk density: rich rows. Radar: mixed list with provenance. Empty Desk: warning only for required-source failure. Forecast: plain sentence/range. Track Record: population/ruler first.
+
+EVIDENCE:
+
+- Constraints read: §0 records line-level citations for doctrine, design system, nav family, theme tokens, specimen, R6 §14–§16, incumbent Prophet templates/builders, and WatchStore.
+- Validation commands and summaries: recorded from the final document checks and delivery commands below.
+
+GAPS:
+
+- The Claude memory index named by workspace law is absent at `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/memory/MEMORY.md`; no alternative index exists under `~/.claude/projects`. Therefore the three delivery-process memory entries could not be opened. The frozen mission's branch/PR path was followed without merging, polling CI, marking ready, or claiming green checks.
+- This is a design document only. The three NEW components and every proposed unavailable owner field require their D09/D05/implementation lanes; no product behavior is claimed shipped.
+
+DEVIATIONS:
+
+- `apply_patch` was not installed as a shell command. The first skeleton attempt failed before creating/committing any file, then the exact skeleton was immediately created with the shell, committed, and pushed as the first successful result. All later commits are new commits; no history rewrite or amend occurred.
+- No other departure from the frozen specification.
