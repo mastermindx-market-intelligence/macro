@@ -4,126 +4,79 @@ session: sol/consumer-defensive-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Principal-led Consumer Defensive research and design for granular GMI Themes;
-  explain category demand, company economics, expectations, valuation and equity
-  recognition; deliver a mature implementation masterplan before final Fable CEO buildout.
+  Principal-led Consumer Defensive research, economics and product design within
+  existing GMI Themes; mature the research and implementation masterplan before
+  final Fable CEO buildout. Parent product mission remains incomplete.
 state_before: >
-  Chairman approved the Consumer Defensive commission and assigned most research
-  and planning to Sol, with eventual final buildout to Fable. No sector-native
-  research foundation had been persisted on the incumbent Consumer Defensive carrier.
+  R1 foundation and exact R2 continuation were saved on Macro #7792 at
+  deb717453ad15955336f372fb1932c9c6b641896.
 changed:
-  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md
-    what: >
-      R1 sector-native economics and research architecture: 12 proposed coverage
-      families, 8 archetypes, 10 issuer anchors / 11 dated cases, 16 source references,
-      valuation and measurement distinctions, 24 proposed adversarial acceptance cases.
+  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_COMPANY_EXPOSURES_R2_2026-09-23.md
+    what: "22 company/business records, 25 public source references, ten disclosed-period revenue ratios and economic hypotheses/falsifiers."
   - path: agentos/handoffs/GMI-CONSUMER-DEFENSIVE-RESEARCH-2026-09-23.md
-    what: "Cumulative R1 continuation, explicit incompleteness and exact R2 action."
+    what: "Cumulative intermediate checkpoint before R2 mechanism and comparison work; not a final handoff."
 verified:
-  - claim: "Protected compatible procedure loaded at one immutable revision."
-    command: "GitHub master metadata and immutable fetch_file reads"
-    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack 1.0.1; bootstrap 1."
-  - claim: "R1 research document persisted and read back on incumbent carrier."
-    command: "GitHub create_file then fetch_file at returned commit, header and final sections"
-    result: "Commit d6c1b2e1fe500b867a46607c414635c08fe496cf; blob 2310f6d95ec7ba9f9fa353471624880b55a33ba3."
-  - claim: "Existing shared architecture and actual implementation interfaces located."
-    command: "Immutable reads at Macro c4da107fe729e46b4d4036b3e0e290390315d0fd"
-    result: "GMI workstream, shared sector/theme architecture, Theme Tracker builder and closed evidence.v1 schema inspected."
+  - claim: "Same protected procedure and incumbent carrier recovered."
+    command: "GitHub protected-master, INDEX and companion reads; get_pr_info #7792"
+    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc / 1.0.1/bootstrap1; #7792 open/draft/unmerged at recovery."
+  - claim: "Corrected R2 census persisted and read back by immutable revision."
+    command: "create_file, source self-review, update_file and exact-commit fetch_file"
+    result: "b80a30032a9b0042a66713c91767f6cf7c45f3e3; blob fd0e767c4d144f188272f821631dcf5ad2405f9e."
+  - claim: "Descriptive revenue ratios were recomputed, not taken as portfolio weights."
+    command: "Python Decimal numerator/denominator calculations"
+    result: "Ten reported-period ratios calculated; no empirical stock/valuation model or product test."
 unverified:
-  - claim: "Global research, accepted specification, implementation or product acceptance is complete."
-    what_would_verify: >
-      Complete source-backed exposure and driver dossiers, historical/negative-case
-      validation, accepted written design and implementation plan, lawful Fable
-      delivery and eventual exact-release production/browser acceptance.
-  - claim: "Automated local structural QA or application tests passed."
-    what_would_verify: >
-      Actual successful execution and captured output. Local artifact download/QA
-      did not execute successfully; native GitHub persistence readback did succeed.
+  - claim: "Complete global census, empirical rerating model or implementation readiness."
+    what_would_verify: "Remaining industry/region dossiers, historical evaluation, current owner integration, accepted design/plan and eventual production proof."
 next_actions:
-  - >
-    R2: expand company/business/brand/category/channel/geography exposure census
-    and the mechanism/indicator dictionary, starting with beverages, snacks,
-    pet nutrition and household care. Record disclosed revenue/profit scope,
-    distribution and counterparties, input-cost transmission, repeat-demand
-    evidence, valuation anchor and falsifiers. Do not invent undisclosed percentages.
-  - >
-    Continue the same research branch/PR. Refresh only the minimum current
-    protected procedure and actual interfaces needed; do not replay the full
-    Robotics/template archaeology or take over their source custody.
+  - "Continue R2 demand/distribution/expectations mechanism dictionary and discriminating research cases on #7792."
+  - "Record management-guidance-relative outcome separately from year-over-year trend; do not invent consensus, valuation or stock reaction."
 do_not_redo:
-  - "R1 research foundation and source register at d6c1b2e1 are DO_NOT_REDO unless materially invalidated."
-  - "Do not force Consumer Defensive into a universal Robotics BOM/bottleneck model."
-  - "Do not create another identity, taxonomy, evidence, correction, state, valuation, ranking, watcher or publication owner."
-  - "Do not modify Robotics #7773, the shared template or their active product carriers."
-  - "Do not confuse research priority/coverage with candidacy, ranking, entry, sizing or trading authority."
-  - "Do not hand off to Fable prematurely; no Fable receiver or START has been established here."
+  - "Preserve R1 and corrected R2 census; do not repeat broad Robotics/shared-template archaeology."
+  - "No universal BOM-first model or fused operating/expectations/valuation/price score."
+  - "No duplicate identity, taxonomy, financial facts, evidence, corrections, state, publisher or watcher owner."
+  - "Do not use the initial R2-C10 shorthand: correct Utz measures are net price realization and volume/mix."
+  - "Do not promote research ratios into basket membership/weights, forecasts, rank, entry, sizing or trades."
 danger_areas:
-  - "Preserve source-native price/mix and volume/mix; do not invent a pure component."
-  - "Shipments, retail consumption, acquired sales and organic growth are different observations."
-  - "Margin recovery, demand recovery, expectations and market recognition are separate dimensions."
-  - "Public editorial research is not permission to publish current paid/private product data."
+  - "Brand rights, territory, channel, fiscal period and accounting perimeter must survive exposure mapping."
+  - "Pending transactions and retrospective recasts do not rewrite what was owned/knowable earlier."
+  - "Public research references are not proof of paid-data rights or immutable source retention."
 ---
 
-# Consumer Defensive — cumulative R1 continuation
+# Consumer Defensive cumulative research frontier
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
-Research capability: R1_FOUNDATION_WRITTEN / RESEARCH_IN_PROGRESS
-Product capability: NOT_IMPLEMENTED_BY_THIS_OPERATION
-Fable handoff: NOT_ISSUED
+Capability: SPEC_ONLY / RESEARCH_IN_PROGRESS
+Checkpoint type: intermediate working checkpoint; active research continues in the current turn.
+Fable handoff: NOT_ISSUED.
 
-## Mission and authority
+## Authority, carrier and exact sources
 
-Present Chairman instruction: take this Consumer Defensive project end to end, with most principal research and planning performed by this Sol session and final buildout by Fable CEO. The earlier prompt's stray Basic Materials phrase does not alter Consumer Defensive scope. Retained principal work is economic synthesis and PRINCIPAL_JUDGMENT, not undelegated routine code labor. Fable remains eventual principal integrator/orchestrator, not a worker commissioned or STARTed by this session.
+Current Chairman direction continues principal-owned research and planning over substantial turns, with final implementation/orchestration intended for Fable CEO. PRINCIPAL_JUDGMENT remains the direct-work reason. No concrete Fable receiver has been assigned or started by this operation. A longer requested turn is not a known platform time budget.
 
-Requested Pro mode is user-reported; no platform reasoning-budget or routing attestation is claimed. No mode switch is currently required for the research or native GitHub documentation actions that actually succeeded.
+Operation: `gmi-consumer-defensive-research-20260923-sol-001`.
+Carrier: `mastermindx-market-intelligence/macro` PR #7792, `sol/consumer-defensive-research-20260923`.
+Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`; fresh INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT read at this same compatible pin. Resource read confirms push capability; organizational scope remains research/continuity, not production.
+Base/interface reference remains Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`. No rebase or source-custody change.
+Robotics reference ONLY: #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`; shared architecture in `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`. Do not turn historical architecture ledgers into fresh deployment evidence.
 
-## Exact carrier and source references
+R1 foundation: `research/consumer_defensive/CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md`, commit `d6c1b2e1fe500b867a46607c414635c08fe496cf`, blob `2310f6d95ec7ba9f9fa353471624880b55a33ba3`. Preserve the 12 proposed families, 8 archetypes and 24 proposed safeguards; these were not implemented tests.
+R2 census: `research/consumer_defensive/CONSUMER_DEFENSIVE_COMPANY_EXPOSURES_R2_2026-09-23.md`, corrected commit `b80a30032a9b0042a66713c91767f6cf7c45f3e3`, blob `fd0e767c4d144f188272f821631dcf5ad2405f9e`. The original R2 write `d52d58ec4c66f0f44dc84b21316ee08b362c16ed` contained a source locator typo and mislabeled Utz price/volume bridge; corrected current text and correction receipt supersede those precise fields. No silent source change or issuer restatement is implied.
 
-- Operation: `gmi-consumer-defensive-research-20260923-sol-001`.
-- Repository / carrier: `mastermindx-market-intelligence/macro`, draft/HOLD PR #7792.
-- Branch: `sol/consumer-defensive-research-20260923`.
-- Initial continuity commit: `7242eb4ba9dc23758495f23357ec59c769843e08`.
-- R1 research commit: `d6c1b2e1fe500b867a46607c414635c08fe496cf`.
-- R1 path: `research/consumer_defensive/CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md`.
-- R1 content blob: `2310f6d95ec7ba9f9fa353471624880b55a33ba3`.
-- Protected Skillpack: `Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`, version 1.0.1 / bootstrap 1; INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT consumed there.
-- Implementation/base-read pin: Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-- Robotics reference only: #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`.
-- Shared architecture: `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`, verified present at Macro base-read pin; source blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971`. Do not infer current product readiness from its historical capability ledger.
+## Material research result
 
-This cumulative file's update receipt and exact-commit readback identify its own immutable revision; it does not attempt to embed a self-referential commit SHA.
+The exposure grain is issuer/business/brand/right/territory/channel/period/accounting perimeter. Census spans Coca-Cola, Celsius, Monster, PepsiCo, KDP, Hershey, Mondelez, BellRing, Simply Good Foods, Utz, Nestle, Colgate/Hill's, Freshpet, General Mills (explicit historical control), Smucker, P&G, Church & Dwight, Clorox, Kimberly-Clark, Unilever, Henkel and Glanbia.
 
-## Material results to preserve
+Preserve these non-equivalences: system cases versus concentrate revenue; acquired portfolio versus incumbent brand demand; distributor deductions versus consumption; brand versus segment purity; mixed volume/mix versus physical units; new doors versus repeat sales; management guidance versus consensus; reported income versus common-share attributable earnings; held-for-sale/depreciation/accounting dates versus legal close; original historical taxonomy versus later recast. A common theme can create opposite cost effects for an ingredient business and a finished-brand business.
 
-R1 proposes the sequence consumer/category demand -> channel/share -> price/volume/mix -> retained margin/investment -> earnings/cash per share -> expectations/valuation -> market recognition. Physical supply and procurement are conditional parts of the mechanism, not universal thesis scores.
+The next mechanism work has a source-bound real example: Simply Good Foods April 9 Q3 guidance was $329-338m sales and $46-50m adjusted EBITDA; July 9 actuals were $357m and $57.2m, while prior-year values were $381m and $73.9m. A beat versus that management range can coexist with year-over-year deterioration. Preserve rounded calculation differences and do not label it a consensus beat or stock rerating.
 
-Categories, demand themes, commercial roles, economic archetypes, channels, geographies and lifecycle/market states remain distinct facets over native identities. Keep operating fundamentals, expectations, valuation and market recognition as separate owner-derived panels; evidence confidence/coverage is not stock attractiveness.
+## Effects, holds and gaps
 
-Selected actual/historical company releases exposed discriminating failure cases: P&G reported versus organic growth, Coca-Cola cases versus concentrate shipments, Hershey price-led margin recovery with weak volume/mix, Mondelez reported/adjusted EPS divergence, General Mills acquired sales and channel inventories, Costco membership/comps, Freshpet volume and cash quality, Walmart service/accounting mix, Tyson output-input processing spreads, and PMI category-transition exposure. Source dates, exact metric bases and limitations reside in R1; these are research examples, not current rankings or portfolio instructions.
+Only research and cumulative Agent OS documentation have changed. EFFECT_UNKNOWN: none observed. No product code, native data admission, schema enrollment, live basket/weights, price/rank/entry/size/trade, auth, publisher, CI policy, merge or deployment change. No child, Executive Attempt, watcher, Fable dispatch/ACK/START or autonomous wake.
 
-The existing Theme Tracker builder explicitly names bottleneck tightness. The current GMI evidence schema is closed. The shared federation already rejects universal scores and preserves source/owner scope. Therefore economic research should extend the accepted dossier/native owners, not silently append unsupported fields, create a parallel financial truth store or mutate incumbent scores.
+HOLD FOR SOL: do not merge, mark ready, enable auto-merge, deploy or dispatch Fable. This is not the eventual implementation branch.
 
-## What remains uncertain and why R1 is not a final handoff
+Remaining work: detailed mechanism dictionary, research packet/QA, remaining industries and international breadth, real historical rerating/event evaluation, licensed-data availability, rights/private-retention binding, accepted product specification, implementation plan and eventual live-path/browser acceptance. No current prices or forecasts were fabricated. R2 sources are reviewed examples, not an exhaustive certificate of latest filings. Source summaries are original bounded editorial research, not a copied source corpus.
 
-Full global coverage, business/brand revenue-purity values, licensed panel and consensus availability, empirical rerating episodes, model calibration, international comparability, private retention/publication, accepted schema evolution, final visual behavior and the detailed Fable implementation plan remain incomplete. No independent design review, application tests, CI qualification, merge, deployment or browser proof was performed.
-
-The local convenience-download lane failed before artifact/QA completion: the download helper required prior URL viewing; a separate direct public-file read failed DNS resolution. Do not claim a local downloadable artifact, byte-hash verification or automated structural-test pass. Do not repeat these unchanged optional paths. Native GitHub immutable reads succeeded and are the persistence proof. These local limitations do not block public-source research or native GitHub work.
-
-## Effects, custody and returns
-
-Verified effects: one research branch, one draft/HOLD PR, initial/current continuity documentation and R1 research document. No product code, schema enrollment, live evidence admission, membership/weights, ranking, entry, sizing, trading, auth, publisher, CI policy, merge or deployment change.
-
-EFFECT_UNKNOWN: none observed.
-Active children / Executive Attempts / workers: none created.
-Fable dispatch / ACK / START: none.
-Watchers: none created; no reciprocal dialogue is awaiting a response from this operation.
-No autonomous continuation, wake or background execution is claimed.
-
-HOLD FOR SOL: do not mark ready, arm auto-merge, merge, deploy or treat R1 as the finished masterplan. Public-source research remains editorial and distinct from current authenticated paid product payloads. The research branch is not an implementation carrier.
-
-## Continuation boundary and exact next action
-
-R1 reaches a genuine research-phase boundary after source/context reconciliation and the first causal/measurement foundation. Extensive source and tool context has accumulated; retain this compact frontier rather than replaying it. Intended next surface: a fresh Consumer Defensive research continuation grounded in this cumulative checkpoint, R1 and minimum fresh protected procedure. This is continuity, not completion, custody transfer or release.
-
-Next action is R2 company/business/brand exposure and mechanism research, starting with beverages, snacks, pet nutrition and household care. Use source-native metrics and ownership, record disclosed versus unknown quantities, compare positive and negative cases, and extend the same research carrier. Follow with the remaining sector families and geography, then predictive/valuation evaluation and implementation-ready design. Fable receives the mature final masterplan only after these questions are substantially resolved.
+Next action in this turn: write the R2 demand/distribution/expectations mechanism and comparison requirements, validate the deterministic arithmetic/research structure, then preserve a current checkpoint covering those effects before any genuine phase boundary. No stopping or custody transfer is asserted by this intermediate save.
