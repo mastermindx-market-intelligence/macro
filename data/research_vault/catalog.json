@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T12:24:23.703483+00:00",
-  "count": 2708,
+  "generated_at": "2026-09-23T12:54:11.358148+00:00",
+  "count": 2710,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7yl0z9bvzby-adeeb0",
+      "title": "GS Duttenhoefer BEST of DAY 2 at our German Corp Conference in Munich 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:49Z",
+      "summary_points": [
+        "Siemens AG: Digital Industries momentum (semiconductors/defense) with €6bn datacenter backlog, software monetization focus, and mid-term margin expansion (17-20%); room crowding 9/10 signals under-owned opportunity despite China exposure risks.",
+        "BMW AG: China market down ~40% driving profit warning, ICE portfolio vulnerability, and pricing pressures; Europe tariff concerns compound risks amid EV rollout delays (iX3 Q1).",
+        "Sartorius Outlook: Net-net bullish with H1 bioprocess growth (9%+), APAC/China support, and structural growth visibility; room crowding 4/10 indicates low positioning for upside.",
+        "KRONES AG: Net-net negative due to valuation concerns, pricing challenges, and geopolitical delays; mid-term guidance (3/10 rating) lacks clear catalysts amid customer pushout.",
+        "GERRESHEIMER AG: Strategic divestiture (U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nmuie7j0as1-4f0c24",
       "title": "JPM Asia Pacific Equity Derivs",
@@ -2010,6 +2031,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2uhqbsj2pcc-243e1b",
+      "title": "GS Equities Color US EQUITIES COLOR SEEING GREEN 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:07:48Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
