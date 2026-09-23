@@ -70,9 +70,54 @@
 - OBSERVED, GICS/current sector: `engine/qledger.py` reads a current `membership.parquet` mapping only `ticker` to `sector`, caches it, and performs no as-of query (`engine/qledger.py:1515-1560@a1a0a05e6adc`). EquityDesk earnings backfill carries GICS sector/industry-group/industry/subindustry fields on rows, but those are row attributes without an historical membership interval contract (`engine/earnings_qual.py:2456-2473@a1a0a05e6adc`). CLASSIFICATION: current-only/diagnostic; **current GICS backdated is forbidden**.
 - INFERRED: a compliant historical sector/industry membership table needs (1) issuer/security identity keyed with effective and knowable dates; (2) original vendor publication/announcement clock separate from effective date; (3) immutable add/remove or revision receipts; (4) coverage against the original universe including delisted issuers; and (5) rights for storage, model use and redistribution.
 
-## Q5
+## Q5 RIGHTS
 
-TODO
+- Answer format: five rights are Acquisition / Processing / Storage / Model use / User redistribution. “Recorded” means the repository states it; absence is UNKNOWN, never an inferred license.
+
+### SEC EDGAR filings and 13F evidence
+- OBSERVED: acquisition is by public SEC endpoints with documented pacing and parsing (`collectors/edgar_earnings_8k.py:173-260@a1a0a05e6adc`; `engine/institutional_census/sec_sources.py:41-78@a1a0a05e6adc`).
+- INFERRED: processing may retain and normalize as-filed content because the contracts explicitly preserve source artifacts, hashes and clocks (`engine/earnings_release/binding.py:79-128@a1a0a05e6adc`; `engine/institutional_census/models.py` and storage receipts enforce immutable object digest/length).
+- UNKNOWN: no `license`/`rights` field specifically grants processing or model use for EDGAR data was found in the inspected SOURCE_SHA rows; U.S. government public-domain status is plausible but not recorded here, so D03 forbids assuming it. Required: a rights register row quoting the source terms owner’s recorded determination.
+- OBSERVED: store receipts and bounded immutable object checks are contract-level storage mechanisms (`engine/institutional_census/storage.py:86-134@a1a0a05e6adc`, `engine/institutional_census/storage.py:157-175@a1a0a05e6adc`), not a rights grant.
+- UNKNOWN: user redistribution. No EDGAR-specific redistribution field was observed in the inspected code/config.
+
+### Nasdaq earnings calendar/surprise
+- OBSERVED: acquisition is from public Nasdaq API endpoints, bot-wall-aware, with browser-like headers and pacing (`collectors/equity_earnings.py:66-77@a1a0a05e6adc`, `collectors/equity_earnings.py:116-135@a1a0a05e6adc`, `collectors/equity_earnings.py:158-180@a1a0a05e6adc`).
+- UNKNOWN: processing, storage beyond local parquet, model use and redistribution. `config/dataset_registry.yml` at SOURCE_SHA has no Nasdaq earnings row and the collector has no rights field. A registered rights determination is required before user-facing or model-facing expansion.
+
+### Yahoo/yfinance EPS and revenue expectations
+- OBSERVED: acquisition is direct `yfinance` accessors for `earnings_estimate`, `revenue_estimate`, `eps_revisions`, and `eps_trend`, with bounded drip and guarded accessors (`collectors/equity_revisions.py:453-477@a1a0a05e6adc`, `collectors/equity_revisions.py:552-620@a1a0a05e6adc`, `collectors/equity_revisions.py:729-757@a1a0a05e6adc`).
+- OBSERVED: processing records typed missingness, payload hashes, period anchors, append-only lineage and explicit refusal of backfilled `system_observed_at`; it does not infer contributor identity or fiscal mappings (`collectors/equity_revisions.py:285-365@a1a0a05e6adc`, `collectors/equity_revisions.py:384-423@a1a0a05e6adc`, `collectors/equity_revisions.py:425-448@a1a0a05e6adc`).
+- OBSERVED: storage is local `latest.parquet`, append/dedupe `history.parquet`, and additive `expectation_observations.parquet`/`expectation_attempts.parquet` (`collectors/equity_revisions.py:439-448@a1a0a05e6adc`, `collectors/equity_revisions.py:543-548@a1a0a05e6adc`, `collectors/equity_revisions.py:738-790@a1a0a05e6adc`). The SRC-A1 contract names these physical artifacts and forbids drift in legacy semantics (`research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:48-63@a1a0a05e6adc`).
+- UNKNOWN: model use. SRC-A1 stores `rights_class: UNKNOWN`, and its matrix says unlicensed/rights-blocked are lawful outputs—not grants (`collectors/equity_revisions.py:363@a1a0a05e6adc`; `DATA_CLOCK_RIGHTS_MATRIX.md:3-9@a1a0a05e6adc`). No executed Yahoo entitlement or permitted-use determination was found.
+- UNKNOWN: user redistribution. No Yahoo/yfinance expectation rights row was found. The separate Yahoo price row records `licensing: vendor_terms_personal_use` (`config/dataset_registry.yml:88-105@a1a0a05e6adc`), but that price registry row cannot be transplanted to expectations; expectation redistribution therefore remains UNKNOWN.
+
+### Basket/SPY closes and benchmark store
+- OBSERVED: acquisition is recorded for the Yahoo price family as yfinance (`config/dataset_registry.yml:88-105@a1a0a05e6adc`); the group module reads basket OHLCV files and `yahoo/SPY` from the local store (`engine/group_earnings.py:45-48@a1a0a05e6adc`).
+- OBSERVED: processing/storage are parquet upserts with old rows retained and new rows winning date collisions; adjusted series may instead overwrite their refreshed overlap (`lib/store.py:60-103@a1a0a05e6adc`). Registry notes explicitly say Yahoo re-adjusts history at each fetch and `adjustment_asof` is missing (`config/dataset_registry.yml:129-133@a1a0a05e6adc`).
+- OBSERVED: the committed discovery `DSC:BASKET-OHLCV-REWRITES-HISTORY-NIGHTLY` records that nightly full-history `auto_adjust=True` downloads rewrite historical adjusted values; returns/ratios are preserved to floating precision, but exact equality is not stable (`agentos/discoveries/DSC-BASKET-OHLCV-REWRITES-HISTORY-NIGHTLY.md:3-30@a1a0a05e6adc`). The same discovery links a recorded adverse Yahoo terms fact for the price spine (`agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md:50-65@a1a0a05e6adc`).
+- UNKNOWN: model use and redistribution for `baskets/ohlcv` and `yahoo/SPY` specifically. The binding in-repo fact is the recorded `vendor_terms_personal_use` row plus the adverse-use finding; a family-specific clearance for model use or user redistribution is not present.
+
+### Massive
+- OBSERVED: the operator record says Mastermind holds full licensing and distribution rights under an Enterprise Market Data License and Redistribution Addendum effective 2026-08-09; the executed contract is private and commercial terms must not be quoted (`research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:8-17@a1a0a05e6adc`).
+- OBSERVED: across the enterprise scope, display, external redistribution raw/derived, derivative products, AI/ML training/fine-tuning/evaluation/retrieval/grounding/feature engineering/embeddings/inference, end-user export, archival retention and post-term use of delivered history/derived materials are confirmed (`research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:19-49@a1a0a05e6adc`).
+- OBSERVED: dataset-specific vendor conditions can override this general record and written vendor designations are authoritative per feed; attribution is optional but preferred (`research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:50-60@a1a0a05e6adc`). Therefore each specific Massive feed still needs its per-dataset entitlement check.
+
+### Curated baskets and theme graph
+- OBSERVED: `mastermind_curated` is `direct_display_ok`, `auth_class: house`, first-party curation, with no external rights (`config/theme_sources.yml:21-28@a1a0a05e6adc`). The builder maps those suites to this family and derives new receipt booleans from the rights registry (`engine/theme_graph/materialize.py:70-89@a1a0a05e6adc`).
+- OBSERVED: Finviz themes and THS concepts are `unresolved`, are treated internal-only for new GMI emissions, and refuse public emission; Finviz notes paid export/API and resale restrictions, while THS is a receipted scrape (`config/theme_sources.yml:29-41@a1a0a05e6adc`). Thus processing/internal analysis may be governed by the internal posture, model use and redistribution remain ungranted.
+- OBSERVED: S&P Kensho/Theia are reserved, unresolved rows only; Theia requires a commercial license and S&P Kensho has no bulk constituent route (`config/theme_sources.yml:43-52@a1a0a05e6adc`).
+
+### Consensus estimates
+- OBSERVED: unlicensed is a typed warning; beat/miss is forbidden absent licensed consensus (`engine/company_intelligence/event_workspace.py:99-106@a1a0a05e6adc`, `engine/company_intelligence/event_workspace.py:338-344@a1a0a05e6adc`). C-01 ratifies this permanent absence and requires the family rights block to say so (`research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14@a1a0a05e6adc`). Therefore acquisition, processing, storage, model use and user redistribution are all unavailable under current recorded rights.
+
+### Transcripts
+- OBSERVED: every company source span is forced to `authority=context_only` and transcript evidence carries `rights_profile: rp_public_primary_v1` (`engine/earnings_transcript_intake.py:516-529@a1a0a05e6adc`, `engine/earnings_transcript_intake.py:664-690@a1a0a05e6adc`; `engine/company_intelligence/event_workspace.py:260-265@a1a0a05e6adc`).
+- UNKNOWN: what `rp_public_primary_v1` authorizes for acquisition, persistence, model use and user redistribution. The string alone is not a rights grant. A transcript rights register/contract is required.
+
+### Press, narrative and search
+- OBSERVED: press acquisition is restricted to documented published endpoints and relay APIs, with no first-party scraping; X access is via a paid read relay keyed by an environment variable (`config/press_sources.yml:14-23@a1a0a05e6adc`, `config/press_sources.yml:66-76@a1a0a05e6adc`).
+- UNKNOWN: processing, storage, model use and redistribution. The file records mechanics/corroboration law but not rights. Narrative RSS/EDGAR velocity and Google Trends likewise have no rights fields in the inspected source; `narrative_sources.yml` says Trends is display-only in its implementation note (`config/narrative_sources.yml:138-148@a1a0a05e6adc`), which is a product guard, not a redistribution/model-use grant.
 
 ## Q6
 
