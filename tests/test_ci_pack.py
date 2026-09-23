@@ -3517,13 +3517,16 @@ CURATED_EXCLUSIVE = {
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
     # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
     # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
-    # + test_audit_options_skew_overlap). The lane has no signal-contract /
+    # + test_audit_options_skew_overlap), the W2-4 parity audit
+    # (test_audit_options_skew_parity, #7756) and the two W2-5a payoff-lab
+    # suites (test_options_payoff_lab + test_payoff_lab_launchd, #7759) —
+    # eight suite runs on one run line. The lane has no signal-contract /
     # render subject — its subjects are the launchd plist, the sh runner,
     # argparse helpers, and the publish_r2._DATA_DIRS options_skew
     # registration — and it was previously parked in
     # config/unrun_test_waivers.yml, which the waiver file's own header
     # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
-    # name exactly the five suites plus the load-bearing scripts they
+    # name exactly the eight suites plus the load-bearing scripts they
     # actually invoke and the engine/lib chains those scripts import.
     "skew-accrual-lane",
     # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
