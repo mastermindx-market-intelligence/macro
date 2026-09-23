@@ -973,6 +973,7 @@ def _display_fixture(*, primary="add_on_pullback", reco="enter", organ="TURNING"
     from datetime import datetime
     intel = {"as_of": "2026-09-18", "themes": [dict(item, reco=reco,
              regime_demoted=False, chase_demoted=False,
+             observation={"effective_as_of": "2026-09-18", "aggregate_eligible": True},
              textures={"clean_entry": {"flag": primary == "buy"}})],
              "act_now": {primary: [item]} if primary else {}}
     cycles = [{"id": "b-cn_semis", "name": "Semiconductors", "kind": "basket",
@@ -1089,7 +1090,8 @@ def _continuation_fixture(session="2026-09-21", clean=False, final="accumulate")
           "score": 75, "label": "dominant", "reco": final,
           "reco_en": final.upper(), "reco_zh": "增持" if final == "accumulate" else "持有",
           "regime_demoted": False, "chase_demoted": False, "ext_abs": 0.3,
-          "textures": {"clean_entry": {"flag": clean}}, "n_members": 12}
+          "textures": {"clean_entry": {"flag": clean}}, "n_members": 12,
+          "observation": {"effective_as_of": session, "aggregate_eligible": True}}
     item = {"id": td["id"], "name": td["name"], "name_zh": td["name_zh"],
             "score": 75, "action": "accumulate", "action_en": "ACCUMULATE", "action_zh": "增持"}
     return {"as_of": session, "themes": [td], "act_now": {
@@ -1252,3 +1254,31 @@ def test_continuation_does_not_reinterpret_stock_or_sector_entry_permission():
     assert [r['id'] for r in b['display_lanes']['buy_now']] == ['cn_example']
     assert [r['id'] for r in b['display_lanes']['wait_pullback']] == ['512760.SS']
     assert b['display_lanes']['buy_now'][0]['theme_decision']['stock_entry_permission'] is False
+
+
+@pytest.mark.parametrize("observation", [None, {}, [], "complete",
+    {"effective_as_of": "2026-09-21"},
+    {"aggregate_eligible": True},
+    {"effective_as_of": "2026-09-21", "aggregate_eligible": "true"},
+    {"effective_as_of": "2026-09-21", "aggregate_eligible": 1},
+    {"effective_as_of": "2026-09-22", "aggregate_eligible": True}])
+@pytest.mark.parametrize("clean", [False, True])
+def test_missing_or_malformed_member_evidence_cannot_authorize_a_theme_buy(observation, clean):
+    ti = _continuation_fixture(clean=clean)
+    ti["themes"][0]["observation"] = observation
+    original = deepcopy(ti)
+    board = _continuation_board(ti)
+    assert not board["display_lanes"]["buy_now"]
+    row, = board["display_lanes"]["wait_pullback"]
+    assert row["theme_decision"]["status"] == "UNAVAILABLE"
+    assert row.get("entry_route") != "continuation"
+    assert ti == original
+    assert len(board["lanes"]["buy_now" if clean else "wait_pullback"]) == 1
+
+
+def test_current_eligible_member_evidence_restores_continuation():
+    ti = _continuation_fixture()
+    ti["themes"][0]["observation"]["aggregate_eligible"] = False
+    assert not _continuation_board(ti)["display_lanes"]["buy_now"]
+    ti["themes"][0]["observation"]["aggregate_eligible"] = True
+    assert _continuation_board(ti)["display_lanes"]["buy_now"][0]["entry_route"] == "continuation"

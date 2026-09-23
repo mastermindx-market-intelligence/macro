@@ -24,7 +24,8 @@ source_path = 'site/chinabasketdata/baskets.json'
 raw = git('show', f'{source_commit}:{source_path}')
 source_blob = git('rev-parse', f'{source_commit}:{source_path}').decode().strip()
 intel = json.loads(raw)['theme_intel']
-clock = datetime.now(timezone.utc)
+# Explicit qualification clock for this frozen input, not a current/live read.
+clock = datetime.fromisoformat("2026-09-23T05:00:00+00:00")
 original = deepcopy(intel)
 baseline = types.ModuleType('baseline_china_action_board')
 baseline.__file__ = str(ROOT / 'engine/china_act_now.py')
@@ -46,6 +47,7 @@ report = {'proof_kind': 'repository-input component; not production or historica
           'host_css_paths': css_paths, 'host_body_class': body_class,
           'harness_note': 'Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.',
           'input_as_of': intel.get('as_of'), 'observed_at_utc': clock.isoformat(),
+          'clock_basis': 'injected qualification clock; not historical availability proof',
           'raw_lanes_unchanged': True, 'input_unchanged': True,
           'baseline_display': {k: [r['id'] for r in v] for k, v in before['display_lanes'].items()},
           'candidate_display': {k: [r['id'] for r in v] for k, v in after['display_lanes'].items()},

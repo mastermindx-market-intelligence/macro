@@ -741,6 +741,12 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
             final = td.get("reco") if td else None
             coherent = status == "CURRENT" and td is not None
             if td:
+                # The aggregate producer owns coverage. A date on the wrapper
+                # cannot substitute for current, eligible constituent evidence.
+                observation = td.get("observation")
+                coherent = (coherent and isinstance(observation, dict)
+                            and observation.get("effective_as_of") == session
+                            and observation.get("aggregate_eligible") is True)
                 for key in ("mtf", "tape"):
                     evidence = td.get(key)
                     if isinstance(evidence, dict) and evidence.get("as_of") is not None:

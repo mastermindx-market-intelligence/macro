@@ -14,7 +14,8 @@
   "host_body_class": "page-china mx4-grid",
   "harness_note": "Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.",
   "input_as_of": "2026-09-22",
-  "observed_at_utc": "2026-09-23T05:09:15.615532+00:00",
+  "observed_at_utc": "2026-09-23T05:00:00+00:00",
+  "clock_basis": "injected qualification clock; not historical availability proof",
   "raw_lanes_unchanged": true,
   "input_unchanged": true,
   "baseline_display": {
@@ -194,8 +195,8 @@
     }
   ],
   "source_sha256": {
-    "engine/china_act_now.py": "eac0c34a1b86826ee124fed8b868c16f7999ff763b1d858d2e8707e3700ddca4",
+    "engine/china_act_now.py": "83aebd687b68046fbe0a9edc1b5d238fc916288252683d499f65e3d4b0d0e4fa",
     "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
-    "tests/test_china_act_now.py": "c68411ba5f3c9951750c5935766f0f4061866dd3ccee07fb2b63ea8f5280cf4b"
+    "tests/test_china_act_now.py": "029914720ca2663bad627e7306961049db7525a16b2f51515e7493d9e6fb90d9"
   }
 }
