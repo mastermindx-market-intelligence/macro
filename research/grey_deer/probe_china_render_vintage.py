@@ -50,12 +50,37 @@ assert 'Economic slowdown' in html and 'Historical stress' in html
 assert 'cnx-participation' in html and 'cnx-index-members' in html
 with open(ROOT / 'data/_dev_china_vm.pkl', 'rb') as handle:
     vm = pickle.load(handle)  # this invocation's local debug output only
-fields = ['conditions', 'fear_euphoria', 'market_drivers']
-assert all(vm['latest'][k] == saved[k] for k in fields)
+# Whole-dictionary equality failed on five identified builder additions, not
+# changed saved values. Independently reproduce those exact additions; everything
+# saved, and every other addition, remains checked recursively without tolerance.
+from research.grey_deer.china_render_projection_check import verify_projection
+from engine.china_inputs import build_features
+expected = {}
+cond = saved.get('conditions') or {}
+ch = cond.get('charts') or {}
+if ch:
+    expected['conditions.roro_html'] = build_china._ilx(ch.get('roro'), 'var(--info)', kind='bars', height=170, baseline=0, aria_en='Risk-on/off chart')
+    expected['conditions.recession_html'] = build_china._ilx(ch.get('recession'), 'var(--warn)', height=150, aria_en='Slowdown gauge chart')
+    expected['conditions.drawdown_html'] = build_china._ilx(ch.get('drawdown'), 'var(--down)', height=150, aria_en='Drawdown gauge chart')
+    if saved.get('fear_euphoria') is not None and ch.get('fear_euphoria'):
+        bands = [dict(hi=100, lo=70, tint='color-mix(in srgb, var(--warn) 15%, transparent)', label_en='Euphoria', label_zh='亢奋', pos='top'),
+                 dict(hi=30, lo=0, tint='color-mix(in srgb, var(--info) 15%, transparent)', label_en='Fear', label_zh='恐惧', pos='bottom')]
+        expected['fear_euphoria.chart_html'] = build_china._ilx(ch['fear_euphoria'], '#c08bd8', height=160, bands=bands, value_fmt='{:,.0f}', aria_en='Fear and euphoria gauge chart')
+f = build_features()
+assert str(f.index[-1].date()) == saved['date'], 'extra breadth must use the same assessment session'
+b = f['pct_above_200'].dropna() if 'pct_above_200' in f else None
+if b is not None and len(b) >= 60:
+    tail = b.tail(252 * 5)
+    px = f['510300.SS'].dropna() if '510300.SS' in f else None
+    expected['conditions.breadth'] = dict(above200_pctile=float((tail <= tail.iloc[-1]).mean()),
+        div=bool(px is not None and len(px)>21 and len(b)>21 and b.iloc[-1]<b.iloc[-22] and px.iloc[-1]>px.iloc[-22]))
+projection_proof = verify_projection(saved, vm['latest'], expected_additions=expected)
+assert all(sha(p) == digest for p, digest in before.items()), 'post-qualification input drift'
+
 receipt = {'source_commit': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
            'assessment_date': saved['date'], 'raw_page_sha256': sha(page),
            'raw_page_bytes': page.stat().st_size, 'engine_run_calls': len(run_calls),
-           'preserved_input_sha256': before, 'saved_fields_equal_in_view_model': fields,
+           'preserved_input_sha256': before, 'saved_projection_check': projection_proof,
            'risk_score': (vm.get('risk_reading') or {}).get('radar', {}).get('top_score'),
            'copy_present': True, 'fresh_collection': False,
            'browser_proof': False, 'production': False}

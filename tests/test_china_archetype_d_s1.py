@@ -713,3 +713,59 @@ def test_render_snapshot_both_render_modes_block_score_history_writes():
     assert 'if _no_network_render():' in history_writer
     assert 'environ.get("CHINA_FAST_RENDER")' not in history_writer
     assert 'elif _ms_sc is None:' in history_writer
+
+
+# Exact saved/display boundary: no catch-all subset comparison may excuse drift.
+def _projection_boundary_fixture():
+    import copy
+    saved = {"conditions": {"roro": {"score": 0.175}, "charts": {"roro": [1., 2.]}},
+             "fear_euphoria": {"fe_score": 78}, "market_drivers": {"strength": .94}}
+    additions = {"conditions.roro_html": "<svg>roro</svg>",
+                 "conditions.recession_html": "<svg>slowdown</svg>",
+                 "conditions.drawdown_html": "<svg>drawdown</svg>",
+                 "fear_euphoria.chart_html": "<svg>sentiment</svg>",
+                 "conditions.breadth": {"above200_pctile": .1587, "div": False}}
+    displayed = copy.deepcopy(saved)
+    for path, value in additions.items():
+        parent, key = path.split(".")
+        displayed[parent][key] = copy.deepcopy(value)
+    return saved, displayed, additions
+
+
+def test_projection_boundary_accepts_only_exact_reviewed_additions():
+    from research.grey_deer.china_render_projection_check import verify_projection
+    saved, displayed, additions = _projection_boundary_fixture()
+    proof = verify_projection(saved, displayed, expected_additions=additions)
+    assert proof["saved_measurements_unchanged"] is True
+    assert set(proof["reviewed_additions"]) == set(additions)
+    assert proof["saved_leaf_count"] == 5
+
+
+@pytest.mark.parametrize("change", ["measurement", "removed", "unknown", "chart", "breadth", "missing_expected", "extra_expected", "chart_shape", "bool_measurement", "list_shape", "missing_domain", "existing_display_key"])
+def test_projection_boundary_rejects_unqualified_changes(change):
+    from research.grey_deer.china_render_projection_check import verify_projection
+    saved, displayed, expected = _projection_boundary_fixture()
+    if change == "measurement": displayed["fear_euphoria"]["fe_score"] = 81
+    elif change == "removed": del displayed["market_drivers"]["strength"]
+    elif change == "unknown": displayed["conditions"]["another_score"] = 90
+    elif change == "chart": displayed["conditions"]["roro_html"] = "<svg>wrong</svg>"
+    elif change == "breadth": displayed["conditions"]["breadth"]["div"] = True
+    elif change == "missing_expected": del expected["conditions.breadth"]
+    elif change == "extra_expected": expected["conditions.new_model"] = 1
+    elif change == "chart_shape": displayed["conditions"]["charts"]["roro"].append(3.)
+    elif change == "bool_measurement": displayed["conditions"]["roro"]["score"] = True
+    elif change == "list_shape": displayed["conditions"]["charts"]["roro"] = {"0": 1., "1": 2.}
+    elif change == "missing_domain": del displayed["conditions"]
+    else: saved["conditions"]["roro_html"] = "<svg>previous</svg>"
+    with pytest.raises(AssertionError):
+        verify_projection(saved, displayed, expected_additions=expected)
+
+
+def test_projection_boundary_is_immutable_and_handles_matching_nulls():
+    import copy
+    from research.grey_deer.china_render_projection_check import verify_projection
+    saved, displayed, expected = _projection_boundary_fixture()
+    saved["market_drivers"]["unavailable"] = displayed["market_drivers"]["unavailable"] = None
+    before = copy.deepcopy((saved, displayed, expected))
+    verify_projection(saved, displayed, expected_additions=expected)
+    assert (saved, displayed, expected) == before
