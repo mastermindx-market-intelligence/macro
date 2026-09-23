@@ -421,3 +421,24 @@ neither was repeated/relocated. Safe file reads, tests and the corrected actual
 acceptance invocation succeeded on the original carrier.24 auxiliary outputs
 remain dirty/unaccepted and excluded. Next unit: touch behavior on this newly
 clock-qualified page; original desktop repair and all numerical work stay intact.
+
+### Touch proof resolved without another product workaround
+The apparent remaining mobile failure was reproduced only after a tall cohort
+element screenshot. Event evidence shows hover:none true/maxTouchPoints1 before
+capture and false/0 afterwards; the ordinary mouse-hover close timer then ran.
+No resize was observed. Without the screenshot, the identical touch journey
+stayed open at all4 checkpoints. The browser observer changed its own device.
+Screenshots now follow every gesture assertion; real mobile capabilities are
+asserted before and after the journeys. No product theme/hover/dismissal logic
+was changed. Two new ordering guards were RED; final477 tests pass, no warnings.
+The complete original risk/participation/Lens workflow now passes all8 cases,
+including mobile first tap, persistence/bounds, scrim dismissal, reopen/Escape,
+no-parent-dialog, desktop second-click and hover departure.8 clock journeys also
+pass.16 prior resting/focus images are reused against unchanged page47c502b8.
+Full-process2856 exited0 and both local servers closed. Its supplemental mobile
+Lens image is not accepted as a settled-sheet visual; the verified gestures and
+bounds occur before that potentially disturbing screenshot. Do not conflate them.
+Evidence: interaction-observer-qualification.json, full-interaction-qualification/
+interaction-proof.json and interaction-repair/clock-interactions.json under the
+existing china-participation-clock-20260923 evidence root. Old failed receipts
+remain historical; this exact-page result supersedes their interaction blocker.

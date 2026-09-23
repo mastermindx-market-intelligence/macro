@@ -1,5 +1,5 @@
 {
-  "source_commit": "6d5b0694fecf68a6137fcdab523d148269780fa3",
+  "source_commit": "ab06c9dcb1bd886214e9b5cd16f09a7f0575030a",
   "page_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
   "cases": [
     {
@@ -11,7 +11,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "Check source timing",
       "caption_visible": "CHECK SOURCE TIMING",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 1440,
@@ -22,7 +23,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
       "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 1440,
@@ -33,7 +35,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "Check source timing",
       "caption_visible": "CHECK SOURCE TIMING",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 1440,
@@ -44,7 +47,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
       "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 390,
@@ -55,7 +59,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "Check source timing",
       "caption_visible": "CHECK SOURCE TIMING",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 390,
@@ -66,7 +71,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
       "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 390,
@@ -77,7 +83,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "Check source timing",
       "caption_visible": "CHECK SOURCE TIMING",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     },
     {
       "width": 390,
@@ -88,7 +95,8 @@
       "disclosure_opens_and_closes": true,
       "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
       "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
-      "overflow": false
+      "overflow": false,
+      "capture_interleaving": false
     }
   ],
   "lens_tested": false,

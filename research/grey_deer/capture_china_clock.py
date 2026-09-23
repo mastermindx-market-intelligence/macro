@@ -61,6 +61,8 @@ try:
                             assert ('Dated snapshot' if language=='en' else '历史快照') in text
                             assert PROOF['timing']['expected_session'] in text and '2026-09-21' in text
                             assert 'Recent rebound, uneven recovery' not in text
+                            if width == 390:
+                                assert page.evaluate("matchMedia('(hover: none)').matches && navigator.maxTouchPoints > 0")
                             summary = panel.locator('summary')
                             summary.tap() if width==390 else summary.click()
                             assert panel.locator('details').get_attribute('open') is not None
@@ -78,15 +80,19 @@ try:
                             assert ('2 sessions behind expected' if language=='en' else '2 个交易日落后于预期') in text
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             assert not panel.evaluate('(el)=>el.scrollWidth>el.clientWidth')
-                            if (width,theme,language) in [(1440,'dark','en'),(390,'light','zh')]:
-                                panel.screenshot(path=str(OUT/f'clock-detail-{width}-{theme}-{language}.png'))
                             summary.tap() if width==390 else summary.click()
                             assert panel.locator('details').get_attribute('open') is None
+                            if width == 390:
+                                assert page.evaluate("matchMedia('(hover: none)').matches && navigator.maxTouchPoints > 0")
                             assert not errors, errors
                             cases.append({'width':width,'theme':theme,'language':language,
                                 'dated_state_visible':True,'expected_date_visible':True,
                                 'disclosure_opens_and_closes':True,'caption_dom':expected_caption,
-                                'caption_visible':expected_caption.upper(),'overflow':False})
+                                'caption_visible':expected_caption.upper(),'overflow':False,
+                                'capture_interleaving':False})
+                            if (width,theme,language) in [(1440,'dark','en'),(390,'light','zh')]:
+                                summary.tap() if width==390 else summary.click()
+                                panel.screenshot(path=str(OUT/f'clock-detail-{width}-{theme}-{language}.png'))
                         finally:
                             context.close()
         finally:

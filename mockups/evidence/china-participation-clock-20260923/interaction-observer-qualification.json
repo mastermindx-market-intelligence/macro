@@ -1,0 +1,66 @@
+{
+  "page_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+  "probe_sha256": "c0c078263498de2beeeae69cbb2b6d81621ef757708ad84b46c9873eb8a65f20",
+  "observations": [
+    {
+      "case": "fresh_page",
+      "open_checkpoints": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "dismissals": [
+        {
+          "time": 1137.5999999046326,
+          "kind": "remove_open",
+          "hoverNone": true,
+          "touchPoints": 1,
+          "stack": "Error\n    at DOMTokenList.remove (<anonymous>:9:172)\n    at show (http://127.0.0.1:64849/theme.js?v=1f70cd39:5720:19)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:64849/theme.js?v=1f70cd39:5786:5)"
+        }
+      ]
+    },
+    {
+      "case": "after_risk_and_participation",
+      "open_checkpoints": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "dismissals": [
+        {
+          "time": 3251.2000000476837,
+          "kind": "remove_open",
+          "hoverNone": false,
+          "touchPoints": 0,
+          "stack": "Error\n    at DOMTokenList.remove (<anonymous>:9:172)\n    at show (http://127.0.0.1:64849/theme.js?v=1f70cd39:5720:19)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:64849/theme.js?v=1f70cd39:5786:5)"
+        },
+        {
+          "time": 3449.2000000476837,
+          "kind": "remove_open",
+          "hoverNone": false,
+          "touchPoints": 0,
+          "stack": "Error\n    at DOMTokenList.remove (<anonymous>:9:172)\n    at hide (http://127.0.0.1:64849/theme.js?v=1f70cd39:5737:19)"
+        }
+      ]
+    }
+  ],
+  "finding": "The local tall-element screenshot resets mobile hover/touch emulation. No-capture control stayed touch and open; captured journey changed hover:none true to false and maxTouchPoints1 to0, then normal mouse-hover dismissal ran. No resize was observed.",
+  "repair": "All gesture assertions precede screenshots; mobile hover/touch capabilities asserted before and after each journey. No product JavaScript change.",
+  "red": "2 observer-ordering contract failures before repair",
+  "final_regression": "477 passed without warnings",
+  "full_interactions": 8,
+  "clock_interactions": 8,
+  "static_captures_reused": true,
+  "source_sha256": {
+    "tests/test_china_participation.py": "442a1931c341a491e3504c4af70d9cd97706b48ba5fb777803704eeea469e292",
+    "tests/test_lens_nested_control_taps.py": "883780e85739c09277a7d598cb72113392cd2e4df8d032f2fa861c7a2a93fb55",
+    "templates/_china_participation_context.html.j2": "708e43c3fa826d9df97e66c25fed23a975a708963f0e98a682ad28cf9e0da4dd",
+    "research/grey_deer/capture_china_risk_reading.py": "78818dbe0867a45155dd4ef734b9e30a8dbe64a5ede74976ba9b48a2cad5b0af",
+    "research/grey_deer/capture_china_clock.py": "5f7eb4dc7d018c10400fc16b9eae5e84fc4773ff367cfce2f32eef9cf0c20fe1"
+  },
+  "supplemental_mobile_lens_screenshot": "Not accepted as a settled-sheet visual: screenshot follows assertions and itself can disturb emulation. Interaction content/persistence/bounds are measured before capture; 16 rest/focus images remain separate.",
+  "production": false,
+  "fresh_collection": false
+}

@@ -371,3 +371,15 @@ def test_lens_consumes_dedicated_activation_but_preserves_other_controls(name, s
     branch = click[click.index("if (dedicated)"):]
     assert "hide()" in branch and "show(t)" in branch
     assert "bare data-tip chips: desktop clicks pass through" in branch
+
+
+@pytest.mark.parametrize('name', ['capture_china_clock.py', 'capture_china_risk_reading.py'])
+def test_browser_journeys_do_not_capture_during_touch_assertions(name):
+    """The local Chrome screenshot path can reset touch emulation. Observe last."""
+    source = (ROOT / 'research/grey_deer' / name).read_text()
+    start = source.index('for width')
+    end = source.index('cases.append(', start)
+    journey = source[start:end]
+    assert '.screenshot(' not in journey
+    assert 'navigator.maxTouchPoints > 0' in journey
+    assert "matchMedia('(hover: none)').matches" in journey

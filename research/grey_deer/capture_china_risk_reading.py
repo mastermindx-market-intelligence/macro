@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as capture
 CURRENT_SOURCE = '--current-source' in sys.argv
+INTERACTIONS_ONLY = '--interactions-only' in sys.argv
 INTEGRATED = '--integrated' in sys.argv or CURRENT_SOURCE
 EXPECTED = json.loads(Path(sys.argv[sys.argv.index('--expected')+1]).read_text()) if CURRENT_SOURCE else None
 OUT = ROOT / ('mockups/evidence/china-integrated-context-20260921' if INTEGRATED else 'mockups/evidence/china-risk-reading-20260921')
@@ -37,14 +38,15 @@ def driver_factory(**kwargs):
     return capture._PlaywrightDriver(manager, browser, kwargs.get('user_agent',capture.USER_AGENT),
         dict(kwargs.get('observer_config') or capture.DEFAULT_OBSERVER_CONFIG),kwargs.get('settle_ms',1400))
 
-code = capture.main([
-    '--site-dir', str(ROOT/'site'), '--routes', '/china.html',
-    '--output-dir', str(OUT), '--manifest', str(OUT/'manifest.json'),
-    '--smells', str(OUT/'smells.json'), '--viewports', 'desktop,mobile',
-    '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
-    '--settle-ms', '1400',
-] + (['--force-state', 'participation-focus:focus(#cnx-participation summary)'] if INTEGRATED else []), driver_factory=driver_factory)
-assert code == 0
+if not INTERACTIONS_ONLY:
+    code = capture.main([
+        '--site-dir', str(ROOT/'site'), '--routes', '/china.html',
+        '--output-dir', str(OUT), '--manifest', str(OUT/'manifest.json'),
+        '--smells', str(OUT/'smells.json'), '--viewports', 'desktop,mobile',
+        '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
+        '--settle-ms', '1400',
+    ] + (['--force-state', 'participation-focus:focus(#cnx-participation summary)'] if INTEGRATED else []), driver_factory=driver_factory)
+    assert code == 0
 meta = json.loads((OUT/'manifest.json').read_text())['pages'][0]
 assert len(meta['states']) == CAPTURE_CASES and all(s['captured'] for s in meta['states'])
 assert not meta['console_errors'] and not meta['failed_responses']
@@ -107,8 +109,6 @@ try:
                             assert 'not a pullback probability' in text and 'state-based' in text
                             assert 'Shanghai Composite' in text and '21 trading sessions' in text
                             page.wait_for_timeout(450)  # allow the existing sheet animation to settle
-                            if (width,theme,lang) in [(1440,'dark','en'),(390,'light','zh')]:
-                                dialog.screenshot(path=str(OUT/f'dialog-{width}-{theme}-{lang}.png'))
                             page.keyboard.press('Escape')
                             dialog.wait_for(state='hidden')
                             card.click()
@@ -132,8 +132,6 @@ try:
                                         for row in gaps['members'][:5]:
                                             assert row['ticker'] in cohort.locator('.cnx-member-gaps').first.text_content()
                                         assert f"{gaps['excluded_count']} affected members" in cohort.text_content()
-                                    if width == 390:
-                                        cohort.screenshot(path=str(OUT/f'coverage-{width}-{theme}-{lang}.png'))
                                 else:
                                     assert '300 / 300' in cohort.text_content()
                                     assert '-0.67%' in cohort.text_content() and '+0.07%' in cohort.text_content()
@@ -142,6 +140,8 @@ try:
                                 if CURRENT_SOURCE:
                                     from bs4 import BeautifulSoup
                                     trigger = page.locator('.cnx-reason-row .cnx-lens.lens-q').first
+                                    if width == 390:
+                                        assert page.evaluate("matchMedia('(hover: none)').matches && navigator.maxTouchPoints > 0"), 'touch emulation changed before gesture'
                                     raw_tip = trigger.get_attribute('data-tip-'+lang)
                                     (trigger.tap() if width==390 else trigger.click())
                                     lens = page.locator('.lens-pop.open')
@@ -153,8 +153,6 @@ try:
                                     assert bounds and bounds['x'] >= -1 and bounds['x']+bounds['width'] <= width+1
                                     assert bounds['y'] >= -1 and bounds['y']+bounds['height'] <= height+1
                                     assert not page.locator('#cnx-dlg-playbook').is_visible()
-                                    if (width,theme,lang) in [(1440,'dark','en'),(390,'light','zh')]:
-                                        page.screenshot(path=str(OUT/f'lens-{width}-{theme}-{lang}.png'))
                                     if width==390:
                                         page.locator('.lens-scrim.open').tap(position={'x':10,'y':10})
                                     else:
@@ -177,6 +175,7 @@ try:
                                 from tests.test_china_archetype_d_s1 import _render_china_risk_case, _risk_card
                                 # Explicitly synthetic missing-input component, rendered
                                 # by the real full-page template then inspected in Chrome.
+                                original_card_html = card.evaluate('(el)=>el.outerHTML')
                                 fragment = str(_risk_card(_render_china_risk_case(None)))
                                 card.evaluate('(el,html)=>{el.outerHTML=html}', fragment)
                                 missing = page.locator('.cnx-rack3 > .cnx-card').filter(has_text='Pullback Risk')
@@ -184,8 +183,11 @@ try:
                                 footer = missing.locator('.cnx-foot').text_content()
                                 assert 'size down' not in footer and '缩仓' not in footer
                                 assert 'unavailable' in footer and '暂不可用' in footer
+                                missing.evaluate('(el,html)=>{el.outerHTML=html}', original_card_html)
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             assert not errors, errors
+                            if CURRENT_SOURCE and width == 390:
+                                assert page.evaluate("matchMedia('(hover: none)').matches && navigator.maxTouchPoints > 0"), 'touch emulation changed during journey'
                             cases.append({'width':width,'theme':theme,'locale':lang,
                                 'score':score,'state_probability_pct':probability_pct,'scoped_card':True,
                                 'scoped_popover':True,'scoped_shared_dialog':True,
@@ -197,7 +199,14 @@ try:
                                 'current_source_missing_cohort_proof':CURRENT_SOURCE,
                                 'canonical_lens_visible_in_viewport':CURRENT_SOURCE,
                                 'lens_real_second_gesture_closes':CURRENT_SOURCE,
-                                'touch_emulation':bool(CURRENT_SOURCE and width==390)})
+                                'touch_emulation':bool(CURRENT_SOURCE and width==390),
+                                'capture_interleaving':False})
+                            # Screenshot observations follow every user-gesture assertion.
+                            # This local Chrome path can reset touch emulation mid-capture.
+                            if CURRENT_SOURCE and (width,theme,lang) in [(1440,'dark','en'),(390,'light','zh')]:
+                                (trigger.tap() if width==390 else trigger.click())
+                                lens.wait_for(state='visible')
+                                page.screenshot(path=str(OUT/f'lens-{width}-{theme}-{lang}.png'))
                         finally:
                             ctx.close()
         finally:
@@ -210,7 +219,7 @@ assert not thread.is_alive()
 assert hashlib.sha256(PAGE.read_bytes()).hexdigest() == BEFORE
 receipt = {'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
     'page_sha256':BEFORE,'page_bytes':PAGE.stat().st_size,'capture_cases':CAPTURE_CASES,
-    'interaction_cases':cases,'source_page_unchanged':True,'server_closed':True,
+    'interaction_cases':cases,'static_captures_reused':INTERACTIONS_ONLY,'source_page_unchanged':True,'server_closed':True,
     'kind':'actual no-network builder with stored inputs; no live deployment',
     'production':False,'fresh_collection':False,'risk_model_changed':False,
     'expected_input_receipt':EXPECTED, 'weight_injection':False}
