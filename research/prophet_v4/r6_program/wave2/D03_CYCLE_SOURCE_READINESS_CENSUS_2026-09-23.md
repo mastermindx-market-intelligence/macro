@@ -132,7 +132,27 @@ Applications:
 
 ## Q6 GAPS + MUST-NOTS
 
-TODO
+UNKNOWNs and exact closure commands/data:
+
+1. First usable ALFRED vintage and depth for every Q1 leg. Data is unavailable in a sparse checkout. Run a keyed collection into the approved store, then `python3 -m scripts.audit_alfred_depth --series AWHMAN,PERMIT,NEWORDER,CMRMTSPL,INDPRO,ISRATIO,ICSA,PAYEMS,UMCSENT,MNFCTRIRSA,AMTMUO,AMTMVS,CAPUTLG3344S,CAPUTLG334S,CAPUTLG331S,PCU334413334413,PCU331110331110,IPG2211S,CAPUTLG2211S,WPU0543 --output data/fred_vintage/alfred_depth_d03_cycle.json`; verify it reports `min(realtime_start)` and months per series. No API key may be copied or printed.
+2. Existence/vintage availability of Census machinery IDs on FRED. Query FRED keyless series metadata/search for each Census 6-character code: `A33SNO/A33SVS/A33SUO/A33STI` and the named `33A/33C/33D/33E/33I/turbine/33M` variants, then ALFRED output type 4 only under approved rights. Do not treat a 404 as proof of nonexistence until Census/FRED ID transformation is documented.
+3. Machinery subsector historical FRED mapping. Needed artifact is Census/FRED documentation tying each Census code to either an exact FRED ID or Census-only delivery. Current candidate-ID probes are insufficient to prove absence.
+4. Historical industrial capital-goods/machinery issuer membership, including failed/delisted names, renames, and spin predecessors. Needed artifact is a licensed point-in-time industry/segment history, preferably event-dated or at least dated snapshot vintages, plus dead-name coverage. Current sector maps cannot be backdated.
+5. Census M3 redistribution, storage, model use, and user-facing citation requirements. Needed artifact is the Census terms/open-data page or written source-owner ruling; current page reads establish provenance and breaks but not the five-way rights grant.
+6. Historical issuer/segment provider identity, coverage, and rights. Needed artifact is a candidate provider contract/entitlement record with the five dimensions separated and failed-name coverage.
+7. Membership store coverage/first dates for US baskets, Finviz, and THS. Needed artifacts are `data/baskets/membership_history.parquet`, `data/themes_heatmap/tree_history.jsonl`, and THS history; all are omitted from the sparse tree.
+8. `massive_stock_day` live coverage/dead-name audit. Needed artifact is the restored R2 store and manifest, plus a dead-name join when the historical issuer source exists. Do not restore the sparse tree for this read-only census.
+9. Exact first eligible date of FRED `realtime_start` after ALFRED help's one-business-day ingestion caveat. Needed artifact is a keyed measured audit; the help page alone does not create a per-series availability date.
+
+Forbidden shortcuts considered and refused:
+
+- No current sector/index membership, curated basket, or concept mapping was backdated.
+- No broad IP, durable-goods, total-manufacturing, or aggregate capital-goods series was relabeled as a machinery subsector.
+- No modeled `PUB_LAG_M` was converted into a claimed first-vintage date.
+- No FRED/ALFRED key or credential was read, copied, printed, or used.
+- No protected return/outcome/trade artifact was opened, computed, or cited.
+- No missing historical membership, failed-issuer coverage, statutory delay, or license was invented.
+- No full checkout, full test suite, sparse-data write, force push, rebase, or history rewrite was performed.
 
 ## EVIDENCE INDEX
 
