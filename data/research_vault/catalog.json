@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T09:53:45.221026+00:00",
-  "count": 2701,
+  "generated_at": "2026-09-23T10:29:31.064109+00:00",
+  "count": 2702,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1488,6 +1488,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iczjztk2jbh-aa5b48",
+      "title": "Hua Hong (1347)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:47Z",
+      "summary_points": [
+        "China AI demand drives revenue acceleration: +11% / +15% QoQ revenue growth in 3Q26/4Q26 (vs.",
+        "+9% QoQ in 2026) fueled by China’s AI spending and \"China for China\" policy, with Semis Capex growing at +13%/+15%/+15% for 2026-28E.",
+        "Strategic 12-inch fab expansion underpins growth: Huali Micro acquisition (97.5% equity) and Fab9A ramp-up to ~40% 12-inch wafers by end-2026 (full loading 1H27) directly enable revenue/gross margin expansion via embedded NVM/PMIC demand for GenAI.",
+        "Elevated valuation amid margin risks: Forward P/E at 86x (vs. 9x 2030E target) reflects aggressive pricing; margin pressures from destocking (2023–24) and US-China trade tensions threaten near-term execution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
