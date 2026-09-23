@@ -1,29 +1,73 @@
 {
-  "schema": "china_continuation.blocked_candidate.v1",
+  "schema": "china_continuation.implementation_evidence.v1",
   "mission_complete": false,
-  "engine_implemented": false,
-  "source_head": "d0561c3c3bbad86c3d8c2e89a77ca85135fefafb",
+  "state": "PARTIAL",
   "carrier": "sol/cn-act-now-coherence-20260921",
-  "engine_diff_empty": true,
-  "local_test_candidate_already_applied": true,
-  "test_file_sha256": "b78a940a600e33a89d001c06abbf9bf5669fd9e790d6e589c339849a66868068",
-  "patch_sha256": "2f7e3dc90a1046756534503ae618dc7fa8854f97820dc2dd7ece7da120fb0561",
-  "red_log_sha256": "df6a685baf2a179dc79024c88228dc61a4713078e69635ab69285090b5f34d48",
-  "test_result": {
-    "failed": 8,
-    "deselected": 95,
-    "stage": "missing_observed_at_API",
-    "independent_semantic_mutation_kills": false
+  "source_base": "2f469476aefd14e6d31c4608d874f0dc20fdb0ad",
+  "procedure_pin": "c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6",
+  "engine_implemented": true,
+  "release_allowed": false,
+  "remaining_required_guard": "member observation effective_as_of and aggregate_eligible",
+  "remaining_guard_write": "PLATFORM_BLOCKED_BEFORE_EFFECT; not retried",
+  "source_sha256": {
+    "engine/china_act_now.py": "eac0c34a1b86826ee124fed8b868c16f7999ff763b1d858d2e8707e3700ddca4",
+    "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
+    "tests/test_china_act_now.py": "c68411ba5f3c9951750c5935766f0f4061866dd3ccee07fb2b63ea8f5280cf4b"
   },
-  "incumbent_direct_probe": {
-    "final_label": "dominant",
-    "final_reco": "accumulate",
-    "clean_entry": false,
-    "observed_buy_now_count": 0,
-    "observed_wait_pullback_count": 1
+  "tests": {
+    "initial_continuation_contracts_passed": 8,
+    "then_full_coherence_suite_passed": 103,
+    "current_passed": 108,
+    "current_failed": 1,
+    "failure": "test_continuation_respects_member_observation_coverage_and_date",
+    "waived": 0,
+    "final_log_sha256": "835733d8ddf305c41660e6aee04a01ea04417d788e579cf3001644da370ade40",
+    "raw_log_sha256": "835733d8ddf305c41660e6aee04a01ea04417d788e579cf3001644da370ade40",
+    "normalization": "trailing whitespace only"
   },
-  "write_effect": "PLATFORM_BLOCKED_BEFORE_ENGINE_EFFECT",
-  "do_not_redo": "Do not reapply patch in this worktree: the tests are already present. No engine write or tested implementation exists.",
-  "red_log_raw_sha256": "62c0c44d05063d3eeb06465288cd36be93228109cab8d91ac739d715ba1e4042",
-  "log_normalization": "Trailing whitespace removed only to satisfy repository diff guard; results and failure details unchanged."
+  "browser": {
+    "captures": 8,
+    "overflow_count": 0,
+    "page_error_count": 0,
+    "proof_sha256": "2932ef913bb855c8a08b40d5161841a88afb1d7fe13403ddceb88e78abbd9390",
+    "scope": "real repository theme inputs and actual host-page CSS; sector/cycle inputs omitted; not full-page or live deployment"
+  },
+  "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
+  "input_as_of": "2026-09-22",
+  "continuation_cases": [
+    "cn_pharma_cxo"
+  ],
+  "raw_lanes_unchanged_in_snapshot": true,
+  "stock_admission_changed": false,
+  "scores_changed": false,
+  "deployed": false,
+  "prior_checkpoint": {
+    "schema": "china_continuation.blocked_candidate.v1",
+    "mission_complete": false,
+    "engine_implemented": false,
+    "source_head": "d0561c3c3bbad86c3d8c2e89a77ca85135fefafb",
+    "carrier": "sol/cn-act-now-coherence-20260921",
+    "engine_diff_empty": true,
+    "local_test_candidate_already_applied": true,
+    "test_file_sha256": "b78a940a600e33a89d001c06abbf9bf5669fd9e790d6e589c339849a66868068",
+    "patch_sha256": "2f7e3dc90a1046756534503ae618dc7fa8854f97820dc2dd7ece7da120fb0561",
+    "red_log_sha256": "df6a685baf2a179dc79024c88228dc61a4713078e69635ab69285090b5f34d48",
+    "test_result": {
+      "failed": 8,
+      "deselected": 95,
+      "stage": "missing_observed_at_API",
+      "independent_semantic_mutation_kills": false
+    },
+    "incumbent_direct_probe": {
+      "final_label": "dominant",
+      "final_reco": "accumulate",
+      "clean_entry": false,
+      "observed_buy_now_count": 0,
+      "observed_wait_pullback_count": 1
+    },
+    "write_effect": "PLATFORM_BLOCKED_BEFORE_ENGINE_EFFECT",
+    "do_not_redo": "Do not reapply patch in this worktree: the tests are already present. No engine write or tested implementation exists.",
+    "red_log_raw_sha256": "62c0c44d05063d3eeb06465288cd36be93228109cab8d91ac739d715ba1e4042",
+    "log_normalization": "Trailing whitespace removed only to satisfy repository diff guard; results and failure details unchanged."
+  }
 }

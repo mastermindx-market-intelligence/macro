@@ -45,7 +45,7 @@
           kick=('How to read this','如何看懂'),
           title=('Four lanes, left to right','四个分栏，从左到右'),
           rows=[
-            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point today.','今天有干净的入场点。')},
+            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A fresh setup or a still-qualified leading theme.','新入场形态，或条件仍然有效的领涨主题。')},
             {'tone':'info', 'k':('In favour','看好'),          'v':('Constructive context. <b>An entry is not confirmed.</b>','背景仍看好。<b>入场条件尚未确认。</b>')},
             {'tone':'warn', 'k':('Bottoming','洗盘观察'),      'v':('Beaten down, first signs of turning up. <b>Watch only — never a buy signal.</b>','超跌后初现回升迹象。<b>仅供观察 — 绝非买入信号。</b>')},
             {'tone':'dn',   'k':('Reduce / avoid','减仓·回避'),'v':('The trend is weakening.','趋势正在转弱。')},
@@ -69,7 +69,13 @@
     {%- set _sc = (sectors_by_ticker.get(row.id) if row.kind == 'SECTOR' and sectors_by_ticker is defined else none) -%}
     {# PR-4: compute tag tone for hover card header #}
     {%- set _rptag_cls = 'up' if row.reco in ('accumulate','buy','add') else ('dn' if row.reco in ('avoid','trim','reduce','exit') else 'warn') -%}
-    <div class="anv2-row" data-rpop>
+    {%- set _continuation = row.get("entry_route") == "continuation" -%}
+    {%- set _unavailable = row.get("theme_decision", {}).get("status") == "UNAVAILABLE" -%}
+    {%- set _read_override = (("Current inputs unavailable", "当前输入暂缺") if _unavailable else
+                              (("Leadership continuing", "领先趋势延续") if _continuation else none)) -%}
+    {%- set _takeaway_override = (("Current theme inputs are unavailable. No new buy is confirmed.", "当前主题输入不可用，无法确认新的买入机会。") if _unavailable else
+        (("Trend accumulation remains in favour. Check each stock’s entry separately.", "趋势增持仍获支持，个股入场条件须分别判断。") if _continuation else none)) -%}
+    <div class="anv2-row" data-rpop data-entry-route="{{ row.get('entry_route') or 'none' }}">
       {# PR-4: hover card payload — cloned by theme.js into a .row-pop overlay #}
       {#- Hover decision card — the SAME component the US board uses
           (templates/_decision_card.html.j2). Themes get the score ring + leadership
@@ -173,7 +179,7 @@
         'score': row.score if _is_theme else none,
         'kicker': (('Leadership read','领先度判断') if row.get('leadership') else ('Current read','当前判读'))
                   if _is_theme else ('Current setup','当前形态'),
-        'read': (
+        'read': _read_override or (
           (('Led by a few names','少数龙头带动') if row.get('leadership') == 'narrow'
            else (('Broad and leading','广泛领先') if row.reco in ('accumulate','enter','buy','add')
            else (('Late and extended','后期且延伸') if row.reco in ('trim','reduce')
@@ -190,7 +196,7 @@
         'trust': _trust, 'stats': _stats,
         'leaders': {'label': ('Leaders','龙头'), 'val': (row.get('leaders_en'), row.get('leaders_zh') or row.get('leaders_en'))}
                    if row.get('leaders_en') else none,
-        'takeaway': (
+        'takeaway': _takeaway_override or (
           (('Signals disagree. The trend still says reduce while the price shows an early bottom — wait for them to agree.','信号不一致。趋势仍建议减仓，价格却初现筑底 — 等两者一致再动。')
              if (lane == 'reduce' and row.dual_read)
            else (('Turning up from the low — watch it, do not chase it.','自低位回升 — 观察为主，不要追。') if lane == 'bot'
@@ -235,6 +241,7 @@
         {# price-tape chip (W8-R7 rider) — TURNING/CONFIRMED state from basket_turn_cn #}
         {% if row.organ_chip_en %}<span class="anv2-chip anv2-chip-tape">{{ t(row.organ_chip_en, row.organ_chip_zh or tr(row.organ_chip_en)) }}</span>{% endif %}
       </div>
+      {% if _continuation %}<div class="anv2-stat">{{ t('Theme accumulation remains in favour','主题增持条件仍然有效') }}</div>{% endif %}
       {# stat line: rel20 for themes, rs_63d+pos for bottoming #}
       {% if lane == 'bot' %}
       <div class="anv2-stat">
@@ -273,10 +280,10 @@
     {%- endmacro -%}
 
     {{ _anlane('buy',  'buy',  'Buy Now',               '立即买入',
-               'Clean entry point today', '今日有干净入场点',
+               'Fresh setups and continuing leaders', '新形态与持续领涨主题',
                _anl.buy_now, 'anv2-buy') }}
     {{ _anlane('pull', 'pull', 'In Favour', '看好',
-               'Constructive context — entry conditions pending', '背景仍看好 — 入场条件待确认',
+               'Check the stated entry or data constraint', '查看具体入场条件或数据限制',
                _anl.wait_pullback, 'anv2-pull') }}
     {{ _anlane('bot',  'bot',  'Bottoming Watch',        '洗盘观察',
                'Beaten down, first signs of turning up — watch only', '超跌初现回升迹象 — 仅观察',

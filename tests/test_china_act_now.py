@@ -970,13 +970,17 @@ class TestRel5Field:
 def _display_fixture(*, primary="add_on_pullback", reco="enter", organ="TURNING", cycle=True):
     item = {"id": "cn_semis", "name": "Semiconductors", "name_zh": "半导体",
             "score": 59, "action": reco, "action_en": reco.upper(), "action_zh": "观察"}
-    intel = {"as_of": "2026-09-18", "themes": [dict(item, reco=reco)],
+    from datetime import datetime
+    intel = {"as_of": "2026-09-18", "themes": [dict(item, reco=reco,
+             regime_demoted=False, chase_demoted=False,
+             textures={"clean_entry": {"flag": primary == "buy"}})],
              "act_now": {primary: [item]} if primary else {}}
     cycles = [{"id": "b-cn_semis", "name": "Semiconductors", "kind": "basket",
                "phase": "Trough", "osc_slope": 1.2}] if cycle else []
     # Match the accepted basket-turn artifact shape.
     tape = {"baskets": {"cn_semis": {"state": organ}}} if organ else None
-    return assemble_act_now([], intel, cycles, basket_turn=tape)
+    return assemble_act_now([], intel, cycles, basket_turn=tape,
+                            observed_at=datetime.fromisoformat("2026-09-18T10:00:00+00:00"))
 
 
 def display_rows(result):
@@ -1077,3 +1081,174 @@ def test_buy_card_keeps_its_enter_badge():
 def test_empty_projection():
     result = assemble_act_now([], None, None)
     assert all(not rows for rows in result["display_lanes"].values())
+
+
+# Continuing leadership is a distinct theme presentation, not stock admission.
+def _continuation_fixture(session="2026-09-21", clean=False, final="accumulate"):
+    td = {"id": "cn_example", "name": "Example leader", "name_zh": "示例领涨主题",
+          "score": 75, "label": "dominant", "reco": final,
+          "reco_en": final.upper(), "reco_zh": "增持" if final == "accumulate" else "持有",
+          "regime_demoted": False, "chase_demoted": False, "ext_abs": 0.3,
+          "textures": {"clean_entry": {"flag": clean}}, "n_members": 12}
+    item = {"id": td["id"], "name": td["name"], "name_zh": td["name_zh"],
+            "score": 75, "action": "accumulate", "action_en": "ACCUMULATE", "action_zh": "增持"}
+    return {"as_of": session, "themes": [td], "act_now": {
+        "buy": [item] if clean else [], "add_on_pullback": [] if clean else [item],
+        "reduce": [], "conflicted": []}}
+
+
+def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+    from datetime import datetime
+    from engine.china_act_now import assemble_act_now
+    return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+
+
+def test_continuation_final_accumulate_enters_buy_without_new_bottom():
+    ti = _continuation_fixture()
+    b = _continuation_board(ti)
+    row, = b["display_lanes"]["buy_now"]
+    assert row["entry_route"] == "continuation"
+    assert "CONTINUATION" in row["reco_en"]
+    assert b["display_lanes"]["wait_pullback"] == []
+
+
+def test_continuation_preserves_raw_lanes_and_exact_source_evidence():
+    from copy import deepcopy
+    ti = _continuation_fixture()
+    original = deepcopy(ti)
+    b = _continuation_board(ti)
+    assert ti == original
+    assert b["lanes"]["buy_now"] == []
+    assert len(b["lanes"]["wait_pullback"]) == 1
+    row, = b["display_lanes"]["buy_now"]
+    assert row["observed_lanes"] == ["wait_pullback"]
+    assert row["source_reads"][0]["row"] == b["lanes"]["wait_pullback"][0]
+    assert row["theme_decision"]["source_as_of"] == "2026-09-21"
+    assert row["theme_decision"]["final_reco"] == "accumulate"
+
+
+def test_continuation_remains_buyable_across_three_months_of_clean_flag_changes():
+    from datetime import date, timedelta
+    from lib import cn_calendar
+    day, count = date(2026, 6, 22), 0
+    while day <= date(2026, 9, 21):
+        if cn_calendar.is_session(day):
+            ti = _continuation_fixture(day.isoformat(), clean=bool(count % 2))
+            b = _continuation_board(ti, day.isoformat() + "T10:00:00+00:00")
+            row, = b["display_lanes"]["buy_now"]
+            assert row["entry_route"] == "continuation"
+            count += 1
+        day += timedelta(days=1)
+    assert count >= 60
+
+
+def test_continuation_final_hold_trim_avoid_overrides_stale_affirmative_lane():
+    for final in ("hold", "trim", "avoid"):
+        for clean in (True, False):
+            b = _continuation_board(_continuation_fixture(clean=clean, final=final))
+            assert b["display_lanes"]["buy_now"] == []
+            lane = "wait_pullback" if final == "hold" else "reduce_avoid"
+            row, = b["display_lanes"][lane]
+            assert row["reco"] == final
+            assert row.get("entry_route") != "continuation"
+
+
+def test_continuation_same_session_correction_removes_buy_immediately():
+    ti = _continuation_fixture()
+    assert _continuation_board(ti)["display_lanes"]["buy_now"]
+    ti["themes"][0]["reco"] = "hold"
+    ti["themes"][0]["chase_demoted"] = True
+    assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+
+
+def test_continuation_missing_stale_future_and_non_session_fail_closed():
+    for session in (None, "bad", "2026-09-18", "2026-09-22", "2026-09-20"):
+        b = _continuation_board(_continuation_fixture(session))
+        assert b["display_lanes"]["buy_now"] == []
+    ti = _continuation_fixture()
+    ti["stale"] = True
+    assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+    assert _continuation_board(None)["display_lanes"]["buy_now"] == []
+
+
+def test_continuation_requires_complete_final_non_us_recommendation():
+    from copy import deepcopy
+    for changes in ({"label": "emerging"}, {"regime_demoted": True},
+                    {"chase_demoted": True}, {"ext_abs": None},
+                    {"ext_abs": float("nan")}, {"textures": {}}, {"reco": "enter"}):
+        ti = _continuation_fixture()
+        ti["themes"][0].update(changes)
+        assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+    for field in ("regime_demoted", "chase_demoted", "label", "reco"):
+        ti = _continuation_fixture()
+        del ti["themes"][0][field]
+        assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+    ti = _continuation_fixture()
+    ti["themes"].append(deepcopy(ti["themes"][0]))
+    assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+
+
+def test_continuation_never_overrides_source_conflict_or_defensive_read():
+    from copy import deepcopy
+    for lane in ("conflicted", "reduce"):
+        ti = _continuation_fixture()
+        item = deepcopy(ti["act_now"]["add_on_pullback"][0])
+        item.update(action="avoid", action_en="AVOID", action_zh="回避")
+        ti["act_now"][lane] = [item]
+        b = _continuation_board(ti)
+        assert b["display_lanes"]["buy_now"] == []
+
+
+def test_continuation_render_names_its_route_not_a_fresh_bottom():
+    b = _continuation_board(_continuation_fixture())
+    html = render(b)
+    assert 'data-entry-route="continuation"' in html
+    assert '>CONTINUATION<' in html
+    assert 'Theme accumulation remains in favour' in html
+    assert 'Fresh setups and continuing leaders' in html
+    assert 'A clean entry is open today.' not in html
+    assert 'Trend accumulation remains in favour.' in html
+
+
+def test_stale_clean_buy_has_no_affirmative_card_or_freshness_claim():
+    ti = _continuation_fixture("2026-09-18", clean=True)
+    b = _continuation_board(ti)
+    assert len(b['lanes']['buy_now']) == 1
+    assert b['display_lanes']['buy_now'] == []
+    html = render(b)
+    assert 'DATA UNAVAILABLE' in html
+    assert 'Current inputs unavailable' in html
+    assert 'Trend intact' not in html
+    assert 'A clean entry is open today.' not in html
+
+
+def test_naive_clock_refuses_continuation_without_breaking_board():
+    b = _continuation_board(_continuation_fixture(clean=True), "2026-09-21T10:00:00")
+    assert not b['display_lanes']['buy_now']
+
+
+def test_future_technical_source_cannot_confirm_present_continuation():
+    for key in ('mtf', 'tape'):
+        ti = _continuation_fixture(clean=True)
+        ti['themes'][0][key] = {'as_of': '2026-09-22'}
+        b = _continuation_board(ti)
+        assert not b['display_lanes']['buy_now']
+        assert b['display_lanes']['wait_pullback'][0]['theme_decision']['status'] == 'UNAVAILABLE'
+
+
+def test_continuation_respects_member_observation_coverage_and_date():
+    for observation in ({'effective_as_of': '2026-09-18', 'aggregate_eligible': True},
+                        {'effective_as_of': '2026-09-21', 'aggregate_eligible': False}):
+        ti = _continuation_fixture()
+        ti['themes'][0]['observation'] = observation
+        assert not _continuation_board(ti)['display_lanes']['buy_now']
+
+
+def test_continuation_does_not_reinterpret_stock_or_sector_entry_permission():
+    from datetime import datetime
+    sector = {'ticker': '512760.SS', 'name': 'Sector example', 'entry': {'urgency': 'soon', 'tag': 'WAIT'}}
+    ti = _continuation_fixture()
+    b = assemble_act_now([sector], ti, None, observed_at=datetime.fromisoformat('2026-09-21T10:00:00+00:00'))
+    assert [r['id'] for r in b['display_lanes']['buy_now']] == ['cn_example']
+    assert [r['id'] for r in b['display_lanes']['wait_pullback']] == ['512760.SS']
+    assert b['display_lanes']['buy_now'][0]['theme_decision']['stock_entry_permission'] is False

@@ -300,6 +300,7 @@ def assemble_act_now(
     ths_baskets: dict | None = None,
     member_names: dict | None = None,
     href_exists: "((str) -> bool) | None" = None,
+    *, observed_at=None,
 ) -> dict[str, Any]:
     """Assemble the four-lane Act-Now v2 board.
 
@@ -595,7 +596,7 @@ def assemble_act_now(
     }
     return {
         "lanes": lanes,
-        "display_lanes": _display_lanes(lanes),
+        "display_lanes": _continuation_display_lanes(_display_lanes(lanes), theme_intel, observed_at),
         "as_of": as_of,
         "notes": notes,
     }
@@ -681,3 +682,112 @@ def load_cycle_rows(forward_log_path: str | None) -> list[dict] | None:
     except Exception as exc:  # noqa: BLE001
         log.warning("Failed to load forward_log from %s: %s", forward_log_path, exc)
         return None
+
+
+# Reuse the final theme producer's recommendation; this is a display projection,
+# never a second score, stock-entry gate, thesis store or minimum-hold rule.
+def _theme_display_context(theme_intel, observed_at):
+    from datetime import date, datetime, timezone
+    from lib import cn_calendar
+
+    now = observed_at if observed_at is not None else datetime.now(timezone.utc)
+    ti = theme_intel if isinstance(theme_intel, dict) else {}
+    status, session = "UNAVAILABLE", ti.get("as_of")
+    try:
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("timezone required")
+        day = date.fromisoformat(session)
+        if day.isoformat() != session or not cn_calendar.is_session(day):
+            raise ValueError("settled session identity required")
+        if day == cn_calendar.expected_last_session(now) and ti.get("stale") is not True:
+            status = "CURRENT"
+    except (ValueError, TypeError, AttributeError):
+        pass
+    by_id, duplicates = {}, set()
+    for td in ti.get("themes") or []:
+        if not isinstance(td, dict) or not isinstance(td.get("id"), str):
+            continue
+        tid = td["id"]
+        if tid in by_id:
+            duplicates.add(tid)
+        by_id[tid] = td
+    for tid in duplicates:
+        by_id.pop(tid, None)
+    an = ti.get("act_now") or {}
+    conflicts = {item.get("id") for item in an.get("conflicted") or []
+                 if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    return status, session, by_id, conflicts
+
+
+def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
+    """Keep final accumulation actionable while its current conditions persist.
+
+    Raw lanes and source_reads remain immutable. Every render reevaluates the
+    actual final producer verdict; no remembered buy survives missing evidence.
+    Neither a tape watch nor a foreign-market narrative can originate a buy.
+    """
+    import math
+
+    status, session, themes, conflicts = _theme_display_context(theme_intel, observed_at)
+    result = {lane: [] for lane in lanes}
+    for source_lane, rows in lanes.items():
+        for original in rows:
+            row, lane = deepcopy(original), source_lane
+            if row.get("kind") != "THEME":
+                result[lane].append(row)
+                continue
+            tid = row.get("id")
+            td = themes.get(tid)
+            final = td.get("reco") if td else None
+            coherent = status == "CURRENT" and td is not None
+            if td:
+                for key in ("mtf", "tape"):
+                    evidence = td.get(key)
+                    if isinstance(evidence, dict) and evidence.get("as_of") is not None:
+                        coherent = coherent and evidence["as_of"] == session
+            row["theme_decision"] = {
+                "source_as_of": session, "final_reco": final,
+                "final_label": td.get("label") if td else None,
+                "status": "CURRENT" if coherent else "UNAVAILABLE",
+                "source_conflict": tid in conflicts,
+                "scope": "theme_presentation_only", "stock_entry_permission": False,
+            }
+            if not coherent or final not in {"enter", "accumulate", "hold", "trim", "avoid"}:
+                if lane == "buy_now":
+                    lane = "wait_pullback"
+                if lane == "wait_pullback":
+                    row.update(reco=None, reco_en="DATA UNAVAILABLE", reco_zh="数据暂缺")
+            elif lane == "reduce_avoid":
+                pass  # a defensive source conflict can never be promoted to a buy
+            elif final in {"hold", "trim", "avoid"}:
+                lane = "wait_pullback" if final == "hold" else "reduce_avoid"
+                row.update(reco=final, reco_en={"hold": "HOLD", "trim": "TRIM", "avoid": "AVOID"}[final],
+                           reco_zh={"hold": "持有", "trim": "减持", "avoid": "回避"}[final])
+            elif tid in conflicts or row.get("action_disagreement"):
+                lane = "wait_pullback"
+                row.update(reco="hold", reco_en="CONFLICT — WAIT", reco_zh="信号冲突 — 等待")
+            else:
+                textures = td.get("textures") if isinstance(td.get("textures"), dict) else {}
+                ce = textures.get("clean_entry") if isinstance(textures.get("clean_entry"), dict) else {}
+                clean, extension = ce.get("flag"), td.get("ext_abs")
+                complete = (td.get("regime_demoted") is False and td.get("chase_demoted") is False
+                            and isinstance(clean, bool))
+                source_action = row.get("reco")
+                row.update(reco=final, reco_en={"enter": "ENTER", "accumulate": "ACCUMULATE"}[final],
+                           reco_zh={"enter": "入场", "accumulate": "增持"}[final])
+                continuation = (
+                    final == "accumulate" and td.get("label") == "dominant"
+                    and source_action == "accumulate" and complete
+                    and isinstance(extension, (int, float)) and not isinstance(extension, bool)
+                    and math.isfinite(extension)
+                )
+                if continuation:
+                    lane = "buy_now"
+                    row.update(entry_route="continuation", reco="accumulate",
+                               reco_en="CONTINUATION", reco_zh="趋势增持")
+                elif lane == "buy_now" and (clean is not True or not complete):
+                    lane = "wait_pullback"
+                elif lane == "buy_now":
+                    row["entry_route"] = "clean_entry"
+            result[lane].append(row)
+    return result

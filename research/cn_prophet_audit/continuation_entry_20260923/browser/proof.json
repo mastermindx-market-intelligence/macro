@@ -1,0 +1,201 @@
+{
+  "proof_kind": "repository-input component; not production or historical-performance proof",
+  "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
+  "input_blob": "f90dcc6606f05ecb6ac8f251500ad7204f82703b",
+  "input_path": "site/chinabasketdata/baskets.json",
+  "input_sha256": "075b220d9f720b110cb1f52573547b4e244df9f2606a4079644571c97ab6f859",
+  "host_css_paths": [
+    "theme.css",
+    "illus.css",
+    "assets/css/be207544.css",
+    "assets/css/f7e9b02b.css",
+    "navigation-refresh.css"
+  ],
+  "host_body_class": "page-china mx4-grid",
+  "harness_note": "Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.",
+  "input_as_of": "2026-09-22",
+  "observed_at_utc": "2026-09-23T05:09:15.615532+00:00",
+  "raw_lanes_unchanged": true,
+  "input_unchanged": true,
+  "baseline_display": {
+    "buy_now": [],
+    "wait_pullback": [
+      "cn_pharma_cxo",
+      "cn_ai_compute",
+      "cn_semis",
+      "cn_consumer_elec"
+    ],
+    "bottoming_watch": [],
+    "reduce_avoid": [
+      "cn_solar",
+      "cn_battery",
+      "cn_metals",
+      "cn_food_bev",
+      "cn_autos",
+      "cn_med_devices",
+      "cn_baijiu",
+      "cn_appliances",
+      "cn_soe_value",
+      "cn_rare_earth",
+      "cn_gold",
+      "cn_robotics",
+      "cn_coal"
+    ]
+  },
+  "candidate_display": {
+    "buy_now": [
+      "cn_pharma_cxo"
+    ],
+    "wait_pullback": [
+      "cn_ai_compute",
+      "cn_semis",
+      "cn_consumer_elec"
+    ],
+    "bottoming_watch": [],
+    "reduce_avoid": [
+      "cn_solar",
+      "cn_battery",
+      "cn_metals",
+      "cn_food_bev",
+      "cn_autos",
+      "cn_med_devices",
+      "cn_baijiu",
+      "cn_appliances",
+      "cn_soe_value",
+      "cn_rare_earth",
+      "cn_gold",
+      "cn_robotics",
+      "cn_coal"
+    ]
+  },
+  "continuations": [
+    "cn_pharma_cxo"
+  ],
+  "captures": [
+    {
+      "file": "candidate-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "file": "candidate-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    }
+  ],
+  "source_sha256": {
+    "engine/china_act_now.py": "eac0c34a1b86826ee124fed8b868c16f7999ff763b1d858d2e8707e3700ddca4",
+    "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
+    "tests/test_china_act_now.py": "c68411ba5f3c9951750c5935766f0f4061866dd3ccee07fb2b63ea8f5280cf4b"
+  }
+}
