@@ -80,12 +80,24 @@ Capture has not started: there is no live B4 runtime on main. This amendment is 
 9. A cell is supported only by the single primary endpoint with its non-inferiority bound; the old any-of-K support path is superseded. Pareto dominance and non-identifiability remain grounds to kill a cell. The original decision-law arrays are preserved under `decision_law.superseded_by_A1`.
 
 The clock law still forbids historical backfill, the cohort start is unchanged, and all research-only authority flags remain false. This record authorizes evaluation only; it does not rank, admit, size, execute, trade, or promote policy.
-# Amendment A1 (2026-09-23, pre-capture)
 
-STATUS: IN_PROGRESS
+## Amendment A1 build record (2026-09-23)
+
+STATUS: COMPLETE.
 
 ## Result
 
+The machine-readable registration now identifies the singular MAE/H10 endpoint and places every other registered metric and horizon in supporting, descriptive-only status with no rescue authority. Tests cover the full eight-label-to-six-configuration alias collapse, multiplicity, looks, futility, and the rewritten support and kill rules.
+
 ## Evidence
 
+- RED: `python3 -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q -p no:cacheprovider` — `2 failed, 6 passed in 0.87s`, `rc=1`.
+- GREEN: same command — `8 passed in 0.82s`, `rc=0`.
+- Mutant (`distinct_configurations = 8`): `1 failed, 7 passed in 0.84s`, `rc=1`; restore check returned `mutant_restore_rc=0`, followed by `8 passed in 1.16s`, `rc=0`.
+- Final JSON: `python3 -m json.tool research/prophet_v4/b4_entry_policy_calibration/PREREG.json` — `rc=0`.
+- Agent OS: `python3 scripts/agentos.py validate` — `0 error(s)`, `rc=0`.
+- Merge preservation: before merge-base diff `3 files changed, 289 insertions(+), 10 deletions(-)`; after three-dot diff `3 files changed, 289 insertions(+), 10 deletions(-)`; missing-file list empty.
+
 ## Gaps and Deviations
+
+None. All nine frozen registration items remain present; the latest reviewer findings are addressed without changing registered numeric values, cells, authority flags, cohort start, or capture status.
