@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T13:09:42.430237+00:00",
-  "count": 2710,
+  "generated_at": "2026-09-23T13:39:19.922061+00:00",
+  "count": 2711,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-cyxqyhf0iin-b93d17",
+      "title": "GS Novak GS U.S. Industrials & Materials moving pieces 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:55Z",
+      "summary_points": [
+        "GBX Railcar Order: $600mm Saudi SAR order (3,400 units) drives book-to-bill near 1x, signaling robust industrial demand and sector strength.",
+        "Prime Book Industrials Shift: Gross exposure surged 33% (10.5%→14%) from 2022-2025, indicating strategic portfolio reallocation with heightened concentration risk.",
+        "Macro Data Catalysts: Critical releases (Chicago Fed, ADP, PMIs, Durable Goods) Sept 21-25 pivotal for rate expectations, growth trajectory, and volatility.",
+        "AZO EPS Beat: $56.05 EPS vs.",
+        "$54.08 estimate, driven by margin expansion and improving exit rate, boosting 2027 outlook."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7yl0z9bvzby-adeeb0",
       "title": "GS Duttenhoefer BEST of DAY 2 at our German Corp Conference in Munich 22 Sep 2026",
