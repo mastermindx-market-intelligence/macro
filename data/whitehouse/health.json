@@ -1,17 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-22T22:14:25.610640+00:00",
-  "posts_seen": 9,
-  "seen_total": 221,
-  "evaluated": 1,
+  "as_of": "2026-09-23T17:05:08.199652+00:00",
+  "posts_seen": 11,
+  "seen_total": 223,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-22-president-trump-inks-historic-arctic-security-agreement",
-      "importance": 0,
+      "id": "wh-2026-09-23-president-trump-delivers-powerful-america-first-message-to-the-united-nations",
+      "importance": 15,
       "activated": false,
-      "degraded_reason": "served_by:codex"
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-09-21-presidential-message-on-national-historically-black-colleges-and-universities-we",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": null
     }
   ]
 }

@@ -3506,6 +3506,12 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
+    # the gate:code home for tests/test_b4_entry_policy_calibration_prereg.py — its
+    # thematic neighbours are `gate: data`. Curated because the measured import
+    # closure is empty (stdlib only): the scope is the suite + the registration
+    # store + the prose registration, nothing else.
+    "prophet-us-b4-prereg-registration",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
@@ -3514,6 +3520,21 @@ CURATED_EXCLUSIVE = {
     # collectors/ and engine.market_state chains), so exclusivity loses no
     # owner and contract-delta stays at 0 introduced.
     "markets-regime-strip",
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
+    # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
+    # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
+    # + test_audit_options_skew_overlap), the W2-4 parity audit
+    # (test_audit_options_skew_parity, #7756) and the two W2-5a payoff-lab
+    # suites (test_options_payoff_lab + test_payoff_lab_launchd, #7759) —
+    # eight suite runs on one run line. The lane has no signal-contract /
+    # render subject — its subjects are the launchd plist, the sh runner,
+    # argparse helpers, and the publish_r2._DATA_DIRS options_skew
+    # registration — and it was previously parked in
+    # config/unrun_test_waivers.yml, which the waiver file's own header
+    # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
+    # name exactly the eight suites plus the load-bearing scripts they
+    # actually invoke and the engine/lib chains those scripts import.
+    "skew-accrual-lane",
     # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
     # gate:code home for tests/test_options_skew.py. The suite previously
     # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
@@ -3694,6 +3715,15 @@ CURATED_EXCLUSIVE = {
     # for templates/index.html (133 > 132). Curate the stated owner boundary;
     # do not fund that unrelated match by raising the packing ceiling.
     "research-vault-source-lineage",
+    # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
+    # is the gate:code home for the five suites that only gate:data lanes
+    # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
+    # tests/test_dashboard_template_render.py and the HK/CN spine-binding
+    # contract in tests/test_unified_dashboard_b2w2.py never gated a PR.
+    # Curated for COVERAGE: its `paths:` are the measured import closure of the
+    # suites (scripts/build_site.py pulls most of engine/ and lib/), so
+    # exclusivity loses no owner and contract-delta stays at 0 introduced.
+    "dashboard-render-contract",
 }
 
 

@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb_cycle_pattern_state.v1",
-  "asof": "2026-09-22",
+  "asof": "2026-09-23",
   "model_epoch": "price_c4414dcb",
   "gate_status": {
     "up": {
@@ -73,7 +73,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:EEM",
@@ -88,7 +88,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:EFA",
@@ -103,7 +103,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:ILF",
@@ -118,7 +118,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:VGK",
@@ -133,7 +133,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:VPL",
@@ -148,7 +148,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "bloc:VXUS",
@@ -163,7 +163,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "cn_basket:cn_ai_compute",
@@ -973,7 +973,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EIDO",
@@ -988,7 +988,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EPOL",
@@ -1003,7 +1003,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWA",
@@ -1018,7 +1018,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWC",
@@ -1033,7 +1033,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWD",
@@ -1048,7 +1048,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWG",
@@ -1063,7 +1063,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWH",
@@ -1078,7 +1078,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWI",
@@ -1093,7 +1093,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWJ",
@@ -1108,7 +1108,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWL",
@@ -1123,7 +1123,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWN",
@@ -1138,7 +1138,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWP",
@@ -1153,7 +1153,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWQ",
@@ -1168,7 +1168,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWS",
@@ -1183,7 +1183,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWT",
@@ -1198,7 +1198,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWU",
@@ -1213,7 +1213,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWW",
@@ -1228,7 +1228,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWY",
@@ -1243,7 +1243,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EWZ",
@@ -1258,7 +1258,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:EZA",
@@ -1273,7 +1273,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:FXI",
@@ -1288,7 +1288,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:INDA",
@@ -1303,7 +1303,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "country:TUR",
@@ -1318,7 +1318,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     {
       "entity_id": "us_basket:ai_agents",

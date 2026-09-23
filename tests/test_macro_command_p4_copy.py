@@ -624,10 +624,16 @@ def test_live_page_carries_every_emitted_p4_string(built: tuple[str, Path]) -> N
 
 def test_quadrant_copy_that_is_not_live_today_is_on_the_view() -> None:
     """A/C/D are not today's published states — still asserted on the tables
-    and on a fabricated view so a later state cannot ship unpinned."""
+    and on a fabricated view so a later state cannot ship unpinned.
+
+    The fabricated view pins the workspace's availability to CURRENT: the
+    assertion is about the state-C copy, not about today's source freshness.
+    A STALE_SOURCE base (the 2026-09-23 nightly flipped growth to it) is E2
+    by design and carries no stance at all."""
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         if entry["workspace_id"] == "growth_real_economy":
+            entry["snapshot"]["availability"]["state"] = "CURRENT"
             entry["snapshot"]["headline"]["state_id"] = "C"
     sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     growth = next(s for s in sections if s["id"] == "growth")
@@ -807,12 +813,17 @@ def test_e2_on_housing_uses_the_empty_title(tmp_path: Path) -> None:
 
 
 def test_subtab_e1_uses_the_stance_tab_empty_title() -> None:
+    # E1 is the dateless-CURRENT empty; E2 (stale / failed source) outranks
+    # it, so the fabricated workspaces pin availability to CURRENT instead
+    # of inheriting whatever freshness today's bake happens to carry.
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         if entry["workspace_id"] == "business_activity":
+            entry["snapshot"]["availability"]["state"] = "CURRENT"
             entry["snapshot"]["headline"]["status"] = "ABSENT"
             entry["snapshot"]["headline"]["state_id"] = None
         if entry["workspace_id"] == "growth_real_economy":
+            entry["snapshot"]["availability"]["state"] = "CURRENT"
             entry["snapshot"]["headline"]["effective_date"] = None
             entry["snapshot"]["headline"]["status"] = "ABSENT"
             entry["snapshot"]["headline"]["state_id"] = None

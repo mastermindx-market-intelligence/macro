@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CELH-BULL-20260525",
-  "asof": "2026-09-22",
+  "asof": "2026-09-23",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 29.0,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.457,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 117.8,
+    "horizon_pct_used": 120.0,
     "p1": -0.3623,
     "p2": -0.1811,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": "2026-08-20",
   "_first_t2_ts": null,
-  "days_elapsed": 53,
-  "tau": 1.1778
+  "days_elapsed": 54,
+  "tau": 1.2
 }

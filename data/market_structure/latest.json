@@ -1,7 +1,7 @@
 {
   "schema": "market_structure_context.v1",
   "asof": "2026-09-21",
-  "built_at": "2026-09-22T16:43:40.735458+00:00",
+  "built_at": "2026-09-23T06:25:19.663501+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
@@ -396,7 +396,7 @@
     ],
     "coverage": {
       "last_obs": "2026-09-22",
-      "expected_last_session": "2026-09-21",
+      "expected_last_session": "2026-09-22",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [

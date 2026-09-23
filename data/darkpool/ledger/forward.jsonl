@@ -397,4 +397,4 @@
 {"asof":"2026-09-21","ticker":"HWM","pattern":"heavy_price_flat","participation":0.4703,"participation_z":1.71,"streak":1,"price_change_pct":0.11,"ats_frac":0.5502,"short_trend_pp":-4.97}
 {"asof":"2026-09-21","ticker":"IR","pattern":"heavy_price_flat","participation":0.4883,"participation_z":1.69,"streak":1,"price_change_pct":0.25,"ats_frac":0.7098,"short_trend_pp":-5.72}
 {"asof":"2026-09-21","ticker":"H","pattern":"heavy_into_weakness","participation":0.477,"participation_z":1.78,"streak":1,"price_change_pct":-4.13,"ats_frac":0.803,"short_trend_pp":0.86}
-{"asof":"2026-09-21","ticker":"CIEN","pattern":"heavy_into_strength","participation":0.4981,"participation_z":1.59,"streak":1,"price_change_pct":14.49,"ats_frac":0.6389,"short_trend_pp":6.64}
+{"asof":"2026-09-21","ticker":"CIEN","pattern":"heavy_into_strength","participation":0.4954,"participation_z":1.53,"streak":1,"price_change_pct":14.49,"ats_frac":0.6389,"short_trend_pp":6.64}
