@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T15:09:37.545777+00:00",
-  "count": 2716,
+  "generated_at": "2026-09-23T15:39:45.125149+00:00",
+  "count": 2717,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:45Z",
+      "summary_points": [
+        "F1Q Beat & FY27 Guidance: Adj EPS beat ($0.75 vs $0.72); FY27 guidance slightly below consensus (EPS $3.00-$3.20 vs $3.12/$3.08), but $750mm cost savings offsetting higher input inflation (4-5%).",
+        "Margin Strength: Gross margin 33.3% (above consensus 33.0%) and operating margin 14.4% (vs consensus 13.7%) despite net sales down -2.8% y/y.",
+        "Valuation Anchor: Neutral rating underpinned by 50/50 P/E blend (10x/11x/12x) and EV/EBITDA (9.5x/10x/10.5x) for $35 target.",
+        "Critical Risks: Downside from economic slowdown, trade-down to private label, and input cost inflation not fully passed through to margins."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vxqbq7fg0xc-a29f7b",
       "title": "Brenntag SE (BNRGn.DE) 15th German Corporate Conference — Key Takeaways",
