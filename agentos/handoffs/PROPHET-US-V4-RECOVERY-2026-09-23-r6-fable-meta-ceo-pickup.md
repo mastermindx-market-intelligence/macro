@@ -17,6 +17,8 @@ state_before: >
   under the operation; incumbent Draft carriers #7581 (CI green), #7180 and #7572 (CI red)
   on their original Sol/Main-CEO writers; no Agent OS record of the delegation on main.
 changed:
+  - path: research/prophet_v4/r6_program/
+    what: program-generated records (independent reviews, wave records, seat rulings) — created beside the frozen packet because verify_handoff.py enforces a file census over the packet directory
   - path: research/prophet_v4/r6_fable_meta_ceo_handoff/
     what: Byte-for-byte adoption of the delivered R6 archive (110 files; archives/R5_source_packet.zip omitted, its 28 members preserved in baseline_r5/, SHA-256 recorded in MANIFEST.json).
   - path: agentos/decisions/DEC-PROPHET-US-FABLE-META-CEO-DELEGATION.md
@@ -26,6 +28,9 @@ changed:
   - path: agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-23-r6-fable-meta-ceo-pickup.md
     what: This record.
 verified:
+  - claim: The independent external review of the R6 delta concluded ACCEPT_WITH_REPAIRS (B1 verifier could not run without the omitted archive; M1 B00 technical-owner label; m1 verifier scope) and B1 is repaired byte-exact.
+    how: research/prophet_v4/r6_program/reviews/R6_INDEPENDENT_REVIEW_GLM53_2026-09-23.md; `cd research/prophet_v4/r6_fable_meta_ceo_handoff && python3 verify_handoff.py` → rc=0 at the repaired head (110 manifest files, 28 baseline members); `shasum -a 256 archives/R5_source_packet.zip` = ded2d954…5635 as MANIFEST.json lists
+    note: M1 is declined, not fixed — `technical_owner` is a frozen R5 semantic field (verify_handoff.py rejects any change outside owner/status), and the DEC record already scopes accountability to Fable; the label denotes the incumbent source owner only.
   - claim: The delivered packet is internally consistent (documents, hashes, graph, authority).
     command: cd research/prophet_v4/r6_fable_meta_ceo_handoff && python3 verify_handoff.py | tail -25
     result: PASS — 29 build units, 24 research packets, 12 decisions, 36 requirements, 53 work cards, 126 inherited + 30 added acceptance entries, 0 product/operating tests executed, source_edits false, workers_dispatched 0.
@@ -46,16 +51,21 @@ unverified:
   - claim: #7180 and #7572 reds are PR-own rather than main-inherited.
     what_would_verify: pu_b_carrier CI red table with attribution and evidence per check.
 unresolved:
+  - The packet directory is byte-frozen by its own verifier: any file added under research/prophet_v4/r6_fable_meta_ceo_handoff/ fails the census check. Program records therefore live in research/prophet_v4/r6_program/ (reviews/, wave0/, wave1/, rulings/); the records carrier #7811 is being moved there.
   - D01–D12 remain OPEN; D10 is satisfied in practice for wave 0 by the lease receipts above but is not closed as a record until the first build child returns through the same path.
   - Fabric capacity is four concurrent lanes (m1 max_active 2 with a Mon–Fri 02:00–11:00Z daemon window; mb max_active 2, no window; seat host m2 load >30 refuses local admission). Program throughput is bounded by this, not by the packet.
   - m1 lanes were launched directly at 11:30Z, outside m1's daemon window; the daemon window should be respected for further m1 launches unless the host owner widens it.
 next_actions:
-  - Adjudicate pu_r6_review; repair or accept; then mark #7809 ready and arm merge-on-green.
+  - Land #7809 (review adjudicated; B1 repaired) — ready + merge-on-green; post the wave-0 checkpoint on #6805 at merge.
+  - Consume pu_c_earnings (PR #7818 @f88b215b) and pu_d11_release (m1, running) → rule B08/B14 readiness and the D11 release path; cherry-pick their records onto #7811 under r6_program/wave0/.
+  - D05 ruled: the three watchlist sync-honesty defects are commissioned as build unit pu_w1_watch_honesty (mb queue, glm-5.3-flash builds / glm-5.3 reviews); the trade_episodes route is the candidate durable owner for an episode thesis pending the production DDL gate.
   - Consume pu_a_receipt → rule D01 (validity contract vs re-emission) and commission the Packet A build on #7581 only after reading a same-carrier custody statement there.
   - Consume pu_b_carrier → per PR: ACCEPT/REPAIR/HOLD; repairs only for PR-own reds, on the original carrier, never a replacement branch.
   - Consume pu_c_earnings, pu_d05_persistence, pu_d11_release → rule the readiness branches for B08/B14, D05 and D11.
   - Consume the Opus adversarial science audit → pre-register what it names before any formal read (D03/D06/D07/D08).
 do_not_redo:
+  - Do not write any file under research/prophet_v4/r6_fable_meta_ceo_handoff/ (verifier census); records go to research/prophet_v4/r6_program/.
+  - Do not re-review the R6 delta; the GLM-5.3 record stands and B1 is repaired; M1 is declined by the verifier's frozen-semantics contract.
   - Do not re-ACK or re-START this operation; the PICKUP_ACK is comment 5793983971 on #6805.
   - Do not re-run the isolated 8-case _bind_owner_confluence probe (finding 5789777976); the open question is the producer's emission schedule, not the function.
   - Do not replace, rebase or re-open #7581/#7180/#7572 on new branches; work stays on the original carriers.
