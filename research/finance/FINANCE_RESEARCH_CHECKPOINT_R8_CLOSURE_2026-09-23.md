@@ -7,12 +7,14 @@
 **Implementation complete:** false  
 **Fable handoff complete:** false
 
-## 0. Authority and procedure
+## 0. Authority, source and exact parent
 
 - Current Chairman intent: continue extensive principal Finance research/planning before any Fable CEO implementation handoff.
 - Protected procedure pin: `mastermindx-market-intelligence/Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`.
 - Skillpack: `mastermind.sol_skillpack.v1` v1.0.1, bootstrap major 1.
 - Original Macro research base: `668237947e016f679782e41e61c91c9133a5ea99`.
+- Exact cumulative research parent covered by this checkpoint: `8a0b42fddf90a23e70685c87708837a26f14562b`.
+- This checkpoint commit is the intended exact resume revision once GitHub returns its immutable commit SHA.
 - Direct principal reason: `PRINCIPAL_JUDGMENT`.
 - No worker, Fable receiver, Executive Attempt or watcher was started.
 - No product code, production schema, canonical graph data, basket membership, rank, recommendation, trade, CI or deployment was changed.
@@ -44,12 +46,12 @@ Operating economics, expectations, valuation and price recognition remain separa
 
 ### After R8
 
-The carrier now includes:
+The carrier includes:
 
 1. a 19-company asset-management/wealth/insurance census;
 2. a closed asset/wealth/insurance metric/evidence dictionary;
 3. a 19-record research-only assertion packet;
-4. current structural-disruption/regulatory-stage research;
+4. current structural-disruption and regulatory-stage research;
 5. a point-in-time historical/prospective rerating evaluation design;
 6. a Theme Tracker → XLF dossier → subtheme/company/evidence product contract;
 7. an owner-preserving authenticated read/data contract;
@@ -60,8 +62,6 @@ The carrier now includes:
 
 ## 3. Structured research census
 
-The program now has structured research packets covering all representative census records:
-
 | Packet | Records | Numeric research assertions | Canonical identity bindings | Approved basket memberships | Rank/trade fields |
 |---|---:|---:|---:|---:|---:|
 | Financial Rails & Market Infrastructure | 11 | 11 | 0 | 0 | 0 |
@@ -71,9 +71,30 @@ The program now has structured research packets covering all representative cens
 
 Every packet is `RESEARCH_ONLY_NON_CANONICAL` and preserves source-native measurements, limitations and rerating bridges. It does not establish source admission, immutable retention, current valuation, consensus, basket membership or trade authority.
 
-## 4. Gap-review supersession
+## 4. R8 artifact set
 
-This checkpoint narrowly supersedes the following states in `FINANCE_RESEARCH_PROGRAM_GAP_REVIEW_AND_COMPLETION_GATES_2026-09-23.md`:
+### Asset management, wealth and insurance
+
+- `FINANCE_ASSET_WEALTH_INSURANCE_RERATING_2026-09-23.md`
+- `FINANCE_ASSET_WEALTH_INSURANCE_COMPANY_BUSINESS_CENSUS_2026-09-23.md`
+- `FINANCE_ASSET_WEALTH_INSURANCE_METRIC_DICTIONARY_2026-09-23.md`
+- `FINANCE_ASSET_WEALTH_INSURANCE_ASSERTION_PACKET_V0_1_2026-09-23.json`
+
+### Cross-cutting architecture
+
+- `FINANCE_STRUCTURAL_DISRUPTION_AND_RERATING_2026-09-23.md`
+- `FINANCE_RERATING_HISTORICAL_EVALUATION_DESIGN_2026-09-23.md`
+- `FINANCE_PRODUCT_EXPERIENCE_AND_OWNER_PRESERVING_DATA_CONTRACT_2026-09-23.md`
+- `FINANCE_SOURCE_RIGHTS_REFRESH_AND_PROVENANCE_PLAN_2026-09-23.md`
+- `FINANCE_EXPECTATIONS_VALUATION_AND_PRICE_JOIN_CONTRACT_2026-09-23.md`
+
+### First vertical and program control
+
+- `FINANCE_FIRST_VERTICAL_ASSERTION_PACKET_V0_1_2026-09-23.json`
+- `FINANCE_RESEARCH_PROGRAM_GAP_REVIEW_AND_COMPLETION_GATES_2026-09-23.md`
+- `FINANCE_RESEARCH_CHECKPOINT_R8_CLOSURE_2026-09-23.md`
+
+## 5. Gap-review supersession
 
 ### G-FIN-01 — First-vertical portable assertion packet
 
@@ -91,46 +112,6 @@ This checkpoint narrowly supersedes the following states in `FINANCE_RESEARCH_PR
 
 All other gap-review findings remain controlling unless separately superseded.
 
-## 5. Current durable research inventory
-
-### System and rerating foundation
-
-1. `FINANCE_SECTOR_SYSTEM_RESEARCH_FOUNDATION_2026-09-23.md`
-2. `FINANCE_RERATING_VALUATION_AND_PRICE_TRANSMISSION_2026-09-23.md`
-3. `FINANCE_EXPECTATIONS_VALUATION_AND_PRICE_JOIN_CONTRACT_2026-09-23.md`
-
-### Product, source and evaluation architecture
-
-4. `FINANCE_PRODUCT_EXPERIENCE_AND_OWNER_PRESERVING_DATA_CONTRACT_2026-09-23.md`
-5. `FINANCE_SOURCE_RIGHTS_REFRESH_AND_PROVENANCE_PLAN_2026-09-23.md`
-6. `FINANCE_RERATING_HISTORICAL_EVALUATION_DESIGN_2026-09-23.md`
-7. `FINANCE_STRUCTURAL_DISRUPTION_AND_RERATING_2026-09-23.md`
-
-### First vertical — Financial Rails & Market Infrastructure
-
-8. `FINANCE_FIRST_VERTICAL_COMPANY_BUSINESS_CENSUS_2026-09-23.md`
-9. `FINANCE_FIRST_VERTICAL_METRIC_AND_EVIDENCE_DICTIONARY_2026-09-23.md`
-10. `FINANCE_FIRST_VERTICAL_ASSERTION_PACKET_V0_1_2026-09-23.json`
-
-### Balance-sheet, credit and private credit
-
-11. `FINANCE_BALANCE_SHEET_CREDIT_AND_PRIVATE_CREDIT_RERATING_2026-09-23.md`
-12. `FINANCE_BALANCE_SHEET_CREDIT_COMPANY_BUSINESS_CENSUS_2026-09-23.md`
-13. `FINANCE_CREDIT_CAPITAL_AND_VINTAGE_METRIC_DICTIONARY_2026-09-23.md`
-14. `FINANCE_CREDIT_RESEARCH_ASSERTION_PACKET_V0_1_2026-09-23.json`
-
-### Asset management, wealth and insurance
-
-15. `FINANCE_ASSET_WEALTH_INSURANCE_RERATING_2026-09-23.md`
-16. `FINANCE_ASSET_WEALTH_INSURANCE_COMPANY_BUSINESS_CENSUS_2026-09-23.md`
-17. `FINANCE_ASSET_WEALTH_INSURANCE_METRIC_DICTIONARY_2026-09-23.md`
-18. `FINANCE_ASSET_WEALTH_INSURANCE_ASSERTION_PACKET_V0_1_2026-09-23.json`
-
-### Program control
-
-19. `FINANCE_RESEARCH_PROGRAM_GAP_REVIEW_AND_COMPLETION_GATES_2026-09-23.md`
-20. `FINANCE_RESEARCH_CHECKPOINT_R8_CLOSURE_2026-09-23.md`
-
 ## 6. DO NOT REDO
 
 Unless materially invalidated:
@@ -142,7 +123,7 @@ Unless materially invalidated:
 - do not equate volume, transactions, AUM/AUA/client assets, premium, ARR/RPO or mandate wins with revenue/profit;
 - do not equate manager and vehicle economics;
 - do not equate written premium and earned underwriting profit;
-- do not equate reported/adjusted/statutory/cash-remittance earnings;
+- do not equate reported, adjusted, statutory and cash-remittance earnings;
 - do not infer current adoption or revenue from a law, proposal, pilot, partnership or production demonstration;
 - do not create a second identity, evidence, revisions, valuation, rates, market, source, publication or evaluation owner;
 - do not promote a research packet into accepted evidence or basket membership without owner admission;
@@ -150,7 +131,7 @@ Unless materially invalidated:
 
 ## 7. Remaining material gaps
 
-### R9 — Global/regional Finance extension
+### R9 — Global and regional Finance extension
 
 Research regional structures and non-U.S. differences for Europe/UK, Japan, China/HK, India, developed Asia and selected emerging payment/banking systems, including accounting, regulation, rails, insurer capital, market structure, identity and cross-market baskets.
 
@@ -172,9 +153,9 @@ Only after the remaining research/design gates are sufficiently mature.
 
 ## 8. Exact next action
 
-Continue in Pro mode with **R9: Global and regional Finance-system extension**, beginning with Europe/UK, Japan and China/HK. Preserve local regulatory/accounting/market-structure differences instead of treating U.S. definitions as universal. R10 point-in-time casebook fixture may follow after the regional ontology and source map are sufficiently stable.
+Continue in Pro mode with **R9: Global and regional Finance-system extension**, beginning with Europe/UK, Japan and China/HK. Preserve local regulatory, accounting, market-structure and capital differences instead of treating U.S. definitions as universal. R10’s point-in-time casebook fixture follows after the regional ontology and source map are sufficiently stable.
 
-## 9. Finalization state at this checkpoint
+## 9. Finalization state
 
 ```text
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
