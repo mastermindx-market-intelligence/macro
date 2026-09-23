@@ -224,7 +224,7 @@ def test_pending_sol_hold_waits_before_first_unsafe_branch_remediation(monkeypat
     reason = block["reason"].lower()
     assert "hold-for-sol waiting" in reason
     assert "do not rename" in reason
-    assert "wait for the existing check watcher only" in reason
+    assert "ci holds release, not independent authorized work" in reason
     assert "unsafe_branch" not in reason
     assert calls == {"open_pull": 1, "checks": 1}
 
@@ -276,7 +276,7 @@ def test_pending_ordinary_claude_hold_waits_instead_of_demanding_a_forbidden_mer
     reason = block["reason"].lower()
     assert "hold-for-sol waiting" in reason
     assert "trusted-executor-pack-10" in reason
-    assert "wait for the existing check watcher only" in reason
+    assert "ci holds release, not independent authorized work" in reason
     # The exact instructions the old fall-through wrongly produced must be absent.
     assert "squash-merge" not in reason
     assert "render/deploy" not in reason

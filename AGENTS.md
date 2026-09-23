@@ -731,6 +731,15 @@ outside the command line makes that read illegal. That rule is older and stronge
 than shape 7, which is exactly why shape 7 advises instead of denying — escalating
 it to a deny is a RULING for the operator, not a refactor.
 
+
+**CI holds release, not independent authorized work.** A pending/red or held PR
+remains unshipped. Use an existing verified observer when available, without
+inventing watcher registration or background execution. Continue already-authorized, path/dependency-disjoint
+foreground work under its existing source custody rather than idling or generating
+repeated hold notes. A Stop hook's `decision: block` still rejects that Stop/ship
+attempt; this clarification creates no new Stop-hook exit or release permission.
+Do not merge, arm, rename, duplicate CI, or mutate a held PR to escape its hold.
+
 **A blocked Stop is not a demand for a fresh poll** (operator 2026-08-24, repeated
 2026-08-27). The commonest burn is neither a loop nor a hot interval: it is one
 `gh pr checks <n>` per Stop-hook cycle while a 30–45 minute run finishes. Measured
@@ -739,7 +748,7 @@ session that already had a watcher armed at 150s reporting every transition for
 free. The mechanism is not laziness — the Stop hook fires on every turn and
 escalates to "If the same genuine blocker persists after another attempt, finish
 with `SHIP LOOP BLOCKED:`", which reads as pressure to show a fresh attempt. It is
-not. Answer a blocked Stop with a one-line hold note and no tool call; waiting on
+not. Answer a blocked Stop with a one-line hold note instead of another CI poll; waiting on
 CI is explicitly not a qualifying blocker for the escape ladder, so there is
 nothing to prove by looking again. The tell: three identical bucket counts in a row
 means every further read is waste, and an armed watcher makes polling redundant
