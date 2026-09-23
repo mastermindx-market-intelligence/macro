@@ -299,6 +299,33 @@ FAKE_PUBLISH_OK = '''"""Fake publish — exit 0."""
 import sys
 sys.exit(0)
 '''
+FAKE_PUBLISH_MARKER = '''"""Fake publish — exit 0 AND writes a marker file the test can read.
+
+A-F03-W2-8 (2026-09-23) caught-up no-op test: the runner must SKIP
+step_publish entirely on rc 3, so we cannot trust the absence of an
+`SKEW_DRY_RUN` log line to prove the step was skipped (the dry-run
+leg drops the R2 call but logs the skip — its absence under rc 3 IS
+the proof, but only when dry-run=1). The marker file is the
+ground-truth proof: a publish call writes it, the rc-3 path skips the
+publish call, the marker is therefore absent.
+"""
+import os, sys
+marker = os.path.join(os.environ["SKEW_STATE_DIR"], ".publish_called")
+with open(marker, "w", encoding="utf-8") as f:
+    f.write("called\n")
+sys.exit(0)
+'''
+FAKE_VERIFY_MARKER = '''"""Fake verify — exit 0 AND writes a marker file the test can read.
+
+Same idea as FAKE_PUBLISH_MARKER: a verify call writes the marker,
+the rc-3 path skips the verify call, the marker is therefore absent."""
+import os, sys
+marker = os.path.join(os.environ["SKEW_STATE_DIR"], ".verify_called")
+with open(marker, "w", encoding="utf-8") as f:
+    f.write("called\n")
+print("OK")
+sys.exit(0)
+'''
 FAKE_FETCH_R2_OK = '''"""Fake fetch_r2 — exits 0 (no actual R2 I/O).
 
 The runner's step_hydrate_ledger (B2 cure, 2026-09-22) calls
@@ -334,6 +361,27 @@ new_row = pd.DataFrame([{"date": "2099-01-01", "underlying": "FAKE_NEW",
                           "skew": 0.99}])
 df = pd.concat([df, new_row], ignore_index=True)
 df.to_parquet(ledger, index=False)
+sys.exit(0)
+'''
+FAKE_ACCRUE_NOOP = '''"""Fake accrue — A-F03-W2-8 caught-up no-op (rc 3).
+
+The builder exits 3 when the store's complete session S is already on
+the ledger (catch_up_sessions returns []). The fake mirrors that
+contract: exit 3 AND append no row to the ledger (a real caught-up
+accrue writes nothing). The runner is the unit under test — it must
+treat rc 3 as a one-line receipt + skip verify + skip publish + exit 0.
+"""
+import sys
+sys.exit(3)
+'''
+FAKE_ACCRUE_NO_GROWTH = '''"""Fake accrue — exits 0 but writes zero rows (real no-op under a fresh session).
+
+BLOCKER-2 stays intact: a zero-row accrue on a day with a NEW complete
+session still aborts at step_verify_ledger. The fake mirrors that
+contract: exit 0 AND append no row to the ledger, so the verify step's
+post_rows <= pre_rows check refuses the publish.
+"""
+import sys
 sys.exit(0)
 '''
 FAKE_GATE_FRESH = '''"""Fake gate — FRESH."""
@@ -435,14 +483,35 @@ def _build_fake_repo(tmp_path: Path, *,
     # args. This is what the runner actually executes when it calls
     # `$PYTHON -m scripts.<name>` — without this shim the fake modules
     # would never run and every assertion would fail with empty status.
+    #
+    # A-F03-W2-8 (2026-09-23): the shim also executes `python -c "<code>"`
+    # inline (NOT by re-spawning `sys.executable`, which would loop back
+    # into this very shim) so the runner's pre-accrue row-count read
+    # actually sees the ledger's real row count. Without this, `pre_rows`
+    # is always 0 in tests because the shim only handles `-m`, and
+    # BLOCKER-2 (`post_rows <= pre_rows`) never fires — every
+    # FAKE_ACCRUE that appends 1 row sees `1 > 0` and passes. The
+    # caught-up / zero-growth tests therefore had to use the `n == 0`
+    # rule (a different failure mode) to drive the abort. With `-c`
+    # executing inline here, BLOCKER-2 itself is reachable.
     py_shim = '''#!/usr/bin/env python3
 """Hermetic test shim: dispatches `python -m scripts.<name>` to the
-fake module under $SKEW_OPS_ROOT/scripts/<name>.py."""
-import os
-import runpy
-import sys
+fake module under $SKEW_OPS_ROOT/scripts/<name>.py`. `python -c "…"`
+executes inline in this process (NOT via sys.executable — that would
+recurse into this shim) so inline ledger-row reads see real counts."""
+import os, runpy, sys
 
 args = sys.argv[1:]
+# `python -c "<code>"` → execute inline. The runner's pre_rows read
+# needs the real ledger row count; BLOCKER-2 is only exercisable when
+# pre_rows is accurate. Recursing via sys.executable would loop, since
+# the shim IS the executable the runner resolved `$PYTHON` to.
+if args and args[0] == "-c":
+    code = args[1]
+    sys.argv = ["-c"] + args[2:]
+    exec(compile(code, "<shim -c>", "exec"), {"__name__": "__main__"})
+    sys.exit(0)
+
 mod = None
 i = 0
 while i < len(args):
@@ -699,8 +768,13 @@ def _build_real_git_repo(tmp_path: Path,
     py_shim_text = (
         "#!/usr/bin/env python3\n"
         "import os, runpy, sys\n"
-        "args = sys.argv[1:]; mod = None\n"
-        "i = 0\n"
+        "args = sys.argv[1:]\n"
+        "if args and args[0] == '-c':\n"
+        "    code = args[1]\n"
+        "    sys.argv = ['-c'] + args[2:]\n"
+        "    exec(compile(code, '<shim -c>', 'exec'), {'__name__': '__main__'})\n"
+        "    sys.exit(0)\n"
+        "mod = None; i = 0\n"
         "while i < len(args):\n"
         "    if args[i] == '-m' and i + 1 < len(args):\n"
         "        mod = args[i + 1]; del args[i:i + 2]; break\n"
@@ -925,3 +999,106 @@ def test_fetch_r2_docstring_routes_data_dir_to_data_subtree():
     docstring = fetch_r2.read_text(encoding="utf-8").split('"""', 2)[1]
     assert "data/<dir>" in docstring or "data/" in docstring
     assert "publish_r2._DATA_DIRS" in docstring
+
+
+# ─────────────────────────────────────────────────────────────────────────── #
+# 5. A-F03-W2-8 (2026-09-23): caught-up no-op exits clean (no verify, no publish). #
+# ─────────────────────────────────────────────────────────────────────────── #
+# The skew-accrual lane resolves the COMPLETE store session S via
+# engine.options_skew.complete_store_session (W2-6, PR #7832) and backfills
+# every missed session on the path from the ledger's newest complete
+# thetadata row. When S is already on the ledger, catch_up_sessions returns
+# [] and the builder exits 3. The launchd runner treats that rc as a
+# one-line receipt + SKIP verify AND publish + exit 0 — a caught-up ledger
+# is exactly what the verify step's BLOCKER-2 rule was written to refuse
+# (post_rows <= pre_rows), but refusing the publish under "nothing to
+# accrue" is the wrong outcome: the daily maintainer's session has already
+# landed, the lane did its job, and the operator wants a clean rc-0 exit,
+# not a launchd failure for every weekday-after-holiday tick.
+#
+# These two tests pin the two-case contract:
+#   - rc 3 → receipt + skip verify + skip publish + exit 0 (caught-up no-op)
+#   - rc 0 with zero growth → BLOCKER-2 still aborts loud at verify (the
+#     real failure path stays intact).
+
+
+def test_runner_caught_up_noop_exits_zero_and_skips_verify_and_publish(tmp_path):
+    """A-F03-W2-8 (2026-09-23): caught-up no-op must exit 0, log the
+    one-line receipt, AND skip verify AND publish.
+
+    The fake accrue exits 3 (FAKE_ACCRUE_NOOP) and appends no row. The
+    fake verify and fake publish are the *-MARKER variants — both write
+    a marker file in $SKEW_STATE_DIR when invoked. The runner must NOT
+    call the fake verify (marker absent), must NOT call the fake
+    publish (marker absent), must remove the `.skew_pre_rows.<run_tag>`
+    sidecar so it does not contaminate the next tick, and must exit 0.
+
+    The receipt `NOOP_CAUGHT_UP run_tag=… ledger=…` is the line-start
+    line the runbook points operators at; its absence is a regression
+    on the seat ruling."""
+    repo, stub_bin = _build_fake_repo(tmp_path, accrue=FAKE_ACCRUE_NOOP,
+                                       verify=FAKE_VERIFY_MARKER,
+                                       publish=FAKE_PUBLISH_MARKER)
+    state_dir = tmp_path / "skew_state"
+    rc = _run_runner_with_state(
+        tmp_path, repo, stub_bin, state_dir=state_dir,
+    )
+    assert rc.returncode == 0, (rc.stdout, rc.stderr)
+    # The seat-ruled one-line receipt is at line start.
+    assert "NOOP_CAUGHT_UP" in rc.stdout, rc.stdout
+    # The step_accrue NOOP log line — the runner's own evidence the
+    # rc-3 was a caught-up no-op, distinct from a generic accrual pass.
+    assert "caught-up no-op" in rc.stdout or "nothing to accrue" in rc.stdout
+    # The runner did NOT reach step_verify_ledger — marker file absent.
+    verify_marker = state_dir / ".verify_called"
+    assert not verify_marker.exists(), (
+        f"runner called step_verify_ledger on rc 3: {verify_marker}"
+    )
+    # The runner did NOT reach step_publish — marker file absent.
+    publish_marker = state_dir / ".publish_called"
+    assert not publish_marker.exists(), (
+        f"runner called step_publish on rc 3: {publish_marker}"
+    )
+    # Pre_rows sidecar gone (step_accrue removes it on rc 3 — the rc-3
+    # receipt is the durable evidence; the sidecar would only leak into
+    # the next tick if it survived).
+    pre_rows_markers = list(state_dir.glob(".skew_pre_rows.*"))
+    assert pre_rows_markers == [], (
+        f"runner left .skew_pre_rows.* sidecar on rc 3: {pre_rows_markers}"
+    )
+    # Final-state log line: the runner closes with the "done" receipt
+    # the runbook points operators at.
+    assert "done" in rc.stdout
+
+
+def test_runner_zero_growth_under_a_real_accrue_still_aborts_at_verify(tmp_path):
+    """A-F03-W2-8 (2026-09-23): a zero-row accrue on a day with a NEW
+    complete session MUST still abort at step_verify_ledger (BLOCKER-2).
+
+    This pins the BLOCKER-2 rule survives the W2-8 change — the runner
+    treats rc 0 + zero growth as a real no-op, NOT as a caught-up no-op.
+    The fake accrue exits 0 AND writes no row; the fake verify would
+    pass on OK rows but the real verify (FAKE_VERIFY_OK mirrors the real
+    BLOCKER-2 contract) refuses post_rows <= pre_rows → runner logs
+    `ABORT at step_verify_ledger` and exits 5.
+
+    Without this pin, a future refactor that drops BLOCKER-2 in favour
+    of "every zero-row accrue is a no-op" would publish a no-op ledger
+    to R2 and pollute audit_r2's freshness anchor (the measured fallout
+    that BLOCKER-2 was written to prevent)."""
+    repo, stub_bin = _build_fake_repo(tmp_path, accrue=FAKE_ACCRUE_NO_GROWTH,
+                                       verify=FAKE_VERIFY_OK,
+                                       publish=FAKE_PUBLISH_OK)
+    rc = _run_runner(tmp_path, repo, stub_bin, dry_run=True)
+    # FAKE_VERIFY_OK is the BLOCKER-2-mirror fake: post_rows <= pre_rows
+    # → NO_LEDGER → rc 5. The runner collapses that to exit 5.
+    assert rc.returncode == 5, (rc.stdout, rc.stderr)
+    assert "ABORT at step_verify_ledger" in rc.stdout, rc.stdout
+    # The receipt log explicitly names the failure surface.
+    assert "ledger" in rc.stdout.lower()
+    # The rc-3 receipt from the caught-up branch MUST NOT appear here —
+    # a real no-op is not a caught-up no-op.
+    assert "NOOP_CAUGHT_UP" not in rc.stdout, (
+        f"zero-growth under a real accrue was mis-classified as caught-up: "
+        f"{rc.stdout}"
+    )
