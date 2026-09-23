@@ -18,6 +18,9 @@ EXPECTED = json.loads(Path(sys.argv[sys.argv.index('--expected')+1]).read_text()
 OUT = ROOT / ('mockups/evidence/china-integrated-context-20260921' if INTEGRATED else 'mockups/evidence/china-risk-reading-20260921')
 if CURRENT_SOURCE:
     OUT = ROOT / 'mockups/evidence/china-source-current-20260922'
+if '--output-dir' in sys.argv:
+    OUT = (ROOT / sys.argv[sys.argv.index('--output-dir')+1]).resolve()
+    assert OUT.is_relative_to((ROOT / 'mockups/evidence').resolve())
 OUT.mkdir(parents=True, exist_ok=True)
 PAGE = ROOT / 'site/china.html'
 BEFORE = hashlib.sha256(PAGE.read_bytes()).hexdigest()
@@ -75,6 +78,11 @@ try:
                             card = page.locator('.cnx-rack3 > .cnx-card').filter(has_text='Pullback Risk')
                             assert card.count() == 1
                             card_text = card.text_content()
+                            if CURRENT_SOURCE:
+                                playbook_text = page.locator('#cnx-dlg-playbook').text_content()
+                                assert 'regime prior' in playbook_text and '周期先验' in playbook_text
+                                assert '~70% hit' not in playbook_text
+                                assert 'measured best contrarian bottom' not in playbook_text
                             assert 'Weak large-cap participation' in card_text
                             assert '大盘股参与偏弱' in card_text
                             score = EXPECTED['radar']['top_score'] if CURRENT_SOURCE else 94

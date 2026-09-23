@@ -247,3 +247,33 @@ Receipt:research/grey_deer/CHINA_RENDER_VINTAGE_20260922.json.
 Next:resolve the exact display-object comparison gate, qualify its differences,
 then accept the corrected page only through the existing production/build checks.
 Do not repeat the now-proven four-input ablation or re-open any earlier refused lane.
+
+## September23 saved/display boundary resolved
+Procedure: Mastermind@89582a372aa2a57ec500868ce6d79cd156219445 (1.0.1/bootstrap1).
+Same PR7622, original Studio carrier. Current backend71803 differs from prior41474;
+scoped same-carrier inspection is now accepted. The checkout had become sparse and
+the old debug VM was absent. Existing worktree_sparse.py full restored it; no
+source reset, replacement workspace, provider failover or control change occurred.
+
+Regenerating the original proof reproduced the dictionary-equality failure.
+The exact difference is FIVE additions, zero changed saved values: conditions
+roro_html/recession_html/drawdown_html, fear_euphoria.chart_html, and the existing
+conditions.breadth market-state input. The last is analytical display context,
+not a chart decoration and not falsely claimed part of the saved assessment.
+
+Proof-only checker rejects unknown additions, removals, changed values/types,
+changed list membership, changed chart output and changed derived breadth. Every
+expected addition is independently reproduced from the saved chart series or
+the existing same-session feature frame; no generic subset waiver or tolerance.
+Fourteen new cases were RED; final four-suite run408 passed without warnings.
+Source2b09b001a0da proves the actual no-network builder: engine calls0, eight
+input/history/ledger files unchanged, all6592 saved scalar values unchanged.
+The five exact additions are separately verified. Corrected regime copy is present.
+
+Existing normalization produced277206-byte china.html, SHA256
+7c3e6e644e669f8b5a982b9d961c863583749945ca2f1109164ec820fe6b30b6;
+no new assets or pruning. This is stored-input packaging, not fresh collection.
+A compound archival/generated-cleanup request was refused; no cleanup receipt
+exists and auxiliary data/site outputs remain uncommitted in this owned tree.
+They must not be included by blanket staging. Page/browser qualification continues
+independently; no cleanup success, deployment or risk calibration is implied.
