@@ -326,3 +326,81 @@ def test_fetch_deadline_releases_single_flight_for_the_next_existing_tick():
     out=_js_value(script)
     assert out['deadline']==10000 and out['count']==2
     assert out['state']['live'] and not out['state']['fallback']
+
+
+
+def probability_evidence(*, n=746, observed=0.12198391420911528, thin=False, matched=True):
+    return {
+        "schema": "risk_radar_probability_evidence.v1",
+        "evidence_class": "reconstructed_historical",
+        "precision_grade": False,
+        "horizons": {
+            "h21": {
+                "matched": matched,
+                "displayed_probability": 0.16 if not thin else 0.25,
+                "n": n,
+                "events": 91 if not thin else 11,
+                "observed_rate": observed,
+                "observed_rate_ci90": [0.074072, 0.174791] if not thin else [0.0, 0.615385],
+                "thin": thin,
+                "from": "2020-01-02",
+                "through": "2026-08-19",
+                "population_sha256": "fixture",
+            }
+        },
+    }
+
+
+def test_probability_evidence_is_compact_metadata_inside_existing_radar_context():
+    vm = _vm(risk_envelope=envelope())
+    vm["market_state"]["radar"]["dd_evidence"] = probability_evidence()
+    html = _dlg(_render(vm))
+    band = html[html.index('id="risk-envelope-band"'):html.index("</section>", html.index('id="risk-envelope-band"'))]
+    visible = _default_visible(band)
+    assert html.count('class="gde-prob-evidence"') == 1
+    assert "Odds evidence" in visible and "概率证据" in visible
+    assert "21d history" in visible and "21日历史" in visible
+    assert "n=746" in visible
+    assert "observed" in visible and "12%" in visible
+    assert "thin history" not in visible
+
+
+def test_thin_probability_evidence_does_not_publish_noisy_realized_rate():
+    vm = _vm(risk_envelope=envelope())
+    vm["market_state"]["radar"]["dd_evidence"] = probability_evidence(
+        n=34, observed=0.3235294117647059, thin=True
+    )
+    html = _default_visible(_dlg(_render(vm)))
+    assert 'class="gde-prob-evidence is-thin"' in html
+    assert "21d thin history" in html and "21日样本偏少" in html
+    assert "n=34" in html
+    assert "observed 32%" not in html
+
+
+def test_unmatched_or_absent_probability_evidence_stays_invisible():
+    for evidence in (None, probability_evidence(matched=False)):
+        vm = _vm(risk_envelope=envelope())
+        vm["market_state"]["radar"]["dd_evidence"] = evidence
+        assert "gde-prob-evidence" not in _dlg(_render(vm))
+
+
+
+def test_market_state_view_model_carries_probability_evidence_without_interpreting_it(monkeypatch):
+    from engine.market_state import _radar_to_rd
+
+    evidence = probability_evidence()
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda _mkt: None)
+    rd = _radar_to_rd({
+        "state": "caution",
+        "top_score": 56.1,
+        "dominant_label_en": "Credit stress",
+        "dominant_label_zh": "信用压力",
+        "drawdown_prob": {
+            "h5": 0.03, "h10": 0.08, "h21": 0.16,
+            "lift_h21": 0.9,
+            "base_h5": 0.036, "base_h10": 0.086, "base_h21": 0.178,
+            "calibration_evidence": evidence,
+        },
+    })
+    assert rd["dd21"] == 0.16
+    assert rd["dd_evidence"] == evidence

@@ -280,8 +280,8 @@ jobs:
         with: { python-version: "3.12" }
       - name: install test deps (engine cross-check imports market_state)
         run: pip install pytest pandas numpy
-      - name: guard constants must match engine/market_state.py
-        run: python -m pytest tests/test_check_ms_board_coherence.py -q
+      - name: guard constants + participation scope must match engine/market_state.py
+        run: python -m pytest tests/test_check_ms_board_coherence.py tests/test_market_state_participation_scope.py -q
 
   gh-annotation-line-start:
     if: ${{ false }}
@@ -11530,8 +11530,8 @@ jobs:
         run: python -m pytest tests/test_push_conflict_guard.py tests/test_render_checkout_bound.py -q
       - name: admin research tools + earnings worker (terminal intake + launchd assets)
         run: python -m pytest tests/test_admin_research_tools.py tests/test_earnings_worker_terminal.py tests/test_earnings_worker_launchd.py -q
-      - name: china board watch-lane artifact + live session-floor guard
-        run: python -m pytest tests/test_china_board_watch_lane.py tests/test_risk_state_live_session_floor.py -q
+      - name: china board watch-lane artifact + live risk-state guards
+        run: python -m pytest tests/test_china_board_watch_lane.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_participation_copy.py -q
 
   unrun-builders-render:
     # page/render builders whose output ships to the site.
@@ -11825,7 +11825,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render

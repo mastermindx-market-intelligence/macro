@@ -1,0 +1,753 @@
+{
+  "mode": "immutable public-data candidate fixture, no interception; not production acceptance",
+  "cases": [
+    {
+      "cell": "desktop-en-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "top_ats_venue",
+        "streak",
+        "ats_frac",
+        "price_change_pct",
+        "finra_total_vol",
+        "n_days"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": false,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "top_ats_venue",
+        "streak",
+        "ats_frac",
+        "price_change_pct",
+        "finra_total_vol",
+        "n_days"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": false,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "top_ats_venue",
+        "streak",
+        "ats_frac",
+        "price_change_pct",
+        "finra_total_vol",
+        "n_days"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": false,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "top_ats_venue",
+        "streak",
+        "ats_frac",
+        "price_change_pct",
+        "finra_total_vol",
+        "n_days"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": false,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "tablet-en-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "streak",
+        "ats_frac",
+        "finra_total_vol"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "tablet-en-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "streak",
+        "ats_frac",
+        "finra_total_vol"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "tablet-zh-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "streak",
+        "ats_frac",
+        "finra_total_vol"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "tablet-zh-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "asof",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "short_trend_pp",
+        "streak",
+        "ats_frac",
+        "finra_total_vol"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "narrow-en-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 45.1875,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "narrow-en-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 45.1875,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "narrow-zh-dark",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    },
+    {
+      "cell": "narrow-zh-light",
+      "http": 200,
+      "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+      "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+      "rows": 372,
+      "native_presets": 4,
+      "native_sort_buttons": 13,
+      "sort_columns_exercised": [
+        "ticker",
+        "participation",
+        "participation_trend_pp",
+        "participation_z",
+        "short_rate",
+        "streak"
+      ],
+      "preset_predicate_parity": true,
+      "native_touch": true,
+      "sort_single_activation_and_focus": true,
+      "locale_state_preserved": true,
+      "filtered_csv_parity": true,
+      "clear_focus_restored": true,
+      "minimum_target_height": 40,
+      "actual_focus": {
+        "active": true,
+        "style": "solid",
+        "width": 2
+      },
+      "controls_unclipped": true,
+      "overflow": 0,
+      "errors": [],
+      "failed_responses": [
+        {
+          "url": "http://127.0.0.1:56708/wh_banner.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56708/rr_banner.json",
+          "status": 404
+        }
+      ],
+      "ticker_visible_on_horizontal_scroll": true,
+      "passed": true
+    }
+  ]
+}

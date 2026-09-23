@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T09:53:45.221026+00:00",
-  "count": 2701,
+  "generated_at": "2026-09-23T12:24:23.703483+00:00",
+  "count": 2708,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1492,6 +1492,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-iczjztk2jbh-aa5b48",
+      "title": "Hua Hong (1347)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:47Z",
+      "summary_points": [
+        "China AI demand drives revenue acceleration: +11% / +15% QoQ revenue growth in 3Q26/4Q26 (vs.",
+        "+9% QoQ in 2026) fueled by China’s AI spending and \"China for China\" policy, with Semis Capex growing at +13%/+15%/+15% for 2026-28E.",
+        "Strategic 12-inch fab expansion underpins growth: Huali Micro acquisition (97.5% equity) and Fab9A ramp-up to ~40% 12-inch wafers by end-2026 (full loading 1H27) directly enable revenue/gross margin expansion via embedded NVM/PMIC demand for GenAI.",
+        "Elevated valuation amid margin risks: Forward P/E at 86x (vs. 9x 2030E target) reflects aggressive pricing; margin pressures from destocking (2023–24) and US-China trade tensions threaten near-term execution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-jcygycn6uds-7f20ef",
       "title": "Americas Transportation Railroads Weekly Rail Carload Snapshot — Week 37",
       "institution": "Goldman Sachs",
@@ -1553,6 +1573,45 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-iqzxspdbmim-58c49d",
+      "title": "USA GS Economic Indicators Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:31Z",
+      "summary_points": [
+        "GS US Financial Conditions Index Tightening: Nominal FCI tightened 1.8bp to 98.67, real FCI tightened 4.1bp to 98.25; negative Real GDP Growth Impulse dampens near-term growth outlook.",
+        "Credit & Equity Stress: BBB Credit Spread (-3.6 bps) and Log SPX (-1.0 bps) indicate deteriorating credit conditions and equity market stress, offsetting lower equity prices; Fed Funds (+1.1 bps) and 10-yr TSy (+1.8 bps) reflect restrictive policy stance.",
+        "Structural Wage Growth: GS Wage Tracker shows sustained 5% wage growth (peaking 2023-2024), outpacing ECI/median earnings, signaling persistent labor tightness driving inflation and delaying monetary policy normalization.",
+        "US MAP Index & Leading Indicators: MAP Index at +0.7 signals positive economic surprises; Manufacturing Survey Tracker (blue) outperforms ISM Manufacturing Index (red), and Non-Manufacturing Tracker (blue) recovers faster than ISM Services Index (red), indicating sector resilience and leading indicator status."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dtkibmuajv3-ed61f1",
+      "title": "The 720 The Refining Super Cycle, China Online Games NetEase & XD, Xiaomi, Toray, Busy Ming, Sansera Engg, Ramelius",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:29Z",
+      "summary_points": [
+        "Refining Super Cycle: Goldman Sachs upgrades SK Innovation (12m TP W140,000) with 27%/24%/17% EBITDA estimate hikes for 2026-2028, driven by tight supply and refining margins; highlights S-Oil, Thai Oil, Valero, Marathon, Repsol for robust cash flow.",
+        "China Consumer Durables Demand: August NBS data shows +2% YoY domestic appliance retail growth, with exports surging from Latin America/emerging market restocking; targets Midea, Roborock, Anker for growth potential.",
+        "Global Cross-Asset Repricing: Fed/BoJ 25bp hikes and Brent crude >$100/bbl trigger cross-asset repricing; maintains neutral (3mo), pro-risk (12mo) stance: overweight equities, underweight credit/bonds/real estate as recession hedges."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rerdwz2ob94-e3e252",
       "title": "GOAL Kickstart Markets repricing around higher rates and oil prices",
       "institution": "Goldman Sachs",
@@ -1567,6 +1626,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wq5nh13jemi-90cfd2",
+      "title": "Global GS Economic Indicators Update Current Activity in DMs Above Potential",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:20Z",
+      "summary_points": [
+        "DM CAI Above Potential: Goldman Sachs' DM Current Activity Indicator (CAI) exceeds potential threshold (1.6%) as of Sep-26, signaling stronger-than-expected developed market economic momentum.",
+        "Global ex Russia FCI Tightening: 3.8bps weekly FCI tightening driven by exchange rates (1.6bps), amplifying FX volatility amid geopolitical tensions and signaling heightened market stress.",
+        "Asia Growth Revisions vs Europe: Positive GDP revisions across Asia (esp.",
+        "Asia Pacific) contrast with negative Western Europe revisions, highlighting regional growth divergence critical for allocation.",
+        "EM CAI Outperformance: EM CAI at 4.2% vs DM CAI at 1.6%, fueling EM capital flows but indicating sustainability risks for portfolio managers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
       "language": "en",
       "needs_metadata": false
     },
@@ -1672,6 +1752,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-1smfjyn2yor-65b836",
+      "title": "FIS WeeklyUpdate",
+      "institution": "Piper Sandler",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:59:44Z",
+      "summary_points": [
+        "Fed tightening & credit stress: Fed raised rates 25bp (median 4.1% year-end), flattening yield curve (2yr 4.76%, 10yr 5.00%), Caa yields surged to 14% signaling acute credit stress risk.",
+        "RMBS spread opportunities: NA RMBS 5.5 SEQ/PT at 6.0% yield vs Treasury (4.8%) offers 1.2% spread (largest opportunity), with steeper mid-term (5-8yr) slopes indicating structural yield curve advantage.",
+        "Yield curve steepening: Treasury yields rose 8-11bps (1-3yr) vs 3-6bps (5-7yr), signaling growth expectations and favoring short-duration portfolios.",
+        "Geopolitical supply chain risks: Houthi attacks/Saudi disruptions + Russian refinery outages tighten diesel markets, elevating crude supply risks amid heavy Treasury supply ($183bn)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
       "institution": "Westpac",
@@ -1730,6 +1830,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-relvlyiuqc4-a03142",
+      "title": "How will Fed rate hikes impact markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:40:17Z",
+      "summary_points": [
+        "Fed Policy Shift: Fed raised rates to 3.75–4.00% (first hike in 3 years); markets price 3 additional hikes by 2027 vs 1 expected in December.",
+        "Equity Resilience: Resilient growth and earnings support equities absorbing moderately higher yields despite rate hikes.",
+        "Tactical Bond Opportunities: Selective medium-to-long duration high-quality bonds offer opportunities amid higher yields; caution on longest maturities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -1811,6 +1930,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-19xikmb4chm-8d87e4",
+      "title": "JPM US Market Intelligence Afternoon Briefing Sept 21",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:27:48Z",
+      "summary_points": [
+        "US Tech-Driven Rally & Geopolitical Oil Shock: SPX/NDX surge (1.5%/2.8%) led by Meta (+12% on AI app), Semis; Houthi attack on Saudi capital (RTS) drives WTI surge (contrasting Trump’s airstrike comments causing 5% drop earlier), creating immediate energy volatility.",
+        "Fed Policy Contradiction & Hawkish Signals: Goolsbee’s stance against reversing 2025 rate cuts clashes with Musalem’s push for earlier hikes, amid inflation above target and supply shocks, heightening rate uncertainty.",
+        "AI Sector Flow Dynamics & Technical Catalysts: \"AI Vulnerable\" names (NFLX, CPNG) reverse due to tax-loss concerns, while Meta Muse-driven gains (CPU demand focus) and GOOGL outperformance (despite ad revenue lag) highlight sector-specific flow shifts.",
+        "Critical Geopolitical Triggers & Data Focus: Trump-Xi summit (Sep 23), US-China AI talks, and Houthi attacks intersect with key data (ADP, PMIs, Sep 21-25 Fed speeches), amplifying volatility around oil, rates, and sector rotation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
