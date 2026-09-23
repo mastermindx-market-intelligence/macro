@@ -429,7 +429,7 @@ def test_risk_reading_same_value_other_driver_is_not_breadth_attribution():
 
 # Execute the actual published page and its existing dialog view-model, not a
 # hand-written copy of the card. All fixtures are synthetic, never live proof.
-def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=None):
+def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=None, **extra):
     from jinja2 import ChainableUndefined, Environment, FileSystemLoader
     from engine import china_tier1, i18n
     from scripts.build_china import _radar_dlg_vm
@@ -452,7 +452,7 @@ def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=N
                           ("posture_lane", "posture_tone", "reason_faces", "hero_clause", "slowdown_face")})
     ctx = _radar_dlg_vm({"market_state": market_state}, latest)
     return env.get_template("china.html.j2").render(
-        mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx, pb=playbook)
+        mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx, pb=playbook, **extra)
 
 
 def _risk_card(html):
@@ -769,3 +769,118 @@ def test_projection_boundary_is_immutable_and_handles_matching_nulls():
     before = copy.deepcopy((saved, displayed, expected))
     verify_projection(saved, displayed, expected_additions=expected)
     assert (saved, displayed, expected) == before
+
+
+@pytest.mark.parametrize('report', [{}, {'sources': {}}, {'sources': None}, None])
+def test_page_time_health_keeps_missing_source_families_visible(monkeypatch, report):
+    from scripts import build_china
+    monkeypatch.setattr(build_china.store, 'read_status', lambda: report)
+    rows = build_china._health_rows()
+    assert len(rows) == 7
+    assert len({row['key'] for row in rows}) == 7
+    assert all(row['status'] == 'unknown' and row['last'] == '—' for row in rows)
+
+
+def test_page_time_collection_success_does_not_certify_freshness(monkeypatch):
+    from scripts import build_china
+    report = {'sources': {'china_prices': {'status': 'ok', 'last_date': '2026-08-01', 'rows': 900}}}
+    before = copy.deepcopy(report)
+    monkeypatch.setattr(build_china.store, 'read_status', lambda: report)
+    row = build_china._health_rows()[0]
+    assert row['status'] == 'ok' and row['last'] == '2026-08-01'
+    assert row['status_basis'] == 'collection_report_not_freshness'
+    assert report == before
+
+
+@pytest.mark.parametrize('invalid', ['garbled', [], {'status': 'ok', 'last_date': 'not-a-date'}])
+def test_page_time_health_bad_row_is_explicit(monkeypatch, invalid):
+    from scripts import build_china
+    monkeypatch.setattr(build_china.store, 'read_status', lambda: {'sources': {'china_prices': invalid}})
+    row = build_china._health_rows()[0]
+    assert row['last'] == '—'
+    assert row['status_basis'] == 'collection_report_not_freshness'
+
+
+def test_page_time_saved_hero_is_dated_not_live():
+    from bs4 import BeautifulSoup
+    doc = BeautifulSoup(_render_china_risk_case(None), 'html.parser')
+    pill = doc.find(id='ms-live-pill')
+    assert pill is not None
+    assert 'LIVE' not in pill.get_text() and '实时' not in pill.get_text()
+    assert 'Saved assessment' in pill.get_text() and '已保存评估' in pill.get_text()
+    stamp = doc.find(id='ms-date')
+    assert stamp['data-assessment-asof'] == '2026-09-18'
+    assert stamp.find('time')['datetime'] == '2026-09-18'
+
+
+def test_page_time_health_disclosure_reports_collection_not_freshness():
+    from bs4 import BeautifulSoup
+    health = [{'key':'china_prices','en':'Prices / sectors','zh':'价格 / 板块',
+               'status':'ok','last':'2026-08-01','status_basis':'collection_report_not_freshness'}]
+    doc = BeautifulSoup(_render_china_risk_case(None, health=health), 'html.parser')
+    disclosure = doc.select_one('details.cnx-dh')
+    assert disclosure and disclosure.find('summary')
+    text = disclosure.get_text(' ', strip=True)
+    assert 'Collection succeeded' in text and '采集成功' in text
+    assert 'fresh' not in text.lower() and 'Current' not in text
+    assert '2026-08-01' in text and '2026-09-18' not in text
+    assert 'does not certify' in text and '不代表' in text
+
+
+@pytest.mark.parametrize('file', ['templates/china_risk_state_live.js','site/china_risk_state_live.js'])
+def test_page_time_client_preserves_baseline_and_full_update_date(file):
+    source = (ROOT / file).read_text()
+    assert 'data-assessment-asof' in source
+    assert 'ms-snapshot-kind' in source
+    assert 'Intraday snapshot' in source and '盘中快照' in source
+    assert 'Updated ' in source and '更新于 ' in source
+    assert '.toISOString().slice(0, 16)' in source
+    assert 'Quote timing unverified' in source
+    assert 'pill.classList.remove("on")' in source
+
+
+def test_page_time_client_asset_pair_stays_equal():
+    assert (ROOT/'templates/china_risk_state_live.js').read_bytes() == (ROOT/'site/china_risk_state_live.js').read_bytes()
+
+
+def test_page_time_unreadable_collection_report_is_not_missing_page(monkeypatch):
+    from scripts import build_china
+    def unreadable():
+        raise ValueError('invalid stored report')
+    monkeypatch.setattr(build_china.store, 'read_status', unreadable)
+    rows = build_china._health_rows()
+    assert len(rows) == 7 and all(row['status'] == 'unknown' for row in rows)
+
+
+def test_page_time_unknown_collection_state_cannot_be_green():
+    from bs4 import BeautifulSoup
+    rows = [{'en':'Breadth','zh':'广度','status':'unexpected','last':'—'}]
+    doc = BeautifulSoup(_render_china_risk_case(None, health=rows), 'html.parser')
+    disclosure = doc.select_one('details.cnx-dh')
+    assert 'Collection needs checking' in disclosure.get_text()
+    assert 'Collection succeeded' not in disclosure.get_text()
+
+
+@pytest.mark.parametrize('file', ['templates/china_risk_state_live.js','site/china_risk_state_live.js'])
+@pytest.mark.parametrize('built,real_time,expected', [
+    ('2026-08-01T03:04:00Z',False,'Updated 2026-08-01 03:04 UTC · Quotes delayed'),
+    ('2026-08-01T11:04:00+08:00',True,'Updated 2026-08-01 03:04 UTC · Quote feed marked real-time'),
+    ('2026-08-01T03:04:00Z',None,'Updated 2026-08-01 03:04 UTC · Quote timing unverified')])
+def test_page_time_executed_client_discloses_dated_update(file,built,real_time,expected):
+    from tests.test_risk_state_live_session_floor import _harness
+    feed={'built':built,'nightly_asof':'2026-07-31','live_active':True,
+          'realtime':real_time,'display':{'verdict':'RISK_OFF','score':33,
+          'label_en':'Risk-off','label_zh':'避险'},'live':{},'nightly':{}}
+    result=_harness((ROOT/file).read_text(),feed,'cn')
+    assert 'error' not in result
+    assert result['date'] == expected and result['pill_on'] is False
+    assert result['score'] == result['numeral'] == '33'
+
+
+@pytest.mark.parametrize('file', ['templates/china_risk_state_live.js','site/china_risk_state_live.js'])
+def test_page_time_executed_nightly_patch_stays_dated(file):
+    from tests.test_risk_state_live_session_floor import _harness
+    feed={'built':'2026-08-01T03:04:00Z','nightly_asof':'2026-07-31','live_active':False,
+          'display':{'verdict':'RISK_OFF','score':33,'label_en':'Risk-off','label_zh':'避险'}}
+    result=_harness((ROOT/file).read_text(),feed,'cn')
+    assert result['date'] == 'As of 2026-07-31' and result['pill_on'] is False

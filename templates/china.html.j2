@@ -1129,6 +1129,17 @@
   body.page-china .cnx-dh{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding:12px 20px;background:rgba(16,22,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(20px);margin-top:8px}
   body.page-china .cnx-dh b{color:var(--text);font-weight:650}
   body.page-china .cnx-dh .d{width:8px;height:8px;border-radius:50%;background:var(--ok,var(--up))}
+  /* Existing native source disclosure (PR7723); collection outcomes are not freshness. */
+  body.page-china details.cnx-dh{display:block}
+  body.page-china .cnx-dh summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer;list-style:none;min-height:44px}
+  body.page-china .cnx-dh summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+  body.page-china .cnx-dh summary::-webkit-details-marker{display:none}
+  body.page-china .cnx-dh .cnx-dh-chev{margin-left:auto;opacity:.6}
+  body.page-china .cnx-dh[open] .cnx-dh-chev{transform:rotate(180deg)}
+  body.page-china .cnx-dh-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  body.page-china .cnx-dh-row{display:grid;grid-template-columns:minmax(0,1fr);gap:3px}
+  body.page-china .cnx-dh-src{color:var(--text);font-weight:600}
+  body.page-china .cnx-dh-state,body.page-china .cnx-dh-date{font-size:11px}
   /* dialogs */
   /* z-index 200, not 60 (2026-08-11): the site nav sits at z-150
      (templates/navigation-refresh.css, theme.css .site-nav) and was painting straight over
@@ -1812,9 +1823,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <span class="cnx-regime-pill"><span class="dot"></span>
           {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
-          <span class="l-en">LIVE</span><span class="l-zh">实时</span>
-          <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
-          {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} feeds</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 数据源</span></span>{% endif %}
+          <span id="ms-snapshot-kind"><span class="l-en">Saved assessment</span><span class="l-zh">已保存评估</span></span>
+          <span id="ms-date" data-assessment-asof="{{ latest.date }}" style="margin-left:4px"><span class="l-en">As of </span><span class="l-zh">截至 </span><time datetime="{{ latest.date }}">{{ latest.date }}</time></span>
+          {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} collection reports ok</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 采集报告成功</span></span>{% endif %}
         </span>
       </div>
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
@@ -2496,14 +2507,21 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
   </div>
   {% if health %}
-  <div class="cnx-dh">
-    <span class="d"></span>
-    <b>{{ t('Data health','数据健康度') }}</b> ·
-    <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
-    <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
-    · {{ t('updated','更新于') }} {{ latest.date }}
-    <span style="margin-left:auto;opacity:.6">▾</span>
-  </div>
+  <details class="cnx-dh">
+    <summary><b>{{ t('Sources & data health','数据来源与健康度') }}</b>
+      <span>{{ t('Last collection reports','最近采集报告') }}: {{ _health_ok }}/{{ _health_n }} {{ t('succeeded','成功') }}</span>
+      <span class="cnx-dh-chev" aria-hidden="true">▾</span></summary>
+    <p>{{ t('Collection status does not certify the age or completeness of market inputs.','采集状态不代表市场输入的时效性或完整性。') }}</p>
+    <div class="cnx-dh-rows">
+    {% for h in health %}
+      <div class="cnx-dh-row">
+        <span class="cnx-dh-src">{{ t(h.en, h.zh) }}</span>
+        <span class="cnx-dh-state">{% if h.status == 'ok' %}{{ t('Collection succeeded','采集成功') }}{% elif h.status == 'unknown' %}{{ t('No collection report','无采集报告') }}{% else %}{{ t('Collection needs checking','需核对采集结果') }}{% endif %}</span>
+        <span class="cnx-dh-date">{{ t('Reported last date','报告所载最近日期') }} · {% if h.last and h.last != '—' %}<time datetime="{{ h.last }}">{{ h.last }}</time>{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</span>
+      </div>
+    {% endfor %}
+    </div>
+  </details>
   {% endif %}
 
   </div>{# /cnx-wrap #}

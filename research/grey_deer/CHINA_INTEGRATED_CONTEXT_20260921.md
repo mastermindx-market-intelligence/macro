@@ -442,3 +442,42 @@ Evidence: interaction-observer-qualification.json, full-interaction-qualificatio
 interaction-proof.json and interaction-repair/clock-interactions.json under the
 existing china-participation-clock-20260923 evidence root. Old failed receipts
 remain historical; this exact-page result supersedes their interaction blocker.
+
+## September23 page-wide assessment and collection-report semantics
+Procedure: Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2,1.0.1/bootstrap1.
+Same PR7622 and locked Studio carrier; Chairman continues with CI/release deferred.
+Direct scope retained for principal interpretation and tightly coupled integration.
+
+Before: the saved hero displayed LIVE, while collector status=ok was called fresh.
+The source confirms neither inference. The candidate labels the hero Saved assessment,
+keeps a semantic as-of date and an immutable assessment-date attribute, and labels
+client updates Intraday snapshot with the full UTC timestamp and separate quote mode.
+It never lights a blanket real-time assessment badge. Quote mode missing remains
+unverified. Existing feed-behind-render floor and numerical patching are preserved.
+
+Health now enumerates all seven configured families, retaining unknown/malformed/
+unreadable report states rather than shrinking the denominator. A valid old reported
+date stays old. Success is explicitly a collection report, never input freshness.
+The native disclosure structure adapts PR7723@3c802f57a9b562dd4d2a3b632308dfbba228d993;
+semantic time markup adapts PR7722@b66434165afe64a7e4946d97c87d2c4b7ef2b2f1.
+Their branch/controller/stack histories are untouched; no new data-health owner.
+The contradictory signal-only hide from7676 is not imported: unknown reports must
+remain inspectable. Source styles preserve existing dark/light tokens and layout.
+
+TDD: initial12 failures/1 control; unreadable-report case added1 failure/1 control.
+The read-only status/source compound and the compound scope-comment request were
+safety-status refused; same-carrier PR comment read confirms no scope post occurred.
+The separate event-clock test append was also refused; its source and default
+regime-date calendar behavior are unchanged, not represented as repaired.
+No raw source inspection retry, alternate provider, fresh collection, model/odds
+change or release action.24 auxiliary outputs and4 prior supplemental images remain
+unaccepted and excluded; source tests/build/browser results follow this boundary.
+
+Source qualification:515 tests pass across seven affected suites without warnings,
+including23 new report/hero/client contracts. Eight of the new cases execute both
+shipped client copies under the existing Node DOM harness. The48 existing client
+session-floor/copy tests pass unchanged. Both JS files parse; scoped diff whitespace
+is clean. Unknown report, old date, paired JS and older-feed guards remain explicit.
+Next bounded proof: the existing no-network builder, normal artifact normalization,
+then8 native source-disclosure journeys and32 explicitly synthetic intraday scenarios.
+The event-clock test refusal freezes only that independent lane; no event fix is claimed.

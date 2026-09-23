@@ -345,7 +345,13 @@ def _lifespan_rows(quad: pd.Series) -> list[dict]:
 
 def _health_rows() -> list[dict]:
     """Data-health for the China collectors, from data/run_status.json."""
-    sources = store.read_status().get("sources", {})
+    try:
+        report = store.read_status()
+    except (OSError, ValueError, TypeError):
+        log.warning("China collection report unavailable; source states remain unknown")
+        report = {}
+    sources = report.get("sources") if isinstance(report, dict) else {}
+    sources = sources if isinstance(sources, dict) else {}
     labels = {"china_prices": ("Prices / sectors", "价格 / 板块"),
               "china_macro": ("Macro (PMI/CPI/credit)", "宏观 (PMI/CPI/信贷)"),
               "china_breadth": ("Breadth", "市场宽度"),
@@ -356,10 +362,17 @@ def _health_rows() -> list[dict]:
     rows = []
     for key, (en, zh) in labels.items():
         s = sources.get(key)
-        if not s:
-            continue
-        rows.append({"en": en, "zh": zh, "status": s.get("status", "?"),
-                     "rows": s.get("rows", 0), "last": s.get("last_date") or "—"})
+        s = s if isinstance(s, dict) else {}
+        last = s.get("last_date")
+        try:
+            if not isinstance(last, str) or datetime.strptime(last, "%Y-%m-%d").strftime("%Y-%m-%d") != last:
+                last = "—"
+        except (TypeError, ValueError):
+            last = "—"
+        rows.append({"key": key, "en": en, "zh": zh,
+                     "status": s.get("status") if isinstance(s.get("status"), str) else "unknown",
+                     "status_basis": "collection_report_not_freshness",
+                     "rows": s.get("rows", 0), "last": last})
     return rows
 
 

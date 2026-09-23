@@ -9,8 +9,8 @@
    site/china_risk_state_live.js.
 
    Additive + defensive: no-ops when the file or the target elements are absent.
-   Honest freshness: only lights the "live" pill when realtime:true (delayed_min==0);
-   Yahoo spark is ~15-min delayed so the pill is off and the date shows "delayed/延迟".
+   Snapshot honesty: show the full update timestamp and separately describe quote
+   mode. A real-time quote flag never certifies every macro input as live.
 
    DOM targets (china.html.j2's inline hero-board markup — the cnx hero card;
    macro.html carries its own separate inline copy, patched by risk_state_live.js):
@@ -18,8 +18,8 @@
      #ms-score     — 0-100 score numeral
      #ms-tick      — progress tick left: <score>% (macro-page markup only — absent on
                      china.html, where the mx5 gauge replaces the meter; patch no-ops)
-     #ms-date      — "· delayed HH:MM UTC" / "· live HH:MM UTC" / "· YYYY-MM-DD"
-     #ms-live-pill — "live" badge toggled on live_active && realtime only
+     #ms-date      — full dated update + quote mode, or dated saved assessment
+     #ms-live-pill — muted snapshot badge, never blanket real-time certification
      .v-thesis     — headline_en/zh for the current verdict (bilingual l-en/l-zh)
      .v-flip       — "flip" condition line: hidden when live band moves off the baked verdict
      .ms-front / .ms  — wrapper: ms-green / ms-yellow / ms-red class swap */
@@ -66,7 +66,11 @@
         if (DATE_RE.test(t)) best = t;
       }
       var el = document.getElementById("ms-date");
-      t = el ? (el.textContent || "").trim() : "";
+      t = el ? (el.getAttribute("data-assessment-asof") || (el.textContent || "").trim()) : "";
+      if (!DATE_RE.test(t)) {
+        var dateMatch = t.match(/\b\d{4}-\d{2}-\d{2}\b/);
+        t = dateMatch ? dateMatch[0] : "";
+      }
       if (DATE_RE.test(t) && t > best) best = t;
       bakedSession = best;
     } catch (e) { bakedSession = ""; }
@@ -204,28 +208,26 @@
       else if (col === "red") aur.classList.add("au-red");
     }
 
-    /* #ms-date — honest freshness wording.
-       realtime:false (delayed_min > 0) keeps the "delayed / 延迟" label; the green
-       "live" pill stays off. Only lights "live" + pill when realtime:true AND live_active. */
+    /* A generated update is a dated snapshot, not proof all model inputs are live.
+       The immutable data-assessment-asof attribute continues to fence older feeds. */
+    var kind = document.getElementById("ms-snapshot-kind");
+    if (kind) setBL(kind, d.live_active ? "Intraday snapshot" : "Saved assessment",
+                         d.live_active ? "盘中快照" : "已保存评估");
     var dt = document.getElementById("ms-date");
     if (dt && d.live_active) {
-      var hhmm = (d.built || "").slice(11, 16);
-      /* Bilingual (l-en/l-zh) so the freshness word follows the html[data-lang] CSS
-         toggle even when the user switches language AFTER this live patch. A plain
-         text node would freeze in whatever language was active at patch time — the
-         exact leak setBL exists to prevent (see the doctrine on setBL above). */
-      setBL(dt, "· " + (d.realtime ? "live " : "delayed ") + hhmm + " UTC",
-                "· " + (d.realtime ? "实时 " : "延迟 ") + hhmm + " UTC");
-      dt.classList.toggle("ms-date-live", !!d.realtime);
+      var built = new Date(d.built || "");
+      var stamp = isFinite(built.getTime()) ? built.toISOString().slice(0, 16).replace("T", " ") + " UTC" : "";
+      var quoteEn = d.realtime === false ? "Quotes delayed" : d.realtime === true ? "Quote feed marked real-time" : "Quote timing unverified";
+      var quoteZh = d.realtime === false ? "报价延迟" : d.realtime === true ? "报价源标为实时" : "报价时间未核实";
+      setBL(dt, (stamp ? "Updated " + stamp : "Update time unavailable") + " · " + quoteEn,
+                (stamp ? "更新于 " + stamp : "更新时间暂不可用") + " · " + quoteZh);
     } else if (dt && d.nightly_asof) {
-      dt.textContent = "· " + d.nightly_asof;
-      dt.classList.remove("ms-date-live");
+      setBL(dt, "As of " + d.nightly_asof, "截至 " + d.nightly_asof);
     }
-
-    /* #ms-live-pill — on only when live AND realtime (Yahoo spark is 15-min delayed,
-       so realtime:false => pill off, matching the US build doctrine) */
+    if (dt) dt.classList.remove("ms-date-live");
     var pill = document.getElementById("ms-live-pill");
-    if (pill) pill.classList.toggle("on", !!(d.live_active && d.realtime));
+    if (pill) pill.classList.remove("on");
+
   }
 
   function tick() {
