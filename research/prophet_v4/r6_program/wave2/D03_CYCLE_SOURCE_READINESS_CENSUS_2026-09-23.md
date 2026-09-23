@@ -18,7 +18,39 @@
 
 ## Q1 VINTAGE LEG INVENTORY
 
-TODO
+VERDICT: PARTIALLY FOUND. The configured legs, semantics, modeled release clocks and code revision paths are FOUND. The FIRST USABLE VINTAGE DATE for every leg is UNKNOWN because the sparse tree omits `data/fred_vintage/vintages.parquet` and no committed depth report covering this set was found.
+
+Observed code law:
+
+- `config.yml` replaces the collector default with `fred.vintage_series`: `config.yml:124@10166ad5272f`–`:157@10166ad5272f`.
+- Business-cycle `PUB_LAG_M` is a modeled per-leg floor, not a measured availability receipt; the code says the base lag is added to the caller's stress lag: `engine/business_cycle.py:122@10166ad5272f`–`:129@10166ad5272f`.
+- Only `ICSA`, `UMCSENT`, `PAYEMS` and `INDPRO` are wired into the business-cycle initial-release lookup; absent legs are scored on revised data and flagged revised: `engine/business_cycle.py:131@10166ad5272f`–`:140@10166ad5272f`; `:151@10166ad5272f`–`:158@10166ad5272f`.
+- Collector output type 4 stores one initial release per period with `realtime_start`; absent/no-key runs return empty: `collectors/fred.py:176@10166ad5272f`–`:203@10166ad5272f`.
+- The depth audit reads only the local store unless `--probe-missing` is supplied, and probing explicitly requires `FRED_API_KEY`: `scripts/audit_alfred_depth.py:10@10166ad5272f`–`:12@10166ad5272f`; `:98@10166ad5272f`–`:108@10166ad5272f`.
+
+No `ACOGNO`, `A34SNO`, `AMTMNO`, `IPMAN` or `IPBUSEQ` occurrence was found in the configured engine/config source at `10166ad5272f`. Receipt: `git grep -nE 'ACOGNO|A34SNO|AMTMNO|AMTMUO|NEWORDER|IPMAN|IPBUSEQ' 10166ad5272f -- ':!data' ':!site' ':!mockups' ':!verify_shots'`, rc 0, 43 lines; matched files included `config.yml`, `engine/business_cycle.py`, `engine/bottleneck.py`, `engine/glut_watch.py` and prose/tests, but none of the five absent symbols. `DGORDER` occurs only in prose/config-adjacent searches as durable-goods aggregate, not a machinery vintage leg.
+
+| Leg | Economic semantics / adjustment | Modeled lag | Revision behavior in code | First usable vintage | Exact class | Deciding fact |
+|---|---|---:|---|---|---|---|
+| `AWHMAN` | Manufacturing production and nonsupervisory hours; seasonally adjusted index/hours proxy. | 1 month | Configured for collector vintage store, but absent from business-cycle vintage map; live/validation fallback is latest-revised. | UNKNOWN | prospective-only | Configured for collection; no measured local depth receipt. |
+| `PERMIT` | New private housing permits; thousands of units, SAAR. | 1 month | Same collector-only vintage path; business-cycle fallback latest-revised. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `NEWORDER` | Nondefense capital goods excluding aircraft new orders; millions of dollars, SA. | 1 month | Same collector-only vintage path; business-cycle fallback latest-revised. | UNKNOWN | prospective-only | Capital-goods aggregate configured, but no measured local depth receipt. |
+| `CMRMTSPL` | Real manufacturing and trade sales; millions of chained 2017 dollars, SA. | 2 months | Same collector-only vintage path; business-cycle fallback latest-revised. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `INDPRO` | Total industrial production index, 2017=100, SA. | 1 month | Mapped in `business_cycle.VINTAGE_SERIES`; `use_vintage` reads the first-published value, otherwise latest-revised. | UNKNOWN | prospective-only | Code path is PIT-capable, but local vintage depth is unavailable and unmeasured. |
+| `ISRATIO` | Total business inventories/sales ratio, SA. | 2 months | Collector-only vintage path; business-cycle fallback latest-revised. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `MNFCTRIRSA` | Manufacturers' inventories/sales ratio, SA. | not in `PUB_LAG_M` | Collector-only vintage path; no business-cycle initial-release wiring. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `AMTMUO` | Manufacturers' unfilled orders, total manufacturing; millions of dollars, SA. | not in `PUB_LAG_M` | Collector-only vintage path; used elsewhere as backlog context on revised store data. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `AMTMVS` | Manufacturers' value of shipments, total manufacturing; millions of dollars, SA. | not in `PUB_LAG_M` | Collector-only vintage path; used elsewhere as shipment context on revised store data. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `CAPUTLG3344S` | Semiconductor and electronic-component capacity utilization; percent, SA. | not in `PUB_LAG_M` | Collector-only vintage path; config explicitly calls detail-vintage coverage plausible but unverified. | UNKNOWN | prospective-only | Config warning plus absent store. |
+| `CAPUTLG334S` | Computer/electronic-products capacity utilization; percent, SA. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | Config warning plus absent store. |
+| `CAPUTLG331S` | Primary-metal capacity utilization; percent, SA. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | Config warning plus absent store. |
+| `PCU334413334413` | Semiconductor and related device manufacturing PPI; index. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `PCU331110331110` | Iron and steel mills/ferroalloy manufacturing PPI; index. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `IPG2211S` | Electric-power generation industrial production; 2017=100, SA. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `CAPUTLG2211S` | Electric-power generation capacity utilization; percent, SA. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | No measured local depth receipt. |
+| `WPU0543` | Industrial electric power PPI; index. | not in `PUB_LAG_M` | Same collector-only path. | UNKNOWN | prospective-only | No measured local depth receipt. |
+
+Exact closure command (not run; requires a legitimately keyed collection into the approved store): `python3 -m scripts.audit_alfred_depth --series AWHMAN,PERMIT,NEWORDER,CMRMTSPL,INDPRO,ISRATIO,MNFCTRIRSA,AMTMUO,AMTMVS,CAPUTLG3344S,CAPUTLG334S,CAPUTLG331S,PCU334413334413,PCU331110331110,IPG2211S,CAPUTLG2211S,WPU0543 --output data/fred_vintage/alfred_depth_d03_cycle.json`. The receipt must expose `min(realtime_start)` and period count per leg; a modeled `PUB_LAG_M` must not be read as that date. Do not restore or write `data/` in this sparse tree.
 
 ## Q2 GRANULAR M3 SERIES
 
