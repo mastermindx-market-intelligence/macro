@@ -1,4 +1,5 @@
 import copy
+from datetime import datetime, timedelta
 import hashlib
 import json
 
@@ -105,6 +106,7 @@ from engine.prophet_entry_availability import (
     validate_entry_availability,
 )
 from engine.prophet_live.interval import ADJUSTED, UNADJUSTED
+from lib.nyse_calendar import is_session
 
 _B4_GEN = "peg:" + "a" * 64
 
@@ -146,11 +148,12 @@ def _b4_projection(
     terminal_reason=None,
     generated_at="2026-09-18T19:30:00Z",
     emergence=None,
+    market_session="2026-09-18",
 ):
     emergence_by_episode = None if emergence is None else {_b4_cid(): emergence}
     return project_candidate_states(
         _B4Snap(_B4_GEN, _B4Gen((_b4_episode(state, terminal_reason),))),
-        market_session="2026-09-18",
+        market_session=market_session,
         generated_at=generated_at,
         emergence_by_episode=emergence_by_episode,
     )
@@ -438,13 +441,13 @@ class _B4Aliases:
     def vendor_symbol_for(self, vendor, security_id, on):
         assert vendor == "store"
         assert security_id == "SEC:US-XNAS-AAPL"
-        assert on == date(2026, 9, 18)
+        assert on.isoformat()
         return self.symbol
 
     def resolve(self, vendor, symbol, on):
         assert vendor == "store"
         assert symbol == self.symbol
-        assert on == date(2026, 9, 18)
+        assert on.isoformat()
         return self.reverse
 
 
@@ -639,57 +642,278 @@ def test_b4_runtime_adapter_refuses_unbound_external_gate_or_receipt_injection()
 
 
 
-def _b4_signal_gate(symbol="UNIT", *, eligible=True, tier="T1", at_utc="2026-09-18T19:30:07Z", as_of="2026-09-18"):
+def _b4_signal_gate(
+    symbol="UNIT",
+    *,
+    eligible=True,
+    tier="T1",
+    at_utc="2026-09-17T22:35:00Z",
+    as_of="2026-09-17",
+    decision_at="2026-09-18T14:00:00Z",
+    market_session="2026-09-18",
+):
+    validity = {
+        "schema": "signal_gate.validity/v1",
+        "source_session": as_of,
+        "emitted_at": at_utc,
+        "expected_last_session": as_of,
+        "lag_sessions": 0,
+        "settled": True,
+        "valid_for_decision_sessions": ["2026-09-18"],
+        "expiry_session": "2026-09-18",
+        "lineage_token": "unit-pair-001",
+    }
     return {
         "as_of": as_of,
-        "verdicts": {symbol: {"eligible": eligible, "tier_cascade": tier}},
+        "verdicts": {
+            symbol: {
+                "eligible": eligible,
+                "tier_cascade": tier,
+                "asof": as_of,
+            }
+        },
         "emit": {
             "pair_id": "unit-pair-001",
             "at_utc": at_utc,
             "writer": "build_stock_library",
         },
+        "validity": validity,
+        "_decision_at": decision_at,
+        "_market_session": market_session,
     }
 
 
-def test_b4_runtime_adapter_binds_only_positive_pit_safe_owner_confluence():
+def _b4_confluence_case(**overrides):
+    artifact = _b4_signal_gate(**overrides.get("artifact", {}))
+    for key, value in overrides.get("validity", {}).items():
+        artifact["validity"][key] = value
+    decision_at = artifact.pop("_decision_at")
+    market_session = artifact.pop("_market_session")
+    decision_clock = datetime.fromisoformat(decision_at.replace("Z", "+00:00"))
+    quote_clock = decision_clock - timedelta(seconds=8)
+    quote_ts = quote_clock.isoformat(timespec="seconds").replace("+00:00", "Z")
+    projection = _b4_projection(
+        generated_at=quote_ts,
+        market_session=market_session,
+    )
+    runtime_kwargs = _b4_runtime_kwargs(
+        decision_at=decision_at,
+        market_session=market_session,
+        signal_gate_artifact=artifact,
+        **overrides.get("runtime", {}),
+    )
+    runtime_kwargs["quotes_by_symbol"]["UNIT"]["quote_ts"] = quote_ts
+    runtime_kwargs["live_state_artifact"]["meta"]["pass_ts"] = decision_at
+    runtime_kwargs["live_state_artifact"]["meta"]["session_et"] = market_session
+    return artifact, runtime_kwargs, projection
+
+
+def _b4_confluence_gate(**overrides):
+    _, runtime_kwargs, projection = _b4_confluence_case(**overrides)
     facts = compose_runtime_owner_facts(
-        _b4_projection(), episode_id=_b4_cid(),
-        **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate()),
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    return facts["deterministic_gates"]["owner_confluence"], facts["source_receipts"]
+
+
+def test_b4_runtime_adapter_binds_only_positive_pit_safe_owner_confluence():
+    _, runtime_kwargs, projection = _b4_confluence_case()
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
     )
     assert facts["deterministic_gates"]["owner_confluence"] == "PASS"
-    assert "signal-gate-pair:unit-pair-001" in facts["source_receipts"]
+    assert (
+        "signal-gate-pair:unit-pair-001@2026-09-17 "
+        "verdict_asof=2026-09-17 emitted_at=2026-09-17T22:35:00Z"
+    ) in facts["source_receipts"]
     assert facts["deterministic_gates"]["risk_ceiling"] == "UNKNOWN"
 
+    _, not_buyable_kwargs, not_buyable_projection = _b4_confluence_case(
+        artifact={"eligible": False, "tier": None}
+    )
     not_buyable = compose_runtime_owner_facts(
-        _b4_projection(), episode_id=_b4_cid(),
-        **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate(eligible=False, tier=None)),
+        not_buyable_projection, episode_id=_b4_cid(), **not_buyable_kwargs
     )
     assert not_buyable["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
-    assert "signal-gate-pair:unit-pair-001" not in not_buyable["source_receipts"]
+    assert "signal-gate-pair:unit-pair-001@2026-09-17" not in not_buyable["source_receipts"]
 
-    malformed = _b4_signal_gate()
-    malformed["verdicts"]["UNIT"]["eligible"] = "true"
+    _, malformed_kwargs, malformed_projection = _b4_confluence_case(
+        artifact={"eligible": "true"}
+    )
     malformed_facts = compose_runtime_owner_facts(
-        _b4_projection(), episode_id=_b4_cid(),
-        **_b4_runtime_kwargs(signal_gate_artifact=malformed),
+        malformed_projection, episode_id=_b4_cid(), **malformed_kwargs
     )
     assert malformed_facts["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
 
 
-def test_b4_runtime_adapter_refuses_stale_or_future_signal_gate_lineage():
-    with pytest.raises(RuntimeOwnerFactError, match="session does not match"):
-        compose_runtime_owner_facts(
-            _b4_projection(), episode_id=_b4_cid(),
-            **_b4_runtime_kwargs(signal_gate_artifact=_b4_signal_gate(as_of="2026-09-17")),
-        )
+def test_b4_runtime_adapter_degrades_legacy_signal_gate_to_unknown_and_unavailable():
+    artifact, runtime_kwargs, projection = _b4_confluence_case()
+    artifact.pop("validity")
+    runtime_kwargs["signal_gate_artifact"] = artifact
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    assert facts["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
+    availability = evaluate_runtime_entry_availability(
+        projection,
+        episode_id=_b4_cid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        **runtime_kwargs,
+    )
+    assert availability["state"] == "UNAVAILABLE_DATA"
+    assert "OWNER_CONFLUENCE_UNKNOWN" in availability["blockers"]
 
-    with pytest.raises(RuntimeOwnerFactError, match="emitted after B4 decision clock"):
-        compose_runtime_owner_facts(
-            _b4_projection(), episode_id=_b4_cid(),
-            **_b4_runtime_kwargs(
-                signal_gate_artifact=_b4_signal_gate(at_utc="2026-09-18T19:30:09Z")
-            ),
-        )
+
+def test_b4_confluence_c3_expired_pair_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        artifact={
+            "at_utc": "2026-09-18T19:30:00Z",
+            "as_of": "2026-09-18",
+            "decision_at": "2026-09-21T14:00:00Z",
+            "market_session": "2026-09-21",
+        }
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_expired") for receipt in receipts)
+
+
+def test_b4_confluence_c4_late_emission_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        artifact={"at_utc": "2026-09-18T15:00:00Z", "as_of": "2026-09-17"}
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_late_emission") for receipt in receipts)
+
+
+def test_b4_confluence_c5_lineage_mismatch_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        validity={"lineage_token": "other-pair"}
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_lineage_mismatch") for receipt in receipts)
+
+
+def test_b4_confluence_c6_stale_source_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        artifact={
+            "at_utc": "2026-09-17T22:35:00Z",
+            "as_of": "2026-09-16",
+            "decision_at": "2026-09-18T14:00:00Z",
+            "market_session": "2026-09-17",
+        },
+        validity={"valid_for_decision_sessions": ["2026-09-17"]},
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_stale_source") for receipt in receipts)
+
+
+def test_b4_confluence_c7_ahead_unsettled_source_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        artifact={
+            "at_utc": "2026-09-18T15:00:00Z",
+            "as_of": "2026-09-18",
+            "decision_at": "2026-09-21T14:00:00Z",
+            "market_session": "2026-09-21",
+        },
+        validity={
+            "expected_last_session": "2026-09-17",
+            "lag_sessions": -1,
+            "settled": False,
+            "valid_for_decision_sessions": ["2026-09-21"],
+        },
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_unsettled_source") for receipt in receipts)
+
+
+def test_b4_confluence_c8_holiday_adjacent_pair_passes():
+    artifact, runtime_kwargs, projection = _b4_confluence_case(
+        artifact={
+            "at_utc": "2026-11-25T22:35:00Z",
+            "as_of": "2026-11-25",
+            "decision_at": "2026-11-27T15:00:00Z",
+            "market_session": "2026-11-27",
+        },
+        validity={"valid_for_decision_sessions": ["2026-11-27"], "expiry_session": "2026-11-27"},
+    )
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    assert is_session(date(2026, 11, 25)) and is_session(date(2026, 11, 27))
+    assert facts["deterministic_gates"]["owner_confluence"] == "PASS"
+    assert any(
+        receipt.startswith("signal-gate-pair:unit-pair-001@2026-11-25")
+        for receipt in facts["source_receipts"]
+    )
+
+
+def test_b4_confluence_c9_missing_symbol_row_is_unknown():
+    artifact, runtime_kwargs, projection = _b4_confluence_case()
+    artifact["verdicts"].pop("UNIT")
+    runtime_kwargs["signal_gate_artifact"] = artifact
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    assert facts["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
+    assert any(receipt.endswith("confluence_row_missing") for receipt in facts["source_receipts"])
+
+
+def test_b4_confluence_c10_relabelled_source_session_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        validity={"source_session": "2026-09-16"}
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_session_mismatch") for receipt in receipts)
+
+
+def test_b4_confluence_c11_same_session_pair_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        artifact={
+            "at_utc": "2026-09-18T19:30:07Z",
+            "as_of": "2026-09-18",
+            "decision_at": "2026-09-18T19:30:08Z",
+        },
+        validity={"valid_for_decision_sessions": ["2026-09-18"], "expiry_session": "2026-09-18"},
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_session_mismatch") for receipt in receipts)
+
+
+def test_b4_confluence_c12_stale_verdict_tape_is_unknown():
+    artifact, runtime_kwargs, projection = _b4_confluence_case()
+    artifact["verdicts"]["UNIT"]["asof"] = "2026-09-11"
+    runtime_kwargs["signal_gate_artifact"] = artifact
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    assert facts["deterministic_gates"]["owner_confluence"] == "UNKNOWN"
+    assert any(receipt.endswith("confluence_tape_stale") for receipt in facts["source_receipts"])
+
+
+def test_b4_confluence_c13_foreign_writer_is_unknown():
+    artifact, runtime_kwargs, projection = _b4_confluence_case()
+    artifact["emit"]["writer"] = "other"
+    runtime_kwargs["signal_gate_artifact"] = artifact
+    facts = compose_runtime_owner_facts(
+        projection, episode_id=_b4_cid(), **runtime_kwargs
+    )
+    verdict, receipts = facts["deterministic_gates"]["owner_confluence"], facts["source_receipts"]
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_writer_mismatch") for receipt in receipts)
+
+
+def test_b4_confluence_c14_emit_stamp_mismatch_is_unknown():
+    verdict, receipts = _b4_confluence_gate(
+        validity={"emitted_at": "2026-09-17T22:36:00Z"}
+    )
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_malformed") for receipt in receipts)
+
+
+def test_b4_confluence_c15_producer_lag_disagreement_is_unknown():
+    verdict, receipts = _b4_confluence_gate(validity={"lag_sessions": 1})
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_malformed") for receipt in receipts)
 
 
 def test_b4_runtime_adapter_binds_quote_clock_to_live_state_freshness_owner():

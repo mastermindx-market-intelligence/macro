@@ -14,6 +14,8 @@ runtime artifacts.  There is intentionally no ticker-equality fallback.
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
+
+from lib.nyse_calendar import expected_last_session, session_n_forward
 from hashlib import sha256
 import json
 from math import isfinite
@@ -135,6 +137,35 @@ def _entry_signal_for_symbol(entry_rows_by_symbol: Mapping[str, object], symbol:
     return signal
 
 
+def _iso_session(value: object) -> date | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _confluence_result(
+    verdict: str,
+    reason: str | None = None,
+    *,
+    source_session: str | None = None,
+    verdict_asof: str | None = None,
+    pair_id: str | None = None,
+    emitted_at: str | None = None,
+) -> tuple[str, str | None]:
+    if verdict != "PASS":
+        assert reason is not None
+        return "UNKNOWN", f"reason:{reason}"
+    assert None not in {source_session, verdict_asof, pair_id, emitted_at}
+    return (
+        "PASS",
+        f"signal-gate-pair:{pair_id}@{source_session}"
+        f" verdict_asof={verdict_asof} emitted_at={emitted_at}",
+    )
+
+
 def _bind_owner_confluence(
     signal_gate_artifact: Mapping[str, object] | None,
     *,
@@ -142,40 +173,95 @@ def _bind_owner_confluence(
     market_session: str,
     decision_clock: datetime,
 ) -> tuple[str, str | None]:
-    """Bind only a positive incumbent signal-gate verdict with its native clock.
+    """Bind a prior-session incumbent confluence verdict under validity/v1.
 
-    ``signal_gate.json`` is display-tier but it is the incumbent confluence owner
-    consumed by ``entry_signal``.  Its ``emit`` stamp carries the writer-process
-    lineage clock.  A positive T1/T2/T3 verdict can therefore prove PASS when the
-    artifact session matches B4 and the owner emitted it no later than decision_at.
-
-    A non-buyable compact verdict deliberately remains UNKNOWN: the slim artifact
-    does not preserve enough refusal provenance to distinguish a true market FAIL
-    from thin history / engine refusal.  This adapter never upgrades that ambiguity
-    to a deterministic negative claim.
+    Artifact content is evidence, not an input-validation failure: every missing,
+    stale, expired, relabelled, or malformed artifact condition degrades to a
+    typed UNKNOWN so B4 itself can fail closed.  Only non-artifact caller inputs
+    retain injection refusal.
     """
     if signal_gate_artifact is None:
         return "UNKNOWN", None
     if not isinstance(signal_gate_artifact, Mapping):
         raise RuntimeOwnerFactError("signal_gate_artifact must be an object")
-    if signal_gate_artifact.get("as_of") != market_session:
-        raise RuntimeOwnerFactError("signal-gate artifact session does not match B4 market_session")
+
+    as_of = signal_gate_artifact.get("as_of")
+    validity = signal_gate_artifact.get("validity")
+    if not isinstance(validity, Mapping):
+        return _confluence_result(
+            "UNKNOWN",
+            "confluence_no_validity_block" if validity is None else "confluence_legacy_artifact",
+        )
+    if validity.get("schema") != "signal_gate.validity/v1":
+        return _confluence_result("UNKNOWN", "confluence_legacy_artifact")
+
+    source_session_value = validity.get("source_session")
+    source_session = _iso_session(source_session_value)
+    if source_session is None or source_session_value != as_of:
+        if source_session_value is None:
+            return _confluence_result("UNKNOWN", "confluence_no_source_session")
+        return _confluence_result("UNKNOWN", "confluence_session_mismatch")
+
     emit = signal_gate_artifact.get("emit")
     if not isinstance(emit, Mapping):
-        raise RuntimeOwnerFactError("signal-gate artifact has no native emit lineage")
-    if emit.get("writer") != "build_stock_library":
-        raise RuntimeOwnerFactError("signal-gate artifact writer is not the incumbent owner")
-    pair_id = _text(emit.get("pair_id"), "signal_gate.emit.pair_id")
-    emitted_at = _utc(emit.get("at_utc"), "signal_gate.emit.at_utc")
-    if emitted_at > decision_clock:
-        raise RuntimeOwnerFactError("signal-gate owner verdict was emitted after B4 decision clock")
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+    pair_id = emit.get("pair_id")
+    writer = emit.get("writer")
+    at_utc = emit.get("at_utc")
+    if not isinstance(pair_id, str) or not pair_id or any(ord(char) < 32 for char in pair_id):
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+    if writer != "build_stock_library":
+        return _confluence_result("UNKNOWN", "confluence_writer_mismatch")
+    try:
+        emitted_clock = _utc(at_utc, "signal_gate.emit.at_utc")
+    except RuntimeOwnerFactError:
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+
+    if validity.get("emitted_at") != at_utc:
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+    if emitted_clock > decision_clock:
+        return _confluence_result("UNKNOWN", "confluence_late_emission")
+
+    valid_sessions = validity.get("valid_for_decision_sessions")
+    if not isinstance(valid_sessions, list) or market_session not in valid_sessions:
+        return _confluence_result("UNKNOWN", "confluence_expired")
+    next_session = session_n_forward(source_session, 1)
+    if next_session is None or next_session.isoformat() != market_session:
+        return _confluence_result("UNKNOWN", "confluence_session_mismatch")
+
+    expected_session = expected_last_session(emitted_clock)
+    if expected_session != source_session:
+        return _confluence_result(
+            "UNKNOWN",
+            "confluence_stale_source" if expected_session > source_session
+            else "confluence_unsettled_source",
+        )
+    producer_lag = validity.get("lag_sessions")
+    if isinstance(producer_lag, bool) or not isinstance(producer_lag, int) or producer_lag != 0:
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+    if validity.get("settled") is not True:
+        return _confluence_result("UNKNOWN", "confluence_malformed")
+
+    if validity.get("lineage_token") != pair_id:
+        return _confluence_result("UNKNOWN", "confluence_lineage_mismatch")
+
     verdicts = signal_gate_artifact.get("verdicts")
     verdict = verdicts.get(symbol) if isinstance(verdicts, Mapping) else None
     if not isinstance(verdict, Mapping):
-        return "UNKNOWN", None
+        return _confluence_result("UNKNOWN", "confluence_row_missing")
     if verdict.get("eligible") is not True or not signal_gate_is_buyable(dict(verdict)):
-        return "UNKNOWN", None
-    return "PASS", f"signal-gate-pair:{pair_id}"
+        return _confluence_result("UNKNOWN", "confluence_row_missing")
+    verdict_asof = verdict.get("asof")
+    if verdict_asof != source_session_value:
+        return _confluence_result("UNKNOWN", "confluence_tape_stale")
+
+    return _confluence_result(
+        "PASS",
+        source_session=source_session_value,
+        verdict_asof=verdict_asof,
+        pair_id=pair_id,
+        emitted_at=at_utc,
+    )
 
 
 def _bind_event_status_from_candidate(
@@ -304,6 +390,7 @@ def compose_runtime_owner_facts(
     metrics = {key: _positive(metric_inputs.get(key), f"metric_inputs.{key}") for key in sorted(_METRIC_KEYS)}
 
     gates = dict(_GATE_DEFAULTS)
+    # source_health is hardcoded PASS upstream and does not cover confluence tape staleness; (7b) is the only guard.
     owner_confluence, confluence_receipt = _bind_owner_confluence(
         signal_gate_artifact,
         symbol=symbol,
