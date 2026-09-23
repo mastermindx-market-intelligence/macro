@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T02:37:46.327381+00:00",
-  "count": 2679,
+  "generated_at": "2026-09-23T03:22:55.517480+00:00",
+  "count": 2682,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-0xtmlwaxpfl-55fd89",
+      "title": "JPM JPM US Market Intelligence Afternoon Briefing Sept 22",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T02:31:50Z",
+      "summary_points": [
+        "Fed Inflation Focus: Barkin signals inflation may require more than one rate hike; global PMIs (France/Germany/Eurozone/UK) due tomorrow as key data catalyst.",
+        "US-Iran Oil Volatility: Oil down 1.2% amid Strait reopening framework, diesel export debate, and Trump’s peace deal rhetoric; critical risk for energy sector.",
+        "AI Sector Rotation: Hypercomputers (70% price return) and Software (25.4x NTM PE) lead; active buying in META/semis, selling AI Vulnerable (NFLX) as LOs shift.",
+        "Bank/WM Trust Erosion: Aggressive bank/WM offers lack fundamentals; Meta’s untrustworthiness and Hugging Face scenario disrupt models, driving systemic de-risking (large caps dominate volume).",
+        "Geopolitical Escalation: US-Iran tensions (Hormuz threat, flight restrictions), Trump-Xi summit, and diesel export ban amplify oil volatility and equity risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qrdfmjn6wzi-46fee1",
+      "title": "JPM Meta Platforms Inc The Models and Agents Are Here, With Muse Consumers and Businesses Coming Next",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T02:31:47Z",
+      "summary_points": [
+        "Muse Outperformance & Adoption: Muse surged 21% vs SPX +1%, #1 free US app (U.S./Canada), daily downloads exceed Meta’s core apps (Instagram, WhatsApp, Facebook), driven by agent capabilities, free tier, and Meta distribution.",
+        "Monetization Path Validated: Revenue via transaction take-rates (commerce/travel) and subscriptions; Commerce/Shopping score 10 and Travel score 10 confirm high purchase intent and habit-forming workflows.",
+        "Meta Connect Catalyst: Sept 23-24 event to showcase AI progress (agent integration, smart glasses); key for business adoption (e.g., Meta Connect event) and addressing Amazon access block risk.",
+        "Valuation Anchor: $820 target (21x 2028 EPS), overweight rating; driven by social graph moat, AI monetization path, and top-line growth (23x 2028E GAAP EPS + 16x SPX premium).",
+        "Critical Risk: Token referral program (1B tokens/referral) risks token dilution and regulatory scrutiny, potentially distorting valuation and investor sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-panyzaaoyqm-fef318",
       "title": "GERMANY: MERZ IN TROUBLE AFTER STATE ELECTION DISASTER",
@@ -228,6 +270,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5lfifdhclpm-bf7f8c",
+      "title": "JPM Brazil Equity Strategy",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:45:27Z",
+      "summary_points": [
+        "Election Catalyst: Opposition win in Oct election triggers +6.4% MSCI Brazil upside (vs -3.6% for government win), driven by Senate advantage and fiscal policy shifts, diverging from 2014 dynamics.",
+        "Valuation Gap: Current 12-mo fwd P/E (8.6x) implies 54% upside potential under Structural Fix scenario (P/E 13.3x), last seen in 2020, versus 28% in Deterioration.",
+        "Rate Sensitivity: 0.5% Selic yield decline drives 2% MSCI Brazil gain (bullish), with 50bp decline yielding 5.5% upside, directly linking policy outcomes to equity returns.",
+        "Structural Fix Driver: Policy implementation (e.g., finance minister candidates) during 2016-2020 \"Structural Fix\" period validated rate-driven equity gains, underscoring policy as core equity catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
