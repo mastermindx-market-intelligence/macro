@@ -1,8 +1,8 @@
 {
   "base": "b7da88a718d700a707be6edf67669e1fa5061e45",
   "procedure": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
-  "new_contract_tests": "31 passed",
-  "four_suite_regression": "436 passed, 3 existing presentation expectations require reconciliation",
+  "new_contract_tests": "33 passed in the complete run;15 original cases plus18 additions",
+  "four_suite_regression": "438 passed,3 existing presentation expectations require reconciliation",
   "unchanged_existing_functions": [
     "_data_path",
     "_load_turnover",
@@ -209,11 +209,12 @@
     "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
   },
   "source_sha256": {
-    "engine/china_participation.py": "c3ef768d87b6a2e9e7c287bbe8d3e265b34e510269cbfd16fbb68f0b3edf4a0f",
+    "engine/china_participation.py": "73b1f4eb1bddf9ad94c0c5c59f56ede8296afd4057ea18c8c37911cac02e28ef",
     "templates/_china_participation_context.html.j2": "3fa6477bbf2b4b912b671c977ea388e5845cf4177e6a51eef3fcae8a2bf185f3",
-    "tests/test_china_participation.py": "da1946cb0f5be43706f6c9e9cd05ede947d92d1dd222eaa5cb5286242f1e0184"
+    "tests/test_china_participation.py": "27f7f98da73976750405bb8fdd34e01d162d25fd8459e7ff6a7685e946b65c2f"
   },
   "fresh_collection": false,
   "risk_calibration_changed": false,
-  "production": false
+  "production": false,
+  "last_edge_red": "2 failed: short sector history and runtime calendar failure"
 }

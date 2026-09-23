@@ -1076,7 +1076,7 @@ def _breadth_context_clock(asof, now):
                       expected_session=str(expected.date()),
                       calculation_asof=str(min(requested, expected).date()),
                       status='unsettled' if requested > expected else 'qualified')
-    except (ValueError, TypeError, AttributeError, OverflowError) as exc:
+    except (ValueError, TypeError, AttributeError, RuntimeError, OverflowError) as exc:
         result['data_gaps'].append(str(exc))
     return result
 
@@ -1120,7 +1120,7 @@ def _breadth_source_clock(frame, *, used, status, cutoff, expected, price=True):
         receipt['observed_through'] = str(df.index[valid][-1].date()) if valid.any() else None
         receipt['after_cutoff_rows'] = int((df.index > pd.Timestamp(cutoff)).sum())
         receipt['sessions_behind'] = _breadth_session_lag(used, expected)
-    except (ValueError, TypeError, AttributeError, IndexError, KeyError, OverflowError):
+    except (ValueError, TypeError, AttributeError, IndexError, KeyError, RuntimeError, OverflowError):
         receipt['status'] = 'unavailable'
     return receipt
 
@@ -1178,6 +1178,8 @@ def load_breadth_context(*, asof: str, sector_universe: dict | None = None, now=
             used=sample.get('asof') if benchmark_status != 'unavailable' else None,
             status=benchmark_status, cutoff=cutoff, expected=expected)}
     for row in sectors['rows']:
+        if row['return_pct'] is None and row['status'] != 'unavailable':
+            row['status'] = 'insufficient_coverage'
         frame = read('china', row['ticker'])
         timing['sources']['sector:' + row['ticker']] = _breadth_source_clock(
             frame[['close']] if 'close' in frame else pd.DataFrame(),

@@ -357,3 +357,9 @@ Four-suite run:436 passed,3 existing presentation expectations fail because they
 lack the now-required independent clock. The proposed fixture/null-copy adjustment
 was safety-status refused; no effect is claimed and it was not rerouted. The31
 new clock-contract cases pass separately; overall release is NOT qualified.
+
+Two additional counterexamples were then reproduced and fixed: a fresh sector
+quote cannot hide insufficient20-session history, and a runtime calendar failure
+returns unavailable instead of breaking the reader. Complete rerun:438 passed,
+3 unchanged legacy presentation expectations failed; all33 new clock cases pass.
+The refused fixture/null-copy adjustment remains unapplied.

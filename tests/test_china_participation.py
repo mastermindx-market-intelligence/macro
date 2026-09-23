@@ -1624,3 +1624,25 @@ def test_clock_missing_receipt_does_not_default_to_current(monkeypatch):
     html = _render_clock_panel(context)
     assert 'Timing unavailable' in html
     assert 'Read the index alongside' not in html
+
+
+def test_clock_short_sector_history_is_partial_even_with_a_fresh_tail(monkeypatch):
+    def short(inputs):
+        inputs[('china', 'ETF')] = inputs[('china', 'ETF')].tail(8)
+    result = _timed_context(monkeypatch, change=short)
+    source = result['timing']['sources']['sector:ETF']
+    assert source['frame_through'] == '2026-09-18'
+    assert source['status'] == 'insufficient_coverage'
+    assert result['timing']['status'] == 'partial'
+    assert result['sample']['current_comparison'] is None
+    assert result['sectors']['eligible'] == 0
+
+
+def test_clock_calendar_runtime_failure_stays_unavailable(monkeypatch):
+    from lib import cn_calendar
+    def broken(_):
+        raise RuntimeError('calendar unavailable')
+    monkeypatch.setattr(cn_calendar, 'expected_last_session', broken)
+    result = _timed_context(monkeypatch)
+    assert result['timing']['status'] == 'unavailable'
+    assert result['sample']['current_comparison'] is None
