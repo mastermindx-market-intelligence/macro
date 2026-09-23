@@ -10157,7 +10157,11 @@ jobs:
       # THAT fix in a clean venv, not by the round-2 review. It now runs instead in
       # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Workflow-shape pins for the lanes that commit site/ pages (2026-09-23, #7758):
+      # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
+      # live HERE (gate: code, minimal deps) because the engine suites next to them
+      # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
+        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -16034,9 +16038,12 @@ jobs:
       - "templates/theme.css"
       - "site/theme.css"
       - "site/markets.html"
+      # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
+      - "site/markets.css"
       - "scripts/build_markets.py"
       - "engine/market_state.py"
       - "tests/test_markets_regime_strip.py"
+      - "tests/test_markets_cyc_stage_mobile.py"
       - "tests/fixtures/markets_regime_strip/**"
       # Import closure beyond the page family. Listed literally so
       # exclusive scope still covers what inference would have owned.
@@ -16098,8 +16105,8 @@ jobs:
       # arrives with jinja2. Never importorskip.
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
-      - name: markets risk-regime strip
-        run: python -m pytest tests/test_markets_regime_strip.py -q
+      - name: markets risk-regime strip + cycle-stage mobile detail
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -16196,9 +16203,13 @@ jobs:
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
-    # The five suite runs this job names are the entire W2-2 test surface
+    # 2026-09-23 A-F03-W2-4 appends the methodology-parity audit
+    # (tests/test_audit_options_skew_parity.py and
+    # scripts/audit_options_skew_parity.py) to the same gate:code job.
+    # The suite runs this job names are the W2-2 test surface
     # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
-    # test_audit_options_skew_overlap). These are end-to-end tests of the
+    # test_audit_options_skew_overlap) plus the W2-4 parity audit.
+    # These are end-to-end tests of the
     # M1-host launchd lane that builds data/options_skew/snapshots.parquet
     # and publishes it to R2; they have no signal-contract / render subject,
     # so they were parked in config/unrun_test_waivers.yml in error. They
@@ -16223,6 +16234,7 @@ jobs:
       - "scripts/skew_accrual_precheck.py"
       - "scripts/skew_accrual_verify_ledger.py"
       - "scripts/audit_options_skew_overlap.py"
+      - "scripts/audit_options_skew_parity.py"
       - "scripts/publish_r2.py"
       - "scripts/fetch_r2.py"
       - "scripts/build_options_skew.py"
@@ -16235,6 +16247,7 @@ jobs:
       - "tests/test_skew_accrual_gate.py"
       - "tests/test_skew_accrual_launchd.py"
       - "tests/test_audit_options_skew_overlap.py"
+      - "tests/test_audit_options_skew_parity.py"
       - "tests/test_skew_accrual_precheck.py"
       - "tests/test_skew_accrual_verify_ledger.py"
     timeout-minutes: 10
@@ -16252,12 +16265,13 @@ jobs:
         # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
         # (12 publish_r2 registration tests red without it — run 35782263306).
         run: pip install pytest pandas pyarrow pyyaml
-      - name: skew-accrual lane — gate, precheck, verify, launchd, real-overlap audit
+      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap and parity audits
         run: |
           python -m pytest \
             tests/test_skew_accrual_gate.py \
             tests/test_skew_accrual_launchd.py \
             tests/test_audit_options_skew_overlap.py \
+            tests/test_audit_options_skew_parity.py \
             tests/test_skew_accrual_precheck.py \
             tests/test_skew_accrual_verify_ledger.py \
             -q
