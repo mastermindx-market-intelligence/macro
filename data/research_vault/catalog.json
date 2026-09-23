@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T00:53:22.756730+00:00",
-  "count": 2674,
+  "generated_at": "2026-09-23T01:22:38.163079+00:00",
+  "count": 2676,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -413,6 +413,45 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5jj6ie8pmh-943554",
+      "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:22Z",
+      "summary_points": [
+        "Brent Price Revisions: Goldman Sachs raises 2027 Brent estimate to $80/b (vs.",
+        "$75/b in 2028) with $29/b crack spread in 2028, driven by tight refining fundamentals (low inventory, supply disruptions, resilient demand).",
+        "Geopolitical Catalysts: Middle East/Russia-Ukraine disruptions boost refining margins; XOM target raised to $169 (9.0x EV/DCF, 6.5% FCF yield), with key risks: commodity prices, refining margins, operational execution.",
+        "IBR Rating Discrepancy: 65% Buy rating in Investment Banking Relationships vs. 50% in general coverage, indicating stronger bullish bias in IBR-linked analyst recommendations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-v8qab5rjglo-640364",
+      "title": "On the Road with Goldman Sachs Everything we Learned at the 33rd Global Consumer & Retail Conference",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:19Z",
+      "summary_points": [
+        "US Consumer Resilience: Consumer spending remains strong despite higher rates/gas prices, with 2027 discretionary cash inflow forecast upgraded to +3.9% (vs. 2026 deceleration), favoring value/convenience sectors.",
+        "Big Box Retail Shifts: Tariff-driven promotions by WMT/BJ widen price gaps vs. traditional grocers; structural digital/physical/supply chain shifts critical amid lower-income trade-down and higher-income migration to discount formats.",
+        "Auto Parts Geopolitical Pressure: Strait of Hormuz closure exacerbates lubricant costs; DRVN/VVV strategically raising prices amid healthy demand despite consumer deferral, highlighting cost pass-through dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
