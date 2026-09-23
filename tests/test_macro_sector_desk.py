@@ -51,6 +51,7 @@ def _pulse():
         _row("quantum_computing", 25, 15, -4, heat="idle", reco="hold"),
         _row("space_economy", 27, 15, 1, heat="broken"),
     ]
+    rows[3].update(name="Cybersecurity", name_zh="网络安全")
     rows[5].update(name="AI Semiconductors", name_zh="AI 半导体")
     return dict(as_of="2026-09-18", history=_history(), heating=[r["id"] for r in rows[:6]], themes=rows)
 
@@ -64,12 +65,16 @@ def test_card_leader_is_selected_before_the_four_row_strip_cap(monkeypatch):
     from engine import sector_pulse
     from scripts import build_site
     pulse = _pulse()
+    # The fifth/sixth rows must still compete for the primary desk even though
+    # the visible strip is capped at four.
+    semis = next(row for row in pulse["themes"] if row["id"] == "ai_semiconductors")
+    semis["rank_delta_5d"] = 30
     before = deepcopy(pulse)
     monkeypatch.setattr(sector_pulse, "build_pulse", lambda _: pulse)
     view = build_site._sector_heat_view()
     assert [r["id"] for r in view["heating"]] == pulse["heating"][:4]
     assert view["desk"]["leader"]["id"] == "ai_semiconductors"
-    assert view["desk"]["leader"]["rank_delta_5d"] == 14
+    assert view["desk"]["leader"]["rank_delta_5d"] == 30
     assert view["desk"]["entry_leader"]["id"] == "ai_semiconductors"
     assert [r["id"] for r in view["rotation"]] == ["ai_semiconductors", "memory_storage"]
     assert pulse == before
@@ -78,12 +83,14 @@ def test_card_leader_is_selected_before_the_four_row_strip_cap(monkeypatch):
 def test_full_population_velocity_beats_absolute_rank_and_latest_day_alone():
     out = _desk()
     assert out["status"] == "ready"
-    assert out["leader"]["id"] == "ai_semiconductors"
-    assert out["leader"]["rank_delta_1d"] == -1
-    assert out["leader"]["entry_actionable"] is True
+    # Five-session velocity wins even when the latest session is weak and the
+    # rating is non-actionable. Entry suitability remains a separate answer.
+    assert out["leader"]["id"] == "cybersecurity"
+    assert out["leader"]["rank_delta_1d"] == -3
+    assert out["leader"]["entry_actionable"] is False
     assert out["entry_leader"]["id"] == "ai_semiconductors"
     assert out["as_of"] == "2026-09-18"
-    assert out["href"] == "basket/ai_semiconductors.html"
+    assert out["href"] == "basket/cybersecurity.html"
 
 
 def test_order_does_not_choose_the_winner():
@@ -164,18 +171,19 @@ def test_macro_renders_exact_desk_with_source_date_and_real_destination():
     html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
     card = BeautifulSoup(html, "html.parser").select_one("#macro-sector-desk")
     assert card is not None
-    assert card["href"] == "basket/ai_semiconductors.html"
+    assert card["href"] == "basket/cybersecurity.html"
     assert not card.has_attr("data-tip-en"), "Whole-link LENS hijacks the first mobile tap"
-    assert "AI Semiconductors" in card.get_text()
-    assert "AI 半导体" in card.get_text()
+    assert "Cybersecurity" in card.get_text()
+    assert "网络安全" in card.get_text()
     assert "Hottest desk" in card.get_text()
-    assert "Up 14 places over 5 sessions" in card.get_text()
-    assert "Entry rating: Accumulate" in card.get_text()
-    assert card["data-entry-rating"] == "accumulate"
-    assert card["data-entry-actionable"] == "true"
+    assert "Up 25 places over 5 sessions" in card.get_text()
+    assert "Entry rating: Hold" in card.get_text()
+    assert card["data-entry-rating"] == "hold"
+    assert card["data-entry-actionable"] == "false"
     assert card.select_one("time")["datetime"] == "2026-09-18"
     assert "Running hot right now" not in card.get_text()
     assert "Hottest desk" not in card.get_text()
+    assert "Opportunity watch" not in card.get_text()
     assert "wrong" not in card.get_text().lower()
 
 
