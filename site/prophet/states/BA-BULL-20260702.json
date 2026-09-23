@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BA-BULL-20260702",
-  "asof": "2026-09-22",
+  "asof": "2026-09-23",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 23.9,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.33,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
+    "horizon_pct_used": 173.3,
     "p1": -0.4467,
     "p2": -0.2234,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111
+  "days_elapsed": 78,
+  "tau": 1.7333
 }

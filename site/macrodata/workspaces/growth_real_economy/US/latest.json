@@ -96,14 +96,20 @@
       "zh": "GDPNow/高频增长实时预估读数显示强劲加速，但同步硬数据层（薪资、实际收入、制造/贸易销售、工业生产）方向仍为下行（falling）——加速信号尚未获得硬数据确认。"
     },
     "coverage_ratio": 1.0,
-    "degraded": [],
+    "degraded": [
+      "gdpnow_growth",
+      "wei_growth",
+      "leading_diffusion",
+      "coincident_diffusion"
+    ],
     "reasons": [
+      "worst_required_source_freshness=STALE_SOURCE",
       "contradiction=nowcast_vs_hard_data"
     ],
     "required": [
       {
         "component_id": "gdpnow_growth",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "GDPNow growth nowcast",
           "zh": "GDPNow 实时增长预估"
@@ -111,11 +117,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-21",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "wei_growth",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Weekly Economic Index growth",
           "zh": "每周经济指数增长"
@@ -123,11 +129,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-21",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "leading_diffusion",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Leading tier diffusion (breadth)",
           "zh": "领先层扩散度（广度）"
@@ -135,11 +141,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-30",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "coincident_diffusion",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Coincident tier diffusion (breadth)",
           "zh": "同步层扩散度（广度）"
@@ -147,11 +153,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-30",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "STALE_SOURCE",
+    "worst_freshness": "STALE_SOURCE"
   },
   "axes": {
     "items": [
@@ -163,7 +169,7 @@
             "component_id": "gdpnow_growth",
             "contribution": 13.47,
             "coverage_state": "DISAGREEMENT",
-            "freshness": "CURRENT",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "GDPNow growth nowcast",
               "zh": "GDPNow 实时增长预估"
@@ -179,8 +185,8 @@
           {
             "component_id": "wei_growth",
             "contribution": 5.89,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Weekly Economic Index growth",
               "zh": "每周经济指数增长"
@@ -196,8 +202,8 @@
           {
             "component_id": "leading_tier_momentum",
             "contribution": 3.8,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Leading tier 6M momentum",
               "zh": "领先层六个月动能"
@@ -214,7 +220,7 @@
             "component_id": "coincident_tier_momentum",
             "contribution": -0.75,
             "coverage_state": "DISAGREEMENT",
-            "freshness": "CURRENT",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Coincident tier 6M momentum",
               "zh": "同步层六个月动能"
@@ -234,7 +240,7 @@
         "definition_version": "1.0.0",
         "direction_semantics": "deteriorating_to_accelerating",
         "frequency_alignment": "mixed: GDPNow near-daily intra-quarter nowcast, WEI weekly (Fri), leading/coincident tier mom6 monthly with per-leg publication lag (see business_cycle.calibration_resolution / sources[business_cycle_leading])",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Growth momentum",
           "zh": "增长动能"
@@ -266,8 +272,8 @@
           {
             "component_id": "leading_diffusion",
             "contribution": 15.0,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Leading tier diffusion (breadth)",
               "zh": "领先层扩散度（广度）"
@@ -283,8 +289,8 @@
           {
             "component_id": "coincident_diffusion",
             "contribution": 17.5,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Coincident tier diffusion (breadth)",
               "zh": "同步层扩散度（广度）"
@@ -300,8 +306,8 @@
           {
             "component_id": "coincident_index_level",
             "contribution": -2.91,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Coincident tier index level",
               "zh": "同步层指数水平"
@@ -317,8 +323,8 @@
           {
             "component_id": "growth_axis_score",
             "contribution": 1.5,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "coverage_state": "PARTIAL",
+            "freshness": "STALE_SOURCE",
             "label": {
               "en": "Growth axis composite (engine/axes.py)",
               "zh": "增长轴综合评分（engine/axes.py）"
@@ -338,7 +344,7 @@
         "definition_version": "1.0.0",
         "direction_semantics": "weak_to_strong",
         "frequency_alignment": "leading/coincident tier diffusion and index monthly with per-leg publication lag; growth_axis_score (engine/axes.py) shares the same build cadence as the regime read",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Growth level/breadth",
           "zh": "增长水平/广度"
@@ -392,13 +398,13 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "growth_real_economy-US-1639b8e34d7df127"
+    "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
+    "predecessor_generation_id": "growth_real_economy-US-97403ff4d4dc9142"
   },
   "drivers": {
     "balance_sheet": [
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "leading_diffusion",
         "impact_magnitude": 15.0,
         "impact_sign": 1,
@@ -412,7 +418,7 @@
         "value": 100.0
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "coincident_diffusion",
         "impact_magnitude": 17.5,
         "impact_sign": 1,
@@ -426,7 +432,7 @@
         "value": 100.0
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "coincident_index_level",
         "impact_magnitude": 2.91,
         "impact_sign": -1,
@@ -440,7 +446,7 @@
         "value": 35.46430194493509
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "growth_axis_score",
         "impact_magnitude": 1.5,
         "impact_sign": 1,
@@ -470,7 +476,7 @@
         "value": 5.0796
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "wei_growth",
         "impact_magnitude": 5.89,
         "impact_sign": 1,
@@ -484,7 +490,7 @@
         "value": 3.07
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "PARTIAL",
         "driver_id": "leading_tier_momentum",
         "impact_magnitude": 3.8,
         "impact_sign": 1,
@@ -514,11 +520,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-22T16:43:48Z",
+    "built_at": "2026-09-23T06:25:25Z",
     "calculation_as_of": "2026-09-21",
-    "code_version": "09536acb196c62d969c6c2869b4f724fe9296e30",
-    "content_sha256": "97403ff4d4dc91426250daf85dbdcd69089566d68e16d5879462ae416e993be1",
-    "generation_id": "growth_real_economy-US-97403ff4d4dc9142",
+    "code_version": "528b3837483ad996d41e42db569a1b77ccba46cf",
+    "content_sha256": "6cd748cb171d6f743c58b7af0009945e287ceef5e5bc011f1c2309f3a4e0a827",
+    "generation_id": "growth_real_economy-US-6cd748cb171d6f74",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },
@@ -584,7 +590,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [
           "nowcast_vs_hard_data"
@@ -610,7 +616,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [
           "nowcast_vs_hard_data"
@@ -650,7 +656,7 @@
         "definition_id": "growth_momentum_composite",
         "definition_version": "1.0.0",
         "direction_semantics": "deteriorating_to_accelerating",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "growth_momentum",
         "model_version": "growth_real_economy.compose.v1",
@@ -686,7 +692,7 @@
         "definition_id": "growth_level_breadth_composite",
         "definition_version": "1.0.0",
         "direction_semantics": "weak_to_strong",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "growth_level_breadth",
         "model_version": "growth_real_economy.compose.v1",
@@ -722,7 +728,7 @@
         "definition_id": "conditions.growth_nowcast.gdpnow",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "gdpnow_growth",
         "model_version": "growth_real_economy.compose.v1",
@@ -758,7 +764,7 @@
         "definition_id": "conditions.growth_nowcast.wei",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "wei_growth",
         "model_version": "growth_real_economy.compose.v1",
@@ -794,7 +800,7 @@
         "definition_id": "business_cycle.tiers.leading.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "leading_tier_momentum",
         "model_version": "growth_real_economy.compose.v1",
@@ -830,7 +836,7 @@
         "definition_id": "business_cycle.tiers.coincident.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "coincident_tier_momentum",
         "model_version": "growth_real_economy.compose.v1",
@@ -866,7 +872,7 @@
         "definition_id": "business_cycle.tiers.leading.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "leading_diffusion",
         "model_version": "growth_real_economy.compose.v1",
@@ -902,7 +908,7 @@
         "definition_id": "business_cycle.tiers.coincident.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "coincident_diffusion",
         "model_version": "growth_real_economy.compose.v1",
@@ -938,7 +944,7 @@
         "definition_id": "business_cycle.tiers.coincident.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "coincident_index_level",
         "model_version": "growth_real_economy.compose.v1",
@@ -974,7 +980,7 @@
         "definition_id": "growth_score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "growth_axis_score",
         "model_version": "growth_real_economy.compose.v1",
@@ -1010,7 +1016,7 @@
         "definition_id": "business_cycle.tiers.leading.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "leading_tier_index",
         "model_version": "growth_real_economy.compose.v1",
@@ -1046,7 +1052,7 @@
         "definition_id": "business_cycle.tiers.lagging.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "lagging_tier_index",
         "model_version": "growth_real_economy.compose.v1",
@@ -1082,7 +1088,7 @@
         "definition_id": "business_cycle.tiers.lagging.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "lagging_tier_diffusion",
         "model_version": "growth_real_economy.compose.v1",
@@ -1118,7 +1124,7 @@
         "definition_id": "business_cycle.tiers.lagging.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "lagging_tier_momentum",
         "model_version": "growth_real_economy.compose.v1",
@@ -1154,7 +1160,7 @@
         "definition_id": "conditions.recession.score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_risk",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "recession_risk_score",
         "model_version": "growth_real_economy.compose.v1",
@@ -1190,7 +1196,7 @@
         "definition_id": "conditions.recession.sahm",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_risk",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "sahm_rule_value",
         "model_version": "growth_real_economy.compose.v1",
@@ -1226,7 +1232,7 @@
         "definition_id": "conditions.labor_nowcast.withheld_tax_yoy_pct",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "real_income_proxy_yoy",
         "model_version": "growth_real_economy.compose.v1",
@@ -2013,7 +2019,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "GDPNow real-time GDP nowcast",
           "zh": "GDPNow 实时GDP预估"
@@ -2034,7 +2040,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "NY Fed Weekly Economic Index",
           "zh": "纽约联储每周经济指数"
@@ -2055,7 +2061,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Leading tier composite (claims/permits/new orders/S&P 500/HY OAS/yield curve/consumer sentiment)",
           "zh": "领先层综合指数（初次申请/开工许可/新订单/标普500/高收益利差/收益率曲线/消费者信心）"
@@ -2076,7 +2082,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Coincident tier composite (nonfarm payrolls/real income/mfg-trade sales/industrial production)",
           "zh": "同步层综合指数（非农就业/实际收入/制造贸易销售/工业生产）"
@@ -2097,7 +2103,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Lagging tier composite (avg unemployment duration/inventory-sales ratio/business loans/prime rate/shelter CPI)",
           "zh": "滞后层综合指数（平均失业时长/库存销售比/工商贷款/最优惠利率/住房CPI）"
@@ -2118,7 +2124,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Growth axis composite",
           "zh": "增长轴综合评分"
@@ -2139,7 +2145,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Recession-risk context (NY Fed probability, Sahm rule, EBP, yield curve)",
           "zh": "衰退风险背景（纽约联储概率、Sahm法则、超额债券溢价、收益率曲线）"
@@ -2160,7 +2166,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Withheld tax receipts YoY (real-time income proxy, NOT BEA real income)",
           "zh": "预扣税收入同比（实时收入代理指标，非BEA实际收入）"

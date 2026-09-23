@@ -3,8 +3,8 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-09-22",
-  "generated_utc": "2026-09-22T18:23:23.747097+00:00",
+  "generated_asof": "2026-09-23",
+  "generated_utc": "2026-09-23T08:08:55.868305+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
   "n_entries": 426,
@@ -29,9 +29,15 @@
     "basis": "append-only shadow revisions overlay immutable raw PIT tags; canonical Prophet clocks and current quarantine are applied before grading, every summary split, and median_tilt"
   },
   "ec_source": {
-    "state": "unavailable",
-    "path": "data/stage_analysis/backfill/earnings_calls.parquet",
-    "reason": "no earnings-call source on this host \u2014 the EquityDesk backfill parquet is local-only and absent on CI/deploy, so every earnings lookup answers null"
+    "state": "available",
+    "path": "data/earnings_calls/history.parquet",
+    "tier": "r2_history",
+    "generation": {
+      "generation_id": "b81515ced740f5faee93136e",
+      "published_at": "2026-09-23T06:48:29.694908+00:00",
+      "rows": 50982
+    },
+    "reason": null
   },
   "split": {
     "stage2": {
