@@ -4,116 +4,100 @@ session: sol/semiconductors-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Complete deep semiconductor subtheme, company-role, BOM, manufacturing-dependency,
-  bottleneck and economic research here before a later Fable CEO implementation handoff.
+  Complete the difficult semiconductor research and synthesis in this principal session before
+  a reviewed final handoff to Fable CEO for implementation orchestration through existing owners.
 state_before: >
-  Chairman commissioned semiconductor research using the Robotics methodology and shared
-  template, explicitly retaining most research in the current conversation to conserve Fable.
+  Installment one established the five-view industrial model and initial AI/HBM/packaging
+  evidence. Process/material, EDA/IP, non-AI demand and comparable business economics remained open.
 changed:
-  - path: research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md
-    what: "First source-led foundation: five distinct industrial views, 24 proposed slices, 21 business roles, 38 source references and 16 future acceptance requirements."
-  - path: research/semiconductors/RESEARCH_QA_AND_RELATIONSHIP_EXAMPLES_2026-09-23.md
-    what: "Eight scoped relationship examples and the limited meaning of 17 portable-companion integrity checks."
+  - path: research/semiconductors/PROCESS_MATERIALS_EDA_RESEARCH_2026-09-23.md
+    what: "Substantive second research installment: demand mechanisms, 33 source references, 32 scoped business roles, 14 relationships, 12 falsifiable cards and 22 future acceptance cases."
   - path: agentos/handoffs/GMI-SEMICONDUCTOR-RESEARCH-2026-09-23.md
-    what: "Cumulative incomplete research frontier; same carrier; no Fable commission or implementation transfer."
+    what: "Cumulative incomplete frontier on the same research carrier; no Fable handoff or implementation custody change."
 verified:
-  - claim: "Protected compatible procedure loaded atomically."
-    command: "GitHub protected master, INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT at one commit"
-    result: "Mastermind c917a75b0168a524a51b2ba0603a99118e93ef1f; Skillpack 1.0.1/bootstrap 1."
-  - claim: "The foundation exists at an immutable research commit."
+  - claim: "Current protected procedure is compatible with this research continuation."
+    command: "Protected master and same-pin INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT reads and unchanged-blob comparisons"
+    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack 1.0.1/bootstrap 1."
+  - claim: "The second research dossier is durably published on the existing branch."
     command: "GitHub create_file followed by exact-commit fetch_file"
-    result: "Commit 6c2895c7799c5b9da585ccb64546caee435301dd; returned blob 4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c; intended header read back."
-  - claim: "QA limits and relationship examples are durably recorded."
-    command: "GitHub create_file followed by exact-commit fetch_file"
-    result: "Commit 591a13ee93892acb042d2e8da743d816c9446ffb; returned blob d13ca60e52905a95ba8fde0f3b56b04db92d5c13."
-  - claim: "The portable research companion passes its structural and reference checks."
-    command: "python /mnt/data/semiconductor_research/build_research_pack.py"
-    result: "17 integrity checks PASS; 0 product tests. JSON SHA-256 798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4."
-  - claim: "A single draft research carrier is discoverable."
-    command: "GitHub create_pull_request"
-    result: "Macro #7780, draft/open, initial PR head 591a13ee93892acb042d2e8da743d816c9446ffb. This checkpoint advances that same branch."
+    result: "Commit 65a15b656d2faa2e9fb36fe22d88209b62397d26; returned blob 2eb2dcbfa80db2fce3d058147af8c85c7c0ee761; intended header and scope read back."
+  - claim: "The authored offline companion passes structural/reference/date/arithmetic checks."
+    command: "python build_chunk2.py, rerun after making the bundle self-contained"
+    result: "26 checks PASS; 0 product tests; new 33 URLs distinct from prior 38."
+  - claim: "The expanded portable dossier includes all authored source, relationship, hypothesis and future-acceptance references."
+    command: "python render_dossier.py and source/URL/ID inclusion plus placeholder check"
+    result: "All referenced entries included; no TODO/TBD/FIXME markers; portable dossier is not represented as a byte-identical canonical download."
 unverified:
-  - claim: "Semiconductor research is comprehensive or the final Fable implementation packet is ready."
-    what_would_verify: "Finish open research families and source validation, challenge the synthesis, then review a written semiconductor design and implementation plan."
-  - claim: "The new semiconductor intelligence works on the production Themes path."
-    what_would_verify: "Accepted native admission, incumbent template integration, independent review and deployed source-to-visible-result browser proof."
-  - claim: "Portable Markdown bytes equal the full canonical foundation."
-    what_would_verify: "A successful full artifact retrieval and byte/hash comparison; not needed to repeat the verified GitHub existence read."
+  - claim: "Research is comprehensive or ready for final Fable implementation handoff."
+    what_would_verify: "Complete non-AI families, regional/competitor coverage, qualified capacity and business economics; challenge synthesis; review written semiconductor design and implementation plan."
+  - claim: "The new intelligence is accepted native data or live in Themes."
+    what_would_verify: "Approved native contracts/identity/retention/admission, incumbent template integration, independent review and real production-path browser proof."
 unresolved:
-  - "30 of 38 references are official excerpts, not fully inspected source pages."
-  - "Qualified capacity, yield, lead-time, comparable business exposure, private source retention and native security bindings remain incomplete."
-  - "JEDEC SPHBM4 direct page fetch failed; validate the original or attributable issuer publication before adoption/substitution claims."
-  - "#7669 metadata/body head discrepancy remains a future interface-write reconciliation gate."
+  - "Installment 2 has 30 relevant-body reviews and 3 official excerpts; excerpt details remain held."
+  - "Installment 1 retains 8 opened pages and 30 excerpts; no claim that all 71 cumulative URLs are full-document reviews or independent confirmations."
+  - "Qualified capacity, delivery, yield, contract pricing, comparable financial exposure and native security bindings remain incomplete."
+  - "SCREEN release/product access failed; MKS and one Synopsys flow page did not expose substantive bodies. Do not repeat unchanged failed paths solely to inflate evidence."
+  - "Prior JEDEC SPHBM4 verification and #7669 body/head discrepancy remain future relevant-source gates, not research-wide blockers."
 next_actions:
-  - "Continue research from this record and the foundation, not old tool history: process-to-material-to-supplier mapping plus EDA/IP dependencies."
-  - "Deepen relevant excerpt-only records with exact sections; then complete non-AI semiconductor families, qualified capacity and economic exposure."
-  - "Only after sufficient research, present the semiconductor written-design review gate and later implementation plan; do not commission Fable now."
+  - "Research non-AI semiconductor applications and component families: analog/signal-chain, MCUs, power silicon/SiC/GaN, RF/acoustic filters, sensors, mature/specialty foundry and conventional memory."
+  - "Build Robotics/automotive/industrial application-to-component mappings; distinguish end-demand, inventory adjustment, qualified supply and current asset ownership."
+  - "Then deepen facility-qualified capacity and compatible business economics before a reviewed written design and final Fable execution packet."
 do_not_redo:
-  - "Do not repeat broad Robotics/template/source-law archaeology without a material invalidator."
-  - "Do not recreate the 38-reference foundation or its 24/21/8/16 coverage structures; append focused evidence on this carrier."
-  - "Do not create another graph, product identity master, evidence store, ingestion queue, publisher or live basket."
-  - "Do not equate catalog capability, samples, qualification, commercial shipment and installed capacity."
-  - "Do not change ranking, entry, sizing, execution or trade policy from research."
+  - "Do not repeat completed broad Robotics/template or first-two-installment archaeology without a material invalidator."
+  - "Preserve foundation five views and the new demand-driver distinctions, date cases and falsifiers; extend evidence instead of regenerating an outline."
+  - "No new graph, identity/product master, evidence store, curation queue, publisher, watcher or trading authority."
+  - "No capability-to-procurement, certification-to-production, target-to-actual or mixed-segment-to-pure-exposure conflation."
+  - "Fable remains the intended later implementation orchestrator; do not offload foundational research now."
 danger_areas:
-  - "Macro is public. These are editorial proposals and bounded public-source examples, not current paid product payloads or admitted native assertions."
-  - "No source-content digest or immutable retention receipt has been invented."
-  - "Company role, semantic relevance, security identity, revenue share, basket weight and investment attractiveness are different concepts."
-  - "A source-critical supplier is not automatically supply-constrained or an economic beneficiary."
+  - "Macro is public. These are editorial proposals and bounded public-source examples, not current paid/native product data."
+  - "Research confidence, company relevance, financial exposure and investment decision authority remain different."
+  - "Current source assertions need existing approved private retention/publication and identity; no fabricated native receipts."
 ---
 
-# Semiconductor research cumulative continuation
+# Semiconductor research — cumulative continuation after installment 2
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 CAPABILITY_STATE: SPEC_ONLY
 
 Operation: `gmi-semiconductors-research-20260923-sol-001`.
-Carrier: Macro draft/HOLD PR #7780, branch `sol/semiconductors-research-20260923`.
+Carrier: Macro draft/HOLD PR #7780, `sol/semiconductors-research-20260923`.
 Original research base: `668237947e016f679782e41e61c91c9133a5ea99`.
-Protected procedure: Mastermind `c917a75b0168a524a51b2ba0603a99118e93ef1f`, compatible Skillpack 1.0.1/bootstrap 1.
-Direct-work rationale: PRINCIPAL_JUDGMENT. Chairman expressly requested that this session do most research before Fable. The user reported Pro mode; no hidden model/mode, quota or runtime attestation is inferred from that report.
+Current governing pin: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, compatible Skillpack 1.0.1/bootstrap 1.
+Present authority: current Chairman expressly requested meaningful research chunks here before Fable orchestrates implementation. Direct-work rationale: PRINCIPAL_JUDGMENT. User-reported Pro mode is not a hidden-model/runtime attestation.
 
-## Before and after
+## Material delta
 
-Before: the semiconductor assignment was a broad ambition plus the Robotics precedent.
-After: the research owner has a recoverable, source-led foundation separating physical BOM, manufacturing route, commercial relationships, qualified capacity and business/security exposure, with explicit evidence limits and adversarial interpretation cases. This is research capability, not a live Themes feature or accepted production architecture.
+The second installment resolves why generic semiconductor-growth/AI-capex labels lose economic meaning. The research distinguishes design/mask activity, wafer/process use, equipment/productivity, quality, site commissioning, licensing, unit royalties and business mix. It supplies route-specific material dependencies, scoped EDA certification, dated asset ownership and explicit alternative explanations/falsifiers. It does not claim a live feature, accepted ontology, complete company universe or proven global shortages.
 
-Coverage is exactly 38 references (8 opened relevant pages; 30 official excerpts), 21 company/business-role records, 24 proposed research slices, 8 scoped relationship examples and 16 future application acceptance requirements. Seventeen checks validated an offline companion's structure and references, not source truth or application behavior. No complete company census or quantified global shortage/qualified-capacity series exists yet.
+New coverage: 33 primary-source URLs (30 relevant-body inspections; 3 held official excerpts), 32 business-role records, 14 relationship/ownership examples, 12 bottleneck research cards and 22 future acceptance specifications. These are not necessarily new companies, independent corroborations or executed product tests. The source URL sets are disjoint across installments: 38 + 33 = 71, a coverage measure only.
 
-## Material findings and falsifiers retained
+Key retained findings: mask demand can track designs rather than wafer volume; qualified material grades differ from commodity segments; CZ crucible quartz differs from silicon feedstock and FZ is not automatically substitutable; blanks/masks/writers are different objects; non-exclusive resist cooperation does not prove universal adoption; deposition, CMP, vacuum and cleaning roles need qualified configuration and economic offsets; future gas targets are not commissioning; EDA certification is function/tool/node scoped; controller/PHY/memory production differ; asset history must follow exact or evidenced-by dates.
 
-- HBM records must distinguish supplier, base-die route, generation, stack configuration and shipment milestone. A sampled configuration does not inherit volume status from another configuration.
-- CoWoS-S/R/L construction differs; generic package capacity cannot be assumed fungible across variants and product requirements.
-- ABF material and fabricated package substrate are different roles; category adjacency is not a named procurement contract.
-- Ibiden's 220-billion-yen phase is included in its 500-billion-yen program; planned future mass production is not current qualified output.
-- TCB, hybrid bonding, surface preparation and test/inspection are distinct process/application dependencies, not a universal one-date replacement story.
-- Equipment supplier plans, catalog dry-cycle throughput and customer-qualified good output are distinct measures.
-- Technical criticality does not prove scarcity, pricing power, supplier revenue capture or an investment conclusion. Relevant falsifiers include qualified substitutes, differing recipes/intensity, easing allocation and realized usable capacity.
+Strong date regressions: Rambus PHY close 2023-09-06 versus publication 2023-09-07; Arm Artisan disposition 2025-08-26; other completion announcements retain unknown exact close day where unestablished. Arm's described end-2026 silicon production remains forward-looking. No guessed listing, revenue purity or basket weight is admitted.
 
-## Existing architecture and custody
+## Canonical artifacts and reproducibility
 
-Robotics precedent: Macro #7773 at `7efdd6cdc6401b5caf8f7fd34aa683b39e108686`, including its cumulative Agent OS handoff and approved written design. Its implementation plan remained at review; no semiconductor design inherits that approval.
+Installment 2: `research/semiconductors/PROCESS_MATERIALS_EDA_RESEARCH_2026-09-23.md`, commit `65a15b656d2faa2e9fb36fe22d88209b62397d26`, GitHub-returned blob `2eb2dcbfa80db2fce3d058147af8c85c7c0ee761`. It preserves the substantive findings, all primary URLs, company-role table, relationship cases, hypothesis/falsifier matrix and future acceptance requirements independently of chat attachments.
 
-Existing GMI evidence/curation and identity owners remain canonical. K1 references native evidence; F04 composes the existing user workflow. The Robotics optional assertion/clock proposal is a dependency to reconcile, not an enrolled semiconductor schema. No W4/W5/W6 revival or K3-D clone.
+Portable expanded dossier: `SEMICONDUCTOR_PROCESS_MATERIALS_EDA_DOSSIER_2026-09-23.md`, SHA-256 `14b3bba540494bc3b98e7383ecd3e46255441431bc28ca29cd649bdfbdfc1a03`.
+Portable structured companion: `SEMICONDUCTOR_CHUNK2_RESEARCH.json`, SHA-256 `96c8d54566c409f1dec84de8e892b5f843c595d028282f46f4424540583776dc`.
+The portable dossier is separately rendered from authored editorial records, not a downloaded byte-identical canonical file. `build_chunk2.py` uses bundled prior URLs for 26 reproducible integrity checks; `render_dossier.py` generates the readable expansion. No product tests, independent review, native retention validation, Agent OS validator, CI acceptance or browser proof is claimed.
 
-Incumbent interface navigation from the Robotics plan: #7462 evidence store, #7669 shared basket-detail template, #7664 theme board builder. No interface is written here. Inspected #7669 metadata returned `2c28d950aa9448fc878bb64d92b228a8f1952bde`; its body named `79c291a40684869facb160a20341ba7340d96b04`. Preserve rather than guess; refresh only when the future write depends on it.
+DO_NOT_REDO installment 1: foundation commit `6c2895c7799c5b9da585ccb64546caee435301dd`, blob `4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c`; QA/relationship supplement commit `591a13ee93892acb042d2e8da743d816c9446ffb`, blob `d13ca60e52905a95ba8fde0f3b56b04db92d5c13`. Its 24 proposed slices, 21 business records, 8 relationships and 16 requirements remain research only. Prior seed digest `798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4` is historical and was not overwritten.
 
-## Evidence and artifacts
+## Existing architecture and held interfaces
 
-Foundation: `research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md`, immutable commit `6c2895c7799c5b9da585ccb64546caee435301dd`, returned blob `4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c`.
-Supplement: `research/semiconductors/RESEARCH_QA_AND_RELATIONSHIP_EXAMPLES_2026-09-23.md`, immutable commit `591a13ee93892acb042d2e8da743d816c9446ffb`, returned blob `d13ca60e52905a95ba8fde0f3b56b04db92d5c13`.
-Portable seed digest: `798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4`.
+Robotics #7773 at `7efdd6cdc6401b5caf8f7fd34aa683b39e108686` remains the recovered precedent, not fresh status. Its own written-design approval is not approval of a semiconductor design. Reuse native GMI curation/evidence/identity, K1 reference and F04 composition. No W4/W5/W6 revival or K3-D clone.
 
-The durable Markdown register/tables/examples preserve substantive findings independently of attachments. An attempted public raw-file copy could not resolve the newly written URL; no exact full-byte local Markdown comparison is claimed. The local JSON was authored as an offline companion, not falsely labeled a downloaded canonical file. Do not retry the raw-copy lane unchanged merely to manufacture a download receipt.
+Incumbent #7462 evidence store, #7669 shared detail template and #7664 board builder remain untouched. Preserve the previously recorded #7669 metadata/body head mismatch; refresh only when actual interface work depends on it. No unrelated current-main rebase, source-custody transfer or parallel template was created.
 
-## Continuation boundary and effects
+## Boundary, effects and exact next action
 
-Boundary: substantial canonical recovery and multi-pillar source retrieval have produced a first evidence-model installment. The accumulated tool/source context warrants a safe research-chunk continuation before the distinct process/material/EDA deep dive. This is not an arbitrary elapsed-time stop, mission completion or Fable handoff.
+Boundary justification: a substantial manufacturing/material/EDA source-retrieval and synthesis chunk has now produced a concrete dossier and checkable companion. Accumulated source/tool context warrants a safe continuation before the distinct non-AI application/component research phase. This is not a stop because of elapsed time, a final Fable handoff or mission completion.
 
-Intended resume surface: a research-capable principal conversation using this cumulative record and only minimum fresh canonical state; avoid replaying earlier tool payloads. A fresh conversation changes presentation, not source custody or authority. No hard session seal or autonomous wake is asserted.
+Last effects: installment-2 research document committed and exact-commit header/blob read back on the original branch. This cumulative checkpoint advances that same branch; its own revision is supplied by the write receipt and readback, not invented self-referentially here. EFFECT_UNKNOWN: none observed before this write. Active children, workers, Executive Jobs/Attempts, watchers and pending counterpart returns: none created by this operation.
 
-Last verified effects: this same research branch contains the foundation and QA supplement; draft PR #7780 exists. This checkpoint's own committed revision is established by its tool receipt and exact-commit readback, not a self-invented SHA inside its contents.
+Intended resume: research-capable principal, this cumulative record plus the two dossiers and only minimum fresh canonical state. No automatic wake, hard session seal or custody transfer is asserted. Keep PR #7780 draft/HOLD, without automatic merge.
 
-EFFECT_UNKNOWN: none observed. Active children, Executive Jobs/Attempts and reciprocal watchers: none created. No counterpart is waiting for an invented ACK/START/STOP. No product source, native data, deployment, portfolio or trading effect. No independent review, hosted CI, Agent OS validation or browser acceptance claimed.
-
-Exact next action: continue process-to-material-to-supplier and EDA/IP research here before advancing to the non-AI families and qualified capacity/economic layer. Fable remains uncommissioned until the research and reviewed implementation specification are ready. Keep this PR draft/HOLD; do not merge automatically.
+Exact next action: produce the non-AI semiconductor application/component dossier, emphasizing Robotics/automotive/industrial use, inventory versus end-demand and qualified substitutes. Fable stays uncommissioned until the deeper corpus and written implementation specification are ready.
