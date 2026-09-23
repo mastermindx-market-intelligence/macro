@@ -58,6 +58,24 @@ changed:
       Records that #851 is protected but all six #811 owned paths moved before current protected c917a75b.
       The immutable-commission owner is unblocked in principle but now needs a real same-carrier semantic
       integration workspace; no web-only overlay or sibling commission plane is safe.
+  - path: "Mastermind PR #651"
+    what: >
+      Same-carrier current-protected integration completed at
+      8efbd67c9129f7a1df12cc2584e17fac6b3d2aa5 with parents
+      3e70694f7c5af9aee1d3f06ab0b4d2a253f30799 and
+      7084d7c436a991c3a9d445a1afc6bc0f0642dc62. Relative to current protected master it differs
+      by exactly the incumbent three WEBCTX-P1 files; the previously tested candidate blobs were
+      preserved byte-for-byte. Fresh exact-head CI run 35840354840 is running.
+  - path: "Mastermind PR #936"
+    what: >
+      Opened dependent Draft/HOLD assignment-projection child on #651. Current exact head
+      b61ee938e34f1e23d498fdae4779fea0c55ad666 adds only
+      control_plane/web_sol_cognition_assignment.py and its test. It composes existing Job/Attempt
+      identity, ExecutiveDialogueSource/commission_ref provenance, #651 bounded continuation and
+      existing orchestration_result_schema into a deterministic research-only browser assignment.
+      Same-carrier frame-budget repair lowered assignment JSON/rendered ceilings to 22 KiB/24 KiB
+      after proving a 40 KiB raw prompt could violate #836's 64 KiB native frame after JSON escaping.
+      Fresh exact-head CI run 35841422023 is running; no browser wiring or provider effect exists.
 verified:
   - claim: >
       Current protected Mastermind procedure and implementation source were pinned before effects at
@@ -120,6 +138,30 @@ verified:
       SUBMIT_CONTINUATION is deliberately fixed-text, exact-target and no-caller-text. The directive tells
       the session to recover Executive/Agent OS state. Therefore it is safe but insufficient for a degraded
       Pro session that lacks the custom Executive/Studio Direct access needed to perform that recovery.
+  - claim: >
+      Current continuation re-pinned protected Mastermind procedure before the #651/#936 effects.
+    command: >
+      GitHub protected-master branch read plus same-SHA INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION reads.
+    result: >
+      Protected Mastermind pin is 7084d7c436a991c3a9d445a1afc6bc0f0642dc62; Skillpack remains
+      mastermind.sol_skillpack.v1 1.0.1 / bootstrap major 1.
+  - claim: >
+      #651 current-base composition preserved incumbent source rather than creating a parallel continuation owner.
+    command: >
+      Compare 7084d7c436a991c3a9d445a1afc6bc0f0642dc62...8efbd67c9129f7a1df12cc2584e17fac6b3d2aa5
+      plus candidate blob readback.
+    result: >
+      Diff is exactly control_plane/web_sol_continuation.py, scripts/web_sol_continuation.py and
+      tests/test_web_sol_continuation.py; all three blob identities equal the pre-integration candidate.
+  - claim: >
+      #936 is a path-disjoint pure producer and explicitly reserves native-frame composition budget.
+    command: >
+      Compare #651 exact base 8efbd67c9129f7a1df12cc2584e17fac6b3d2aa5 to #936 exact head
+      b61ee938e34f1e23d498fdae4779fea0c55ad666 plus local py_compile.
+    result: >
+      Diff is exactly two new assignment files. Python compile passes. Declared rendered-prompt ceiling
+      is 24 KiB and the test requires worst-case 2x JSON-string escaping plus 16 KiB reserve to fit
+      inside the incumbent 64 KiB native frame.
 unverified:
   - claim: "R0 exact-head repository CI is green."
     what_would_verify: "GitHub Actions run 35840961016 reaches terminal success on head 9bcee18df96afd5d8659c31c272344ea94d0fffc."
@@ -130,6 +172,10 @@ unverified:
       After #836 source custody releases and a separately versioned R1 result-observation action is
       implemented/installed, an approved disposable exact conversation produces one canonical result and
       the native/control side receives only that bounded result plus exact-turn identity/digests.
+  - claim: "#651 current-protected integration is accepted and released."
+    what_would_verify: "GitHub Actions run 35840354840 is terminal green on 8efbd67c... and a genuine non-author exact-head review accepts the same integration head."
+  - claim: "#936 bounded cognition-assignment projection is accepted."
+    what_would_verify: "GitHub Actions run 35841422023 is terminal green on b61ee938... and a genuine non-author exact-head review accepts the same dependent head after #651 acceptance."
   - claim: "A degraded Pro session can receive enough bounded task context without Executive/Studio Direct."
     what_would_verify: >
       An accepted outbound assignment-capsule release consumes current #651 continuation semantics, submits
@@ -152,7 +198,8 @@ unresolved:
 next_actions:
   - "Primary: consume PR #933 exact-head CI and independent review. Repair only on the same PR/branch if a finding or failure is material; do not start R1 from an unaccepted R0."
   - "After #836 releases its Web-Sol transport paths, implement R1 on the incumbent transport: one separately versioned exact-current-terminal-turn result-observation action feeding the accepted R0 reducer, with transcript/DOM/prior-turn export prohibited."
-  - "After #811/#818 immutable commission source/consumer semantics and #651 bounded continuation are accepted/current, build only the browser-specific bounded projection/renderer that composes those existing owners; do not introduce a second handoff or task-authority schema."
+  - "Consume #651 exact-head CI/review; its current-base integration is 8efbd67c... and must stay on the same carrier."
+  - "Consume #936 exact-head CI/review; its current bounded assignment projector is b61ee938... and is dependent on #651. Do not duplicate it or wire it into #836 before its dependency/review gates."
   - "After #870/current Runtime owner settles, implement R2 by routing the browser raw observation through the existing Runtime validation/sealing/completion path and existing terminal-return consumer; preserve replay/effect reconciliation."
   - "Consume #890 for R3 cognition-only placement and pre-START toolful rebinding; then use #651/context-rotation/RuntimeBinding for R4 successor bootstrap."
   - "Only after those source releases: execute a disposable zero-Chairman canary before any explicitly authorized production responsibility."
@@ -194,3 +241,19 @@ At this checkpoint exact-head GitHub CI run `35840961016` is queued on the froze
 The next Sol session should start by reading PR #933 and this handoff, consume the CI/review return, and
 repair the same carrier if required. Only after R0 is accepted should transport wiring begin, and only
 after incumbent source owners release the relevant paths.
+
+
+## Continuation update — #651 current-base integration and #936 assignment ingress
+
+This continuation advanced the outbound half without seizing browser transport custody. #651 now has a
+same-carrier current-protected integration at `8efbd67c9129f7a1df12cc2584e17fac6b3d2aa5`; fresh CI is running.
+A dependent child, Mastermind PR #936, now implements the pure research-only assignment projection at
+`b61ee938e34f1e23d498fdae4779fea0c55ad666`. The assignment carries no commission body and performs no
+browser effect. It binds exact Job/Attempt/Worker/root identity, immutable commission provenance, the
+#651 Agent OS projection, a no-effects contract and the existing orchestration result schema.
+
+Adversarial carrier composition caught and repaired an initial 40 KiB prompt ceiling before release.
+The current 24 KiB rendered ceiling reserves for worst-case JSON-string escaping inside #836's existing
+64 KiB native-message boundary. The next source action remains return-driven: repair #651/#936/#933 only
+on their incumbent carriers if exact-head CI/review finds a defect; browser submit/observe wiring remains
+held behind #836 source custody.
