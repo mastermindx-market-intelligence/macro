@@ -5,96 +5,60 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R3_PRECIOUS_METALS_RECORDED
-finalization_classification: CHECKPOINTED_CONTINUATION
+research_stage: R4_IN_PROGRESS
 implementation_authority: none
 ---
 
 # Basic Materials — cumulative principal research checkpoint
 
-## Mission and current authority
+## Mission, authority and carrier
 
-The Chairman commissions extensive principal-led Basic Materials research, economic synthesis, ontology and product design, followed by an implementation-ready masterplan for Fable CEO. Consume the neighboring sector/theme framework and Robotics methodology without duplicating either. The current live directive is to continue; earlier guidance requests deeper productive turns and safe persistence, not an arbitrary elapsed-time stop. Principal synthesis is retained for PRINCIPAL_JUDGMENT.
+The Chairman's current live directive is to continue the extensive principal-led Basic Materials research and eventual implementation-ready masterplan for Fable CEO. Preserve the neighboring shared sector/theme framework and Robotics work. Principal synthesis remains retained for PRINCIPAL_JUDGMENT. No product implementation or premature Fable assignment. The user job remains identifying changing material economics, the businesses and financial claims that capture them, the timing of retained cash/per-share value, and qualified context for the existing stock workflow.
 
-User outcome: identify which granular material economics change, who captures them, how and when they reach retained cash and per-share value, what was already expected, and what qualified context the existing stock/Prophet workflow should receive. The complete sector research and final Fable packet remain unfinished. No product code or premature delegation. Fable remains intended eventual principal, not a bound receiver.
+Operation `gmi-basic-materials-research-20260923-sol-001` stays on Macro **#7796**, OPEN / DRAFT / HOLD, branch `sol/basic-materials-research-20260923`. Sol holds release. Do not merge, arm, replace, rebase or turn the research branch into implementation by inference. Current head reconciled before this write: `20552ebd79d1254d626c4486fb1dfd5ef3b466bb`. Original research base `7cc3e15ea45cd45a1d192495204f07ebd43f783d`.
 
-## Exact current carrier and procedure
+Protected Mastermind master freshly read: `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, protected=true, identical to R3. INDEX fetched again (blob `1a20acafe1fe7df686489cadef15a1ae7833ec12`); Skillpack 1.0.1/bootstrap 1 compatible. Previously fully loaded ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT at this identical immutable commit remain controlling; fresh header/blob reads returned `69ac0734df6ca1e8d4885b917ba5b51d998aafe6`, `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, and `4a9ec3782da001322604e977dbe91b9cf371f0b9`. This is bounded same-revision reuse, not loading remembered procedure from a different revision. Current GitHub get_repo preflight returned read/push permission. Technical access grants no additional organizational authority.
 
-- Operation: `gmi-basic-materials-research-20260923-sol-001`.
-- Macro **#7796**, OPEN / DRAFT / HOLD; `sol/basic-materials-research-20260923`. Sol holds release. Do not merge, arm, replace, rebase or turn this research branch into product implementation by inference.
-- Last artifact commit before this checkpoint: `10b1c8ce445375a5ba9266a0e5d91ca67ae350a9`. The commit containing this checkpoint is its immutable continuation revision; obtain it from the real write receipt and read it back, not by inventing a future SHA in this file.
-- Original research base: `7cc3e15ea45cd45a1d192495204f07ebd43f783d`.
-- Protected Mastermind master freshly read this turn: `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, protected=true. INDEX, ACTIVE_EXECUTION (complete ranges), WEB_CEO_DELEGATION and CLOSEOUT loaded from the SAME commit. Compatible Skillpack 1.0.1/bootstrap 1; no provider/runtime admission inferred from user-reported mode.
-- Current GitHub action discovery and Macro get_repo preflight establish read/push permission. That is technical capability, not extra organizational authority.
-- Existing parent: WS:GMI-THEME-GRAPH. Prior architecture-read pin `c4da107fe729e46b4d4036b3e0e290390315d0fd`; STSI spec blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971`; workstream blob `cd2067041dc441bf5bc44302ee8c458bdfd42b45`. These are research continuity refs, not fresh release qualification.
+Existing parent: WS:GMI-THEME-GRAPH. Prior architecture-read pin `c4da107fe729e46b4d4036b3e0e290390315d0fd`, STSI spec blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971`, workstream blob `cd2067041dc441bf5bc44302ee8c458bdfd42b45`. These are research continuity refs, not refreshed release qualification.
 
-## Durable research artifacts
+## R1–R3 preserved, not to be re-crawled
 
-### Preserve R1 and R2 unchanged
+All paths below are in `research/basic_materials/` on the same carrier.
 
-- R1 foundation: `research/basic_materials/BASIC_MATERIALS_RESEARCH_FOUNDATION_2026-09-23.md`; blob `31cfbcdae510940e09161a4989b360df0b4f6818`.
-- R2 metals: `research/basic_materials/BASIC_MATERIALS_R2_METALS_ECONOMICS_2026-09-23.md`; creation `6c3fa22934c547196508c414263b71cfb6b46ee8`; blob `82d11b917654565e223374736b735429591a4d9d`; SHA256 `8be7c908a62a3d478d6a036f219213f2706bf5c5d662996393eafa7d386450e9`.
-- R2 arithmetic: `research/basic_materials/R2_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`; creation `c26b3274d94364630a2ea2612bdf988088e7dfb7`; blob `71c477134f82b114ad1720d43cdc6e800ed4f048`; SHA256 `14e816f328b6fca64183a8034d9f84f75274d855207bee5cf54763408fa982ad`.
-- R2 final checkpoint was `3f1eb2dd054c10d830a5d20d42142026abd41bda`, blob `f5ea3d0ca8bad32bd312e94ffa6705a9ae7c34ac`.
+- `BASIC_MATERIALS_RESEARCH_FOUNDATION_2026-09-23.md`: blob `31cfbcdae510940e09161a4989b360df0b4f6818`; sector families, operating-model proposals, measurement/rights/clock boundaries.
+- `BASIC_MATERIALS_R2_METALS_ECONOMICS_2026-09-23.md`: blob `82d11b917654565e223374736b735429591a4d9d`; copper/aluminium/steel company and cash/ownership cases, physical-stage definitions, conditional rerating mechanisms.
+- `R2_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: blob `71c477134f82b114ad1720d43cdc6e800ed4f048`; 31 exact arithmetic checks and 4 retained source/display residuals, not application tests.
+- `BASIC_MATERIALS_R3_PRECIOUS_METALS_AND_FINANCIAL_CLAIMS_2026-09-23.md`: creation `fdeab42b34cd59e52f9a95f01c7495e5e2296638`, blob `d58bfb76a78efba919cb161f050bdb8c1502c872`; gold/silver/PGM demand, operator/royalty/stream exposures, resource/reserve semantics, development financing/overrun/delay scenarios.
+- `R3_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: creation `10b1c8ce445375a5ba9266a0e5d91ca67ae350a9`, blob `eb8feaf67907b5866a9a07ab02b0f4ec98432cc1`; 38 exact rational checks and 2 retained residuals. R3 serialization issue was diagnosed and repaired without changing inputs; no need to repeat it.
 
-R1 preserves the sector taxonomy and operating-model proposals. R2 preserves five metal-company cash/ownership cases, stage-specific copper definitions and rerating hypotheses. Their historical research limits and source clocks remain in force; no re-crawl is required.
+R3 final cumulative checkpoint is at `20552ebd79d1254d626c4486fb1dfd5ef3b466bb`, blob `7135b00db2b2124226fd6cdbf0cff1ca3e263698`. The current note replaces the working frontier, not the immutable research. All R1–R3 annexes remain unchanged and research-only. Their source clocks and uncertainty still apply.
 
-### R3 — new research result
+## Material analytical boundaries already established
 
-`research/basic_materials/BASIC_MATERIALS_R3_PRECIOUS_METALS_AND_FINANCIAL_CLAIMS_2026-09-23.md`
+Preserve cost bases and denominators; gross/consolidated/attributable quantities; actual versus preliminary/guidance/scenario; intra-group elimination; data period versus first publication/revision; current membership versus PIT membership. Do not subtract working capital twice from cash flow or count a stream burden both in operating cash and again in equity. Physical metal, contractual entitlement and financial exposure are distinct. An equivalent-ounce methodology change is not physical growth. Full-year versus second-half forecasts may differ without contradiction. Financing can alter retained per-share economics without a change in resource size or share count.
 
-Creation commit `fdeab42b34cd59e52f9a95f01c7495e5e2296638`; exact-ref returned blob `d58bfb76a78efba919cb161f050bdb8c1502c872`. Local full-document Git blob matches; 47,436 bytes, approximately 6,185 words. SHA256 `e988de9beaaef8a9a69d7b24d2572728fa574f0c585cdd2b093cb02c72bbcd67`.
+R1–R3 taxonomy/cohort labels, model hypotheses and acceptance cases are proposals, not admitted canonical graph nodes, price baskets, source datasets or predictive/decision models. No demonstrated alpha, accepted contract or production proof is claimed.
 
-The annex adds gold/silver/PGM demand distinctions, Agnico/Wheaton/Franco-Nevada/Valterra/Montage cases with BHP counterparty evidence, physical-versus-contractual-right models, reserve/resource boundaries, a financing/dilution scenario, thirteen proposed research cohorts, seven rerating hypotheses, twenty-four proposed acceptance cases and fourteen primary-source register entries. Related report pages/transaction publications are not independent events.
+## R4 progress and exact next action
 
-`research/basic_materials/R3_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`
+R4 is investigating lithium product/process and price realization; natural/synthetic graphite and customer-specific anode qualification; rare-earth separation and magnet-material economics. Initial primary-source reads identify useful cases: Albemarle Q2 results and Kemerton idling decision; PLS June-quarter shipment/cost/funding boundaries; MP Materials Q2 separated-product/intercompany/PPA-versus-revenue disclosures; IEA 2026 battery deployment and manufacturing definitions. These are source leads and provisional observations, not completed R4 findings or an accepted current market balance.
 
-Creation commit `10b1c8ce445375a5ba9266a0e5d91ca67ae350a9`; exact-ref returned blob `eb8feaf67907b5866a9a07ab02b0f4ec98432cc1`. Local Git blob matches; 6,502 bytes. SHA256 `064920fe1be85ac43bf6dd49e6f272287b695ab6c2dc12fc1b95ee963b1c7f31`.
+Continue by obtaining original issuer financial and operating disclosures, inspecting relevant PDF pages, reconciling at least one producer/processor financial bridge, and building source-bound demand/loading and usable-capacity/qualification examples. Separate product purity from customer approval, sample delivery from commercial acceptance, nameplate capacity from realized saleable output, and benchmark support/contract income from market selling price. Preserve missing inputs rather than manufacture cost spreads or capacity utilization.
 
-Executed verification: **38 exact rational checks and two retained nonzero displayed-precision residuals**. JSON roundtrip validates all forty exact result/expected/residual identities. Local integrity checks verify source and proposed-case identifiers and exact remote/local Git-blob matches. An initial serialization check incorrectly compared rounded repeating-decimal display against exact rational expectation; three hypothetical scenario rows identified the cause. Expected/residual fractions were preserved and the entire calculation/readback reran successfully. No source values or criteria were weakened. This is research arithmetic, not application tests, a full audit or predictive validation.
+Planned outputs on this same carrier: `BASIC_MATERIALS_R4_BATTERY_AND_STRATEGIC_MATERIALS_2026-09-23.md` and a research arithmetic record. At the end of a justified research boundary, update this same checkpoint and read back exact revisions. No finalization is claimed by this intermediate checkpoint.
 
-Portable Markdown/JSON copies exist under `/mnt/data/basic_materials_r3/` in the originating conversation. They match the GitHub blobs and are copies, not a second canonical owner. Their existence in a later runtime must be checked before sharing sandbox links.
+## Held source questions and non-goals
 
-## Material R3 findings to preserve
+Preserve R1's USGS date/reference-period discrepancy; R2's ANTO-APM page-image gap, NUE-UNITS mapping gap and unrecovered ICSG forecast body; R3's incomplete current Kone agreement/payment curve and original deposit-wording discrepancy, Valterra 3E/total-PGM mapping and contract meanings not inferable from royalty acronyms. Reopen only on material new evidence. Do not turn dated analytical cases into current stock recommendations.
 
-1. Precious metals are not one demand regime. Silver application growth needs per-unit loading and substitution; gold demand components and inventories remain distinct. These are dated sources and hypotheses, not current trades.
-2. The September 9 WPIC forecast is a 2026 full-year surplus alongside a second-half deficit forecast. Preserve the report's vintage, horizon and above-ground-stock definition. Its rounded table has two retained one-koz calculation residuals; do not invent unrounded repairs.
-3. Agnico: produced and sold ounces differ; AISC and realized-price denominators differ; prior cost composition is restated. Its source-reconciled Q2 FCF is USD1,334.865m versus pre-working-capital FCF USD1,302.949m. Production less sales is not automatically inventory.
-4. Wheaton/Antamina: low ongoing purchase cost does not include upfront capital or all financing effects. Metal rights are not mine ownership/control; whole-mine stream share must not be multiplied by seller ownership again. Metal credits need not be physical shipments. Contract thresholds can alter receipts at unchanged mine output.
-5. Franco-Nevada changes GEO conversion methodology in 2026; reported equivalents are not unqualified physical growth. Available capital includes cash, investments and undrawn credit. Its Net GEO is an economic measure, not extra mined metal.
-6. Valterra: source-defined AISC per 3E ounce and total-PGM/5E+Au output cannot be used as a common margin denominator without further evidence. Own-mined, purchased concentrate, refining and sales remain different activities.
-7. CIM reference: resources/reserves require their own definitions, reference point, assumptions and inclusivity. Reserve classification does not by itself prove a built/permitted/funded operation. Do not invent a new geological lifecycle authority.
-8. Montage: June liquidity minus remaining headline capex gives our USD47.8m limited-perimeter residual; cash-only comparison gives -USD106.8m. Neither is a full funding conclusion. Oxide, hard-rock and commercial completion are distinct.
-9. Koné original stream headline 20% purchase payment has a temporary price adjustment, threshold/area/schedule conditions and possible later amendments. Its example at USD3,200 gold pays USD675, not USD640. The general curve is not derived from one example. Key-terms/cautionary deposit wording differs (625/600); retain the inconsistency, not guessed legal truth.
-10. H5 financing example holds operating asset value fixed while comparing equity issue prices, a stream's surrendered cash PV, overrun and delay. Outputs are hypothetical, not issuer price targets. No share-count dilution does not mean no economic cost. Do not double-count capex, financing proceeds, stream burden or debt obligations.
+A current SQM earnings-release PDF link returned 403 during R4; the issuer landing is accessible. This is one source-body retrieval limitation, not an issuer/data-fabric-wide failure. No repeated identical fetch is needed. Syrah's public report index and Lynas's embedded index did not expose report rows in the initial parsed view; report-body availability remains unproven, not globally unavailable.
 
-## Held uncertainty and DO_NOT_REDO
+No product/template, live graph facts, basket membership, ranking/entry/size/trade, source rights, publisher or runtime config changes. No new graph, asset master, evidence/identity/correction owner, ThemeState, source store, queue or control plane. No paid full-fidelity payload or licensed raw dataset admitted to public Git. Robotics #7773 remains reference-only and untouched.
 
-R3 contract-calculation admission remains held for the full current Koné agreement/amendments/payment curve and the original publication's inconsistent deposit wording. Valterra's complete source-specific 3E/total-PGM conversion is unadmitted. Legal royalty terms cannot be inferred from acronyms. Full precious-metal issuer/asset coverage, forecast calibration and predictive evaluation remain unfinished.
+## Effects and continuation safety
 
-Preserve earlier held cases: R2 ANTO-APM page-image reconciliation unavailable; NUE-UNITS no finished-steel/scrap output-yield mapping; ICSG forecast body unavailable, so no current quantitative copper balance conclusion. R1 USGS date/reference-period discrepancy remains visible in its source register. Reopen only on material new source/access evidence, not another identical failed fetch.
+EFFECT_UNKNOWN: none observed before this write. Active children/returns: none. Fable delivery/ACK/START: none. Autonomous wake/watch: none. Application tests, Agent OS validator, independent acceptance, CI, merge, deployment and browser proof: not claimed.
 
-Do not repeat R1 architecture/Library/Robotics recovery or R2/R3 issuer crawls and checked arithmetic without an invalidator. Use the annex source registers and this checkpoint. Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` remains reference-only; its accepted scope and receiver semantics are untouched.
+This is a working checkpoint before longer R4 source and calculation work, not a terminal classification or custody transfer. Research runs only in the active turn. A later session must reconcile the exact head and procedure before writes and continue R4 rather than restart R1–R3.
 
-No product/template, live graph facts, basket membership, identity/evidence/correction owner, ThemeState, source rights, publisher, ranking, entry, sizing, trading or runtime configuration changed. No paid full-fidelity payload or licensed raw dataset admitted to public Git. Research cohorts and scenarios are proposals, not admitted models or canonical themes.
-
-## Effects, proof and continuation
-
-Last material effects: intermediate checkpoint `41f97794e1794a47d4a6ff193b9a1aa9f7f6545b` read back; R3 annex and arithmetic committed and read back with exact local blob matches; this cumulative checkpoint updated on the same carrier. Final readback and PR metadata reconciliation are required before the originating turn claims a verified continuation.
-
-**EFFECT_UNKNOWN:** none observed before this write.  
-**Active children/returns:** none.  
-**Fable delivery/ACK/START:** none.  
-**Autonomous wake/watch:** none.  
-**Application tests / Agent OS validator / independent research acceptance / CI / merge / deployment / browser proof:** not claimed.
-
-**FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**  
-**MISSION_COMPLETE: false**
-
-Boundary: the R3 demand/financial-claim/financing research unit has a coherent recorded result after substantial multi-source/PDF/tool context. Its unresolved source-specific calculations are explicit. Starting the different battery/strategic-material evidence family should consume this compact frontier, not replay the R3 crawl. This is continuity, not completion, cancellation, source-writer release, transfer or Fable assignment.
-
-**Exact next action — R4 battery and strategic materials:** research lithium product/process and price realization; natural/synthetic graphite and anode qualification; rare-earth separation and magnet-material economics. Obtain at least one worked source-reconciled producer/processor or qualified-material company comparison, testing end-market units against loading, usable grade, capacity ramp and financing. Preserve R1–R3's measurement, economic-right, clock and authority rules. Extend the same #7796 carrier and cumulative checkpoint. Other Materials families, full geographic/company coverage and the final Fable masterplan remain in scope.
-
-**Intended resume surface:** next principal research turn from this checkpoint and the R3 source register, using a fresh conversation if needed for context stability. Re-pin current protected procedure and reconcile #7796 before further modification. A new chat is not custody transfer or runtime admission; no autonomous wake is implied.
-
-verified_by: fresh protected source and PR reads; GitHub read/push preflight; primary issuer/industry/CIM publications; targeted PDF screenshots; executed rational arithmetic and diagnosed serialization repair; document integrity checks; exact-commit readbacks and matching local Git blobs; final checkpoint verification and PR projection update in the originating turn.
+verified_by: current protected branch, exact-reference INDEX/procedure-blob and #7796 checkpoint reads; current GitHub permission preflight; initial primary-source reads and explicit retrieval failures; same-carrier update and required exact-ref readback.
