@@ -290,10 +290,19 @@ step_freshness_gate() {
         # Capture the gate's exit code BEFORE the if: `if ! cmd` resets $?
         # inside the body, so the rc-must-be-captured-before pattern is the
         # only way to keep failure rc's intact (BLOCKER-2 fix).
+        # 2026-09-23 defect (first scheduled run): the gate prints ONE verdict
+        # word on stdout and ONE `::gate-info::` line on stderr, but this
+        # capture merged both streams into the status file and matched the
+        # whole file against `FRESH` — so a FRESH store read as STALE on every
+        # attempt and the lane aborted after 6×20 min. Capture stdout only;
+        # keep the info line in the lane log (it is the receipt's evidence);
+        # parse the verdict as the last line that IS a verdict word.
         ( cd "$REPO" && "$PYTHON" -m scripts.skew_accrual_gate \
-            --store "$STORE" --repo "$REPO" >"$GATE_STATUS_FILE" 2>&1 )
+            --store "$STORE" --repo "$REPO" >"$GATE_STATUS_FILE" 2>"$GATE_STATUS_FILE.err" )
         gate_rc=$?
-        status=$(cat "$GATE_STATUS_FILE" 2>/dev/null || true)
+        gate_info=$(tail -n1 "$GATE_STATUS_FILE.err" 2>/dev/null || true)
+        [ -n "$gate_info" ] && log "gate: $gate_info"
+        status=$(grep -E '^(FRESH|STALE|RESOLVE_ERROR|USAGE_ERROR)$' "$GATE_STATUS_FILE" 2>/dev/null | tail -n1 || true)
         case "$status" in
             FRESH|RESOLVE_ERROR)
                 # RESOLVE_ERROR is fatal: a missing tier is not a wait-and-retry
