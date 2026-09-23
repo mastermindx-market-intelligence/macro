@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-22T23:22:27.406632+00:00",
-  "count": 2670,
+  "generated_at": "2026-09-23T01:22:38.163079+00:00",
+  "count": 2676,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -62,6 +62,7 @@
     "Nuveen",
     "One River",
     "PNC",
+    "Pictet",
     "Piper Sandler",
     "RBC",
     "Rabobank",
@@ -87,6 +88,7 @@
     "The Punchline",
     "UBS",
     "Vanda Research",
+    "Vontobel",
     "WEF",
     "WGC",
     "Westpac",
@@ -97,6 +99,84 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lld02x88wkk-044b41",
+      "title": "insights india",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:33:42Z",
+      "summary_points": [
+        "Growth Momentum Revision: FY27 growth revised to 7.3% (from 7.8% in FY26) due to policy moderation, energy price impacts, and lagged tax cuts; FY28 forecast at 6.8-7.0%, reflecting sustainability risks from external pressures and rising inflation.",
+        "Core Inflation Acceleration: Core inflation (ex-food/fuel) hit 1.5-month high in August driven by precious metals, telecom, and transport; broadening price pressures signal inflationary acceleration against strong liquidity, necessitating RBI’s likely 50bp rate hike in H2 FY27.",
+        "Reserves & Liquidity Surge: Foreign reserves at $780bn (new high) from $133bn FCNR(B) deposits; banking surplus surged to INR 14tn, suppressing overnight rates and easing USDINR intervention bias—critical for portfolio liquidity positioning.",
+        "CAD Widening & Capital Flow Offset: Current account deficit rose to $10.5bn (Apr-Jul 2026) driven by $117.8bn merchandise trade deficit; capital flows (NRI deposits $36bn) offset deficit, pushing BoP surplus to $12.7bn, with oil prices as primary CAD swing factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fu308f16ebn-258aff",
+      "title": "US stock market A mega cap refuge",
+      "institution": "Pictet",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T23:23:24Z",
+      "summary_points": [
+        "Mega-Cap Tech Flows & Leadership: MAGS US ETF flows reversed from -15% June outflows to accelerated inflows, confirming renewed investor interest in US mega-cap tech (Magnificent 7) as a scarcity-driven \"hard asset\" amid rising sovereign debt, with ETF breaking all-time highs (71.72) targeting 85–87.",
+        "Market Breadth Deterioration: S&P 500 200-day breadth below 50% (first since April) near record highs, signaling concentrated leadership but non-bearish (historical precedents show 12-month returns of +8.90% vs. all-time average of +9.90%).",
+        "Technical Confirmation of Tech Resilience: Nasdaq 100/S&P 500 ratio broke 3.85 resistance (23.6% Fib retracement), targeting 4.20; Nasdaq 100 rebounded above 7,492 support and 50-day SMA (7,617), with RSI neutral (50.7), confirming outperformance.",
+        "Equal Weight vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6sruilnbsej-98657e",
+      "title": "HF Highlights 2026.09.18",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T23:18:42Z",
+      "summary_points": [
+        "HF Rotation Trend: Hedge funds shifting capital from momentum to quality strategies, signaling a fundamental positioning shift amid market uncertainty.",
+        "Japan Outflows Dominant Risk: Japan Activity shows -4.0 Z-Score in regional flows, indicating significant outflows as the primary risk factor.",
+        "US Gross Leverage Dominance: US gross leverage at 209% exceeds Europe (177%) and Asia (127%), with 78% 5-year percentile, signaling elevated risk.",
+        "Equity L/S Outperformance: Equity Long/Short strategies outperform All Funds (MTD median 0.28 vs 0.09; YTD median 5.70 vs 5.29).",
+        "Crowded Longs Structural Favorability: Top 50 Longs outperform Top 50 Shorts by 21.18% YTD (34.50% vs 13.32%), confirming structural long bias."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nqraqocwpcv-876a29",
+      "title": "VON32627736",
+      "institution": "Vontobel",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:55:04Z",
+      "summary_points": [
+        "OCS Production Scaling: Polatis subsidiary's automated OCS line enables 1,000+ units/year scaling, boosting follow-on orders from Google/NVIDIA (2028 adoption), driving significant upside beyond estimates for Huber+Suhner - Roches Phase 2 Results: 15.5% weight loss (48w) in T2D/obesity patients with mild GI events (2.0% discontinuation vs 0.0% placebo), supporting Phase 3 progression and 2028 launch - Roche Peak Sales Estimate: $2.5B peak sales potential (60% success probability) for enicepatide in competitive T2D/obesity market, underpinning Buy recommendation and Pharma Day catalyst"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-g9h7iunik4a-f14141",
       "title": "Emerging market bonds",
@@ -333,6 +413,45 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5jj6ie8pmh-943554",
+      "title": "Americas Energy US Majors Higher Estimates Offset By Slightly Lower Multiples",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:22Z",
+      "summary_points": [
+        "Brent Price Revisions: Goldman Sachs raises 2027 Brent estimate to $80/b (vs.",
+        "$75/b in 2028) with $29/b crack spread in 2028, driven by tight refining fundamentals (low inventory, supply disruptions, resilient demand).",
+        "Geopolitical Catalysts: Middle East/Russia-Ukraine disruptions boost refining margins; XOM target raised to $169 (9.0x EV/DCF, 6.5% FCF yield), with key risks: commodity prices, refining margins, operational execution.",
+        "IBR Rating Discrepancy: 65% Buy rating in Investment Banking Relationships vs. 50% in general coverage, indicating stronger bullish bias in IBR-linked analyst recommendations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-v8qab5rjglo-640364",
+      "title": "On the Road with Goldman Sachs Everything we Learned at the 33rd Global Consumer & Retail Conference",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:19Z",
+      "summary_points": [
+        "US Consumer Resilience: Consumer spending remains strong despite higher rates/gas prices, with 2027 discretionary cash inflow forecast upgraded to +3.9% (vs. 2026 deceleration), favoring value/convenience sectors.",
+        "Big Box Retail Shifts: Tariff-driven promotions by WMT/BJ widen price gaps vs. traditional grocers; structural digital/physical/supply chain shifts critical amid lower-income trade-down and higher-income migration to discount formats.",
+        "Auto Parts Geopolitical Pressure: Strait of Hormuz closure exacerbates lubricant costs; DRVN/VVV strategically raising prices amid healthy demand despite consumer deferral, highlighting cost pass-through dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },

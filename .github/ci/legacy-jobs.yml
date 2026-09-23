@@ -3024,6 +3024,7 @@ jobs:
           tests/test_pick_autopsy_selection.py
           tests/test_trade_memory.py
           tests/test_options_stamp.py tests/test_options_entry_state.py tests/test_sector_pulse_wiring.py
+          tests/test_sector_pulse.py tests/test_sector_pulse_observation_clock.py
           tests/test_news_page_render.py tests/test_china_lens_hub.py
           tests/test_news_rank_aging.py
           tests/test_build_netliq_daily.py
@@ -6527,7 +6528,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -7450,6 +7451,8 @@ jobs:
         run: python -m pytest tests/test_mailer_alert_template.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
         run: python -m pytest tests/test_alert_delivery_drain.py -v
+      - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
+        run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
   serving-observability:
     if: ${{ false }}
