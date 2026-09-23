@@ -42,8 +42,9 @@
 #   4. step_freshness_gate         — SPY eod >= T-1 NYSE session
 #   5. step_precheck_w21b          — W2-1b --accrue flag exists in source
 #   6. step_accrue                 — append today's skew to the ledger
-#   7. step_verify_ledger          — ledger has at least one row and grew
-#   8. step_publish                — publish to R2 (skipped under SKEW_DRY_RUN=1)
+#   7. step_verify_ledger          — ledger has at least one row AND grew
+#                                     (BLOCKER-2; skipped on rc 3)
+#   8. step_publish                — publish to R2 (skipped on rc 3 OR SKEW_DRY_RUN=1)
 #
 # Dry-run (SKEW_DRY_RUN=1) performs steps 1-7 and skips step 8 — the ledger is
 # written locally, the R2 leg is dropped. Used for smoke / integration checks
@@ -88,13 +89,30 @@
 # for the literal '--accrue') BEFORE invoking the accrue step. Precheck exit
 # 4 (FLAG_MISSING) → runner aborts loud with the named reason.
 #
-# LEDGER VERIFY (BLOCKER-3 fix)
+# LEDGER VERIFY (BLOCKER-3 fix; A-F03-W2-8 refines the caught-up case)
 # ─────────────────────────────────────────────────────────────────────────────
 # The W2-1b snapshot() can return 0 without writing rows (chain=None, no
-# rows, or dedup-only). A zero-row accrue must NOT publish — the R2 leg
-# would advertise a no-op put. scripts.skew_accrual_verify_ledger checks
-# data/options_skew/snapshots.parquet has at least one row after the accrue
-# step; exit 5 (NO_LEDGER) → runner aborts loud.
+# rows, or dedup-only). Two distinct outcomes are now treated differently:
+#
+#   1. Zero-row accrue under a REAL run (a non-zero fresh session S that the
+#      store resolved and backfill_from_store processed): the verify helper's
+#      BLOCKER-2 rule refuses `post_rows <= pre_rows` → runner logs `ABORT at
+#      step_verify_ledger` and exits 5. A zero-row accrue must NOT publish:
+#      the R2 leg would advertise a no-op put, polluting audit_r2's freshness
+#      anchor. scripts.skew_accrual_verify_ledger is unchanged.
+#
+#   2. Zero-row accrue under a CAUGHT-UP ledger (the complete store session
+#      S is already on the ledger byte-for-byte, so the backfill receipt
+#      reports `dates_backfilled == len(dates)` AND `rows_added + rows_replaced == 0`
+#      — see scripts/build_options_skew.py for the discriminator; the spec's
+#      "`catch_up_sessions` returns `[]`" line is misleading, the helper
+#      always returns at least the target session itself): the runner logs
+#      `NOOP_CAUGHT_UP run_tag=… ledger=…`, SKIPS step_verify_ledger AND
+#      step_publish, and exits 0. The seat ruling treats this as a lawful
+#      no-op — the daily maintainer's session already landed, the lane did
+#      its job, and the operator wants a clean rc-0 exit, not a launchd
+#      failure for every weekday-after-holiday tick. See A-F03-W2-8
+#      (2026-09-23) for the full ruling.
 #
 # BYPASS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -377,6 +395,17 @@ step_precheck_w21b() {
 # successful publish for an unchanged ledger. The pre_rows file lives in
 # $STATE_DIR (B2 cure, 2026-09-22): it must NOT be inside $REPO or it would
 # dirty the checkout and fail step_assert_clean_tree on the next tick.
+#
+# A-F03-W2-8 (2026-09-23): the builder distinguishes the CAUGHT-UP no-op from
+# a real accrue by exiting 3 when the accrue leg was the ONLY selected leg
+# AND the ledger was already caught up to the store's complete session.
+# The launchd runner treats that rc as a one-line receipt + rc-3 return so
+# the main sequence can SKIP verify AND publish — a caught-up ledger is
+# exactly what the verify step's BLOCKER-2 rule was written to refuse
+# (post_rows <= pre_rows), but refusing the publish under "nothing to
+# accrue" is the wrong outcome: the daily maintainer's session has already
+# landed, the lane did its job, and the operator wants a clean rc-0 exit,
+# not a launchd failure for every weekday-after-holiday tick.
 step_accrue() {
     cd "$REPO"
     # Record pre-state — the row count the ledger has TODAY, before the
@@ -398,11 +427,27 @@ except Exception:
     log "pre-accrue row count: $pre_rows"
     printf '%s\n' "$pre_rows" > "$PRE_ROWS_FILE"
     log "launching python -m scripts.build_options_skew --accrue (W2-1b)"
-    # Explicit rc-capture BEFORE any control flow:
-    set +e
-    "$PYTHON" -m scripts.build_options_skew --accrue
-    rc=$?
-    set -e
+    # Explicit rc-capture BEFORE any control flow. The `|| rc=$?` form
+    # swallows the python non-zero exit (including rc 3) at the call site
+    # so `set -e` does not abort the function — the main sequence reads
+    # `accrue_rc` and branches on it explicitly. (The main sequence uses
+    # the `set +e … rc=$? … set -e` shape below; both patterns are valid.
+    # Inside step_accrue we use `|| rc=$?` only because the function body
+    # keeps executing past the python call, so the explicit form is
+    # cleaner than bracketing the python call with set +e/set -e.)
+    rc=0
+    "$PYTHON" -m scripts.build_options_skew --accrue || rc=$?
+    if [ "$rc" -eq 3 ]; then
+        # A-F03-W2-8: caught-up no-op. The ledger already carries the
+        # complete store session S, so the accrue step has nothing to
+        # write. Propagate rc 3 to the main sequence so it can SKIP
+        # verify AND publish — a caught-up ledger would refuse the
+        # verify step's BLOCKER-2 rule (post_rows <= pre_rows), but
+        # the publish-skip is the seat-ruled correct outcome here.
+        log "accrue: NOOP_CAUGHT_UP — complete store session already on the ledger; nothing to accrue"
+        rm -f "$PRE_ROWS_FILE"
+        return 3
+    fi
     if [ "$rc" -ne 0 ]; then
         log "ERROR: build_options_skew accrue step failed with exit $rc"
         return "$rc"
@@ -498,7 +543,27 @@ if ! step_precheck_w21b; then
     log "ABORT at step_precheck_w21b (--accrue flag missing in source — W2-1b not on origin/main)"
     exit 4
 fi
-if ! step_accrue; then
+# A-F03-W2-8 (2026-09-23): the builder distinguishes the CAUGHT-UP no-op from
+# a real accrue by exiting 3 when the accrue leg was the ONLY selected leg
+# AND the ledger was already caught up to the store's complete session. The
+# launchd runner treats that rc as a one-line receipt + rc-3 return so the
+# main sequence can SKIP verify AND publish (a caught-up ledger is exactly
+# what the verify step's BLOCKER-2 rule was written to refuse, but refusing
+# the publish under "nothing to accrue" is the wrong outcome: the daily
+# maintainer's session has already landed, the lane did its job, and the
+# operator wants a clean rc-0 exit, not a launchd failure for every
+# weekday-after-holiday tick). Steps 7 and 8 are byte-identical for rc 0
+# and any other non-zero rc (those still abort loud with the named reason).
+set +e
+step_accrue
+accrue_rc=$?
+set -e
+if [ "$accrue_rc" -eq 3 ]; then
+    log "NOOP_CAUGHT_UP run_tag=$RUN_TAG ledger=$LEDGER"
+    log "done (caught-up no-op: verify + publish skipped)"
+    exit 0
+fi
+if [ "$accrue_rc" -ne 0 ]; then
     log "ABORT at step_accrue"
     exit 1
 fi

@@ -1,0 +1,18 @@
+{
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "commit": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "files": {
+    "scripts/source_continuity.py": {
+      "blob": "8e00951321a32638c5b540e479ad0dffad1b5391",
+      "sha256": "be4bf5fbc3dc99bfcb1e997487f4c51410f39f00928cacac45901ad2f72e890e"
+    },
+    "control_plane/source_continuity.py": {
+      "blob": "77d6c069048dbef49193b6867108f9d77ec46328",
+      "sha256": "ef7354a54793656d368d8773aeb4d0510dc122fe002ecba4738d5807051def33"
+    },
+    "control_plane/__init__.py": {
+      "blob": "2bcf2a4135db7c52a584b6fb98a15b7c9fea9959",
+      "sha256": "8fa406e6a2b3a127e89cef26eb55fe49224faac59847777eda004c0081296b05"
+    }
+  }
+}
