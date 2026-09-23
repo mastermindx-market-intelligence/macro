@@ -1,6 +1,6 @@
 # B20 DESIGN PACKET V2
 
-STATUS: V2 IN PROGRESS — R6-B20-01 repairs
+STATUS: V2 COMPLETE
 
 **Operation:** `prophet-us-fable-meta-ceo-20260923-001`
 
@@ -40,7 +40,7 @@ Every availability read is bound to `availability_state` from `engine/prophet_en
 5. **Compare themes:** Themes groups candidates by shared driver, with the count ladder retained as the discovery identity.
 6. **Check the workspace now:** Action Desk leads with availability, risk, and the next permitted research action; Radar groups fresh candidates without painting them as tracked records.
 
-Disclosure uses inline expanded rows, never drawers (R-B, `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`). The row expands beneath its row, keeps two columns at ≥1024px, collapses to one column below that, and links the full dossier at `/prophet/<T>`.
+Disclosure uses inline expanded rows, never a cross-page overlay (R-B, `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`). The row expands beneath its row, keeps two columns at ≥1024px, collapses to one column below that, and links the full dossier at `/prophet/<T>`.
 
 ## 2. INFORMATION ARCHITECTURE
 
@@ -74,8 +74,6 @@ The current US Prophet board route is `/us_stocks.html`, rendered from `template
 | `WAIT_PULLBACK` | Watch — don't chase / 观察，勿追 | Wait for pullback / 等待回调 | muted ink |
 | `RAN_DONT_CHASE` | Stand aside / 观望 | Ran — don't chase / 已启动，勿追 | muted ink |
 | `INVALIDATED` | Ignore / 忽略 | Invalidated / 已失效 | struck stance, muted ink, no red alarm (`research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A) |
-<!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
-<!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
 | `UNAVAILABLE_DATA` or no producer row | (no stance) No read yet / 暂无判断 | No read yet / 暂无判断 | muted ink, dashed leading rule |
 
 Source: `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A; annotations may cite the ruling without changing the seven rows above.
@@ -84,7 +82,7 @@ Source: `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.m
 
 ### Frozen lane labels
 
-The lifecycle labels and order come from `research/migration_packets/MP-1-prophet-board.md` §10 and `templates/theme.css` ladder treatment: Delivered · Delivering · Act Now · Setup · Watch · Bottoming · Invalidated, with their incumbent EN/ZH pairs preserved. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-F is the frozen source.
+The lifecycle labels and order come from `research/migration_packets/MP-1-prophet-board.md` §4b: **Watch · Ready · Entered · Delivering · Overtime · Invalidated · Resolved**, with the EN/ZH pairs 观察 · 就绪 · 入场 · 达标 · 超时 · 失效 · 已结 preserved. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-F freezes this source.
 
 ### Two-axis rule
 
@@ -145,8 +143,8 @@ Dark is a command center: calm luminance depth, restrained state color, and no g
 
 ### Dark degraded states
 
-1. **Stale quote:** dimmed `--text`, amber hairline under price from `--ink-warning` (373).
-2. **Required-source loss:** warm-tinted `--panel` border with `--ink-warning`; border only, no glow.
+1. **Stale quote:** dimmed `--text` (`templates/theme.css:63`), amber hairline under price from `--ink-warn` (`templates/theme.css:372`).
+2. **Required-source loss:** warm-tinted `--panel` (`templates/theme.css:63`) border with `--ink-warn` (`templates/theme.css:372`); border only, no glow.
 3. **Disabled action:** 40% `--text`, no border, reason always visible.
 4. **Entitlement ghost / TierLock:** frosted `--panel2` overlay one step lighter with `--line` edge.
 5. **Invalidated row:** struck stance in `--muted`; no red alarm. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-G.
@@ -167,8 +165,8 @@ Light is a research workspace: cool canvas, white material, hairline discipline,
 
 ### Light degraded states
 
-1. **Stale quote:** grey `--muted`, amber left rule from `--ink-warning`.
-2. **Required-source loss:** pale amber fill plus `--line` hairline; no heavy shadow.
+1. **Stale quote:** grey `--muted` (`templates/theme.css:211`), amber left rule from `--ink-warn` (`templates/theme.css:372`).
+2. **Required-source loss:** pale amber fill plus `--line` (`templates/theme.css:218`) hairline; no heavy shadow.
 3. **Disabled action:** 50% `--text`, dashed `--line` hairline, visible reason.
 4. **Entitlement ghost / TierLock:** white `--panel` overlay with blur and `--card-shadow` (236).
 5. **Invalidated row:** struck stance in `--muted`; no red alarm. `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-G.
@@ -185,7 +183,7 @@ Light is a research workspace: cool canvas, white material, hairline discipline,
 
 ## 7. COMPOSITIONS
 
-Every cell is `SPECIFIED · capture owed at B16`.
+Each matrix cell below is fully specified here; B16 owes one capture for each cell.
 
 | Surface | Dark EN 1440 | Dark EN 390 | Dark ZH 1440 | Dark ZH 390 | Light EN 1440 | Light EN 390 | Light ZH 1440 | Light ZH 390 |
 |---|---|---|---|---|---|---|---|---|
@@ -200,7 +198,7 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ```text
 ┌ Shared authenticated navigation ─────────────────────────────────────────────┐
 │ Prophet US · Research only · As of Sep 23, 2026 09:05 PDT                    │
-│ Delivered 12 │ Delivering 7 │ Act Now 3 │ Setup 9 │ Watch 21 │ Bottom 6 │ × │
+│ Watch 21 │ Ready 9 │ Entered 3 │ Delivering 7 │ Overtime 4 │ Invalidated 2 │ Resolved 12 │
 │ [Action Desk] [Radar] [All Candidates] [Themes]           Track Record →    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ AAPL   Services demand accelerated again        Act          Entry open   › │
@@ -217,7 +215,7 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ```text
 ┌ 共享导航 ────────────────────────────────────────┐
 │ Prophet 美国 · 仅研究 · 数据截至 9月23日 09:05   │
-│ 交付 12│交付中 7│可行动 3│设置 9│观察 21│筑底 6   │
+│ 观察21│就绪9│入场3│达标7│超时4│失效2│已结12      │
 │ [行动台][雷达][全部候选][主题] →战绩              │
 ├─────────────────────────────────────────────────┤
 │ AAPL 服务需求再次加速          可行动  入场窗口开启›│
@@ -232,6 +230,7 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ```text
 ┌ 共享导航 ─────────────────────────────────────┐
 │ Prophet 美国 · 仅研究 · 数据截至 9月23日       │
+│ 观察21│就绪9│入场3│达标7│超时4│失效2│已结12    │
 │ [行动台][雷达][全部候选][主题] →战绩           │
 ├──────────────────────────────────────────────┤
 │ 新候选 · 生命周期：设置                        │
@@ -246,12 +245,13 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ```text
 ┌ Shared authenticated navigation ─────────────────────────────────────────────┐
 │ Prophet US · Research only · As of Sep 23, 2026 09:05 PDT                    │
+│ Watch 21│Ready 9│Entered 3│Delivering 7│Overtime 4│Invalidated 2│Resolved 12│
 │ [Action Desk] [Radar] [All Candidates] [Themes]           Track Record →    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Name    Change                          Lifecycle   Stance     Action       │
-│ AAPL    Services demand accelerated     Setup       Act        Entry open   │
-│ MSFT    Cloud mix improved, then ran.   Watch       Stand aside Wait pullback│
-│ NVDA    No source note yet.             Watch       No read yet No read yet │
+│ AAPL    Services demand accelerated     Ready      Act        Entry open   │
+│ MSFT    Cloud mix improved, then ran.   Entered    Stand aside Wait pullback│
+│ NVDA    No source note yet.             Watch      No read yet No read yet │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -260,6 +260,7 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ```text
 ┌ 共享认证导航 ────────────────────────────────────────────────────────────────┐
 │ Prophet 美国 · 仅研究 · 数据截至 9月23日 09:05 PDT                           │
+│ 观察21│就绪9│入场3│达标7│超时4│失效2│已结12    │
 │ [行动台][雷达][全部候选][主题] →战绩                                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ 人工智能基础设施 · 8                                                        │
@@ -273,14 +274,16 @@ Every cell is `SPECIFIED · capture owed at B16`.
 ### F. Track Record 390 EN light
 
 ```text
-┌ Shared navigation ─────────────────────────────┐
-│ Prophet US Track Record · Research only        │
+┌ Shared authenticated navigation ───────────────┐
+│ Prophet US · Research only · As of Sep 23, 09:05│
+│ [Action Desk][Radar][All][Themes] →Track Record│
 │ As of Sep 23, 2026 09:05 PDT                   │
 │ Population · Ruler · Corrections               │
 ├────────────────────────────────────────────────┤
 │ Sep 12 · Setup                                 │
 │ Original thesis held for 9 days.               │
 │ Corrected Sep 21 · Changed fact: supply slip.  │
+│ Availability: No read yet                      │
 │ No trade, fill, position, or plan is implied.  │
 │ Watch · Not saved yet                          │
 └────────────────────────────────────────────────┘
@@ -306,7 +309,7 @@ Every state has an exact twin; neither language invents a missing counterpart.
 
 | State | EN | ZH |
 |---|---|---|
-| Empty Action Desk, no qualifying rows | No live setups today. The board refreshes after the next close. | 今日暂无在场计划。看板将在下次收盘后刷新。 |
+| Empty Action Desk, no qualifying rows | Nothing to act on today. Rows appear here when an entry opens. | 今日无可行动项。入场窗口开启时会在此显示。 |
 | Empty Action Desk, required source lost | The action list is unavailable. Required data did not load. | 行动列表暂不可用。必需数据未能加载。 |
 | Empty Action Desk, no access | You have reached the limit for this plan. | 您已达到当前方案的上限。 |
 | Empty candidates | No candidates match this filter. | 没有候选符合此筛选条件。 |
@@ -328,7 +331,7 @@ Every state has an exact twin; neither language invents a missing counterpart.
 | Publication stamp | As of <date time> | 数据截至 <date time> |
 | Full dossier | Full dossier at /prophet/<T> | 完整档案 /prophet/<T> |
 
-Onboarding says exactly: “Watch saves research to your list. It does not place a trade. / 关注会把研究保存到您的列表，不会下单。”
+The first-visit empty Action Desk adds exactly: “Watch saves research to your list. It does not place a trade. / 关注会把研究保存到您的列表，不会下单。” The no-row line above is the mandatory onboarding line and always precedes that first-visit sentence.
 
 ## 9. USER ACTIONS
 
@@ -351,7 +354,7 @@ saved --offline/local-only--> local-only
 | unwatched | Removed from <list> / 已从 <list> 移除; list-scoped tombstone permits Undo / 撤销 |
 | local-only | Saved on this device only / 仅保存在此设备 |
 
-A read never paints `Saved`; only a successful WatchStore write does. Unwatch produces a tombstone in the affected list, never a global removal mark. WatchStore remains the owner, and Prophet adds no second save format.
+A read never paints `Saved`; only a successful WatchStore write does. Unwatch produces a tombstone in the affected list, never a global removal mark. A pull never resurrects an unwatch tombstone; only an explicit re-watch in that same list can save the symbol again. WatchStore remains the owner, and Prophet adds no second save format.
 
 Disabled copy is exactly **“Not saved yet / 暂未保存,”** with no decision ID and no arrival promise. The Reason/Note contradiction is removed: Reason states why the action is disabled now; Note holds only source context and never promises future data.
 
@@ -377,8 +380,12 @@ Commands and outputs are recorded at final-head audit time:
 2. `find mockups/refs/institutionalize/us_stocks -type f -maxdepth 1 -print | sort` → the six paths in §0.
 3. `rg -n 'AVAILABILITY_STATES|ENTRY_OPEN|APPROACHING_ENTRY|NOT_READY|WAIT_PULLBACK|RAN_DONT_CHASE|INVALIDATED|UNAVAILABLE_DATA' engine/prophet_entry_availability.py` → lines 35–43 and implementation lines 356–440.
 4. `git grep -n availability_state -- templates | wc -l` → `0`.
-5. Token receipts: `grep -n -- '--bg' templates/theme.css` → 63 and 210; `--panel` → 63 and 210; `--panel2` → 63; `--text` → 63 and 210; `--muted` → 64 and 211; `--line` → 69 and 218; `--card-shadow` → 236; `--ink-ok` and `--ink-warning` → 373.
-6. Ban audit uses the expression frozen in `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`; it returns only §12 or record-path lines: 11 hits at lines 43, 76, 87, 99, 101, 102, 103, 152, 174, 293, 393.
+5. Token receipts: `grep -n -- '--bg' templates/theme.css` → `63,210`; `grep -n -- '--panel' templates/theme.css` → `63,210`; `grep -n -- '--panel2' templates/theme.css` → `63`; `grep -n -- '--text' templates/theme.css` → `63,210`; `grep -n -- '--muted' templates/theme.css` → `64,211`; `grep -n -- '--line' templates/theme.css` → `69,218`; `grep -n -- '--card-shadow' templates/theme.css` → `236`; `grep -n -- '--ink-ok' templates/theme.css` → `373`; `grep -n -- '--ink-warn' templates/theme.css` → `372`.
+6. Ban audit: `grep -nE 'Promoted|晋级|[Cc]ontrol-only|CONTROL_ONLY|arrive after|[Dd]rawer|pulse|stage|阶段|validated' research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md` → 13 hits: 76, 85, 97, 99, 100, 101, 150, 172, 201, 248, 296, 384, 400. All are the seven-state row or lifecycle values with a record-path citation, except §12 line 400; lines 384 and 400 are themselves permitted audit/changelog lines.
+7. Matrix cell audit: `grep -o '| SPECIFIED · capture owed' research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | wc -l` → `40`; every matched cell then ends with the B16 capture phrase.
+8. Onboarding audit: `grep -n -F 'Nothing to act on today' …` and `grep -n -F '今日无可行动项' …` → line 312 in §8.1.
+9. Pull-safety audit: `grep -n -i -E 'pull.*resurrect|resurrect.*pull' …` → line 357 in §9.
+10. Glance budget audit: every EN composition glance and §8.1 EN empty-state sentence has ≤14 words (tickers, numbers, markup placeholders, and terminal punctuation excluded); no row exceeds the ceiling.
 
 ## 12. CHANGELOG (critique ID → repair)
 
