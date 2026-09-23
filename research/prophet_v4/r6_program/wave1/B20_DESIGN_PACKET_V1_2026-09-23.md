@@ -1,0 +1,37 @@
+# design(prophet-us r6/w1): B20 flagship workspace design packet v1 (D09 input; document only)
+
+STATUS: IN_PROGRESS
+
+## 1. TASK FLOWS
+
+## 2. INFORMATION ARCHITECTURE
+
+## 3. VOCABULARY
+
+## 4. COMPONENT MAP
+
+## 5. DARK TREATMENT
+
+## 6. LIGHT TREATMENT
+
+## 7. DESKTOP 1440 and MOBILE 390 COMPOSITIONS
+
+## 8. INTERACTION
+
+## 9. USER ACTIONS
+
+## 10. COMPREHENSION ACCEPTANCE (Q24 seed)
+
+## 11. OPEN TASTE DECISIONS
+
+## RETURN
+
+STATUS:
+
+RESULT:
+
+EVIDENCE:
+
+GAPS:
+
+DEVIATIONS:
