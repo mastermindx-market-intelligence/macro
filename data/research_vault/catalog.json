@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T14:09:25.657046+00:00",
-  "count": 2713,
+  "generated_at": "2026-09-23T14:39:31.275186+00:00",
+  "count": 2714,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -116,6 +116,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-au8capm9s1w-de037c",
+      "title": "GS Bartlett GS TMT TODAY 9.23.26 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:01Z",
+      "summary_points": [
+        "AI Competitive Shift: Anthropic/OpenAI cost-cutting models (GPT-6 Sol, Claude Opus 5.5) pressure Chinese AI stocks (BABA -3%, BIIDU -2.5%) amid open-weight competition.",
+        "Geopolitical Policy Volatility: Trump-Xi UN meeting, Besent as US \"AI czar\" candidate pushing US-China AI security notification mechanism, and Jensen Huang’s Trump/Xi dinner signal heightened tech tensions and regulatory uncertainty.",
+        "TMT Structural Momentum vs.",
+        "Risk: Memory Exposed (+183.94% YTD) and AI Data Center (+65.21% YTD) surge driven by infrastructure demand, contrasting with China Internet underperformance (-25.96% YTD) and sector-specific risks.",
+        "Critical Risk Factor: China Internet (-25.96% YTD) and Software (-4.18% YTD) underperformance due to geopolitical headwinds, amplified by LLM data security probes and sector crowding risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
