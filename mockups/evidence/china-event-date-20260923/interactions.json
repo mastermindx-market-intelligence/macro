@@ -1,0 +1,90 @@
+{
+  "source_commit": "5e2e11de07c1ebf9ca57ef61a6336ede6193602f",
+  "page_sha256": "e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618",
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "dates_match": true,
+      "reference_visible": true,
+      "opens_and_closes": true,
+      "no_overflow": true,
+      "calendar_rows": 5
+    }
+  ],
+  "production": false,
+  "fresh_collection": false,
+  "schedule_dates_validated": false,
+  "server_closed": true
+}

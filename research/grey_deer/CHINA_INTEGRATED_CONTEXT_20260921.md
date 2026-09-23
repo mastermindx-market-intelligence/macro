@@ -542,3 +542,30 @@ Source/UI consumer work is complete locally; actual builder and browser proof ar
 next. No fresh collection, model/risk/probability/sizing change, accepted production
 release or shared-PR/controller change is claimed. Known24 auxiliary outputs and4
 supplemental images remain excluded from selective staging.
+
+### Event-date page qualification
+Semantic source5e2e11de07c1ebf9ca57ef61a6336ede6193602f is pushed on the same PR.
+Actual no-network builder preserved6592 saved values and8 persisted hashes with0
+analytical-engine calls. Saved assessment stays2026-09-21; event reference is now
+2026-09-24 Beijing, even though the UTC build date is2026-09-23. The obsolete
+September21 LPR entry is no longer described as today. The existing schedule's
+next high-impact entry is presented on the absolute date2026-09-30; its official
+release timing/result is NOT validated by this work.
+
+Final normalized page SHA256e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618;
+20 versioned JS/CSS references match, no new assets. Whitespace-only normalization
+preserves element attributes, visible text, scripts/styles and preformatted text.
+Eight actual rest captures and8 event-card/dialog journeys pass across desktop/mobile,
+EN/ZH and dark/light. Each journey checks date/offset identity, both locale lanes,
+open/Escape-close and no panel/document overflow. Touch assertions precede capture.
+No console/capture response errors. Existing risk/participation controls are retained.
+Desktop-dark image was inspected; updated events align with the existing deep layout.
+Evidence:mockups/evidence/china-event-date-20260923/qualification.json,
+interactions.json,manifest.json,EVIDENCE.yml. Final tests542 pass/0 failures/0 warnings.
+
+A separate source-structure/AgentOS-metadata diagnostic was platform-refused; no
+result or retry is claimed. It does not negate the executed builder/browser checks.
+Known24 unaccepted auxiliary outputs and4 earlier supplemental images remain excluded;
+no cleanup, raw refresh, weight-feed activation, schedule revalidation or production
+claim. Next independent capability is protective automatic official-weight supply;
+normal current-base/CI/publication acceptance stays deferred under Chairman intent.

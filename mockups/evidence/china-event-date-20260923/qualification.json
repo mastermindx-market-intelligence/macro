@@ -1,0 +1,232 @@
+{
+  "procedure": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "source_commit": "5e2e11de07c1ebf9ca57ef61a6336ede6193602f",
+  "tests": {
+    "passed": 542,
+    "failed": 0,
+    "warnings": 0,
+    "new_event_cases": 16,
+    "initial_missing_helper_red": 9,
+    "rendering_red": 3,
+    "glyph_contract_reconciled_without_weakening": true
+  },
+  "builder": {
+    "source_commit": "5e2e11de07c1ebf9ca57ef61a6336ede6193602f",
+    "assessment_date": "2026-09-21",
+    "raw_page_sha256": "6796ab9993ebe1736e4f501e6568563456ae97db0d3905ed8225a04bf73d8b48",
+    "raw_page_bytes": 473286,
+    "engine_run_calls": 0,
+    "preserved_input_sha256": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "saved_projection_check": {
+      "saved_measurements_unchanged": true,
+      "saved_leaf_count": 6592,
+      "reviewed_additions": [
+        "conditions.breadth",
+        "conditions.drawdown_html",
+        "conditions.recession_html",
+        "conditions.roro_html",
+        "fear_euphoria.chart_html"
+      ],
+      "breadth_is_separate_derived_context": true
+    },
+    "risk_score": 94,
+    "copy_present": true,
+    "fresh_collection": false,
+    "browser_proof": false,
+    "production": false
+  },
+  "event_page": {
+    "source_commit": "5e2e11de07c1ebf9ca57ef61a6336ede6193602f",
+    "page_sha256": "e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618",
+    "page_bytes": 281304,
+    "assessment_date": "2026-09-21",
+    "event_clock": {
+      "status": "dated",
+      "asof": "2026-09-24",
+      "checked_at": "2026-09-23T23:35:56.772387+00:00",
+      "timezone": "Asia/Shanghai",
+      "basis": "existing_release_cadence"
+    },
+    "calendar": [
+      {
+        "type": "PMI",
+        "date": "2026-09-30",
+        "days_until": 6,
+        "name_en": "NBS PMI (mfg + non-mfg)",
+        "name_zh": "国家统计局 PMI（制造业＋非制造业）",
+        "importance": "high",
+        "category": "activity",
+        "source": "computed",
+        "is_context_only": true
+      },
+      {
+        "type": "CAIXIN_M",
+        "date": "2026-10-01",
+        "days_until": 7,
+        "name_en": "Caixin Manufacturing PMI",
+        "name_zh": "财新制造业 PMI",
+        "importance": "med",
+        "category": "activity",
+        "source": "computed",
+        "is_context_only": true
+      },
+      {
+        "type": "CAIXIN_S",
+        "date": "2026-10-05",
+        "days_until": 11,
+        "name_en": "Caixin Services PMI",
+        "name_zh": "财新服务业 PMI",
+        "importance": "med",
+        "category": "activity",
+        "source": "computed",
+        "is_context_only": true
+      },
+      {
+        "type": "TRADE",
+        "date": "2026-10-07",
+        "days_until": 13,
+        "name_en": "Customs trade (exports/imports)",
+        "name_zh": "海关进出口数据",
+        "importance": "high",
+        "category": "trade",
+        "source": "computed",
+        "is_context_only": true
+      },
+      {
+        "type": "FXRES",
+        "date": "2026-10-07",
+        "days_until": 13,
+        "name_en": "FX reserves (SAFE)",
+        "name_zh": "外汇储备（外管局）",
+        "importance": "med",
+        "category": "external",
+        "source": "computed",
+        "is_context_only": true
+      }
+    ],
+    "imminent": {
+      "en": "Scheduled high-impact China event: NBS PMI (mfg + non-mfg) · 2026-09-30.",
+      "zh": "高影响中国事件排期：国家统计局 PMI（制造业＋非制造业） · 2026-09-30。",
+      "type": "PMI",
+      "date": "2026-09-30",
+      "days_until": 6
+    },
+    "formatting_only_whitespace_lines": true,
+    "schedule_dates_validated": false,
+    "production": false
+  },
+  "browser": {
+    "source_commit": "5e2e11de07c1ebf9ca57ef61a6336ede6193602f",
+    "page_sha256": "e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618",
+    "cases": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "locale": "en",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 1440,
+        "theme": "dark",
+        "locale": "zh",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "locale": "en",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "locale": "zh",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "locale": "en",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "locale": "zh",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "locale": "en",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "locale": "zh",
+        "dates_match": true,
+        "reference_visible": true,
+        "opens_and_closes": true,
+        "no_overflow": true,
+        "calendar_rows": 5
+      }
+    ],
+    "production": false,
+    "fresh_collection": false,
+    "schedule_dates_validated": false,
+    "server_closed": true
+  },
+  "static_captures": 8,
+  "asset_refs_verified": 20,
+  "new_assets": [],
+  "source_structure_diagnostic": "Separate AST/AgentOS-metadata compound call was platform-refused; no result claimed and no retry.",
+  "auxiliary_generated_outputs_excluded": 24,
+  "earlier_supplemental_images_excluded": 4,
+  "production": false,
+  "fresh_collection": false,
+  "schedule_dates_validated": false,
+  "governance": {
+    "visual_evidence_guard": "passed",
+    "design_added_blockers": 0,
+    "agentos_errors": 0,
+    "agentos_existing_warnings": 64
+  }
+}
