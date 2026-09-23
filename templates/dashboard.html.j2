@@ -7750,6 +7750,7 @@ html[data-theme="light"] :is(
        Needle: -90deg (leftmost at score=0) + score/100 * 180 = final rotation from vertical. #}
     {% set _mx5_arc_len = 175.93 %}
     {% set _mx5_score = MS.score | int %}
+    {% set _mx5_scope = MS.get('participation_scope') if MS else none %}
     {% set _mx5_filled = (_mx5_score / 100 * _mx5_arc_len) | round(1) %}
     {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
     {% set _mx5_needle_deg = (_mx5_score / 100 * 180 - 90) | round(1) %}
@@ -7907,8 +7908,8 @@ html[data-theme="light"] :is(
             <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ {'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—') }} &mdash; {{ {'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'') }}</span>
-            <span class="l-zh">{{ {'green':'偏多 — 顺势而为受支撑','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
+            <span class="l-en">{{ _mx5_scope.get('subline_en') if (_mx5_scope and _mx5_scope.get('subline_en')) else ({'green':'GREEN — Risk-on backdrop','yellow':'YELLOW — Trade with caution','red':'RED — Defend capital first'}.get(MS.color,'—')) }}</span>
+            <span class="l-zh">{{ _mx5_scope.get('subline_zh') if (_mx5_scope and _mx5_scope.get('subline_zh')) else ({'green':'偏多 — 风险偏好环境','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'')) }}</span>
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
                     '刻度盘上限为 ' ~ _mx5_score ~ '；六项信号合成为 ' ~ _mx5_raw ~ '。上限只能压低刻度盘，不会抬高。') }}
@@ -8735,6 +8736,7 @@ html[data-theme="light"] :is(
       <div class="mx5-action-list">
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
+        {% set _wtd_scope = market_state.get('participation_scope') if market_state else none %}
         {% set _wtd_icon_col = 'mx5-ai-green' if market_state.color == 'green' else ('mx5-ai-yellow' if market_state.color == 'yellow' else 'mx5-ai-gray') %}
         {% set _wtd_stroke = '#22d97a' if market_state.color == 'green' else ('#f59e0b' if market_state.color == 'yellow' else 'rgba(255,255,255,.38)') %}
         <div class="mx5-action-item mx5-action-primary" data-wtd-primary>
@@ -8755,8 +8757,8 @@ html[data-theme="light"] :is(
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">{{ {'green':'Follow the trend. Add on strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
-              <span class="l-zh">{{ {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
+              <span class="l-en">{{ _wtd_scope.get('action_en') if (_wtd_scope and _wtd_scope.get('action_en')) else ({'green':'Stay selective. Add where setups confirm.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.')) }}</span>
+              <span class="l-zh">{{ _wtd_scope.get('action_zh') if (_wtd_scope and _wtd_scope.get('action_zh')) else ({'green':'保持精选，仅在入场条件确认时加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。')) }}</span>
             </div>
             <div class="mx5-action-sub">
               <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>
@@ -12090,12 +12092,7 @@ html[data-theme="light"] :is(
       {%- set _wnx_hi = (macro_catalysts | selectattr('impact','equalto','high') | list) -%}
       {%- set _wnx_ev = (_wnx_hi | first) if _wnx_hi else (macro_catalysts | first) -%}
     {%- endif -%}
-    {# ── Slot B: hottest desk (sector-heat leader) — links to Sector Central ── #}
-    {%- set _wnx_hot = none -%}
-    {%- if sector_heat is defined and sector_heat -%}
-      {%- set _wnx_heating = (sector_heat.get('heating') or []) -%}
-      {%- set _wnx_hot = (_wnx_heating | first) if _wnx_heating else none -%}
-    {%- endif -%}
+    {# Slot B selection belongs to the full-population velocity view, not this strip. #}
     {# ── Slot C: risk follow-up when elevated (dlg-risk), else upturn/ignition, else Macro Weather ── #}
     {%- set _wnx_rdr = (market_state.radar if (market_state is defined and market_state and market_state.radar is defined) else none) -%}
     {%- set _wnx_rstate = (_wnx_rdr.state if (_wnx_rdr and _wnx_rdr.state is defined) else '') -%}
@@ -12146,28 +12143,7 @@ html[data-theme="light"] :is(
         </a>
         {% endif %}
 
-        {# ── Card B — hottest desk ── #}
-        {% if _wnx_hot %}
-        <a class="wnx-card" style="--wnx-c:var(--isle-evidence)" href="sector_central.html">
-          <div class="wnx-kicker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 11V7h-4"/></svg>
-            <span class="l-en">Hottest desk</span><span class="l-zh">最热板块</span>
-          </div>
-          <div class="wnx-state"><span class="l-en">{{ _wnx_hot.get('name','')[:20] }}</span><span class="l-zh">{{ (_wnx_hot.get('name_zh') or _wnx_hot.get('name',''))[:10] }}</span></div>
-          <div class="wnx-line"><span class="l-en">Running hot right now — see who's leading</span><span class="l-zh">当前领涨——看看谁在带头</span></div>
-          <span class="wnx-go"><span class="l-en">Sector Central</span><span class="l-zh">行业中枢</span> &rarr;</span>
-        </a>
-        {% else %}
-        <a class="wnx-card" style="--wnx-c:var(--isle-evidence)" href="sector_central.html">
-          <div class="wnx-kicker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 11V7h-4"/></svg>
-            <span class="l-en">Sector desk</span><span class="l-zh">板块桌面</span>
-          </div>
-          <div class="wnx-state"><span class="l-en">Sector Central</span><span class="l-zh">行业中枢</span></div>
-          <div class="wnx-line"><span class="l-en">What's heating up and what's rolling over</span><span class="l-zh">谁在升温、谁在退潮</span></div>
-          <span class="wnx-go"><span class="l-en">Open</span><span class="l-zh">打开</span> &rarr;</span>
-        </a>
-        {% endif %}
+        {% include '_macro_sector_desk.html.j2' %}
 
         {# ── Card C — risk follow-up / upturn cross-ref ── #}
         {% if _wnx_risk_elev %}

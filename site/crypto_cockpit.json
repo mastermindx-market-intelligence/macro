@@ -2,17 +2,17 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-09-22",
-  "generated_at": "2026-09-22T06:01:23+00:00",
+  "as_of": "2026-09-23",
+  "generated_at": "2026-09-23T09:20:05+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 85586.41,
-    "change_24h_pct": -1.16,
+    "price": 86565.35,
+    "change_24h_pct": 0.73,
     "stance_en": "STRONG RISK-ON",
     "stance_zh": "强烈偏多",
-    "summary_en": "The big picture reads strongly risk-on. Support comes from momentum and the trend; the drag comes from futures positioning and behaviour versus stocks. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向明显偏多。支撑来自动量与趋势；拖累来自期货持仓与与美股的联动。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 41,
+    "summary_en": "The big picture reads strongly risk-on. Support comes from momentum and the trend; the drag comes from futures positioning and the market cycle. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向明显偏多。支撑来自动量与趋势；拖累来自期货持仓与所处周期。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 49,
     "exposure_pct": 100,
     "gate_active": false
   },
@@ -153,7 +153,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-09-22"
+        "as_of": "2026-09-23"
       },
       "spark_source": "signals.oi_mcap_ratio",
       "receipt_members": [
@@ -248,9 +248,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Amplifies sell-offs",
-          "state_zh": "放大下跌",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "CONFIRMED"
         }
       ]

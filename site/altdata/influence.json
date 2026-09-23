@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-09-22T05:12:21.543310+00:00",
+  "generated_utc": "2026-09-23T09:44:26.666990+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -1120,12 +1120,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 7,
-      "alt_weighted": 2.85,
+      "alt_score": 6,
+      "alt_weighted": 2.55,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "github_momentum",
         "gov_contract_accel",
         "retail_buzz",
         "stocktwits_bull",
@@ -1254,11 +1253,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 2.4,
+      "alt_score": 4,
+      "alt_weighted": 1.6,
       "alt_channels": [
         "affiliation",
-        "congress_cluster",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
@@ -1318,6 +1316,27 @@
         "title": "Institution",
         "shares": 151610700
       }
+    },
+    {
+      "ticker": "KO",
+      "actors": [
+        {
+          "actor": "Warren Buffett",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
     },
     {
       "ticker": "BAC",
@@ -1543,26 +1562,6 @@
     },
     {
       "ticker": "OXY",
-      "actors": [
-        {
-          "actor": "Warren Buffett",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
-    },
-    {
-      "ticker": "KO",
       "actors": [
         {
           "actor": "Warren Buffett",

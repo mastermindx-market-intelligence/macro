@@ -742,6 +742,16 @@ jobs:
       #   serial post-band step.)
       # (This block was collateral damage in #3834's stale-base clobber; restored
       #  2026-07-30 — daily.yml's build_odds comment had been pointing at nothing.)
+      - name: restore options_skew ledger from R2 (W2-2 store-host accrual)
+        # The store host publishes the skew ledger to R2. This step copies it down
+        # before emit. If the copy fails, emit still renders the committed ledger
+        # and reports that ledger's as-of time. The failure is a warning, not a crash.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -907,10 +917,10 @@ jobs:
               brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
               brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
               brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
               brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               # OIP E8: AFTER skew/ivspread so it reads this run's snapshots; inside cl_gex
-              # because build_options_skew rewrites snapshots.parquet non-atomically.
+              # because build_options_skew upserts snapshots.parquet atomically (temp file + rename).
               brun options_screener "US options screener page (build_options_screener)" scripts.build_options_screener
               brun options_entry "options entry state fusion table (build_options_entry_state)" scripts.build_options_entry_state
             }
@@ -1050,7 +1060,7 @@ jobs:
               run_py "index vol-regime (build_vol_regime)"      scripts.build_vol_regime
               run_py "options flow desk (build_options_flow)"   scripts.build_options_flow
               run_py "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew
+              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew --emit
               run_py "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               run_py "US options screener page (build_options_screener)" scripts.build_options_screener
               # flowleaders BEFORE optionscmd: options.html re-serialises

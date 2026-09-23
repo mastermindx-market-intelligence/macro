@@ -399,8 +399,8 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "inflation_system-US-a9f771b5cfa93c50"
+    "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
+    "predecessor_generation_id": "inflation_system-US-4acf0949c65dc962"
   },
   "drivers": {
     "balance_sheet": [
@@ -521,11 +521,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-18T15:39:55Z",
+    "built_at": "2026-09-23T06:25:25Z",
     "calculation_as_of": "2026-09-18",
-    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "73f52d1d325b5dc363c1e37679f7dc86e1de318526b450cf699fecdfdab7c51f",
-    "generation_id": "inflation_system-US-73f52d1d325b5dc3",
+    "code_version": "528b3837483ad996d41e42db569a1b77ccba46cf",
+    "content_sha256": "a3a18e1505931826c6ac95fe5ad585ad1b9e665065d8d3cf0c7f78c5ff6f4210",
+    "generation_id": "inflation_system-US-a3a18e1505931826",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
@@ -597,8 +597,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US inflation regime reads A - Disinflating headline, broad/sticky underlying (impulse x=50.42, persistence/breadth y=58.61, boundary 50).",
-          "zh": "美国通胀体制读数为 A - 总体降温，但内部广泛/顽固（冲量 x=50.42，持续性/广度 y=58.61，分界 50）。"
+          "en": "US inflation regime reads A - Disinflating headline, broad/sticky underlying (impulse 50.4, persistence/breadth 58.6, boundary 50).",
+          "zh": "美国通胀体制读数为 A - 总体降温，但内部广泛/顽固（冲量 50.4，持续性/广度 58.6，分界 50）。"
         },
         "trace_ref": "data/release_forecast/inflation_intelligence.json#released_state"
       },
@@ -968,7 +968,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "release_radar_champion_projection",
-        "calculation_as_of": "2026-09-18T07:55:39Z",
+        "calculation_as_of": "2026-09-18T18:53:44Z",
         "collected_at": null,
         "coverage": null,
         "definition_id": "next_release_forecast.core.release_radar_projection.point",

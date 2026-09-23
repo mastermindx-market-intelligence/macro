@@ -7,8 +7,12 @@ import pytest
 
 from engine.prophet_entry_policy import (
     EntryPolicyContractError,
+    RISK_ATR_CEILING,
+    RISK_POLICY_ERA,
+    RISK_POLICY_VERSION,
     SESSION_POLICY_ERA,
     SESSION_POLICY_VERSION,
+    evaluate_risk_ceiling,
     evaluate_session_eligibility,
 )
 
@@ -1112,3 +1116,79 @@ def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition
 
     with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026"):
         _session_policy("2027-01-04T15:00:00Z", "2027-01-04")
+
+
+def _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0):
+    return evaluate_risk_ceiling(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        current_price=current_price,
+        invalidation_price=invalidation_price,
+        atr=atr,
+    )
+
+
+def test_b4_risk_policy_uses_structural_atr_risk_not_universal_percent():
+    out = _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0)
+    assert out["gate"] == "risk_ceiling"
+    assert out["verdict"] == "PASS"
+    assert out["reason"] == "STRUCTURAL_RISK_WITHIN_ATR_CEILING"
+    assert out["risk_to_invalidation_atr"] == 1.5
+    assert out["risk_to_invalidation_pct"] == 3.0
+    assert out["risk_atr_ceiling"] == 2.0 == RISK_ATR_CEILING
+    assert out["horizon"] == "2_15_SESSIONS"
+    assert out["horizon_role"] == "new_entry"
+    assert out["scientific_status"] == "CONTROL_ONLY"
+    assert out["authority_tier"] == "SHADOW_ONLY"
+    assert out["risk_policy_version"] == RISK_POLICY_VERSION
+    assert out["risk_policy_era"] == RISK_POLICY_ERA
+    assert out["threshold_status"] == "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED"
+    assert out["calibration_requirement"] == "PROSPECTIVE_OR_OOS_SAME_TAPE_WITH_COSTS"
+    assert all(value is False for value in out["authority"].values())
+    assert out["policy_receipt"].startswith("pep:")
+    assert out["fact_receipt"].startswith("pepf:")
+    assert out == _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0)
+
+
+def test_b4_risk_policy_boundary_is_two_atr_and_above_it_fails():
+    boundary = _risk_policy(current_price=100.0, invalidation_price=96.0, atr=2.0)
+    assert boundary["risk_to_invalidation_atr"] == 2.0
+    assert boundary["verdict"] == "PASS"
+
+    above = _risk_policy(current_price=100.0, invalidation_price=95.9, atr=2.0)
+    assert above["risk_to_invalidation_atr"] == 2.05
+    assert above["verdict"] == "FAIL"
+    assert above["reason"] == "STRUCTURAL_RISK_ABOVE_ATR_CEILING"
+
+
+def test_b4_risk_policy_fails_when_structural_invalidation_is_not_below_price():
+    at_stop = _risk_policy(current_price=100.0, invalidation_price=100.0, atr=2.0)
+    assert at_stop["verdict"] == "FAIL"
+    assert at_stop["reason"] == "STRUCTURAL_INVALIDATION_NOT_BELOW_PRICE"
+    assert at_stop["risk_to_invalidation_atr"] == 0.0
+
+    above_price = _risk_policy(current_price=100.0, invalidation_price=101.0, atr=2.0)
+    assert above_price["verdict"] == "FAIL"
+    assert above_price["reason"] == "STRUCTURAL_INVALIDATION_NOT_BELOW_PRICE"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("current_price", 0.0), ("invalidation_price", -1.0), ("atr", 0.0), ("atr", float("nan"))),
+)
+def test_b4_risk_policy_refuses_unprovable_numeric_inputs(field, value):
+    kwargs = {"current_price": 100.0, "invalidation_price": 97.0, "atr": 2.0}
+    kwargs[field] = value
+    with pytest.raises(EntryPolicyContractError, match=field):
+        _risk_policy(**kwargs)
+
+
+def test_b4_risk_policy_requires_the_accepted_strategy_identity():
+    mutated = build_early_leadership_sector_rotation_definition()
+    mutated["strategy_definition_id"] = "psd:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_risk_ceiling(
+            strategy_definition=mutated,
+            current_price=100.0,
+            invalidation_price=97.0,
+            atr=2.0,
+        )

@@ -1,0 +1,40 @@
+{
+  "document_kind": "SCOPED_CHAIRMAN_DELEGATION_RECORD_NOT_RUNTIME_GRANT",
+  "operation": "prophet-us-fable-meta-ceo-20260923-001",
+  "parent": "macro#6805",
+  "intended_accountable_role": "Fable Meta-CEO",
+  "record_comment": 5793406610,
+  "delegation_source": "Current live Chairman instruction to prepare the full end-to-end Fable Meta-CEO handoff",
+  "program_decision_authority": {
+    "adopt_and_amend_in_scope_design": true,
+    "resolve_D01_D12": true,
+    "orchestrate_B00_B28": true,
+    "own_Q01_Q24_judgment": true,
+    "accept_independent_review": true,
+    "authorize_release_through_existing_gates": true,
+    "perform_in_scope_program_acceptance": true
+  },
+  "requires_astra": false,
+  "mandatory_builtin_agents": false,
+  "external_fabric_only": true,
+  "not_granted": [
+    "Automatic runtime/source custody",
+    "Bypass of independent review or scientific evidence",
+    "New credentials or unapproved paid commitments",
+    "Discretionary sizing/leverage/brokerage execution",
+    "Unreconciled takeover of started or unknown effects",
+    "Automatic worker/session assignment by finding a file"
+  ],
+  "prepared_record_source_adopted": false,
+  "receiver_acknowledged": false,
+  "children_started": 0,
+  "retained_current_owner_laws": [
+    "Executive Runtime and Capacity",
+    "Agent OS",
+    "GitHub source/PR/CI",
+    "Existing source and data rights owners",
+    "Evaluation/QLedger",
+    "Portfolio/Risk",
+    "Existing release and auth owners"
+  ]
+}

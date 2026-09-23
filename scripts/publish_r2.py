@@ -147,6 +147,40 @@ _DATA_DIRS = {
                   # host that holds the ThetaData store, and a lost host means a lost
                   # rebuild input. Not in DEFAULT_DIRS: the ops lane publishes it
                   # explicitly (--dirs index_gex_history), never the nightly render.
+    "options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
+                  # producer ledger (data/options_skew/snapshots.parquet,
+                  # TRACKED on origin/main — bootstrap = 238,595 bytes /
+                  # 12,375 rows / 34 dates / 417 underlyings, sourced from
+                  # the pre-W2-1b engine run; the comment's earlier
+                  # "gitignored" model was wrong). ONE writer: the M1
+                  # store-host launchd job `com.macro.skewaccrual`
+                  # (ops/launchd/com.macro.skewaccrual.plist +
+                  # ops/launchd/run_skew_accrual.sh) which appends
+                  # today's per-underlying IV skew via
+                  # `python -m scripts.build_options_skew --accrue`
+                  # (W2-1b-owned source-stamped canonical-wins upsert).
+                  # Consumer = W2-3 render cutover:
+                  # `python -m scripts.fetch_r2 --dirs options_skew`
+                  # restores the ledger into render hosts'
+                  # data/options_skew/, where `--emit` writes
+                  # site/options_skew/latest.json. Not in DEFAULT_DIRS:
+                  # the dedicated skewaccrual ops lane publishes it
+                  # explicitly (--dirs options_skew), never the nightly
+                  # render.
+    "options_payoff_lab",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options
+                  # payoff lab producer (data/options_payoff_lab/latest.json
+                  # overwritten each session, plus history/<asof>.json kept).
+                  # ONE writer: the M1 store-host launchd job
+                  # `com.macro.payofflab` (ops/launchd/com.macro.payofflab.plist
+                  # + ops/launchd/run_options_payoff_lab.sh) via
+                  # `python -m scripts.build_options_payoff_lab --accrue`.
+                  # Render hosts restore with
+                  # `python -m scripts.fetch_r2 --dirs options_payoff_lab`
+                  # into data/options_payoff_lab/, where `--emit` writes
+                  # site/options_payoff_lab/latest.json. Not append-only:
+                  # latest.json is replaced each session. Not in DEFAULT_DIRS:
+                  # the store-host runner publishes it explicitly
+                  # (--dirs options_payoff_lab), never the nightly render.
 }
 # A data-dir tree with fewer files than this is a PARTIAL CHECKOUT (the parquets are
 # gitignored — a CI runner checkout holds just the committed _manifest.json +
@@ -168,7 +202,17 @@ _DATA_DIR_MIN_FILES = 100
 # night the §10.1 pass files one, which would make a bare checkout 3 files — so the
 # bytes floor below (not the count) is the fence that survives that: a sidecars-only
 # tree is ~73 KB against an ~11 MB store.
-_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
+_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
+                           # MO-PAID-013 W2-2: snapshots.parquet + the tracked
+                           # validation_gate.json sidecar. 2 is the bare store;
+                           # the bytes floor below is the real discrimination
+                           # between a real ledger and a sparse-CI sidecars-only
+                           # tree.
+                           "options_skew": 2,
+                           # MO-A3 W2-5a: latest.json + one history/<asof>.json.
+                           # 2 is the first honest session. A lone latest.json
+                           # is a partial tree and stays under this floor.
+                           "options_payoff_lab": 2}
 # History-append stores whose R2 objects hold DEEP history (data/attention/*.parquet:
 # backfilled 2015-07→ SLF-048 2026-07-06; gitignored since same day). The nightly
 # collect job materialises the store via scripts/fetch_r2 BEFORE the wiki_pageviews
@@ -204,7 +248,34 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
 # it compares CONTENT dates rather than sizes.
 _APPEND_ONLY_DIRS = {"attention", "index_gex_history"}
 _DATA_DIR_MIN_BYTES = {"attention": 15_000_000, "index_gex_history": 600_000,
-                       "price_pressure": 4_000_000}
+                       "price_pressure": 4_000_000,
+                       # MO-PAID-013 W2-2: measured against the bootstrap
+                       # ledger committed on origin/main at 238,595 bytes /
+                       # 12,375 rows / 34 dates / 417 underlyings. A bare
+                       # sparse-CI checkout of data/options_skew carries
+                       # just the tracked validation_gate.json sidecar
+                       # (~700 bytes). A real ledger post-accrue is hundreds
+                       # of KB once the bootstrap + one session's ~380
+                       # roots land. 10 KB sits safely above the bare
+                       # sidecars size AND well below one session of real
+                       # accruals — refuses a sparse-CI sidecars-only tree
+                       # without blocking the first legitimate nightly run.
+                       # The bootstrap is 238,595 bytes; 10 KB is a 23×
+                       # margin that any first-run store clears. Not in
+                       # _APPEND_ONLY_DIRS: snapshots.parquet is rewritten
+                       # whole on every accrue (dedup + concat), so a
+                       # per-file shrink refusal would block honest
+                       # nights; snapshot()'s idempotent key-set is the
+                       # append-only contract.
+                       "options_skew": 10_000,
+                       # MO-A3 W2-5a (2026-09-23): measured latest.json is
+                       # 407,756 bytes for the 2026-09-21 session (4 roots,
+                       # 16 structures). 10 KB refuses an empty stub and
+                       # clears that file with about a 40x margin.
+                       # Not in _APPEND_ONLY_DIRS:
+                       # latest.json is overwritten every session, so a
+                       # per-file shrink refusal would block an honest night.
+                       "options_payoff_lab": 10_000}
 _CT = {".json": "application/json", ".js": "application/javascript",
        ".html": "text/html; charset=utf-8", ".csv": "text/csv"}
 
