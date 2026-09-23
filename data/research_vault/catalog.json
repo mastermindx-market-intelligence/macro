@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T11:55:05.648503+00:00",
-  "count": 2707,
+  "generated_at": "2026-09-23T12:09:57.193684+00:00",
+  "count": 2708,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1930,6 +1930,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-19xikmb4chm-8d87e4",
+      "title": "JPM US Market Intelligence Afternoon Briefing Sept 21",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:27:48Z",
+      "summary_points": [
+        "US Tech-Driven Rally & Geopolitical Oil Shock: SPX/NDX surge (1.5%/2.8%) led by Meta (+12% on AI app), Semis; Houthi attack on Saudi capital (RTS) drives WTI surge (contrasting Trump’s airstrike comments causing 5% drop earlier), creating immediate energy volatility.",
+        "Fed Policy Contradiction & Hawkish Signals: Goolsbee’s stance against reversing 2025 rate cuts clashes with Musalem’s push for earlier hikes, amid inflation above target and supply shocks, heightening rate uncertainty.",
+        "AI Sector Flow Dynamics & Technical Catalysts: \"AI Vulnerable\" names (NFLX, CPNG) reverse due to tax-loss concerns, while Meta Muse-driven gains (CPU demand focus) and GOOGL outperformance (despite ad revenue lag) highlight sector-specific flow shifts.",
+        "Critical Geopolitical Triggers & Data Focus: Trump-Xi summit (Sep 23), US-China AI talks, and Houthi attacks intersect with key data (ADP, PMIs, Sep 21-25 Fed speeches), amplifying volatility around oil, rates, and sector rotation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
