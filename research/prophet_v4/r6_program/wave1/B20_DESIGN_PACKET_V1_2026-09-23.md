@@ -1,37 +1,29 @@
-# design(prophet-us r6/w1): B20 flagship workspace design packet v1 (D09 input; document only)
+# B20 — Prophet US flagship workspace design packet v1 (D09 input; document only)
+
+**Operation:** `prophet-us-fable-meta-ceo-20260923-001`  
+**Status:** DRAFT PACKET — no product code, data owner, score, permission, price, or chart is invented by this document.  
+**Scope:** B20 design input for D09 steps 1–2 only.
+
+## 0. Constraints read and binding basis
+
+1. **Content law:** `docs/DESIGN_DOCTRINE.md` — three disclosure tiers and hard word budgets at §1 lines 19–33; stance or it does not ship at §2 lines 38–47; plain words, translated numbers, no raw slugs/internal names at §2 lines 49–74 and 75–80; one as-of and one footnote at §2 lines 82–88; honest nulls and bilingual parity at §2 lines 90–101 and §5 lines 148–162; light is a separate design target at §5 lines 163–180.
+2. **System law:** `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md` — archetype selection/composition process at §0 lines 21–40; token and density laws at §2 lines 93–104 and §9 lines 348–405; the nine route archetypes at §10 lines 420–490; canonical component inventory and new-component discipline at §11 lines 519–566; the light-mode component contract at §12 lines 587–613; bilingual, accessibility, and responsive law at §13–§15 lines 622–668.
+3. **Navigation law:** `templates/_site_nav.html.j2` is the authenticated shell and includes the one shared menu at lines 12–20; contextual links are the only sanctioned page-local addition at lines 21–45. `templates/_navlinks.html.j2` declares itself the single source of truth at lines 1–22 and owns the inventory from line 28. `templates/navigation-refresh.css` owns nav geometry/material at lines 1–20 and 131–170. No third header, local resize, or parallel search is proposed.
+4. **Theme law:** `templates/theme.css` root tokens at lines 63–79, light tokens at lines 205–245, text-grade state inks at lines 357–377, and stance semantics at lines 2703–2725. All new presentation derives from `theme.css`; this packet adds no stylesheet or token root.
+5. **Executable specimen:** `mockups/design_system/specimen.html` — identity and VerdictHero at lines 187–215; component specimens at lines 348–537; light-only and 390 reductions at lines 658–693; archetype table at lines 704–714. `python3 scripts/worktree_sparse.py add mockups` materialized this file without `data/` or `site/`.
+6. **Product plan:** `research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md` — the three user jobs at §2.1 lines 52–60; six destinations and shared context at §14 lines 440–486; dark/light/desktop/mobile/coherent hydration at §15 lines 488–522; WatchStore and disabled action law at §16 lines 524–547.
+7. **Incumbent payload semantics:** `templates/_prophet_card.html.j2` lines 575–677; `templates/_prophet_receipts.html.j2` lines 119–233; `templates/_us_board_cards.html.j2` lines 17–38 and 58–308; `templates/_us_prophet_plan_cards.html.j2` lines 1–136; `scripts/build_site.py` refusal generation at lines 4811–4875, stance projection at lines 4979–5039, and plan-book split at lines 5086–5127. Theme-source semantics are visible in `templates/_theme_tape.html.j2` lines 1–65 and 650–704 plus `scripts/build_site.py` lines 6089–6107.
+8. **User-action owner:** `templates/watchstore.js` is the cloud seam over the same per-list blob; `templates/watchlist.js` exposes the local store, list scope, provenance generation, and sync events. Prophet only consumes this owner and performs no second save format.
 
 STATUS: IN_PROGRESS
 
 ## 1. TASK FLOWS
 
-## 2. INFORMATION ARCHITECTURE
+The following numbered flows are the shared spine of the workspace. “Drawer: closed” means the destination list owns focus; “drawer: open” means the row remains selected and visible while the episode/dossier drawer is anchored beside it on desktop or covers the list on mobile. No flow claims a fill, position, recommendation, or ownership of an unmapped action.
 
-## 3. VOCABULARY
-
-## 4. COMPONENT MAP
-
-## 5. DARK TREATMENT
-
-## 6. LIGHT TREATMENT
-
-## 7. DESKTOP 1440 and MOBILE 390 COMPOSITIONS
-
-## 8. INTERACTION
-
-## 9. USER ACTIONS
-
-## 10. COMPREHENSION ACCEPTANCE (Q24 seed)
-
-## 11. OPEN TASTE DECISIONS
-
-## RETURN
-
-STATUS:
-
-RESULT:
-
-EVIDENCE:
-
-GAPS:
-
-DEVIATIONS:
+1. **Market/group change → review set** — Destination: **Early Radar**. Select market context and persistent strategy in the shared header, then scan a bounded early field; change a group from the Radar context strip. Drawer: **closed**, except a long group description opens as a popover/LENS, not an episode drawer. Fields: canonical episode identity is `episode_map[p.id].ep` where available (`templates/_us_prophet_plan_cards.html.j2:24–26, 86–99`); watch/intake membership is `book.intake.early_turn_watch` (`templates/_prophet_card.html.j2:139–143`); theme/group membership is `theme_tape.*.members` and `n_members` (`templates/_theme_tape.html.j2:650–704`). Strategy-specific group economics: **UNAVAILABLE_FIELD**.
+2. **Security → why now** — Destination: **All Candidates** search → **exact episode drawer**. Search a display name/ticker, open the row, and read “what changed” before any rank. Drawer: **open**. Fields: identity/name/sector/price/spark are the fail-soft candidate join at `cand_map[p.asset]` (`templates/_us_prophet_plan_cards.html.j2:14–21, 101–106, 118`); first-seen/board membership is `n.added_date` (`templates/_us_board_cards.html.j2:274–304`); changed state is `n.adjusted` (`templates/_us_board_cards.html.j2:201–210`); episode/date is `p.id`, `p.plan_asof`, or `p.recorded_at` (`templates/_us_prophet_plan_cards.html.j2:86–99, 122`). Economic event/expectation detail: **UNAVAILABLE_FIELD**.
+3. **Research interest → entry permission** — Destination: **Action Desk**, with the drawer's **Entry vs research** layer open. Drawer: **open**. Fields: permission/stance comes from `p.entry_status`, falling back to `p.board_read.fields.status.value` only when available; both absent renders **No read yet**, never guessed Wait (`scripts/build_site.py:4979–5039` and `templates/_us_prophet_plan_cards.html.j2:31–36, 107–113`). Availability and actionability use `entry_signal.status` on candidates (`templates/_us_board_cards.html.j2:89–103`). Entry geometry is `p.entry_zone.low/high`, with “zone sets on confirmation” when absent (`templates/_us_prophet_plan_cards.html.j2:71–80, 119–121`; rendering contract `templates/_prophet_card.html.j2:649–663`). A strategy-specific accepted permission owner: **UNAVAILABLE_FIELD**.
+4. **Risks and counterevidence** — Destination: any list; **episode drawer**. Drawer: **open**. Fields: the incumbent caution ledger maps `cand.blowoff.burst_mover`, `cand.alpha_entry == extended`, `cand.ext_z > 2`, `cand.antichase_shadow_blocked`, `cand.earnings_soon.*`, and `cand.in_blackout` to plain risk sentences (`templates/_us_prophet_plan_cards.html.j2:37–60`; sibling contract `templates/_us_board_cards.html.j2:103–107`). Refusal/non-selection reasons come from `refusal_receipts(...).groups[].en/zh/names[].why` (`scripts/build_site.py:4811–4875`; rendering `templates/_prophet_receipts.html.j2:119–159`). Severe-loss/tail estimate: **UNAVAILABLE_FIELD**.
+5. **Save/manage to an intended list** — Destination: **drawer action area**; confirmation opens the WatchStore **list-scoped save sheet**. Drawer stays open until owner readback, then focus returns to its Watch button. Fields: list identity and item scope are the existing `WatchStore.lists` / `mdash.wl.<listId>.v1` blob contract (`templates/watchstore.js:182–243`); the consuming seam is `window.WL` / `window.WS` with generation provenance (`templates/watchlist.js:2111–2180`). Episode metadata is not persisted unless WatchStore already owns it; the UI labels that limit in the sheet. **D05 owns any Pass, reason, thesis, or milestone mapping.**
+6. **Later inspect the original decision** — Destination: **Track Record → original decision**. The record opens the same episode drawer in historical mode; later corrections remain separate from the then-known snapshot. Drawer: **open**. Fields: current lifecycle is `p.lifecycle_state` (`templates/_us_prophet_plan_cards.html.j2:29–36, 123–126`); lifecycle counts are the published `book.lifecycle_counts`, `lifecycle_live_total`, and `lifecycle_grand_total` (`templates/_prophet_card.html.j2:139–143`; producer `scripts/build_prophet.py:2546–2557`); newer episode is `episode_map[p.id].newer` (`templates/_us_prophet_plan_cards.html.j2:24–26, 86–99`). Frozen original decision/evidence: **UNAVAILABLE_FIELD**.
