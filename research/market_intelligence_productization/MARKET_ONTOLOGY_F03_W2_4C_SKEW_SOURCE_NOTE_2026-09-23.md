@@ -158,3 +158,23 @@ bytes).  That file is now appended to the run line of the
 line only — no job inserted).  The producer-side
 `engine/options_skew.py` additions are pinned by `tests/test_options_skew.py`
 (the same home the existing skew-emit tests already ship in).
+## Round-5 seat-ratification handoff (2026-09-23)
+
+This packet's deliverable is COMPLETE per the Meta-CEO A ruling DELIVERY
+contract ("commit → push → PR stays DRAFT; return LANE_DONE with the final
+head. The seat re-reads the PR's own ci run before ratifying"):
+
+- HEAD `e3ef6b8655a96dd396a359eed0c01cd1d6458f7f` on lane branch
+  `claude/mo-a-3-a-f03-w2-4c-skew-source-note` (carry: `origin`).
+- PR #7783 isDraft=true; the PR body carries the round-5 measured-truth
+  table, the new exact EN/ZH sentences, the 39-test proof line, the
+  acceptance-grep table, and the seat round-5 ruling narrative.
+- 39/39 tests pass on the three test files the ruling names
+  (`test_options_skew.py`, `test_options_skew_source_note.py`,
+  `test_options_skew_backfill.py`); the workspace-scope pin holds
+  (31/31 on `test_render_options_workspace_scope.py`).
+- All 12 acceptance greps at the expected values; `check_ui_visual_evidence.py`
+  exits 0 against the diff.
+
+The seat owns the ci → ratify → ready → arm → squash-merge → render →
+live chain from here.
