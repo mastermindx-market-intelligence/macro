@@ -207,9 +207,9 @@ def load_skew_source(root: Path) -> dict | None:
     corrupt -> None; the consumer stays silent when there is no break (the
     Directional read panel already covers skew through its own rows).  Same
     DELIBERATELY SEPARATE loader pattern as load_intel_brief / load_payoff_lab
-    above — load_stores() is pinned BYTE-FOR-BYTE by
-    tests/test_render_options_workspace_scope.py and this packet's scope
-    excludes touching it."""
+    above — the new artifact has its OWN function (never an addition to the
+    pinned workspace loaders), and this packet's scope excludes touching the
+    pinned set tests/test_render_options_workspace_scope.py guards."""
     return _load(root / "site" / "options_skew" / "latest.json")
 
 

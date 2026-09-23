@@ -453,6 +453,26 @@ def _is_weekend_iso(value: str) -> bool:
         return False
 
 
+def _majority_source(s):
+    """Per-date majority source for source_windows().
+
+    Returns the source that owns the largest share of rows on this calendar day;
+    ties go to the first row seen (stable). A date with no rows returns None
+    (the caller skips it). Per the ruling, mixed-source dates are NOT dropped —
+    the canonical-wins row-majority is the date's source, so the helper stays
+    consistent with emit_from_ledger's session count and the sentence's ranges.
+    """
+    if s is None or len(s) == 0:
+        return None
+    counts = s.value_counts()
+    if counts is None or len(counts) == 0:
+        return None
+    top = counts.iloc[0]
+    if int(top) <= 0:
+        return None
+    return str(counts.index[0])
+
+
 def source_windows(df) -> list[dict]:
     """Ascending list of maximal contiguous runs of one source across session days.
 
@@ -496,11 +516,13 @@ def source_windows(df) -> list[dict]:
         return []
     by_date = (
         work.groupby("date")["source"]
-        .agg(lambda s: s.iloc[0] if s.nunique() == 1 else
-             # mixed sources on a single date are not a real window — drop the
-             # date entirely rather than picking the row-majority winner.
-             None)
-        .dropna()
+        # Per the ruling: each date is assigned its MAJORITY source. A row-majority
+        # winner stays a real session date even when one or two legacy polygon_gex
+        # rows from a partial migration landed on the same calendar day — the
+        # canonical-wins rule still applies, and a future canonical re-write of
+        # those rows naturally collapses the window to a single source without
+        # silently vanishing dates from the sentence's ranges.
+        .agg(_majority_source)
         .sort_index()
     )
     if by_date.empty:
@@ -714,9 +736,11 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         # history crosses a source boundary — the consumer renders this verbatim on
         # options.html as a one-sentence footnote.  Reuses the session-only `norm`
         # frame above (weekends already excluded) so the windows match the names
-        # the panel prints.
-        history_dates = int(norm["date"].nunique())
+        # the panel prints.  `history_dates` is the SUM of the per-window date
+        # counts so it always agrees with `source_windows` (a degenerate all-
+        # weekend ledger has zero of both, not zero windows and >0 history_dates).
         windows = source_windows(norm)
+        history_dates = int(sum(int(w.get("n_dates") or 0) for w in windows))
         source_break = bool(len(windows) > 1)
     if not names:
         source_state = "empty_ledger"

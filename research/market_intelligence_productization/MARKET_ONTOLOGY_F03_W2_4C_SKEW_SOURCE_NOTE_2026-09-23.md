@@ -35,11 +35,14 @@ Three pieces of fact feed the sentence:
 
 1. **The windows** are computed by `engine/options_skew.py::source_windows`,
    a pure helper that groups the normalised ledger by `date`, assigns each
-   date its majority source (rows without a `source` column → `polygon_gex`,
-   the legacy read), and returns the ascending list of maximal contiguous
-   runs.  Session-only dates: weekend as-of rows are excluded before
-   grouping, the same way `emit_from_ledger` already excludes them when
-   it picks the latest session — the helper reuses the W2-4b rule by
+   date its MAJORITY source via `_majority_source` (rows without a `source`
+   column → `polygon_gex`, the legacy read; mixed-source dates keep the
+   row-majority winner rather than being silently dropped, so a partially-
+   migrated date still counts as a session date and `sum(n_dates)` always
+   equals `history_dates`), and returns the ascending list of maximal
+   contiguous runs.  Session-only dates: weekend as-of rows are excluded
+   before grouping, the same way `emit_from_ledger` already excludes them
+   when it picks the latest session — the helper reuses the W2-4b rule by
    construction.
 
 2. **The break flag** is the simplest possible derivation: `len(windows)

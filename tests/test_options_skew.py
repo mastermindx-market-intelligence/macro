@@ -731,3 +731,49 @@ def test_emit_payload_carries_source_windows_and_history_dates(tmp_path, monkeyp
     assert quiet_payload["history_dates"] == 1
     assert len(quiet_payload["source_windows"]) == 1
     assert quiet_payload["source_windows"][0]["source"] == "thetadata"
+
+
+def test_source_windows_assigns_majority_on_mixed_source_date():
+    """A date whose rows are split between thetadata and polygon_gex votes
+    row-majority; the date is NOT silently dropped (per the ruling: every
+    session date stays a session).  This is the RED-first test for the
+    round-3 majority-rule fix — the round-2 implementation dropped any
+    mixed-source date, which made the sentence's ranges silently disagree
+    with `history_dates`."""
+    rows = [
+        # 2026-08-12 (Wed): 3 thetadata + 1 polygon_gex → thetadata wins (3/4)
+        _ledger_row("AAA", "2026-08-12", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-08-12", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-08-12", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-08-12", 0.10, source="polygon_gex"),
+        # 2026-08-13 (Thu): pure polygon_gex
+        _ledger_row("AAA", "2026-08-13", 0.10, source="polygon_gex"),
+    ]
+    windows = S.source_windows(pd.DataFrame(rows))
+    assert windows == [
+        {"source": "thetadata", "first_date": "2026-08-12",
+         "last_date": "2026-08-12", "n_dates": 1},
+        {"source": "polygon_gex", "first_date": "2026-08-13",
+         "last_date": "2026-08-13", "n_dates": 1},
+    ]
+
+
+def test_emit_payload_history_dates_agrees_with_source_windows_for_all_weekend(tmp_path, monkeypatch):
+    """A degenerate all-weekend ledger has history_dates == 0 AND zero
+    source_windows — the two additive keys always agree, even at the
+    degenerate edge.  This is the RED-first test for the round-3 fix
+    (the round-2 implementation kept weekend rows in `norm` and counted
+    them as session dates, so history_dates was >0 while source_windows
+    was [])."""
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    rows = [
+        _ledger_row("AAA", "2026-06-20", 0.10, source="polygon_gex"),  # Saturday
+        _ledger_row("AAA", "2026-06-21", 0.10, source="polygon_gex"),  # Sunday
+    ]
+    pd.DataFrame(rows).to_parquet(ledger)
+    payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert payload["source_break"] is False
+    assert payload["history_dates"] == 0
+    assert payload["source_windows"] == []

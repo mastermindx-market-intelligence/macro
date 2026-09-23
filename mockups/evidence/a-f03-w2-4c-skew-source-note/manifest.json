@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-23T09:04:19Z",
+  "generated_at": "2026-09-23T09:34:50Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -33,82 +33,8 @@
   "outcome": "captured",
   "pages": [
     {
-      "console_errors": [
-        {
-          "source_url": "http://127.0.0.1:53259/theme.css",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/illus.css",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/navigation-refresh.css",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/stock-logos.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/logo_config.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/theme.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/live_config.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/live.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "source_url": "http://127.0.0.1:53259/illus.js",
-          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        }
-      ],
-      "failed_responses": [
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/theme.css"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/illus.css"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/navigation-refresh.css"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/stock-logos.js"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/logo_config.js"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/theme.js"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/live_config.js"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/live.js"
-        },
-        {
-          "status": 404,
-          "url": "http://127.0.0.1:53259/illus.js"
-        }
-      ],
+      "console_errors": [],
+      "failed_responses": [],
       "gaps": [
         {
           "captured": false,
@@ -157,23 +83,23 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 31450,
+            "document_height_px": 2906,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 14887,
+            "document_height_px": 5190,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 1,
-        "document_height_px": 31450,
+        "console_error_count": 0,
+        "document_height_px": 2906,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 1,
-          "h2": 13,
+          "h2": 9,
           "h3": 1,
           "h4": 0,
           "h5": 0,
@@ -188,16 +114,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 285822,
+        "payload_bytes_total": 613180,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 10,
+        "request_count": 17,
         "screenshot_completion": 1.0,
         "section_count": 0,
-        "source_present": true,
+        "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 1607
+        "visible_word_count": 790
       },
       "page_id": "options.html",
       "registry_route": "/options.html",
@@ -208,13 +134,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1438345,
+          "bytes": 557389,
           "captured": true,
-          "file": "90285b814fd00350.png",
+          "file": "f9778fa67b34bf39.png",
           "force_state": null,
-          "height": 31450,
+          "height": 2906,
           "locale": "en",
-          "sha256": "90285b814fd00350983434bd03b9b422666bf8a8a4e126d0a1908a1624e0794d",
+          "sha256": "f9778fa67b34bf393063b05a8f1a941f53432f31146d40084252793eaaf940e4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -225,13 +151,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1439008,
+          "bytes": 558921,
           "captured": true,
-          "file": "1d01418280510265.png",
+          "file": "92d0ca7250acb5a7.png",
           "force_state": null,
-          "height": 31450,
+          "height": 2907,
           "locale": "en",
-          "sha256": "1d014182805102659d1d003a4aa47ce8e608e224203242d1335debb0f77f03fa",
+          "sha256": "92d0ca7250acb5a789690232a2728f1bfa79e3f9d14da5262b169baaee36b816",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -242,13 +168,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1495600,
+          "bytes": 564776,
           "captured": true,
-          "file": "f0424c7ee3f4d2bb.png",
+          "file": "81c5659471133601.png",
           "force_state": null,
-          "height": 31574,
+          "height": 2877,
           "locale": "zh",
-          "sha256": "f0424c7ee3f4d2bb0cc38cdf1e55eaf79cadb4760a4a78ca4ee586cdcfe1a325",
+          "sha256": "81c56594711336012f03740e87a00eafeba3376e71cc95efaa7fc4ac973aaeda",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -259,13 +185,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1496141,
+          "bytes": 570440,
           "captured": true,
-          "file": "53a1870f069c7882.png",
+          "file": "f7cb306150897bf0.png",
           "force_state": null,
-          "height": 31574,
+          "height": 2878,
           "locale": "zh",
-          "sha256": "53a1870f069c78822057c2817a9818f852db6f487e7b8f92a1e807e606ff8b13",
+          "sha256": "f7cb306150897bf04d500b06079e0e9f07b453c0e551dceb802a8c59e9d35938",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -276,13 +202,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1126618,
+          "bytes": 504331,
           "captured": true,
-          "file": "d4622aa645ebab04.png",
+          "file": "26ed54c734297812.png",
           "force_state": null,
-          "height": 14887,
+          "height": 5190,
           "locale": "en",
-          "sha256": "d4622aa645ebab048fb850e59560a09432dfa485bc16c0e3de3c53ee361bb6f9",
+          "sha256": "26ed54c734297812996292ec052f685db9ca88ca0881666eebde2ab494e84cc0",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -293,13 +219,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1127276,
+          "bytes": 511446,
           "captured": true,
-          "file": "60a236fa1f768188.png",
+          "file": "04bc62dc5091964b.png",
           "force_state": null,
-          "height": 14887,
+          "height": 5191,
           "locale": "en",
-          "sha256": "60a236fa1f768188ac90617bcbe75f2b7a24fd173553b9114ca808239b7dab8c",
+          "sha256": "04bc62dc5091964ba2b2680ba40ba6cc85b38d928487eab170f7ea0f93d3ca02",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -310,13 +236,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1184267,
+          "bytes": 499431,
           "captured": true,
-          "file": "0004e4dd62fd035d.png",
+          "file": "6b8fddf3940c5ebd.png",
           "force_state": null,
-          "height": 15281,
+          "height": 4768,
           "locale": "zh",
-          "sha256": "0004e4dd62fd035dc64e47f01860cc4e953179be25fc72712e662f4b5013d5fb",
+          "sha256": "6b8fddf3940c5ebd30cbc4a181d6fad7a26bfd0cc204a8efc41d4bd54f24da8a",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -327,13 +253,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1184742,
+          "bytes": 508805,
           "captured": true,
-          "file": "dfa04750821ffafc.png",
+          "file": "919d267e89b45ca2.png",
           "force_state": null,
-          "height": 15281,
+          "height": 4769,
           "locale": "zh",
-          "sha256": "dfa04750821ffafc1f962c35ee0740a193dbd8d923dc01eec918d5a2d1e40f28",
+          "sha256": "919d267e89b45ca207f1c3015972964e8d9177772a8cd6ceaeb8b0854e1c6b41",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -360,10 +286,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": null,
-    "resolved_sha_or_none": null,
-    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/w2_4c_evidence/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w2_4c",
+    "resolved_sha_or_none": "b5adca3c70a0c8b0bc2c3f9694fdf4da7849f5df",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w2_4c (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/lanes/wt/mo-ext-fix-mo_a3_w2_4c/.tmp_w2_4c_capture"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
