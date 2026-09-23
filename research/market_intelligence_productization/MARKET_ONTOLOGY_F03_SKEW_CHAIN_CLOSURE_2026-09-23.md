@@ -41,14 +41,14 @@ script which runs the same hydrate→emit pair.
 | W2-1b | #6923 | 2026-09-22 21:05:39Z | ledger `source` column; thetadata canonical-wins upsert; legacy polygon chain behind `OPTIONS_SKEW_LEGACY_CHAIN=1` | merge commit `dd973910e95ea3ad99118fbbc2c83473fe8f1c80` |
 | W2-2 | #7737 | 2026-09-22 23:35:22Z | store-host launchd lane (`ops/launchd/run_skew_accrual.sh`, plist `com.macro.skewaccrual`, weekdays 12:30Z); runbook published | merge commit `ac731aec23bde1b8e628259f82937b2013340623`; runbook `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md` |
 | W2-3 | #7743 | 2026-09-23 00:53:59Z | cutover: render hosts hydrate `python -m scripts.fetch_r2 --dirs options_skew` then `scripts.build_options_skew --emit`; `publish_r2` registry entry `options_skew`; six legacy callers unpinned | merge commit `b2d43b3a4078b7b539b6081cc30d02e1112d7754` |
-| W2-4 | #7756 (direct to main) | 6298d58ea497 (2026-09-23) | methodology-parity audit (compared 3965; match 2392 / flip 1563 / zero 10; sign agreement 0.603279); parity packet published; no engine change | merge commit `6298d58ea497`; `research/MARKET_ONTOLOGY_F03_SKEW_PARITY_2026-09-23.md`; `research/MARKET_ONTOLOGY_F03_SKEW_PARITY_RECEIPT_2026-09-23.md` |
+| W2-4 | #7756 | 2026-09-23 03:43:02Z | methodology-parity audit (compared 3965; match 2392 / flip 1563 / zero 10; sign agreement 0.603279); parity packet published; no engine change | merge commit `6298d58ea497`; `research/MARKET_ONTOLOGY_F03_SKEW_PARITY_2026-09-23.md`; `research/MARKET_ONTOLOGY_F03_SKEW_PARITY_RECEIPT_2026-09-23.md` |
 | W2-4b | #7770 | 2026-09-23 07:42:47Z | backfill leg (canonical-wins) + DEC `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`; weekend rows excluded from emit | merge commit `d857f4568a7e0f4eb7c30d4ca6aabd69003f5d40`; `agentos/decisions/DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY.md` |
 | W2-5a | #7759 | 2026-09-23 05:17:48Z | options payoff lab producer (`com.macro.payofflab`, weekdays 15:00Z) — index-ETF structures from `engine/options_payoff` over the thetadata chain; R2 publish; no UI | merge commit `148d1bfec8bbf1c080253b46a15d3e08184e8cfe` |
 | W2-5b | #7763 | 2026-09-23 08:46:03Z | payoff lab consumer — "What a structure pays" fold on `options.html`; R2 → emit wiring on the render path | merge commit `668237947e016f679782e41e61c91c9133a5ea99` |
 | runner hardening | #7819 | 2026-09-23 13:34:10Z | `git reset --hard && git clean -fd` BEFORE the detach in both runners; runbook §3.8 "restore the shared checkout after ANY manual session" | merge commit `646eb0611710bfecc395601a29ddd94c52349c03` |
 | gate-stdout fix | #7827 | 2026-09-23 14:14:19Z | freshness gate verdict is read from stdout only; stderr `.err` sidecar; FRESH store no longer reads STALE | merge commit `2e476c04bb817022a352a8ae0c6a959390a58274` |
-| W2-4c | #7783 | OPEN | source-window fields on `site/options_skew/latest.json`; one plain-language Directional-read sentence (per `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`); pinned awaiting a base-side HK-state re-bake | head ref `84428a84`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7783` |
-| W2-6 | #7832 | OPEN | complete-session resolver + bounded catch-up + thin-session emit guard; lane PASS, seat RATIFIED at `ba2729b7` 16:05Z, armed `merge-on-green`, merge pending its CI run | head ref `ba2729b7`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7832` |
+| W2-4c | #7783 | OPEN | source-window fields on `site/options_skew/latest.json`; one plain-language Directional-read sentence (per `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`); head `84428a84` after a merge-of-main on 2026-09-23 15:33Z; seat correction of the note's window table pending before merge | head ref `84428a84`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7783` |
+| W2-6 | #7832 | OPEN | complete-session resolver + bounded catch-up + thin-session emit guard; lane PASS, seat RATIFIED at `ba2729b7` 16:05Z, armed `merge-on-green`, merge pending its CI run | head ref `807365f4`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7832` |
 
 ## 2. Data receipts
 
@@ -140,7 +140,7 @@ armed).
   `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`.
 
 - **W2-6 merge** (PR `#7832`). Owner: seat, armed `merge-on-green`. Head ref
-  `ba2729b7`; merge-candidate `3ffffb1900238bbf41db4a7a12e9ff2dacae0172`. Proof
+  `807365f4`; merge-candidate `0a5ea3326006d1abe8de1a40a3d7cc0b1d61fbda`. Proof
   that will close it: `gh pr view 7832 --json state,mergedAt` reporting
   `state=merged`; the next scheduled accrual receipt in
   `~/skew-ops-state/logs/skewaccrual.stdout.log` will then show the thin newest
@@ -174,24 +174,16 @@ armed).
 
 ## 5. Operating the lane
 
-Full text lives in `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md`
-(W2-2 install + runbook). Cited by section, not re-explained.
+Runbook `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md` by section
+number (§3.1, §3.2, §3.3, §3.3b, §3.7, §3.8); lane host is the M1 store.
 
-- **Lane install** (§3.1 checkout, §3.2 .env, §3.3 plist + state dir + logs,
-  §3.3b R2 seed): M1 store host.
-- **One-time backfill** (§3.7 manual session): seat act.
-- **Restore after ANY manual session** (§3.8): required before next scheduled run.
-- **Recovery kickstart** (after an aborted run):
-  `launchctl kickstart gui/$(id -u)/com.macro.skewaccrual` (runbook §3.8).
-  Accrual is idempotent for the session it targets.
-- **"Which session is accrued" rule**: `S` = the manifest's `daily_refresh.S`,
-  one session behind the store's early 12-root set (per `#7832`); until W2-6
-  merges, the seat's stopgap is to drop rows from the store-host ledger
-  before publish (see §3 defect).
-- **Receipt log sidecars**: gate sidecar `$STATE_DIR/.skew_gate_status.<run_tag>.err`
-  (per `ops/launchd/run_skew_accrual.sh`, post-`#7827`); receipt log's stderr
-  sibling `~/skew-ops-state/logs/skewaccrual.stderr.log` predates `#7827` and
-  is NOT the gate sidecar.
+- Recovery kickstart: `launchctl kickstart gui/$(id -u)/com.macro.skewaccrual` (§3.8).
+- "Which session is accrued" rule: `S` = manifest's `daily_refresh.S`, one session
+  behind the store's early 12-root set (per `#7832`); until W2-6 merges, the seat's
+  stopgap is to drop partial rows before publish (see §3 defect).
+- Gate sidecar `$STATE_DIR/.skew_gate_status.<run_tag>.err` (post-`#7827`); the
+  receipt log's stderr sibling `~/skew-ops-state/logs/skewaccrual.stderr.log`
+  predates `#7827` and is NOT the gate sidecar.
 
 ## 6. Do-not-redo
 
@@ -208,10 +200,12 @@ Full text lives in `research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md
   re-pinning would re-introduce the polygon path the chain is closing.
 - Never accrue from a render host. Accrual runs on the M1 store host only; the
   render path is hydrate + `--emit`, never accrue.
-- Never edit `scripts/build_options_command.py::load_stores`. That function is
-  pinned byte-for-byte by `tests/test_render_options_workspace_scope.py`.
-  Skew/payoff/catalyst readers are separate loaders (`load_payoff_lab`,
-  `load_skew_source` in `#7783`) threaded through `build_context`.
+- Never edit `scripts/build_options_command.py::load_stores`. It reads only
+  flow_desk / screener / leaders / market_structure / vol / gex / gex_index
+  (`scripts/build_options_command.py:143`). Skew and payoff are separate
+  loaders (`load_skew_source` added by `#7783`, `load_payoff_lab` at
+  `scripts/build_options_command.py:187`) threaded through `build_context`
+  (`scripts/build_options_command.py:2020`).
 - Never write `site/options_skew/latest.json` by hand. The artifact is produced
   by `scripts/build_options_skew --emit` on render hosts after `scripts/fetch_r2
   --dirs options_skew` hydrates R2; hand-writing it would diverge from the
