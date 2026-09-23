@@ -179,4 +179,96 @@ Forbidden shortcuts considered and refused:
 
 ## EVIDENCE INDEX
 
-TODO
+**Object/source citations.** All 44 unique `path:line@10166ad5272f` references in Q1–Q6 are part of this index; they were read from immutable object `10166ad5272f`, which was `origin/main` when the census base was observed. The same fact may be cited at the first line of a code span whose later line appears elsewhere (for example, a table row ending `:456@10166ad5272f` is indexed together with `config.yml:440@10166ad5272f`).
+
+**Public-primary and sparse receipts.**
+
+```text
+git rev-parse HEAD
+10166ad5272f8ca24161aed5bdd8d3980271489e
+git rev-parse origin/main
+10166ad5272f8ca24161aed5bdd8d3980271489e
+rc=0
+
+python3 scripts/worktree_sparse.py status
+worktree-sparse: SPARSE checkout — omitting data, mockups, site, verify_shots
+worktree-sparse: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+rc=0
+
+git grep -nE 'ACOGNO|A34SNO|AMTMNO|AMTMUO|NEWORDER|IPMAN|IPBUSEQ' 10166ad5272f -- ':!data' ':!site' ':!mockups' ':!verify_shots'
+43 matches in config, engine, reports, research and tests; no ACOGNO, A34SNO, AMTMNO, IPMAN, or IPBUSEQ match
+rc=0
+
+curl -L -sS -o /dev/null -w '%{http_code}' 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A33SNO'
+200
+rc=0
+curl -L -sS -o /dev/null -w '%{http_code}' 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A33SVS'
+200
+rc=0
+curl -L -sS -o /dev/null -w '%{http_code}' 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A33SUO'
+200
+rc=0
+curl -L -sS -o /dev/null -w '%{http_code}' 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=A33STI'
+200
+rc=0
+
+for id in A33SNO A33SVS A33SUO A33STI; do curl -fsSL "https://fred.stlouisfed.org/graph/fredgraph.csv?id=${id}" > "${id}_fred.csv"; curl -fsSL "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=${id}" > "${id}_alfred.csv"; done
+A33SNO FRED_ROWS=415 ALFRED_ROWS=415 FRED_FIRST=1992-02-01,14202 FRED_LAST=2026-07-01,44641 ALFRED_FIRST_VINTAGE=1992-02-01
+A33SVS FRED_ROWS=416 ALFRED_ROWS=416 FRED_FIRST=1992-01-01,14623 FRED_LAST=2026-07-01,43778 ALFRED_FIRST_VINTAGE=1992-01-01
+A33SUO FRED_ROWS=416 ALFRED_ROWS=416 FRED_FIRST=1992-01-01,40073 FRED_LAST=2026-07-01,152221 ALFRED_FIRST_VINTAGE=1992-01-01
+A33STI FRED_ROWS=416 ALFRED_ROWS=416 FRED_FIRST=1992-01-01,36225 FRED_LAST=2026-07-01,105561 ALFRED_FIRST_VINTAGE=1992-01-01
+rc=0
+
+for id in A33XMVS A33XMUO A33XMTI A33SNO A33SVS A33SUO A33STI A34SNO A34SVS A34SUO A34STI A33AMNO A33CMNO A33DMNO A33EMNO A33IMNO A33JMNO A33MMNO; do status=$(curl ... "$id"); done
+A33XMVS HTTP_404; A33XMUO HTTP_404; A33XMTI HTTP_404; A33S* HTTP_200; A34S* HTTP_200; A33AMNO HTTP_404; A33CMNO HTTP_200; A33DMNO HTTP_200; A33EMNO HTTP_200; A33IMNO HTTP_200; A33JMNO HTTP_404; A33MMNO HTTP_200
+rc=0
+
+for code in A C D E I J M; do for suffix in NO VS UO TI; do id="A33${code}${suffix}"; status=$(curl ... "$id"); done; done
+A33AVS HTTP_200; A33ATI HTTP_200; A33ANO HTTP_404; A33AUO HTTP_404; A33C*–A33I* and A33M* all HTTP_200; A33J* all HTTP_404
+rc=0
+
+curl -fsSL 'https://www.census.gov/manufacturing/m3/historical/timeseries.html' > m3_timeseries.html
+BYTES=77451
+rc=0
+visible-text/html line 719: from the April 2010 Reports, semiconductor estimates are no longer available separately; current-month numbers are subject to revision
+
+curl -fsSL 'https://www.census.gov/manufacturing/m3/historical_data/aggseries.pdf' > m3_aggseries.pdf; pdftotext -layout m3_aggseries.pdf -
+BYTES=29160; LINES=299; rc=0
+line 99: 33S Machinery; line 172: 33C Construction; line 173: 33D Mining/oil/gas; line 174: 33E Industrial; line 179: 33I Metalworking; line 183: 33M Material handling; line 232: 33A Farm; lines 260 and 297–298: NXA and TGP/33J
+
+curl -fsSL 'https://www.census.gov/manufacturing/m3/historical_data/summary.pdf' > m3_summary.pdf; pdftotext -layout m3_summary.pdf -
+BYTES=22166; LINES=196; rc=0
+lines 1–24: May 21, 2001 NAICS release, 1997 Economic Census/1998–1999 ASM/1999 Unfilled Orders benchmarks, seasonal/trading-day updates; lines 153–190 arbitrary product splits and inventory/unfilled shipment-factor assumptions; lines 191–195 product-mix assumption
+
+curl -fsSL 'https://fred.stlouisfed.org/docs/api/fred/realtime_period.html'
+rc=0
+visible text: real-time period marks when a fact was true/known; defaults to today; realtime_start and realtime_end form a closed interval
+```
+
+**Git and validation receipts at this record head.**
+
+```text
+git diff --check
+rc=0
+
+python3 - <<'PY'
+from pathlib import Path
+p=Path('research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md')
+text=p.read_text()
+print('LINES', len(text.splitlines()))
+print('TODO_COUNT', text.count('TODO'))
+print('SECTIONS', sum(1 for line in text.splitlines() if line.startswith('## ')))
+PY
+LINES 249
+TODO_COUNT 0
+SECTIONS 9
+rc=0
+
+git diff --stat 1e28f99cd110a9cfd6078baaecc7c4bae4a97a8c HEAD
+research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 239 +++++++++++++++++++++
+1 file changed, 239 insertions(+)
+
+git diff --stat origin/main...HEAD
+research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 239 +++++++++++++++++++++
+1 file changed, 239 insertions(+)
+```
