@@ -51,6 +51,48 @@ Cross-check: `python3 -m scripts.audit_alfred_depth --series ... --output resear
 
 ## 3. KEYED-VS-KEYLESS + M3 CROSSWALK
 
+- **First-published value per period (Q6-2):** the keyed store proves it for all 17 configured machinery candidates. It has exactly one initial-release row per `(series, period)` for every candidate (`n_vintages == n_periods`, table above), with `value`, `period`, `realtime_start`, and `realtime_end`. `config/dataset_registry.yml:206-249` records the ALFRED realtime endpoint, the `(series, period, realtime_start)` grain, `value`, and `realtime_start` as the publication clock. This is stronger than the keyless CSV evidence in the cycle census, but it does not prove equality of FRED CSV bytes and the keyed output-type-4 response; that equivalence remains UNKNOWN.
+- **Remaining M3 crosswalk (Q6-3):** the only committed M3 observations found in the governing cycle census are public single-ID probes for machinery totals/categories and exact-ID failures for the queried alternatives. No authoritative Census-to-FRED crosswalk is present at `origin/main`. Therefore:
+  - Machinery total and tested category order/shipment/unfilled/inventory IDs: PUBLIC PROBE FOUND in the census, but local vintage store status UNKNOWN.
+  - `A33XMVS` / `A33XMUO` / `A33XMTI` capital-goods counterparts, farm `A33ANO` / `A33AUO`, and all `A33J*` turbine measures: UNKNOWN in this repo; exact-ID probe failures are not proof of Census absence.
+  - Census-only historical files and their vintage clocks: UNKNOWN; no provider contract is present.
+
+## 4. MEMBERSHIP, IDENTITY AND FAILURE COVERAGE
+
+| Artifact | Measurement | Readiness implication |
+|---|---|---|
+| `membership_history.parquet` | 3,114 rows; snapshots 2026-08-13, 2026-08-18, and 2026-09-04; 1 suite (`baskets`), 49 lists, 710 distinct names; 1,038 rows and 708 distinct names per snapshot | First observed cut is 2026-08-13; content is identical across all three cuts. |
+| Dead-name candidates | `EQR` and `GOLD` occur in earlier snapshots but not the latest. Neither is in the six-row `config/delisted_symbols.yml`. Both are identity changes: `EQR→VMRK` has dated alias rows and the census records an identity break; `GOLD` is explicitly deferred/disclosed in `_receipt.json`. | Their absence is not failure coverage; it is an unresolved rename/reuse case. |
+| `tree_history.jsonl` | every `asof`: 2026-07-05 and 2026-08-15 | Theme-tree history begins 2026-07-05. |
+| THS history | `data/basket_levels/china_ths.parquet`: first date 2026-07-02, 78 rows | Daily levels exist only from 2026-07-02; this is not issuer membership and is not a US industrial mapping source. |
+| `security_master.parquet` | 2,380 rows, 2,379 securities, 1,213 issuer IDs, effective dates 2012-08-31→2026-09-21, ingestion 2026-08-13→2026-09-21; security states: 2,379 null and 1 `SUPERSEDED_DUPLICATE_MINT`; issuer states: 1,212 `RESOLVED`, 1,167 `NO_ISSUER_EVIDENCE`, 1 deferred | It is a current/correction snapshot, not an issuer lifecycle table. Effective dates are key inception facts, not first-observed issuer coverage. |
+| `vendor_aliases.parquet` | 6,035 rows, 2,379 security IDs; vendors: membership 1,218, store 1,217, theme graph 1,163, Yahoo/Yahoo fetch 1,219 each, ledger 2; 7 rows have `valid_from`/`valid_to` | Alias coverage is overwhelmingly current-name; only 7 dated alias bounds exist. |
+| Membership alias coverage | 3,088 of 3,114 membership rows have an alias symbol; 9 distinct names are uncovered at some cut: `ANGPY`, `B`, `BLD`, `CBOE`, `EA`, `GATO`, `IMPUY`, `MAG`, `RHHBY` | `_receipt.json` reports identity resolution 708/718 with these names unresolved; alias presence alone is not issuer-safe historical identity. |
+| Delisted registry | Six names: `AVB`, `CTRA`, `FBRX`, `LEG`, `TPH`, `TWO`. Only `AVB` appears in every membership cut. | Six curated exits do not constitute general failure coverage. |
+
+Per historical membership cut, failed/delisted issuer coverage is: **FAIL** at 2026-08-13, 2026-08-18, and 2026-09-04. Only one of six delisted names is present; the other five are absent without evidence that they belong to these baskets, and no general original-universe/failed-issuer registry exists. Security-master ingestion starts 2026-08-13, so no earlier cut can be evidenced from this snapshot. **Earliest cut satisfying rules 2 and 3: none.** Rule 2 alone has a genuine observed membership cut at 2026-08-13, but rule 3 fails at every observed cut.
+
+## 5. UNITS AND MAPPING CASES
+
+| Candidate / leg | Configured semantic evidence | Unit and measurement case | Mapping constraint |
+|---|---|---|---|
+| (a) `AWHMAN` | `config.yml:361-365` | Average weekly hours, manufacturing; labor level, not orders or shipments. | Macro-only; no issuer mapping. |
+| (a) `PERMIT` | `config.yml:361-365` | Count of new private housing units authorized; physical permit volume, NSA-compatible administrative count as configured without a seasonal declaration here. | Macro-only; no issuer mapping. |
+| (a) `NEWORDER` | `config.yml:361-365` and `:433-456` | New orders, nondefense capital goods excluding aircraft; nominal order flow, dollars. | Capital-goods aggregate, not granular machinery. |
+| (a) `CMRMTSPL` | `config.yml:366-368` | Real manufacturing and trade sales; real dollar volume. | Macro-only. |
+| (a) `ISRATIO` | `config.yml:369-372` and `:446-453` | Total-business inventories divided by sales; dimensionless ratio. | Macro-only. |
+| (a) `MNFCTRIRSA` | `config.yml:446-453` | Manufacturing inventory-to-sales ratio, SA. | Total manufacturing, not machinery grain. |
+| (a) `AMTMUO` | `config.yml:446-453` | Manufacturers' unfilled orders, total manufacturing; nominal order backlog in dollars. | Backlog/order-flow case; total manufacturing grain. |
+| (a) `AMTMVS` | `config.yml:446-453` | Manufacturers' value of shipments, total manufacturing; nominal shipment flow in dollars. | Shipment case; total manufacturing grain. |
+| (b) `CAPUTLG3344S` | `config.yml:433-445` | Capacity utilization, semiconductors and electronic components, percent, NAICS 3344. | Sector capacity, not equipment-maker membership. |
+| (b) `CAPUTLG334S` | `config.yml:433-445` | Capacity utilization, computer and electronic products, percent, NAICS 334. | Broad electronics capacity, not semiconductor equipment. |
+| (b) `PCU334413334413` | `config.yml:433-457` | PPI, semiconductor and related device manufacturing; price index. | Price level, not equipment orders/shipments. |
+| (b) `CAPUTLG331S` | `config.yml:433-445` | Capacity utilization, primary metals, percent, NAICS 331. | Upstream industrial capacity context. |
+| (c) `PERMIT` plus housing legs | `config.yml:211-214` and `:361-365` | Permits and starts are counts/SAAR; Case-Shiller is a seasonally adjusted house-price index; mortgage rate is a percent. | Only `PERMIT` is in the vintage list; starts/HPI/mortgage legs lack measured vintage rows. |
+| (c) other detail power/steel legs | `config.yml:154-157` | Capacity utilization is percent; `PCU331110331110` and `WPU0543` are PPI indices. | Broad industrial material context, not building-products issuer membership. |
+
+No segment mapping dated after a decision cut may be used. `members_asof` selects only the newest stored snapshot on or before the decision date and returns `pit=False` for pre-store fallback; the measured snapshots make that fence effective from 2026-08-13. Security-master ingestion (first 2026-08-13), dated aliases (seven rows), tree history (2026-07-05), and THS daily history (2026-07-02) likewise establish first observed/correction clocks rather than permitting backdating. A later-dated GICS, current basket, theme, or identity mapping cannot be substituted at an earlier cut; if a cut predates its source clock, the mapped branch is prospective-only or macro-only.
+
 ## 4. MEMBERSHIP, IDENTITY AND FAILURE COVERAGE
 
 ## 5. UNITS AND MAPPING CASES
