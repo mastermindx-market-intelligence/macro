@@ -5365,6 +5365,27 @@ jobs:
       - name: flow-cohorts unit tests
         run: python -m pytest tests/test_flow_cohorts.py -q
 
+  options-payoff-lab-consumer:
+    if: ${{ false }}
+    gate: code
+    # A-F03-W2-5b · index-ETF payoff lab CONSUMER (templates/options.html.j2 fold,
+    # scripts/build_options_command.py adapter, scripts/build_options_payoff_lab.py
+    # contract pin, .github/workflows/engine-render.yml text pins).  The test file
+    # is hermetic: every fixture payload is built in-memory from the producer's
+    # documented contract (engine/options_payoff_lab.py SCHEMA
+    # "mastermind.options_payoff_lab/v1"); no network, no store read.  Never a
+    # gate: data job (options-estate-guards, workflow-yaml, unrun-* never run in
+    # PR packs); never a waiver row.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: options-payoff-lab consumer tests
+        run: python -m pytest tests/test_options_payoff_lab_consumer.py -q
   uk-policy-desk:
     if: ${{ false }}
     gate: code
@@ -6009,7 +6030,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jinja2
+      # PR #7797 regional detail composition is a source-only user-facing UI
+      # contract. Keep it in the PR-time gate:code governance lane rather than
+      # a gate:data render lane, which cannot protect the merge gate.
+      - name: regional sector shared-body source contract
+        run: python3 -m pytest tests/test_regional_sector_detail_shared_body.py -q
       - name: design governance unit suites
         run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_check_p0b_receipt_closure.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
