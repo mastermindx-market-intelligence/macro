@@ -101,7 +101,7 @@
     "red_log_raw_sha256": "62c0c44d05063d3eeb06465288cd36be93228109cab8d91ac739d715ba1e4042",
     "log_normalization": "Trailing whitespace removed only to satisfy repository diff guard; results and failure details unchanged."
   },
-  "observed_compatibility_base": "bbc684e2acd10319df9b2007882f478ae30f1d70",
+  "observed_compatibility_base": "fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8",
   "release_gates_remaining": [
     "current-head hosted CI",
     "independent review",
@@ -127,7 +127,11 @@
     "template_write": "SUCCEEDED_ON_ORIGINAL_CARRIER",
     "no_new_template_test_execution_claim": false,
     "latest_source_verification": "COMPLETE_ORIGINAL_CARRIER",
-    "publication": "PENDING_NORMAL_COMMIT"
+    "publication": {
+      "state": "PUSHED",
+      "runtime_semantic_head": "06db2fed7cb95e736afc0b9a5c9dbc3d3d2adce8",
+      "same_carrier": true
+    }
   },
   "previous_template_hold_evidence": {
     "source_sha256": {
@@ -232,5 +236,6 @@
       "source_acceptance": false,
       "new_semantic_review": "REQUIRED"
     }
-  }
+  },
+  "current_composition_tree": "30d2274b10bb6aa3655679c988184f5770062970"
 }
