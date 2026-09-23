@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T02:07:42.348470+00:00",
-  "count": 2678,
+  "generated_at": "2026-09-23T02:37:46.327381+00:00",
+  "count": 2679,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -210,6 +210,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vtwyizbd0cv-326e97",
+      "title": "Strategy Daily",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:53:05Z",
+      "summary_points": [
+        "USD Geopolitical & Fed Policy: Middle East escalation (Houthi attacks, tanker shortages) sustaining energy inflation; Fed hawkish stance supporting DXY (100.35) with 10Y UST yields near 5% as key focus.",
+        "EUR Political & ECB Rate Outlook: France's AA- to A+ downgrade and German election fallout driving volatility; ECB meeting priced at 55-45% rate hike probability with terminal rates expected to rise."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
