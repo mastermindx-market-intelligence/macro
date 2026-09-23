@@ -172,4 +172,189 @@ Each cell names the number that decides it. For rule 1, the two-mechanism indepe
 
 ## 9. EVIDENCE
 
+Commands are in execution order. `$TMP` denotes the external scratch directory created by `mktemp`; binary paths were written there only after `git show origin/main:<path> > "$TMP/<name>"`.
+
+1. Source and skeleton:
+
+```text
+$ git rev-parse origin/main
+742a2e86c505cca926dee2c68d7166c10a7128a1
+$ git status --short --branch
+## HEAD (no branch)
+$ wc -l research/prophet_v4/r6_program/wave2/D03_SOURCE_READINESS_MATRIX_2026-09-23.md
+22 ...
+```
+
+1. Governing records: `origin/main` lacked all three (`git cat-file -e origin/main:<path>` failed for each), so the exact fallbacks were fetched:
+
+```text
+$ git fetch origin refs/pull/7841/head:refs/remotes/pr/7841
+ * [new ref] refs/pull/7841/head -> pr/7841
+$ git fetch origin refs/pull/7836/head:refs/remotes/pr/7836
+ * [new ref] refs/pull/7836/head -> pr/7836
+$ git fetch origin refs/pull/7837/head:refs/remotes/pr/7837
+ * [new ref] refs/pull/7837/head -> pr/7837
+$ git show pr/7841:research/prophet_v4/r6_program/rulings/R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md > "$TMP/R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md"
+$ git show pr/7836:research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md > "$TMP/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md"
+$ git show pr/7837:research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md > "$TMP/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md"
+$ git rev-parse pr/7841 pr/7836 pr/7837
+d3b1fb743cbcde38a23ff13def1db47e42335514
+68ece597765bb8d842a16434be9c8fc67200ee53
+6c0539e253fbab4a8caee8fe02a0732d2f3fb341
+```
+
+1. Allowlist discovery:
+
+```text
+$ git ls-tree --name-only origin/main data/reference/
+data/reference/_receipt.json
+data/reference/issuer_master.parquet
+data/reference/issuer_migrations.parquet
+data/reference/security_master.parquet
+data/reference/security_migrations.parquet
+data/reference/vendor_aliases.parquet
+$ git ls-tree -r --name-only origin/main | grep -iE 'ths' | head
+admin/paths.py
+agentos/discoveries/DSC-PROPHET-LAB-OWNS-NO-CN-LIMIT-PATHS.md
+app/deploy/biocatalyst-secure-paths.py
+collectors/china_ths_concepts.py
+contracts/baskets_china_ths/scrape_receipt.v1.schema.json
+data/basket_levels/china_ths.parquet
+data/baskets_china_ths/concept_en_map.json
+data/baskets_china_ths/concept_map.json
+data/baskets_china_ths/latest.json
+data/baskets_china_ths/membership.json
+$ git ls-tree -r --name-only origin/main research/licenses/
+research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+research/licenses/THETADATA_ENTITLEMENT_RECORD.md
+```
+
+1. Every §1 path was copied to scratch with the required `git show origin/main:<path> > "$TMP/<name>"` form. `inspect_sources.py` then read only those scratch files:
+
+```text
+### data_fred_vintage_vintages.parquet
+shape (16472, 5)
+columns ['series', 'period', 'value', 'realtime_start', 'realtime_end']
+### data_baskets_membership_history.parquet
+shape (3114, 9)
+columns ['snapshot_date', 'suite', 'basket_id', 'ticker', 'added', 'removed', 'name_zh', 'members_sha', 'source_shape']
+### data_themes_heatmap_tree_history.jsonl
+0 {'asof': '2026-07-05'}
+1 {'asof': '2026-08-15'}
+### data_reference_security_master.parquet
+shape (2380, 13)
+columns ['security_id', 'issuer_id', 'issuer_state', 'issuer_cik', 'issuer_evidence_snapshot', 'listing_key', 'country', 'mic', 'inception_code', 'effective_at', 'ingested_at', 'security_state', 'superseded_by']
+### data_reference_vendor_aliases.parquet
+shape (6035, 6)
+columns ['vendor', 'vendor_symbol', 'security_id', 'valid_from', 'valid_to', 'ingested_at']
+### data_basket_levels_china_ths.parquet
+shape (78, 1186)
+THS_INDEX_NAME date
+THS_FIRST_ROWS [Timestamp('2026-07-02'), Timestamp('2026-07-03')]
+THS_LAST_ROWS [Timestamp('2026-09-22'), Timestamp('2026-09-23')]
+```
+
+1. The §2 pandas snippet created the exact `series` list from Q6-1 and, for each series, calculated min/max `realtime_start`, row and period counts, the calendar-month span, missing calendar months, and month-end→release lag:
+
+```python
+series = 'AWHMAN PERMIT NEWORDER CMRMTSPL INDPRO ISRATIO MNFCTRIRSA AMTMUO AMTMVS CAPUTLG3344S CAPUTLG334S CAPUTLG331S PCU334413334413 PCU331110331110 IPG2211S CAPUTLG2211S WPU0543'.split()
+v = pd.read_parquet(root / 'data_fred_vintage_vintages.parquet')
+for sid in series:
+    d = v[v.series.eq(sid)].copy()
+    first_period, latest_period = d.period.min(), d.period.max()
+    months = (latest_period.year - first_period.year) * 12 + (latest_period.month - first_period.month) + 1
+    present = pd.PeriodIndex(d.period, freq='M')
+    all_months = pd.period_range(first_period, latest_period, freq='M')
+    gaps = sorted(str(x) for x in all_months.difference(present))
+    month_end = d.period.dt.to_period('M').dt.to_timestamp('M')
+    lag_days = (d.realtime_start - month_end).dt.days
+```
+
+Its summarized output was `SERIES_COUNT 17`, followed by all 17 §2 table rows. No series was missing and every gap list was `none`.
+
+1. Membership/identity/failure snippet:
+
+```python
+m = pd.read_parquet(root / 'data_baskets_membership_history.parquet')
+dead = sorted(set(m.ticker[m.snapshot_date < m.snapshot_date.max()]) - set(m.ticker[m.snapshot_date == m.snapshot_date.max()]))
+sm = pd.read_parquet(root / 'data_reference_security_master.parquet')
+va = pd.read_parquet(root / 'data_reference_vendor_aliases.parquet')
+dl = yaml.safe_load((root / 'config_delisted_symbols.yml').read_text())['symbols']
+```
+
+```text
+MEMBERSHIP 2026-08-13 2026-09-04 3114 1 49
+SNAPSHOTS: each of 2026-08-13, 2026-08-18, 2026-09-04 has 1038 rows, 49 lists, 708 tickers
+DEAD_NAME_CANDIDATES 2 EQR,GOLD
+DELISTED 6 AVB,CTRA,FBRX,LEG,TPH,TWO
+DEAD_CANDIDATE EQR delisted False alias_rows 3 master_rows 0
+DEAD_CANDIDATE GOLD delisted False alias_rows 4 master_rows 0
+SECURITY_MASTER 2380 ... states {nan: 2379, SUPERSEDED_DUPLICATE_MINT: 1} ingested 2026-08-13 ... 2026-09-21
+VENDOR_ALIASES 6035 ... valid_from_nonnull 7 valid_to_nonnull 7 securities 2379
+ALIAS_UNCOVERED_NAMES ANGPY,B,BLD,CBOE,EA,GATO,IMPUY,MAG,RHHBY
+THS_LEVELS 78 2026-07-02 2026-09-23
+```
+
+1. Direct audit attempts in the sparse worktree and a symlinked package attempt each returned `WARNING: vintage store not found ... every series ABSENT`, with all 17 rows `ABSENT 0`. Those outputs diagnose the sparse path and do not supersede the direct pandas read. The successful cross-check copied the existing repo Python package roots to `$TMP/audit-root-4`, linked the already-read parquet into its expected data path, changed directory there, and wrote only the mandated output into this worktree:
+
+```text
+$ (cd "$TMP/audit-root-4" && python3 -m scripts.audit_alfred_depth --series AWHMAN,...,WPU0543 --output "$REPO/research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json")
+loaded vintage store: 16,472 rows, 54 series
+AWHMAN           OK        1997-01-10          356
+PERMIT           OK        1999-09-17          321
+NEWORDER         OK        1997-03-26          354
+CMRMTSPL         THIN      2013-06-24          155
+INDPRO           OK        1997-01-17          356
+ISRATIO          OK        1997-04-15          354
+MNFCTRIRSA       THIN      2013-07-15          159
+AMTMUO           THIN      2011-07-05          181
+AMTMVS           THIN      2011-07-05          181
+CAPUTLG3344S     SHALLOW   2022-09-15           48
+CAPUTLG334S      SHALLOW   2015-03-16          138
+CAPUTLG331S      SHALLOW   2015-03-16          138
+PCU334413334413  SHALLOW   2015-05-14          136
+PCU331110331110  SHALLOW   2015-05-14          136
+IPG2211S         SHALLOW   2015-03-16          138
+CAPUTLG2211S     SHALLOW   2015-03-16          138
+WPU0543          SHALLOW   2015-04-14          137
+SUMMARY: PIT-OK ... AWHMAN, PERMIT, NEWORDER, INDPRO, ISRATIO
+SUMMARY: THIN/SHALLOW ... CMRMTSPL, MNFCTRIRSA, AMTMUO, AMTMVS, CAPUTLG3344S, CAPUTLG334S, CAPUTLG331S, PCU334413334413, PCU331110331110, IPG2211S, CAPUTLG2211S, WPU0543
+SUMMARY: ABSENT ... none
+```
+
+The audit's `n_vintages` counts distinct release timestamps; §2's row counts are the literal store rows. Both agree on period coverage.
+
+1. Provider search:
+
+```text
+$ git grep -n -iE 'kensho|theia|compustat|crsp|refinitiv|factset|s&p capital|gics history' origin/main -- config research | head -40
+origin/main:config/theme_sources.yml:45: # sp_kensho:
+origin/main:config/theme_sources.yml:49: # theia:
+origin/main:research/CN_COMMERCIAL_SUPPLY_CHAIN_DILIGENCE_2026_08_19.md:191: Western FactSet Revere ... not a license.
+origin/main:research/ETF_DATA_SOURCES.md:72: SSGA / SPDR S&P Kensho (current-only XLSX — forward collection)
+origin/main:research/GATE0_SURVIVORSHIP.md:90: ... needs paid CRSP ...
+origin/main:research/GLOBAL_MARKET_INTELLIGENCE_MASTERPLAN_BY_FABLE.md:284: Theia taxonomy/Kensho ... authorizes nothing ...
+origin/main:research/RIC_DOMAIN_RESEARCH_PACK_2026-07-13.md:96: ... free via standard data vendors including Bloomberg, Refinitiv ...
+origin/main:research/RIC_DOMAIN_RESEARCH_PACK_2026-07-13.md:698: FactSet GeoRev methodology ...
+origin/main:research/SEASONAX_BIOPHARMA_SEASONALITY_INTELLIGENCE_BUILD_DOCKET_FOR_FABLE.md:107: ... reserved for Bloomberg/Refinitiv integrations.
+origin/main:research/SIGNAL_AUDIT.md:83: ... needs paid CRSP ... Basis: Shumway (1997), CRSP PIT.
+origin/main:research/SIGNAL_LAB_FRONTIER_DAY2_FABLE_ADJUDICATION_2026-07-06.md:107: sparse vs FactSet Revere coverage
+origin/main:research/SIGNAL_LAB_FRONTIER_PHASE0_2026-07-06.md:92: N-PORT/CRSP ... not fully in repo.
+origin/main:research/alpha_intelligence/censuses/B0/B0_MANAGER_COMPLEX_DRAFT.md:49: SSGA Kensho ...
+```
+
+The full capped result had 40 lines; no Compustat entitlement or GICS-history row appeared. Duplicated ETF/research name-drops and non-provider prose are represented above without changing any provider conclusion.
+
+## 10. GAPS + MUST-NOTS REFUSED
+
+- **Rule 2/3 closure:** no historical industrial, equipment, or building-products segment map and no original failed-issuer universe exist. The earliest satisfiable cut is none. A licensed historical mapping/failure source remains the exact human/provider question; no commitment is made here.
+- **Rule 4 for (a)/(b):** the census cites Census SIC→NAICS, benchmark, semiconductor-M3 discontinuity and seasonal-method treatment, but those source documents were outside this task allowlist. This matrix records UNKNOWN rather than opening them.
+- **Rule 5:** Census/M3 and historical issuer mapping have no recorded five-rights answers. FRED model use and redistribution remain unresolved; one blanket public-domain label is insufficient. Massive enterprise scope is recorded but does not identify an exact historical issuer/dead-name feed.
+- **M3:** keyless CSV/keyed API byte-equivalence and authoritative Census crosswalks remain UNKNOWN. No key was used and no missing probe was run.
+- **Identity:** security master is not a lifecycle table; alias coverage is current-heavy and only seven alias rows are dated. Nine membership names remain unresolved, and `EQR`/`GOLD` are identity-change cases, not dead-name coverage.
+- **Costs:** no provider cost was inferred. The only allowlisted cost number, ThetaData's private subscription amount, is deliberately not restated here because it is irrelevant to this branch and commercial details should remain in its record.
+- MUST-NOT REFUSED: no current membership, event set, GICS assignment, segment mapping, or issuer identity was backdated; no broad aggregate was relabeled as machinery; no modeled lag minted a vintage date.
+- MUST-NOT REFUSED: no sparse-tree opt-in, `--probe-missing`, keyed network call, credential, `.env`, or forbidden outcome artifact was used. `data/` was never written.
+- **No return, outcome, ledger, scoreboard or trial artifact was opened.**
+
 ## 10. GAPS + MUST-NOTS REFUSED
