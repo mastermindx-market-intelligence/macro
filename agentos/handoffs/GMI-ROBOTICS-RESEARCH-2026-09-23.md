@@ -90,3 +90,27 @@ The review point is the written specification, not a request to reauthorize the 
 Boundary justification: completion of source-to-native-contract investigation and a written architectural specification requiring review before product implementation, after substantial source/tool context. This is a procedural phase checkpoint, not a completed plan masquerading as shipped capability. Resume from this cumulative owner record plus exact artifacts on the current research/design surface; no autonomous wake is claimed and no hard session seal is declared.
 
 Effects: research/spec/continuity documentation only. No product code, production schema, graph data, basket, runtime, entry, rank, size, trade, merge or deployment effect. EFFECT_UNKNOWN: none observed. Active children/returns/watchers: none created by this operation. The current handoff write's commit is established by the tool receipt/readback, not embedded self-referentially here.
+
+
+## 2026-09-23 — written spec accepted; implementation-plan review frontier
+
+Chairman explicitly approved \`docs/superpowers/specs/2026-09-23-robotics-theme-evidence-vertical-design.md\` in the live parent conversation and switched the session to Extra High for tool-capable continuation. This is approval of the written specification, not merge/deploy authority and not implicit acceptance of a plan that did not yet exist at the time of approval.
+
+Fresh protected procedure pin for planning: Mastermind \`89582a372aa2a57ec500868ce6d79cd156219445\`, Skillpack 1.0.1/bootstrap 1. The enrolled INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT blobs remain compatible.
+
+Implementation plan:
+\`docs/superpowers/plans/2026-09-23-robotics-theme-evidence-vertical-implementation.md\`
+
+Plan self-review head before this checkpoint: \`45d01c718402ddfd0d3981967c64580695d97d96\`; plan blob \`d0a04e96c874395ae51cf44281039c99527dcd86\`. Self-review: 8 tasks; RBV-01 through RBV-32 all mapped; zero placeholder markers; K1 clock bindings use only the repository-supported \`date|datetime\` grains and carry unknown values through the existing wire's explicit unknown value state.
+
+Current Macro interface pin used for planning: \`a6314d0192e0884f2fab29042c6143f2e1f74ad6\`. The research/design branch remains intentionally additive and diverged from main; implementation code is planned for a fresh current-main carrier after plan acceptance and exact collision reconciliation.
+
+Current collision facts at the planning pin:
+- #7462 head \`31706d7322af55696dc7b2e746ec511b08bd51d7\` owns \`engine/theme_graph/store.py\`; Task 2 waits for terminal/accepted custody reconciliation.
+- #7669 head \`2c28d950aa9448fc878bb64d92b228a8f1952bde\` includes \`templates/basket_detail.html.j2\`; Task 6 waits for the accepted current template.
+- #7664 owns \`scripts/build_state_of_themes.py\`, but the plan intentionally avoids that file by hydrating the Robotics summary client-side through the paid API.
+- #7455/#7633 had no planned-path overlap at this pin.
+
+A material implementation constraint is explicit rather than hidden: current \`data/theme_graph/evidence.parquet\` is Git-tracked in the public Macro repository. Therefore no live full-fidelity curation assertion may be committed there. Task 7 requires proof of an incumbent approved private owner/publication binding before Task 8 admits a real assertion. If that cannot be satisfied without a second evidence/latest-state plane, the live-admission lane returns to the architecture owner instead of weakening the privacy law.
+
+NEXT GATE: Chairman reviews the written implementation plan and selects execution method. No implementation task has STARTed, no child worker/Executive Attempt is implied, and no watcher is armed by this checkpoint.
