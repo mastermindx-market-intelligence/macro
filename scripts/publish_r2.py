@@ -167,6 +167,20 @@ _DATA_DIRS = {
                   # the dedicated skewaccrual ops lane publishes it
                   # explicitly (--dirs options_skew), never the nightly
                   # render.
+    "options_payoff_lab",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options
+                  # payoff lab producer (data/options_payoff_lab/latest.json
+                  # overwritten each session, plus history/<asof>.json kept).
+                  # ONE writer: the M1 store-host launchd job
+                  # `com.macro.payofflab` (ops/launchd/com.macro.payofflab.plist
+                  # + ops/launchd/run_options_payoff_lab.sh) via
+                  # `python -m scripts.build_options_payoff_lab --accrue`.
+                  # Render hosts restore with
+                  # `python -m scripts.fetch_r2 --dirs options_payoff_lab`
+                  # into data/options_payoff_lab/, where `--emit` writes
+                  # site/options_payoff_lab/latest.json. Not append-only:
+                  # latest.json is replaced each session. Not in DEFAULT_DIRS:
+                  # the store-host runner publishes it explicitly
+                  # (--dirs options_payoff_lab), never the nightly render.
 }
 # A data-dir tree with fewer files than this is a PARTIAL CHECKOUT (the parquets are
 # gitignored — a CI runner checkout holds just the committed _manifest.json +
@@ -194,7 +208,11 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
                            # the bytes floor below is the real discrimination
                            # between a real ledger and a sparse-CI sidecars-only
                            # tree.
-                           "options_skew": 2}
+                           "options_skew": 2,
+                           # MO-A3 W2-5a: latest.json + one history/<asof>.json.
+                           # 2 is the first honest session. A lone latest.json
+                           # is a partial tree and stays under this floor.
+                           "options_payoff_lab": 2}
 # History-append stores whose R2 objects hold DEEP history (data/attention/*.parquet:
 # backfilled 2015-07→ SLF-048 2026-07-06; gitignored since same day). The nightly
 # collect job materialises the store via scripts/fetch_r2 BEFORE the wiki_pageviews
@@ -249,7 +267,15 @@ _DATA_DIR_MIN_BYTES = {"attention": 15_000_000, "index_gex_history": 600_000,
                        # per-file shrink refusal would block honest
                        # nights; snapshot()'s idempotent key-set is the
                        # append-only contract.
-                       "options_skew": 10_000}
+                       "options_skew": 10_000,
+                       # MO-A3 W2-5a (2026-09-23): measured latest.json is
+                       # 407,756 bytes for the 2026-09-21 session (4 roots,
+                       # 16 structures). 10 KB refuses an empty stub and
+                       # clears that file with about a 40x margin.
+                       # Not in _APPEND_ONLY_DIRS:
+                       # latest.json is overwritten every session, so a
+                       # per-file shrink refusal would block an honest night.
+                       "options_payoff_lab": 10_000}
 _CT = {".json": "application/json", ".js": "application/javascript",
        ".html": "text/html; charset=utf-8", ".csv": "text/csv"}
 

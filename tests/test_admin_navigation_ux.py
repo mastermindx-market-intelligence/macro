@@ -302,3 +302,26 @@ assert.equal(refused.label, 'Queue for X');
 assert.equal(refused.button.disabled, false);
 assert(refused.detail.includes('Refused by'));
 """)
+
+
+def test_publisher_receipt_labels_preserve_delivery_uncertainty():
+    """A legacy posted record is not independently verified delivery evidence."""
+    start = APP.index('RENDER.marketing_publish = async () => {')
+    end = APP.index('/* Dark-desk park readout', start)
+    renderer = APP[start:end]
+    assert '["posted", "Publisher records", "var(--muted)"]' in renderer
+    assert 'Recent publisher records' in renderer
+    assert 'not delivery confirmation or permission to resend' in renderer
+    assert '["posted", "Posted",' not in renderer
+    assert 'What goes out next, what is stuck, and what already went.' not in renderer
+    assert 'Live posts land here with their Buffer receipt' not in renderer
+    assert 'Engagement is polled after the post lands' not in renderer
+    assert 'Submission receipts and confirmed delivery remain separate.' in renderer
+    # Preserve the existing ledger fields, receipt navigation, and measurement nulls.
+    assert 'const posted = d.recent_posted || [];' in renderer
+    assert 'posted: ["#pub-posted",' in renderer
+    assert 'r.external_url' in renderer and 'r.external_id' in renderer
+    assert 'v2 == null ?' in renderer and 'not measured yet' in renderer
+    assert 'recorded ${a.posted || 0}' in renderer
+    assert 'pubWireGoLive(d);' in renderer
+    assert 'onclick="pubRunDryRun(this)"' in renderer
