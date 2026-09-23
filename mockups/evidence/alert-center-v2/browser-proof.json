@@ -1,0 +1,522 @@
+{
+  "checks": [
+    "Now renders only canonical tier+freshness groups present in the current snapshot",
+    "Every first-glance row has a source-bound next action instead of generic evidence copy",
+    "Full-source Bonds evidence is reachable beyond the capped queue",
+    "Search AND source filtering, genuine no-results, and reset",
+    "Evidence selection has a reloadable canonical-ID permalink",
+    "Native Escape closes evidence and restores the selected row",
+    "A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary",
+    "A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up",
+    "Five next-priority risk families render source-bound limits, actions and evidence destinations",
+    "Net-liquidity flips expose current-state sizing work without becoming timing signals",
+    "OI crowding exposes leverage verification without becoming a crash call",
+    "Vector market mode exposes trend-efficiency/risk state without becoming a directional trade call",
+    "Current real snapshot has no Vector momentum-trigger observation; browser proof does not synthesize one",
+    "Current real snapshot has no Vector structure-shift observation; browser proof does not synthesize one",
+    "Five theme-change families render source-bound model limits, reassessment and current-page actions",
+    "Three rotation rollover families render breadth-aware limits and current-panel reassessment",
+    "Forming narratives expose exact cluster verification without turning model score or watch names into trade authority",
+    "Demand-ahead variants render an expectations-gap workflow without becoming buy signals",
+    "FX residual shocks expose attribution work without claiming a causal driver",
+    "FX momentum flips expose current-state verification without becoming directional forecasts",
+    "FX trend, structure, positioning and dollar-smile flips expose current-state verification without becoming forecasts or trade calls",
+    "Dollar-smile regimes expose source taxonomy and current inputs without claiming macro outcomes",
+    "Triple-red co-movement exposes cross-asset stress verification without claiming forced deleveraging as the cause",
+    "FX scenarios expose threshold-state verification without claiming the named real-world cause",
+    "MOVE band changes expose current stress verification without equating calm with safety",
+    "Curve regimes expose current taxonomy verification without treating macro interpretation as fact",
+    "Commodity-complex quadrants expose source taxonomy without treating macro labels as economic facts",
+    "Commodity shock workflow now covers silver without turning stabilization into a direction call",
+    "Commodity momentum, allocation and gold/silver value states expose source-bound verification without becoming forecasts or recommendations",
+    "Sector relative-strength breakdowns expose rotation verification without inventing flows or sell calls",
+    "FX transmission shifts expose current relationship verification without becoming causal or directional claims",
+    "Flow-normalized manager activity exposes current holdings verification without becoming a copy trade",
+    "Source outages expose missing-evidence handling without masquerading as market calm",
+    "Sector leadership crossings expose relative-strength verification without becoming flow evidence or buy calls",
+    "Axis-confidence floors expose regime-input disagreement without becoming probabilities or market direction calls",
+    "Passive sector-ETF residual flow stays distinct from discretionary manager conviction and stock recommendations",
+    "Situation context links related observations without claiming independent confirmation",
+    "Browser back and malformed legacy hash values do not crash",
+    "320/390/430 portrait + 844×390 landscape + 1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls",
+    "History selection retains the actual firing clock in its permalink"
+  ],
+  "screenshots": [
+    "desktop-net-liquidity.png",
+    "desktop-oi-crowding.png",
+    "desktop-vector-market-mode.png",
+    "desktop-forming-narrative.png",
+    "desktop-demand-ahead.png",
+    "desktop-forex-residual.png",
+    "desktop-forex-momentum.png",
+    "desktop-forex-trend-flip.png",
+    "desktop-forex-structure.png",
+    "desktop-forex-positioning.png",
+    "desktop-forex-smile-flip.png",
+    "desktop-forex-smile-regime.png",
+    "desktop-forex-triple-red.png",
+    "desktop-forex-scenario.png",
+    "desktop-bonds-move.png",
+    "desktop-bonds-curve.png",
+    "desktop-commodity-complex-regime.png",
+    "desktop-silver-shock.png",
+    "desktop-commodity-momentum.png",
+    "desktop-commodity-allocation.png",
+    "desktop-commodity-value.png",
+    "desktop-commodity-positioning.png",
+    "desktop-sector-rs-low.png",
+    "desktop-forex-transmission.png",
+    "desktop-holdings-active-change.png",
+    "desktop-source-circuit-breaker.png",
+    "desktop-sector-rs-high.png",
+    "desktop-inflation-confidence.png",
+    "desktop-sector-passive-flow.png",
+    "desktop-related-context.png",
+    "desktop-dark-en.png",
+    "desktop-dark-zh.png",
+    "desktop-light-en.png",
+    "desktop-light-zh.png",
+    "mobile-landscape-dark-en.png",
+    "mobile-landscape-dark-zh.png",
+    "mobile-landscape-light-en.png",
+    "mobile-landscape-light-zh.png",
+    "mobile-430-dark-en.png",
+    "mobile-430-dark-zh.png",
+    "mobile-430-light-en.png",
+    "mobile-430-light-zh.png",
+    "mobile-dark-en.png",
+    "mobile-dark-zh.png",
+    "mobile-light-en.png",
+    "mobile-light-zh.png",
+    "mobile-320-dark-en.png",
+    "mobile-320-dark-zh.png",
+    "mobile-320-light-en.png",
+    "mobile-320-light-zh.png",
+    "desktop-evidence-history.png"
+  ],
+  "page_errors": [],
+  "production_acceptance": false,
+  "viewport_metrics": [
+    {
+      "name": "desktop-dark-en.png",
+      "width": 1440,
+      "height": 900,
+      "first_row": {
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "desktop-dark-zh.png",
+      "width": 1440,
+      "height": 900,
+      "first_row": {
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "desktop-light-en.png",
+      "width": 1440,
+      "height": 900,
+      "first_row": {
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "desktop-light-zh.png",
+      "width": 1440,
+      "height": 900,
+      "first_row": {
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 170,
+        "y": 309.75,
+        "width": 1100,
+        "height": 56
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-dark-en.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 17,
+        "y": 315,
+        "width": 810,
+        "height": 155.25
+      },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-dark-zh.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 17,
+        "y": 315,
+        "width": 810,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-light-en.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 17,
+        "y": 315,
+        "width": 810,
+        "height": 155.25
+      },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-landscape-light-zh.png",
+      "width": 844,
+      "height": 390,
+      "first_row": {
+        "x": 17,
+        "y": 315,
+        "width": 810,
+        "height": 139.3125
+      },
+      "tabs": {
+        "x": 16,
+        "y": 164.5,
+        "width": 812,
+        "height": 41
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 40
+    },
+    {
+      "name": "mobile-430-dark-en.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 404,
+        "height": 189.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-dark-zh.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 404,
+        "height": 168.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-light-en.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 404,
+        "height": 189.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-430-light-zh.png",
+      "width": 430,
+      "height": 932,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 404,
+        "height": 168.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 406,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-dark-en.png",
+      "width": 390,
+      "height": 844,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 364,
+        "height": 208
+      },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-dark-zh.png",
+      "width": 390,
+      "height": 844,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 364,
+        "height": 168.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-light-en.png",
+      "width": 390,
+      "height": 844,
+      "first_row": {
+        "x": 13,
+        "y": 623,
+        "width": 364,
+        "height": 208
+      },
+      "tabs": {
+        "x": 12,
+        "y": 328.5,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-light-zh.png",
+      "width": 390,
+      "height": 844,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 364,
+        "height": 168.875
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 366,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-dark-en.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 695.5,
+        "width": 294,
+        "height": 226.75
+      },
+      "tabs": {
+        "x": 12,
+        "y": 396,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-dark-zh.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 294,
+        "height": 208
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-light-en.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 695.5,
+        "width": 294,
+        "height": 226.75
+      },
+      "tabs": {
+        "x": 12,
+        "y": 396,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    },
+    {
+      "name": "mobile-320-light-zh.png",
+      "width": 320,
+      "height": 568,
+      "first_row": {
+        "x": 13,
+        "y": 600.5,
+        "width": 294,
+        "height": 208
+      },
+      "tabs": {
+        "x": 12,
+        "y": 306,
+        "width": 296,
+        "height": 45.75
+      },
+      "stale_notice": null,
+      "browse_height": 40,
+      "reset_height": 40,
+      "quick_filter_min_height": 44
+    }
+  ],
+  "passed": true
+}

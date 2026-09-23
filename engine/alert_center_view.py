@@ -1,0 +1,3401 @@
+"""Pure investigation projection over Alert Triage's existing evidence.
+
+No readers, persistence, new signal IDs, scoring or outbound authority live here.
+The capped legacy board and its push consumers remain unchanged.
+"""
+from __future__ import annotations
+
+from datetime import date
+import unicodedata
+import math
+import re
+
+from engine import alert_time
+
+
+def _json_safe(value):
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {k: _json_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(v) for v in value]
+    if isinstance(value, tuple):
+        return tuple(_json_safe(v) for v in value)
+    return value
+
+
+def _key(row: dict) -> tuple[str, str, str]:
+    source = str(row.get('source') or '')
+    return source, str(row.get('type') or ''), str(row.get('asset') or source)
+
+
+def _clock_key(row: dict) -> tuple:
+    day = alert_time.parse_date(row.get('board_date')) or date.min
+    instant = alert_time.parse_instant(row.get('event_ts'))
+    return day, instant.timestamp() if instant is not None else 0.0
+
+
+def _plain(text: str) -> str:
+    text = str(text or '').strip()
+    while text and (unicodedata.category(text[0])[0] in 'PS' or text[0].isspace()):
+        text = text[1:]
+    return text.strip()
+
+
+BRIEF_SCHEMA = 'mastermind.alert_brief.v1'
+_TRANSITION_DETAIL = re.compile(
+    r"^The regime's footing went from (.+?) to (.+?) \((\d+) warning flags active\)$"
+)
+_RISK_DETAIL = re.compile(
+    r'^Equity risk-state crossed into ([A-Z][A-Z _-]+) \((\d{1,3})/100\) — (.+?); (.+)$'
+)
+_NET_LIQUIDITY_ROC_FLIP = re.compile(
+    r'^Net liquidity 4-week RoC flipped (positive \(expanding\)|negative \(contracting\)) '
+    r'and held ([1-9][0-9]*)d: ([+-][0-9]+(?:\.[0-9]+)?)bn -> '
+    r'([+-][0-9]+(?:\.[0-9]+)?)bn$'
+)
+_COMMODITY_COMPLEX_HEADLINE = re.compile(
+    r'^Commodity complex → (Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare)$'
+)
+_COMMODITY_COMPLEX_DETAIL = re.compile(
+    r'^The dollar × growth quadrant shifted '
+    r'(Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare) → '
+    r'(Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare)\.$'
+)
+_COMMODITY_PRICE_SHOCK = re.compile(
+    r'^(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl) '
+    r'— the acute move is settling\.$'
+)
+_COMMODITY_MOMENTUM_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) momentum → (bull|bear)$'
+)
+_COMMODITY_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
+    r'(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl)\.$'
+)
+_COMMODITY_ALLOCATION_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) allocation → ([0-9]{1,3})%$'
+)
+_COMMODITY_ALLOCATION_DETAIL = re.compile(
+    r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% \(momentum × risk\)\.$'
+)
+_COMMODITY_VALUE_HEADLINE = re.compile(
+    r'^(Gold|Silver): gold/silver ratio (silver cheap|silver rich)$'
+)
+_COMMODITY_VALUE_DETAIL = re.compile(
+    r'^GSR at ([0-9]{1,3})(?:st|nd|rd|th) %ile \(3y\) — '
+    r'(silver cheap vs gold|silver rich vs gold)\.$'
+)
+_COMMODITY_POSITIONING_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) COT (crowded long|crowded short)$'
+)
+_COMMODITY_POSITIONING_DETAIL = re.compile(
+    r'^Speculative net positioning reached (crowded long|crowded short) '
+    r'\(([0-9]{1,3})(?:st|nd|rd|th) %ile, 3y\)\.$'
+)
+_VECTOR_ALLOCATION_CHANGE = re.compile(
+    r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
+    r'\(momentum × risk grid\)\.$'
+)
+_VECTOR_MOMENTUM_HEADLINE = re.compile(
+    r'^Momentum (?:turned (Bullish|Bearish)|cooled to (neutral))$'
+)
+_VECTOR_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum score ([+-]?[0-9]+(?:\.[0-9]+)?) '
+    r'\((neutral|bull|bear) → (neutral|bull|bear)\); ±0\.5 is the trigger band\.$'
+)
+_VECTOR_STRUCTURE_HEADLINE = re.compile(
+    r'^Structure Shift: (Bullish trigger|Bearish trigger|neutral)$'
+)
+_VECTOR_STRUCTURE_DETAIL = re.compile(
+    r'^Structure oscillator now ([+-]?[0-9]+(?:\.[0-9]+)?) '
+    r'\((neutral|constructive|broken) → (neutral|constructive|broken)\)\.$'
+)
+_ALTDATA_CONVERGENCE = re.compile(
+    r'^(.+?) lit up by ([0-9]+) independent alt-data channels: (.+)\.$'
+)
+_ROTATION_EMERGING = re.compile(
+    r'^(.+?) just turned (improving|leading) & accelerating '
+    r'\(1W ([+-]?[0-9]+(?:\.[0-9]+)?)%, '
+    r'1M ([+-]?[0-9]+(?:\.[0-9]+)?)%, '
+    r'3M ([+-]?[0-9]+(?:\.[0-9]+)?)%; accel '
+    r'([+-]?[0-9]+(?:\.[0-9]+)?)\)\. An early rotate-in candidate '
+    r'— context, not a buy list\.$'
+)
+
+_ROTATION_FADING = re.compile(
+    r'^(.+?) was leading but momentum has rolled over to weakening '
+    r'\(1W ([+-]?[0-9]+(?:\.[0-9]+)?)%, 3M ([+-]?[0-9]+(?:\.[0-9]+)?)%; '
+    r'mom ([+-]?[0-9]+(?:\.[0-9]+)?)\)\. A rotate-out / take-profit watch '
+    r'— context only\.$'
+)
+_ROTATION_TURN_DOWN = re.compile(
+    r"^(.+?) (ran|built) ([0-9]+(?:\.[0-9]+)?)% (off its 1-year low|of lead over the market) "
+    r"and has now rolled over on confirmed sessions — this week ([+-]?[0-9]+(?:\.[0-9]+)?)% "
+    r"vs the market's ([+-]?[0-9]+(?:\.[0-9]+)?)%/wk, ([0-9]{1,3})% of members rolling "
+    r"with it( · carried by one name)?\. Context, not a sell list\.$"
+)
+_ROTATION_TURN_UP = re.compile(
+    r"^(.+?) (fell|gave up) ([0-9]+(?:\.[0-9]+)?)% (from its 1-year high|of its lead over the market) "
+    r"and has now turned up on confirmed sessions — this week ([+-]?[0-9]+(?:\.[0-9]+)?)% "
+    r"vs the market's ([+-]?[0-9]+(?:\.[0-9]+)?)%/wk, ([0-9]{1,3})% of members turning "
+    r"with it( · carried by one name)?\. Context, not a buy list\.$"
+)
+_VECTOR_IMPULSE_DOWN = re.compile(
+    r'^DVOL intraday-range spike \(unusually large versus its own history\) '
+    r'— the options market is repricing risk\. BTC \$([0-9][0-9,]*)\.$'
+)
+_VECTOR_OI_CROWDING = re.compile(
+    r'^Open interest crossed into (elevated|stretched) \(funding-independent\)\. '
+    r'Leverage fuel loading, not a crash call\.(?: BTC \$([0-9][0-9,]*)\.)?$'
+)
+_VECTOR_MARKET_MODE_HEADLINE = re.compile(
+    r'^Market mode changed to (Strategic|Tactical)$'
+)
+_VECTOR_MARKET_MODE_DETAIL = re.compile(
+    r'^Trend efficiency shifted the regime (Strategic|Tactical) → (Strategic|Tactical)\.$'
+)
+
+_INSTRUMENT_RISK_HEADLINE = re.compile(
+    r'^(.+?) risk turned (Elevated|Calm)$'
+)
+_INSTRUMENT_RISK_DETAIL = re.compile(
+    r'^Risk Index (rose through|fell back below) (?:the|its) threshold to '
+    r'([0-9]{1,3})\. (.+)\.$'
+)
+_GEX_FLIP_DETAIL = re.compile(
+    r'^GEX: (spot crossed the gamma flip|net GEX changed sign) '
+    r'\(net ([+-]?(?:[0-9]+bn|n/a)), spot vs flip '
+    r'([+-]?(?:[0-9]+(?:\.[0-9]+)?%|n/a))\)'
+    r'( — measured across [0-9]+ sessions, not overnight: no chain snapshot exists for '
+    r'[0-9]{4}-[0-9]{2}-[0-9]{2}(?:, [0-9]{4}-[0-9]{2}-[0-9]{2})*, '
+    r'so the crossing point inside that span is unobserved)?$'
+)
+_HIDDEN_FRAGILITY_DETAIL = re.compile(
+    r'^(Complacency watch: calm tape starting to mask weakening internals|'
+    r'Hidden fragility: a calm surface \(cheap VIX, contango\) over weakening '
+    r'internals \(thinning breadth, HY widening\) — the classic complacent '
+    r'pre-drawdown setup)$'
+)
+_BREADTH_DIVERGENCE_DETAIL = re.compile(
+    r'^Breadth divergence: index near its 1y high while %>200dma is weak '
+    r'\(([0-9]{1,3})% pctile\) — fewer names carrying the tape$'
+)
+
+_THEME_RECO_CHANGE = re.compile(
+    r'^Theme recommendation for (.+?) changed from ([A-Za-z]+) to ([A-Za-z]+) '
+    r'\(score ([0-9]{1,3}), ([^)]+)\)'
+    r'(?: — held ([0-9]+) consecutive sessions '
+    r'\(constructive flips wait for a second session; risk flips fire immediately\))?\.$',
+    re.IGNORECASE,
+)
+_THEME_DETERIORATING = re.compile(
+    r'^(.+?) broke down into deteriorating — momentum and breadth weakening together\. '
+    r'Recommendation now ([A-Za-z]+)\.$', re.IGNORECASE,
+)
+_THEME_TOPPING = re.compile(
+    r'^(.+?) dropped from dominant to fading as of the ([0-9]{4}-[0-9]{2}-[0-9]{2}) close '
+    r'— momentum cooling at a high\. Historically this read flags elevated pullback risk '
+    r'over the next month, not a confirmed top — leaders inside the theme can keep running\. '
+    r'Recommendation now ([A-Za-z]+)\.$', re.IGNORECASE,
+)
+_THEME_EMERGING = re.compile(
+    r'^(.+?) entered the (?:emerging phase|EMERGING lifecycle) — accelerating relative strength '
+    r'before it is extended \(score ([0-9]{1,3})\)'
+    r'(?: — held ([0-9]+) consecutive sessions '
+    r'\((?:constructive label shifts are debounced|constructive label shifts wait for a second session); '
+    r'risk label shifts fire immediately\))?\.$', re.IGNORECASE,
+)
+_MACRO_SECTOR_RS_LOW = re.compile(
+    r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed below '
+    r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
+)
+_MACRO_SECTOR_RS_HIGH = re.compile(
+    r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed above '
+    r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
+)
+_MACRO_AXIS_CONFIDENCE_FLOOR = re.compile(
+    r'^(Growth|Inflation) axis confidence dropped below ([0-9]{1,3})%: '
+    r'([0-9]{1,3})% -> ([0-9]{1,3})%$'
+)
+_MACRO_SECTOR_HOLDINGS = re.compile(
+    r'^([A-Z0-9._\-]+): ([A-Z0-9._\-]+) weight '
+    r'([+-][0-9]+(?:\.[0-9]+)?)pp beyond price'
+    r'(?: \(≈([+-]\$[0-9]+(?:\.[0-9]+)?[MB]) est\. rebalance flow\))? '
+    r'\((accumulating|trimming)\), '
+    r'([0-9]{4}-[0-9]{2}-[0-9]{2})\.\.([0-9]{4}-[0-9]{2}-[0-9]{2})'
+    r'(?: — cycle (.+)·(.+))?$'
+)
+_MACRO_HOLDINGS_ACTIVE_CHANGE = re.compile(
+    r'^([A-Z0-9._\-]+): manager (added|cut) ([A-Z0-9._\-]+) by '
+    r'([+-][0-9]+(?:\.[0-9]+)?)% of position '
+    r'\(([0-9]{4}-[0-9]{2}-[0-9]{2})\.\.([0-9]{4}-[0-9]{2}-[0-9]{2}), '
+    r'flow-normalized\)$'
+)
+_MACRO_CIRCUIT_BREAKER_OPEN = re.compile(
+    r"^Source '([A-Za-z0-9_.:\-]+)' marked dead after ([1-9][0-9]*) consecutive failures — "
+    r'collector skipped until it recovers; affected signals degrade$'
+)
+_FOREX_TRANSMISSION_EFFECT_HEADLINE = re.compile(
+    r'^Dollar link to (.+?) changed: now (a headwind|a tailwind|not linked now)$'
+)
+_FOREX_TRANSMISSION_EFFECT_DETAIL = re.compile(
+    r'^The (.+?) dollar-transmission effect shifted from '
+    r'(headwind|tailwind|neutral) to (headwind|tailwind|neutral)\.$'
+)
+_FOREX_TRANSMISSION_STABILITY_HEADLINE = re.compile(
+    r'^Dollar link to (.+?): stability changed to (decoupled|flipping|stable)$'
+)
+_FOREX_TRANSMISSION_STABILITY_DETAIL = re.compile(
+    r'^The (.+?) dollar-transmission stability shifted from '
+    r'(decoupled|flipping|stable) to (decoupled|flipping|stable)\.$'
+)
+
+_FOREX_RESIDUAL_HEADLINE = re.compile(
+    r"^([A-Z]{3}/[A-Z]{3}): Unusual move the dollar and rates don't explain \((up|down)\)$"
+)
+_FOREX_RESIDUAL_DETAIL = re.compile(
+    r'^([A-Z]{3}) moved beyond what the dollar \+ rates explain '
+    r'\(shock z ([+-][0-9]+(?:\.[0-9]+)?)\) — possible intervention / flow / '
+    r'geopolitics\. ([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_MOMENTUM_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): Trend turned (up|down)$'
+)
+_FOREX_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
+    r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_TREND_FLIP_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): ([A-Z]{3}) 12-month trend turned (up|down)$'
+)
+_FOREX_TREND_FLIP_DETAIL = re.compile(
+    r'^Idiosyncratic \(ex-dollar\) trailing-year momentum flipped '
+    r'(flat|up|down) → (up|down)\. ([A-Z]{3}/[A-Z]{3}) '
+    r'([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_STRUCTURE_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): Chart shape (turned constructive|broke down)$'
+)
+_FOREX_STRUCTURE_DETAIL = re.compile(
+    r'^Structure state (neutral|constructive|broken) → (constructive|broken)\. '
+    r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_POSITIONING_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}) COT (crowded long|crowded short)$'
+)
+_FOREX_POSITIONING_DETAIL = re.compile(
+    r'^Speculative net positioning reached (crowded long|crowded short) '
+    r'\(([0-9]{1,3})(?:st|nd|rd|th) %ile, 3y\) — contrarian context\.$'
+)
+_FOREX_SMILE_FLIP_HEADLINE = re.compile(
+    r'^Dollar smile flipped: (.+?) → (.+?)$'
+)
+_FOREX_SMILE_FLIP_DETAIL = re.compile(
+    r'^The dollar-smile decomposition regime changed: (.+?) → (.+?)\. '
+    r'This shifts the structural USD bias — '
+    r'(safe-haven bid active|see dollar desk for context)\.$'
+)
+_FOREX_SCENARIO_HEADLINE = re.compile(
+    r'^(Carry-trade unwind|Dollar squeeze|EM outflows|Flight to safety|Risk-on rally|'
+    r'Intervention watch) pattern (now active|no longer active)$'
+)
+_FOREX_SCENARIO_ACTIVE = re.compile(
+    r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
+    r'intervention watch) stress pattern crossed the activation threshold '
+    r'\(([0-9]+)/([0-9]+)\+ legs firing, intensity ([0-9]{1,3})%\)\.$'
+)
+_FOREX_SCENARIO_INACTIVE = re.compile(
+    r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
+    r'intervention watch) stress pattern fell below the activation threshold\.$'
+)
+_FOREX_SMILE_HEADLINE = re.compile(
+    r'^Dollar regime → (World stressed|US booming|Calm growth|US wobble|In between)$'
+)
+_FOREX_SMILE_REGIMES = (
+    'Risk-off haven bid', 'US growth premium', 'Global reflation',
+    'US-specific stress', 'Neutral',
+)
+_FOREX_SMILE_ZONE = {
+    'Risk-off haven bid': 'World stressed',
+    'US growth premium': 'US booming',
+    'Global reflation': 'Calm growth',
+    'US-specific stress': 'US wobble',
+    'Neutral': 'In between',
+}
+_FOREX_SMILE_DETAIL = re.compile(
+    r'^The dollar-smile quadrant \(dollar direction × risk\) shifted (.+?) → (.+?)\.$'
+)
+_FOREX_TRIPLE_RED_ACTIVE_HEADLINE = 'Triple-red: USD, equities, and Treasuries all declining'
+_FOREX_TRIPLE_RED_ACTIVE_DETAIL = (
+    'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) '
+    'have all fallen over the past month. This is a potential stress-selling signal '
+    '— watch for forced deleveraging.'
+)
+_FOREX_TRIPLE_RED_CLEAR_HEADLINE = 'Triple-red cleared: safe-haven function may be restoring'
+_FOREX_TRIPLE_RED_CLEAR_DETAIL = (
+    'The dollar, equities, and Treasuries are no longer all declining together. '
+    'The acute co-movement stress has eased.'
+)
+_BONDS_MOVE_HEADLINE = re.compile(
+    r'^Rates volatility \(MOVE\) → (calm|normal|elevated|crisis)$'
+)
+_BONDS_MOVE_DETAIL = re.compile(
+    r"^The MOVE index crossed into the (calm|normal|elevated|crisis) band at ([0-9]+)\. "
+    r"A MOVE spike is the bond market's systemic-stress thermometer\.$"
+)
+_BONDS_CURVE_HEADLINE = re.compile(
+    r'^Curve regime → (Bull steepener|Bull flattener|Bear steepener|Bear flattener)$'
+)
+_BONDS_CURVE_DESCRIPTIONS = {
+    'Bull steepener': 'short rates falling faster than long — the market is pricing Fed cuts',
+    'Bull flattener': 'long rates falling faster than short — growth/inflation fears pulling the long end',
+    'Bear steepener': 'long rates rising faster than short — reflation / term-premium / fiscal repricing',
+    'Bear flattener': 'short rates rising faster than long — a hawkish Fed; classic late-cycle tightening',
+}
+
+_EMERGENCE_NARRATIVE_HEADLINE = re.compile(
+    r'^New forming narrative — (.+)$'
+)
+_EMERGENCE_NARRATIVE_DETAIL = re.compile(
+    r'^Score ([0-9]+(?:\.[0-9]+)?) \((Forming|Forming fast)\); '
+    r'([1-9][0-9]*) names tightening\. Watch: '
+    r'([A-Z0-9._\-]+(?:, [A-Z0-9._\-]+){0,3})\. '
+    r'Candidate for review — not a buy list\.$'
+)
+
+_DEMAND_AHEAD = re.compile(
+    r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
+    r"([A-Z0-9.\-]+)'s analyst revisions — a forward-demand signal not yet fully in "
+    r"the price\. Context for review; not a buy signal\.$"
+)
+
+_THEME_LEADERSHIP = re.compile(
+    r'^(.+?) took the #1 theme rank \(score ([0-9]{1,3})\), displacing (.+?)'
+    r'(?: — held #1 for ([0-9]+) consecutive sessions with a '
+    r'([0-9]+(?:\.[0-9]+)?)-point margin over #2)?\.$', re.IGNORECASE,
+)
+_THEME_RECO_RANK = {'avoid': 0, 'trim': 1, 'hold': 2, 'accumulate': 3, 'enter': 4}
+
+
+def _attention(row: dict) -> str:
+    """Translate source tier + canonical freshness into page attention only."""
+    tier = str(row.get('tier') or '')
+    age = _age_days(row)
+    if tier == 'act':
+        return 'review_first' if age is not None and age <= 2 else 'earlier_priority'
+    if tier == 'watch' and age is not None and age <= 2:
+        return 'watch_next'
+    return 'for_awareness'
+
+
+def _age_days(row: dict) -> int | None:
+    value = row.get('age_days')
+    if isinstance(value, bool):
+        return None
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return None
+    return value if value >= 0 else None
+
+
+def _rotation_fading_brief(row: dict, detail: str, detail_zh: str,
+                             age: int | None, brief: dict) -> dict | None:
+    match = _ROTATION_FADING.fullmatch(detail)
+    if row.get('source') != 'rotation' or row.get('type') != 'rotation_fading' or not match:
+        return None
+    subject, one_week, three_month, momentum = match.groups()
+    age_limit = '' if age is None or age <= 2 else (
+        f' This event is {age} days old; recheck the current quadrant.')
+    age_limit_zh = '' if age is None or age <= 2 else (
+        f' 该事件已过去 {age} 天；请复核当前象限。')
+    brief.update({
+        'status': 'supported', 'family': 'rotation.rotation_fading',
+        'change': detail, 'change_zh': detail_zh,
+        'implication': (
+            f'{subject} moved from leadership into weakening momentum, with 1W '
+            f'{one_week}%, 3M {three_month}% and momentum {momentum}; this is a '
+            'rotate-out research watch.'),
+        'implication_zh': (
+            f'{subject} 从领先转入动量走弱；1周 {one_week}%，3月 {three_month}%，'
+            f'动量 {momentum}。这是轮出研究观察。'),
+        'limitation': (
+            'This is context, not a take-profit instruction, sell list, calibrated '
+            'probability or separately backtested timing signal. The return horizons '
+            f'and quadrant are descriptive snapshots that can reverse.{age_limit}'),
+        'limitation_zh': (
+            '这只是背景，并非止盈指令、卖出清单、校准概率或经过单独回测的择时信号。'
+            f'周期收益与象限只是可能反转的描述性快照。{age_limit_zh}'),
+        'next_action': (
+            f'Open the current rotation panel and verify {subject} still sits in weakening, '
+            'momentum remains negative and its relative-performance profile has not recovered.'),
+        'next_action_zh': (
+            f'打开当前轮动面板，确认 {subject} 仍处于走弱、动量仍为负且相对表现尚未恢复。'),
+        'next_action_label': 'Recheck rollover', 'next_action_label_zh': '复核走弱',
+        'reassessment': (
+            'Change the read if the quadrant leaves weakening, momentum recovers or '
+            'relative performance resumes leadership.'),
+        'reassessment_zh': '若象限退出走弱、动量恢复或相对表现重新领先，则改变判断。',
+        'evidence_label': 'Open current rotation panel',
+        'evidence_label_zh': '打开当前轮动面板',
+    })
+    return brief
+
+
+def _rotation_turn_brief(row: dict, detail: str, detail_zh: str,
+                          age: int | None, brief: dict) -> dict | None:
+    type_ = str(row.get('type') or '')
+    up = type_ == 'rotation_turn_up'
+    if row.get('source') != 'rotation' or type_ not in {'rotation_turn_down', 'rotation_turn_up'}:
+        return None
+    match = (_ROTATION_TURN_UP if up else _ROTATION_TURN_DOWN).fullmatch(detail)
+    if not match:
+        return None
+    subject, verb, magnitude, basis, one_week, market_week, breadth_text, concentration = match.groups()
+    valid_basis = ((up and verb == 'fell' and basis == 'from its 1-year high') or
+                   (up and verb == 'gave up' and basis == 'of its lead over the market') or
+                   (not up and verb == 'ran' and basis == 'off its 1-year low') or
+                   (not up and verb == 'built' and basis == 'of lead over the market'))
+    if not valid_basis:
+        return None
+    breadth = int(breadth_text)
+    leadership_path = verb in {'gave up', 'built'}
+    path = 'leadership path' if leadership_path else 'price path'
+    path_zh = '领先路径' if leadership_path else '价格路径'
+    concentrated = bool(concentration)
+    if concentrated:
+        participation = (
+            f' {breadth}% breadth is concentrated and carried by one name; member breadth '
+            'is not independent confirmation.')
+        participation_zh = (
+            f' {breadth}% 的宽度较集中，且主要由单一成分股带动；成分股宽度并非独立确认。')
+    else:
+        participation = (
+            f' {breadth}% member breadth is descriptive participation, not independent confirmation.')
+        participation_zh = (
+            f' {breadth}% 的成分股宽度是描述性参与度，并非独立确认。')
+    age_limit = '' if age is None or age <= 2 else (
+        f' This event is {age} days old; recheck the current turn state.')
+    age_limit_zh = '' if age is None or age <= 2 else (
+        f' 该事件已过去 {age} 天；请复核当前转向状态。')
+    direction = 'up' if up else 'down'
+    direction_zh = '上行' if up else '下行'
+    verb_phrase = 'turned up' if up else 'rolled over'
+    members_phrase = 'turning' if up else 'rolling'
+    list_phrase = 'buy' if up else 'sell'
+    relative = 'leads' if up else 'lags'
+    brief.update({
+        'status': 'supported', 'family': f'rotation.rotation_turn_{direction}',
+        'change': detail, 'change_zh': detail_zh,
+        'implication': (
+            f'{subject} {verb_phrase} on confirmed sessions through its {path}; this week '
+            f'{one_week}% versus the market {market_week}%/wk, with {breadth}% of members '
+            f'{members_phrase} with it.'),
+        'implication_zh': (
+            f'{subject} 通过其{path_zh}连续确认转为{direction_zh}；本周 {one_week}%，市场 '
+            f'{market_week}%/周，{breadth}% 成分股同步转向。'),
+        'limitation': (
+            f'Confirmed sessions establish a repeated state transition, not future return or '
+            f'a {list_phrase} instruction. This is context, not a {list_phrase} list, calibrated '
+            f'probability or separately backtested timing signal.{participation}{age_limit}'),
+        'limitation_zh': (
+            f'连续确认只表明状态反复出现，并不代表未来收益或{("买入" if up else "卖出")}指令。'
+            f'这只是背景，不是{("买入" if up else "卖出")}清单、校准概率或经过单独回测的择时信号。'
+            f'{participation_zh}{age_limit_zh}'),
+        'next_action': (
+            f'Open the current rotation panel and verify {subject} remains turned {direction}, '
+            f'its weekly relative move still {relative} and member breadth remains near {breadth}%.'),
+        'next_action_zh': (
+            f'打开当前轮动面板，确认 {subject} 仍为{direction_zh}、本周相对表现继续'
+            f'{("领先" if up else "落后")}且成分股宽度仍接近 {breadth}%。'),
+        'next_action_label': f'Recheck turn {direction}',
+        'next_action_label_zh': f'复核{direction_zh}转向',
+        'reassessment': (
+            f'Change the read if the turn state reverses, weekly relative performance no longer '
+            f'{relative}, or member participation collapses.'),
+        'reassessment_zh': (
+            f'若转向状态反转、本周相对表现不再{("领先" if up else "落后")}或成分股参与度崩解，则改变判断。'),
+        'evidence_label': 'Open current rotation panel',
+        'evidence_label_zh': '打开当前轮动面板',
+    })
+    return brief
+
+
+def _fallback_brief(row: dict) -> dict:
+    validation = row.get('validation') if isinstance(row.get('validation'), dict) else {}
+    implication = str(row.get('edge') or validation.get('note') or '')
+    implication_zh = str(row.get('edge_zh') or validation.get('note_zh') or implication)
+    verdict = str(validation.get('verdict') or '')
+    if verdict in {'no_edge', 'killed'}:
+        limitation = 'No validated forward edge. Use this as evidence context, not a timing signal.'
+        limitation_zh = '没有经过验证的前瞻优势。应将其作为证据背景，而非择时信号。'
+    elif verdict == 'underpowered':
+        limitation = 'The available sample is insufficient for a predictive claim.'
+        limitation_zh = '现有样本不足以支持预测性结论。'
+    elif int(row.get('fire_count') or 0) > 1:
+        limitation = 'Repeated firings are observations, not proof the condition stayed active between them.'
+        limitation_zh = '重复触发只是观测记录，并不能证明状态在期间持续有效。'
+    else:
+        limitation = 'Attention level and predictive evidence are separate.'
+        limitation_zh = '关注级别与预测证据是两回事。'
+    link = str(row.get('link') or '')
+    return {
+        'schema': BRIEF_SCHEMA, 'status': 'fallback', 'family': None,
+        'attention': _attention(row),
+        'change': str(row.get('detail') or _plain(row.get('headline') or '')),
+        'change_zh': str(row.get('detail_zh') or row.get('detail') or _plain(row.get('headline_zh') or '')),
+        'implication': implication, 'implication_zh': implication_zh,
+        'limitation': limitation, 'limitation_zh': limitation_zh,
+        'next_action': 'Open the source evidence before drawing a conclusion.',
+        'next_action_zh': '先打开来源证据，再形成结论。',
+        'next_action_label': 'Inspect evidence', 'next_action_label_zh': '查看证据',
+        'reassessment': '', 'reassessment_zh': '',
+        'evidence_scope': 'current_panel_not_historical_archive' if link else 'no_verified_destination',
+        'evidence_label': 'Open source evidence', 'evidence_label_zh': '打开来源证据',
+        'event_age_days': _age_days(row),
+    }
+
+
+def build_alert_brief(row: dict) -> dict:
+    """Build presentation-only copy without changing alert authority or identity."""
+    brief = _fallback_brief(row)
+    source, type_ = str(row.get('source') or ''), str(row.get('type') or '')
+    detail = str(row.get('detail') or '')
+    detail_zh = str(row.get('detail_zh') or detail)
+    validation = row.get('validation') if isinstance(row.get('validation'), dict) else {}
+    edge = str(row.get('edge') or validation.get('note') or '')
+    edge_zh = str(row.get('edge_zh') or validation.get('note_zh') or edge)
+    age = _age_days(row)
+
+    transition = _TRANSITION_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'transition_state_change' and transition:
+        age_clause = f'This event is {age} days old; ' if age is not None and age > 2 else ''
+        age_clause_zh = f'该事件发生于 {age} 天前；' if age is not None and age > 2 else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.transition_state_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                'A regime-model transition is not market confirmation or a price forecast. '
+                f'{age_clause}re-check the current regime before acting.'),
+            'limitation_zh': (
+                '周期模型转换并不等于市场确认或价格预测。'
+                f'{age_clause_zh}行动前应重新核对当前周期状态。'),
+            'next_action': (
+                'Open the current Regime Radar and compare today’s state before changing '
+                'growth-sensitive exposure.'),
+            'next_action_zh': '打开当前周期雷达，在调整增长敏感型敞口前核对今日状态。',
+            'next_action_label': 'Recheck regime', 'next_action_label_zh': '复核周期',
+            'reassessment': (
+                'Change the read only if the current radar has returned to a stable state '
+                'or the named warning flags have cleared.'),
+            'reassessment_zh': '仅当当前雷达恢复稳定状态或相关预警消退时，才改变判断。',
+            'evidence_label': 'Open current Regime Radar',
+            'evidence_label_zh': '打开当前周期雷达',
+        })
+        return brief
+
+    risk = _RISK_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'risk_state_elevated' and risk:
+        source_score = int(risk.group(2))
+        priority = row.get('priority')
+        priority_text = str(priority) if isinstance(priority, (int, float)) and not isinstance(priority, bool) else 'unknown'
+        age_sentence = f' This event is {age} days old.' if age is not None and age > 2 else ''
+        age_sentence_zh = f' 该事件发生于 {age} 天前。' if age is not None and age > 2 else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.risk_state_elevated',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                f'{source_score}/100 is the source risk-state reading; attention priority '
+                f'{priority_text} is a separate ordering value, not a return forecast or '
+                f'stock-selection score.{age_sentence}'),
+            'limitation_zh': (
+                f'{source_score}/100 是来源风险状态读数；关注优先级 {priority_text} 是独立的排序值，'
+                f'并非收益预测或选股评分。{age_sentence_zh}'),
+            'next_action': (
+                'Open the current Risk Envelope, re-check breadth, volatility and positioning, '
+                'then review gross exposure before chasing leaders.'),
+            'next_action_zh': '打开当前风险框架，复核宽度、波动与仓位，再决定是否追逐领涨标的。',
+            'next_action_label': 'Recheck risk', 'next_action_label_zh': '复核风险',
+            'reassessment': (
+                'Reassess when the current source no longer reports ELEVATED or the named '
+                'fragility inputs improve.'),
+            'reassessment_zh': '当当前来源不再显示偏高状态，或相关脆弱性指标改善时再重新评估。',
+            'evidence_label': 'Open current Risk Envelope',
+            'evidence_label_zh': '打开当前风险框架',
+        })
+        return brief
+
+    liquidity = _NET_LIQUIDITY_ROC_FLIP.fullmatch(detail)
+    if source == 'macro' and type_ == 'net_liquidity_roc_flip' and liquidity:
+        direction, held_text, before_text, current_text = liquidity.groups()
+        held_days = int(held_text)
+        before_value = float(before_text)
+        current_value = float(current_text)
+        expanding = direction.startswith('positive')
+        sign_flip = ((expanding and before_value <= 0 < current_value) or
+                     (not expanding and before_value >= 0 > current_value))
+        if sign_flip:
+            direction_word = 'expanding' if expanding else 'contracting'
+            context_word = 'tailwind' if expanding else 'headwind'
+            direction_zh = '扩张' if expanding else '收缩'
+            context_zh = '顺风' if expanding else '逆风'
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current liquidity state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前流动性状态。'
+            verdict = str(validation.get('verdict') or '')
+            if verdict == 'no_edge':
+                validation_limit = (
+                    ' The current rule scorecard reports no statistically validated forward SPY '
+                    'edge (FDR q>0.10), so this is risk context rather than a timing signal.')
+                validation_limit_zh = (
+                    ' 当前规则评分卡未发现统计上经过验证的标普前瞻优势（FDR q>0.10），'
+                    '因此这只是风险背景，而非择时信号。')
+            elif verdict == 'underpowered':
+                validation_limit = (
+                    ' The current rule scorecard is underpowered, so it cannot support a '
+                    'predictive timing claim.')
+                validation_limit_zh = ' 当前规则评分卡样本不足，不能支持预测性择时结论。'
+            else:
+                validation_limit = (
+                    ' This relationship is context, not a calibrated probability or standalone '
+                    'timing signal.')
+                validation_limit_zh = ' 该关系只是背景，并非校准概率或独立择时信号。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the condition persisted between '
+                    'observations.')
+                recurrence_limit_zh = f' {fire_count} 次记录触发并不能证明该状态在观测之间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'macro.net_liquidity_roc_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports four-week net-liquidity momentum flipped to '
+                    f'{direction_word} and held {held_days} days, making liquidity a macro '
+                    f'{context_word} to recheck when sizing risk.'),
+                'implication_zh': (
+                    f'来源报告 4 周净流动性动量转为{direction_zh}并持续 {held_days} 天，'
+                    f'使流动性成为调整风险规模时需要复核的宏观{context_zh}。'),
+                'limitation': (
+                    (edge or 'Net liquidity is contextual evidence, not a trade instruction.') +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    (edge_zh or '净流动性只是背景证据，并非交易指令。') +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Macro risk panel and verify the four-week net-liquidity '
+                    f'RoC is still {direction_word}, the latest print remains on the same side of '
+                    'zero, and the source still flags the condition before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观风险面板，确认 4 周净流动性 RoC 仍为{direction_zh}、最新读数仍在'
+                    '零轴同一侧，且来源仍在标记该状态，再调整敞口。'),
+                'next_action_label': 'Recheck liquidity',
+                'next_action_label_zh': '复核流动性',
+                'reassessment': (
+                    'Change the read if the current RoC crosses back through zero, the held-state '
+                    'condition breaks, or the source no longer flags the flip.'),
+                'reassessment_zh': (
+                    '若当前 RoC 再次穿越零轴、持续状态条件失效，或来源不再标记该转向，则改变判断。'),
+                'evidence_label': 'Open current Macro risk panel',
+                'evidence_label_zh': '打开当前宏观风险面板',
+            })
+            return brief
+
+    momentum_headline = _FOREX_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _FOREX_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'momentum' and momentum_headline and momentum_detail:
+        headline_pair, direction = momentum_headline.groups()
+        from_state, to_state, detail_pair, quote_text = momentum_detail.groups()
+        expected_direction = 'up' if to_state == 'bull' else 'down'
+        asset_pair = detail_pair.replace('/', '')
+        if (headline_pair == detail_pair and expected_direction == direction and
+                asset_pair == str(row.get('asset') or '') and from_state != to_state):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            validation_note = str(validation.get('note') or '')
+            validation_note_zh = str(validation.get('note_zh') or validation_note)
+            if str(validation.get('verdict') or '') == 'documented':
+                evidence_limit = (
+                    ' The source conviction is documented but this family is not separately '
+                    'backtested as a timing signal.')
+                evidence_limit_zh = ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            else:
+                evidence_limit = (
+                    (' ' + validation_note) if validation_note else
+                    ' This state change is descriptive context, not a calibrated timing signal.')
+                evidence_limit_zh = (
+                    (' ' + validation_note_zh) if validation_note_zh else
+                    ' 该状态变化只是描述性背景，并非校准择时信号。')
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated firings are separate observations and do not prove the state '
+                    'persisted between them.')
+                recurrence_limit_zh = ' 重复触发是独立观测，并不能证明该状态在期间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'forex.momentum',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports {detail_pair} momentum changed from {from_state} to '
+                    f'{to_state} at {quote_text}, a directional state change to verify against '
+                    'the current FX tape.'),
+                'implication_zh': (
+                    f'来源报告 {detail_pair} 动量从 {from_state} 转为 {to_state}，当时报价 '
+                    f'{quote_text}；这是需要结合当前外汇盘面复核的方向状态变化。'),
+                'limitation': (
+                    'A momentum-state flip describes the source model state; it is not a return '
+                    'forecast, trade instruction, calibrated probability or proof the move will '
+                    'continue.' + evidence_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '动量状态翻转描述的是来源模型状态；它不是收益预测、交易指令、校准概率，也不能证明'
+                    '行情会继续。' + evidence_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {detail_pair} is still in the '
+                    f'{to_state} momentum state, compare the latest quote with {quote_text}, and '
+                    'check whether the state has already reversed before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {detail_pair} 仍处于 {to_state} 动量状态，将最新报价与 '
+                    f'{quote_text} 对比，并检查状态是否已经反转，再调整敞口。'),
+                'next_action_label': 'Recheck FX momentum',
+                'next_action_label_zh': '复核外汇动量',
+                'reassessment': (
+                    f'Change the read if the current momentum state is no longer {to_state}, the '
+                    'source records a new opposite transition, or newer evidence supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前动量状态不再是 {to_state}、来源记录新的反向转换，或更新证据取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    trend_headline = _FOREX_TREND_FLIP_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    trend_detail = _FOREX_TREND_FLIP_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'trend_flip' and trend_headline and trend_detail:
+        headline_pair, base_ccy, headline_direction = trend_headline.groups()
+        from_state, to_state, detail_pair, quote_text = trend_detail.groups()
+        asset_pair = detail_pair.replace('/', '')
+        pair_ccys = set(detail_pair.split('/'))
+        if (headline_pair == detail_pair and base_ccy in pair_ccys and
+                headline_direction == to_state and from_state != to_state and
+                asset_pair == str(row.get('asset') or '')):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current ex-dollar trend.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前去美元趋势。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated trend flips are separate observations and do not prove the state '
+                    'persisted between them.')
+                recurrence_limit_zh = ' 重复趋势翻转是独立观测，并不能证明该状态在期间持续存在。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.trend_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source ex-dollar trend model moved {base_ccy} trailing-year momentum '
+                    f'from {from_state} to {to_state} in {detail_pair} at {quote_text}; this isolates '
+                    'an idiosyncratic trend state to recheck.'),
+                'implication_zh': (
+                    f'来源的去美元趋势模型显示 {base_ccy} 在 {detail_pair} 中的过去一年动量从 '
+                    f'{from_state} 切换到 {to_state}，当时报价 {quote_text}；这是需要复核的特异趋势状态。'),
+                'limitation': (
+                    'An ex-dollar trailing-year trend state is a source-model classification, not a '
+                    'spot-price target, causal explanation, calibrated return probability or trade '
+                    'instruction.' + validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '去美元的过去一年趋势状态只是来源模型分类，并非现货价格目标、因果解释、校准收益概率或交易指令。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {base_ccy} ex-dollar trailing-year '
+                    f'momentum is still {to_state}, compare the latest {detail_pair} quote with '
+                    f'{quote_text}, and check whether a newer trend transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {base_ccy} 去美元的过去一年动量仍为 {to_state}，将 '
+                    f'{detail_pair} 最新报价与 {quote_text} 对比，并检查是否已有更新趋势转换取代该事件。'),
+                'next_action_label': 'Recheck ex-dollar trend',
+                'next_action_label_zh': '复核去美元趋势',
+                'reassessment': (
+                    f'Change the read if the current ex-dollar trend is no longer {to_state}, '
+                    'returns to flat, or a newer source transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前去美元趋势不再是 {to_state}、回到走平，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    structure_headline = _FOREX_STRUCTURE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    structure_detail = _FOREX_STRUCTURE_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'structure' and structure_headline and structure_detail:
+        headline_pair, headline_phrase = structure_headline.groups()
+        from_state, to_state, detail_pair, quote_text = structure_detail.groups()
+        expected_phrase = 'turned constructive' if to_state == 'constructive' else 'broke down'
+        if (headline_pair == detail_pair and headline_phrase == expected_phrase and
+                detail_pair.replace('/', '') == str(row.get('asset') or '') and
+                from_state != to_state):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current chart structure.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前图表结构。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This chart-state context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该图表状态背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.structure',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source chart-state model moved {detail_pair} structure from {from_state} '
+                    f'to {to_state} at {quote_text}; this is a structural state change to verify '
+                    'against the current pair.'),
+                'implication_zh': (
+                    f'来源的图表状态模型将 {detail_pair} 结构从 {from_state} 切换到 {to_state}，'
+                    f'当时报价 {quote_text}；这是需要结合当前货币对复核的结构状态变化。'),
+                'limitation': (
+                    'A constructive or broken chart-state label is descriptive model context, not '
+                    'breakout certainty, a price target, calibrated return probability or trade '
+                    'instruction.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    '向好或破位的图表状态标签只是描述性模型背景，并非突破确定性、价格目标、校准收益概率或交易指令。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {detail_pair} structure is still '
+                    f'{to_state}, compare the latest quote with {quote_text}, and check whether a '
+                    'newer structure transition has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {detail_pair} 结构仍为 {to_state}，将最新报价与 '
+                    f'{quote_text} 对比，并检查是否已有更新结构转换取代该事件。'),
+                'next_action_label': 'Recheck FX structure',
+                'next_action_label_zh': '复核外汇结构',
+                'reassessment': (
+                    f'Change the read if current structure is no longer {to_state}, returns to neutral, '
+                    'or a newer source transition replaces this event.'),
+                'reassessment_zh': (
+                    f'若当前结构不再是 {to_state}、回到中性，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    positioning_headline = _FOREX_POSITIONING_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    positioning_detail = _FOREX_POSITIONING_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'positioning' and positioning_headline and positioning_detail:
+        headline_pair, headline_state = positioning_headline.groups()
+        detail_state, percentile_text = positioning_detail.groups()
+        percentile = int(percentile_text)
+        if (headline_state == detail_state and 0 <= percentile <= 100 and
+                headline_pair.replace('/', '') == str(row.get('asset') or '')):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck current positioning.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前持仓。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This positioning context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该持仓背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.positioning',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places {headline_pair} speculative net positioning at the '
+                    f'{percentile}th percentile of its three-year range and classifies it as '
+                    f'{detail_state}; this is contrarian positioning context to recheck.'),
+                'implication_zh': (
+                    f'来源将 {headline_pair} 投机净持仓定位在三年区间的第 {percentile} 百分位，'
+                    f'并分类为 {detail_state}；这是需要复核的逆向持仓背景。'),
+                'limitation': (
+                    'A COT percentile is a historical positioning rank, not proof a reversal is due, '
+                    'a calibrated return probability, a measure of motive or a trade instruction.' +
+                    validation_limit + age_limit),
+                'limitation_zh': (
+                    'COT 百分位只是历史持仓排名，并不能证明反转即将发生，也不是校准收益概率、动机衡量或交易指令。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {headline_pair} positioning is still '
+                    f'{detail_state}, inspect the latest three-year percentile against {percentile}, '
+                    'and check whether a newer positioning event supersedes this observation.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {headline_pair} 持仓仍为 {detail_state}，核对最新三年百分位'
+                    f'与 {percentile} 的差异，并检查是否已有更新持仓事件取代该观测。'),
+                'next_action_label': 'Recheck FX positioning',
+                'next_action_label_zh': '复核外汇持仓',
+                'reassessment': (
+                    f'Change the read if positioning leaves {detail_state}, the percentile normalizes, '
+                    'or a newer source event supersedes this observation.'),
+                'reassessment_zh': (
+                    f'若持仓退出 {detail_state}、百分位恢复正常，或新的来源事件取代该观测，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    smile_flip_headline = _FOREX_SMILE_FLIP_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    smile_flip_detail = _FOREX_SMILE_FLIP_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'smile_regime_flip' and smile_flip_headline and smile_flip_detail:
+        headline_from, headline_to = smile_flip_headline.groups()
+        detail_from, detail_to, suffix = smile_flip_detail.groups()
+        expected_suffix = (
+            'safe-haven bid active' if detail_to == 'Risk-off haven bid'
+            else 'see dollar desk for context')
+        if (str(row.get('asset') or '') == 'dollar' and headline_from == detail_from and
+                headline_to == detail_to and detail_from != detail_to and
+                detail_from in _FOREX_SMILE_REGIMES and detail_to in _FOREX_SMILE_REGIMES and
+                suffix == expected_suffix):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current dollar-smile regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前美元微笑状态。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This regime context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该状态背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.smile_regime_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar-smile decomposition changed from {detail_from} to '
+                    f'{detail_to}, altering its structural USD-bias context.'),
+                'implication_zh': (
+                    f'来源的美元微笑分解从 {detail_from} 切换到 {detail_to}，改变了其结构性美元偏向背景。'),
+                'limitation': (
+                    'A dollar-smile regime is a source taxonomy, not proof of a macro outcome, '
+                    'safe-haven mechanism, causal driver, calibrated return probability or '
+                    'directional USD trade.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    '美元微笑状态只是来源分类，并不能证明宏观结果、避险机制、因果驱动、校准收益概率或美元方向交易。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current dollar desk and verify the smile regime is still {detail_to}, '
+                    'inspect the current dollar-direction and risk inputs, and check whether a newer '
+                    'regime flip has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前美元总台，确认美元微笑状态仍为 {detail_to}，检查当前美元方向与风险输入，'
+                    '并确认是否已有更新状态翻转取代该事件。'),
+                'next_action_label': 'Recheck dollar smile',
+                'next_action_label_zh': '复核美元微笑',
+                'reassessment': (
+                    f'Change the read if the current smile regime is no longer {detail_to}, the '
+                    'underlying dollar/risk inputs no longer fit it, or a newer flip replaces this event.'),
+                'reassessment_zh': (
+                    f'若当前美元微笑状态不再是 {detail_to}、底层美元/风险输入不再符合该状态，'
+                    '或新的翻转取代该事件，则改变判断。'),
+                'evidence_label': 'Open current dollar desk',
+                'evidence_label_zh': '打开当前美元总台',
+            })
+            return brief
+
+    move_headline = _BONDS_MOVE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    move_detail = _BONDS_MOVE_DETAIL.fullmatch(detail)
+    if source == 'bonds' and type_ == 'rates_vol' and move_headline and move_detail:
+        headline_band = move_headline.group(1)
+        detail_band, move_text = move_detail.groups()
+        if headline_band == detail_band and str(row.get('asset') or '') == 'rates':
+            move_value = int(move_text)
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current MOVE band.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前 MOVE 区间。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated band-crossing events are separate observations and do not prove '
+                    'the band persisted between them.')
+                recurrence_limit_zh = ' 重复区间穿越是独立观测，并不能证明该区间在观测之间持续存在。'
+            scorecard_name = str(validation.get('scorecard_name') or '')
+            if str(validation.get('verdict') or '') == 'scored' and scorecard_name:
+                validation_limit = (
+                    f' The attached scorecard ({scorecard_name}) validates the broader bond-health '
+                    'drawdown gauge; it does not make this single MOVE-band crossing an independent '
+                    'return forecast.')
+                validation_limit_zh = (
+                    f' 附带评分卡（{scorecard_name}）验证的是更广泛的债券健康回撤指标；'
+                    '它并不把这一次 MOVE 区间穿越变成独立收益预测。')
+            else:
+                validation_limit = (
+                    ' This band crossing is descriptive stress context, not a standalone return forecast.')
+                validation_limit_zh = ' 该区间穿越只是压力背景，并非独立收益预测。'
+            brief.update({
+                'status': 'supported', 'family': 'bonds.rates_vol',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports MOVE crossed into the {headline_band} band at {move_value}, '
+                    'changing the rates-volatility backdrop that informs systemic-stress monitoring.'),
+                'implication_zh': (
+                    f'来源报告 MOVE 在 {move_value} 进入 {headline_band} 区间，改变了用于监测系统性压力的'
+                    '利率波动背景。'),
+                'limitation': (
+                    f'A {headline_band} MOVE band is not proof markets are safe, nor is it a trade '
+                    'instruction, calibrated probability or directional equity call.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    f'MOVE 处于 {headline_band} 区间并不能证明市场安全，也不是交易指令、校准概率或股票'
+                    '方向判断。' + validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Bonds timeline and verify MOVE is still in the {headline_band} '
+                    f'band, compare the latest level with {move_value}, and check credit/funding '
+                    'stress before changing risk.'),
+                'next_action_zh': (
+                    f'打开当前债券时间线，确认 MOVE 仍处于 {headline_band} 区间，将最新水平与 '
+                    f'{move_value} 对比，并检查信用/融资压力后再调整风险。'),
+                'next_action_label': 'Recheck MOVE',
+                'next_action_label_zh': '复核 MOVE',
+                'reassessment': (
+                    f'Change the read if MOVE leaves the {headline_band} band, the rates-volatility '
+                    'state changes again, or newer credit/funding evidence materially changes the backdrop.'),
+                'reassessment_zh': (
+                    f'若 MOVE 离开 {headline_band} 区间、利率波动状态再次变化，或更新的信用/融资证据'
+                    '实质改变背景，则改变判断。'),
+                'evidence_label': 'Open current Bonds timeline',
+                'evidence_label_zh': '打开当前债券时间线',
+            })
+            return brief
+
+    curve_headline = _BONDS_CURVE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    if source == 'bonds' and type_ == 'curve_regime' and curve_headline:
+        curve_label = curve_headline.group(1)
+        expected_detail = (
+            f'The Treasury-curve move turned {curve_label.lower()} — '
+            f'{_BONDS_CURVE_DESCRIPTIONS[curve_label]}.')
+        if str(row.get('asset') or '') == 'curve' and detail == expected_detail:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current curve regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前收益率曲线状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated regime-transition events do not prove the classification persisted '
+                    'between observations.')
+                recurrence_limit_zh = ' 重复状态转换事件并不能证明该分类在观测之间持续存在。'
+            descriptor = _BONDS_CURVE_DESCRIPTIONS[curve_label]
+            brief.update({
+                'status': 'supported', 'family': 'bonds.curve_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source classifies the Treasury move as {curve_label.lower()}: '
+                    f'{descriptor}. Verify that classification against the current curve before '
+                    'using it in macro risk decisions.'),
+                'implication_zh': (
+                    f'来源将国债曲线走势分类为 {curve_label}。应结合当前收益率曲线复核该分类，'
+                    '再用于宏观风险判断。'),
+                'limitation': (
+                    'The curve-regime taxonomy describes relative short- and long-rate moves. '
+                    'Its macro explanation is a source interpretation, not proof of Fed motive, '
+                    'growth outcome, recession timing, or a directional trade. This family is not '
+                    'separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '曲线状态分类描述的是短端与长端利率的相对变化。其宏观解释是来源的解释，并不能证明'
+                    '美联储动机、增长结果、衰退时点或交易方向；该信号族未作为择时信号单独回测。'
+                    + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Bonds timeline and verify the curve is still classified as '
+                    f'{curve_label.lower()}, inspect the underlying short- versus long-rate move, '
+                    'and check whether a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前债券时间线，确认曲线仍被分类为 {curve_label}，检查短端相对长端的实际变化，'
+                    '并确认是否已有更新的转换取代该事件。'),
+                'next_action_label': 'Recheck curve',
+                'next_action_label_zh': '复核曲线',
+                'reassessment': (
+                    f'Change the read if the current curve is no longer {curve_label.lower()}, '
+                    'the underlying rate moves no longer fit the taxonomy, or a newer regime '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前曲线不再是 {curve_label}、底层利率变化不再符合该分类，或新的状态转换取代'
+                    '该事件，则改变判断。'),
+                'evidence_label': 'Open current Bonds timeline',
+                'evidence_label_zh': '打开当前债券时间线',
+            })
+            return brief
+
+    smile_headline = _FOREX_SMILE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    smile_detail = _FOREX_SMILE_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'smile_regime' and smile_headline and smile_detail:
+        zone = smile_headline.group(1)
+        previous, current = smile_detail.groups()
+        if (str(row.get('asset') or '') == 'dollar' and
+                previous in _FOREX_SMILE_REGIMES and current in _FOREX_SMILE_REGIMES and
+                _FOREX_SMILE_ZONE[current] == zone and previous != current):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current dollar-smile regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前美元微笑状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated transition events do not prove the regime persisted between observations.')
+                recurrence_limit_zh = ' 重复转换事件并不能证明该状态在观测之间持续存在。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested as '
+                'a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This regime classification is descriptive context, not a calibrated timing signal.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该状态分类只是描述性背景，并非校准择时信号。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.smile_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar-smile model moved from {previous} to {current}, placing the '
+                    f'current quadrant in its “{zone}” presentation zone. Recheck the underlying '
+                    'dollar-direction and risk inputs before using that context.'),
+                'implication_zh': (
+                    f'来源的美元微笑模型从 {previous} 切换到 {current}，当前位于“{zone}”展示区间。'
+                    '使用该背景前应复核美元方向与风险输入。'),
+                'limitation': (
+                    'The dollar-smile regime is a source taxonomy built from dollar direction and '
+                    'risk conditions. Its plain-language zone label is not proof of a growth outcome, '
+                    'risk outcome, recession path, causal driver, or directional trade.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '美元微笑状态是基于美元方向与风险条件的来源分类。其通俗区间标签并不能证明增长结果、'
+                    '风险结果、衰退路径、因果驱动或交易方向。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify the dollar-smile regime is still '
+                    f'{current}, inspect the current dollar-direction and risk inputs, and check '
+                    'whether a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认美元微笑状态仍为 {current}，检查当前美元方向与风险输入，'
+                    '并确认是否已有更新转换取代该事件。'),
+                'next_action_label': 'Recheck dollar regime',
+                'next_action_label_zh': '复核美元状态',
+                'reassessment': (
+                    f'Change the read if the current smile regime is no longer {current}, the '
+                    'underlying dollar/risk inputs no longer fit that quadrant, or a newer '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前美元微笑状态不再是 {current}、底层美元/风险输入不再符合该象限，或新的转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    triple_headline = _plain(row.get('headline') or '')
+    triple_active = (
+        triple_headline == _FOREX_TRIPLE_RED_ACTIVE_HEADLINE and
+        detail == _FOREX_TRIPLE_RED_ACTIVE_DETAIL
+    )
+    triple_clear = (
+        triple_headline == _FOREX_TRIPLE_RED_CLEAR_HEADLINE and
+        detail == _FOREX_TRIPLE_RED_CLEAR_DETAIL
+    )
+    if (source == 'forex' and type_ == 'triple_red' and
+            str(row.get('asset') or '') == 'dollar' and (triple_active or triple_clear)):
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current cross-asset state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前跨资产状态。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+            recurrence_limit = (
+                ' Repeated firings are observations, not proof this co-movement persisted '
+                'between them.')
+            recurrence_limit_zh = ' 重复触发只是观测，并不能证明该共振状态在观测之间持续存在。'
+        documented_limit = (
+            ' Source conviction is documented, but this family is not separately backtested '
+            'as a timing signal.'
+            if str(validation.get('verdict') or '') == 'documented'
+            else ' This co-movement state is context, not a calibrated timing signal.'
+        )
+        documented_limit_zh = (
+            ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            if str(validation.get('verdict') or '') == 'documented'
+            else ' 该共振状态只是背景，并非校准择时信号。'
+        )
+        if triple_active:
+            implication = (
+                'The source observed USD, S&P 500 and Treasury prices all falling over the '
+                'past month, a cross-asset stress configuration worth checking for signs of '
+                'forced selling.')
+            implication_zh = (
+                '来源观察到美元、标普500与美债价格过去一月同步下跌；这是值得检查是否存在强制卖出的'
+                '跨资产压力组合。')
+            limitation = (
+                'Joint declines do not establish forced deleveraging as the cause, prove the '
+                'dollar has permanently lost safe-haven behavior, predict the next market move, '
+                'or provide a directional trade instruction.')
+            limitation_zh = (
+                '同步下跌并不能证明强制去杠杆就是原因，也不能证明美元永久失去避险属性、预测下一步行情'
+                '或构成方向交易指令。')
+            reassessment = (
+                'Change the read if any of USD, equities or Treasury prices stop declining '
+                'together on the current source window, or the source marks triple-red cleared.')
+            reassessment_zh = (
+                '若当前来源窗口中美元、股市或美债价格不再同步下跌，或来源标记三重下跌已解除，则改变判断。')
+        else:
+            implication = (
+                'The source no longer sees USD, equities and Treasury prices all declining '
+                'together, so the acute triple-red co-movement has eased.')
+            implication_zh = '来源不再看到美元、股市与美债价格同步下跌，因此急性三重下跌共振已经缓解。'
+            limitation = (
+                'A cleared triple-red state does not prove safe-haven behavior is fully restored, '
+                'system stress is absent, or risk assets are safe to add.')
+            limitation_zh = (
+                '三重下跌解除并不能证明避险属性已完全恢复、系统压力已经消失，或风险资产可以安全加仓。')
+            reassessment = (
+                'Change the read if all three legs return to simultaneous declines or the '
+                'source reactivates triple-red.')
+            reassessment_zh = '若三项资产重新同步下跌，或来源再次激活三重下跌，则改变判断。'
+        brief.update({
+            'status': 'supported', 'family': 'forex.triple_red',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': implication, 'implication_zh': implication_zh,
+            'limitation': limitation + documented_limit + age_limit + recurrence_limit,
+            'limitation_zh': limitation_zh + documented_limit_zh + age_limit_zh + recurrence_limit_zh,
+            'next_action': (
+                'Open the current FX timeline and verify the latest one-month direction of USD, '
+                'S&P 500 and Treasury prices before changing risk.'),
+            'next_action_zh': '打开当前外汇时间线，核对美元、标普500与美债价格最新一个月方向，再调整风险。',
+            'next_action_label': 'Recheck triple-red',
+            'next_action_label_zh': '复核三重下跌',
+            'reassessment': reassessment, 'reassessment_zh': reassessment_zh,
+            'evidence_label': 'Open current FX timeline',
+            'evidence_label_zh': '打开当前外汇时间线',
+        })
+        return brief
+
+    scenario_headline = _FOREX_SCENARIO_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    scenario_active = _FOREX_SCENARIO_ACTIVE.fullmatch(detail)
+    scenario_inactive = _FOREX_SCENARIO_INACTIVE.fullmatch(detail)
+    if source == 'forex' and type_ == 'scenario' and scenario_headline and str(row.get('asset') or '') == 'dollar':
+        scenario_name, state_phrase = scenario_headline.groups()
+        scenario_key = scenario_name.lower()
+        active = state_phrase == 'now active'
+        detail_matches = scenario_active if active else scenario_inactive
+        if detail_matches and detail_matches.group(1) == scenario_key:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current scenario state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前情景状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated activation/deactivation events are separate edges; they do not '
+                    'prove the scenario stayed active between observations.')
+                recurrence_limit_zh = ' 重复激活/解除事件是独立边沿，并不能证明该情景在观测之间持续激活。'
+            validation_limit = (
+                ' The source conviction is documented but this family is not separately '
+                'backtested as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This scenario state is descriptive context, not a calibrated timing signal.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该情景状态只是描述性背景，并非校准择时信号。'
+            )
+            if active:
+                fired_text, minimum_text, intensity_text = detail_matches.groups()[1:]
+                fired, minimum, intensity = int(fired_text), int(minimum_text), int(intensity_text)
+                if fired < minimum or intensity > 100:
+                    return brief
+                implication = (
+                    f'The FX stress radar reports {scenario_name} crossed its activation '
+                    f'threshold with {fired}/{minimum}+ legs firing and {intensity}% intensity.')
+                implication_zh = (
+                    f'外汇压力雷达报告 {scenario_name} 越过激活阈值，{fired}/{minimum}+ 项触发，'
+                    f'强度 {intensity}%。')
+                next_action = (
+                    f'Open the current FX timeline and verify {scenario_name} is still active, '
+                    f'which underlying legs are firing and whether intensity remains near '
+                    f'{intensity}% before changing risk.')
+                next_action_zh = (
+                    f'打开当前外汇时间线，确认 {scenario_name} 仍处于激活状态、哪些底层条件仍在触发，'
+                    f'以及强度是否仍接近 {intensity}%，再调整风险。')
+                reassessment = (
+                    f'Change the read if {scenario_name} falls below its activation threshold, '
+                    'the firing legs materially change, or newer source evidence supersedes the event.')
+                reassessment_zh = (
+                    f'若 {scenario_name} 低于激活阈值、触发条件发生实质变化，或更新来源证据取代该事件，'
+                    '则改变判断。')
+            else:
+                implication = (
+                    f'The FX stress radar reports {scenario_name} fell below its activation '
+                    'threshold; the previously flagged stress configuration is no longer active.')
+                implication_zh = (
+                    f'外汇压力雷达报告 {scenario_name} 已低于激活阈值；此前标记的压力组合不再激活。')
+                next_action = (
+                    f'Open the current FX timeline and verify {scenario_name} remains inactive '
+                    'and that the underlying stress legs have not re-formed before relaxing risk controls.')
+                next_action_zh = (
+                    f'打开当前外汇时间线，确认 {scenario_name} 仍未激活，且底层压力条件尚未重新形成，'
+                    '再放松风险控制。')
+                reassessment = (
+                    f'Change the read if {scenario_name} reactivates or the underlying stress legs '
+                    'again meet the source threshold.')
+                reassessment_zh = (
+                    f'若 {scenario_name} 再次激活，或底层压力条件再次达到来源阈值，则改变判断。')
+            brief.update({
+                'status': 'supported', 'family': 'forex.scenario',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    'The scenario name is a deterministic stress-radar label, not confirmation '
+                    'that the real-world cause named by the scenario occurred. It is not a trade '
+                    'instruction, return forecast or calibrated probability.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '情景名称是确定性的压力雷达标签，并不能确认该情景名称所指的现实原因确实发生。'
+                    '它不是交易指令、收益预测或校准概率。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': next_action, 'next_action_zh': next_action_zh,
+                'next_action_label': 'Recheck FX scenario',
+                'next_action_label_zh': '复核外汇情景',
+                'reassessment': reassessment, 'reassessment_zh': reassessment_zh,
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    holdings_change = _MACRO_HOLDINGS_ACTIVE_CHANGE.fullmatch(detail)
+    if (source == 'macro' and type_ == 'holdings_active_change' and
+            str(row.get('asset') or '') == 'macro' and holdings_change and
+            _plain(row.get('headline') or '') == 'A star fund manager made a notable move'):
+        fund, verb, position, pct_text, window_start, window_end = holdings_change.groups()
+        pct = float(pct_text)
+        sign_ok = (verb == 'added' and pct > 0) or (verb == 'cut' and pct < 0)
+        if sign_ok and window_start <= window_end:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the latest holdings snapshots.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核最新持仓快照。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the position change persisted '
+                    'between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录触发并不能证明该持仓变化在观测之间持续存在。')
+            direction = 'increased' if pct > 0 else 'decreased'
+            brief.update({
+                'status': 'supported', 'family': 'macro.holdings_active_change',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source flow-normalized holdings calculation reports {fund}’s continuing '
+                    f'{position} position {direction} by {abs(pct):g}% between {window_start} and '
+                    f'{window_end}; this is a manager-activity observation to verify, not a copy trade.'),
+                'implication_zh': (
+                    f'来源的资金流标准化持仓计算显示，{fund} 的 {position} 持续持仓在 '
+                    f'{window_start} 至 {window_end} 期间变化 {abs(pct):g}%；'
+                    '这是需要复核的经理活动观测，并非跟单交易。'),
+                'limitation': (
+                    'Flow normalization estimates and removes mechanical fund creation/redemption '
+                    'effects; it does not establish the manager’s motive, conviction, information '
+                    'advantage, expected return or recommendation. The source explicitly treats this '
+                    'as context rather than a recommendation.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '资金流标准化用于估算并剔除基金申赎的机械影响；它不能证明经理的动机、信念、信息优势、'
+                    '预期收益或建议。来源明确将其视为背景，而非推荐。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current tracked-holdings panel and verify {fund}’s latest {position} '
+                    f'snapshots, the {window_start}..{window_end} flow-normalized change and whether '
+                    'a newer snapshot reversed or extended it before using the observation.'),
+                'next_action_zh': (
+                    f'打开当前跟踪持仓面板，核对 {fund} 的最新 {position} 快照、'
+                    f'{window_start}..{window_end} 的资金流标准化变化，并确认更新快照是否反转或延续该变化。'),
+                'next_action_label': 'Recheck manager holding',
+                'next_action_label_zh': '复核经理持仓',
+                'reassessment': (
+                    'Change the read if the latest flow-normalized position change reverses, shrinks '
+                    'below the alert threshold, or a newer holdings window supersedes this event.'),
+                'reassessment_zh': (
+                    '若最新资金流标准化持仓变化反转、缩小到警报阈值以下，或新的持仓窗口取代该事件，则改变判断。'),
+                'evidence_label': 'Open current tracked holdings',
+                'evidence_label_zh': '打开当前跟踪持仓',
+            })
+            return brief
+
+    breaker = _MACRO_CIRCUIT_BREAKER_OPEN.fullmatch(detail)
+    if (source == 'macro' and type_ == 'circuit_breaker_open' and
+            str(row.get('asset') or '') == 'macro' and breaker and
+            _plain(row.get('headline') or '') == 'A data source went dark'):
+        source_name, failures_text = breaker.groups()
+        failures = int(failures_text)
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current outage status cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前中断状态。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck whether the source has recovered.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核该来源是否已恢复。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        fire_count = int(row.get('fire_count') or 0)
+        if fire_count > 1 and not row.get('continuity_verified'):
+            recurrence_limit = (
+                f' {fire_count} recorded firings do not prove the source stayed unavailable '
+                'between observations.')
+            recurrence_limit_zh = (
+                f' {fire_count} 次记录触发并不能证明该来源在观测之间持续不可用。')
+        brief.update({
+            'status': 'supported', 'family': 'macro.circuit_breaker_open',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source-health circuit breaker opened for {source_name} after {failures} '
+                'consecutive collection failures, so affected signals have missing or degraded '
+                'evidence until collection recovers.'),
+            'implication_zh': (
+                f'{source_name} 在连续 {failures} 次采集失败后触发来源健康断路器；'
+                '在采集恢复前，相关信号的证据缺失或降级。'),
+            'limitation': (
+                'This is data-pipeline health, not a market signal. Missing evidence must not be '
+                'interpreted as a quiet market, zero risk, confirmation, or a directional view.' +
+                age_limit + recurrence_limit),
+            'limitation_zh': (
+                '这是数据管线健康状态，并非市场信号。证据缺失不能被解释为市场平静、零风险、确认或方向判断。' +
+                age_limit_zh + recurrence_limit_zh),
+            'next_action': (
+                f'Open the current Macro source-health panel and verify {source_name} breaker state, '
+                'last successful collection and downstream coverage before interpreting any affected signal.'),
+            'next_action_zh': (
+                f'打开当前宏观来源健康面板，核对 {source_name} 的断路器状态、最近一次成功采集和下游覆盖，'
+                '再解读受影响的任何信号。'),
+            'next_action_label': 'Check source health',
+            'next_action_label_zh': '检查来源健康',
+            'reassessment': (
+                'Clear the outage read only after the current breaker is closed and a fresh successful '
+                'collection restores the affected evidence path.'),
+            'reassessment_zh': (
+                '仅当当前断路器关闭且新的成功采集恢复受影响证据路径后，才解除中断判断。'),
+            'evidence_label': 'Open current Macro source health',
+            'evidence_label_zh': '打开当前宏观来源健康',
+        })
+        return brief
+
+    confidence = _MACRO_AXIS_CONFIDENCE_FLOOR.fullmatch(detail)
+    if source == 'macro' and confidence:
+        axis_label, floor_text, previous_text, current_text = confidence.groups()
+        axis = axis_label.lower()
+        expected_type = f'{axis}_confidence_floor'
+        expected_headline = f'{axis_label} read got muddy — trust the regime label less'
+        floor = int(floor_text)
+        previous = int(previous_text)
+        current = int(current_text)
+        if (type_ == expected_type and str(row.get('asset') or '') == 'macro' and
+                _plain(row.get('headline') or '').lstrip('\ufe0f ') == expected_headline and
+                0 < floor <= 100 and 0 <= current < floor <= previous <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current {axis} confidence.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前{axis_label}一致度。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated floor crossings are separate observations and do not prove confidence '
+                    'stayed below the threshold between them.')
+                recurrence_limit_zh = ' 重复下穿阈值是独立观测，并不能证明一致度在期间持续低于阈值。'
+            brief.update({
+                'status': 'supported', 'family': f'macro.{expected_type}',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source regime model reports {axis} indicator agreement fell from '
+                    f'{previous}% to {current}%, crossing below its {floor}% usable-confidence '
+                    'floor; the regime label should be treated with less confidence until the '
+                    'underlying inputs agree again.'),
+                'implication_zh': (
+                    f'来源周期模型报告{axis_label}指标一致度从 {previous}% 降至 {current}%，下穿 '
+                    f'{floor}% 的可用一致度阈值；在底层输入重新取得一致前，应降低对周期标签的信任。'),
+                'limitation': (
+                    'Axis confidence measures agreement among source inputs. It is not the probability '
+                    'that a regime label is correct, a market-risk score, a return forecast or a '
+                    'directional trade signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '轴一致度衡量的是来源输入之间的认同程度。它不是周期标签正确的概率、市场风险评分、'
+                    '收益预测或方向交易信号。' + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Regime Radar and verify {axis} confidence is still below '
+                    f'{floor}%, inspect the underlying {axis} inputs, and compare the current regime '
+                    'state before relying on the label for sizing decisions.'),
+                'next_action_zh': (
+                    f'打开当前周期雷达，确认{axis_label}一致度仍低于 {floor}%，检查底层{axis_label}输入，'
+                    '并核对当前周期状态，再将该标签用于仓位判断。'),
+                'next_action_label': f'Recheck {axis} confidence',
+                'next_action_label_zh': f'复核{axis_label}一致度',
+                'reassessment': (
+                    f'Change the read if {axis} confidence recovers above {floor}% with underlying '
+                    'inputs agreeing again, or a newer confidence event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若{axis_label}一致度恢复至 {floor}% 以上且底层输入重新一致，或新的置信度事件'
+                    '取代此次下穿，则改变判断。'),
+                'evidence_label': 'Open current Regime Radar',
+                'evidence_label_zh': '打开当前周期雷达',
+            })
+            return brief
+
+    sector_holdings = _MACRO_SECTOR_HOLDINGS.fullmatch(detail)
+    if (source == 'macro' and type_ == 'sector_holdings_accumulation' and
+            str(row.get('asset') or '') == 'macro' and sector_holdings and
+            _plain(row.get('headline') or '') ==
+            'A sector ETF is over-weighting a stock beyond its price move'):
+        fund, ticker, change_text, flow_text, verb, window_start, window_end, cycle_label, cycle_action = (
+            sector_holdings.groups())
+        change = float(change_text)
+        sign_ok = (verb == 'accumulating' and change > 0) or (verb == 'trimming' and change < 0)
+        if sign_ok and window_start <= window_end:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-ETF weight residual.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块 ETF 权重残差。'
+            flow_clause = f' with an estimated rebalance flow of about {flow_text}' if flow_text else ''
+            flow_clause_zh = f'，估算再平衡资金流约为 {flow_text}' if flow_text else ''
+            cycle_clause = (
+                f' The source also attached cycle context “{cycle_label}·{cycle_action}”; that '
+                'overlay is context, not independent confirmation.'
+                if cycle_label and cycle_action else '')
+            cycle_clause_zh = (
+                f' 来源还附带周期背景“{cycle_label}·{cycle_action}”；该叠加层只是背景，并非独立确认。'
+                if cycle_label and cycle_action else '')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_holdings_accumulation',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source price-decomposition reports {fund}’s {ticker} weight moved '
+                    f'{change_text} percentage points beyond what the stock’s own price move explains'
+                    f'{flow_clause}; this is passive sector-ETF rebalance/float-flow context.'),
+                'implication_zh': (
+                    f'来源的价格分解显示，{fund} 中 {ticker} 的权重变化比该股票自身价格变动可解释的部分多 '
+                    f'{change_text} 个百分点{flow_clause_zh}；这是被动板块 ETF 再平衡/流通权重资金流背景。'),
+                'limitation': (
+                    'A price-decomposed ETF weight residual is not discretionary manager conviction, '
+                    'a stock recommendation, calibrated probability or expected-return forecast. '
+                    'The source explicitly attributes this passive-fund residual to index '
+                    'reconstitution/float-weight flow rather than active selection.' +
+                    cycle_clause + age_limit),
+                'limitation_zh': (
+                    '价格分解后的 ETF 权重残差并非主动经理信念、个股推荐、校准概率或预期收益预测。'
+                    '来源明确将该被动基金残差归因于指数再平衡/流通权重资金流，而非主动选股。' +
+                    cycle_clause_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current sector-accumulation panel and verify {fund} still shows '
+                    f'{ticker} with a price-decomposed weight residual in the same direction, '
+                    'check any current rebalance-flow estimate, and inspect the stock’s own setup '
+                    'before using the flow context.'),
+                'next_action_zh': (
+                    f'打开当前板块累积面板，确认 {fund} 中 {ticker} 的价格分解权重残差方向仍一致，'
+                    '核对当前再平衡资金流估算，并检查该股自身形态后再使用该资金流背景。'),
+                'next_action_label': 'Recheck passive sector flow',
+                'next_action_label_zh': '复核被动板块资金流',
+                'reassessment': (
+                    'Change the read if the residual falls below the source alert threshold, reverses '
+                    'direction, or a newer holdings window supersedes this observation.'),
+                'reassessment_zh': (
+                    '若残差跌破来源警报阈值、方向反转，或新的持仓窗口取代该观测，则改变判断。'),
+                'evidence_label': 'Open current sector accumulation',
+                'evidence_label_zh': '打开当前板块累积',
+            })
+            return brief
+
+    sector_high = _MACRO_SECTOR_RS_HIGH.fullmatch(detail)
+    if source == 'macro' and type_ == 'sector_rs_cross_high' and sector_high:
+        sector, benchmark, threshold_text, current_text = sector_high.groups()
+        threshold = int(threshold_text)
+        current = int(current_text)
+        if (str(row.get('asset') or '') == 'macro' and sector != benchmark and
+                0 < threshold < 100 and threshold <= current <= 100 and
+                _plain(row.get('headline') or '') == 'A sector broke into leadership'):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-relative-strength rank.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块相对强度排名。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded crossings do not prove the sector stayed above the '
+                    'threshold between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录穿越并不能证明该板块在观测之间持续高于阈值。')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_rs_cross_high',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'{sector} relative strength versus {benchmark} moved into the top '
+                    f'{100 - threshold}% of its 90-day rank, with the source reporting a current '
+                    f'percentile of {current}; sector leadership strengthened enough to recheck.'),
+                'implication_zh': (
+                    f'{sector} 相对 {benchmark} 的强度进入其 90 天排名的顶部 {100 - threshold}%，'
+                    f'来源报告当前百分位为 {current}；板块领导力已经明显增强，需要复核。'),
+                'limitation': (
+                    'A relative-strength percentile is a descriptive price-relative rank, not evidence '
+                    'of fund flows, a calibrated return probability, a durable leadership regime or '
+                    'an instant buy signal. The source treats this family as rotation context rather '
+                    'than a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '相对强度百分位只是描述性的相对价格排名，并不能证明资金流、校准收益概率、持久领导状态'
+                    '或立即买入信号。来源将该信号族视为轮动背景，而非择时信号。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Macro sector panel and verify {sector} relative strength '
+                    f'versus {benchmark} is still at or above the {threshold}th-percentile threshold, '
+                    'then check the current sector heat and trigger state before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观板块面板，确认 {sector} 相对 {benchmark} 的强度仍处于或高于第 '
+                    f'{threshold} 百分位阈值，并检查当前板块热度与触发状态，再调整敞口。'),
+                'next_action_label': 'Recheck sector leadership',
+                'next_action_label_zh': '复核板块领导力',
+                'reassessment': (
+                    f'Change the read if {sector} relative strength falls back below the high-percentile '
+                    'threshold, leadership weakens, or a newer sector event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若 {sector} 相对强度重新跌破高百分位阈值、领导力减弱，或更新的板块事件取代此次穿越，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Macro sector panel',
+                'evidence_label_zh': '打开当前宏观板块面板',
+            })
+            return brief
+
+    sector_low = _MACRO_SECTOR_RS_LOW.fullmatch(detail)
+    if source == 'macro' and type_ == 'sector_rs_cross_low' and sector_low:
+        sector, benchmark, threshold_text, current_text = sector_low.groups()
+        threshold = int(threshold_text)
+        current = int(current_text)
+        if (str(row.get('asset') or '') == 'macro' and sector != benchmark and
+                0 < threshold < 100 and 0 <= current <= threshold):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-relative-strength rank.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块相对强度排名。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded crossings do not prove the sector stayed below the '
+                    'threshold between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录穿越并不能证明该板块在观测之间持续低于阈值。')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_rs_cross_low',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'{sector} relative strength versus {benchmark} moved into the bottom '
+                    f'{threshold}% of its 90-day rank, with the source reporting a current '
+                    f'percentile of {current}; sector leadership has deteriorated enough to recheck.'),
+                'implication_zh': (
+                    f'{sector} 相对 {benchmark} 的强度进入其 90 天排名的底部 {threshold}%，'
+                    f'来源报告当前百分位为 {current}；板块领导力已经明显走弱，需要复核。'),
+                'limitation': (
+                    'A relative-strength percentile is a descriptive rank, not evidence of fund '
+                    'flows, a calibrated return probability, a bottom signal or a sell instruction. '
+                    'The source explicitly treats this family as rotation context rather than a '
+                    f'timing signal.{age_limit}{recurrence_limit}'),
+                'limitation_zh': (
+                    '相对强度百分位只是描述性排名，并不能证明资金流、校准收益概率、底部信号或卖出指令。'
+                    '来源明确将该信号族视为轮动背景，而非择时信号。'
+                    f'{age_limit_zh}{recurrence_limit_zh}'),
+                'next_action': (
+                    f'Open the current Macro sector panel and verify {sector} relative strength '
+                    f'versus {benchmark} is still at or below the {threshold}th-percentile threshold, '
+                    'then check whether the relative-strength line has based or reversed before '
+                    'changing sector exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观板块面板，确认 {sector} 相对 {benchmark} 的强度仍处于或低于 '
+                    f'第 {threshold} 百分位阈值，并检查相对强度线是否已经筑底或反转，再调整板块敞口。'),
+                'next_action_label': 'Recheck sector weakness',
+                'next_action_label_zh': '复核板块走弱',
+                'reassessment': (
+                    f'Change the read if {sector} relative strength recovers above the low-percentile '
+                    'threshold, forms a durable base, or a newer sector event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若 {sector} 相对强度重新升至低百分位阈值之上、形成稳定底部，或更新的板块事件'
+                    '取代此次穿越，则改变判断。'),
+                'evidence_label': 'Open current Macro sector panel',
+                'evidence_label_zh': '打开当前宏观板块面板',
+            })
+            return brief
+
+    transmission_effect_headline = _FOREX_TRANSMISSION_EFFECT_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    transmission_effect_detail = _FOREX_TRANSMISSION_EFFECT_DETAIL.fullmatch(detail)
+    transmission_stability_headline = _FOREX_TRANSMISSION_STABILITY_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    transmission_stability_detail = _FOREX_TRANSMISSION_STABILITY_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'transmission_shift' and str(row.get('asset') or '') == 'dollar':
+        relation_kind = ''
+        relation_name = ''
+        previous = ''
+        current = ''
+        valid_shape = False
+        if transmission_effect_headline and transmission_effect_detail:
+            headline_name, headline_label = transmission_effect_headline.groups()
+            detail_name, previous, current = transmission_effect_detail.groups()
+            expected_label = {
+                'headwind': 'a headwind',
+                'tailwind': 'a tailwind',
+                'neutral': 'not linked now',
+            }[current]
+            valid_shape = headline_name == detail_name and headline_label == expected_label and previous != current
+            relation_kind = 'effect'
+            relation_name = detail_name
+        elif transmission_stability_headline and transmission_stability_detail:
+            headline_name, headline_state = transmission_stability_headline.groups()
+            detail_name, previous, current = transmission_stability_detail.groups()
+            valid_shape = headline_name == detail_name and headline_state == current and previous != current
+            relation_kind = 'stability'
+            relation_name = detail_name
+        if valid_shape:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current transmission state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前传导状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded transitions do not prove the relationship stayed in '
+                    'that state between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录转换并不能证明该关系在观测之间持续保持该状态。')
+            if relation_kind == 'effect':
+                implication = (
+                    f'The source dollar-transmission model changed {relation_name} from {previous} '
+                    f'to {current}; this is a relationship classification to verify against the '
+                    'current dollar and asset tape.')
+                implication_zh = (
+                    f'来源的美元传导模型将 {relation_name} 的关系从 {previous} 切换到 {current}；'
+                    '这是需要结合当前美元与相关资产行情复核的关系分类。')
+            else:
+                implication = (
+                    f'The source dollar-transmission model changed {relation_name} stability from '
+                    f'{previous} to {current}; this says the measured relationship changed, not why.')
+                implication_zh = (
+                    f'来源的美元传导模型将 {relation_name} 的稳定性从 {previous} 切换到 {current}；'
+                    '这表示测量关系发生变化，并不说明原因。')
+            brief.update({
+                'status': 'supported', 'family': 'forex.transmission_shift',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication,
+                'implication_zh': implication_zh,
+                'limitation': (
+                    'A transmission label is a source-model description of a rolling dollar/asset '
+                    'relationship, not a causal driver, calibrated probability, return forecast or '
+                    'directional trade. Source conviction is documented, but this family is not '
+                    'separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '传导标签只是来源模型对滚动美元/资产关系的描述，并非因果驱动、校准概率、收益预测或方向交易。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX transmission panel and verify {relation_name} is still '
+                    f'classified {current}, inspect the current fast/slow relationship inputs and '
+                    'source clock, and check whether a newer transition supersedes this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇传导面板，确认 {relation_name} 当前仍被分类为 {current}，检查当前快/慢关系输入'
+                    '和来源时间，并确认是否有更新转换取代该事件。'),
+                'next_action_label': 'Recheck dollar transmission',
+                'next_action_label_zh': '复核美元传导',
+                'reassessment': (
+                    f'Change the read if the current {relation_kind} classification is no longer '
+                    f'{current}, the underlying relationship inputs no longer support it, or a newer '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前 {relation_kind} 分类不再是 {current}、底层关系输入不再支持该分类，'
+                    '或新的转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX transmission panel',
+                'evidence_label_zh': '打开当前外汇传导面板',
+            })
+            return brief
+
+    residual_headline = _FOREX_RESIDUAL_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    residual_detail = _FOREX_RESIDUAL_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'residual_shock' and residual_headline and residual_detail:
+        headline_pair, direction = residual_headline.groups()
+        currency, z_text, detail_pair, price_text = residual_detail.groups()
+        pair_asset = detail_pair.replace('/', '')
+        z_value = float(z_text)
+        expected_direction = 'up' if z_value > 0 else 'down' if z_value < 0 else ''
+        pair_currencies = set(detail_pair.split('/'))
+        if (headline_pair == detail_pair and pair_asset == str(row.get('asset') or '') and
+                currency in pair_currencies and direction == expected_direction):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current residual before using it.'
+                age_limit_zh = f' 该事件已过去 {age} 天；使用前请复核当前残差。'
+            brief.update({
+                'status': 'supported', 'family': 'forex.residual_shock',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar/rates model reports a {z_text} z-score residual in '
+                    f'{detail_pair} at {price_text}, flagging an unexplained FX move that '
+                    'requires attribution.'),
+                'implication_zh': (
+                    f'来源的美元/利率模型报告 {detail_pair} 在 {price_text} 出现 {z_text} 的 z 分数残差，'
+                    '提示一项需要进一步归因的异常外汇波动。'),
+                'limitation': (
+                    'A model residual says the named factors did not explain the observed move; '
+                    'it does not identify intervention, flows or geopolitics as the cause. The '
+                    'z-score is not a probability or return forecast, and this family is documented '
+                    f'but not separately backtested as a timing signal.{age_limit}'),
+                'limitation_zh': (
+                    '模型残差只表示所列因素未能解释该波动；它不能把原因确定为干预、资金流或地缘政治。'
+                    'z 分数不是概率或收益预测，且该信号族虽有记录，但未作为择时信号单独回测。'
+                    f'{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current FX timeline and verify the {detail_pair} residual, pair '
+                    f'price, broad-dollar and rates inputs, and source clocks before investigating '
+                    f'local {currency} catalysts or changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，核对 {detail_pair} 残差、汇率、广义美元与利率输入及来源时间，'
+                    f'再调查 {currency} 的本地催化因素或调整敞口。'),
+                'next_action_label': 'Investigate FX residual',
+                'next_action_label_zh': '调查外汇残差',
+                'reassessment': (
+                    'Change the read if the residual normalizes, the dollar/rates model explains '
+                    'the move, or newer source evidence identifies the driver.'),
+                'reassessment_zh': (
+                    '若残差恢复正常、美元/利率模型可以解释该波动，或更新的来源证据识别出驱动因素，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    narrative_headline = _EMERGENCE_NARRATIVE_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    narrative_detail = _EMERGENCE_NARRATIVE_DETAIL.fullmatch(detail)
+    if source == 'emergence' and type_ == 'narrative_forming' and narrative_headline and narrative_detail:
+        narrative_name = narrative_headline.group(1)
+        score_text, score_label, names_text, watch_names = narrative_detail.groups()
+        score = float(score_text)
+        names_count = int(names_text)
+        asset = str(row.get('asset') or '')
+        link = str(row.get('link') or '')
+        watch_list = watch_names.split(', ')
+        if (55 <= score <= 100 and names_count >= len(watch_list) and
+                re.fullmatch(r'[0-9a-f]{12}', asset) and
+                link.endswith('#ne-' + asset)):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck whether the narrative is still forming.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核该叙事是否仍在形成。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the cluster persisted between '
+                    'observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录触发并不能证明该聚类在观测之间持续存在。')
+            brief.update({
+                'status': 'supported', 'family': 'emergence.narrative_forming',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source emergence model newly surfaced “{narrative_name}” at score '
+                    f'{score_text} ({score_label}), with {names_count} names tightening together. '
+                    f'The named watch candidates are {watch_names}.'),
+                'implication_zh': (
+                    f'来源的叙事涌现模型新识别出“{narrative_name}”，评分 {score_text}（{score_label}），'
+                    f'共有 {names_count} 个标的同步收紧。当前关注候选为 {watch_names}。'),
+                'limitation': (
+                    'This is context-only cluster detection. The emergence score is not a calibrated '
+                    'probability, expected return, independent-confirmation count or evidence that the '
+                    'cluster is a durable economic theme. The watch candidates are explicitly not a '
+                    'buy list, and this family has no validated forward edge.' +
+                    age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '这只是背景层的聚类检测。涌现评分不是校准概率、预期收益、独立确认数量，也不能证明该聚类'
+                    '已经成为持久的经济主题。关注候选明确不是买入清单，且该信号族没有经过验证的前瞻优势。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current forming-narrative card and verify “{narrative_name}” still '
+                    f'scores at least 55, the {names_count}-name cluster remains coherent, and the '
+                    f'current watch candidates still include {watch_names} before promoting it to '
+                    'deeper research.'),
+                'next_action_zh': (
+                    f'打开当前成形叙事卡片，确认“{narrative_name}”评分仍至少为 55、{names_count} 个标的的'
+                    f'聚类仍保持一致，并核对当前关注候选仍包含 {watch_names}，再决定是否进入更深研究。'),
+                'next_action_label': 'Recheck forming narrative',
+                'next_action_label_zh': '复核成形叙事',
+                'reassessment': (
+                    'Change the read if the narrative disappears, its score falls below the source '
+                    '55-point alert bar, the cluster stops tightening, or the current constituent set '
+                    'materially re-forms.'),
+                'reassessment_zh': (
+                    '若该叙事消失、评分跌破来源的 55 分警报门槛、聚类不再收紧，或当前成分集合发生实质重组，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current forming narrative',
+                'evidence_label_zh': '打开当前成形叙事',
+            })
+            return brief
+
+    demand = _DEMAND_AHEAD.fullmatch(detail)
+    if source == 'demand' and type_ == 'demand_ahead' and demand:
+        measure, growth_text, ticker = demand.groups()
+        if ticker == str(row.get('asset') or ''):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current demand and revisions.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前需求与分析师调整。'
+            measure_label = measure.replace('_', ' ')
+            brief.update({
+                'status': 'supported', 'family': 'demand.demand_ahead',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports {measure_label} demand growing {growth_text}% YoY '
+                    f'and running ahead of {ticker} analyst revisions, creating a possible '
+                    'expectations gap to investigate.'),
+                'implication_zh': (
+                    f'来源报告 {measure_label} 需求同比增长 {growth_text}%，并领先于 {ticker} '
+                    '分析师调整，形成一个值得调查的潜在预期差。'),
+                'limitation': (
+                    'This source-described demand variant is not proof the stock is underpriced, '
+                    'a buy signal, a calibrated probability, or an independent confirmation of '
+                    'future returns. Analyst revisions can lag for procedural reasons, and this '
+                    f'family is documented but not separately backtested as a timing signal.{age_limit}'),
+                'limitation_zh': (
+                    '该来源描述的需求变体不能证明股票被低估，也不是买入信号、校准概率或未来收益的'
+                    '独立确认。分析师调整可能因流程原因滞后，且该信号族虽有记录，但未作为择时信号'
+                    f'单独回测。{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current demand timeline and verify the {measure_label} as-of date, '
+                    f'its {growth_text}% YoY reading, {ticker} revision direction, and whether '
+                    'price expectations have already moved.'),
+                'next_action_zh': (
+                    f'打开当前需求时间线，核对 {measure_label} 的观测日期、{growth_text}% 同比读数、'
+                    f'{ticker} 分析师调整方向，以及价格预期是否已经变化。'),
+                'next_action_label': 'Recheck demand lead',
+                'next_action_label_zh': '复核需求领先',
+                'reassessment': (
+                    'Change the read if the current demand measure decelerates, analyst revisions '
+                    'catch up or reverse, or the price already discounts the change.'),
+                'reassessment_zh': (
+                    '若当前需求指标减速、分析师调整追上或反转，或价格已经计入该变化，则改变判断。'),
+                'evidence_label': 'Open current demand timeline',
+                'evidence_label_zh': '打开当前需求时间线',
+            })
+            return brief
+
+    oi_crowding = _VECTOR_OI_CROWDING.fullmatch(detail)
+    if (source == 'vector' and type_ == 'oi_crowding_derisk' and oi_crowding and
+            _plain(row.get('headline') or '') == 'OI crowding building — de-risk context'):
+        state, price_text = oi_crowding.groups()
+        state_label = 'elevated' if state == 'elevated' else 'stretched'
+        state_zh = '偏高' if state == 'elevated' else '极度拥挤'
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current leverage state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前杠杆状态。'
+        price_clause = (' at BTC $' + price_text) if price_text else ''
+        price_clause_zh = ('（BTC $' + price_text + '）') if price_text else ''
+        brief.update({
+            'status': 'supported', 'family': 'vector.oi_crowding_derisk',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source reports open interest moved into {state_label}{price_clause} '
+                'without requiring elevated funding, flagging more leverage fuel that could '
+                'amplify a later move if other cascade conditions arrive.'),
+            'implication_zh': (
+                f'来源报告未平仓合约在不要求资金费率升高的情况下进入{state_zh}{price_clause_zh}，'
+                '表示杠杆燃料增加；若其他连环清算条件随后出现，行情可能被放大。'),
+            'limitation': (
+                'Funding-independent crowding does not establish a liquidation cascade, crash '
+                'direction, timing or probability. ' +
+                (edge or 'The source treats standalone open interest as low-conviction context, not a crash call.') +
+                age_limit),
+            'limitation_zh': (
+                '与资金费率无关的拥挤并不能证明连环清算、下跌方向、时点或概率。' +
+                (edge_zh or '来源将单独的未平仓合约视为低信心背景，而非下跌信号。') +
+                age_limit_zh),
+            'next_action': (
+                f'Open the current Bitcoin leverage panel and verify open interest is still '
+                f'{state_label}, check whether funding or other cascade conditions have joined, '
+                'and recheck the current BTC price before changing risk.'),
+            'next_action_zh': (
+                f'打开当前比特币杠杆面板，确认未平仓合约仍处于{state_zh}，检查资金费率或其他连环清算'
+                '条件是否加入，并复核当前 BTC 价格后再调整风险。'),
+            'next_action_label': 'Recheck leverage', 'next_action_label_zh': '复核杠杆',
+            'reassessment': (
+                'Change the read if open interest leaves elevated/stretched, the source no longer '
+                'flags crowding, or the broader leverage setup materially changes.'),
+            'reassessment_zh': (
+                '若未平仓合约退出偏高/极度拥挤、来源不再标记拥挤，或更广泛的杠杆结构发生实质变化，则改变判断。'),
+            'evidence_label': 'Open current Bitcoin leverage panel',
+            'evidence_label_zh': '打开当前比特币杠杆面板',
+        })
+        return brief
+
+    market_mode_headline = _VECTOR_MARKET_MODE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    market_mode_detail = _VECTOR_MARKET_MODE_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'market_mode' and market_mode_headline and market_mode_detail:
+        headline_state = market_mode_headline.group(1)
+        previous, current = market_mode_detail.groups()
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current market mode.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前市场模式。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded transitions do not prove the mode persisted between '
+                    'observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录转换并不能证明该模式在观测之间持续存在。')
+            if current == 'Tactical':
+                implication = (
+                    'The source trend-efficiency/risk classifier moved from Strategic to Tactical '
+                    'after its confirmation rule; at least one condition required for Strategic '
+                    'mode no longer holds.')
+                implication_zh = (
+                    '来源的趋势效率/风险分类器在确认规则后从“战略”转为“战术”；'
+                    '战略模式所需的至少一个条件已不再满足。')
+                input_limit = (
+                    'Tactical does not prove both trend efficiency and risk deteriorated; it is the '
+                    'complement of the source Strategic gate, so either condition can break.')
+                input_limit_zh = (
+                    '“战术”并不证明趋势效率与风险同时恶化；它是来源“战略”门槛的补集，任一条件失效即可触发。')
+            else:
+                implication = (
+                    'The source trend-efficiency/risk classifier moved from Tactical to Strategic '
+                    'after its confirmation rule; the current inputs now satisfy the source '
+                    'Strategic gate.')
+                implication_zh = (
+                    '来源的趋势效率/风险分类器在确认规则后从“战术”转为“战略”；'
+                    '当前输入已满足来源的战略门槛。')
+                input_limit = (
+                    'Strategic does not guarantee the trend will persist or that every risk measure '
+                    'is benign; it only describes this source classifier.')
+                input_limit_zh = (
+                    '“战略”并不能保证趋势持续，也不表示所有风险指标都温和；它只描述该来源分类器。')
+            brief.update({
+                'status': 'supported', 'family': 'vector.market_mode',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    input_limit + ' Market mode is context, not a directional return forecast, '
+                    'sell/buy instruction or calibrated probability. The source documents this '
+                    f'family but does not separately backtest it as a timing signal.{age_limit}'
+                    f'{recurrence_limit}'),
+                'limitation_zh': (
+                    input_limit_zh + ' 市场模式只是背景，并非方向性收益预测、买卖指令或校准概率。'
+                    '来源记录了该信号族，但没有将其作为择时信号单独回测。'
+                    f'{age_limit_zh}{recurrence_limit_zh}'),
+                'next_action': (
+                    f'Open the current Vector allocation panel and verify market mode is still '
+                    f'{current}; inspect current trend efficiency, Risk Index and model allocation '
+                    'before changing position size.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 配置面板，确认市场模式仍为 {current}；检查当前趋势效率、'
+                    '风险指数与模型配置后再调整仓位规模。'),
+                'next_action_label': 'Recheck market mode',
+                'next_action_label_zh': '复核市场模式',
+                'reassessment': (
+                    f'Change the read if the current mode is no longer {current}, the underlying '
+                    'trend-efficiency/risk inputs no longer support that state, or a newer transition '
+                    'supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前模式不再是 {current}、底层趋势效率/风险输入不再支持该状态，或更新转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current Vector allocation panel',
+                'evidence_label_zh': '打开当前 Vector 配置面板',
+            })
+            return brief
+
+    momentum_headline = _VECTOR_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _VECTOR_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'momentum_trigger' and momentum_headline and momentum_detail:
+        turned, cooled = momentum_headline.groups()
+        score_text, previous, current = momentum_detail.groups()
+        headline_state = (
+            'bull' if turned == 'Bullish' else
+            'bear' if turned == 'Bearish' else
+            'neutral' if cooled == 'neutral' else ''
+        )
+        score = float(score_text)
+        score_consistent = (
+            (current == 'bull' and score > 0) or
+            (current == 'bear' and score < 0) or
+            (current == 'neutral' and abs(score) < 0.5)
+        )
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current and score_consistent):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            validation_limit = edge or (
+                'The source treats this momentum state as lower-conviction context.')
+            validation_limit_zh = edge_zh or '来源将该动量状态视为较低信心背景。'
+            state_label = {'bull': 'bullish', 'bear': 'bearish', 'neutral': 'neutral'}[current]
+            state_label_zh = {'bull': '看多', 'bear': '看空', 'neutral': '中性'}[current]
+            brief.update({
+                'status': 'supported', 'family': 'vector.momentum_trigger',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source momentum score moved {previous} → {current} at {score_text}, '
+                    f'putting the model in a {state_label} state relative to its ±0.5 trigger band.'),
+                'implication_zh': (
+                    f'来源动量评分在 {score_text} 时由 {previous} 转为 {current}，'
+                    f'相对于 ±0.5 触发区间进入{state_label_zh}状态。'),
+                'limitation': (
+                    validation_limit + ' A momentum-state transition is not a calibrated probability, '
+                    'return forecast, or directional trade instruction; the source itself says the '
+                    'edge weakened after 2021.' + age_limit),
+                'limitation_zh': (
+                    validation_limit_zh + ' 动量状态转换并不是校准概率、收益预测或方向交易指令；'
+                    '来源本身说明该优势在 2021 年后减弱。' + age_limit_zh),
+                'next_action': (
+                    f'Open the current Vector momentum panel and verify the score is still in the '
+                    f'{state_label} state relative to ±0.5, then check whether a newer trigger has '
+                    'superseded this event before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 动量面板，确认评分相对于 ±0.5 仍处于{state_label_zh}状态，'
+                    '并检查是否有更新触发取代该事件，再调整敞口。'),
+                'next_action_label': 'Recheck momentum',
+                'next_action_label_zh': '复核动量',
+                'reassessment': (
+                    f'Change the read if the current momentum state is no longer {current}, the '
+                    'score crosses back through the trigger band, or a newer transition supersedes '
+                    'this event.'),
+                'reassessment_zh': (
+                    f'若当前动量状态不再是 {current}、评分重新穿越触发区间，或新的转换取代该事件，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Vector momentum panel',
+                'evidence_label_zh': '打开当前 Vector 动量面板',
+            })
+            return brief
+
+    structure_headline = _VECTOR_STRUCTURE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    structure_detail = _VECTOR_STRUCTURE_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'structure_shift' and structure_headline and structure_detail:
+        headline_text = structure_headline.group(1)
+        score_text, previous, current = structure_detail.groups()
+        headline_state = {
+            'Bullish trigger': 'constructive',
+            'Bearish trigger': 'broken',
+            'neutral': 'neutral',
+        }.get(headline_text, '')
+        score = float(score_text)
+        score_consistent = (
+            (current == 'constructive' and score > 0) or
+            (current == 'broken' and score < 0) or
+            (current == 'neutral' and abs(score) < 0.5)
+        )
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current and score_consistent):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current structure state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前结构状态。'
+            validation_limit = edge or (
+                'The source treats this structure state as lower-conviction context.')
+            validation_limit_zh = edge_zh or '来源将该结构状态视为较低信心背景。'
+            state_label = {
+                'constructive': 'constructive',
+                'broken': 'broken',
+                'neutral': 'neutral',
+            }[current]
+            state_label_zh = {
+                'constructive': '偏多',
+                'broken': '走坏',
+                'neutral': '中性',
+            }[current]
+            brief.update({
+                'status': 'supported', 'family': 'vector.structure_shift',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source structure oscillator moved {previous} → {current} at {score_text}, '
+                    f'putting the model in a {state_label} structure state.'),
+                'implication_zh': (
+                    f'来源结构振荡器在 {score_text} 时由 {previous} 转为 {current}，'
+                    f'使模型进入{state_label_zh}结构状态。'),
+                'limitation': (
+                    validation_limit + ' A structure-state transition is not a calibrated probability, '
+                    'return forecast, or directional trade instruction; the source itself says the '
+                    'edge weakened after 2021.' + age_limit),
+                'limitation_zh': (
+                    validation_limit_zh + ' 结构状态转换并不是校准概率、收益预测或方向交易指令；'
+                    '来源本身说明该优势在 2021 年后减弱。' + age_limit_zh),
+                'next_action': (
+                    f'Open the current Vector structure panel and verify the oscillator is still in '
+                    f'the {state_label} state, then check whether a newer structure shift has '
+                    'superseded this event before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 结构面板，确认振荡器仍处于{state_label_zh}状态，'
+                    '并检查是否有更新结构转换取代该事件，再调整敞口。'),
+                'next_action_label': 'Recheck structure',
+                'next_action_label_zh': '复核结构',
+                'reassessment': (
+                    f'Change the read if the current structure state is no longer {current}, the '
+                    'oscillator crosses back through its neutral zone, or a newer shift supersedes '
+                    'this event.'),
+                'reassessment_zh': (
+                    f'若当前结构状态不再是 {current}、振荡器重新穿越中性区间，或新的结构转换取代该事件，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Vector structure panel',
+                'evidence_label_zh': '打开当前 Vector 结构面板',
+            })
+            return brief
+
+    impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
+    if source == 'vector' and type_ == 'impulse_warn_down' and impulse:
+        if age is None:
+            window_limit = (
+                'The source describes a 2–4 day edge window, but event age is unavailable, '
+                'so current validity cannot be established.')
+            window_limit_zh = '来源描述的是 2–4 天优势窗口，但事件时间未知，无法确认当前有效性。'
+            implication = (
+                'The source reports a short leading de-risk window, but without an event '
+                'age it cannot be treated as current.')
+            implication_zh = '来源报告了一个短期领先减仓窗口，但事件时间未知，不能视为当前信号。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is not a '
+                'current de-risk instruction.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'
+            reassessment = (
+                'Restore fresh urgency only if the current panel shows a new precursor '
+                'cross with a new event clock.')
+            reassessment_zh = '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。'
+        elif age <= 4:
+            unit = 'day' if age == 1 else 'days'
+            window_limit = (
+                f'The source describes a 2–4 day edge window; this event is {age} {unit} '
+                'old, so any urgency is bounded to that short horizon.')
+            window_limit_zh = f'来源描述的是 2–4 天优势窗口；该事件已过去 {age} 天，紧迫性仅限于这一短期范围。'
+            implication = edge or (
+                'The source reports a fresh leading precursor with a short forward de-risk window.')
+            implication_zh = edge_zh or '来源报告了一个最新领先前兆，伴随短期前瞻减仓窗口。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is a bounded '
+                'risk-management signal rather than a universal selloff detector.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这是有限的风险管理信号，并非通用下跌探测器。'
+            reassessment = (
+                'Reassess if the current panel no longer shows the precursor cross or once '
+                'the short edge window expires.')
+            reassessment_zh = '若当前面板不再显示前兆突破，或短期优势窗口结束，则重新评估。'
+        else:
+            window_limit = (
+                f'The source describes a 2–4 day edge window; at {age} days old, that '
+                '2–4 day edge window has elapsed.')
+            window_limit_zh = f'来源描述的是 2–4 天的优势窗口；该事件已过去 {age} 天，窗口已经结束。'
+            implication = (
+                f'The source originally reported a short leading de-risk window from this '
+                f'precursor; at {age} days old, that signal is historical rather than current.')
+            implication_zh = f'来源曾报告该前兆带来的短期领先减仓窗口；事件已过去 {age} 天，属于历史信号而非当前信号。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is not a '
+                'current de-risk instruction.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'
+            reassessment = (
+                'Restore fresh urgency only if the current panel shows a new precursor '
+                'cross with a new event clock.')
+            reassessment_zh = '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。'
+        brief.update({
+            'status': 'supported', 'family': 'vector.impulse_warn_down',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': implication, 'implication_zh': implication_zh,
+            'limitation': f'{window_limit} {blind_spot}',
+            'limitation_zh': f'{window_limit_zh}{blind_spot_zh}',
+            'next_action': (
+                'Open the current impulse panel and verify whether a new leading precursor '
+                'cross exists before changing risk.'),
+            'next_action_zh': '打开当前脉冲面板，确认是否出现新的领先前兆突破，再调整风险。',
+            'next_action_label': 'Recheck impulse',
+            'next_action_label_zh': '复核脉冲',
+            'reassessment': reassessment,
+            'reassessment_zh': reassessment_zh,
+            'evidence_label': 'Open current impulse panel',
+            'evidence_label_zh': '打开当前脉冲面板',
+        })
+        return brief
+
+    complex_headline = _COMMODITY_COMPLEX_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    complex_detail = _COMMODITY_COMPLEX_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'complex_regime' and complex_headline and complex_detail:
+        headline_regime = complex_headline.group(1)
+        previous, current = complex_detail.groups()
+        if str(row.get('asset') or '') == 'complex' and headline_regime == current and previous != current:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current commodity regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前大宗商品状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated transitions do not prove the quadrant persisted between observations.')
+                recurrence_limit_zh = ' 重复转换并不能证明该象限在观测之间持续存在。'
+            if str(validation.get('verdict') or '') == 'documented':
+                validation_limit = (
+                    ' Source conviction is documented, but this family is not separately backtested '
+                    'as a timing signal.')
+                validation_limit_zh = ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            else:
+                validation_limit = (
+                    ' This quadrant is descriptive source context, not a calibrated timing signal.')
+                validation_limit_zh = ' 该象限是描述性来源背景，并非校准择时信号。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.complex_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar × growth taxonomy moved from {previous} to {current}, '
+                    'changing the commodity-complex context that should be checked against the '
+                    'current dollar and growth inputs.'),
+                'implication_zh': (
+                    f'来源的美元 × 增长分类从 {previous} 切换到 {current}，改变了大宗商品综合体的背景；'
+                    '应结合当前美元与增长输入重新核对。'),
+                'limitation': (
+                    f'“{current}” is the source quadrant label, not proof the economy is in that '
+                    'macro state, not a causal diagnosis, calibrated probability, return forecast '
+                    'or directional commodity trade.' + validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    f'“{current}”是来源象限标签，并不能证明经济正处于该宏观状态，也不是因果诊断、'
+                    '校准概率、收益预测或商品方向交易。' + validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify the complex regime is still '
+                    f'{current}, inspect the current dollar and growth inputs, and check whether a '
+                    'newer quadrant transition has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认综合体状态仍为 {current}，检查最新美元与增长输入，'
+                    '并确认是否已有新的象限转换取代该事件。'),
+                'next_action_label': 'Recheck commodity regime',
+                'next_action_label_zh': '复核商品状态',
+                'reassessment': (
+                    f'Change the read if the current complex regime is no longer {current}, the '
+                    'dollar/growth inputs no longer map to that quadrant, or a newer transition '
+                    'supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前综合体状态不再是 {current}、美元/增长输入不再对应该象限，或新的转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    commodity = _COMMODITY_PRICE_SHOCK.fullmatch(detail)
+    if source == 'commodity' and type_ == 'price_shock' and commodity:
+        label, price_text, unit = commodity.groups()
+        asset = str(row.get('asset') or '')
+        expected_unit = {'gold': '$/oz', 'silver': '$/oz', 'copper': '$/lb', 'oil': '$/bbl'}.get(asset)
+        if asset != label.lower() or unit != expected_unit:
+            return brief
+        asset_zh = {'gold': '黄金', 'silver': '白银', 'copper': '铜', 'oil': '原油'}[asset]
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current shock state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前冲击状态。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+            recurrence_limit = ' Re-fired observations do not prove continuous stabilization between events.'
+            recurrence_limit_zh = ' 重复触发并不能证明两次事件之间持续处于稳定状态。'
+        brief.update({
+            'status': 'supported', 'family': 'commodity.price_shock',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The acute {label.lower()} move is losing intensity near {price_text} {unit}, '
+                'which may reduce immediate shock pressure without establishing the next '
+                'price direction.'),
+            'implication_zh': (
+                f'{asset_zh}在 {price_text} {unit} 附近的急剧波动正在减弱，短期冲击压力可能下降，'
+                '但下一价格方向仍未确定。'),
+            'limitation': (
+                'The source says the shock is settling; it does not establish direction, '
+                'a durable regime, calibrated probability, or a separately backtested timing '
+                'edge.' + age_limit + recurrence_limit),
+            'limitation_zh': (
+                '来源仅表示冲击正在平息；这不能确定方向、持久状态、校准概率或经过单独回测的择时优势。'
+                + age_limit_zh + recurrence_limit_zh),
+            'next_action': (
+                f'Open the current commodity timeline and confirm {label} is still in the '
+                f'stabilizing shock state, compare the latest price with {price_text} {unit}, '
+                'and check whether acceleration has resumed before changing exposure.'),
+            'next_action_zh': (
+                f'打开当前商品时间线，确认{asset_zh}仍处于冲击趋稳状态，将最新价格与 '
+                f'{price_text} {unit} 对比，并检查波动是否重新加速，再调整敞口。'),
+            'next_action_label': f'Recheck {asset}', 'next_action_label_zh': f'复核{asset_zh}',
+            'reassessment': (
+                'Change the read if the current timeline shows renewed acceleration, '
+                'a new shock direction, or the stabilization state has disappeared.'),
+            'reassessment_zh': '若当前时间线显示冲击重新加速、方向改变或稳定状态消失，则改变判断。',
+            'evidence_label': 'Open current commodity timeline',
+            'evidence_label_zh': '打开当前商品时间线',
+        })
+        return brief
+
+    momentum_headline = _COMMODITY_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _COMMODITY_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'momentum' and momentum_headline and momentum_detail:
+        headline_label, headline_state = momentum_headline.groups()
+        previous, current, detail_label, price_text, unit = momentum_detail.groups()
+        asset = str(row.get('asset') or '')
+        expected_unit = {'gold': '$/oz', 'silver': '$/oz', 'copper': '$/lb', 'oil': '$/bbl'}.get(asset)
+        if (asset == detail_label.lower() == headline_label.lower() and
+                headline_state == current and previous != current and unit == expected_unit):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated transitions do not prove momentum persisted between observations.'
+                recurrence_limit_zh = ' 重复转换并不能证明动量状态在观测之间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.momentum',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source commodity model moved {detail_label} momentum from {previous} '
+                    f'to {current} near {price_text} {unit}; this is a current-state research cue '
+                    'to verify, not a directional forecast.'),
+                'implication_zh': (
+                    f'来源商品模型将 {detail_label} 动量从 {previous} 切换到 {current}，'
+                    f'当时价格约为 {price_text} {unit}；这是需要复核的当前状态线索，并非方向预测。'),
+                'limitation': (
+                    'The momentum label is descriptive model state, not a calibrated probability, '
+                    'standalone return forecast or trade instruction. Source conviction is documented, '
+                    'but this family is not separately backtested as a timing signal.' +
+                    age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '动量标签只是描述性模型状态，并非校准概率、独立收益预测或交易指令。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify {detail_label} momentum is still '
+                    f'{current}, compare the latest price with {price_text} {unit}, and check whether '
+                    'a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {detail_label} 动量仍为 {current}，将最新价格与 '
+                    f'{price_text} {unit} 对比，并检查是否已有更新转换取代该事件。'),
+                'next_action_label': f'Recheck {asset} momentum',
+                'next_action_label_zh': '复核商品动量',
+                'reassessment': (
+                    f'Change the read if {detail_label} momentum leaves {current}, returns to neutral, '
+                    'or a newer source transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若 {detail_label} 动量不再是 {current}、回到中性，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    commodity_allocation_headline = _COMMODITY_ALLOCATION_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    commodity_allocation_detail = _COMMODITY_ALLOCATION_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'allocation' and commodity_allocation_headline and commodity_allocation_detail:
+        label, headline_pct = commodity_allocation_headline.groups()
+        old_pct, new_pct = commodity_allocation_detail.groups()
+        asset = str(row.get('asset') or '')
+        if (asset == label.lower() and headline_pct == new_pct and old_pct != new_pct and
+                0 <= int(old_pct) <= 100 and 0 <= int(new_pct) <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current model allocation.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前模型配置。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated firings do not prove the model held that weight between observations.'
+                recurrence_limit_zh = ' 重复触发并不能证明模型在两次观测之间持续保持该权重。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.allocation',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source momentum × risk model changed its {label} allocation from '
+                    f'{old_pct}% to {new_pct}%, making the current model weight worth rechecking '
+                    'before using it as portfolio context.'),
+                'implication_zh': (
+                    f'来源的动量 × 风险模型将 {label} 配置从 {old_pct}% 调整为 {new_pct}%；'
+                    '在将其作为组合背景前，应先复核当前模型权重。'),
+                'limitation': (
+                    '“Optimal strategy” is the source model label, not proof that the weight is '
+                    'optimal for an investor, a personalized recommendation, calibrated return '
+                    'probability or guaranteed future outcome. This alert family is documented but '
+                    'not separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '“最优策略”只是来源模型标签，并不能证明该权重对投资者而言最优，也不是个性化建议、'
+                    '校准收益概率或未来结果保证。该警报族有记录，但未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify the {label} model allocation is '
+                    f'still {new_pct}%, then inspect the current momentum and risk inputs before '
+                    'changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {label} 模型配置仍为 {new_pct}%，并检查当前动量与风险输入，'
+                    '再调整敞口。'),
+                'next_action_label': f'Recheck {asset} allocation',
+                'next_action_label_zh': '复核商品配置',
+                'reassessment': (
+                    f'Change the read if the current {label} weight is no longer {new_pct}% or the '
+                    'momentum/risk inputs that produced it have changed.'),
+                'reassessment_zh': (
+                    f'若当前 {label} 权重不再是 {new_pct}%，或产生该权重的动量/风险输入已改变，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    value_headline = _COMMODITY_VALUE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    value_detail = _COMMODITY_VALUE_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'value' and value_headline and value_detail:
+        label, headline_state = value_headline.groups()
+        percentile_text, detail_state = value_detail.groups()
+        asset = str(row.get('asset') or '')
+        expected_detail_state = headline_state + ' vs gold'
+        percentile = int(percentile_text)
+        if (asset == label.lower() and detail_state == expected_detail_state and 0 <= percentile <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current gold/silver ratio.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前金银比。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = ' Repeated value-state events do not prove the relative-value state persisted.'
+                recurrence_limit_zh = ' 重复价值状态事件并不能证明相对价值状态持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.value',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places the three-year gold/silver-ratio percentile at {percentile}, '
+                    f'which it classifies as {headline_state}; this is a relative-value context cue '
+                    'to verify against the current ratio.'),
+                'implication_zh': (
+                    f'来源将 3 年金银比百分位定位在 {percentile}，并将其分类为 {headline_state}；'
+                    '这是需要结合当前比率复核的相对价值背景。'),
+                'limitation': (
+                    'The GSR percentile is a historical relative-rank statistic, not intrinsic fair '
+                    'value, expected return, a calibrated probability or a trade instruction. Source '
+                    'conviction is documented, but this family is not separately backtested as a '
+                    'timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '金银比百分位只是历史相对排名统计，并非内在公允价值、预期收益、校准概率或交易指令。'
+                    '来源信念有据可查，但该信号族未作为择时信号单独回测。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    'Open the current commodity timeline and verify the latest gold/silver-ratio '
+                    f'percentile and whether the source still classifies silver as {headline_state.split()[-1]} '
+                    'relative to gold before using the signal.'),
+                'next_action_zh': (
+                    '打开当前商品时间线，核对最新金银比百分位，并确认来源是否仍维持当前白银相对黄金分类，'
+                    '再使用该信号。'),
+                'next_action_label': 'Recheck gold/silver ratio',
+                'next_action_label_zh': '复核金银比',
+                'reassessment': (
+                    f'Change the read if the ratio leaves the source {headline_state} state, the '
+                    'three-year percentile normalizes, or a newer value-state event supersedes it.'),
+                'reassessment_zh': (
+                    '若金银比退出当前来源分类、3 年百分位恢复正常，或新的价值状态事件取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    commodity_positioning_headline = _COMMODITY_POSITIONING_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    commodity_positioning_detail = _COMMODITY_POSITIONING_DETAIL.fullmatch(detail)
+    if (source == 'commodity' and type_ == 'positioning' and
+            commodity_positioning_headline and commodity_positioning_detail):
+        label, headline_state = commodity_positioning_headline.groups()
+        detail_state, percentile_text = commodity_positioning_detail.groups()
+        asset = str(row.get('asset') or '')
+        percentile = int(percentile_text)
+        if (asset == label.lower() and headline_state == detail_state and 0 <= percentile <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck current commodity positioning.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前商品持仓。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This positioning context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该持仓背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'commodity.positioning',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places {label} speculative net positioning at the {percentile}th '
+                    f'percentile of its three-year range and classifies it as {detail_state}; this '
+                    'is crowding context to verify against the current commodity tape.'),
+                'implication_zh': (
+                    f'来源将 {label} 投机净持仓定位在三年区间的第 {percentile} 百分位，并分类为 '
+                    f'{detail_state}；这是需要结合当前商品盘面复核的拥挤背景。'),
+                'limitation': (
+                    'A COT percentile is a historical positioning rank, not proof a reversal or '
+                    'continuation is due, a calibrated return probability, intrinsic value measure '
+                    'or trade instruction.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    'COT 百分位只是历史持仓排名，并不能证明反转或延续即将发生，也不是校准收益概率、'
+                    '内在价值衡量或交易指令。' + validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify {label} positioning is still '
+                    f'{detail_state}, inspect the latest three-year percentile against {percentile}, '
+                    'and check whether a newer positioning event supersedes this observation.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {label} 持仓仍为 {detail_state}，核对最新三年百分位'
+                    f'与 {percentile} 的差异，并检查是否已有更新持仓事件取代该观测。'),
+                'next_action_label': f'Recheck {asset} positioning',
+                'next_action_label_zh': '复核商品持仓',
+                'reassessment': (
+                    f'Change the read if positioning leaves {detail_state}, the percentile normalizes, '
+                    'or a newer source event supersedes this observation.'),
+                'reassessment_zh': (
+                    f'若持仓退出 {detail_state}、百分位恢复正常，或新的来源事件取代该观测，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    allocation = _VECTOR_ALLOCATION_CHANGE.fullmatch(detail)
+    if source == 'vector' and type_ == 'allocation_change' and allocation:
+        old_weight, new_weight = allocation.group(1), allocation.group(2)
+        brief.update({
+            'status': 'supported', 'family': 'vector.allocation_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge,
+            'implication_zh': edge_zh or '这是策略模型的配置输出；历史回测曾跑赢买入并持有。',
+            'limitation': (
+                f'The {old_weight}% → {new_weight}% change is a model allocation output. '
+                'Its historical backtest does not guarantee future returns, and repeated '
+                'firings do not prove the allocation stayed unchanged between observations.'),
+            'limitation_zh': (
+                f'{old_weight}% → {new_weight}% 是模型配置输出。历史回测不能保证未来收益，'
+                '重复触发也不能证明两次观测之间的配置保持不变。'),
+            'next_action': (
+                'Open the current allocation panel and compare the current BTC weight and '
+                'momentum/risk inputs before changing exposure.'),
+            'next_action_zh': '打开当前配置面板，比较最新 BTC 权重与动量/风险输入，再调整敞口。',
+            'next_action_label': 'Open allocation',
+            'next_action_label_zh': '打开配置',
+            'reassessment': (
+                f'Reassess if the current panel no longer shows {new_weight}% BTC or the '
+                'momentum/risk grid reverses direction.'),
+            'reassessment_zh': f'若当前面板不再显示 {new_weight}% BTC，或动量/风险网格反转，则重新评估。',
+            'evidence_label': 'Open current allocation panel',
+            'evidence_label_zh': '打开当前配置面板',
+        })
+        return brief
+
+    convergence = _ALTDATA_CONVERGENCE.fullmatch(detail)
+    if source == 'altdata' and type_ == 'convergence' and convergence:
+        asset, channel_count, channel_names = convergence.groups()
+        brief.update({
+            'status': 'supported', 'family': 'altdata.convergence',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source reports {channel_count} alt-data channels converging on '
+                f'{asset}; this is a research lead, not confirmation.'),
+            'implication_zh': f'来源报告 {channel_count} 个替代数据渠道同时指向 {asset}；这是研究线索，不是确认。',
+            'limitation': (
+                'The channel count is not a probability, expected return, or proof of '
+                'independent economic causes. This family is not separately backtested '
+                'as a timing signal, and repeated firings do not prove persistence.'),
+            'limitation_zh': (
+                '渠道数量不是概率、预期收益，也不能证明存在独立的经济原因。该信号族未作为择时信号'
+                '单独回测，重复触发也不能证明状态持续。'),
+            'next_action': (
+                f'Open the current convergence panel, inspect the named channels '
+                f'({channel_names}) and their source timestamps, then decide whether '
+                f'{asset} merits deeper research.'),
+            'next_action_zh': f'打开当前汇聚面板，检查相关渠道及来源时间，再决定是否深入研究 {asset}。',
+            'next_action_label': 'Inspect channels',
+            'next_action_label_zh': '检查渠道',
+            'reassessment': (
+                'Change the read if the channels disappear, collapse to one underlying '
+                'event, or newer source evidence contradicts the convergence.'),
+            'reassessment_zh': '若渠道消失、实际来自同一底层事件，或更新证据与汇聚结论矛盾，则改变判断。',
+            'evidence_label': 'Open current convergence panel',
+            'evidence_label_zh': '打开当前汇聚面板',
+        })
+        return brief
+
+    rotation = _ROTATION_EMERGING.fullmatch(detail)
+    if source == 'rotation' and type_ == 'rotation_emerging' and rotation:
+        subject, state, one_week, one_month, three_month, acceleration = rotation.groups()
+        state_zh = {'improving': '改善', 'leading': '领先'}[state]
+        horizon_text = f'1W {one_week}%, 1M {one_month}%, 3M {three_month}%'
+        brief.update({
+            'status': 'supported', 'family': 'rotation.rotation_emerging',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} is {state} and accelerating, with {horizon_text} and '
+                f'acceleration {acceleration}; this is an early research candidate.'),
+            'implication_zh': (
+                f'{subject} 当前处于{state_zh}且加速状态；1周 {one_week}%，1月 {one_month}%，'
+                f'3月 {three_month}%，加速 {acceleration}。这是一个早期研究候选。'),
+            'limitation': (
+                'This is explicitly context, not a buy list or a separately backtested '
+                'timing signal. The 1W/1M/3M return profile and state label are descriptive '
+                'snapshots that can reverse; repeated firings do not prove persistence.'),
+            'limitation_zh': (
+                '这明确只是背景，不是买入清单，也不是经过单独回测的择时信号。1周/1月/3月收益'
+                '与状态标签只是可能反转的描述性快照；重复触发也不能证明状态持续。'),
+            'next_action': (
+                f'Open the current rotation panel and confirm {subject} still ranks {state} '
+                'and accelerating before promoting it to a research candidate.'),
+            'next_action_zh': f'打开当前轮动面板，确认 {subject} 仍处于{state_zh}且加速状态，再将其列为研究候选。',
+            'next_action_label': 'Check rotation',
+            'next_action_label_zh': '检查轮动',
+            'reassessment': (
+                f'Change the read if the current status loses its {state}/accelerating '
+                'classification or the observed horizon profile deteriorates.'),
+            'reassessment_zh': f'若当前状态不再{state_zh}/加速，或所示周期表现恶化，则改变判断。',
+            'evidence_label': 'Open current rotation panel',
+            'evidence_label_zh': '打开当前轮动面板',
+        })
+        return brief
+
+    rotation_fading = _rotation_fading_brief(row, detail, detail_zh, age, brief)
+    if rotation_fading is not None:
+        return rotation_fading
+    rotation_turn = _rotation_turn_brief(row, detail, detail_zh, age, brief)
+    if rotation_turn is not None:
+        return rotation_turn
+
+    risk_headline = _INSTRUMENT_RISK_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    risk_detail = _INSTRUMENT_RISK_DETAIL.fullmatch(detail)
+    if source in {'commodity', 'forex'} and type_ == 'risk_regime' and risk_headline and risk_detail:
+        subject, named_state = risk_headline.groups()
+        movement, score_text, observed = risk_detail.groups()
+        expected_state = 'Elevated' if movement == 'rose through' else 'Calm'
+        if named_state == expected_state:
+            score = int(score_text)
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                unit = 'day' if age == 1 else 'days'
+                age_limit = f' This event is {age} {unit} old; recheck the current timeline.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前时间线。'
+            if named_state == 'Elevated':
+                implication = (
+                    f'{subject} crossed into its source-defined elevated risk state at '
+                    f'{score}; this warrants closer review of that instrument.')
+                implication_zh = f'{subject} 的来源风险指数升至 {score}，进入偏高状态；应加强对该标的的风险复核。'
+                state_read = 'remains Elevated'
+                state_read_zh = '仍处于偏高状态'
+            else:
+                implication = (
+                    f'{subject} fell back into its source-defined calm risk state at '
+                    f'{score}; measured risk eased, but this is not an all-clear.')
+                implication_zh = f'{subject} 的来源风险指数回落至 {score}，进入平静状态；风险读数下降，但并非全面解除警报。'
+                state_read = 'remains Calm'
+                state_read_zh = '仍处于平静状态'
+            verdict = str(validation.get('verdict') or '')
+            if verdict == 'confirmer':
+                horizon = str(validation.get('horizon') or '').strip()
+                horizon_label = (
+                    f' {horizon[:-1]}-day' if horizon.endswith('d') and horizon[:-1].isdigit()
+                    else f' {horizon}' if horizon else '')
+                evidence_limit = (
+                    f'The source classifies this as a{horizon_label} confirmer; it does not '
+                    'publish a probability, price direction or complete performance statistics '
+                    'in this snapshot.')
+                evidence_limit_zh = '来源将其归类为确认项；该快照未提供概率、价格方向或完整绩效统计。'
+            else:
+                note = str(validation.get('note') or '').strip()
+                evidence_limit = note or (
+                    'This source family is documented, not separately backtested as a timing signal.')
+                evidence_limit_zh = str(validation.get('note_zh') or '').strip() or (
+                    '该来源信号族有据可查，但未作为择时信号单独回测。')
+            source_name = 'commodity' if source == 'commodity' else 'FX'
+            source_name_zh = '商品' if source == 'commodity' else '外汇'
+            brief.update({
+                'status': 'supported', 'family': f'{source}.risk_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    f'{evidence_limit} The reading is instrument-specific—not a market-wide '
+                    f'probability, return forecast or trade instruction.{age_limit}'),
+                'limitation_zh': (
+                    f'{evidence_limit_zh} 该读数仅针对单一标的，并非全市场概率、收益预测或交易指令。'
+                    f'{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current {source_name} timeline and verify that {subject} '
+                    f'{state_read} before changing exposure.'),
+                'next_action_zh': f'打开当前{source_name_zh}时间线，确认 {subject} {state_read_zh}，再调整敞口。',
+                'next_action_label': f'Recheck {source_name} risk',
+                'next_action_label_zh': f'复核{source_name_zh}风险',
+                'reassessment': (
+                    f'Change the read if the current risk index recrosses its threshold or '
+                    f'the current timeline no longer shows {named_state}.'),
+                'reassessment_zh': f'若当前风险指数重新穿越阈值，或时间线不再显示{"偏高" if named_state == "Elevated" else "平静"}状态，则改变判断。',
+                'evidence_label': f'Open current {source_name} timeline',
+                'evidence_label_zh': f'打开当前{source_name_zh}时间线',
+            })
+            return brief
+
+    gex = _GEX_FLIP_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'gex_flip_cross' and gex:
+        event_kind, net_gex, spot_vs_flip, gap_disclosure = gex.groups()
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable, so current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            unit = 'day' if age == 1 else 'days'
+            age_limit = f' This event is {age} {unit} old; current gamma may have changed.'
+            age_limit_zh = f' 该事件已过去 {age} 天；当前 Gamma 状态可能已经改变。'
+        extra = ' '.join(str(item) for item in validation.get('extra') or [])
+        sample_limit = (
+            ' The validation history is still accruing with a small sample.'
+            if 'n small' in extra.lower() else '')
+        sample_limit_zh = ' 验证历史仍在积累，样本量较小。' if sample_limit else ''
+        gap_limit = (
+            ' The source measured the transition across multiple sessions with missing '
+            'chain snapshots, so the exact crossing time is unobserved.'
+            if gap_disclosure else '')
+        gap_limit_zh = ' 来源跨多个交易日测量该变化，且期间缺少期权链快照，因此无法观测准确穿越时点。' if gap_disclosure else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.gex_flip_cross',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge or (
+                f'{event_kind} with net GEX {net_gex} and spot-versus-flip {spot_vs_flip}; '
+                'the volatility backdrop changed.'),
+            'implication_zh': edge_zh or (
+                f'{event_kind}；净 GEX 为 {net_gex}，现价相对翻转点为 {spot_vs_flip}，波动背景发生变化。'),
+            'limitation': (
+                'This is a volatility-backdrop confirmer, not a directional call, return '
+                'forecast or proof that the state persisted between firings.'
+                f'{sample_limit}{gap_limit}{age_limit}'),
+            'limitation_zh': (
+                '这是波动背景确认项，并非方向判断、收益预测，也不能证明状态在重复触发之间持续。'
+                f'{sample_limit_zh}{gap_limit_zh}{age_limit_zh}'),
+            'next_action': (
+                'Open the current gamma board and verify net GEX, spot-versus-flip and '
+                'chain-snapshot continuity before changing volatility assumptions.'),
+            'next_action_zh': '打开当前 Gamma 面板，复核净 GEX、现价相对翻转点和期权链快照连续性，再调整波动假设。',
+            'next_action_label': 'Recheck gamma', 'next_action_label_zh': '复核 Gamma',
+            'reassessment': (
+                'Change the read if current net GEX or the spot side of the flip reverses, '
+                'or newer chain evidence contradicts the crossing.'),
+            'reassessment_zh': '若当前净 GEX 或现价相对翻转点的方向反转，或更新期权链证据与该变化矛盾，则改变判断。',
+            'evidence_label': 'Open current gamma board',
+            'evidence_label_zh': '打开当前 Gamma 面板',
+        })
+        return brief
+
+    fragility = _HIDDEN_FRAGILITY_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'hidden_fragility' and fragility:
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck both legs now.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请重新核对两个条件。'
+        brief.update({
+            'status': 'supported', 'family': 'macro.hidden_fragility',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                'The source requires the calm-surface and weakening-internals conjunction; '
+                'low VIX alone is insufficient. This family is documented, not separately '
+                f'backtested as a timing signal; it provides no market-top probability or countdown.{age_limit}'),
+            'limitation_zh': (
+                '来源要求“表面平静”与“内部走弱”同时成立；仅有低 VIX 并不充分。该信号族有据可查，'
+                f'但未作为择时信号单独回测，也不提供市场顶部概率或倒计时。{age_limit_zh}'),
+            'next_action': (
+                'Open the current risk panel and verify both the VIX/contango calm leg and '
+                'the breadth/credit fragility leg before changing gross exposure.'),
+            'next_action_zh': '打开当前风险面板，同时复核 VIX/contango 平静条件与宽度/信用脆弱条件，再调整总敞口。',
+            'next_action_label': 'Recheck fragility',
+            'next_action_label_zh': '复核脆弱性',
+            'reassessment': (
+                'Change the read if either the calm-surface leg or the weakening-internals '
+                'leg disappears in the current panel.'),
+            'reassessment_zh': '若当前面板中的表面平静条件或内部走弱条件任一消失，则改变判断。',
+            'evidence_label': 'Open current risk panel',
+            'evidence_label_zh': '打开当前风险面板',
+        })
+        return brief
+
+    breadth = _BREADTH_DIVERGENCE_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'breadth_divergence' and breadth:
+        percentile = int(breadth.group(1))
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck current breadth.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前市场宽度。'
+        brief.update({
+            'status': 'supported', 'family': 'macro.breadth_divergence',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                f'The {percentile}% percentile is a descriptive breadth state, not a '
+                'market-top probability or timer. This family is documented, not separately '
+                f'backtested as a timing signal.{age_limit}'),
+            'limitation_zh': (
+                f'{percentile}% 分位是描述性的市场宽度状态，并非市场顶部概率或择时计时器。'
+                f'该信号族有据可查，但未作为择时信号单独回测。{age_limit_zh}'),
+            'next_action': (
+                'Open the current risk panel and verify that the index remains near its '
+                'one-year high while the share above the 200-day average is still weak.'),
+            'next_action_zh': '打开当前风险面板，确认指数仍接近一年高点，且站上 200 日均线的个股占比依然偏弱。',
+            'next_action_label': 'Recheck breadth',
+            'next_action_label_zh': '复核宽度',
+            'reassessment': (
+                'Change the read if breadth recovers materially or the index is no longer '
+                'near the referenced high.'),
+            'reassessment_zh': '若市场宽度明显恢复，或指数不再接近所述高点，则改变判断。',
+            'evidence_label': 'Open current risk panel',
+            'evidence_label_zh': '打开当前风险面板',
+        })
+        return brief
+
+    reco = _THEME_RECO_CHANGE.fullmatch(detail)
+    if source == 'themes' and type_ == 'reco_change' and reco:
+        subject, old_reco, new_reco, score_text, label, held_text = reco.groups()
+        score = int(score_text)
+        old_key, new_key = old_reco.lower(), new_reco.lower()
+        direction = 'upgrade' if _THEME_RECO_RANK.get(new_key, 2) > _THEME_RECO_RANK.get(old_key, 2) else 'downgrade'
+        held = int(held_text) if held_text else None
+        confirmation = f' The constructive change was confirmed for {held} sessions.' if held else ''
+        confirmation_zh = f' 该进取方向变化已连续 {held} 个交易日确认。' if held else ''
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current recommendation.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前建议。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.reco_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} moved from {old_reco} to {new_reco} at model score {score} '
+                f'with a {label} lifecycle label.{confirmation}'),
+            'implication_zh': (
+                f'{subject} 的模型建议由{old_reco}变为{new_reco}，模型评分 {score}，'
+                f'生命周期标签为{label}。{confirmation_zh}'),
+            'limitation': (
+                f'The recommendation is a model state, not a trade instruction, position size, '
+                f'probability or expected return. {score} is a model score, not a probability. '
+                'This family is documented, not separately backtested as a timing signal; '
+                'constructive changes are delayed for confirmation while risk-direction changes '
+                f'fire immediately. Re-fired events do not prove persistence.{age_limit}'),
+            'limitation_zh': (
+                f'该建议是模型状态，并非交易指令、仓位、概率或预期收益。{score} 是模型评分，'
+                '不是概率。该信号族有据可查，但未作为择时信号单独回测；进取方向变化需确认，'
+                f'风险方向变化即时触发。重复触发不能证明状态持续。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} still shows {new_reco}, '
+                f'score {score} and the {label} lifecycle before changing exposure.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍显示{new_reco}、评分 {score} 与{label}生命周期，再调整敞口。',
+            'next_action_label': 'Recheck recommendation',
+            'next_action_label_zh': '复核建议',
+            'reassessment': (
+                f'Change the read if the current recommendation no longer shows {new_reco}, '
+                'the lifecycle changes, or the score materially reverses.'),
+            'reassessment_zh': f'若当前建议不再为{new_reco}、生命周期改变或评分明显反转，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    deteriorating = _THEME_DETERIORATING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_deteriorating' and deteriorating:
+        subject, recommendation = deteriorating.groups()
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current state.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前状态。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_deteriorating',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} entered the deteriorating lifecycle with momentum and breadth '
+                f'weakening together; the source recommendation is now {recommendation}.'),
+            'implication_zh': f'{subject} 进入走弱生命周期，动量与宽度同步转弱；当前来源建议为{recommendation}。',
+            'limitation': (
+                'The source treats deterioration as an immediate risk-direction event, but '
+                'the page payload supplies no calibrated probability, hit rate or individual-name '
+                'sell list. This family is documented, not separately backtested as a timing '
+                f'signal; repeated firings do not prove persistence.{age_limit}'),
+            'limitation_zh': (
+                '来源将走弱视为即时风险方向事件，但页面载荷未提供校准概率、命中率或个股卖出清单。'
+                f'该信号族有据可查，但未作为择时信号单独回测；重复触发不能证明状态持续。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify both momentum and breadth still weaken '
+                f'together and the recommendation remains {recommendation}.'),
+            'next_action_zh': f'打开当前主题页面，确认动量与宽度仍同步走弱，且建议仍为{recommendation}。',
+            'next_action_label': 'Recheck deterioration',
+            'next_action_label_zh': '复核走弱',
+            'reassessment': (
+                'Change the read if momentum or breadth recovers, the lifecycle exits '
+                'deteriorating, or the recommendation improves.'),
+            'reassessment_zh': '若动量或宽度恢复、生命周期退出走弱，或建议改善，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    topping = _THEME_TOPPING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_topping' and topping:
+        subject, asof_date, recommendation = topping.groups()
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck current momentum.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前动量。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_topping',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} moved from dominant to fading at the {asof_date} close. The source '
+                'frames this as elevated basket-level pullback risk over roughly the next month.'),
+            'implication_zh': f'{subject} 在 {asof_date} 收盘时由主导转入退潮；来源将其视为未来约一个月篮子层面回撤风险上升。',
+            'limitation': (
+                f'This is not a confirmed top, calibrated probability or claim that every leader '
+                f'inside the theme must fall; leaders can keep running. Recommendation {recommendation} '
+                f'is a model state, not an instruction or position size.{age_limit}'),
+            'limitation_zh': (
+                f'这并非确认见顶、校准概率，也不表示主题内所有领涨股都会下跌；领涨股仍可能续涨。'
+                f'{recommendation} 是模型建议状态，并非交易指令或仓位。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} remains fading, momentum is '
+                f'still cooling and the recommendation remains {recommendation}.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍处于退潮、动量继续降温且建议仍为{recommendation}。',
+            'next_action_label': 'Recheck pullback risk',
+            'next_action_label_zh': '复核回撤风险',
+            'reassessment': (
+                'Change the read if the theme returns to dominant/leading, momentum reaccelerates '
+                'or the recommendation improves.'),
+            'reassessment_zh': '若主题恢复主导/领先、动量重新加速或建议改善，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    emerging = _THEME_EMERGING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_emerging' and emerging:
+        subject, score_text, held_text = emerging.groups()
+        score = int(score_text)
+        held = int(held_text) if held_text else None
+        held_copy = f' and held {held} consecutive sessions' if held else ''
+        held_copy_zh = f'，并连续 {held} 个交易日确认' if held else ''
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current lifecycle.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前生命周期。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_emerging',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} entered the emerging lifecycle at score {score}, with relative '
+                f'strength accelerating before extension{held_copy}.'),
+            'implication_zh': f'{subject} 以评分 {score} 进入新兴生命周期，相对强度在过度延展前加速{held_copy_zh}。',
+            'limitation': (
+                f'The confirmation stabilizes the label; it does not validate future returns. '
+                f'{score} is a model score, not a probability, and this is not a buy list or '
+                f'separately backtested timing signal.{age_limit}'),
+            'limitation_zh': (
+                f'连续确认仅稳定标签，并不验证未来收益。{score} 是模型评分，不是概率；这也不是买入清单'
+                f'或经过单独回测的择时信号。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} remains emerging, relative '
+                'strength still accelerates and the theme is not already extended.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍处于新兴、相对强度继续加速且尚未过度延展。',
+            'next_action_label': 'Recheck emergence',
+            'next_action_label_zh': '复核新兴状态',
+            'reassessment': (
+                'Change the read if the lifecycle leaves emerging, relative strength stalls '
+                'or extension becomes excessive.'),
+            'reassessment_zh': '若生命周期退出新兴、相对强度停滞或延展过度，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    leadership = _THEME_LEADERSHIP.fullmatch(detail)
+    if source == 'themes' and type_ == 'leadership_rotation' and leadership:
+        subject, score_text, old_leader, held_text, margin_text = leadership.groups()
+        score = int(score_text)
+        held = int(held_text) if held_text else None
+        margin = float(margin_text) if margin_text else None
+        confirmation = ''
+        confirmation_zh = ''
+        if held is not None and margin is not None:
+            margin_label = f'{margin:g}'
+            confirmation = f' The lead held for {held} sessions with a {margin_label}-point margin over #2.'
+            confirmation_zh = f' 该领先已持续 {held} 个交易日，并领先第二名 {margin_label} 分。'
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current leaderboard.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前排行榜。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.leadership_rotation',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} became the #1 theme at score {score}, displacing {old_leader}.'
+                f'{confirmation}'),
+            'implication_zh': f'{subject} 以评分 {score} 升至主题第一，取代 {old_leader}。{confirmation_zh}',
+            'limitation': (
+                f'Theme rank and score are descriptive model outputs—not expected return, '
+                f'probability, a recommendation or proof of durable leadership. {score} is a '
+                f'model score, not expected return; confirmation filters rank noise but does '
+                f'not establish forward edge.{age_limit}'),
+            'limitation_zh': (
+                f'主题排名与评分是描述性模型输出，并非预期收益、概率、建议或持久领先的证明。'
+                f'{score} 是模型评分，不是预期收益；连续确认只过滤排名噪声，并不建立前瞻优势。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme leaderboard and verify {subject} is still #1, its '
+                'margin remains decisive and the underlying score leadership persists.'),
+            'next_action_zh': f'打开当前主题排行榜，确认 {subject} 仍为第一、领先幅度仍具决定性且评分优势持续。',
+            'next_action_label': 'Recheck leadership',
+            'next_action_label_zh': '复核主题领先',
+            'reassessment': (
+                'Change the read if another theme takes #1, the lead margin falls inside '
+                'normal score wobble or the score leadership reverses.'),
+            'reassessment_zh': '若其他主题升至第一、领先幅度回落到正常评分波动内或评分优势反转，则改变判断。',
+            'evidence_label': 'Open current theme leaderboard',
+            'evidence_label_zh': '打开当前主题排行榜',
+        })
+        return brief
+
+    return brief
+
+
+def _subject(rows: list[dict], asset: str, language: str = 'en') -> str:
+    # A display label only. Matching NEVER depends on title text or a generic link.
+    field = 'headline_zh' if language == 'zh' else 'headline'
+    for row in rows:
+        headline = _plain(row.get(field) or '')
+        for separator in (':', '：'):
+            if separator in headline:
+                label = headline.split(separator, 1)[0].strip()
+                if 0 < len(label) <= 80:
+                    return label
+    return asset.replace('_', ' ') if asset.isupper() else asset.replace('_', ' ').title()
+
+
+def _situations(signals: list[dict]) -> list[dict]:
+    groups: dict[tuple, list[dict]] = {}
+    for row in signals:
+        source, _, asset = _key(row)
+        if not asset or asset.lower() in {source.lower(), 'macro', 'rates', 'vector', 'all'}:
+            continue
+        groups.setdefault((source, asset), []).append(row)
+    result = []
+    for (source, asset), rows in groups.items():
+        if len({r.get('type') for r in rows}) < 2:
+            continue
+        result.append({'primary_alert_id': rows[0]['alert_id'],
+                       'member_ids': list(dict.fromkeys(r['alert_id'] for r in rows)),
+                       'subject': _subject(rows, asset), 'subject_zh': _subject(rows, asset, 'zh'),
+                       'source': source, 'source_label': rows[0].get('source_label', source),
+                       'source_label_zh': rows[0].get('source_label_zh', source),
+                       'method': 'same_source_subject'})
+    return result
+
+
+def build_explorer(signals: list[dict], raw_events: list[dict], *,
+                   history_limit: int = 1000) -> dict:
+    """Expose uncapped signals and bounded observed history without promotion.
+
+    The caller supplies the already-ranked, future-quarantined populations.
+    Derived situations are same-source exact-subject views, not new entities.
+    History rows refer to the existing parent alert_id; no synthetic event ID.
+    """
+    if isinstance(history_limit, bool) or not isinstance(history_limit, int) or history_limit < 0:
+        raise ValueError('history_limit must be a non-negative integer')
+    # Tenant-bound sentinel evidence must not expand into a shared page.
+    signals = [_json_safe(r) for r in signals if r.get('source') != 'watchlist']
+    briefs = {str(row['alert_id']): build_alert_brief(row)
+              for row in signals if row.get('alert_id')}
+    index = {_key(row): row for row in signals}
+    sources: dict[str, dict] = {}
+    for row in signals:
+        source = str(row.get('source') or '')
+        info = sources.setdefault(source, {'source': source, 'count': 0,
+            'label': row.get('source_label', source),
+            'label_zh': row.get('source_label_zh', source)})
+        info['count'] += 1
+    history = []
+    clock_fields = ('board_date', 'event_date', 'event_ts', 'source_asof',
+                    'recorded_at', 'date_precision')
+    for event in raw_events:
+        parent = index.get(_key(event))
+        if parent is None:
+            continue
+        history.append({
+            'alert_id': parent['alert_id'], 'source': parent['source'],
+            'asset': parent.get('asset'), 'type': parent.get('type'),
+            'source_label': parent.get('source_label', parent['source']),
+            'source_label_zh': parent.get('source_label_zh', parent['source']),
+            'headline': _plain(event.get('headline') or parent.get('headline') or ''),
+            'headline_zh': _plain(event.get('headline_zh') or event.get('headline') or ''),
+            'detail': str(event.get('detail') or ''),
+            'detail_zh': str(event.get('detail_zh') or event.get('detail') or ''),
+            **{key: event.get(key) for key in clock_fields},
+        })
+    history.sort(key=_clock_key, reverse=True)
+    return {'schema': 'mastermind.alert_center_view.v1',
+            'brief_schema': BRIEF_SCHEMA, 'briefs': briefs,
+            'signals': list(signals), 'total_signals': len(signals),
+            'restricted_sources': ['watchlist'],
+            'sources': sorted(sources.values(), key=lambda s: s['label']),
+            'situations': _situations(signals), 'history': history[:history_limit],
+            'history_total': len(history), 'history_limit': history_limit,
+            'history_truncated': max(0, len(history) - history_limit)}

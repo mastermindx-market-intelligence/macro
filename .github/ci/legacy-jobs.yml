@@ -1206,6 +1206,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # Alert Center V2 current-main closure widening 2026-09-19 (contract-delta):
+      # the shared build-site/dossier route reaches the pure explorer projection.
+      - "engine/alert_center_view.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
@@ -7953,6 +7956,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/alert_center_view.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -12323,6 +12327,7 @@ jobs:
       - "engine/marketing/source_authority.py"
       - "engine/marketing/state.py"
       - "engine/stocks_hub.py"
+      - "engine/alert_center_view.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -14099,7 +14104,7 @@ jobs:
       # — the fake corroborator that held a `major` band at priority 60, which is also
       # the outbound push floor. Hermetic: monkeypatched readers, injected clock.
       - name: Alert Command Center — three clocks, ET board day, and exact evidence links
-        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py -q
+        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_center_explorer.py tests/test_alert_center_surface.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH C (2026-07-27) ─────────────────────────────
   # The PIT / frozen-tape share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on

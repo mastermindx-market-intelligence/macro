@@ -1,0 +1,32 @@
+{
+  "schema": "mastermind.alert_center.latest_base_compatibility.v9",
+  "observed_at": "2026-09-22T09:28:02Z",
+  "candidate_source_head": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+  "latest_protected_main": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "latest_merge_tree": "RELEASE_BLOCKED_SHARED_CI_RECONCILIATION",
+  "merge_conflicts": [
+    "SHARED_CI_OVERLAP:.github/ci/legacy-jobs.yml"
+  ],
+  "material_movement": {
+    "prior_green_ci_base": "6a165f6725e82290a336945106160baa3d874776",
+    "latest_protected_main": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+    "main_commits_since_prior_green_base": 185,
+    "candidate_semantic_paths_changed_on_main": [],
+    "shared_overlap_paths": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "strategy": "FREEZE_SEMANTICS_REVIEW_THEN_ONE_FINAL_SHARED_CI_RECONCILIATION"
+  },
+  "skillpack_commit": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "classification": "RELEASE_BLOCKED",
+  "reason": "Semantic/UI/test source is now frozen at 7aa9af9f1d1 after accepting the short-landscape and snapshot-honesty repairs. Protected main is 185 commits beyond the last fully green CI base; the only overlap with PR #7022 remains .github/ci/legacy-jobs.yml. Repeated reconciliation of that fast-moving shared file before independent semantic review is a no-delta loop. Obtain exact-head independent review first, then reconcile the CI file once against then-current main and rerun hosted CI.",
+  "production_acceptance": false,
+  "candidate_evidence_head": "993aa205f344e09412db9b2d24fef24dc1b8704d",
+  "release_blockers": [
+    "fresh independent review has not yet accepted source head 7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+    "shared .github/ci/legacy-jobs.yml must be reconciled once against current protected main after review",
+    "hosted exact-head CI/contract-delta must pass after that final reconciliation",
+    "both render and engine-render publication effects must settle before final live-route acceptance",
+    "production still serves the old Alert Command Center"
+  ]
+}

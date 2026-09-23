@@ -1,0 +1,132 @@
+"""Real-template contracts for the investigation workspace."""
+from pathlib import Path
+from jinja2 import Environment, FileSystemLoader
+
+ROOT = Path(__file__).parents[1]
+
+
+def render(*, partial=False):
+    from engine import i18n
+    env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    return env.get_template('alerts.html.j2').render(
+        board_date='2026-09-09', board_tz='America/New_York', generated_utc='2026-09-09 07:31',
+        asof='2026-09-08', window_days=30, regime={}, cross_asset={}, risk_backdrop={},
+        events={'items': [], 'next': None}, alerts=[], storylines=[], volume={},
+        summary={'total': 0, 'actionable': 0, 'new_today': 0, 'major': 0, 'recurring': 0},
+        coverage={'state': 'partial' if partial else 'complete', 'sources': [],
+                  'backdrop_missing': partial, 'blocking': ['Bonds'] if partial else []},
+        board_read={'stance': 'partial' if partial else 'mixed',
+                    'score': None if partial else 25, 'one_liner': 'Partial tape read' if partial else 'Mixed observations'},
+        explorer={'signals': [], 'sources': [], 'situations': [], 'history': [],
+                  'total_signals': 0, 'history_total': 0, 'history_truncated': 0})
+
+
+def test_workspace_has_three_real_tasks_and_an_evidence_inspector():
+    html = render()
+    assert 'id="alert-center"' in html
+    for view in ('now', 'explore', 'history'):
+        assert f'data-view="{view}"' in html
+    assert '<dialog' in html and 'id="ac-detail"' in html
+    assert 'aria-labelledby="ac-detail-title"' in html
+    assert 'id="ac-source"' in html and 'id="ac-search"' in html
+    assert 'id="ac-data"' in html and 'application/json' in html
+
+
+def test_empty_and_partial_are_different_states_and_do_not_claim_calm():
+    empty = render()
+    partial = render(partial=True)
+    assert 'No observations in this window' in empty
+    assert 'data-coverage-state="partial"' in partial
+    assert 'Partial evidence' in partial
+    assert 'Missing evidence is not a quiet market' in partial
+    assert 'data-overall-score=' not in partial
+    assert 'A quiet tape is a position' not in partial
+
+
+def test_bilingual_controls_and_non_javascript_source_path_are_present():
+    html = render()
+    assert '探索' in html and '历史记录' in html and '当前重点' in html
+    assert '<noscript>' in html and 'id="ac-noresults"' in html
+    assert 'id="ac-reset"' in html and 'id="ac-show-more"' in html
+    assert 'alerts_last_visit' not in html
+
+
+def test_javascript_does_not_create_a_second_style_or_storage_plane():
+    path = ROOT / 'templates/alert_center.js'
+    assert path.exists()
+    source = path.read_text()
+    assert "createElement('style')" not in source and 'localStorage.setItem' not in source
+
+
+def test_standalone_alert_controls_keep_the_40px_interaction_floor():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert '.page-alerts .acx-chip' in css
+    assert 'min-height:40px' in css
+    assert '.page-alerts #ac-reset,.page-alerts #ac-browse-all{min-height:40px}' in css
+
+
+def test_alert_center_css_uses_shared_palette_tokens_not_local_color_functions():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert 'color-mix(' not in css
+    assert '.acx-attention-earlier_priority .acx-attention-title{color:var(--muted)}' in css
+    assert '.acx-row.is-earlier_priority{box-shadow:inset 2px 0 var(--line)}' in css
+    assert '.acx-row.is-watch_next{box-shadow:inset 2px 0 var(--info)}' in css
+    assert '.acx-next-action{padding:var(--sp-3,12px);border:1px solid var(--line);' in css
+
+
+def test_short_landscape_prioritizes_triage_without_hiding_partial_evidence_warning():
+    css = (ROOT / 'templates' / 'alert_center.css').read_text()
+    assert '@media(max-height:450px) and (min-width:701px) and (max-width:1000px) and (orientation:landscape)' in css
+    assert '.page-alerts .acx-brief{display:none}' in css
+    assert '.page-alerts .acx[data-coverage-state="partial"] .acx-brief{display:flex;' in css
+    assert '.page-alerts .acx-context-strip{display:none}' in css
+    assert '.page-alerts .acx-stale{' in css
+
+
+def test_shared_html_never_inlines_account_specific_legacy_rows():
+    from engine import i18n
+    env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    private = dict(alert_id='PRIVATE_ID', source='watchlist', headline='PRIVATE_SENTINEL_TITLE',
+                   source_label='Personal watchlist', board_date='2026-09-09')
+    html = env.get_template('alerts.html.j2').render(
+        alerts=[private], board_date='2026-09-09', generated_utc='2026-09-09 07:31',
+        asof='2026-09-09', regime={}, cross_asset={}, events={'next':None},
+        coverage={'state':'complete','sources':[]}, board_read={'score':None},
+        summary={'total':1})
+    assert 'PRIVATE_SENTINEL_TITLE' not in html
+    assert 'PRIVATE_ID' not in html
+
+
+
+def test_action_led_monitor_contract_replaces_the_generic_four_tab_shell():
+    html = render()
+    assert 'data-view="now"' in html
+    assert 'data-view="explore"' in html
+    assert 'data-view="history"' in html
+    assert 'data-view="situations"' not in html
+    assert 'data-view="signals"' not in html
+    assert 'acx-context-strip' in html
+    assert 'acx-context"' not in html
+    assert 'Review fresh changes. Recheck earlier priorities. Watch what may develop.' in html
+    assert 'Attention, recency, evidential weight and predictive edge stay separate.' in html
+
+
+def test_client_renders_attention_groups_and_takeaway_before_receipts():
+    source = (ROOT / 'templates' / 'alert_center.js').read_text()
+    for text in ('Review first', 'Earlier priority', 'Watch next', 'For awareness', 'Takeaway',
+                 'What would change the read'):
+        assert text in source
+    assert "legacyView === 'signals'" in source
+    assert "legacyView === 'situations'" in source
+    assert "route({view:'explore'" in source
+
+
+def test_client_surfaces_structured_related_observations_without_fake_confirmation():
+    source = (ROOT / 'templates' / 'alert_center.js').read_text()
+    for text in ('Related changes', 'Same explicit subject',
+                 'not independent confirmation', 'situationByAlert',
+                 'relatedAlertId'):
+        assert text in source
+    assert 'acx-related-observation' in source

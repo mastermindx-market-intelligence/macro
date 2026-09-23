@@ -1,0 +1,231 @@
+{
+  "schema": "mastermind.alert_center.current_main_proof.v14",
+  "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
+  "verified_at": "2026-09-22T09:28:02Z",
+  "skillpack_commit": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "macro_origin_main_observed": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "candidate_source_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+  "current_merge_tree": "RELEASE_BLOCKED_SHARED_CI_RECONCILIATION",
+  "integration_carrier": "claude/alert-center-v2-astra-20260908",
+  "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
+  "tests": {
+    "full_alert_regression": {
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "passed": 244,
+      "warnings": 6,
+      "failures": 0,
+      "log": "mockups/evidence/alert-center-v2/full-alert-regression.log"
+    },
+    "current_real_snapshot": {
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "shared_signals": 630,
+      "supported_rows": 630,
+      "fallback_rows": 0,
+      "family_count_present": 48,
+      "failures": 0
+    },
+    "absent_family_unit_contracts": {
+      "tested_commit": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+      "families": [
+        "vector.momentum_trigger",
+        "vector.structure_shift"
+      ],
+      "browser_policy": "do not synthesize absent observations; unit tests retain semantic coverage"
+    }
+  },
+  "builder": {
+    "legacy_ranked": 60,
+    "shared_signals": 634,
+    "specific_subject_bundles": 146,
+    "published_firings": 1000,
+    "total_matched_firings": 1165
+  },
+  "source_bound": {
+    "signals": 634,
+    "total_shared_signals": 634,
+    "coverage_ratio": 1.0,
+    "fallback_rows": 0,
+    "family_count": 49
+  },
+  "source_bound_families": [
+    "altdata.convergence",
+    "bonds.curve_regime",
+    "bonds.rates_vol",
+    "commodity.allocation",
+    "commodity.complex_regime",
+    "commodity.momentum",
+    "commodity.positioning",
+    "commodity.price_shock",
+    "commodity.risk_regime",
+    "commodity.value",
+    "demand.demand_ahead",
+    "emergence.narrative_forming",
+    "forex.momentum",
+    "forex.positioning",
+    "forex.residual_shock",
+    "forex.risk_regime",
+    "forex.scenario",
+    "forex.smile_regime",
+    "forex.smile_regime_flip",
+    "forex.structure",
+    "forex.transmission_shift",
+    "forex.trend_flip",
+    "forex.triple_red",
+    "macro.breadth_divergence",
+    "macro.circuit_breaker_open",
+    "macro.gex_flip_cross",
+    "macro.hidden_fragility",
+    "macro.holdings_active_change",
+    "macro.inflation_confidence_floor",
+    "macro.net_liquidity_roc_flip",
+    "macro.risk_state_elevated",
+    "macro.sector_holdings_accumulation",
+    "macro.sector_rs_cross_high",
+    "macro.sector_rs_cross_low",
+    "macro.transition_state_change",
+    "rotation.rotation_emerging",
+    "rotation.rotation_fading",
+    "rotation.rotation_turn_down",
+    "rotation.rotation_turn_up",
+    "themes.leadership_rotation",
+    "themes.reco_change",
+    "themes.theme_deteriorating",
+    "themes.theme_emerging",
+    "themes.theme_topping",
+    "vector.allocation_change",
+    "vector.impulse_warn_down",
+    "vector.market_mode",
+    "vector.momentum_trigger",
+    "vector.oi_crowding_derisk"
+  ],
+  "situation_context": {
+    "specific_subject_bundles": 151,
+    "browser_navigation_proven": true,
+    "independent_confirmation_claimed": false
+  },
+  "browser": {
+    "interaction_checks": 40,
+    "named_screenshots": 51,
+    "adversarial_checks": 14,
+    "adversarial_screenshots": 10,
+    "matrix": [
+      "320x568 portrait",
+      "390x844 portrait",
+      "430x932 portrait",
+      "844x390 landscape",
+      "1440x900 desktop"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "standalone_control_floor_px": 40,
+    "short_landscape": {
+      "tabs_bottom_px": 205.5,
+      "first_real_row_y_px": 315,
+      "viewport_height_px": 390
+    },
+    "page_errors": 0,
+    "horizontal_overflow": false,
+    "production_acceptance": false
+  },
+  "legacy_parity": {
+    "baseline_commit": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+    "fields_compared": 17,
+    "differences": [],
+    "payload_hash_equal": true,
+    "reuse_basis": "Prior 17-field exact legacy parity remains applicable: current semantic expansion is additive explorer brief projection and tests preserve canonical signal rows without mutation."
+  },
+  "guards": {
+    "full_alert_regression": "pass: 244 passed, 6 warnings, 0 failures",
+    "current_real_snapshot": "pass: 630/630 supported, 0 fallback, 48 families currently present",
+    "snapshot_honesty": "pass: browser proof renders only attention/family groups present in the current real snapshot; absent Vector momentum/structure observations are not fabricated",
+    "short_landscape": "pass: 844x390 dark/light EN/ZH has tabs + first real triage row in first viewport; standalone controls >=40px",
+    "design_system": "pass: R0 enforce-added 0 blocking findings on cumulative Session-D UI delta",
+    "runtime_style": "pass: runtime style injection guard OK",
+    "diff_check": "pass",
+    "prior_current_base_ci": "pass on 6f870e02096: full CI run 35604374983, including ci-pack-3, ci-pack-11, ci-gate; contract-delta 0 introduced / 1 inherited",
+    "latest_base_integration": "RELEASE_BLOCKED — main moved 185 commits beyond prior green base; overlap remains exactly .github/ci/legacy-jobs.yml; semantic/UI/test paths are disjoint",
+    "contract_delta": "HOSTED_EXACT_HEAD_REQUIRED_AFTER_FINAL_CURRENT_BASE_RECONCILIATION"
+  },
+  "source_sha256": {
+    "engine/alert_center_view.py": "b50a0c6e9b6c64411235c503c13b339494f6ffa71dd15d9f731b30e6b4378161",
+    "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
+    "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
+    "templates/alert_center.css": "c16fd6fa97356f4bbfddb2f6463845e3f878664aa111604c9112478b1fa76421",
+    "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
+    "scripts/qa_alert_center_v2.py": "613e9f92b6791f2496d13076f5a24165729509c960ecc786c785db6d8121b968",
+    "tests/test_alert_center_surface.py": "6ff9c50320abde6aff69e1483072e51a7fb561aada4b004f6825c64e6db950d5"
+  },
+  "evidence_sha256": {
+    "browser-proof.json": "0dc8f1922d21d828c849558a0ba759d570ded7807803775972399c8b272bb000",
+    "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
+    "input-manifest.json": "9ccb7f718118af8f2f40584112093ffc6593dd018ce5be348679e819c7ac63d7",
+    "full-alert-regression.log": "7c010deea1f8d5cf8a07e225b0fbab9d2233752f2349718d10a2fc22dcdf7edd",
+    "targeted-tests.log": "7c010deea1f8d5cf8a07e225b0fbab9d2233752f2349718d10a2fc22dcdf7edd",
+    "guard-results.json": "deaffac181811c149a710b56ddb70072a3a9e54590f5c71783409d0e8ff1b7a4"
+  },
+  "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
+  "figma": {
+    "file_key": "r1hSkfDg4vGzjWRySgrHE1",
+    "runtime_authority": false,
+    "modified_this_turn": false
+  },
+  "review_state": "FULL_REREVIEW_REQUIRED",
+  "release_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
+  "what_this_does_not_prove": [
+    "deployment",
+    "production-route visibility",
+    "customer acceptance",
+    "trading edge"
+  ],
+  "candidate_evidence_commit": "993aa205f344e09412db9b2d24fef24dc1b8704d",
+  "rotation_source_bound_total": {
+    "supported_rows": 313,
+    "families": {
+      "rotation.rotation_emerging": 185,
+      "rotation.rotation_fading": 100,
+      "rotation.rotation_turn_down": 14,
+      "rotation.rotation_turn_up": 14
+    }
+  },
+  "rotation_rollover_wave": {
+    "supported_rows": 128,
+    "families": {
+      "rotation.rotation_fading": 100,
+      "rotation.rotation_turn_down": 14,
+      "rotation.rotation_turn_up": 14
+    }
+  },
+  "production_observation": {
+    "observed_at": "2026-09-22T09:28:02Z",
+    "bytes": 333307,
+    "sha256": "504e941d9f23a42acdbec16c6e3f8f677ddac2cf879897b146ba62b2bfef6703",
+    "market_changes_desk_present": false,
+    "old_alert_command_center_present": true
+  },
+  "complete_source_bound_snapshot": {
+    "source_commit": "292dedb32d350b1064bad46a7145c7d00a21a804",
+    "evidence_snapshot_commit": "00f13b153f0bed71ce371dfdc17ff9082f8daf52",
+    "supported_rows": 634,
+    "total_rows": 634,
+    "fallback_rows": 0,
+    "family_count": 49
+  },
+  "review_return": {
+    "prior_reviewer": "mastermindx-2",
+    "prior_reviewed_head": "8277e787fa38f33b2fdbf9b9ef2e76b09af8d245",
+    "prior_state": "DISMISSED_AS_STALE_AFTER_REPAIR",
+    "session_d_source_head": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+    "accepted_local_returns": [
+      "079e73b125e07d07ca1440cc70cdf713b95a311b",
+      "e4eebf1b56ff29bc77966d111443bea9d4a768d1"
+    ],
+    "final_snapshot_honesty_repair": "7aa9af9f1d1ba05c0a871bf293721ae59029c650",
+    "fresh_exact_head_rereview_required": true
+  }
+}
