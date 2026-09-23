@@ -1035,7 +1035,13 @@ def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
             loss_word_en, loss_word_zh = "no cap", "无上限"
         else:
             loss_word_en, loss_word_zh = _payoff_lab_risk_word(loss_per_share, "loss", "dollar")
-        gain_word_en, gain_word_zh = _payoff_lab_risk_word(gain_per_share, "gain", "dollar")
+        # UNBOUNDED gain must also map to "no cap" / "无上限" — `_num` strips
+        # the string sentinel so we re-check the raw producer value before
+        # delegating to the formatter.
+        if payoff.get("max_gain") == "UNBOUNDED":
+            gain_word_en, gain_word_zh = "no cap", "无上限"
+        else:
+            gain_word_en, gain_word_zh = _payoff_lab_risk_word(gain_per_share, "gain", "dollar")
         out["risk_en"] = f"most you can lose: {loss_word_en} · most you can make: {gain_word_en}"
         out["risk_zh"] = f"最多损失：{loss_word_zh} · 最多盈利：{gain_word_zh}"
     else:

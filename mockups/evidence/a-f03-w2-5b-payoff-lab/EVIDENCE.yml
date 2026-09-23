@@ -4,3 +4,4 @@ changed_paths:
   - templates/options.html.j2
   - scripts/build_options_command.py
 manifest: mockups/evidence/a-f03-w2-5b-payoff-lab/manifest.json
+---

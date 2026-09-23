@@ -401,6 +401,267 @@ def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     assert "Structures as of 2026-09-23" in _visible_text(_workspace_fold(page, "SPY"))
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# RED-first tests for round-3 behavioural fixes
+# ─────────────────────────────────────────────────────────────────────────────
+def test_risk_words_are_per_share_not_per_contract():
+    """Round-3 fix #1 (MAJOR 1): the producer's `expiry_payoff.max_loss` /
+    `max_gain` are PER-CONTRACT (engine/options_payoff.py StructureSummary.cost =
+    sum(qty * multiplier * entry_price), multiplier=100 for ETF standard
+    contracts).  The consumer must divide by 100 BEFORE formatting the risk
+    line, so a producer figure of -1200.0 (per-contract loss) renders as
+    `$12.00 a share` (per-share), NOT `1,200 a share` or `$1,200.00 a share`.
+
+    The fixture deliberately uses a loss figure that does NOT equal the cost
+    so the "the cost" shortcut does not mask the per-share division — we
+    are testing the division, not the shortcut.
+
+    On the previous head (2d881478b8) the helper formatted the per-contract
+    raw value with `:,.0f`, so -1200.0 rendered as `1,200` — this test fails
+    there and passes on the new head (9731865033)."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    record = {
+        "name": "rr25",
+        "summary": {
+            "cost": -150.0,  # per-contract (credit)
+            "max_gain": 10000.0,  # per-contract
+            "max_loss": -1200.0,  # per-contract (NOT equal to abs(cost)=150)
+            "breakevens": [620.0, 670.0],
+            "horizon_days": 21,
+            "horizon_expiry": "2026-09-25",
+            "liquidity": "ok",
+            "prerequisites_met": True,
+            "states": (),
+            "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": 10000.0,
+            "max_loss": -1200.0,
+            "cost": -150.0,
+            "cost_per_unit": -1.5,
+            "breakevens": [620.0, 670.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [],
+            "assumptions": {},
+            "states": (),
+        },
+        "states": [],
+    }
+    row = _payoff_lab_row_text(record, spot=645.0)
+
+    # The risk line must use per-share numbers ($12.00, $100.00), not per-contract
+    # ($1,200.00, $10,000.00).  The previous head emitted `1,200` / `10,000`
+    # for these values — the regression this test pins.
+    assert "1,200" not in row["risk_en"], (
+        f"risk_en still uses per-contract value 1,200: {row['risk_en']!r}"
+    )
+    assert "10,000" not in row["risk_en"], (
+        f"risk_en still uses per-contract value 10,000: {row['risk_en']!r}"
+    )
+    assert "12.00 a share" in row["risk_en"], (
+        f"risk_en must carry per-share '$12.00 a share': {row['risk_en']!r}"
+    )
+    assert "100.00 a share" in row["risk_en"], (
+        f"risk_en must carry per-share '$100.00 a share': {row['risk_en']!r}"
+    )
+
+    # Same on the ZH side — per-share (每股 $X.XX), not per-contract.
+    assert "1,200" not in row["risk_zh"], (
+        f"risk_zh still uses per-contract value 1,200: {row['risk_zh']!r}"
+    )
+    assert "10,000" not in row["risk_zh"], (
+        f"risk_zh still uses per-contract value 10,000: {row['risk_zh']!r}"
+    )
+    assert "每股 $12.00" in row["risk_zh"], (
+        f"risk_zh must carry per-share '每股 $12.00': {row['risk_zh']!r}"
+    )
+    assert "每股 $100.00" in row["risk_zh"], (
+        f"risk_zh must carry per-share '每股 $100.00': {row['risk_zh']!r}"
+    )
+
+
+def test_risk_zh_parity_keeps_zh_words_not_en_words():
+    """Round-3 fix #2 (MAJOR 2 ZH parity): when `loss_word` resolves to
+    'the cost' / `成本金额` or 'no cap' / `无上限`, the ZH risk line must carry
+    the ZH word, not the EN word.  On the previous head (2d881478b8) the
+    code discarded the ZH half of `_payoff_lab_risk_word` (used `loss_en, _`)
+    and stitched `loss_word` (an EN string) into both `risk_en` and `risk_zh`,
+    so ZH read e.g. `最多损失：the cost · 最多盈利：no cap`.
+
+    This test pins that ZH reads `最多损失：成本金额` / `最多盈利：无上限` for
+    the loss-equals-cost and UNBOUNDED-gain cases — failing on the previous
+    head where the EN words bled into ZH."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    # Case 1: loss == cost ⇒ loss_word = 'the cost' / '成本金额'.
+    rec_cost = {
+        "name": "atm_straddle",
+        "summary": {
+            "cost": 1590.0, "max_gain": 12000.0, "max_loss": -1590.0,
+            "breakevens": [630.0, 660.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-25", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": 12000.0, "max_loss": -1590.0, "cost": 1590.0,
+            "cost_per_unit": 15.9, "breakevens": [630.0, 660.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    row_cost = _payoff_lab_row_text(rec_cost, spot=645.0)
+    assert "成本金额" in row_cost["risk_zh"], (
+        f"risk_zh must use ZH word '成本金额' (not EN 'the cost'): {row_cost['risk_zh']!r}"
+    )
+    assert "the cost" not in row_cost["risk_zh"], (
+        f"risk_zh leaked EN 'the cost': {row_cost['risk_zh']!r}"
+    )
+
+    # Case 2: UNBOUNDED gain ⇒ gain_word = 'no cap' / '无上限'.
+    rec_unb = {
+        "name": "atm_straddle",
+        "summary": {
+            "cost": 1590.0, "max_gain": "UNBOUNDED", "max_loss": -1590.0,
+            "breakevens": [630.0, 660.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-25", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": "UNBOUNDED", "max_loss": -1590.0, "cost": 1590.0,
+            "cost_per_unit": 15.9, "breakevens": [630.0, 660.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    row_unb = _payoff_lab_row_text(rec_unb, spot=645.0)
+    assert "无上限" in row_unb["risk_zh"], (
+        f"risk_zh must use ZH word '无上限' (not EN 'no cap'): {row_unb['risk_zh']!r}"
+    )
+    assert "no cap" not in row_unb["risk_zh"], (
+        f"risk_zh leaked EN 'no cap': {row_unb['risk_zh']!r}"
+    )
+    assert "no cap" in row_unb["risk_en"], (
+        f"risk_en must carry 'no cap' (the EN half of UNBOUNDED): {row_unb['risk_en']!r}"
+    )
+
+
+def test_null_zh_never_copies_en_prose():
+    """Round-3 fix #2 (MAJOR 2 ZH parity on null rows): when the producer
+    ships an EN-only `null_reason` (≤ 10 plain words), the consumer uses
+    that prose for `null_en` but keeps `null_zh` on its own closed-vocab
+    string — NEVER copies the EN prose into ZH.  On the previous head
+    (2d881478b8) the code did `out['null_zh'] = prose` for the override
+    path, exposing English in the Chinese locale.
+
+    This test pins that ZH stays on the closed-vocab string even when the
+    producer's EN prose would otherwise win."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    record = {
+        "name": "atm_straddle",
+        "summary": {
+            "cost": None, "max_gain": None, "max_loss": None,
+            "breakevens": [], "horizon_days": 21, "horizon_expiry": "2026-09-25",
+            "liquidity": "thin", "prerequisites_met": False, "states": (),
+            "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": None, "max_loss": None, "cost": None,
+            "cost_per_unit": None, "breakevens": [],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [{
+            "code": "QUOTE_MISSING",
+            "scope": "structure",
+            "reason": "left leg had no bid today",
+            "receipt": {"root": "TEST", "name": "atm_straddle"},
+        }],
+    }
+    row = _payoff_lab_row_text(record, spot=645.0)
+    # EN picks up the producer's prose (≤ 10 plain words).
+    assert row["null_en"] == "left leg had no bid today"
+    # ZH must stay on the closed-vocab ZH string — never copy EN prose.
+    assert row["null_zh"] != "left leg had no bid today", (
+        f"null_zh leaked EN producer prose: {row['null_zh']!r}"
+    )
+    assert "今日未定价" in row["null_zh"], (
+        f"null_zh must stay on closed-vocab ZH string: {row['null_zh']!r}"
+    )
+
+
+def test_css_oew_lab_has_no_border_radius_50():
+    """Round-3 fix #3 (BLOCKER 2 CSS): the design-system gate forbids
+    `border-radius:50%` in this packet's `.oew-lab*` rules — the spec
+    names the dot geometry as a rectangle, and the dot is the brightest
+    thing in the fold, so the round shape would carry glow semantics the
+    law forbids.  On the previous head (2d881478b8) `.oew-lab-spot` and
+    `.oew-lab-be` carried `border-radius:50%`; on the new head they do not.
+
+    This test pins the absence as a literal grep on the rendered template."""
+    text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+
+    # Pin: no `.oew-lab*` rule carries the literal `border-radius:50%` token.
+    # Word-boundary match on the selector prefix keeps `border-radius:50%`
+    # inside `.oew-ic` (unrelated) from triggering.
+    bad = re.findall(r"\.oew-lab[a-z0-9_-]*[^{}]*\{[^{}]*border-radius:\s*50%",
+                     text, flags=re.S)
+    assert not bad, f".oew-lab rule(s) still carry border-radius:50%: {bad}"
+
+
+def test_css_oew_lab_has_no_hex_color_literals():
+    """Round-3 fix #3 (BLOCKER 2 CSS): the design-system gate forbids raw
+    hex literals in this packet's CSS — page tokens only.  On the previous
+    head (2d881478b8) a CSS comment carried the literal `#4c55a8` (the
+    light-mode accent), which the checker flagged even though it was
+    only a comment.  The new head removed the literal entirely (the
+    light-mode accent is set by the page's existing
+    `html[data-theme='light'] .oew` block above).
+
+    This test pins the absence of any hex literal anywhere in the
+    `.oew-lab*` rules."""
+    text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+
+    # Capture every `.oew-lab…` selector block and assert no hex literal.
+    blocks = re.findall(r"(\.oew-lab[a-z0-9_-]*[^{}]*\{[^{}]*\})",
+                        text, flags=re.S)
+    assert blocks, "expected at least one .oew-lab* rule block"
+    hex_re = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+    bad = [(b[:60], hex_re.findall(b)) for b in blocks if hex_re.search(b)]
+    assert not bad, f".oew-lab* rule(s) still carry hex literals: {bad}"
+
+
+def test_css_breakeven_dot_ring_uses_outline_not_box_shadow():
+    """Round-3 fix #3 (BLOCKER 2 CSS): the breakeven dot's tile-coloured
+    ring uses `outline:` rather than `box-shadow:` — `box-shadow:` would
+    trigger the design-system's glow/shadow guard.  The light-mode override
+    flips ring off via `outline:none` (was `box-shadow:none`).
+
+    This test pins both the dark-mode rule and the light-mode override."""
+    text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+
+    # Dark-mode: the `.oew-lab-be` rule carries `outline:` (not `box-shadow:`)
+    # for the tile-coloured ring.
+    m = re.search(r"\.oew-lab-be\s*\{([^{}]*)\}", text, flags=re.S)
+    assert m, "expected .oew-lab-be rule block"
+    be_block = m.group(1)
+    assert "outline:" in be_block, (
+        f".oew-lab-be must use `outline:` for the tile ring: {be_block!r}"
+    )
+    assert "box-shadow:" not in be_block, (
+        f".oew-lab-be must NOT use `box-shadow:` (design-system glow guard): {be_block!r}"
+    )
+
+    # Light-mode override: flips ring off via `outline:none`.
+    m_light = re.search(
+        r"html\[data-theme=.light.\]\s*\.oew-lab-be\s*\{([^{}]*)\}", text, flags=re.S
+    )
+    assert m_light, "expected html[data-theme=light] .oew-lab-be override"
+    light_block = m_light.group(1)
+    assert "outline:none" in light_block, (
+        f"light-mode override must set `outline:none`: {light_block!r}"
+    )
+
+
 def test_engine_render_yml_text_pins():
     """engine-render.yml: the R2 restore step follows the skew restore step;
     the brun line follows the skew emit line inside cl_gex(); every step's
