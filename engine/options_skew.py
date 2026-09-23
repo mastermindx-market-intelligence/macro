@@ -599,11 +599,10 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
             str(item) for item in norm["source"].tolist() if str(item)
         })
         weekend = norm["date"].map(_is_weekend_iso)
-        n_weekend_rows_excluded = int(weekend.sum())
-        # Weekend as-of rows are not a session. When a weekday row exists,
-        # choose the latest date from the weekday rows only. A ledger with
-        # no weekday row keeps the previous selection.
+        # A weekday row means weekend as-of rows are not a session. A ledger
+        # with only weekend dates keeps those rows, so the count stays zero.
         if bool((~weekend).any()):
+            n_weekend_rows_excluded = int(weekend.sum())
             norm = norm.loc[~weekend]
         dates = [d for d in norm["date"].tolist() if d]
         if dates:
