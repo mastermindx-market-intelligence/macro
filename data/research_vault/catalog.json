@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T00:22:22.070212+00:00",
-  "count": 2673,
+  "generated_at": "2026-09-23T00:53:22.756730+00:00",
+  "count": 2674,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -88,6 +88,7 @@
     "The Punchline",
     "UBS",
     "Vanda Research",
+    "Vontobel",
     "WEF",
     "WGC",
     "Westpac",
@@ -156,6 +157,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nqraqocwpcv-876a29",
+      "title": "VON32627736",
+      "institution": "Vontobel",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:55:04Z",
+      "summary_points": [
+        "OCS Production Scaling: Polatis subsidiary's automated OCS line enables 1,000+ units/year scaling, boosting follow-on orders from Google/NVIDIA (2028 adoption), driving significant upside beyond estimates for Huber+Suhner - Roches Phase 2 Results: 15.5% weight loss (48w) in T2D/obesity patients with mild GI events (2.0% discontinuation vs 0.0% placebo), supporting Phase 3 progression and 2028 launch - Roche Peak Sales Estimate: $2.5B peak sales potential (60% success probability) for enicepatide in competitive T2D/obesity market, underpinning Buy recommendation and Pharma Day catalyst"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
