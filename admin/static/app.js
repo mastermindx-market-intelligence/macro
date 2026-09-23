@@ -10433,14 +10433,14 @@ RENDER.marketing_publish = async () => {
     armPill = `<span class="obx-shadow-pill" style="color:var(--warn)" title="${esc(as.error || "state unknown")}"><span class="obx-shadow-dot" style="background:var(--warn)"></span>Arm state unknown${srcNote}</span>`;
   }
   const header = `<div class="section">Publisher ${asOfChip}${armPill}</div>
-  <div class="obx-lede">What goes out next, what is stuck, and what already went. Approved, due posts leave through Buffer at the next slot.</div>`;
+  <div class="obx-lede">Review scheduled submissions, resolve blocked items, and inspect publisher records.</div>`;
 
   /* Status strip — one tile per publisher state. */
   const tileDefs = [
     ["queued", "Queued", null],
     ["approved", "Approved", "var(--ok)"],
     ["posting", "Posting", "var(--warn)"],
-    ["posted", "Posted", "var(--muted)"],
+    ["posted", "Publisher records", "var(--muted)"],
     ["failed", "Failed", "var(--bad)"],
     ["quarantined", "Quarantined", "var(--bad)"],
     ["recalled", "Recalled", "var(--warn)"],
@@ -10460,7 +10460,7 @@ RENDER.marketing_publish = async () => {
     failed: ["#pub-triage", "Open the triage list below"],
     posting: ["#pub-triage", "Open the stuck-sending group below"],
     approved: ["#pub-next", "Show what goes out next"],
-    posted: ["#pub-posted", "Show the recent posts and their receipts"],
+    posted: ["#pub-posted", "Show publisher records; delivery is not confirmed here"],
   };
   const tiles = `<div class="metric-tiles-row">
     ${tileDefs.map(([k, lbl, color]) => {
@@ -10535,14 +10535,15 @@ RENDER.marketing_publish = async () => {
       </tr>`;
     }).join("");
     postedCard = `<div class="card" id="pub-posted">
-      <div class="section">Recent posts <span class="cnt">last ${posted.length} · newest first</span></div>
+      <div class="section">Recent publisher records <span class="cnt">last ${posted.length} · newest first</span></div>
+      <div class="note muted">Delivery: Not confirmed here. A publisher record is not delivery confirmation or permission to resend.</div>
       <div class="table-wrap"><table class="tbl pub-tbl"><thead><tr><th>at</th><th>desk</th><th>post</th>${anyMetrics ? "<th>how it did</th>" : ""}<th>via</th><th>receipt</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-      ${anyMetrics ? `<div class="note muted" style="margin-top:6px">Engagement is polled after the post lands — a dash means the poller has not read that post yet, not a zero.</div>` : ""}
+      ${anyMetrics ? `<div class="note muted" style="margin-top:6px">A dash means no measurement is available, not zero. Metrics alone do not establish delivery.</div>` : ""}
     </div>`;
   } else {
-    postedCard = `<div class="card" id="pub-posted"><div class="section">Recent posts</div>
-      <div class="note muted">Nothing posted yet. Live posts land here with their Buffer receipt once the publisher is armed and runs.</div></div>`;
+    postedCard = `<div class="card" id="pub-posted"><div class="section">Recent publisher records</div>
+      <div class="note muted">No publisher records yet. Submission receipts and confirmed delivery remain separate.</div></div>`;
   }
 
   /* Dry-run action + result zone. Now a disclosure: §3 answers "what goes out
@@ -10559,7 +10560,7 @@ RENDER.marketing_publish = async () => {
   const actStrip = activity.length ? `<details class="card"><summary class="section" style="cursor:pointer">Recent runs <span class="cnt">last ${activity.length}</span></summary>
     <div style="margin-top:8px">${activity.map(a => `<div class="pub-act-row"><span class="muted">${esc(a.at || "")}</span>
       <span class="pub-act-lane">${esc(a.lane || "")}</span>
-      posted ${a.posted || 0} · would_post ${a.would_post || 0} · quarantined ${a.quarantined || 0}${a.auto_approved ? ` · auto ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
+      recorded ${a.posted || 0} · would_post ${a.would_post || 0} · quarantined ${a.quarantined || 0}${a.auto_approved ? ` · auto ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
   </details>` : "";
 
   const goLive = pubGoLive(d);
