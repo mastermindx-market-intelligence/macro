@@ -44,7 +44,24 @@ After a keyed `collectors.fred.fetch_vintages()` run, the audit must cover all l
 
 ## Q2 GRANULAR M3 SERIES
 
-TODO
+VERDICT: PARTIALLY FOUND. The exact Census/FRED aggregate capital-goods IDs are FOUND; machinery subsector mappings are FOUND in Census historical documentation. Direct FRED IDs for machinery subsector orders/shipments/unfilled/inventories were NOT FOUND by the tested candidate spellings, and their existence status remains UNKNOWN rather than proven absent.
+
+| Claim | Candidate series | FRED status | Census vintage status | Claim support |
+|---|---|---|---|---|
+| Nondefense capital goods ex-aircraft new orders | `NEWORDER` = `A33XMNO` | FOUND: FRED series exists; SA, millions of dollars. | Configured as ALFRED initial-release leg; depth unknown. | Granular capital-goods aggregate is supported, subject to depth. |
+| Same category shipments | probable FRED `A33XMVS` | UNKNOWN: not repo-configured and not tested through a vintage call. | Census code `NXA` + `VS` exists in the 6-digit M3 code law. | Census-only history likely; not usable as a vintage series on repo evidence alone. |
+| Same category unfilled orders | probable FRED `A33XMUO` | UNKNOWN. | Census code `NXA` + `UO` exists in the code law. | Census-only history likely; not usable as a vintage series on repo evidence alone. |
+| Same category inventories | probable FRED `A33XMTI` | UNKNOWN. | Census code `NXA` + `TI` exists in the code law. | Census-only history likely; not usable as a vintage series on repo evidence alone. |
+| Machinery subsector total (`33S`) orders/shipments/unfilled/inventories | Census `A33SNO`, `A33SVS`, `A33SUO`, `A33STI` | UNKNOWN: the four exact IDs returned FRED HTTP 404, which may reflect an undocumented ID transformation. | Census historical-code law directly names `33S` machinery and all item suffixes. | Census history is supported; FRED/ALFRED status is unresolved. |
+| Machinery subindustries | Census `33A`, `33C`, `33D`, `33E`, `33I`, turbine/power transmission, `33M`; several later categories not published | UNKNOWN at FRED. | Census documentation names/publishes the listed categories and explicitly says others are included but not published. | Per-machine-type economic claims must not be built on a broad machinery series; exact Census-only series would be needed. |
+| Semiconductor subtheme via M3 | Semiconductor industry removed as a separately published M3 estimate in the April 2010 report | UNKNOWN at FRED. | FOUND: Census page documents the April 2010 break. | Semiconductor subtheme is UNSUPPORTED by any M3 vintage series after that break; use semiconductor-specific FRED capacity/PPI legs only for their own themes, not machinery membership. |
+
+Documented M3 definition/benchmark changes:
+
+- SIC→NAICS conversion: revised monthly data for January 1992–March 2001 were released on May 21, 2001; shipments/inventories were benchmarked to the 1997 Economic Census and 1998–1999 ASM, unfilled orders to the 1999 survey, with seasonal/trading-day factors updated. Treat pre-/post-1992 and SIC/NAICS categories as separate definitions.
+- The SIC→NAICS allocation used product-based factors and, in places, arbitrary equal splits across multiple NAICS codes; inventory factors were assumed to follow shipment factors. These are documented, material composition breaks for subsector claims.
+- The Census page says current-month numbers are revised and gives semiconductor-specific publication break in April 2010; it does not state a vintage-by-vintage download contract on the page read.
+- Broad series must not be relabeled granular: `INDPRO`, `DGORDER`, total manufacturing `AMTM*`, and capital-goods aggregates do not prove claims about construction machinery, machine tools, material-handling equipment, turbines, or farm machinery.
 
 ## Q3 ISSUER-TO-DOMAIN MAPPING
 
