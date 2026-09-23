@@ -1,0 +1,8 @@
+# Local development logs may include unrelated pytest temporary-cleanup warnings.
+# The compact evidence report and the final qualified green log are committed.
+red-tests.txt
+helper-tests.txt
+integration-tests.txt
+integration-tests-qualified.txt
+regression-tests.txt
+test-runtime-preflight.txt

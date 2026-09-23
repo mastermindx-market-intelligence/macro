@@ -1,0 +1,65 @@
+{
+  "schema": "china_us_context.implementation_evidence.v1",
+  "mission_complete": false,
+  "state": "BUILT_NOT_PROVEN",
+  "source_base": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
+  "procedure_pin": "0e2575cbe2d77ea09812c8cd5d532332a3eb7edb",
+  "source_sha256": {
+    "engine/narrative_crossmarket.py": "bd119cc6921fd96fb38d360c8e6b0521045b8375ce4d686c476dd2a74a00f495",
+    "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
+    "tests/test_narrative_crossmarket.py": "16a2615b9c51bd339d9d56b3fff04a8f72fcbb757faf4c25f6b333e79c122f9b",
+    "tests/test_china_intel_hub_command.py": "ff20325b4f29229b38956a1cb2e2afee98937c640089905204863d520e49d66f"
+  },
+  "runtime": {
+    "python": "3.14.7",
+    "pytest": "9.1.1",
+    "pandas": "3.0.5"
+  },
+  "red_first": {
+    "failed": 22,
+    "passed": 5,
+    "cause": "new compute_china_us_context API absent before implementation"
+  },
+  "final_regression": {
+    "passed": 165,
+    "failed": 0,
+    "log": "regression-tests-qualified.txt",
+    "log_sha256": "a870436bbc5147f08beedd3d04dce19ff75cc06991cbffc5fbae7fdc9d31809d",
+    "suites": [
+      "tests/test_narrative_crossmarket.py",
+      "tests/test_china_intel_hub_command.py",
+      "tests/test_china_intel_interest.py",
+      "tests/test_china_intel_hub_visits.py",
+      "tests/test_china_intel_hub.py",
+      "tests/test_cn_calendar.py",
+      "tests/test_nyse_calendar.py"
+    ]
+  },
+  "git_effects": {
+    "commit_attempt": "PLATFORM_BLOCKED_NO_GIT_EFFECT_ON_READBACK",
+    "readback_head": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
+    "index_empty": true,
+    "new_commit": null,
+    "pushed": false,
+    "new_pull_request": null,
+    "source_files_saved_in_owned_worktree": true
+  },
+  "proof": {
+    "two_existing_builders_serialize_context": true,
+    "nonempty_command_order_scores_and_snapshot_inputs_unchanged_by_us_evidence": true,
+    "hosted_ci": "NOT_YET_OBSERVED",
+    "independent_review": "NOT_YET_OBSERVED",
+    "deployed": "NOT_PROVEN",
+    "live_exemplar": "NOT_PROVEN",
+    "financial_performance": "NOT_PROVEN",
+    "buy_now_policy_changed": false
+  },
+  "raw_development_log_sha256": {
+    "helper-tests.txt": "beb32fa33f224e383a904824ceea4109bc73de07a65a923db0d210b4b752fd31",
+    "integration-tests-qualified.txt": "c0453b62b2d048aca38fe5b9dc25ef9d92a4fe81ff754948319a8115cba517a0",
+    "integration-tests.txt": "c26ed2d95d27b7ed769e6c03318f8bba2ed64e55edaa8bc821fce9e60a1b40cf",
+    "red-tests.txt": "b450ad84bf9e5d15e7b0510e02c024cb01d6d0ce9628fead55dfadf10afb1d32",
+    "regression-tests.txt": "953dc6ef31553dd4a3b79919ab1f55305b213dbe02e86e812dceafaecb51aae0",
+    "test-runtime-preflight.txt": "f487fbc3c87b457fd300829dfc3f709b3bc6ddc6fbf0b2ed8c8399dc79c2b6d1"
+  }
+}

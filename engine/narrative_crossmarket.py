@@ -25,10 +25,14 @@ abroad. Pure read; nothing here feeds a score or an allocation.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import math
+from datetime import date, datetime, timezone
+from pathlib import Path
 
-from lib import config
+from lib import cn_calendar, config, nyse_calendar
 
 log = logging.getLogger(__name__)
 
@@ -161,6 +165,8 @@ def compute_crossmarket(site=None) -> dict:
     return {
         "as_of": _as_of(site),
         "regions": REGION_META, "quads": quads, "links": links,
+        # Separate source-bound observations, never a replacement for link/rank semantics.
+        "china_us_context": compute_china_us_context(site),
         "disclaimer": {
             "en": ("Display-only narrative cross-reference — NOT a validated signal and never scored. "
                    "It flags when the SAME globally-traded theme is also scoring well in another "
@@ -188,3 +194,197 @@ def _as_of(site) -> str | None:
             except Exception:  # noqa: BLE001
                 pass
     return None
+
+
+# The China intelligence consumer reuses CANON, not a second ontology or ranker.
+# A current observation receipt is not proof of historical publication availability.
+CHINA_US_CONTEXT_SCHEMA = "narrative_crossmarket.china_us_context.v1"
+CONTEXT_AUTHORITY = {
+    "is_context_only": True, "may_rank": False, "may_gate": False,
+    "may_size": False, "may_escalate": False, "may_trade": False,
+}
+
+
+def _context_utc(value: datetime) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("cross-market observation clocks require an explicit timezone")
+    return value.astimezone(timezone.utc)
+
+
+def _context_number(value):
+    if isinstance(value, bool) or not isinstance(value, (float, int)):
+        return None
+    try:
+        return value if math.isfinite(value) else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def _context_dict(value) -> dict:
+    return value if isinstance(value, dict) else {}
+
+
+def _context_theme(row: dict) -> dict:
+    """Retain local producer judgments; never infer buyability from foreign strength."""
+    score = _context_number(row.get("score"))
+    if score is not None and not 0 <= score <= 100:
+        score = None
+    label = row.get("label") if isinstance(row.get("label"), str) else None
+    reco = row.get("reco") if isinstance(row.get("reco"), str) else None
+    positive_label, positive_reco = label in {"dominant", "emerging"}, reco in {"enter", "accumulate"}
+    negative_label, negative_reco = label in {"fading", "deteriorating"}, reco in {"trim", "avoid"}
+    if score is None:
+        stance = "unconfirmed"
+    elif (positive_label and negative_reco) or (negative_label and positive_reco):
+        stance = "conflicting"
+    elif negative_label or negative_reco:
+        stance = "defensive"
+    elif positive_label and positive_reco:
+        stance = "constructive"
+    else:
+        stance = "unconfirmed"
+    perf = _context_dict(row.get("perf"))
+    texture = _context_dict(_context_dict(row.get("textures")).get("clean_entry"))
+    flag = texture.get("flag")
+    return {
+        "id": row["id"],
+        "name": row.get("name") if isinstance(row.get("name"), str) else row["id"],
+        "score": score, "label": label, "reco": reco, "stance": stance,
+        "clean_entry": flag if isinstance(flag, bool) else None,
+        "rel5": _context_number(_context_dict(perf.get("5d")).get("rel")),
+        "rel20": _context_number(_context_dict(perf.get("20d")).get("rel")),
+        "accel_z": _context_number(row.get("accel_z")),
+    }
+
+
+def _context_market(site: Path, region: str, observed: datetime, cutoff: datetime) -> tuple[dict, dict]:
+    """One byte-bound live read, checked against the existing exchange calendar.
+
+    Date-only daily artifacts cannot prove historical availability. Never use a
+    filesystem mtime or today's contents to fill a past decision's information set.
+    Session finalization buffers deliberately follow the existing calendar owner.
+    """
+    calendar = nyse_calendar if region == "us" else cn_calendar
+    expected = calendar.expected_last_session(cutoff)
+    relpath = f"{_BASKETS_DATA[region]}/baskets.json"
+    receipt = {
+        "path": f"site/{relpath}", "sha256": None, "observation_session": None,
+        "expected_session": expected.isoformat(), "observed_at_utc": observed.isoformat(),
+        "status": "MISSING", "availability_basis": "current_read_only",
+    }
+    if observed > cutoff:
+        receipt["status"] = "OBSERVED_AFTER_CUTOFF"
+        return {}, receipt
+    if cutoff > observed:
+        receipt["status"] = "FUTURE_CUTOFF"
+        return {}, receipt
+    try:
+        raw = (site / relpath).read_bytes()
+    except FileNotFoundError:
+        return {}, receipt
+    except OSError:
+        receipt["status"] = "UNREADABLE"
+        return {}, receipt
+    receipt["sha256"] = hashlib.sha256(raw).hexdigest()
+    try:
+        payload = json.loads(raw)
+    except (ValueError, UnicodeDecodeError):
+        receipt["status"] = "INVALID_SOURCE"
+        return {}, receipt
+    ti = _context_dict(payload).get("theme_intel")
+    if not isinstance(ti, dict) or not isinstance(ti.get("themes"), list):
+        receipt["status"] = "INVALID_SOURCE"
+        return {}, receipt
+    as_of = ti.get("as_of")
+    try:
+        if not isinstance(as_of, str) or len(as_of) != 10:
+            raise ValueError("daily observation identity required")
+        session = date.fromisoformat(as_of)
+    except ValueError:
+        receipt["status"] = "INVALID_SESSION"
+        return {}, receipt
+    receipt["observation_session"] = as_of
+    if not calendar.is_session(session):
+        receipt["status"] = "NON_SESSION"
+        return {}, receipt
+    if session > expected:
+        receipt["status"] = "UNSETTLED_SESSION"
+        return {}, receipt
+    if session < expected or ti.get("stale") is True:
+        receipt["status"] = "STALE"
+        return {}, receipt
+    rows = {}
+    for row in ti["themes"]:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str) or not row["id"].strip():
+            receipt["status"] = "INVALID_SOURCE"
+            return {}, receipt
+        bid = row["id"]
+        if bid in rows:
+            receipt["status"] = "DUPLICATE_ID"
+            return {}, receipt
+        rows[bid] = _context_theme(row)
+    receipt["status"] = "CURRENT"
+    receipt["theme_count"] = len(rows)
+    return rows, receipt
+
+
+def compute_china_us_context(site=None, *, observed_at: datetime | None = None,
+                             decision_at: datetime | None = None) -> dict:
+    """Source-bound US theme context for the existing China intelligence surface.
+
+    These are separate upstream observations, NOT a scored transmission factor.
+    An upstream constructive stance survives absence of a fresh clean-entry flag;
+    Chinese defensive/conflicting evidence remains explicit. Nothing here alters
+    Buy Now admission, stock eligibility, orders, sizing, or the thesis ledger.
+    Clock injection is for deterministic caller/tests, not an archive substitute.
+    """
+    site = Path(site) if site is not None else config.ROOT / "site"
+    observed = _context_utc(observed_at if observed_at is not None else datetime.now(timezone.utc))
+    cutoff = _context_utc(decision_at if decision_at is not None else observed)
+    us, us_receipt = _context_market(site, "us", observed, cutoff)
+    china, cn_receipt = _context_market(site, "china", observed, cutoff)
+    result = {
+        "schema": CHINA_US_CONTEXT_SCHEMA, **CONTEXT_AUTHORITY,
+        "status": "UNAVAILABLE", "decision_at_utc": cutoff.isoformat(),
+        "observed_at_utc": observed.isoformat(),
+        "sources": {"us": us_receipt, "china": cn_receipt}, "themes": {},
+        "crosswalk_sha256": hashlib.sha256(json.dumps(CANON, sort_keys=True).encode()).hexdigest(),
+        "validated_lead_lag": False, "historical_availability_proven": False,
+        "notes": [
+            "US and China observations are not a forecast that China must follow.",
+            "Theme analogs do not establish a company-level exposure or entry permission.",
+            "A current read is not a point-in-time archive; historical replay requires its existing owner.",
+        ],
+    }
+    if any(r["status"] != "CURRENT" for r in result["sources"].values()):
+        return result
+    for canon, spec in CANON.items():
+        regions = spec["regions"]
+        if not regions.get("us") or not regions.get("china"):
+            continue
+        analogs = [us[bid] for bid in dict.fromkeys(regions["us"]) if bid in us]
+        positive = any(t["stance"] == "constructive" for t in analogs)
+        conflicting = any(t["stance"] == "conflicting" for t in analogs)
+        defensive = any(t["stance"] == "defensive" for t in analogs)
+        for bid in dict.fromkeys(regions["china"]):
+            local = china.get(bid)
+            if local is None:
+                continue
+            if not analogs:
+                state = "US_SOURCE_UNAVAILABLE"
+            elif conflicting or (positive and defensive):
+                state = "MIXED_US_EVIDENCE"
+            elif not positive:
+                state = "NO_CONFIRMED_US_STRENGTH"
+            else:
+                suffix = {"constructive": "CONFIRMING", "unconfirmed": "UNCONFIRMED",
+                          "defensive": "DEFENSIVE", "conflicting": "CONFLICTING"}[local["stance"]]
+                state = f"US_STRENGTH_LOCAL_{suffix}"
+            result["themes"][bid] = {
+                **CONTEXT_AUTHORITY, "local": local, "us_analogs": analogs,
+                "observation_state": state,
+                "relationship": {"kind": "theme_analog", "canon": canon, "exact_member_link": False},
+                "foreign_scores_comparable": False, "requires_local_confirmation": True,
+            }
+    result["status"] = "CURRENT" if result["themes"] else "NO_MAPPED_CONTEXT"
+    return result

@@ -827,3 +827,105 @@ def test_dossier_feed_name_still_wins_over_spine():
 def test_ths_concepts_empty_on_unknown_ticker():
     assert hub._ths_concepts("NOPE.SS") == []
     assert hub._spine_name("NOPE.SS") is None
+
+
+# ── US/China theme context is consumed, but cannot alter local ranking ────── #
+
+def _us_context_fixture(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from datetime import datetime, timezone
+
+    observed = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
+    monkeypatch.setattr(hub, "_root", lambda: tmp_path)
+    monkeypatch.setattr(hub, "_read_json", lambda rel: {
+        "triple": [_altdata_row("600519.SS")], "top": [], "bottom": [],
+    } if "chinaaltdata" in rel else None)
+    monkeypatch.setattr(hub, "_build_radar_by_ticker", lambda rows: {})
+    monkeypatch.setattr(hub, "_load_closes_and_benchmark", lambda: (None, None))
+    monkeypatch.setattr(hub, "_load_visits_context", lambda: {"by_code": {}, "coverage_start": None})
+    snapshots = []
+    monkeypatch.setattr(hub, "_append_snapshot_ledger", lambda rows, day: snapshots.append(deepcopy(rows)))
+    for name in ("_disc_lhb_first_seat", "_disc_margin_velocity", "_disc_southbound_delta", "_disc_ths_emerging_concepts"):
+        monkeypatch.setattr(hub, name, lambda today: [])
+    monkeypatch.setattr(hub, "_analogs_block", lambda: None)
+    loader = hub._load_us_theme_context
+    monkeypatch.setattr(hub, "_load_us_theme_context", lambda today: loader(today, observed_at=observed))
+    paths = {}
+    for region, directory, session, bid in (
+        ("us", "basketdata", "2026-09-18", "ai_semiconductors"),
+        ("china", "chinabasketdata", "2026-09-21", "cn_semis"),
+    ):
+        folder = tmp_path / "site" / directory
+        folder.mkdir(parents=True, exist_ok=True)
+        paths[region] = folder / "baskets.json"
+        paths[region].write_text(json.dumps({"theme_intel": {
+            "as_of": session, "themes": [{"id": bid, "name": bid, "score": 70,
+                "label": "emerging", "reco": "enter", "textures": {"clean_entry": {"flag": False}}}],
+        }}))
+    return paths, snapshots
+
+
+def test_us_context_reaches_existing_hub_without_ranking_or_ledger_effect(tmp_path, monkeypatch):
+    paths, snapshots = _us_context_fixture(tmp_path, monkeypatch)
+    before = hub.build(today=date(2026, 9, 21))
+    assert before["command"]  # non-empty command is important for the no-authority proof
+    context = before["us_theme_context"]
+    assert context["status"] == "CURRENT"
+    assert context["themes"]["cn_semis"]["observation_state"] == "US_STRENGTH_LOCAL_CONFIRMING"
+    source = json.loads(paths["us"].read_text())
+    source["theme_intel"]["themes"][0].update(reco="avoid", label="deteriorating", score=25)
+    paths["us"].write_text(json.dumps(source))
+    after = hub.build(today=date(2026, 9, 21))
+    assert after["us_theme_context"]["themes"]["cn_semis"]["observation_state"] == "NO_CONFIRMED_US_STRENGTH"
+    for key in ("command", "counts", "discovery", "n_universe"):
+        assert before[key] == after[key]
+    assert len(snapshots) == 2 and snapshots[0] == snapshots[1]
+    assert all("us_theme_context" not in row for row in snapshots[0])
+    assert context["may_rank"] is False and context["may_gate"] is False
+
+
+def test_us_context_source_failure_does_not_erase_the_china_command(tmp_path, monkeypatch):
+    _us_context_fixture(tmp_path, monkeypatch)
+    def fail(*args, **kwargs):
+        raise RuntimeError("synthetic optional producer failure")
+    monkeypatch.setattr(hub.narrative_crossmarket, "compute_china_us_context", fail)
+    result = hub.build(today=date(2026, 9, 21))
+    assert result["command"]
+    assert result["us_theme_context"]["reason"] == "CONSUMER_FAILURE"
+    assert result["us_theme_context"]["themes"] == {}
+
+
+def test_us_context_dated_rebuild_never_reads_current_inputs(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    called = []
+    monkeypatch.setattr(hub.narrative_crossmarket, "compute_china_us_context", lambda *a, **kw: called.append(True))
+    result = hub._load_us_theme_context(date(2026, 9, 18), observed_at=datetime(2026, 9, 21, 10, tzinfo=timezone.utc))
+    assert result["reason"] == "DATED_BUILD_REQUIRES_ARCHIVED_CONTEXT"
+    assert called == [] and result["themes"] == {}
+    assert result["historical_availability_proven"] is False
+
+
+def test_us_context_empty_hub_does_not_claim_healthy_context():
+    result = hub._empty(date(2026, 9, 21))
+    assert result["us_theme_context"]["reason"] == "HUB_BUILD_FAILED"
+    assert result["us_theme_context"]["may_trade"] is False
+
+
+def test_us_context_serializes_through_existing_command_builder(tmp_path, monkeypatch):
+    from engine import china_radar_ic, signal_governor
+    from scripts import build_china_intel_hub as builder
+
+    _us_context_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(builder.config, "ROOT", tmp_path)
+    monkeypatch.setattr(builder, "_site_dir", lambda: tmp_path / "site")
+    monkeypatch.setattr(hub, "load_and_build", lambda: hub.build(today=date(2026, 9, 21)))
+    monkeypatch.setattr(hub, "compute_track_record", lambda: {"n_snapshots": 0})
+    monkeypatch.setattr(china_radar_ic, "compute_ic", lambda: {"n_events": 0, "n_matured": 0})
+    monkeypatch.setattr(signal_governor, "compute", lambda **kw: {"n_demoted": 0})
+    result = builder.build()
+    assert result is not None
+    artifact = json.loads((tmp_path / "site" / "china_intel" / "command.json").read_text())
+    assert artifact["us_theme_context"] == result["us_theme_context"]
+    assert artifact["us_theme_context"]["status"] == "CURRENT"
+    assert artifact["us_theme_context"]["themes"]["cn_semis"]["local"]["clean_entry"] is False
+    assert artifact["command"]
