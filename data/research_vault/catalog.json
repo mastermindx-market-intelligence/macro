@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T00:07:18.245024+00:00",
-  "count": 2672,
+  "generated_at": "2026-09-23T00:22:22.070212+00:00",
+  "count": 2673,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lld02x88wkk-044b41",
+      "title": "insights india",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:33:42Z",
+      "summary_points": [
+        "Growth Momentum Revision: FY27 growth revised to 7.3% (from 7.8% in FY26) due to policy moderation, energy price impacts, and lagged tax cuts; FY28 forecast at 6.8-7.0%, reflecting sustainability risks from external pressures and rising inflation.",
+        "Core Inflation Acceleration: Core inflation (ex-food/fuel) hit 1.5-month high in August driven by precious metals, telecom, and transport; broadening price pressures signal inflationary acceleration against strong liquidity, necessitating RBI’s likely 50bp rate hike in H2 FY27.",
+        "Reserves & Liquidity Surge: Foreign reserves at $780bn (new high) from $133bn FCNR(B) deposits; banking surplus surged to INR 14tn, suppressing overnight rates and easing USDINR intervention bias—critical for portfolio liquidity positioning.",
+        "CAD Widening & Capital Flow Offset: Current account deficit rose to $10.5bn (Apr-Jul 2026) driven by $117.8bn merchandise trade deficit; capital flows (NRI deposits $36bn) offset deficit, pushing BoP surplus to $12.7bn, with oil prices as primary CAD swing factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-fu308f16ebn-258aff",
       "title": "US stock market A mega cap refuge",
