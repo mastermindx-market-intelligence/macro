@@ -117,7 +117,14 @@ def accrue(today=None) -> tuple[int, str]:
 
 
 def emit(today=None, accrual_state: str = "ledger_only") -> dict:
-    """Write site/options_skew/latest.json from the ledger. No chain provider."""
+    """Write site/options_skew/latest.json from the ledger. No chain provider.
+
+    The payload carries the A-F03-W2-4c additive keys `source_windows`,
+    `source_break`, and `source_break_date` (round-5 coverage-span model
+    — one span per source present on the ledger, plus the first session
+    date strictly after the older source's last_date).  Schema string
+    (`options_skew.v1`) is unchanged; downstream consumers that pre-date
+    the additive keys stay silent on the source_break gate."""
     payload = S.emit_from_ledger(today=today, accrual_state=accrual_state)
     out = config.site_dir() / "options_skew"
     out.mkdir(parents=True, exist_ok=True)

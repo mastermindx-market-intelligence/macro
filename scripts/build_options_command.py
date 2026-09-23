@@ -214,91 +214,99 @@ def load_skew_source(root: Path) -> dict | None:
 
 
 _SKEW_NOTE_EN = (
-    "Put-skew history comes from two sources: ThetaData end-of-day option "
-    "chains for {theta_ranges}, and the earlier Polygon feed for "
-    "{polygon_ranges}. A skew change that crosses one of those boundaries "
-    "is not like-for-like."
+    "Put-skew history comes from two sources. The earlier Polygon feed covers "
+    "{polygon_first}–{polygon_last} alongside ThetaData end-of-day option "
+    "chains; from {break_date} the history is ThetaData only. A skew change "
+    "that crosses {break_date} is not directly comparable."
 )
 _SKEW_NOTE_ZH = (
-    "认沽偏度历史来自两个来源：{theta_ranges}使用 ThetaData 日终期权链，"
-    "{polygon_ranges}使用较早的 Polygon 数据。跨越这些边界的偏度变化不可直接比较。"
+    "认沽偏度历史来自两个来源：较早的 Polygon 数据覆盖{polygon_first}–"
+    "{polygon_last}，与 ThetaData 日终期权链并行；自{break_date}起仅使用 "
+    "ThetaData。跨越{break_date}的偏度变化不可直接比较。"
 )
 _SKEW_MONTH_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
-def _skew_source_format_ranges(windows, locale: str) -> str:
-    """Render the same-source windows of one source as "22 Jun 2026" (EN) or
-    "2026年6月22日" (ZH).  A single-window pair becomes "22 Jun 2026–13 Aug
-    2026" / "2026年6月22日–2026年8月13日"; multiple ranges joined with
-    " and " / "和".  The year stays on BOTH ends of every range so a reader
-    never has to guess the second calendar year."""
+def _skew_source_format_date(value, locale: str) -> str:
+    """Render one YYYY-MM-DD as "22 Jun 2026" (EN) or "2026年6月22日" (ZH)."""
+    text = str(value or "")[:10]
+    if not text:
+        return ""
     from datetime import date as _date
-    out: list[str] = []
+    try:
+        d = _date.fromisoformat(text)
+    except ValueError:
+        return ""
+    if locale == "zh":
+        return f"{d.year}年{d.month}月{d.day}日"
+    return f"{d.day} {_SKEW_MONTH_EN[d.month - 1]} {d.year}"
+
+
+def _skew_source_span(windows, source_name):
+    """The first span dict whose source matches; None when absent."""
     for window in windows:
         if not isinstance(window, dict):
             continue
-        first = str(window.get("first_date") or "")[:10]
-        last = str(window.get("last_date") or "")[:10]
-        if not first:
-            continue
-        try:
-            first_d = _date.fromisoformat(first)
-        except ValueError:
-            continue
-        last_d = None
-        if last and last != first:
-            try:
-                last_d = _date.fromisoformat(last)
-            except ValueError:
-                last_d = None
-        if locale == "zh":
-            range_text = f"{first_d.year}年{first_d.month}月{first_d.day}日"
-            if last_d is not None:
-                range_text = f"{range_text}–{last_d.year}年{last_d.month}月{last_d.day}日"
-        else:
-            mon_first = _SKEW_MONTH_EN[first_d.month - 1]
-            range_text = f"{first_d.day} {mon_first} {first_d.year}"
-            if last_d is not None:
-                mon_last = _SKEW_MONTH_EN[last_d.month - 1]
-                range_text = f"{range_text}–{last_d.day} {mon_last} {last_d.year}"
-        out.append(range_text)
-    joiner = "和" if locale == "zh" else " and "
-    return joiner.join(out) if out else ""
+        if str(window.get("source")) == source_name:
+            return window
+    return None
 
 
 def skew_source_note(payload) -> tuple[str, str] | None:
     """One plain-language sentence about the source boundary in skew history.
 
-    Returns (en, zh) ONLY when `source_break` is truthy AND at least one
-    window of EACH source (thetadata + polygon_gex) exists. Otherwise None —
-    no sentence when there is no break, because the Directional read panel
-    already explains the skew leg on its own cards.
+    Returns (en, zh) ONLY when ALL of the following hold (per the round-5
+    ruling: coverage-span model — one polygon span + one thetadata span):
+
+      · `source_break` is truthy;
+      · `source_break_date` is a real YYYY-MM-DD date;
+      · exactly one polygon_gex span AND exactly one thetadata span exist
+        in the windows list.
+
+    Otherwise None — no sentence when there is no break (the Directional
+    read panel already explains skew through its own cards), or when the
+    payload is incomplete (missing the break date or one of the two spans).
 
     The vendor names "ThetaData" and "Polygon" are allowed (F03 doctrine:
     plain words, vendor names are fine; only internal slugs are banned). The
     source *slugs* `thetadata` / `polygon_gex` MUST NEVER reach the page
-    (tests/test_options_skew_source_note.py::test_no_source_slug_leaks_into_page
-    pins this)."""
+    (tests/test_options_skew_source_note.py::test_render_with_note_emits_one_element
+    pins both halves of that contract)."""
     if not isinstance(payload, dict):
         return None
     if not payload.get("source_break"):
         return None
+    break_text = str(payload.get("source_break_date") or "")[:10]
+    if not break_text:
+        return None
     windows = payload.get("source_windows")
     if not isinstance(windows, list):
         return None
-    theta_windows = [w for w in windows if isinstance(w, dict) and w.get("source") == "thetadata"]
-    polygon_windows = [w for w in windows if isinstance(w, dict) and w.get("source") == "polygon_gex"]
-    if not theta_windows or not polygon_windows:
+    polygon_window = _skew_source_span(windows, "polygon_gex")
+    theta_window = _skew_source_span(windows, "thetadata")
+    if polygon_window is None or theta_window is None:
         return None
-    theta_en = _skew_source_format_ranges(theta_windows, "en")
-    polygon_en = _skew_source_format_ranges(polygon_windows, "en")
-    theta_zh = _skew_source_format_ranges(theta_windows, "zh")
-    polygon_zh = _skew_source_format_ranges(polygon_windows, "zh")
-    if not (theta_en and polygon_en and theta_zh and polygon_zh):
+    polygon_first = _skew_source_format_date(polygon_window.get("first_date"), "en")
+    polygon_last = _skew_source_format_date(polygon_window.get("last_date"), "en")
+    theta_first = _skew_source_format_date(theta_window.get("first_date"), "en")
+    theta_last = _skew_source_format_date(theta_window.get("last_date"), "en")
+    break_en = _skew_source_format_date(break_text, "en")
+    polygon_first_zh = _skew_source_format_date(polygon_window.get("first_date"), "zh")
+    polygon_last_zh = _skew_source_format_date(polygon_window.get("last_date"), "zh")
+    break_zh = _skew_source_format_date(break_text, "zh")
+    if not (polygon_first and polygon_last and theta_first and theta_last and break_en and break_zh and polygon_first_zh and polygon_last_zh):
         return None
-    en = _SKEW_NOTE_EN.format(theta_ranges=theta_en, polygon_ranges=polygon_en)
-    zh = _SKEW_NOTE_ZH.format(theta_ranges=theta_zh, polygon_ranges=polygon_zh)
+    en = _SKEW_NOTE_EN.format(
+        polygon_first=polygon_first,
+        polygon_last=polygon_last,
+        break_date=break_en,
+    )
+    zh = _SKEW_NOTE_ZH.format(
+        polygon_first=polygon_first_zh,
+        polygon_last=polygon_last_zh,
+        break_date=break_zh,
+    )
     return en, zh
 
 

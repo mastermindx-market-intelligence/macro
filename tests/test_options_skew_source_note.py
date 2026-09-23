@@ -2,15 +2,18 @@
 
 Hermetic by construction: every fixture payload is built IN-MEMORY from the
 producer's documented contract (engine/options_skew.py SCHEMA
-"options_skew.v1" + A-F03-W2-4c additive keys).  No network, no store read,
-no committed data/site/ files.  The producer contract is the one the engine
-W2-4c packet ships: source_windows, source_break, history_dates — schema
+"options_skew.v1" + A-F03-W2-4c round-5 additive keys).  No network, no
+store read, no committed data/site/ files.  The producer contract is the one
+the engine W2-4c packet ships: source_windows (per-source coverage spans),
+source_break (True iff ≥ 2 spans), source_break_date (the first session
+strictly after the older source's last_date), history_dates — schema
 string unchanged.
 
 Pinned properties:
-  · the sentence is rendered ONLY when `source_break` is True AND every
-    source appears at least once across the windows (one-source ledgers stay
-    silent even when the break flag is on)
+  · the sentence is rendered ONLY when `source_break` is True AND
+    `source_break_date` is a real YYYY-MM-DD AND exactly one polygon_gex
+    span AND exactly one thetadata span exist in source_windows
+    (single-source ledgers stay silent even when the break flag is on)
   · load_skew_source() returns None for an absent artifact
   · the rendered page emits exactly one `data-skew-source-note` element when
     the note is set, and none when it is not
@@ -42,45 +45,43 @@ from scripts.build_options_command import (  # noqa: E402
 from tests.test_build_options_command import _stores  # noqa: E402
 
 
-# A-F03-W2-4c — the three-window payload that mirrors the live backfill
-# receipt (research/…/MARKET_ONTOLOGY_F03_W2_4C_SKEW_SOURCE_NOTE_2026-09-23.md
-# §"Three windows measured today"): 2026-06-22..2026-08-13 thetadata,
-# 2026-08-14..2026-09-18 polygon_gex gap (2026-09-19 is a Saturday as-of
-# row — session-only windows end on the Friday), 2026-09-22..2026-09-23 thetadata
-# launchd.  The capture fixture (mockups/evidence/…/EVIDENCE.yml) writes
-# these exact same dates to the rendered page so the crops and the research
-# note table describe the same ledger picture.
-_THREE_WINDOW_PAYLOAD = {
+# A-F03-W2-4c — round-5 measured-truth fixture (the live ledger, after the
+# 2026-08-14..2026-09-18 backfill; research/…/MARKET_ONTOLOGY_F03_W2_4C_…md
+# §"Coverage spans measured on the live ledger"): polygon_gex on 33 session
+# dates 2026-06-22..2026-08-13, thetadata on 64 session dates 2026-06-22..
+# 2026-09-21, first ThetaData-only session = 2026-08-14.  The capture
+# fixture (mockups/evidence/…/EVIDENCE.yml) writes these exact dates to the
+# rendered page so the crops and the research note table describe the same
+# ledger picture.
+_ROUND5_PAYLOAD = {
     "schema": "options_skew.v1",
     "source_break": True,
-    "history_dates": 65,
+    "source_break_date": "2026-08-14",
+    "history_dates": 64,
     "source_windows": [
+        {"source": "polygon_gex", "first_date": "2026-06-22",
+         "last_date": "2026-08-13", "n_dates": 33},
         {"source": "thetadata", "first_date": "2026-06-22",
-         "last_date": "2026-08-13", "n_dates": 37},
-        {"source": "polygon_gex", "first_date": "2026-08-14",
-         "last_date": "2026-09-18", "n_dates": 26},
-        {"source": "thetadata", "first_date": "2026-09-22",
-         "last_date": "2026-09-23", "n_dates": 2},
+         "last_date": "2026-09-21", "n_dates": 64},
     ],
 }
 
 
-def test_three_window_payload_yields_the_exact_sentence():
-    """(a) Three-window payload produces the spec's exact EN/ZH sentences."""
-    pair = skew_source_note(_THREE_WINDOW_PAYLOAD)
+def test_round5_payload_yields_the_exact_sentence():
+    """Round-5 two-span payload produces the spec's exact EN/ZH sentences."""
+    pair = skew_source_note(_ROUND5_PAYLOAD)
     assert pair is not None
     en, zh = pair
     expected_en = (
-        "Put-skew history comes from two sources: ThetaData end-of-day option "
-        "chains for 22 Jun 2026–13 Aug 2026 and 22 Sep 2026–23 Sep 2026, "
-        "and the earlier Polygon feed for 14 Aug 2026–18 Sep 2026. "
-        "A skew change that crosses one of those boundaries is not like-for-like."
+        "Put-skew history comes from two sources. The earlier Polygon feed "
+        "covers 22 Jun 2026–13 Aug 2026 alongside ThetaData end-of-day "
+        "option chains; from 14 Aug 2026 the history is ThetaData only. "
+        "A skew change that crosses 14 Aug 2026 is not directly comparable."
     )
     expected_zh = (
-        "认沽偏度历史来自两个来源：2026年6月22日–2026年8月13日和"
-        "2026年9月22日–2026年9月23日使用 ThetaData 日终期权链，"
-        "2026年8月14日–2026年9月18日使用较早的 Polygon 数据。"
-        "跨越这些边界的偏度变化不可直接比较。"
+        "认沽偏度历史来自两个来源：较早的 Polygon 数据覆盖"
+        "2026年6月22日–2026年8月13日，与 ThetaData 日终期权链并行；"
+        "自2026年8月14日起仅使用 ThetaData。跨越2026年8月14日的偏度变化不可直接比较。"
     )
     assert en == expected_en
     assert zh == expected_zh
@@ -88,11 +89,13 @@ def test_three_window_payload_yields_the_exact_sentence():
 
 def test_source_break_false_returns_none():
     """(b) source_break False → None, no sentence when there is no break."""
-    payload = {"source_break": False, "source_windows": _THREE_WINDOW_PAYLOAD["source_windows"]}
+    payload = {"source_break": False, "source_break_date": _ROUND5_PAYLOAD["source_break_date"],
+               "source_windows": _ROUND5_PAYLOAD["source_windows"]}
     assert skew_source_note(payload) is None
     # Even with multiple windows but a False break flag, stay silent.
     payload_no_break = {
         "source_break": False,
+        "source_break_date": None,
         "source_windows": [
             {"source": "thetadata", "first_date": "2026-06-22", "last_date": "2026-06-23", "n_dates": 2},
         ],
@@ -100,25 +103,56 @@ def test_source_break_false_returns_none():
     assert skew_source_note(payload_no_break) is None
 
 
-def test_only_one_source_present_returns_none():
+def test_one_source_present_returns_none():
     """A break flag with only one source in the windows is still silent —
     the sentence names two sources, not one.  This pins the gate that
     prevents fabricating a "second source" sentence on a single-source ledger."""
     payload = {
         "source_break": False,
+        "source_break_date": None,
         "source_windows": [
             {"source": "thetadata", "first_date": "2026-06-22", "last_date": "2026-06-23", "n_dates": 2},
         ],
     }
     assert skew_source_note(payload) is None
-    payload_break_no_poly = {
+    payload_break_only_theta = {
         "source_break": True,
+        "source_break_date": "2026-08-14",
         "source_windows": [
             {"source": "thetadata", "first_date": "2026-06-22", "last_date": "2026-06-23", "n_dates": 2},
             {"source": "thetadata", "first_date": "2026-07-06", "last_date": "2026-07-07", "n_dates": 2},
         ],
     }
-    assert skew_source_note(payload_break_no_poly) is None
+    assert skew_source_note(payload_break_only_theta) is None
+    payload_break_only_poly = {
+        "source_break": True,
+        "source_break_date": "2026-08-14",
+        "source_windows": [
+            {"source": "polygon_gex", "first_date": "2026-06-22", "last_date": "2026-06-23", "n_dates": 2},
+            {"source": "polygon_gex", "first_date": "2026-07-06", "last_date": "2026-07-07", "n_dates": 2},
+        ],
+    }
+    assert skew_source_note(payload_break_only_poly) is None
+
+
+def test_break_date_null_returns_none():
+    """source_break True but source_break_date missing/null → None.
+
+    The round-5 gate requires ALL of: source_break truthy, source_break_date
+    a real YYYY-MM-DD, one polygon_gex span, one thetadata span.  Without the
+    break date the consumer cannot name the boundary; stay silent."""
+    payload = {
+        "source_break": True,
+        "source_break_date": None,
+        "source_windows": _ROUND5_PAYLOAD["source_windows"],
+    }
+    assert skew_source_note(payload) is None
+    payload_blank = {
+        "source_break": True,
+        "source_break_date": "",
+        "source_windows": _ROUND5_PAYLOAD["source_windows"],
+    }
+    assert skew_source_note(payload_blank) is None
 
 
 def test_load_skew_source_returns_none_when_file_absent(tmp_path):
@@ -132,9 +166,9 @@ def test_load_skew_source_reads_the_payload(tmp_path):
     """A written site/options_skew/latest.json is parsed verbatim."""
     site_dir = tmp_path / "site" / "options_skew"
     site_dir.mkdir(parents=True)
-    (site_dir / "latest.json").write_text(json.dumps(_THREE_WINDOW_PAYLOAD))
+    (site_dir / "latest.json").write_text(json.dumps(_ROUND5_PAYLOAD))
     loaded = load_skew_source(tmp_path)
-    assert loaded == _THREE_WINDOW_PAYLOAD
+    assert loaded == _ROUND5_PAYLOAD
 
 
 def test_render_with_note_emits_one_element(tmp_path):
@@ -147,14 +181,14 @@ def test_render_with_note_emits_one_element(tmp_path):
     the in-memory skew_source dict in (no site/options_skew/latest.json file
     is written or needed)."""
     from engine import i18n  # noqa: PLC0415
-    html = render(REPO, stores=_stores(), skew_source=_THREE_WINDOW_PAYLOAD)
+    html = render(REPO, stores=_stores(), skew_source=_ROUND5_PAYLOAD)
     occurrences = re.findall(r'data-skew-source-note', html)
     assert len(occurrences) == 1, (
         "the Directional read foot must emit exactly one skew-source-note element "
         "when the payload carries a real break"
     )
-    assert "ThetaData end-of-day option chains for 22 Jun 2026–13 Aug 2026" in html
-    assert "earlier Polygon feed for 14 Aug 2026–18 Sep 2026" in html
+    assert "earlier Polygon feed covers 22 Jun 2026–13 Aug 2026" in html
+    assert "from 14 Aug 2026 the history is ThetaData only" in html
     visible = re.sub(r'<[^>]+>', ' ', html)
     assert "polygon_gex" not in visible, (
         "the source slug polygon_gex must never reach the page"
@@ -203,27 +237,3 @@ def test_load_stores_source_text_is_byte_identical_to_origin_main():
         "in tests/test_render_options_workspace_scope.py forbids new keys; "
         "add the new store via a SEPARATE loader (load_skew_source)."
     )
-
-
-def test_skew_source_note_handles_payload_with_only_one_polygon_window():
-    """The exact test (a) above uses one ThetaData window before + one
-    ThetaData window after the polygon gap.  The consumer-side formatter
-    must join the two ThetaData windows with " and " / "和" in the rendered
-    sentence — this pins the multi-window join path."""
-    payload = {
-        "source_break": True,
-        "source_windows": [
-            {"source": "thetadata", "first_date": "2026-06-22",
-             "last_date": "2026-06-22", "n_dates": 1},
-            {"source": "polygon_gex", "first_date": "2026-08-14",
-             "last_date": "2026-08-14", "n_dates": 1},
-            {"source": "thetadata", "first_date": "2026-09-22",
-             "last_date": "2026-09-22", "n_dates": 1},
-        ],
-    }
-    pair = skew_source_note(payload)
-    assert pair is not None
-    en, zh = pair
-    # Two single-date ThetaData windows are joined with " and " / "和".
-    assert "22 Jun 2026 and 22 Sep 2026" in en
-    assert "2026年6月22日和2026年9月22日" in zh
