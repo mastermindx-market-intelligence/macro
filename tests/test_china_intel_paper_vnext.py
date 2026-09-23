@@ -65,6 +65,23 @@ def test_existing_machine_inputs_are_still_consumed():
     assert "cmd_full.discovery" in src
 
 
+def test_surface_signal_cards_project_existing_live_schema_values():
+    src = _src()
+    for field in (
+        "b.news.n_events_7d",
+        "b.policy.stance_label_en",
+        "b.altdata.n_triple",
+        "b.radar.n_active",
+        "b.special_situations.n_unlocks",
+        "cmd_full.command|length",
+        "b.conviction|length",
+    ):
+        assert field in src
+    for state in ("active", "measured", "watch", "unavailable"):
+        assert f'data-state="' in src
+        assert state in src
+
+
 def test_no_page_local_duplicate_global_header():
     src = _src()
     assert '<header' not in src.lower()
