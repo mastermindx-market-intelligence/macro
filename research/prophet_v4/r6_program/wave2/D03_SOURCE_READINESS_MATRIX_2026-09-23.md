@@ -140,6 +140,36 @@ The exact capped command output is quoted in §9. No external provider page or p
 
 ## 8. THE MATRIX + VERDICTS
 
+### Branch matrix
+
+| Branch | First consumer | Classification | Admissible coverage window | Rights posture | Fallback | Proof path |
+|---|---|---|---|---|---|---|
+| FRED/ALFRED initial releases | B04/B16 | Admissible point-in-time replay for the 17 measured series | `1997-01-10 → 2026-09-18` overall; series-specific §2 | Five rights unresolved beyond acquisition/storage | Macro-only private diagnostic until rights branch is recorded | `data/fred_vintage/vintages.parquet`; `config/dataset_registry.yml:206-249` |
+| Census M3 candidate IDs | B16 | Prospective-only / source-existence observation | none locally (no vintage rows) | UNKNOWN | Keyed collection only after rights record | Cycle census Q2; §3 |
+| Curated US membership | B08/B09/B16/B18 | Observed as run from first snapshot | `2026-08-13 → 2026-09-04` | House rights recorded | Macro-only; no pre-snapshot issuer mapping | §4 |
+| Finviz tree history | B08/B09 | Observed as run | `2026-07-05 → 2026-08-15` | unresolved | Diagnostic-only; no historical mapping | §4; `config/theme_sources.yml:29-34` |
+| THS daily levels | B08 | Observed as run | `2026-07-02 → 2026-09-23` | unresolved | CN diagnostic only; not a US mapping | §4 |
+| Security master / aliases | B08/B09 | Current and correction snapshot; only seven dated alias bounds | `2026-08-13 → 2026-09-21` for observation/ingestion | No five-rights source grant | Fail closed for historical issuer identity | §4; `config/dataset_registry.yml:251-330` |
+| Delisted-symbol registry | B09 | Observed event registry, not general failure coverage | Six curated exits; dates recorded in the allowlisted file | In-repo curated record | Declare survivorship limit / macro-only | §4 |
+| Massive enterprise feed family | B08/B09 | Prospective-only until an exact historical issuer/dead-name feed is identified | none for this use | Enterprise five rights recorded; exact feed scope unknown | Require per-feed designation | `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:8-55` |
+| Licensed historical segment map | B08/B09/B16 | Prospective-only / not acquired | none | UNKNOWN | Macro-only or Chairman provider gate after exact evidence | §6–§7 |
+
+Classification uses playbook step 2 as incorporated by ruling §3: no current map or current identity may be backdated, and reconstruction is diagnostic rather than historical knowledge.
+
+### Candidate × rule verdicts
+
+Each cell names the number that decides it. For rule 1, the two-mechanism independence condition is not adjudicated here; the count column is the measured post-first-release months.
+
+| Candidate | Rule 1 vintage depth | Rule 2 mapping | Rule 3 failure | Rule 4 definitions | Rule 5 rights |
+|---|---|---|---|---|---|
+| (a) Industrial capital goods / machinery | PASS: at least `NEWORDER` 354 and `AMTMUO`/`AMTMVS` 183 or `AWHMAN` 357 exceed 120; independence reserved to B16-b | FAIL: first genuine membership cut `2026-08-13`; no historical industrial segment map | FAIL: no satisfiable cut; 1/6 delisted names in observed baskets and no general failed universe | UNKNOWN: dated Census SIC→NAICS/benchmark treatment exists in the census, but this lane did not open the cited source; total-manufacturing legs cannot be relabeled machinery | FAIL: Census/M3 and mapping branches each have zero of five recorded rights; FRED model/redistribution UNKNOWN |
+| (b) Semiconductor equipment | FAIL: configured `CAPUTLG3344S` has 49 months; `CAPUTLG334S` 139 exists but is broad electronics, and no equipment-specific orders/shipments leg is configured | FAIL: no historical equipment-maker mapping | FAIL: no historical failed-issuer universe | UNKNOWN: dated April 2010 M3 discontinuity handling is asserted in the census but not source-receipted here; equipment substitution is forbidden | FAIL: no M3 rights row; FRED model/redistribution UNKNOWN |
+| (c) Building products / residential construction | FAIL: `PERMIT` has 325 months, but housing starts, HPI and mortgage legs have no vintage rows in the 17-series store, leaving fewer than two measured legs | FAIL: no historical building-products membership | FAIL: no historical failed-issuer universe | FAIL: HPI/starts/mortgage rebaseline and discontinuity treatment is not assembled; `PERMIT` alone cannot carry the domain | FAIL: issuer mapping and ETF-derived branches unresolved; FRED model/redistribution UNKNOWN |
+
+### Proposed preregistered window for (a)
+
+**none.** The source-clock intersection for two legs having vintage rows **and** a genuine membership cut exists only at/after 2026-08-13, but that is merely the first observed membership snapshot, rules 2–3 still fail there, and no pre-2026 historical mapping source exists. Therefore no preregistered issuer-mapped replay window is proposed. If the seat instead declares (a) macro-only, the source-only clock floor is 2013-06-24 (first date when `NEWORDER`, `CMRMTSPL`, and other measured macro legs coexist); this is a fallback fact, not a proposed window, and B16-b must ratify either choice before any outcome work.
+
 ## 9. EVIDENCE
 
 ## 10. GAPS + MUST-NOTS REFUSED
