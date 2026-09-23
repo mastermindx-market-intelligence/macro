@@ -92,7 +92,43 @@ VERDICT: PARTIALLY FOUND. Repo records answer most Massive dimensions and classi
 
 ## Q5 DATA-INDEPENDENT READINESS RULE + CANDIDATES
 
-TODO
+No return, trade outcome, strategy artifact, or protected outcome file was opened or cited. The rule depends only on source clocks, vintage depth, definition continuity, mapping coverage, rights, and failure coverage.
+
+**Rule.** A proving domain may be a pilot only if all seven pass:
+
+1. At least two independent economic mechanisms have configured source legs (for example orders/backlog, shipments/inventory, production/utilization, segment or issuer sales/order drivers).
+2. Every mechanism-critical leg has measured ALFRED/source vintage depth covering the preregistered episode window; for monthly legs require a minimum of 120 observed post-first-release months unless the source itself is older by audited receipt.
+3. The release clock is explicit and conservative: first-observation/publication date, not a modeled lag, bounds every backtest admission; late or absent vintage rows must block that row, not silently fall back.
+4. Issuer or segment mapping at the decision cut is either genuinely observed or the domain is macro-only. Current membership, current sector, or current concept maps may never be backdated. Failed/delisted issuer coverage is measured or declared as an explicit limitation.
+5. Every definition break (NAICS/benchmark/reclassification/seasonal methodology/discontinuity) is dated and handled by era split, splice factor declared as diagnostic-only, or exclusion. No undated relabeling.
+6. Rights are resolved separately for acquisition, processing, storage, model use, and user redistribution before a user-facing pilot. Internal-only sources may support private research, never public display.
+7. There is a named negative control and falsifier, and the minimum admitted issuer/segment population is stated before outcomes are inspected.
+
+Applications:
+
+**(a) Industrial capital goods/machinery — CONDITIONAL / NOT READY.**
+- Mechanisms: NEWORDER provides orders; AMTMUO/AMTMVS and ISRATIO/MNFCTRIRSA provide backlog, shipment and inventory context. This passes the breadth condition structurally.
+- Fails depth/clock: first usable vintages and minimum months are UNKNOWN for every configured vintage leg.
+- Fails issuer mapping: no historical industrial capital-goods/machinery membership or failed-issuer history is observable here.
+- Definition tolerance: broad aggregate breaks are documented, but machinery subsector continuity is unresolved; semiconductor M3 support has a dated 2010 break.
+- Rights: partial. Economic legs are mostly public-domain, but `CMRMTSPL` is citation-required; Census redistribution and historical segment rights are unresolved.
+- Verdict: admit only as macro-only retrospective diagnostic/prospective collection until keyed depth, machinery lineage, and rights close.
+
+**(b) Alternative 1: semiconductor equipment — PROSPECTIVE / NOT READY.**
+- Mechanisms: repo configures semiconductor capacity utilization and semiconductor-device PPI plus broader electronic capacity; equipment orders/shipments are not configured.
+- Fails depth: detail capacity/PPI vintage coverage is explicitly called plausible but unverified.
+- Fails issuer mapping: historical membership is not present; only prospective theme snapshots exist.
+- Definition tolerance: M3 semiconductor publication break at April 2010 is documented, but the economic legs are FRED G.17/PPI and need their own vintage continuity check.
+- Rights: public-domain FRED metadata is favorable for those IDs; no rights blocker beyond redistribution presentation.
+- Verdict: prospective-only diagnostic until measured vintage depth and a dated membership/issuer cut exist.
+
+**(c) Alternative 2: building products / residential construction — PROSPECTIVE / NOT READY.**
+- Mechanisms: permits are configured and housing-cycle monitors include a case-shiller-style index, permits/starts, mortgage rate, and a building-products ETF proxy; this gives macro mechanisms but no issuer segment mapping in the observed evidence.
+- Fails depth: PERMIT is modeled and configured, but first vintage and depth are UNKNOWN; the other housing monitor legs are not vintage-configured here.
+- Fails issuer mapping: no historical building-products membership or failed-issuer coverage observed.
+- Definition tolerance: source-level benchmark/rebaseline treatment is not yet assembled for the alternative legs.
+- Rights: FRED leg metadata is favorable; proxy/ETF rights inherit the price plane, and issuer display needs a resolved historical segment source.
+- Verdict: prospective-only until all leg depths and issuer mapping pass the same rule.
 
 ## Q6 GAPS + MUST-NOTS
 
