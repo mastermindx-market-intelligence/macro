@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T15:54:43.324038+00:00",
-  "count": 2718,
+  "generated_at": "2026-09-23T16:16:32.899927+00:00",
+  "count": 2719,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -151,6 +151,26 @@
         "USD/BRL Fair Value Range: Market-friendly outcomes (tighter fiscal policy) target 4.50–4.80; fiscal premium persistence (e.g., Dec 2024) implies 5.80 (14% depreciation risk).",
         "Election-Driven Policy Shifts: Proactive fiscal adjustment (lowering premium) boosts BRL; passive shifts or policy delivery failures amplify FX volatility (2014: Rouseff re-election + orthodox appointments spurred rally).",
         "Critical Sensitivity: USD/BRL moves 5.3% appreciation (to 4.80) if fiscal premium reduces vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ergkmhwhsow-e05c9a",
+      "title": "GS European Express Carbonomics, Telcos, Daimler, Heidelberg, ABI, Macro, Global, Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:59Z",
+      "summary_points": [
+        "Carbonomics BTM Power Outlook: $55bn cumulative equipment opportunity for data centers by 2030 (67GW BTM power forecast), favoring Ceres Power, Weichai Power, Delta Electronics due to execution strength.",
+        "Fed Dovish Shift: Core PCE slowed to 2.5% annualized, Fed abandoned no-hike forecast, signaling dovish shift impacting rate expectations and asset valuations.",
+        "German Telco Consolidation: Bullish on telco consolidation (buy ratings on DT, United Internet, 1&1, Ionos, Vodafone) with modest cost efficiency gains.",
+        "Daimler Truck Fundamentals: Robust North America demand (replacement-driven), 15-20% discount vs Chinese OEMs, feasible peak margins, Torc autonomous ops targeting."
       ],
       "tags": [],
       "tickers": [],
