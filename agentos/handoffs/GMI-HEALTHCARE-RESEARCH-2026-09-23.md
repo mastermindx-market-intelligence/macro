@@ -5,55 +5,65 @@ operation_key: gmi-healthcare-deep-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
+finalization_classification: CHECKPOINTED_CONTINUATION
 ---
 
-# Healthcare research continuation — 2026-09-23
+# Healthcare research — cumulative R1 continuation, 2026-09-23
 
-## Mission and current authority
+## Mission, authority and boundary
 
-Current live Chairman instruction: Sol leads extensive Healthcare research, analysis and planning directly across multiple research turns before a later Fable CEO implementation handoff. Save material checkpoints to GitHub. The shared template/chart and Robotics implementation remain with their existing owners. This record is a research continuation, NOT a Fable commission, implementation approval, runtime admission, source-custody transfer or autonomous wake.
+Current live Chairman instruction: Sol performs extensive Healthcare research, analysis and planning directly across multiple Pro research turns before a later Fable CEO implementation-orchestration handoff. Save material checkpoints to GitHub; preserve the existing Robotics and shared-template owners. Direct-work rationale: PRINCIPAL_JUDGMENT. No foundational research was delegated.
 
-Direct-work rationale: PRINCIPAL_JUDGMENT. The present deliverable is domain synthesis and architecture discovery, explicitly retained by the Chairman with the research principal. No foundational research is delegated by this session.
+This is a research continuation, not an implementation specification, Fable commission, runtime admission, source-custody transfer or autonomous wake. The source-heavy architecture recovery and first evidence foundation form the current phase boundary; substantial domain work remains. Resume from this record and the two R1 artifacts, not the preceding tool history. GitHub read/write succeeded in this session; no mode switch was required. The requested Astra Pro work profile is a user instruction, not an independently observed platform attestation.
 
-## Exact source and effect identities
+## Exact source and carrier identities
 
-- Protected Mastermind master: `bf764f494b9cd0ecede6234bb472c3344c8e77cc`; verified protected; compatible Skillpack 1.0.1/bootstrap major 1.
-- Same-revision procedures read: INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT.
+- Protected Mastermind master: `bf764f494b9cd0ecede6234bb472c3344c8e77cc`; protected status and Skillpack 1.0.1/bootstrap-major-1 compatibility verified.
+- Same-revision procedures loaded: INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT.
 - Macro inspection/base: `668237947e016f679782e41e61c91c9133a5ea99`.
-- Research carrier branch: `claude/healthcare-theme-research-20260923`.
-- Existing parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md` (no new workstream invented).
-- Robotics precedent: PR #7773, `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, `agentos/handoffs/GMI-ROBOTICS-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md`.
+- Carrier: Draft/HOLD PR #7788, branch `claude/healthcare-theme-research-20260923`.
+- Research-content head preceding this cumulative checkpoint update: `4b4be13bb99446422e1e311d3504a0e93f8ddc1a`.
+- Parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; no new workstream invented.
+- Robotics precedent: #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, `agentos/handoffs/GMI-ROBOTICS-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md`.
 - Shared architecture: `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`.
+- Main had advanced to `c4da107fe729e46b4d4036b3e0e290390315d0fd` at PR creation. That is navigation only, not a new integration or acceptance receipt. Unrelated main movement does not require replaying recovery.
 
-Effects to date: isolated research branch and this continuity record only. No product code, live data, schema, graph membership, templates, ranking, selection, sizing or trade policy changed. No worker, Executive Attempt or watcher started by this session. Existing runtime execution is not inferred from repository prose.
+## Material R1 result and immutable evidence
 
-## Verified recovery findings
+`research/healthcare/HEALTHCARE_RESEARCH_FOUNDATION_2026-09-23.md`
+- Created at `d2684eca392a21988e49977fa5782e4dcba482be`.
+- Blob: `1ed40785057910b16d01289ed46efe657dc5e06c`.
+- Contains existing-system recovery, 12 proposed linked dimensions, 12 provisional coverage families, eight worked cases, economic-exposure and bottleneck requirements, source/clock/rights limitations and 24 primary-source register entries. Partial/indexed-only reads are explicitly marked; this is not 24 fully acquired source documents.
 
-1. The Robotics PR is open/draft and holds research, design, plan and a Fable packet; it is not proof of deployed template/evidence capability. Preserve its owner decisions; do not re-create it.
-2. GMI owns canonical theme/local-theme semantics and evidence. The existing workstream assigns downstream product composition to F04 and rejects a competing GMI transmission/propagation system.
-3. `scripts/build_state_of_themes.py` renders Theme Tracker into `site/state_of_themes.html` and already consumes `site/basketdata/clinical_pipeline.json`.
-4. `engine/theme_clinical.py` explicitly discloses legacy selection/look-ahead and phase-as-of-ingest limitations; a BioCatalyst point-in-time seam exists. Source code is not proof that the seam is currently production-fed.
-5. `config/clinical_modalities.yml` contains nine modality rows across `glp1_obesity`, `diagnostics_lifesci`, and `medical_devices`. Several therapeutic modalities are mapped under `diagnostics_lifesci`; preserve legacy identifiers while investigating orthogonal disease/modality/value-chain facets. Do not silently equate a broad existing theme with an adequate healthcare ontology.
-6. Existing clinical authority is display/context only, with rank/gate/size/escalation disabled and no fusion into `fused_obs_z`.
+`research/healthcare/HEALTHCARE_RESEARCH_COUNTEREXAMPLES_2026-09-23.json`
+- Created at `4b4be13bb99446422e1e311d3504a0e93f8ddc1a`.
+- Blob: `63d0f57736a4ae790b62eef2adde1777e548beff`.
+- Contains 24 proposed adversarial cases, HC-R01 through HC-R24. They are NOT_EXECUTED research examples, not passing application tests or an approved production schema. Source IDs are document-local references, not a new identity plane.
 
-## Research hypotheses — proposals, not accepted product contracts
+Both research artifacts were read back through GitHub at the exact research-content head. PR changed-filename enumeration confirmed only the two research artifacts and this continuity file. An optional local download-based checker failed on container DNS before any checks ran; no automated JSON-validation pass, local blob-hash verification, CI result, browser proof or live acquisition is claimed.
 
-- Represent disease/indication, target, modality, asset, development stage, value-chain role, geography/rights, payment and economic exposure as linked dimensions rather than forcing them into one tree.
-- A company association is not automatically an approved price-basket membership or material revenue exposure.
-- FDA authorization, clinical evidence, reimbursement, production availability and adoption require distinct dated assertions.
-- Keep source-published, effective/event, observation and ingestion clocks distinct. A current trial record cannot be assumed to reconstruct its historical state.
-- A bottleneck claim must name a constrained node, time/geographic/product scope, evidence, counterevidence and a falsifier. An expansion announcement alone is not proof of scarcity or profitable pricing power.
+## Findings and proposals that must survive
 
-## Holds and source collisions
+The inspected September 23 `clinical_pipeline.json` reports 2,560 studies across nine modalities and three themes, but legacy mode and zero point-in-time rows consumed. This is an exact repository-snapshot observation, not a live service acceptance test. A fresh generation timestamp does not establish fresh observations or historically valid selection. Existing GMI, BioCatalyst, F04 and shared-page owners must be reused.
 
-Research-only writes are confined to `research/healthcare/` and this Agent OS continuation. Do not change shared paths. Robotics names incumbent #7462 (`engine/theme_graph/store.py`), #7669 (`templates/basket_detail.html.j2`) and #7664 (`scripts/build_state_of_themes.py`); these are navigation references, not freshly verified implementation custody. Refresh only when a later proposed write actually depends on them.
+Research proposals distinguish disease/indication, patient context, target, modality, asset, study, authorization, supply, access, payment, economic ownership and clocks. Preserve legacy theme IDs while researching reviewed facets; company association is not approved basket membership or measured revenue materiality.
 
-No merge, auto-merge arm, deployment, live provider acquisition, final Fable handoff or trade-authority expansion is authorized by this research checkpoint. Public repository: publish original synthesis and public-source references only, not licensed corpora, personal information, credentials or paid full-fidelity evidence.
+Worked cases demonstrate licensing versus manufacturing; planned capacity versus actual qualified output; historical site opening versus supply authorization; profit share versus product-revenue share; indication-specific diagnostic relationships; regulatory lists versus paid adoption; and payer spending versus global manufacturer net sales. Keep historical statuses historical until refreshed. No sector-wide shortage, pricing-power winner, predictive clinical-registration signal or new trade authority is accepted.
 
-## Exact next action
+## Effects, holds and unresolveds
 
-Continue directly with primary-source Healthcare research: establish the source/identifier/temporal model, test the multidimensional ontology against advanced therapeutics and device/payment examples, identify existing BioCatalyst capabilities requiring reuse, then publish the first evidence-backed research foundation on this same branch. Subsequent turns deepen the company/economic-exposure and bottleneck dossiers before written design/implementation planning.
+Effects: isolated branch, three research/continuity files, Draft/HOLD PR #7788. No product code, production schema, graph membership, baskets, shared templates, ranking, selection, sizing, trade policy, merge or deployment changed. No worker, Executive Attempt, watcher or Fable dispatch was started by this session. EFFECT_UNKNOWN: none from this session's writes. No source custody was transferred.
 
-## What must not be redone
+Write scope remains `research/healthcare/` and this checkpoint. Public Git receives original synthesis and public references, not licensed corpora or full-fidelity restricted evidence. No automatic merge, final Fable handoff or live-provider acquisition from this research PR.
 
-Do not repeat the Robotics research or shared template build. Do not infer production acceptance from repository artifacts. Do not create new graph, evidence, identity, lifecycle, scheduler or publication authorities. Do not treat this initial recovery checkpoint as completed research or an accepted implementation specification.
+ClinicalTrials.gov's documentation/API web-read attempts, the DOE page and the AACT page had specific access limitations documented in the foundation. These are not evidence of a provider-wide outage. Source feasibility, historical completeness, rights, deployed BioCatalyst coverage and company/security resolution remain separate research gates. Shared-path collision references #7462/#7669/#7664 are navigation only; refresh custody when an actual integration proposal depends on those paths.
+
+## Exact next action and remaining mission
+
+Continue direct principal research with R2: a therapeutic/platform-to-economic-rights dossier comparing advanced oncology, metabolic/obesity therapies and cell/gene approaches. Produce source-backed company/business/product/indication/territory/right records, explicit unknown materiality, clinical-evidence-quality analysis and deliberate negative evidence. Test proposed bottlenecks against substitutions, relief and contrary company/operating evidence. Preserve research priority separately from security ranking or trading authority.
+
+Subsequent dedicated waves must deepen life-science tools/manufacturing, devices, providers/payers/distribution, cross-sector and animal-health coverage; verify source feasibility; then synthesize the written design and bounded implementation plan for review. Only a mature research/design/plan package should reach Fable CEO for orchestration. Do not pass Fable a generic instruction to research Healthcare.
+
+## WHAT MUST NOT BE REDONE
+
+Do not repeat Robotics research or build a rival template. Do not recreate GMI/BioCatalyst identity, evidence, graph, lifecycle or publication owners. Do not rerun the initial recovery without a material invalidator. Do not treat the R1 examples as implemented tests or an accepted schema, an open PR as product completion, or any research association as an authorized basket or trade. The Healthcare mission remains incomplete; continuation requires a new active turn, not an implied background process.
