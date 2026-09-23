@@ -1,7 +1,9 @@
 # B20 — Prophet US flagship workspace design packet v1 (D09 input; document only)
 
-**Operation:** `prophet-us-fable-meta-ceo-20260923-001`  
-**Status:** DRAFT PACKET — no product code, data owner, score, permission, price, or chart is invented by this document.  
+**Operation:** `prophet-us-fable-meta-ceo-20260923-001`
+
+**Status:** DRAFT PACKET — no product code, data owner, score, permission, price, or chart is invented by this document.
+
 **Scope:** B20 design input for D09 steps 1–2 only.
 
 ## 0. Constraints read and binding basis
