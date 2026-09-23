@@ -8,5 +8,250 @@
   <link rel="stylesheet" href="../../templates/tier_preview.css">
 </head>
 <body>
+<main class="pw-fixture" aria-label="B20-1 component fixture">
+  <header class="pw-fixture-bar">
+    <h1>B20-1 · Prophet workspace components</h1>
+    <p class="pw-fixture-note">Static fixture · fake data · every component and state</p>
+    <div class="pw-fixture-controls">
+      <button type="button" id="pw-theme-toggle" aria-pressed="false">Dark / Light</button>
+      <button type="button" id="pw-lang-toggle" aria-pressed="false">EN / 中文</button>
+    </div>
+  </header>
+  <section class="pw-block" aria-labelledby="shell-heading" data-component="ProphetWorkspaceShell">
+    <h2 id="shell-heading">ProphetWorkspaceShell · default / static · §4, §7</h2>
+    <div class="pw-shell" data-surface="action">
+      <div class="pw-context-row">
+        <p class="pw-product"><span class="l-en">Prophet US</span><span class="l-zh">Prophet 美国</span></p>
+        <span class="pw-chip"><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span>
+        <p class="pw-asof"><span class="l-en">As of Sep 24, 2026 09:05 PDT</span><span class="l-zh">数据截至 2026年9月24日 09:05 PDT</span></p>
+      </div>
+      <nav class="pw-tabs" aria-label="Workspace destinations">
+        <a href="#action" aria-current="page"><span class="l-en">Action Desk</span><span class="l-zh">行动台</span></a>
+        <a href="#radar"><span class="l-en">Radar</span><span class="l-zh">雷达</span></a>
+        <a href="#all"><span class="l-en">All Candidates</span><span class="l-zh">全部候选</span></a>
+        <a href="#themes"><span class="l-en">Themes</span><span class="l-zh">主题</span></a>
+        <a class="pw-track-record" href="#track-record"><span class="l-en">Track Record</span><span class="l-zh">战绩</span></a>
+      </nav>
+      <div class="pw-empty" role="status">
+        <p class="pw-empty-main"><span class="l-en">Nothing to act on today. Rows appear here when an entry opens.</span><span class="l-zh">今日无可行动项。入场窗口开启时会在此显示。</span></p>
+        <p><span class="l-en">Watch saves research to your list. It does not place a trade.</span><span class="l-zh">关注会把研究保存到您的列表，不会下单。</span></p>
+      </div>
+    </div>
+  </section>
+  <section class="pw-block" aria-labelledby="ladder-heading" data-component="CountLadderIdentity">
+    <h2 id="ladder-heading">CountLadderIdentity · observed · absent · withheld · loading · error · empty · §3, §4</h2>
+    <div class="pw-ladder" role="group" aria-label="Lifecycle counts">
+      <ol>
+        <li><b>3</b><span class="l-en">Watch</span><span class="l-zh">观察</span></li>
+        <li><b>2</b><span class="l-en">Ready</span><span class="l-zh">就绪</span></li>
+        <li><b>1</b><span class="l-en">Entered</span><span class="l-zh">入场</span></li>
+        <li><b>1</b><span class="l-en">Delivering</span><span class="l-zh">达标</span></li>
+        <li data-absent="true"><b>—</b><span class="l-en">Overtime</span><span class="l-zh">超时</span></li>
+        <li><b>1</b><span class="l-en">Invalidated</span><span class="l-zh">失效</span></li>
+        <li data-withheld="true"><b>0</b><span class="l-en">Resolved</span><span class="l-zh">已结</span></li>
+      </ol>
+    </div>
+    <div class="pw-rows" data-loading="true" aria-label="Loading">
+      <div class="pw-row" aria-hidden="true"><span class="pw-name">EXMPL</span><p class="pw-change">Example row keeps its size.</p></div>
+    </div>
+    <div class="pw-empty" role="status"><p class="pw-empty-main"><span class="l-en">No candidates match this filter.</span><span class="l-zh">没有候选符合此筛选条件。</span></p></div>
+    <div class="pw-empty" role="alert"><p class="pw-empty-main"><span class="l-en">The action list is unavailable. Required data did not load.</span><span class="l-zh">行动列表暂不可用。必需数据未能加载。</span></p></div>
+  </section>
+  <section class="pw-block" aria-labelledby="stance-heading" data-component="AvailabilityStance">
+    <h2 id="stance-heading">AvailabilityStance · seven states · §3</h2>
+    <div class="pw-rows">
+      <div class="pw-row" data-availability="ENTRY_OPEN"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance" data-availability="ENTRY_OPEN"><b><span class="l-en">Act</span><span class="l-zh">可行动</span></b></span><span class="pw-action"><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></span></div>
+      <div class="pw-row" data-availability="APPROACHING_ENTRY"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b></span><span class="pw-action"><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></span></div>
+      <div class="pw-row" data-availability="NOT_READY"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span></div>
+      <div class="pw-row" data-availability="WAIT_PULLBACK"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-action"><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></span></div>
+      <div class="pw-row" data-availability="RAN_DONT_CHASE"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance"><b><span class="l-en">Stand aside</span><span class="l-zh">观望</span></b></span><span class="pw-action"><span class="l-en">Ran — don't chase</span><span class="l-zh">已启动，勿追</span></span></div>
+      <div class="pw-row" data-availability="INVALIDATED" data-lifecycle="INVALIDATED"><span class="pw-name">EXMPL</span><p class="pw-change">One state for each read.</p><span class="pw-stance" data-availability="INVALIDATED"><b><span class="l-en">Ignore</span><span class="l-zh">忽略</span></b></span><span class="pw-action"><span class="l-en">Invalidated</span><span class="l-zh">已失效</span></span></div>
+      <div class="pw-row" data-availability="UNAVAILABLE_DATA"><span class="pw-name">EXMPL</span><p class="pw-change">—</p><span class="pw-stance" data-availability="UNAVAILABLE_DATA"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span></div>
+    </div>
+  </section>
+  <section class="pw-block" aria-labelledby="row-heading" data-component="ProphetRow">
+    <h2 id="row-heading">ProphetRow · collapsed · expanded · stale · failed source · sleeve · §3, §4</h2>
+    <div class="pw-rows">
+      <button class="pw-row" type="button" aria-expanded="false" aria-controls="row-expanded" data-availability="WAIT_PULLBACK" data-lifecycle="WATCH">
+        <span class="pw-name">EXMPL<small><span class="l-en">Setup research</span><span class="l-zh">设置研究</span></small></span>
+        <p class="pw-change"><span class="l-en">Example demand improved, but the price already ran.</span><span class="l-zh">示例需求改善，但价格已启动。</span></p>
+        <span class="pw-stance"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-action"><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></span><svg class="pw-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+      </button>
+      <div class="pw-row" data-availability="NO_READ" aria-label="Missing read"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="NO_READ"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span></div>
+      <div class="pw-row" data-availability="NOT_READY" data-degraded="stale"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">Example price is stale</span><span class="l-zh">示例价格数据已过期</span></p><span class="pw-stance"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span></div>
+      <div class="pw-row" data-availability="NO_READ" data-degraded="failed"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">Required data did not load.</span><span class="l-zh">必需数据未能加载。</span></p><span class="pw-stance" data-availability="NO_READ"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span></div>
+    </div>
+    <div class="pw-evidence" id="row-expanded">
+      <div class="pw-evidence-grid">
+        <section class="pw-evidence-col" aria-label="Evidence and implications"><h3><span class="l-en">Evidence and implications</span><span class="l-zh">证据与影响</span></h3><p><span class="l-en">Example facts improved after the last bake.</span><span class="l-zh">示例事实在上次生成后改善。</span></p></section>
+        <section class="pw-evidence-col" aria-label="Risks conditions actions"><h3><span class="l-en">Risks, conditions, actions</span><span class="l-zh">风险、条件、行动</span></h3><p><span class="l-en">Watch — don't chase.</span><span class="l-zh">观察，勿追。</span></p></section>
+      </div>
+      <div class="pw-evidence-actions"><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/EXMPL</span><span class="l-zh">完整档案 /prophet/EXMPL</span></a></div>
+    </div>
+  </section>
+  <section class="pw-block" aria-labelledby="expanded-heading" data-component="ExpandedEvidenceRow">
+    <h2 id="expanded-heading">ExpandedEvidenceRow · expanded · missing · stale · corrected · loading · error · §2, §4</h2>
+    <div class="pw-evidence">
+      <div class="pw-evidence-grid">
+        <section class="pw-evidence-col"><h3><span class="l-en">Evidence</span><span class="l-zh">证据</span></h3><dl><dt><span class="l-en">Read</span><span class="l-zh">判断</span></dt><dd><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></dd></dl><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span></section>
+        <section class="pw-evidence-col"><h3><span class="l-en">Risks and conditions</span><span class="l-zh">风险与条件</span></h3><div><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></div><p><span class="l-en">Missing field: No source note yet</span><span class="l-zh">缺失字段：暂无来源说明</span></p></section>
+      </div>
+      <div class="pw-evidence-actions"><span class="pw-asof-mark" role="alert"><span class="l-en">This page cannot finish loading safely. Refresh it.</span><span class="l-zh">此页面无法安全完成加载。请刷新。</span></span></div>
+    </div>
+  </section>
+  <section class="pw-block" aria-labelledby="chip-heading" data-component="ResearchOnlyChip">
+    <h2 id="chip-heading">ResearchOnlyChip · default · §4</h2><span class="pw-chip"><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span>
+  </section>
+  <section class="pw-block" aria-labelledby="stamp-heading" data-component="AsOfStamp">
+    <h2 id="stamp-heading">AsOfStamp · fresh · stale · corrected · §4</h2>
+    <div class="pw-evidence-actions"><span class="pw-asof-mark"><span class="l-en">As of Sep 24, 2026 09:05 PDT</span><span class="l-zh">数据截至 2026年9月24日 09:05 PDT</span></span><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></div>
+  </section>
+  <section class="pw-block" aria-labelledby="watch-heading" data-component="WatchAction">
+    <h2 id="watch-heading">WatchAction · idle · pending · saved · failed · unwatched · local-only · disabled · §9</h2>
+    <div>
+      <button class="pw-watch" type="button" data-state="idle"><span class="l-en">Watch</span><span class="l-zh">关注</span></button>
+      <button class="pw-watch" type="button" data-state="pending" aria-live="polite"><span class="l-en">Saving your list choice…</span><span class="l-zh">正在保存您的列表选择…</span></button>
+      <button class="pw-watch" type="button" data-state="saved"><span class="l-en">Saved to Example list</span><span class="l-zh">已保存至示例列表</span></button>
+      <button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your list choice did not save. Try again.</span><span class="l-zh">您的列表选择未保存。请重试。</span></button>
+      <button class="pw-watch" type="button" data-state="local-only"><span class="l-en">Saved on this device only</span><span class="l-zh">仅保存在此设备</span></button>
+      <button class="pw-watch" type="button" disabled><span class="l-en">Not saved yet</span><span class="l-zh">暂未保存</span></button>
+      <div class="pw-watch-meta" data-state="unwatched"><span><span class="l-en">Removed from Example list</span><span class="l-zh">已从示例列表移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
+      <div class="pw-watch-meta" role="alert"><span><span class="l-en">Your change did not save. Try again.</span><span class="l-zh">您的更改未保存。请重试。</span></span></div>
+    </div>
+  </section>
+  <section class="pw-block" aria-labelledby="tier-heading" data-component="TierLockProphet">
+    <h2 id="tier-heading">TierLockProphet · locked · preview · §4</h2>
+    <div class="pw-lock"><div class="pw-lock-content" aria-hidden="true"><div class="pw-row"><span class="pw-name">EXMPL</span><p class="pw-change">Example locked row keeps its shape.</p></div></div><div class="pw-tier-gate"><div class="mx-tier-gate mx-tier-gate--prophet"><div class="mx-tier-copy"><small><span class="l-en">Example lock</span><span class="l-zh">示例锁定</span></small></div><div class="mx-tier-actions"><button class="mx-tier-primary" type="button"><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></button></div></div></div></div>
+    <div class="pw-preview"><div class="pw-preview-line"><span class="pw-preview-count"><span class="l-en">Example count: 1</span><span class="l-zh">示例数量：1</span></span><button class="pw-preview-cta" type="button"><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></button></div></div>
+  </section>
+  <section class="pw-block" aria-labelledby="preview-heading" data-component="PreviewRowState">
+    <h2 id="preview-heading">PreviewRowState · preview · locked · empty · §4</h2>
+    <div class="pw-rows"><div class="pw-row" data-preview="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></p></div><div class="pw-row" aria-hidden="true"><span class="pw-name">EXMPL</span><p class="pw-change">Example remainder is locked.</p></div></div>
+    <div class="pw-empty" role="status"><p class="pw-empty-main"><span class="l-en">No records are ready to show yet.</span><span class="l-zh">暂无可以展示的记录。</span></p></div>
+  </section>
+</main>
+<style>
+html:not([data-lang="zh"]) .l-zh, html[data-lang="zh"] .l-en { display: none; }
+.pw-fixture { max-width: 1160px; margin: 0 auto; padding: var(--sp-6,24px) var(--sp-4,16px) var(--sp-8,44px); }
+.pw-fixture h1, .pw-fixture h2, .pw-block > h2 { margin: 0; font-size: var(--fs-h2,17px); line-height: 1.25; color: var(--text); }
+.pw-fixture h1 { font-size: var(--fs-h1,28px); }
+.pw-block { margin-top: var(--sp-7,32px); padding: var(--sp-4,16px); border: 1px solid var(--line); border-radius: var(--r-panel,14px); background: var(--panel); box-shadow: var(--card-shadow); }
+.pw-block > h2 { margin-bottom: var(--sp-2,8px); color: var(--muted); font-size: var(--fs-label,11px); letter-spacing: .08em; text-transform: uppercase; }
+.pw-fixture-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2,8px) var(--sp-3,12px); }
+.pw-fixture-note { margin-right: auto; color: var(--muted); font-size: var(--fs-sm,12.5px); }
+.pw-fixture-controls, .pw-context-row, .pw-tabs, .pw-row, .pw-evidence-grid, .pw-watch-meta, .pw-preview-line { display: flex; align-items: center; }
+.pw-fixture-controls { gap: var(--sp-2,8px); }
+.pw-fixture-controls button, .pw-watch, .pw-preview-cta, .pw-undo { appearance: none; border: 0; border-radius: var(--r-btn,10px); min-height: 40px; padding: 9px var(--sp-3,12px); font: 700 var(--fs-sm,12.5px)/1.2 var(--font-ui); color: var(--text); background: color-mix(in srgb, var(--text) 10%, transparent); cursor: pointer; transition: transform var(--t-fast,0.16s) var(--ease-lift,ease), background var(--t-fast,0.16s) var(--ease-std,ease); }
+.pw-fixture-controls button:hover, .pw-watch:not(:disabled):hover, .pw-preview-cta:hover, .pw-undo:hover { background: color-mix(in srgb, var(--text) 15%, transparent); transform: translateY(-1px); }
+.pw-shell { border: 1px solid var(--line); border-radius: var(--r-panel,14px); background: var(--bg); overflow: hidden; }
+.pw-context-row { justify-content: flex-start; flex-wrap: wrap; gap: var(--sp-2,8px) var(--sp-3,12px); padding: var(--sp-2,8px) var(--sp-3,12px); border-bottom: 1px solid var(--line); background: var(--panel); }
+.pw-product { margin: 0; font-size: var(--fs-h3,14px); font-weight: 750; color: var(--text); }
+.pw-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 3px var(--sp-2,8px); border: 1px solid color-mix(in srgb, var(--text) 18%, var(--line)); border-radius: var(--r-pill,999px); color: var(--text); background: color-mix(in srgb, var(--text) 5%, var(--panel)); font-size: var(--fs-label,11px); font-weight: 650; }
+.pw-asof { margin: 0; margin-left: auto; color: var(--muted); font-size: var(--fs-micro,10px); font-variant-numeric: tabular-nums; }
+.pw-tabs { justify-content: flex-start; gap: var(--sp-2,8px); overflow-x: auto; padding: var(--sp-2,8px) var(--sp-3,12px); border-bottom: 1px solid var(--line); background: var(--panel); }
+.pw-tabs a { flex: none; min-height: 40px; padding: 9px var(--sp-2,8px); border-radius: var(--r-ctl,8px); color: var(--muted); font-size: var(--fs-sm,12.5px); font-weight: 650; text-decoration: none; }
+.pw-tabs a:hover, .pw-tabs a[aria-current="page"] { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
+.pw-track-record { margin-left: auto; border-left: 1px solid var(--line); padding-left: var(--sp-2,8px); }
+.pw-empty { padding: var(--sp-6,24px) var(--sp-4,16px); text-align: center; background: var(--panel); }
+.pw-empty-main { margin: 0 0 var(--sp-1,4px); font-size: var(--fs-md,15px); font-weight: 650; color: var(--text); }
+.pw-empty p:last-child { margin: 0; color: var(--muted); font-size: var(--fs-sm,12.5px); }
+.pw-ladder { border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel); overflow: hidden; }
+.pw-ladder ol { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); margin: 0; padding: 0; list-style: none; }
+.pw-ladder li { min-width: 0; padding: var(--sp-2,8px) var(--sp-1,4px); border-right: 1px solid var(--line); color: var(--muted); font-size: var(--fs-micro,10px); text-align: center; }
+.pw-ladder li:last-child { border-right: 0; }
+.pw-ladder b { display: block; color: var(--text); font-size: var(--fs-md,15px); font-variant-numeric: tabular-nums; }
+.pw-ladder li[data-absent="true"] b { color: var(--muted); }
+.pw-ladder li[data-withheld="true"] { background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--line) 42%, transparent) 5px 10px); }
+.pw-stance { display: inline-flex; align-items: center; min-height: 24px; padding: 3px var(--sp-2,8px); border: 1px solid var(--line); border-radius: var(--r-pill,999px); color: var(--text); background: color-mix(in srgb, var(--text) 4%, var(--panel)); font-size: var(--fs-label,11px); font-weight: 700; }
+.pw-stance[data-availability="ENTRY_OPEN"] { color: var(--ink-ok); border-color: color-mix(in srgb, var(--ink-ok) 38%, var(--line)); background: color-mix(in srgb, var(--ink-ok) 10%, var(--panel)); }
+.pw-stance[data-availability="APPROACHING_ENTRY"] { color: var(--ink-link,var(--link)); border-color: color-mix(in srgb, var(--link) 34%, var(--line)); }
+.pw-stance[data-availability="INVALIDATED"] b { text-decoration: line-through; }
+.pw-stance[data-availability="UNAVAILABLE_DATA"], .pw-stance[data-availability="NO_READ"] { border-style: dashed; color: var(--muted); background: transparent; }
+.pw-rows { border: 1px solid var(--line); border-radius: var(--r-card,12px); overflow: hidden; background: var(--panel); }
+.pw-row { position: relative; justify-content: flex-start; flex-wrap: wrap; gap: var(--sp-1,4px) var(--sp-2,8px); width: 100%; margin: 0; padding: var(--sp-2,8px) var(--sp-3,12px); border: 0; border-bottom: 1px solid var(--line); border-left: 3px solid transparent; background: var(--panel); color: var(--text); font: inherit; text-align: left; }
+.pw-row:last-child { border-bottom: 0; }
+.pw-row[data-availability="ENTRY_OPEN"] { border-left-color: var(--ink-ok); }
+.pw-row[data-availability="UNAVAILABLE_DATA"], .pw-row[data-availability="NO_READ"] { border-left: 3px dashed var(--line); }
+.pw-row[data-degraded="stale"] .pw-change { color: var(--muted); text-decoration: underline; text-decoration-color: var(--ink-warn); text-underline-offset: 4px; }
+.pw-row[data-degraded="failed"] { background: color-mix(in srgb, var(--ink-warn) 9%, var(--panel)); border-left-color: var(--ink-warn); }
+.pw-row[data-preview="true"], .pw-row[aria-hidden="true"] { border-left: 3px dashed var(--line); }
+.pw-row[data-lifecycle="INVALIDATED"] .pw-stance { color: var(--muted); }
+.pw-name { flex: 0 0 5.5rem; min-width: 0; overflow-wrap: anywhere; font-size: var(--fs-h3,14px); font-weight: 750; }
+.pw-name small { display: block; overflow-wrap: anywhere; color: var(--muted); font-size: var(--fs-micro,10px); font-weight: 550; }
+.pw-change { flex: 1 1 16rem; min-width: 12rem; margin: 0; color: var(--text); font-size: var(--fs-sm,12.5px); line-height: 1.4; }
+.pw-stance { flex: none; }
+.pw-action { flex: none; min-width: 10rem; color: var(--muted); font-size: var(--fs-sm,12.5px); font-weight: 600; }
+.pw-row[data-availability="ENTRY_OPEN"] .pw-action { color: var(--ink-ok); }
+.pw-chevron { flex: none; width: 1.25em; height: 1.25em; color: var(--muted); }
+.pw-row[aria-expanded="true"] .pw-chevron { transform: rotate(90deg); }
+.pw-evidence { margin: 0; padding: var(--sp-3,12px) var(--sp-3,12px) var(--sp-4,16px); border-bottom: 1px solid var(--line); background: var(--panel2); }
+.pw-evidence-grid { align-items: flex-start; justify-content: flex-start; flex-wrap: wrap; gap: var(--sp-3,12px); }
+.pw-evidence-col { flex: 1 1 24rem; min-width: 16rem; margin: 0; }
+.pw-evidence h3 { margin: 0 0 var(--sp-1,4px); color: var(--text); font-size: var(--fs-label,11px); letter-spacing: .08em; text-transform: uppercase; }
+.pw-evidence dl, .pw-evidence p { margin: 0; color: var(--muted); font-size: var(--fs-sm,12.5px); line-height: 1.5; }
+.pw-evidence div { margin-bottom: var(--sp-2,8px); }
+.pw-evidence dt, .pw-evidence dd { margin: 0; display: inline; }
+.pw-evidence dd { color: var(--text); }
+.pw-evidence-actions { align-items: center; flex-wrap: wrap; gap: var(--sp-2,8px); }
+.pw-evidence-link { color: var(--ink-link,var(--link)); font-size: var(--fs-sm,12.5px); font-weight: 650; text-decoration: none; }
+.pw-evidence-link:hover { text-decoration: underline; }
+.pw-asof-mark { display: inline-flex; align-items: center; min-height: 22px; padding: 2px var(--sp-2,8px); border: 1px solid var(--line); border-radius: var(--r-pill,999px); color: var(--muted); background: var(--panel); font-size: var(--fs-micro,10px); font-weight: 650; }
+.pw-asof-mark[data-status="stale"] { color: var(--ink-warn); border-color: color-mix(in srgb, var(--ink-warn) 35%, var(--line)); }
+.pw-asof-mark[data-status="corrected"] { color: var(--text); }
+.pw-watch { border: 1px solid color-mix(in srgb, var(--link) 32%, var(--line)); background: color-mix(in srgb, var(--link) 9%, var(--panel)); color: var(--ink-link,var(--link)); }
+.pw-watch[data-state="pending"] { color: var(--muted); background: var(--panel); }
+.pw-watch[data-state="saved"], .pw-watch[data-state="local-only"] { color: var(--text); background: color-mix(in srgb, var(--text) 8%, var(--panel)); }
+.pw-watch[data-state="failed"] { color: var(--ink-warn); border-color: color-mix(in srgb, var(--ink-warn) 35%, var(--line)); }
+.pw-watch:disabled { border: 0; background: transparent; color: var(--text); opacity: .4; cursor: not-allowed; }
+.pw-watch-meta { flex-wrap: wrap; gap: var(--sp-2,8px); margin-top: var(--sp-1,4px); color: var(--muted); font-size: var(--fs-micro,10px); }
+.pw-undo { min-height: 32px; padding: 4px var(--sp-2,8px); font-size: var(--fs-micro,10px); background: transparent; }
+.pw-lock { position: relative; margin-top: var(--sp-4,16px); border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel); overflow: hidden; }
+.pw-lock-content { padding: var(--sp-3,12px); opacity: .46; filter: blur(5px) saturate(.35); pointer-events: none; user-select: none; }
+.pw-tier-gate { position: absolute; inset: 0; display: grid; place-items: center; }
+.pw-tier-gate > div { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: var(--sp-2,8px); max-width: 34rem; margin: var(--sp-4,16px); padding: var(--sp-3,12px); border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel2); box-shadow: var(--shadow-hover); color: var(--text); font-size: var(--fs-sm,12.5px); text-align: center; }
+.pw-preview { margin: var(--sp-2,8px) 0 0; border-top: 1px dashed var(--line); padding-top: var(--sp-2,8px); color: var(--text); }
+.pw-preview-line { justify-content: space-between; flex-wrap: wrap; gap: var(--sp-2,8px); padding: var(--sp-2,8px) var(--sp-3,12px); border: 1px dashed var(--line); border-radius: var(--r-ctl,8px); background: var(--panel); }
+.pw-preview-count { color: var(--muted); font-size: var(--fs-sm,12.5px); }
+.pw-preview-cta { min-height: 36px; padding: 7px var(--sp-2,8px); font-size: var(--fs-label,11px); }
+.pw-rows[data-loading="true"] .pw-row { background: repeating-linear-gradient(90deg, var(--panel2) 0 7rem, color-mix(in srgb, var(--text) 7%, var(--panel2)) 7rem 8.25rem, var(--panel2) 8.25rem 11rem); color: transparent; }
+:where(.pw-row, .pw-ladder button, .pw-watch, .pw-preview-cta, .pw-undo, .pw-fixture-controls button, .pw-tabs a):focus-visible { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset: 2px; }
+html[data-theme="light"] .pw-block { border-color: var(--line); box-shadow: var(--card-shadow); }
+html[data-theme="light"] .pw-shell, html[data-theme="light"] .pw-rows, html[data-theme="light"] .pw-ladder { background: var(--panel); }
+html[data-theme="light"] .pw-evidence { background: var(--panel); border-color: var(--line); }
+html[data-theme="light"] .pw-row[data-degraded="failed"] { background: color-mix(in srgb, var(--ink-warn) 8%, var(--panel)); }
+html[data-theme="light"] .pw-watch:disabled { color: var(--text); opacity: .5; border: 1px dashed var(--line); background: transparent; }
+html[data-theme="light"] .pw-tier-gate > div { background: var(--panel); box-shadow: var(--card-shadow); }
+html[data-theme="light"] .pw-lock-content { background: var(--panel2); }
+@media (prefers-reduced-motion: reduce) { .pw-row, .pw-watch, .pw-fixture-controls button, .pw-preview-cta, .pw-undo { transition: none; } .pw-row[aria-expanded="true"] .pw-chevron { transform: none; } }
+@media (max-width: 390px) {
+  .pw-fixture { padding: var(--sp-3,12px) var(--sp-2,8px) var(--sp-6,24px); }
+  .pw-block { padding: var(--sp-3,12px); }
+  .pw-fixture-bar, .pw-context-row, .pw-row, .pw-evidence-grid, .pw-evidence-actions, .pw-watch-meta, .pw-preview-line { display: grid; grid-template-columns: 1fr; align-items: start; }
+  .pw-fixture-note { margin-right: 0; }
+  .pw-asof { margin-left: 0; }
+  .pw-track-record { margin-left: 0; border-left: 0; padding-left: 0; }
+  .pw-change, .pw-action { min-width: 0; }
+  .pw-chevron { position: absolute; right: var(--sp-2,8px); top: var(--sp-2,8px); }
+  .pw-ladder ol { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .pw-ladder li { border-bottom: 1px solid var(--line); }
+  .pw-tier-gate > div { margin: var(--sp-2,8px); }
+}
+</style>
+<script>
+var root = document.documentElement;
+var themeToggle = document.getElementById('pw-theme-toggle');
+var langToggle = document.getElementById('pw-lang-toggle');
+themeToggle.onclick = function () {
+  var nextTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  root.setAttribute('data-theme', nextTheme);
+  themeToggle.setAttribute('aria-pressed', nextTheme === 'light' ? 'true' : 'false');
+};
+langToggle.onclick = function () {
+  var nextLang = root.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+  root.setAttribute('data-lang', nextLang);
+  root.setAttribute('lang', nextLang);
+  langToggle.setAttribute('aria-pressed', nextLang === 'zh' ? 'true' : 'false');
+};
+</script>
 </body>
 </html>
