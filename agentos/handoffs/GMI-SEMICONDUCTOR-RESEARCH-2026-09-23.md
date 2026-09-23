@@ -4,55 +4,64 @@ session: sol/semiconductors-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Complete difficult semiconductor research and synthesis here before the reviewed final
-  Fable CEO implementation-orchestration handoff through existing GMI and Themes owners.
+  Complete the difficult semiconductor research, synthesis and reviewed native-owner design
+  before handing a mature implementation-orchestration packet to Fable CEO.
 state_before: >
-  Three installments covered industrial structure, upstream processes/materials/IP and
-  application/cycle economics; facility-qualified capacity and competition were next.
+  Four principal installments established industrial structure, upstream dependencies,
+  applications/cycles, qualified capacity and capacity-to-economics scenarios. Business-model,
+  point-in-time expectation and cross-installment design synthesis remained open.
 changed:
-  - path: research/semiconductors/QUALIFIED_CAPACITY_COMPETITIVE_ECONOMICS_2026-09-23.md
-    what: "Source-led capacity evidence with UMC denominator recovery, qualification scope, site roles and competitive-economic mechanisms."
-  - path: research/semiconductors/CAPACITY_SCENARIOS_BASKETS_AND_PROOF_REQUIREMENTS_2026-09-23.md
-    what: "Later ST/Hua Hong/UMC evidence advances, tested counterexamples, eight research baskets, ten hypotheses/tasks and 36 future acceptance requirements."
+  - path: research/semiconductors/BUSINESS_MODELS_EXPECTATIONS_AND_RERATING_2026-09-23.md
+    what: "Business archetypes, management-guidance economics, expectation contract, 27-source register, 12 mechanism collections and 48 future acceptance requirements."
+  - path: research/semiconductors/POINT_IN_TIME_EXPECTATION_REPLAY_AND_OWNER_BOUNDARY_2026-09-23.md
+    what: "Current native-owner boundary plus six issuer-guidance point-in-time replays and 18 additional refusal/temporal acceptance cases."
+  - path: research/semiconductors/SEMICONDUCTOR_RESEARCH_SYNTHESIS_AND_DESIGN_INPUTS_2026-09-23.md
+    what: "Cross-installment vocabulary, IDM/integrated/OSAT edge cases, product information architecture inputs and three approaches for formal design review."
   - path: agentos/handoffs/GMI-SEMICONDUCTOR-RESEARCH-2026-09-23.md
-    what: "Cumulative verified research continuation; intermediate checkpoint did not end the turn; no Fable or implementation transfer."
+    what: "This cumulative checkpoint moves the program from broad research into the explicit Chairman design-review gate; no implementation/Fable transfer."
 verified:
-  - claim: "Compatible protected procedure remains controlling."
-    command: "Fresh protected-master and same-pin INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT reads with unchanged blobs"
-    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack1.0.1/bootstrap1."
-  - claim: "Capacity evidence exists on the original research carrier."
-    command: "GitHub create_file and exact-commit fetch_file"
-    result: "Commit b406529c7d693256ba06db3d4c4258e3aff4608d; blob 85a1823f0f23a11d96288b05bb8a6f7ff218c2f3."
-  - claim: "The second module and its corrected hypothesis/task identities are durable."
-    command: "GitHub create_file, exact readback, same-file correction and exact-commit section6/7 readback"
-    result: "Current module revision 7391906dc81df354699f837c0dda1430cee05498; blob 5e06b586f3c9c3272f7be9ba591a4742100946c5."
-  - claim: "Offline research diagnostics execute and reproduce from bundled inputs."
-    command: "python author_research.py; python research_checks.py; python render_dossier.py; repeat all three in a fresh temporary directory and compare bytes"
-    result: "45/45 editorial/arithmetic checks PASS; zero product tests; JSON, diagnostic result and expanded dossier byte-identical in fresh-directory reproduction."
+  - claim: "Current protected procedure is compatible."
+    command: "Protected master and same-pin INDEX/COLD_START/ACTIVE_EXECUTION/RECONCILE_STATE/CLOSEOUT/WEB_CEO_DELEGATION reads"
+    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack 1.0.1/bootstrap 1."
+  - claim: "Installment 5 and PIT replay are on the original research carrier."
+    command: "Atomic Git tree/commit from exact parent 78f9d5be8e53df5b0f2d146ebb4ce5333158fa6a; non-force ref advance; exact-commit readback"
+    result: "Commit 4ab4498155b255b1c7a64f125ecf1cff5f1a9f0e; blobs 84f791a6f4469e30a12911ba97b73f92866b9371 and c6dc1bdbab9a75af59481928bd0816592b010f73."
+  - claim: "Cross-installment synthesis is on the same carrier."
+    command: "Atomic Git tree/commit from exact parent 4ab4498155b255b1c7a64f125ecf1cff5f1a9f0e; non-force ref advance"
+    result: "Commit 9400d920463aefef712c90702016347bf05c7657; blob 49d83d7b2b58c796b58217735d72568369679147."
+  - claim: "Offline research package checks passed before publication."
+    command: "verify_chunk5.py; mutation_tests.py; verify_replay.py; verify_synthesis.py; fresh-directory reproduction"
+    result: "Main 78/78, replay 34/34, synthesis 30/30 editorial/arithmetic checks PASS; seven deliberate main-document corruptions rejected; zero product tests."
 unverified:
-  - claim: "The research is comprehensive, independently accepted or ready for final Fable delivery."
-    what_would_verify: "Complete business-model/expectations and material competitor gaps; independently challenge high-impact claims; review native-owner design and implementation plan."
-  - claim: "New semiconductor intelligence is live or admitted native data."
-    what_would_verify: "Approved identity/retention/admission/private-publication contracts, shared consumer integration and independent production/browser proof."
+  - claim: "The research approach is the accepted written Semiconductor product design."
+    what_would_verify: "Chairman reviews the three design approaches and approves one; only then author the formal written specification."
+  - claim: "Historical Street consensus is available for semiconductor PIT replay."
+    what_would_verify: "Accepted existing expectation owner with licensed point-in-time historical consensus objects; current architecture says required depth is NOT_BUILT."
+  - claim: "Historical price re-rating attribution is universally point-in-time clean."
+    what_would_verify: "Accepted market/corporate-action owner supplies the required historical basis/vintage; current price estate has adjustment-vintage limitations."
+  - claim: "Any new research is live native data or visible in production Themes."
+    what_would_verify: "Approved written spec/plan, implementation through incumbent owners, independent review and real production-path browser proof."
 unresolved:
-  - "Actual product/customer-qualified output, allocations, yields, comparable contract prices and native security bindings remain incomplete."
-  - "SMIC current primary capacity remains unrecovered; Hua Hong coverage is now partially resolved through an original-authored mirrored report."
-  - "Hua Hong and Innoscience mirrors were not byte-compared with issuer-host documents."
-  - "Prior excerpt-only sources, JEDEC SPHBM4 and the earlier #7669 interface-head disagreement retain their precise held scope."
+  - "Approach B is the research preference but has not received Chairman design approval."
+  - "Historical Street consensus remains typed unavailable/unlicensed until its native owner matures; no semiconductor shadow store."
+  - "Native first-class product/facility identity remains deliberately deferred; source-scoped object descriptions preserve evidence meanwhile."
+  - "Current full-fidelity private research publication binding remains an implementation gate; public Macro contains research/editorial proposals, not paid native payload."
+  - "Prior JEDEC SPHBM4 and source-level residual gaps remain question-driven research holds, not reasons for another broad census."
 next_actions:
-  - "Principal research: business-model and point-in-time expectations framework across foundry, fabless/custom silicon, memory, equipment, EDA/IP and analog/power."
-  - "Use comparable recurring/per-share economics and actual historical guidance vintages; preserve new capacity counterexamples rather than repeat the capacity sweep."
-  - "Only after sufficient research, proceed to the written native-owner specification and plan review before final Fable orchestration handoff."
+  - "Chairman reviews approaches A/B/C in the research synthesis; research preference is B, compositional Semiconductor dossier across existing native owners."
+  - "On explicit design approval, author the formal Semiconductor native-owner written design specification; do not implement in the same approval step."
+  - "After written-spec review/approval, create the executable implementation plan; then assemble the mature Fable CEO orchestration packet."
 do_not_redo:
-  - "Do not repeat four installments or broad Robotics/template archaeology without material invalidation."
-  - "Do not leave ST operational start or all Hua Hong coverage falsely unresolved after C24/C26."
-  - "Do not replace output utilization with shipments, targets with actuals, ownership shares with physical capacity, or confidence with financial exposure."
-  - "No new graph, product identity, evidence, queue, publication, watcher or trading owner."
-  - "Do not alter #7462/#7669/#7664 source custody or auto-merge PR #7780."
+  - "Do not redo the five principal research installments or broad Robotics/template archaeology without material invalidation."
+  - "Do not create a new graph, product identity, consensus, market-belief, financial fact, correction, queue or publication owner."
+  - "Do not backfill current estimate snapshots into history or infer consensus surprise from management guidance."
+  - "Do not turn catalog capability, announced capacity, installed equipment, qualification, production, shipment and recognized revenue into one state."
+  - "Do not equate source count, thematic relevance or confidence with revenue weight, portfolio weight, ranking or trade authority."
 danger_areas:
-  - "Public Macro holds editorial proposals and bounded examples, not an admitted current paid-native dossier."
-  - "Source counts are not independent corroboration; mirrored and syndicated lineages must remain linked."
-  - "Missing yield should degrade a yield-dependent calculation, not erase a supported reported event."
+  - "Public source facts require exact clocks, scope and corrections; source URLs are not immutable retention receipts."
+  - "Business/segment/issuer/security identities must retain ownership intervals and native bindings."
+  - "Acquisition/perimeter, stock-split, GAAP/non-GAAP and metric-definition changes can invalidate apparently simple historical comparisons."
+  - "A research preference is not design approval and a written spec is not implementation/production acceptance."
 ---
 
 # Semiconductor research cumulative continuation
@@ -64,57 +73,94 @@ CAPABILITY_STATE: SPEC_ONLY
 Operation: `gmi-semiconductors-research-20260923-sol-001`.
 Carrier: Macro draft/HOLD PR #7780, `sol/semiconductors-research-20260923`.
 Original base: `668237947e016f679782e41e61c91c9133a5ea99`.
-Turn resume head: `f5331c2215cef61b4d2ec8e939b80cfcdbcf2782`.
-Governing procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, compatible Skillpack1.0.1/bootstrap1.
-Present intent: Chairman retained hard research here and requested larger useful turns with safe checkpoints before Fable orchestrates implementation. Direct-work rationale: PRINCIPAL_JUDGMENT. Hidden deadlines/model budgets remain unknown; elapsed time is not the quality or stopping criterion.
+Current research/synthesis head before this checkpoint update: `9400d920463aefef712c90702016347bf05c7657`.
+Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1.
+Present authority: Chairman directed the current principal to perform most hard research/planning before Fable. Direct-work rationale: PRINCIPAL_JUDGMENT. Fable remains uncommissioned.
 
-## Material before/after
+## Outcome at this boundary
 
-Before: capacity questions were mostly announced/installed/qualified categories and incomplete operating evidence.
-After: research has twenty scoped interpretation cases, recovered native denominator examples, affirmative operation-start/delivery evidence, tested yield/price/constraint counterexamples, eight mechanism-based research baskets and ten concrete user tasks. The proposed product can explain what a capacity development means, its possible economic offset and the next discriminating evidence. No live capability or accepted architecture is implied.
+The research problem has advanced from a broad semiconductor BOM/supply-chain request to a source-grounded, cross-owner investment-intelligence model. The evidence now supports a unified user job across physical composition, manufacturing dependency, documented commercial relationships, qualified capacity, business economics and point-in-time management expectations.
 
-This turn continued after the verified intermediate checkpoint at `41cf0018412c7e56ee5626ce98866c2cb84387d5`. Later research resolved material uncertainties and advanced the scenario/basket/user-workflow unit; it was not another equivalent status cycle.
+The core product thesis is preserved: a reader should be able to choose a semiconductor technology/application/company, see exactly what role a business plays, understand the manufacturing and constraint mechanism, inspect dated evidence and limitations, and understand how the industrial development could transmit into recognized revenue, profit, cash and per-share expectations without the research layer originating trades.
 
-Key new results:
-- ST's July30 SEC filing reports Q2 operations/ramp at Catania and Sanan ST; old target-only status is superseded at that scope, not upgraded to full qualified output.
-- ST's $1,215m CIP transfer is not cash capex. JV consolidation does not multiply physical capacity.
-- UMC's mixed-diameter table reconstructs to rounded1,305 thousand equivalents. Reported85% uses output, not1129/1305 shipments.
-- Hua Hong's102.8% utilization has an estimated output/capacity denominator. Parent38639 plus NCI-34761 reconciles to total3878, all US$thousands.
-- onsemi's650V GF collaboration and lower-voltage nonbinding Innoscience MOU have different scopes; neither replaces all relationships.
-- UMC's one-customer photonic-IC delivery coexists with its future general platform. Its named Cadence software purchase does not disclose SKU or royalties.
-- Optical order acceleration, customer advances, accounting resets, category changes and minor application chip counts cannot all be called recurring semiconductor earnings growth.
-- Synthetic larger-wafer example: +77.78% area but +15.71% variable cost per good unit at the stated ramp yields; later matched yield changes that result to-10%.
-- Synthetic130units at lower price/cost yield338 contribution versus400 previously, or-15.5%; fixed-route upstream relief alone leaves a90unit bound unchanged.
+## Research corpus — DO_NOT_REDO without a material invalidator
 
-## Scope and verification
+1. **Foundation / robotics-style evidence model**
+   - `research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md`
+   - commit `6c2895c7799c5b9da585ccb64546caee435301dd`, blob `4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c`.
+   - Initial five-view model; 24 proposed slices; AI/HBM/package chain; company/business roles and source register.
+2. **Research QA / scoped relationship examples**
+   - `research/semiconductors/RESEARCH_QA_AND_RELATIONSHIP_EXAMPLES_2026-09-23.md`
+   - commit `591a13ee93892acb042d2e8da743d816c9446ffb`, blob `d13ca60e52905a95ba8fde0f3b56b04db92d5c13`.
+3. **Process/material/EDA/IP**
+   - `research/semiconductors/PROCESS_MATERIALS_EDA_RESEARCH_2026-09-23.md`
+   - commit `65a15b656d2faa2e9fb36fe22d88209b62397d26`, blob `2eb2dcbfa80db2fce3d058147af8c85c7c0ee761`.
+4. **Applications/cycles/economic capture**
+   - `research/semiconductors/APPLICATIONS_CYCLES_ECONOMIC_CAPTURE_2026-09-23.md`
+   - commit `37799afb12bae52356af607efb7b4fa915b97ec8`, blob `77420090d0757691f80c11903b807b03a4b13fce`.
+5. **Qualified capacity / competitive economics**
+   - `research/semiconductors/QUALIFIED_CAPACITY_COMPETITIVE_ECONOMICS_2026-09-23.md`
+   - commit `b406529c7d693256ba06db3d4c4258e3aff4608d`, blob `85a1823f0f23a11d96288b05bb8a6f7ff218c2f3`.
+6. **Capacity scenarios, research baskets and proof requirements**
+   - `research/semiconductors/CAPACITY_SCENARIOS_BASKETS_AND_PROOF_REQUIREMENTS_2026-09-23.md`
+   - revision `7391906dc81df354699f837c0dda1430cee05498`, blob `5e06b586f3c9c3272f7be9ba591a4742100946c5`.
+7. **Business models, expectations and re-rating mechanics**
+   - `research/semiconductors/BUSINESS_MODELS_EXPECTATIONS_AND_RERATING_2026-09-23.md`
+   - commit `4ab4498155b255b1c7a64f125ecf1cff5f1a9f0e`, blob `84f791a6f4469e30a12911ba97b73f92866b9371`.
+8. **Point-in-time expectation replay and owner boundary**
+   - `research/semiconductors/POINT_IN_TIME_EXPECTATION_REPLAY_AND_OWNER_BOUNDARY_2026-09-23.md`
+   - commit `4ab4498155b255b1c7a64f125ecf1cff5f1a9f0e`, blob `c6dc1bdbab9a75af59481928bd0816592b010f73`.
+9. **Cross-installment synthesis / design inputs**
+   - `research/semiconductors/SEMICONDUCTOR_RESEARCH_SYNTHESIS_AND_DESIGN_INPUTS_2026-09-23.md`
+   - commit `9400d920463aefef712c90702016347bf05c7657`, blob `49d83d7b2b58c796b58217735d72568369679147`.
 
-Expanded module:27 source records,20 capacity/interpretation cases,8 research baskets,10 falsifiable hypotheses,9 scoped commercial relationships,10 user journeys and36 future application acceptance requirements. One exact URL repeats the prior103;26 additional unique URLs produce129 cumulative URLs. Repeated release lineages on other hosts are not independent evidence. All new included records have relevant body reviews; four PDF source records include specified visual page checks. No full-report or independent audit is claimed.
+Source-count and company-count totals across these artifacts are coverage measures only. Later modules revisit earlier source lineages; do not mechanically sum counts into independent corroboration.
 
-Evidence module: `research/semiconductors/QUALIFIED_CAPACITY_COMPETITIVE_ECONOMICS_2026-09-23.md`, commit `b406529c7d693256ba06db3d4c4258e3aff4608d`, blob `85a1823f0f23a11d96288b05bb8a6f7ff218c2f3`.
-Synthesis module: `research/semiconductors/CAPACITY_SCENARIOS_BASKETS_AND_PROOF_REQUIREMENTS_2026-09-23.md`, current commit `7391906dc81df354699f837c0dda1430cee05498`, blob `5e06b586f3c9c3272f7be9ba591a4742100946c5`. The current HQ/UJ mapping supersedes the initial synthesis row ordering at `1df63ee5ddcf22b9fb3d0bb34ec5a00cb2fd2d32`.
+## Native-owner boundary recovered this phase
 
-Portable `SEMICONDUCTOR_CHUNK4_RESEARCH.json` SHA-256 `a5fdbfd3fb95b509f9dcdbe5319d927150699a661388c1b499b1114b6950f0f9`.
-Portable `SEMICONDUCTOR_CAPACITY_COMPETITION_DOSSIER_2026-09-23.md` SHA-256 `a475dfac319b90ef2af775db5f3c15d50d1cf429f3bfed5e00e8a1185c63eacb`.
-Diagnostic result SHA-256 `5ac85b931717e6498cd4ff34fb14a93e8973fea68c36b17402b2bb598d56df87`.
+Current Macro architecture says:
 
-45 checks validate editorial structure, reference resolution, reported arithmetic and synthetic positive/refusal cases. They are not36 product-case executions or source-truth proof. Clean-directory reproduction uses only bundled author/check/render scripts, priorURLset and synthesis text; all three generated files match bytes. The portable dossier is a separate authored expansion, not a downloaded canonical file. Source-content digests/native retention have not been invented.
+- Earnings Intelligence owns event/source/guidance/Q&A truth and already carries event/source clocks.
+- Financial Intelligence Fabric owns governed financial facts and source/system cutoff semantics.
+- Current analyst revision snapshots are `PARTIAL / ACCRUING`; they are prospective from observation-era birth, not historical consensus truth.
+- Deep historical Street-consensus vintages are `NOT_BUILT` at required depth; candidate vendors remain source/rights/sample gated.
+- Common expectation semantics and market incorporation remain with their existing federation/Alpha owners; no universal GMI Market-Belief store.
+- Price history has adjustment-vintage/PIT corporate-action limitations; causal historical re-rating claims must consume an accepted owner or degrade/refuse.
 
-Self-review repaired a local Python quoting defect after a wording clarification, then reran all checks. A cross-artifact comparison caught HQ/UJ ordering mismatch in the initially committed synthesis; the same-file correction and exact-section readback align IDs to the unchanged verified companion. No source data, uncertainty or requirement was weakened. No independent review, Agent OS validator, CI acceptance, merge or browser proof is claimed.
+The first expectation vertical can therefore be **management-guidance-led**: prior management outlook -> actual -> new outlook -> visible limitations. Consensus/house/incorporation panels remain typed unavailable until native objects exist.
 
-## Prior installments — DO_NOT_REDO
+## Cross-installment consistency result
 
-1. Foundation `research/semiconductors/SEMICONDUCTOR_RESEARCH_FOUNDATION_2026-09-23.md`: commit `6c2895c7799c5b9da585ccb64546caee435301dd`, blob `4d11bf770edae07fcc4e7d520cf5b51fc8a84e7c`; QA/examples commit `591a13ee93892acb042d2e8da743d816c9446ffb`, blob `d13ca60e52905a95ba8fde0f3b56b04db92d5c13`.38URLs;8bodies/30excerpts;24slices/21roles/8relations/16futurecases. Seed `798f10122bcffc844d0af750dfda8cf6add48418c0fcc30b32a829debf3a5ee4`.
-2. Process/material/EDA `research/semiconductors/PROCESS_MATERIALS_EDA_RESEARCH_2026-09-23.md`: commit `65a15b656d2faa2e9fb36fe22d88209b62397d26`, blob `2eb2dcbfa80db2fce3d058147af8c85c7c0ee761`;33newURLs,30bodies/3excerpts,32roles/14relations/12hypotheses/22futurecases. Seed `96c8d54566c409f1dec84de8e892b5f843c595d028282f46f4424540583776dc`.
-3. Applications/cycles `research/semiconductors/APPLICATIONS_CYCLES_ECONOMIC_CAPTURE_2026-09-23.md`: commit `37799afb12bae52356af607efb7b4fa915b97ec8`, blob `77420090d0757691f80c11903b807b03a4b13fce`;32newURLs,30bodies/1partial/1excerpt,26roles/9maps/12relations/12hypotheses/32futurecases. Seed `0d68fd7a5cff9fbf0394645345800276a104bc94105f4ffc3a17b6cd78daec8f`. Prior40checks remain historical evidence, not rerun application proof.
+The research now uses one vocabulary across domains: `research_slice`, source-scoped objects/assertions, exact relationship predicates, physical containment, manufacturing dependency, scoped capacity/qualification, business/security binding, economic mechanism, management/external/house expectation, actual result and market-incorporation evidence.
 
-## Architecture, effects and justified boundary
+Three new structural witnesses closed taxonomy gaps:
 
-Robotics #7773 at `7efdd6cdc6401b5caf8f7fd34aa683b39e108686` remains recovered precedent, not fresh status or semiconductor-spec approval. Reuse GMI native curation/evidence/identity, K1 references and F04 shared composition. No W4/W5/W6 revival or K3-D clone. #7462 store, #7669 shared template and #7664 builder remain untouched. Preserve the earlier #7669 body/head discrepancy for the actual interface-write gate.
+- Intel demonstrates IDM/captive manufacturing versus external merchant-foundry economics; total Foundry segment revenue cannot be read as external merchant-foundry revenue.
+- Samsung demonstrates an integrated semiconductor division where Memory, System LSI and Foundry have different economic mechanisms under a broader reporting scope.
+- Amkor demonstrates the OSAT/manufacturing-service role, distinct from foundry, material supply and finished-chip product economics.
 
-Last material effects: two research documents and this cumulative update on the original branch, including the explicit same-document HQ/UJ correction. This checkpoint's own revision comes from the actual write receipt/readback, not a self-invented SHA. PR projection should reference that verified revision. EFFECT_UNKNOWN: none observed. Active children, Executive Jobs/Attempts, reciprocal watchers: none created. No runtime, source-custody, production data, basket, trade, deployment or merge effect.
+These refine company classification into facets rather than one permanent label.
 
-Boundary justification: the facility/qualification investigation, late evidence reconciliation and tested economic/basket/user-task synthesis form a completed research unit after extensive source and artifact context. The intermediate checkpoint was followed by substantive further research. Preserve this cumulative boundary before the distinct business-model/expectations source-research phase, rather than accumulate another large unit of retrieval in this chat. This is not mission completion or a stop based on elapsed time.
+## Design review frontier
 
-Exact next action: principal-led business-model and point-in-time expectations research across foundry, fabless/custom silicon, memory, equipment, EDA/IP and analog/power; use comparable recurring/per-share definitions and historical guidance vintages. Target remaining source gaps as required by those questions. Do not redo capacity archaeology or dispatch Fable.
+The synthesis preserves three alternatives:
 
-Intended resume surface: a research-capable principal conversation using this cumulative record plus minimum fresh canonical state. A fresh chat does not transfer custody or relax reconciliation. No hard seal or autonomous/background wake is asserted. Final Fable handoff remains held pending remaining research and written-spec/implementation-plan review. Keep PR #7780 draft/HOLD.
+- **A — evidence-only extension:** safest/minimal, but risks producing an industry encyclopedia weaker on investment economics.
+- **B — compositional Semiconductor dossier across existing native owners:** GMI evidence for industrial assertions plus existing Earnings/financial/identity/K1/F04 outputs for economics and navigation; unavailable consensus/incorporation degrades visibly. **Research preference.**
+- **C — universal first-class semiconductor graph now:** maximal theoretical query power but prematurely competes with product identity, evidence, expectation and financial owners. Rejected by the research as the first delivery.
+
+Approach B is **not approved** merely because research prefers it. The next human gate is Chairman design review. If B is approved, author the formal architectural written specification and stop again for written-spec review before any implementation. Then write the implementation plan and only afterward hand a mature orchestration packet to Fable CEO.
+
+## Effects and proof status
+
+Effects through this boundary are research/docs/checkpoint writes on the original PR carrier only. No product code, production schema, accepted native factual rows, live basket, ranking, entry, sizing, trade, deployment, Executive Job/Attempt, worker or watcher was created. `EFFECT_UNKNOWN`: none observed.
+
+Offline checks are editorial/research integrity only: installment-5 main 78/78, PIT replay 34/34, synthesis 30/30; seven deliberate main-document corruptions were rejected; zero product tests. They do not establish source truth, predictive validity, production UI behavior or acceptance.
+
+No independent design review, CI acceptance, merge, deployment or browser proof is claimed.
+
+## Exact next action
+
+Present the A/B/C design approaches and the research preference for **B** to the Chairman for design approval. Do not write the formal architectural specification until that approval. No further broad external research is required before this gate; reopen research only for a material question that could change the vocabulary, native-owner boundary or selected first vertical.
+
+Intended resume surface after approval: principal design/reasoning session using this checkpoint and the synthesis, with only minimum fresh canonical/interface reads. Fable remains uncommissioned until the written design and implementation plan are reviewed and ready.
