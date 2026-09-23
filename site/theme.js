@@ -4340,6 +4340,12 @@
     }
 
     function isOpen() { return pop.classList.contains('open'); }
+    function isHoverPresented() {
+      return !!(window.matchMedia &&
+        window.matchMedia('(hover:hover) and (pointer:fine)').matches &&
+        wrap.matches && wrap.matches(':hover') &&
+        !wrap.classList.contains('settings-dismissed'));
+    }
     function open() {
       if (isOpen()) return;
       wrap.classList.remove('settings-dismissed');
@@ -4347,13 +4353,16 @@
       gear.setAttribute('aria-expanded', 'true');
       pop.focus();
     }
-    function close() {
-      if (!isOpen()) return;
+    function dismiss() {
       pop.classList.remove('open');
       gear.setAttribute('aria-expanded', 'false');
       // A click or Escape is an explicit close, so do not let the desktop hover
       // rule redraw the pane until the pointer leaves and deliberately returns.
       wrap.classList.add('settings-dismissed');
+    }
+    function close() {
+      if (!isOpen()) return;
+      dismiss();
     }
     // Pointer focus fires before click. Suppress the focus-open path for that
     // gesture so the click remains the single toggle; keyboard/programmatic
@@ -4384,10 +4393,11 @@
     // no scrim: a click anywhere outside the gear + its dropdown closes it
     document.addEventListener('mousedown', function (e) { if (isOpen() && !wrap.contains(e.target)) close(); });
     document.addEventListener('keydown', function (e) {
-      if (!isOpen() || e.key !== 'Escape') return;
+      if (e.key !== 'Escape' || (!isOpen() && !isHoverPresented())) return;
       // account management now lives in the full settings dashboard (its own Esc
-      // handler owns closing it); here Escape simply closes the popover.
-      close(); restoreGearFocus();
+      // handler owns closing it). A desktop hover can reveal this popover without
+      // the JS .open class, so Escape dismisses the presented state directly.
+      dismiss(); restoreGearFocus();
     });
     // Desktop also opens the panel on hover (pure CSS above). If a stray click set
     // .open, make sure leaving the gear + panel always closes it so it never stays

@@ -183,7 +183,7 @@ def _run_settings_focus_runtime(source: str, *, old_focus_restore: bool = False)
 """
         assert guard in fragment
         fragment = fragment.replace(guard, "    var _gearPointerDown = false;\n", 1)
-        fragment = fragment.replace("close(); restoreGearFocus();", "close(); gear.focus();")
+        fragment = fragment.replace("restoreGearFocus();", "gear.focus();")
         fragment = fragment.replace(
             "      if (e.target === gear && _gearFocusRestore) "
             "{ _gearFocusRestore = false; return; }\n",
@@ -285,6 +285,125 @@ def test_settings_focus_restore_executes_without_reopening(src: str, deployed: s
         old = _run_settings_focus_runtime(source, old_focus_restore=True)
         assert old["afterEscape"]["open"] is True
         assert old["afterCloseButton"]["open"] is True
+
+
+
+def _run_settings_hover_escape_runtime(source: str) -> dict:
+    """Exercise the CSS-hover-only Settings presentation against shipped JS."""
+    start = source.index("    function isOpen() {")
+    end = source.index("    // account section", start)
+    fragment = source[start:end]
+
+    driver = r"""
+const timers = [];
+function events(name) {
+  const own = {};
+  return {
+    name,
+    addEventListener(type, fn) { (own[type] ||= []).push(fn); },
+    emit(type, event = {}) { for (const fn of own[type] || []) fn(event); }
+  };
+}
+function classes(initial = []) {
+  const set = new Set(initial);
+  return {
+    contains(x) { return set.has(x); },
+    add(x) { set.add(x); },
+    remove(x) { set.delete(x); }
+  };
+}
+let hovering = true;
+const wrap = events('wrap');
+wrap.classList = classes();
+wrap.matches = selector => selector === ':hover' && hovering;
+wrap.contains = node => node === wrap || node === gear || node === pop || node === closeButton;
+const closeButton = events('close');
+const pop = events('pop');
+pop.classList = classes();
+pop.focus = () => {
+  const prev = document.activeElement;
+  document.activeElement = pop;
+  wrap.emit('focusin', { target: pop, relatedTarget: prev });
+};
+pop.querySelector = selector => selector === '.settings-close' ? closeButton : null;
+const gear = events('gear');
+gear.attrs = {'aria-expanded': 'false'};
+gear.focusCount = 0;
+gear.setAttribute = (k, v) => { gear.attrs[k] = v; };
+gear.focus = () => {
+  gear.focusCount += 1;
+  const prev = document.activeElement;
+  document.activeElement = gear;
+  wrap.emit('focusin', { target: gear, relatedTarget: null, previous: prev });
+};
+const outside = { name: 'outside' };
+const document = events('document');
+document.activeElement = outside;
+const window = {
+  matchMedia: q => ({ matches: q.indexOf('(hover:hover)') !== -1 }),
+  MMSettings: null
+};
+const setTimeout = fn => { timers.push(fn); return timers.length; };
+const _curUser = null;
+""" + fragment + r"""
+function snapshot() {
+  return {
+    open: isOpen(),
+    expanded: gear.attrs['aria-expanded'] || null,
+    dismissed: wrap.classList.contains('settings-dismissed'),
+    active: document.activeElement && document.activeElement.name,
+    focusCount: gear.focusCount
+  };
+}
+wrap.emit('mouseenter', {});
+const beforeEscape = snapshot();
+document.emit('keydown', { key: 'Escape' });
+const afterEscape = snapshot();
+document.emit('keydown', { key: 'Escape' });
+const afterRepeatedEscape = snapshot();
+while (timers.length) timers.shift()();
+hovering = false;
+wrap.emit('mouseleave', {});
+hovering = true;
+wrap.emit('mouseenter', {});
+const afterReenter = snapshot();
+console.log(JSON.stringify({ beforeEscape, afterEscape, afterRepeatedEscape, afterReenter }));
+"""
+    result = subprocess.run(
+        ["node", "-e", driver],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, (
+        f"node Settings hover/Escape harness failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+    )
+    return json.loads(result.stdout)
+
+
+def test_settings_hover_only_escape_dismisses_without_reopen(src: str, deployed: str) -> None:
+    """Escape must dismiss CSS-only desktop hover without stealing focus on hover."""
+    for source in (src, deployed):
+        state = _run_settings_hover_escape_runtime(source)
+        assert state["beforeEscape"] == {
+            "open": False,
+            "expanded": "false",
+            "dismissed": False,
+            "active": "outside",
+            "focusCount": 0,
+        }
+        assert state["afterEscape"] == {
+            "open": False,
+            "expanded": "false",
+            "dismissed": True,
+            "active": "gear",
+            "focusCount": 1,
+        }
+        assert state["afterRepeatedEscape"]["focusCount"] == 1
+        assert state["afterRepeatedEscape"]["dismissed"] is True
+        assert state["afterReenter"]["open"] is False
+        assert state["afterReenter"]["dismissed"] is False
 
 
 def test_settings_narrow_phone_reflow_hosts_shared_preferences(src: str, deployed: str) -> None:
