@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T02:37:46.327381+00:00",
-  "count": 2679,
+  "generated_at": "2026-09-23T02:52:55.167133+00:00",
+  "count": 2680,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-qrdfmjn6wzi-46fee1",
+      "title": "JPM Meta Platforms Inc The Models and Agents Are Here, With Muse Consumers and Businesses Coming Next",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T02:31:47Z",
+      "summary_points": [
+        "Muse Outperformance & Adoption: Muse surged 21% vs SPX +1%, #1 free US app (U.S./Canada), daily downloads exceed Meta’s core apps (Instagram, WhatsApp, Facebook), driven by agent capabilities, free tier, and Meta distribution.",
+        "Monetization Path Validated: Revenue via transaction take-rates (commerce/travel) and subscriptions; Commerce/Shopping score 10 and Travel score 10 confirm high purchase intent and habit-forming workflows.",
+        "Meta Connect Catalyst: Sept 23-24 event to showcase AI progress (agent integration, smart glasses); key for business adoption (e.g., Meta Connect event) and addressing Amazon access block risk.",
+        "Valuation Anchor: $820 target (21x 2028 EPS), overweight rating; driven by social graph moat, AI monetization path, and top-line growth (23x 2028E GAAP EPS + 16x SPX premium).",
+        "Critical Risk: Token referral program (1B tokens/referral) risks token dilution and regulatory scrutiny, potentially distorting valuation and investor sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-panyzaaoyqm-fef318",
       "title": "GERMANY: MERZ IN TROUBLE AFTER STATE ELECTION DISASTER",
