@@ -4,129 +4,94 @@ session: sol/mining-principal-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Conduct extensive principal-led Mining research, analysis and planning across multiple turns
-  before a mature Fable CEO implementation handoff, extending incumbent Themes/GMI/F04 owners.
+  Principal-led Mining research, analysis and planning over multiple turns before a mature
+  Fable CEO implementation handoff; extend incumbent Themes/GMI/F04 owners.
 state_before: >
-  The accepted Mining mandate had drifted into Healthcare #7787. That scope error is corrected
-  on the original carrier without deleting its evidence. This Mining carrier began with a
-  verified context checkpoint, but no source-grounded Mining foundation.
+  Pass 01 and its research checks were preserved at 58b7e58e66e549791eaf3607682834e7869854b4.
+  The next dependency was asset-level copper/precious-metal and economic-rights reconciliation.
 changed:
-  - path: research/mining/MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md
-    what: "4,845-word Pass 01: 19 primary sources, ten stress cases, 15 candidate research families, 30 prospective requirements and four hypothetical arithmetic cases."
-  - path: research/mining/check_research.py
-    what: "Reproducible local document-integrity and selected-arithmetic checks; not application behavior."
-  - path: research/mining/MINING_RESEARCH_CHECKS_2026-09-23.json
-    what: "20/20 PASS receipt with exact foundation byte count and digests."
   - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
-    what: "Same cumulative Agent OS record updated to the source-grounded research boundary and Macro #7795."
+    what: "In-turn cumulative checkpoint: source-specific reporting bases, Antamina ore domains and distinct silver-stream payabilities identified. Further research continues."
 verified:
-  - claim: "Compatible protected procedure and incumbent source ownership were recovered."
-    command: "Exact-commit Skillpack reads and bounded Macro interface reads."
-    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack 1.0.1/bootstrap 1. Macro interface c4da107fe729e46b4d4036b3e0e290390315d0fd; WS:GMI-THEME-GRAPH; F04 composition."
-  - claim: "Foundation GitHub bytes match the portable document."
-    command: "Local Git-blob computation compared with exact-commit fetch_file blob."
-    result: "Commit 1991c91bc6ca7678a455cabaf38bdfe14e800028; blob d107e5527a898c834c26b4869d6de7e51b254af1; 37,792 bytes; SHA-256 7271cbf940685a0b14cd201a5de49a59c7460144a99ed969c930e4c604f66991."
-  - claim: "Research-integrity and selected arithmetic checks pass."
-    command: "python /mnt/data/mining_research/check_research.py; rerun before publication."
-    result: "20 checks, 20 passed, zero failed. Script a70c9a71f9441a476f820edc33680623117c3022 / blob 566cd2d135a1b996851e41111e37eb3cab1f32c8; receipt 5a0b59c793b42e3bb757991c16c70116569257b0 / blob fc0b8628356c49568d06590b7daa9bb3bd6f680d. Both exact readbacks match locally computed blobs."
-  - claim: "The Mining contribution has one draft, unmerged PR and only allowed paths."
-    command: "GitHub create_pull_request and list_pr_changed_filenames."
-    result: "Macro #7795; draft=true; merged=false. Exactly the four paths listed above. Creation head 5a0b59c793b42e3bb757991c16c70116569257b0 precedes this final checkpoint commit."
-  - claim: "Healthcare scope reconciliation is complete on its original carrier."
-    command: "Same-carrier update_file and update_pull_request readback."
-    result: "#7787 head da87d480adf6666583a61bb0912d6daeaeec984c; draft/HOLD/SCOPE_MISMATCH; foundation preserved. Do not continue Healthcare here."
+  - claim: "The research carrier did not move unexpectedly before this continuation."
+    command: "GitHub get_pr_info #7795 and exact-head continuation read."
+    result: "Head 58b7e58e66e549791eaf3607682834e7869854b4; open/draft/unmerged. Merge compatibility is not qualified and remains irrelevant to held research publication."
+  - claim: "Current protected procedure pin matches the previously loaded source."
+    command: "Fresh protected master and exact INDEX read."
+    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; INDEX blob 1a20acafe1fe7df686489cadef15a1ae7833ec12; Skillpack 1.0.1/bootstrap 1. Previously loaded companions are from this unchanged commit, not a moving ref."
+  - claim: "GitHub write permission was preflighted without a dummy mutation."
+    command: "get_repo_collaborator_permission for the established principal mastermindx-2."
+    result: "admin on mastermindx-market-intelligence/macro. Technical permission does not authorize product/source-owner changes."
+  - claim: "Selected Teck operating table and footnotes were visually inspected."
+    command: "Official Q2 2026 PDF parsed and web screenshots of zero-based pages 10,12,26,37."
+    result: "The Antamina table applies zinc grade/recovery only to copper-zinc ore, not total mill feed. Guidance mixes fully consolidated QB/Carmen data and Teck's 22.5% Antamina share."
 unverified:
-  - claim: "Mining taxonomy, exposure model or proposed first vertical is accepted or delivered."
-    what_would_verify: "Representative principal research, current-owner written design/plan acceptance, bounded implementation, required validation and real-path/browser proof."
-  - claim: "A research interpretation identifies market mispricing or expected excess return."
-    what_would_verify: "An acquired, lawful point-in-time expectation benchmark and accepted investment-validation methodology. None was produced."
-  - claim: "Native source retention, complete data rights or global asset coverage are established."
-    what_would_verify: "Dataset-specific ownership/retention/publication review and measured coverage through incumbent ingestion/evidence owners."
+  - claim: "New findings or the Mining implementation design are independently accepted."
+    what_would_verify: "Further principal adjudication, source/definition reconciliation and eventual current-owner design/implementation acceptance."
+  - claim: "Silver-stream cumulative delivery thresholds and exact within-quarter ownership allocation are fully reconciled."
+    what_would_verify: "Contract-specific cumulative delivery evidence and period-specific entitlement statements; do not infer either."
 unresolved:
-  - "Asset-level copper/precious-metal operating and economic-rights reconciliation is the next material research dependency."
-  - "Global cost curves, project pipelines, non-U.S. issuer coverage and point-in-time consensus remain unacquired."
-  - "Exact Albemarle contract pricing lags were not verified; do not assume them."
-  - "ICSG April 2026 primary numeric forecast was not recovered; secondary figures are excluded. Stibnite full technical-report fetch exceeded size limits; no full technical review is claimed."
-  - "WGC historical-comparator revisions and table/prose inconsistency remain explicitly preserved; present retrieval is not an archived historical receipt."
-  - "Current-base integration/mergeability, CI, independent review, canonical Agent OS validation and product/browser acceptance were not qualified by this research pass."
+  - "Finish Freeport asset/process and dated forecast comparison, Antamina rights case, Southern Copper development comparator, Detour Lake operating/resource case, and smelter economics counterexample."
+  - "No global cost curves, complete asset/contract census, point-in-time consensus, data-rights acceptance or native source ingestion."
+  - "No product tests, independent review, Agent OS validator, current-base CI/merge proof or browser acceptance run."
 next_actions:
-  - "Resume principal asset-level copper and precious-metal research from foundation sections 4, 6, 7 and 11; do not replay broad repository recovery."
-  - "Reconcile Freeport asset/operator/ownership and production-to-sales bridges, Antamina operator and contractual-rights layers, and an unstreamed producer/developer comparator."
-  - "For a small representative asset set, extract latest applicable technical/operating sources, process route, gross/attributable basis, product mix, reserve/resource vintage, mine-plan milestones, capital needs and financing/rights encumbrances. Compare publication vintages and identify disconfirming evidence."
-  - "Only after that deepen battery/rare-earth conversion, fuel services, bulk/fertilizer, specialty/by-product and enabler research. Keep Fable handoff and implementation held until the mature package and accepted design/plan gates."
+  - "Continue primary-source Mining research now; persist the asset dossier and reproducible arithmetic on this same carrier."
+  - "Separate reporting ownership from economic ownership; separate ore domains from headline grades; do not use a nominal combined stream percentage as a uniform payable entitlement."
+  - "Complete valuation/expectations and counter-thesis synthesis before the later Fable handoff gate."
 do_not_redo:
-  - "Do not reverse/repeat Healthcare scope correction, delete its evidence, or re-home #7787."
-  - "Do not repeat the initial Skillpack/interface/template archaeology without a material invalidator."
-  - "Do not recreate the ten baseline cases merely to increase volume; extend or correct them only for a new question or changed evidence."
-  - "Do not duplicate Robotics #7773, GMI semantic/evidence/identity/ThemeState, K3-D, F04, publication, runtime or watcher owners."
-  - "Do not infer worker absence from empty branch/title searches or external runtime from GitHub prose."
-  - "Do not change live memberships, rank/gate/entry/size/trade authority during research."
-  - "Do not request Extra High merely because the user reports Pro; needed GitHub writes succeeded."
-danger_areas:
-  - "Scarcity, issuer earnings growth, estimated asset value and common-equity returns are distinct."
-  - "Production is not deliveries; consolidated is not attributable; LCE is not identical product quality; nominal capacity is not qualified output."
-  - "A stream is not mine ownership; financial metal credits are not extra physical supply; internal segment sales require eliminations."
-  - "Financing approval is not closed/drawable financing; early works are not final sanction or commercial operation."
-  - "Public editorial research is not permission to redistribute paid/third-party datasets."
+  - "Pass 01 foundation and historical 20-check receipt remain unchanged and recoverable; do not recreate them."
+  - "Healthcare #7787 correction at da87d480adf6666583a61bb0912d6daeaeec984c remains complete; do not reopen that scope or delete its evidence."
+  - "Do not duplicate Robotics #7773, GMI, identity/evidence/ThemeState, K3-D, F04, publication or runtime owners."
+  - "No live basket, rank, entry, sizing or trading changes; no implementation, dispatch, merge or release."
+  - "No model switch is justified by a reported mode alone; the actual tool surface controls capability claims."
 ---
 
-# Mining principal research — cumulative continuation
+# Mining principal research — live cumulative checkpoint
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
+IN_TURN_CHECKPOINT: true
 CAPABILITY_STATE: SPEC_ONLY
-
 Operation: `gmi-mining-principal-research-20260923-sol-001`.
-Carrier: Macro Draft/HOLD **#7795**, `sol/mining-principal-research-20260923`.
-Source baseline: Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1.
-Permitted paths remain the three research files and this exact Agent OS continuation.
-Direct-work reason: PRINCIPAL_JUDGMENT, consistent with the Chairman's principal-research mandate.
-User-reported mode: Astra Pro; no platform mode or hidden-budget attestation is invented.
+Carrier: Macro Draft/HOLD #7795 / `sol/mining-principal-research-20260923`.
+Principal-research scope: editorial research and research-only arithmetic under `research/mining/`,
+plus this exact Agent OS continuation. No shared implementation writer or runtime owner is claimed.
+Direct-work rationale: PRINCIPAL_JUDGMENT; the Chairman requests foundational research here before Fable.
 
-## Material delta and verification boundary
+## Preserved baseline
 
-Before: an accepted Mining mandate but no researched Mining economic foundation on this carrier.
-After: a recoverable source-grounded framework separates physical exposure, economic rights,
-reinvestment, diluted-share capture and dated expectations, tested against ten disclosed cases.
-Fifteen candidate families and thirty future acceptance requirements make the remaining research
-specific. This is a research capability delta, not a delivered product or accepted investment model.
+Pass 01: `research/mining/MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md`, commit
+1991c91bc6ca7678a455cabaf38bdfe14e800028, blob d107e5527a898c834c26b4869d6de7e51b254af1,
+SHA-256 7271cbf940685a0b14cd201a5de49a59c7460144a99ed969c930e4c604f66991.
+Its 19-source/10-case/30-requirement coverage and 20-check receipt at
+5a0b59c793b42e3bb757991c16c70116569257b0 are historical verified research evidence, not newly rerun.
+Macro implementation/interface baseline remains c4da107fe729e46b4d4036b3e0e290390315d0fd;
+no implementation compatibility refresh is claimed or needed for these disjoint research documents.
 
-The twenty checks verify document IDs, source-reference completeness, explicit held boundaries and
-selected arithmetic. They do not establish that every source claim is independently audited or that
-any application test, CI gate, canonical Agent OS validator, browser proof or investment validation
-ran. The file named check_research.py is a local research utility, not a product implementation.
+## New discriminating findings, still being synthesized
 
-## Effects, custody and held work
+Freeport's Q2 filing identifies Morenci's proportionate reporting and a Cerro Verde ownership
+change from 55.08% to 55.66% in May 2026. Do not multiply already-attributable data again or apply
+quarter-end ownership retroactively. Primary: https://www.sec.gov/Archives/edgar/data/831259/000083125926000036/fcx-20260630.htm
 
-Known effects: Healthcare correction on its original carrier; one Mining documentation branch;
-initial checkpoint, research foundation, research utility, check receipt and this cumulative update;
-one draft Mining PR. Exact final checkpoint revision follows from its write receipt and immutable
-readback, not a self-referential SHA embedded here. No ambiguous modifying response was observed.
+Teck's Antamina operating table separates copper-only and copper-zinc ore; the zinc grade/recovery
+footnote uses only the latter. This enables a falsifiable denominator test rather than a superficial
+company taxonomy. Primary: https://www.teck.com/media/Teck-Q2-2026-Unaudited-Results.pdf
 
-EFFECT_UNKNOWN: none observed.
-Active children/returns/watchers created by this operation: none.
-No Fable commission, Executive Job/Attempt, product code/config/schema/data, membership, trading,
-merge, deployment or production publication was performed. External runtime/custody remains unknown;
-this contribution claims no shared implementation writer and needs no runtime inference for its
-disjoint public editorial research. Robotics #7773 remains a precedent, not a deployed-template claim.
+Wheaton's current Antamina page distinguishes the Glencore stream's 100% payability and 140 Moz
+step-down threshold. The BHP closing source specifies 90% payability and a separate 100 Moz threshold.
+Any illustrative aggregate must be conditional on each contract's threshold state; no actual combined
+received-volume estimate is asserted. Primary sources:
+https://www.wheatonpm.com/portfolio/operating-mines/antamina/default.aspx
+https://www.wheatonpm.com/news/news-details/2026/Wheaton-Precious-Metals-Announces-Closing-of-Silver-Stream-with-BHP-on-Antamina/default.aspx
 
-HOLD release: finish representative principal research and reconcile the resulting written design
-and implementation plan with current owners before any implementation or final Fable handoff.
-Public-source corpus reuse permissions and native private/public publication boundaries still require
-specific acceptance. Do not auto-merge or interpret green CI as research or product acceptance.
+## Effect and continuation boundary
 
-## Boundary and exact resume
+Only this documentation checkpoint has been modified in the current continuation so far. Its exact
+commit/blob follow from the write receipt/readback. No EFFECT_UNKNOWN response observed. No worker,
+Fable, Executive Attempt, watcher, implementation, production data, basket/trading, merge or deployment
+has been started. External runtime/custody remains unknown; it is not inferred from GitHub.
 
-This is the boundary between the broad economic/source-semantics foundation and asset-level
-reconciliation, after substantial source/tool context. It preserves the completed research unit
-without treating it as mission completion. Resume from this compact record and the exact foundation;
-refresh only procedure and material source/custody/dependency invalidators relevant to the next action.
-
-Primary next action: **principal copper/precious-metal asset dossiers with reconciled ownership,
-saleable-output and contractual-rights bridges, starting with Freeport and Antamina plus a comparator**.
-Intended resume surface: principal research-capable Pro conversation when available, preserving this
-same carrier and current authorization. No source-custody transfer, provider placement, automatic wake
-or autonomous background execution is implied. No Thinking failed event was observed; no hard seal
-is asserted. This record supersedes the initial checkpoint's research frontier, not its verified
-historical effects.
+This is not a final response gate or a Fable handoff. Continue useful research in this turn, including
+the contrasting producer/developer and smelter cases. If interrupted, resume from this record and the
+precise cited sources, not broad history. Finalization later must preserve all additional effects and
+an exact next action. No automatic wake, custody transfer or background execution is claimed.
