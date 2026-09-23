@@ -1,0 +1,133 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+____ test_missing_stock_assessment_is_disclosed_even_when_theme_is_blocked _____
+
+    def test_missing_stock_assessment_is_disclosed_even_when_theme_is_blocked():
+        out = bs.act_now_stocks([member(score=None), member(symbol='ARM')],
+                                theme(label='fading', reco='trim'))
+        assert out['status'] == 'theme_out_of_favour' and out['buys'] == []
+        assert out['entry_summary']['unavailable'] == 1
+>       assert out['entry_checks'][0]['code'] == 'assessment_unavailable'
+E       AssertionError: assert 'theme_blocked' == 'assessment_unavailable'
+E         
+E         - assessment_unavailable
+E         + theme_blocked
+
+tests/test_basket_entry_explanations.py:196: AssertionError
+___ test_rejected_stock_detail_has_a_focusable_real_anchor[missing_summary] ____
+
+damage = 'missing_summary'
+
+    @pytest.mark.parametrize('damage', ['missing_summary', 'bad_count', 'bad_reason'])
+    def test_rejected_stock_detail_has_a_focusable_real_anchor(damage):
+        out = bs.act_now_stocks([member(status='await_confluence')], theme())
+        if damage == 'missing_summary':
+            out.pop('entry_summary')
+        elif damage == 'bad_count':
+            out['entry_summary']['qualified'] = 9
+        else:
+            out['entry_checks'][0]['reason_en'] = None
+        html = render_checks(out)
+>       assert 'Stock entry reasons are unavailable.' in html
+E       AssertionError: assert 'Stock entry reasons are unavailable.' in '\n'
+
+tests/test_basket_entry_explanations.py:210: AssertionError
+______ test_rejected_stock_detail_has_a_focusable_real_anchor[bad_count] _______
+
+damage = 'bad_count'
+
+    @pytest.mark.parametrize('damage', ['missing_summary', 'bad_count', 'bad_reason'])
+    def test_rejected_stock_detail_has_a_focusable_real_anchor(damage):
+        out = bs.act_now_stocks([member(status='await_confluence')], theme())
+        if damage == 'missing_summary':
+            out.pop('entry_summary')
+        elif damage == 'bad_count':
+            out['entry_summary']['qualified'] = 9
+        else:
+            out['entry_checks'][0]['reason_en'] = None
+        html = render_checks(out)
+        assert 'Stock entry reasons are unavailable.' in html
+>       assert html.count('id="stock-entry-checks"') == 1
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x10a498710>('id="stock-entry-checks"')
+E        +    where <built-in method count of str object at 0x10a498710> = '<p class="muted sm"><span class="l-en">Stock entry reasons are unavailable.</span><span class="l-zh">个股入场原因暂缺。</span></p>\n'.count
+
+tests/test_basket_entry_explanations.py:211: AssertionError
+______ test_rejected_stock_detail_has_a_focusable_real_anchor[bad_reason] ______
+
+damage = 'bad_reason'
+
+    @pytest.mark.parametrize('damage', ['missing_summary', 'bad_count', 'bad_reason'])
+    def test_rejected_stock_detail_has_a_focusable_real_anchor(damage):
+        out = bs.act_now_stocks([member(status='await_confluence')], theme())
+        if damage == 'missing_summary':
+            out.pop('entry_summary')
+        elif damage == 'bad_count':
+            out['entry_summary']['qualified'] = 9
+        else:
+            out['entry_checks'][0]['reason_en'] = None
+        html = render_checks(out)
+        assert 'Stock entry reasons are unavailable.' in html
+>       assert html.count('id="stock-entry-checks"') == 1
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x10a498870>('id="stock-entry-checks"')
+E        +    where <built-in method count of str object at 0x10a498870> = '<p class="muted sm"><span class="l-en">Stock entry reasons are unavailable.</span><span class="l-zh">个股入场原因暂缺。</span></p>\n'.count
+
+tests/test_basket_entry_explanations.py:211: AssertionError
+_ test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength[templates/baskets_desk.js] _
+
+path = 'templates/baskets_desk.js'
+
+    @pytest.mark.parametrize('path', ['templates/baskets_desk.js', 'templates/basket_detail.html.j2'])
+    def test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength(path):
+        import re, subprocess
+        source = (ROOT / path).read_text()
+        helper = re.search(r'function rolloverReasonText\(reasons, zh=false\)\{.*?\n\}', source, re.S)
+        native = ['extended (RS 87%ile)', 'momentum rolling over', 'decelerating',
+                  'breadth weakening', 'more new lows', 'below 50d', 'rolling off the high',
+                  'momentum fading (hist 1.25→0.5, 3 straight declines)']
+        code = helper.group(0) + '\nconsole.log(JSON.stringify(rolloverReasonText(' + json.dumps(native) + ',true)));'
+        text = json.loads(subprocess.check_output(['node', '-e', code], text=True))
+>       assert '相对强势偏高' in text and '连续3次下降' in text
+E       AssertionError: assert ('相对强势偏高' in '相对强势偏高 · momentum rolling over · decelerating · breadth weakening · more new lows · below 50d · rolling off the high · momentum fading (hist 1.25→0.5, 3 straight declines)' and '连续3次下降' in '相对强势偏高 · momentum rolling over · decelerating · breadth weakening · more new lows · below 50d · rolling off the high · momentum fading (hist 1.25→0.5, 3 straight declines)')
+
+tests/test_theme_recommendation_reasons.py:391: AssertionError
+_ test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength[templates/basket_detail.html.j2] _
+
+path = 'templates/basket_detail.html.j2'
+
+    @pytest.mark.parametrize('path', ['templates/baskets_desk.js', 'templates/basket_detail.html.j2'])
+    def test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength(path):
+        import re, subprocess
+        source = (ROOT / path).read_text()
+        helper = re.search(r'function rolloverReasonText\(reasons, zh=false\)\{.*?\n\}', source, re.S)
+        native = ['extended (RS 87%ile)', 'momentum rolling over', 'decelerating',
+                  'breadth weakening', 'more new lows', 'below 50d', 'rolling off the high',
+                  'momentum fading (hist 1.25→0.5, 3 straight declines)']
+        code = helper.group(0) + '\nconsole.log(JSON.stringify(rolloverReasonText(' + json.dumps(native) + ',true)));'
+        text = json.loads(subprocess.check_output(['node', '-e', code], text=True))
+>       assert '相对强势偏高' in text and '连续3次下降' in text
+E       AssertionError: assert ('相对强势偏高' in '相对强势偏高 · momentum rolling over · decelerating · breadth weakening · more new lows · below 50d · rolling off the high · momentum fading (hist 1.25→0.5, 3 straight declines)' and '连续3次下降' in '相对强势偏高 · momentum rolling over · decelerating · breadth weakening · more new lows · below 50d · rolling off the high · momentum fading (hist 1.25→0.5, 3 straight declines)')
+
+tests/test_theme_recommendation_reasons.py:391: AssertionError
+______ test_timing_rollover_does_not_reintroduce_price_extension_from_rs _______
+
+    def test_timing_rollover_does_not_reintroduce_price_extension_from_rs():
+        html = _timing_cards({'rollover_risk': {'band': 'elevated', 'band_zh': '升高',
+                            'reasons': ['extended (RS 87%ile)', 'momentum rolling over',
+                                        'momentum fading (hist 1.25→0.5, 3 straight declines)']}})
+>       assert 'high relative strength' in html
+E       assert 'high relative strength' in '<h2><span class="idx">01</span><span class="l-en">Timing &amp; risk</span><span class="l-zh">择时与风险</span></h2><div cl...ght declines)</span><span class="l-zh">momentum fading (hist 1.25→0.5, 3 straight declines)</span></div></div></div>\n'
+
+tests/test_ftr_w3_ui.py:593: AssertionError
+
+NOTE: sparse worktree — .agents, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_basket_entry_explanations.py::test_missing_stock_assessment_is_disclosed_even_when_theme_is_blocked
+FAILED tests/test_basket_entry_explanations.py::test_rejected_stock_detail_has_a_focusable_real_anchor[missing_summary]
+FAILED tests/test_basket_entry_explanations.py::test_rejected_stock_detail_has_a_focusable_real_anchor[bad_count]
+FAILED tests/test_basket_entry_explanations.py::test_rejected_stock_detail_has_a_focusable_real_anchor[bad_reason]
+FAILED tests/test_theme_recommendation_reasons.py::test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength[templates/baskets_desk.js]
+FAILED tests/test_theme_recommendation_reasons.py::test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength[templates/basket_detail.html.j2]
+FAILED tests/test_ftr_w3_ui.py::test_timing_rollover_does_not_reintroduce_price_extension_from_rs
+7 failed, 156 deselected in 2.98s

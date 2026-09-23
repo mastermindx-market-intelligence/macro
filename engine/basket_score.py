@@ -349,10 +349,12 @@ def _stock_entry_check(member: dict, theme_blocked: bool) -> dict:
     status, ep, score = entry.get("status"), c.get("entry_pct"), c.get("score")
     result = {"symbol": member.get("symbol"), "name": member.get("name"),
               "eligible": False, "entry_status": status, "score": score}
-    if theme_blocked:
-        code, en, zh = "theme_blocked", "Theme risk blocks new stock entries.", "主题风险限制个股新入场。"
-    elif score is None:
+    # Missing stock evidence is not a stock-level risk verdict. The outer
+    # theme status still carries its unchanged global admission block.
+    if score is None:
         code, en, zh = "assessment_unavailable", "Stock conviction assessment is unavailable.", "个股信念评估暂缺。"
+    elif theme_blocked:
+        code, en, zh = "theme_blocked", "Theme risk blocks new stock entries.", "主题风险限制个股新入场。"
     elif c.get("cycle_blocked"):
         code, en, zh = "cycle_blocked", "The stock cycle has not cleared entry.", "个股周期尚未允许入场。"
     elif not (score or 0) >= 50:

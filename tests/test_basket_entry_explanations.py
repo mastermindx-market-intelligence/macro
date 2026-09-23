@@ -186,3 +186,29 @@ def test_existing_theme_entry_and_risk_texture_functions_are_unchanged():
            for n in ast.parse(current).body if isinstance(n, ast.FunctionDef)}
     for name, digest in old.items():
         assert new[name] == digest, name
+
+
+def test_missing_stock_assessment_is_disclosed_even_when_theme_is_blocked():
+    out = bs.act_now_stocks([member(score=None), member(symbol='ARM')],
+                            theme(label='fading', reco='trim'))
+    assert out['status'] == 'theme_out_of_favour' and out['buys'] == []
+    assert out['entry_summary']['unavailable'] == 1
+    assert out['entry_checks'][0]['code'] == 'assessment_unavailable'
+    assert out['entry_checks'][1]['code'] == 'theme_blocked'
+
+
+@pytest.mark.parametrize('damage', ['missing_summary', 'bad_count', 'bad_reason'])
+def test_rejected_stock_detail_has_a_focusable_real_anchor(damage):
+    out = bs.act_now_stocks([member(status='await_confluence')], theme())
+    if damage == 'missing_summary':
+        out.pop('entry_summary')
+    elif damage == 'bad_count':
+        out['entry_summary']['qualified'] = 9
+    else:
+        out['entry_checks'][0]['reason_en'] = None
+    html = render_checks(out)
+    assert 'Stock entry reasons are unavailable.' in html
+    assert html.count('id="stock-entry-checks"') == 1
+    assert 'tabindex="-1"' in html
+    assert 'role="status"' in html
+    assert '<table' not in html

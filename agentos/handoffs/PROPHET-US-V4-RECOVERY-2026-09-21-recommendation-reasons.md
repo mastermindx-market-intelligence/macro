@@ -366,3 +366,61 @@ required gitignored dossier tree. Current output now explicitly exposes that gap
 Prevent this lightweight lane from overwriting full stock-detail evidence; don't
 copy earlier isolated scores into the newer frame or bypass private-data gates.
 #7749's unpublished mixed-technical-date candidate remains separate and held.
+
+## Independent review consumed; bounded source repair — 2026-09-23
+
+Current Chairman continuation. Protected compatible Skillpack remains
+Mastermind@a5aa42d15c3e5cbfe785b415511de188cff66bd0. The source remains on the
+original #7669 carrier; no model/entry/score policy promotion or new publisher.
+
+Native review capability was successfully requalified on the materially changed
+source, on the original reviewer carrier and included account. #7669's reviewer
+session d8f2dc35-3019-4fb4-80a3-68932c42ae44 returned PARTIAL after a capped read-only
+investigation plus one tool-disabled terminal-report turn. It verified core
+recommendation/stock-admission equivalence and all121 compiled hashes, but found
+incomplete opened-state visual coverage plus four source/translation edge cases.
+This is NOT source approval. The native report is retained, not erased.
+
+Repairs in this source revision:
+- Both existing basket consumers translate the native rollover conditions. Timing
+  cards reuse the same RS formatter instead of reintroducing price-extension copy.
+- Unavailable stock evidence has its own row reason even under a globally blocked
+  theme; global theme admission is unchanged.
+- Malformed summary input has a real, focusable status target rather than a dead
+  hero anchor. Native refresh state preserves focus for this failure target too.
+- All121 generated pages were refreshed from their own existing embedded data.
+  All1,917 member rows, canonical status/buys/coverage, other non-explanation fields,
+  observation dates and original generation stamps were checked and preserved.
+- The opened component now has all eight dark/light, EN/ZH, desktop/mobile cells
+  on five actual regional pages (40 real states), plus16 visibly labeled synthetic
+  validation-failure and mixed theme-blocked/unavailable states. All56 pass
+  keyboard/link/open-state/focus and page-overflow checks; no page exceptions.
+  Separate DARK TREATMENT / LIGHT TREATMENT and artifact caveats are documented.
+- Seven new regression cases were RED before repair and GREEN after; final owner
+  suite309pass on Python3.14 and the same309pass on Python3.12 (overlapping counts).
+
+Evidence: research/sector_pulse/recommendation_reasons_20260921/review_20260923/.
+Older publication/browser evidence remains the historical reviewed baseline, not
+current-template proof. Independent repair re-review, new-head hosted CI and
+production acceptance remain owed. Do not convert this PARTIAL into approval.
+
+Separate preservation fix#7769: native reviewer session
+cbe9be03-e539-48d5-8879-0a12d43acf88 returned PASS, independently ran48tests and
+confirmed the parent-source mutation. Sol accepted its bounded source at exact
+11c89b3c5074f6fe60bbb32d1220145d3cb64d35 and released the hold in comment5790591847.
+The existing merge-on-green path is armed; native auto-merge is null. This was not
+an impersonated GitHub approval and does not claim the PR has already merged.
+Its nonblocking source-comment/staging-test-hardening notes are preserved there.
+Do not edit that source while its existing release owner is consuming it.
+
+Full stock-aware restoration is already being attempted by the EXISTING renderer:
+run35709199694/job106740198741, pc-render-1, actual start2026-09-23T05:08:42Z,
+re-render step started05:10:03Z. Dossier/publication steps were still pending at
+observation; earlier queued engine-render35808507754 was not the only lawful owner.
+No cancellation, duplicate dispatch, relabel or restoration claim. The old Sep22
+run-wrapper start must not be confused with the actual current job start.
+
+Next: commit/push this repair on the original carrier, consume an exact-source
+independent repair return, and complete actual CI/release. Verify deployed
+source/input/result only through the existing publisher. Parent MISSION_COMPLETE
+remains false; #7749's held source and denied publication are not imported.

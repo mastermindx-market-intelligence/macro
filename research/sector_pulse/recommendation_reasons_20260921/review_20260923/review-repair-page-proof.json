@@ -1,0 +1,1220 @@
+{
+  "source_head": "79c291a40684869facb160a20341ba7340d96b04",
+  "template_sha256": "05f2c77f5c0be639d8eb1e71107be72e5a146a62dfda6c38b51287fbb4e22cc0",
+  "engine_sha256": "279fc5255b33d4532c59d306a06c0f2942a489348555a247342fbeb7f1e0bb51",
+  "pages": 121,
+  "member_rows": 1917,
+  "rows": [
+    {
+      "path": "site/basket/ai_agents.html",
+      "before_sha256": "e79d70d9e64d49a18b4f13959efd345db024019d7a83a5936c53bf574cb8d149",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "f510c07808238fc4cce56127459c44582bd8ecba4af924894787f14a04f01392"
+    },
+    {
+      "path": "site/basket/ai_infra.html",
+      "before_sha256": "d63d7c58b90f8b337a1322a21e99e7f984c146ad8a4be6e6c15968e481ee70a2",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 24,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "6c8c3cb76f7d628c8de721195b1e59cea7664c8adc2dacb355e6fa2d87a16ef7"
+    },
+    {
+      "path": "site/basket/ai_neoclouds.html",
+      "before_sha256": "7486cc71fb1f49973996406b3bafa5312c8fa87fc12fff9c41ad5a664e15a2dc",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d5a9616f45ded721d38f55e2fdd996c366c0b778416808c4e2bf3d6a0542b681"
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "before_sha256": "f41b5aa6a53e7d78dcdf6a6c3ba8ee37054d2088225a06da66e9aad227ebacaa",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "220b9dc8534f1858705dc86d13e9b087cd40c90224b2be4c12847459869afcd6"
+    },
+    {
+      "path": "site/basket/ai_software.html",
+      "before_sha256": "56b4674ebcf509fdb8d741e6c05aa9c03b03f8320004567d24b0b63ce3ac6634",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 17,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "4bf1db29a10ac9421e5a1b9e8cb9af22624a69fd34b96cb5045b3171f6acf174"
+    },
+    {
+      "path": "site/basket/big_pharma.html",
+      "before_sha256": "bbd3047339d844300f94c035da96df92fc42ed971386136b12ef7805fc7b6f23",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8a08a330d4934edac03ab1cea26320fdb630e1b791f0b07719102436ceb7f1ff"
+    },
+    {
+      "path": "site/basket/critical_minerals.html",
+      "before_sha256": "30597ec0bc42bbf1e5ad5c1d9120a8215a5d457786f1f79096cc0d733a16f846",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 11,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "37c2794b06ea9dd8456f7931082a157353f2c29176b22f3d1fb67315f2b1c87a"
+    },
+    {
+      "path": "site/basket/crypto.html",
+      "before_sha256": "a8821b6279c482be9629bc5856c5a2df6fa3eea05d72c96772c9b06abf768a9a",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 7,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "32c400fa78c68ecbdff6665b9e55eb36df53c3cc15f55938b13bad7309ae84b1"
+    },
+    {
+      "path": "site/basket/crypto_rails.html",
+      "before_sha256": "9c77432b8f61e61af0e80bf78e5aec249cbbf376ec4aa4ff273d131942834a05",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 7,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "ced1a5ced688b0b74959248b71c649bdac6a18e4df9d74bf1f1e9d02cfb11eba"
+    },
+    {
+      "path": "site/basket/cybersecurity.html",
+      "before_sha256": "8a7caa49ee4190ccee1bf15c114c770b301a0bbd292e904925a00786bc76f84a",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5d75f40636714aa91b78751a25be5c71dfe5251dd76362de08cdda031a567ed9"
+    },
+    {
+      "path": "site/basket/data_center_power.html",
+      "before_sha256": "ac186aad79fc37ac4a2a2296e2958804bf67fc73c737939776ea921c50ebcd87",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "2e26d0034745cdea60663f3b36eeef1787a7cb466ea5a07bf733c9a62768eea3"
+    },
+    {
+      "path": "site/basket/defense.html",
+      "before_sha256": "bce2671dc1b7294b65d6771dd2d2a29bfd39db951ea14c5c5ff84147ea991514",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 21,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "54a8435d5cd007dfc96cacbbfe8d6b95676ce894885b701131d3c2f9e9982ae1"
+    },
+    {
+      "path": "site/basket/defensives.html",
+      "before_sha256": "f115e4b1687627012938b6899c5a36028785b5ed107aa0465279624254d51a87",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "9497b503db2ac49959b4d0cad6bbfb87764c87fc17f0101feebb0720f626f6a9"
+    },
+    {
+      "path": "site/basket/energy_complex.html",
+      "before_sha256": "8d7e1bbbac581db97b8212e30f763d2058ef87af823ec35f9513a60d5761b9c0",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 22,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d49b082457bc34f5c74a3a7cad64c0b0085d7fdd2166d0ef91f6de8570a26f7d"
+    },
+    {
+      "path": "site/basket/gold_miners.html",
+      "before_sha256": "12f9b508f6da6a1f22b52a8d5c38a9d5083af1ff81d6f3a11a35938decb7019d",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "734782d6bacf87cf0f0b048c1584ff90c3399381dd74d67cc35f572debca0d77"
+    },
+    {
+      "path": "site/basket/housing.html",
+      "before_sha256": "4858cce40bc6a5d4065706c919c687fc1e6cfa9982e8d9bca8d9317a86690add",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "46256eb38988f5f992a68643d0499027acc3b94a180dd0f5485e8b8e47e57b4c"
+    },
+    {
+      "path": "site/basket/industrial_distribution.html",
+      "before_sha256": "5bcf341fdf3aed051dbc23f0c7732f2c532b2d4704f6d8218357a2a4ae39f5e3",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "de43180cbf4bc730a42ee88185bc919f9e91dbf6163b66353cad9b7180628dc4"
+    },
+    {
+      "path": "site/basket/insurance.html",
+      "before_sha256": "3c5ea938d360d0915416b681297d1bc643ba3f8012c1d34e4eef1d5dd7f464f6",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 19,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e6b333cf8cdf0e93da5682a173ee987495d832207914bed7d43485e15681d15c"
+    },
+    {
+      "path": "site/basket/mag7.html",
+      "before_sha256": "27a8907e38fad08ffb6f0dd64a82db772348cfc9f33f1beff611bd2aa8915362",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 7,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "a9e5a3756549ee3516968a2725aff290252926c05330461d647d458148a72c16"
+    },
+    {
+      "path": "site/basket/managed_care.html",
+      "before_sha256": "9645a8a6059c7b3e667c0150f4ff55a35014b90fb36f91876058e5c005aa6d00",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "c5fd5dc576f9a1b12e63da99073de56f4b07368654c00bf1b2d37f2ccd22e6b4"
+    },
+    {
+      "path": "site/basket/memory_storage.html",
+      "before_sha256": "813e00f6a72d02e74fdc5ffe2a4749ff3ec5b7c9387c1ac44cdf51cf631550a0",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 4,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8e6051795e30b3fb83819eadeac94be28d49ce6324eb8ae9265cd8fe2752ed51"
+    },
+    {
+      "path": "site/basket/non_ai_software.html",
+      "before_sha256": "c7c60d8f65579c7d55514ba171b0b5b79d113b1481cdb6baf61f4023180cbd09",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "798b65a3136d91ea7381fae8d6f8ed8e1b36de323d180874ee119fb2e4a046fc"
+    },
+    {
+      "path": "site/basket/non_ai_tech.html",
+      "before_sha256": "deb8fa4857d5f7ef77d926e1b3f39ef7266ed799802a56ce7a6c77a3a78d96af",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 13,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8afdbda30180ee5d65788cd50a4b1bbdac55b1234a0f8222523a5c2a21902950"
+    },
+    {
+      "path": "site/basket/nuclear_power.html",
+      "before_sha256": "4e901a8837f6ae9d4174138282f264008319dcd2a009e0c5aa8794783ddbe597",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "f9418fcef620cf5f46137cd44e2e8fbc1eaf6d6a8e0c0e75da026bcc3f48ab7a"
+    },
+    {
+      "path": "site/basket/obesity_glp1.html",
+      "before_sha256": "39ff4314d64fc53962a5f98d3ccd56897c132216cb208e621704de26928add15",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "39bee50542948c0fba503aa7d64114218a7ab5d68c768f3df8611620e3a8e936"
+    },
+    {
+      "path": "site/basket/payments_fintech.html",
+      "before_sha256": "12786dde6fc2d1ba80809c68d6f2ffd337210344f2accb786b2ce9e3212a03a4",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 21,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d7838b25a36b1bc6f053550876723b2bc9d2f57645ea5f195a10fae1fdaa32f9"
+    },
+    {
+      "path": "site/basket/pgm_miners.html",
+      "before_sha256": "0b2e2360350e6a55182339c22c7d6ac20d5ad64a69f5b6f74587d2abb2d9a3b8",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 4,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cfe78fb0ef787edf7f04323397672afa4e0ca7fd887867a08a793dfcc17ba5de"
+    },
+    {
+      "path": "site/basket/power_grid.html",
+      "before_sha256": "c03dd072c652f91bb83821c7f1f95443b4f7aae916abc24ad9c05d7f7f49e095",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 24,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "624b3f72cabe79249de27fe58deec1348906096d40bf3032bc79fd03ef329279"
+    },
+    {
+      "path": "site/basket/quantum_computing.html",
+      "before_sha256": "b16aae49b6a45e6ddf177d005d7e597383a898e055933c6892e5fb06c8d6310d",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 11,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "94a9bd606adb2a33c45a956422dcdd37ef21bcd7f9378f61f4acc9edc2ca6964"
+    },
+    {
+      "path": "site/basket/regional_banks.html",
+      "before_sha256": "ad284e08ccb4a396e0a763edd86544a5f7d8099c67b6a29e43bda32d987d9481",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 19,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "60e31d41b4617942acc20fb5b5eacf8dcaf7e07fee96b1338b806f001b619ade"
+    },
+    {
+      "path": "site/basket/reshoring.html",
+      "before_sha256": "ba8bcd6f2da00af142366454c7ed9283bd8d24064d2d1c8e5fdae6f6e0efc553",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "b6646807b43797886ff5ab6842921bddf075b0bcc5ded617a24419caba0550ed"
+    },
+    {
+      "path": "site/basket/retail.html",
+      "before_sha256": "87b555b19be4f672b9fa1839c1a38d852700d5afe61d2dc5cf5f24f08450af80",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 21,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3d6fbccf1f440e03fd01f88c9aa0f7f7cbac9cdbc80c40f1813ae7f7bb24d7c8"
+    },
+    {
+      "path": "site/basket/robotics_automation.html",
+      "before_sha256": "c3bd9182150258cbd62565a5488ba1b1dc8740ba6312a33de7a888bdd26b5b63",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "01e083ba283561b4e3aadf0fca2de89ebc1cf046d1c27a10bd998944daac17c5"
+    },
+    {
+      "path": "site/basket/semicap_equipment.html",
+      "before_sha256": "a5f297fed508f8f4848b2e673ba3bbc7ae8e797c375d01fa5fcf1c581b9eb02a",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cec6f42baa7644a9205164181446eeaff5ecb2ce8259b6d801f50470642f7e84"
+    },
+    {
+      "path": "site/basket/silver_miners.html",
+      "before_sha256": "8e8082eab2fa1248da354e1272f4a6458ebb4fccd5f7f4e3830b4f05b53ce349",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "731d67ad2060ba441e40c424ca5f590a94f952cd7d89e304858880ab1fb9b90d"
+    },
+    {
+      "path": "site/basket/space_economy.html",
+      "before_sha256": "0ded173a45861756c46043c811b37d8f16860f605ae18fea43c6bff8c843b64b",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "b33f5b17482ab0eb1de80db8f205d0cba77b36a6e5c24b339ea35ca6d1f98eda"
+    },
+    {
+      "path": "site/basket/travel.html",
+      "before_sha256": "9d87cd28e6625ef4b0fb902639d0f13b2e8f55051ddb37055afc08d030b35641",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 24,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3b6f0645599f53de124252f8bcea60d8aac3d1a7799bbd766e434fd95e295e59"
+    },
+    {
+      "path": "site/basket/uranium_miners.html",
+      "before_sha256": "eb5efef51a72d2dc3f66e11b22a0373e16c4f675b7639ed5cdc0c9981119cbc1",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "a774dd59e08b8ae8cc05c0c2f1049be41ad4e5feebaec380ede3f9f940654ead"
+    },
+    {
+      "path": "site/basket/us_sector_comm.html",
+      "before_sha256": "3029f15a78b32a2da46c36487bfd026a162196edb0d5cc339886ab43fac8d267",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 22,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cdfbf4adc6dc37be4be8c36286e23677083e7410b02c485e42df32ad2b14e0f8"
+    },
+    {
+      "path": "site/basket/us_sector_discretionary.html",
+      "before_sha256": "b55c94777b8624fec0306f300894a857f7338c9e782f3333975e503d2e7ae12f",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 47,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "359ae63e5258ba87f07e57cf4e532767d8ec8caf3e87ddec44057374d60b96c6"
+    },
+    {
+      "path": "site/basket/us_sector_energy.html",
+      "before_sha256": "5b60a46a66f9310704b6e63986f435f19c7789685c87a5084c7bd513cad3f1be",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 21,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "bf44c59d76424383b248431c0a81cca77e86ab33fad96f7f21789ff3b6e82f60"
+    },
+    {
+      "path": "site/basket/us_sector_financials.html",
+      "before_sha256": "490095e763990dc8531c0a1e4c8f5d56d04f6e9633d5c69cce157754ced3047d",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 76,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "bc9ceda822789098749026f96911ca9ff934025ca5e90bfdd6bb1b28faf12fe5"
+    },
+    {
+      "path": "site/basket/us_sector_health.html",
+      "before_sha256": "a05b4f81cbd2add5203fb16c81f407a5c82ecd72c11fb5d3bba944f6b4b736f3",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 59,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d1a4be24e3c369a9f00fe7e96ee60eb9eb389b7201d269b7081659a8c5c85fc0"
+    },
+    {
+      "path": "site/basket/us_sector_industrials.html",
+      "before_sha256": "ee2f292e62b148ba423499e6fcb511e045d0ff4b507df3dd560e12956925cc7f",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 80,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "2ca53d6187ec6cef8725e2e844245579fad7bf23f532e0f04f86da649d9ebca8"
+    },
+    {
+      "path": "site/basket/us_sector_materials.html",
+      "before_sha256": "bb74526301723d79c91d5fc0372996ae069963c86748694bf9da6e662fab660b",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 26,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "ee20cda11011cb3f9492a379d7e62bea809f7b9d63001447c9d0c5f63e97b43e"
+    },
+    {
+      "path": "site/basket/us_sector_realestate.html",
+      "before_sha256": "dfdd79f144fcc2ffc79db8f0703fc7ff503ea59e9c2fedb65d39eb891cafd0d3",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 30,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "9e5c279dcde9b835f51f78f8fa5a7f5e9765d197322ecefcc25e435712da6c28"
+    },
+    {
+      "path": "site/basket/us_sector_staples.html",
+      "before_sha256": "eba9592827f4bbd23c975103973880640fee08020415c1e780d23cf356738938",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 35,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "46b9cfe58c59d61cd753d2574a46f075868aaba301da37eadfb3225be275f55f"
+    },
+    {
+      "path": "site/basket/us_sector_tech.html",
+      "before_sha256": "fe5b9b15bd10e65da38e3cb69533a9d30cf2400ce0cfc8b158e38e71ca7fd22c",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 74,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "a06843dc33844f6cbc3b4a25c3aa57411262d975f2a0b548b12935634845f4ec"
+    },
+    {
+      "path": "site/basket/us_sector_utilities.html",
+      "before_sha256": "fb66bdfe66eab79412c30ad8c62ffbb6b80ddee32018cf293240d5fac16251cb",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-23 01:50 UTC",
+      "members": 31,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5c8c20ab8a87232835c6eab579d858a0fda8ad3d704712f6864e395ea1292937"
+    },
+    {
+      "path": "site/basket_canada/ca_asset_mgrs.html",
+      "before_sha256": "79785bb2bbdfb50e2a30f1544ddfc6b794410f4d90629daff6f0cddd397a3b07",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "11f934f4c702d31ca54897eafc70f25c5ba9c082ca1bb41348f5d061d36f52f2"
+    },
+    {
+      "path": "site/basket_canada/ca_banks.html",
+      "before_sha256": "29272c73639f095d30c010a5e339a132a672648f18180e94009ebbd65b003ac0",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 7,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "f36290eafa8df6d5bfc63549c8984e0c9899317bccfe5ba5c6e44a60dece8560"
+    },
+    {
+      "path": "site/basket_canada/ca_base_metals.html",
+      "before_sha256": "0e85c2587e0fb0a70d20b809f511975374bb0654ae621348b36aa499d4ae1fb7",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "90660bc648af35f9bca65aba0bc4ca8c4adadc5426fefed7d09eb29901734e68"
+    },
+    {
+      "path": "site/basket_canada/ca_consumer.html",
+      "before_sha256": "552f16e8dcc4fef2b6ec06c5924919d5b0ae9b08d4ff85d506ece2d932475e31",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 13,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "25e000bc8481a6beab68e4bdddc0582f528db7680125fa813a09cd8b3a057559"
+    },
+    {
+      "path": "site/basket_canada/ca_gold.html",
+      "before_sha256": "cfaaacd14726073765b20aaf82b7e717987aaf75d027aaaa8ac38d1456d84e34",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "0891ca492c739e39b582889cff44e2ced34904707e43a002d1f3b213047eff45"
+    },
+    {
+      "path": "site/basket_canada/ca_insurers.html",
+      "before_sha256": "5ff7204c3d11d9d86c6b1afdbfaaabc8cccc73c889c40a94a0fdddd5c22a13b7",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "c53cbbe490732be319def59c414b2d63bb4f6c9c74fd41c012ced33b80105bc1"
+    },
+    {
+      "path": "site/basket_canada/ca_materials.html",
+      "before_sha256": "1bd4c7950fa067514025174bef9f8b3521ed20e74601ff341ba37918e7a8cd0e",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "143f7ccbffffaced8dd06f594943a519c08281d5a9266a42de29c69cea83bde3"
+    },
+    {
+      "path": "site/basket_canada/ca_oil_gas.html",
+      "before_sha256": "cb41b39bd2773286c67b2ba7074bd5c3f74fb32f0572cb836cccb26c439088c4",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5e43b0d602d11b1ea84d2e5fee72a75608cc998b0b438c0c9bd033ff146b3489"
+    },
+    {
+      "path": "site/basket_canada/ca_pipelines.html",
+      "before_sha256": "9325319b5645c45eacd9e0a20911781608fa1c694d4bc043816a3bd17f82c385",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "7d06e04bbfd92f83a94b685e6ae0cb19f0e8608672724903252b9a5e2bb379ba"
+    },
+    {
+      "path": "site/basket_canada/ca_rails_ind.html",
+      "before_sha256": "3066f8a63c312e1a8e88aa3e63fee26d2d11745ce5553d727970dd4358cfae4d",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 17,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "4a5a382cd3cf63ecfcec689c134f9fdcaca2cf1a8da493c8657a49d8425bed80"
+    },
+    {
+      "path": "site/basket_canada/ca_reits.html",
+      "before_sha256": "e89a469519fe8b11f89fdb102dd0093ddd55814b6df89f077fe18dde29446870",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e16c556227bde7ea0b7455aabead0a609f77bf6a5e2b3c156501e971d95f7488"
+    },
+    {
+      "path": "site/basket_canada/ca_silver_royalty.html",
+      "before_sha256": "651dc79179f89fb8f0707305f7bf0b6de0dd43f0f8348f96bfad9a3f092059cf",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8f9bd3559ccbfccd945bd6c36fc981a0513a60827a3b92b4c3acb2bfdca1489f"
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "before_sha256": "37cd607c91eb9f8533497b73884f16c66461789fbcc75d4bad797cdd4df02cc1",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "b5fb788a1982084ec4e8c457efc5ee27d40b2719c11d35c2def792da8f96c2ac"
+    },
+    {
+      "path": "site/basket_canada/ca_telecom.html",
+      "before_sha256": "15ddaf09dd23f58c12dc6b6ee17d9b1a70860414ca4f9a180b49a13606c51d92",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 5,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "144d0e8d09e746b338af13933bbb0c9df4e934e671cb92070c863a3bd9be4975"
+    },
+    {
+      "path": "site/basket_canada/ca_uranium.html",
+      "before_sha256": "74d226dd8f1f2ab2ddd28b148981ed7bedbdcb949869c66bd751c91556eba000",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 4,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "dd484a6f820387f16bd2a600ebabc2a09dd912f356dbd227d24937e65a798c85"
+    },
+    {
+      "path": "site/basket_canada/ca_utilities.html",
+      "before_sha256": "877b7c5f8aee0511241e87e9322c89f21dd1c96533ecc5ef5a135f902b14cf88",
+      "as_of": "2026-09-21",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cc07a010fc48c01948487859982908880c9693582fc3aaaed4f7820235ba9ca3"
+    },
+    {
+      "path": "site/basket_china/cn_ai_compute.html",
+      "before_sha256": "a808a136cd3121f79992529711983c9114b71806f9d784f42311691df99d63e7",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 17,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "15e6817f8f4550755cd041adce0a739fb6e51bea00fa9567bfd8e050e721723d"
+    },
+    {
+      "path": "site/basket_china/cn_appliances.html",
+      "before_sha256": "d290a03d5e0e29c8d278690d98b8f4a688f56d204a247c5216833a651fa4aca1",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "90d010e4f32b7878ef4754a392bfedb13382928977145c677f4179d339311fc8"
+    },
+    {
+      "path": "site/basket_china/cn_autos.html",
+      "before_sha256": "3aa9c303f54d59356c7d466282aea7d6e2b7d416773c55f82d22029779f210f7",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "07b330ab9b44a1bf149dd683241f73daa0e55221b000a1cde5f52f0886ec0ee5"
+    },
+    {
+      "path": "site/basket_china/cn_baijiu.html",
+      "before_sha256": "5d30e338d2aa33c52f8d1d65d48662a9fabcfa47ac1c3da8556908394e2a6899",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 7,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "c5ac0fcc358eee3bdcfb916c1778678d59cbb3d39b60fff27c1d75901020fd1e"
+    },
+    {
+      "path": "site/basket_china/cn_banks.html",
+      "before_sha256": "ba9aec777e3e3f68604301e44df440c1b1c9aaa2e7efa591db9557fda14bf32e",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "c776ddb6d685a3db92b3f395588eb089b2a50e9e1082208f67f9fedab301f8ac"
+    },
+    {
+      "path": "site/basket_china/cn_battery.html",
+      "before_sha256": "03ad6da1438fd9795eb075d44b3001688c7856569c01ef1232cc5b5ddcfaba9a",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e388ef3a7d1976f5992b96197dc1374e0d09fc8f3bc2d097b29e013ed9e70fea"
+    },
+    {
+      "path": "site/basket_china/cn_brokers.html",
+      "before_sha256": "00748f4565f33f5e56b894b4d81cdcda6a813649f281b11ba1ee4543588a1a1c",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "54873df574c6c181a3c3c37351d4ed2721ec18e8e2b70b1ec154920cf562dfbb"
+    },
+    {
+      "path": "site/basket_china/cn_coal.html",
+      "before_sha256": "149e4e147848f9d1c45469f20ffb1b5c4c738f5eb1f0719f1a6b33235607f4c6",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "b2774700a447a1c3ea118130e3b46f05afe402d20dcd96c1cbd8f75b95287c9e"
+    },
+    {
+      "path": "site/basket_china/cn_consumer_elec.html",
+      "before_sha256": "8251aebd35125e0e51f89b6cf05b9fabeae02125b9e68f128841de82601cac5c",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3ed43251bbeb515f580f3aa958aed0a1f1a3c5c1cc930380af61125e80923c0a"
+    },
+    {
+      "path": "site/basket_china/cn_defense.html",
+      "before_sha256": "3a32d104433f10b9cfaaeeae6f159339c52103b5c0f240ec637ca6f7635c0e87",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 13,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cf33afd517100ec0ddc50a841eca6dfd2808eb63766ca2430fececd461d93de2"
+    },
+    {
+      "path": "site/basket_china/cn_food_bev.html",
+      "before_sha256": "05fd22c072f39e9ecf3ceb2baa8cacf899f77b722dbfd457d60b86e888d81da5",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d3e0649444924f110cb9a0dc854de50b340ad5936fc66a03098bb3068f24728e"
+    },
+    {
+      "path": "site/basket_china/cn_gold.html",
+      "before_sha256": "39bfc9d0a908c498a3159edd7f486913bc3bdeac88e26d303bf02064a3212d25",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 6,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5fa680d8d224cb4a9d58a4727e404052bbb158a479c8a0c308a19941e470837d"
+    },
+    {
+      "path": "site/basket_china/cn_insurers.html",
+      "before_sha256": "99f17b5f0db1bb35824904ea6e17df31ff7876b38ce792cc4fa74050ff2482a3",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 5,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "47c47397ab917efec9f6436e44cc8e52211fac857b8a2c7a485d46a8d94d220a"
+    },
+    {
+      "path": "site/basket_china/cn_med_devices.html",
+      "before_sha256": "4f6117f0a85feb98296862083d8f848c9c96992fe6d4763c087cd0caff0b15d1",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "1232ae462b74b3e85025da52416c73fc306cb80fa750a1d7274f390f049d61c0"
+    },
+    {
+      "path": "site/basket_china/cn_metals.html",
+      "before_sha256": "ca4fd24bef4f2f1dbfc00b93d288594f6b4f715c28952fc2800ced93685b5bed",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 13,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "b7fde04e263a3695925c991b07791877622ebc938e094f5d9ab455fc1386cf41"
+    },
+    {
+      "path": "site/basket_china/cn_pharma_cxo.html",
+      "before_sha256": "6aa27f168464088531c5da59585c67542c6bb259df31ce83712147e624627c58",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "757493ae77d40c32539eacc29872fa5cbf6e6c854bf84df75992858f943e724d"
+    },
+    {
+      "path": "site/basket_china/cn_rare_earth.html",
+      "before_sha256": "091150d3ad1ce167a800f895bdb421ae9cd9c08bab52b8bc282cca167a538085",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5324e9f205b9dac603bd87e90625e52ce181579bce1e40852e2adf339b3323fd"
+    },
+    {
+      "path": "site/basket_china/cn_robotics.html",
+      "before_sha256": "ba087757b57dfc28dad1296743fa7e5baa2718ff300004323835cf90428fcd08",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 11,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "f21161db139c3c51ae3e3760a86154c205a4c23564ba91b2fa3a74edfc2420f4"
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "before_sha256": "1a03e741dca1e4a5136b65a963579c144fcf7b1a1c9ecd04f81d9e367bd311d9",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 22,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "4145d0e161eb80792ab6b833ffcec72f11f836183beeb0e30f09bd2cb93b4f95"
+    },
+    {
+      "path": "site/basket_china/cn_soe_value.html",
+      "before_sha256": "dbd972c51b0c51519b950c7762ef23f1ff9163f1b28eebaee0c18dff7acf89d1",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "da110f4164f790e69b5870d391d37ff085c838f02c3942132dd1b450c3c0eb46"
+    },
+    {
+      "path": "site/basket_china/cn_software.html",
+      "before_sha256": "25d5bb90ba17300814a5623853475b09511b01edca94bf2cc9656dd81a3be896",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8bc960410512983b5c6f94d932ac31f1d226d4d6e7f0db24c776f7fac37ff2aa"
+    },
+    {
+      "path": "site/basket_china/cn_solar.html",
+      "before_sha256": "5bb61479148d4b882ee82e1bb613cf979088fa8a9ac61a85826459af5a1b24aa",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:51 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "358f3ecc370775850603adcf5480d7238575edba5e080f4758c2ca8ffd57a635"
+    },
+    {
+      "path": "site/basket_hk/hk_banks.html",
+      "before_sha256": "2ec6152104e354944468b7091aabede856e20ee7b3ca393bcfb1f434cf21a9f5",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 13,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "669b2d2740a5b7db84988f7333abc39c6dfc070277fd98721c507445fb1fc1da"
+    },
+    {
+      "path": "site/basket_hk/hk_biotech.html",
+      "before_sha256": "06e2ca37f973b09d9668dedd3176e9f2e0357292ff4c00a4a2150eb9ff547769",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "becaca9cd94bca5a879e30dff7f697f8fe3c25bb3da3dc7d312587af619592c9"
+    },
+    {
+      "path": "site/basket_hk/hk_china_tech.html",
+      "before_sha256": "86f4af99c46ab5e5c070148208fa01027f5135da90531d31d5d580bc73e2a2cc",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 19,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e91dd185f367538d8a8dbbd9559e10b0733c62db81e591123627c6411e9229a5"
+    },
+    {
+      "path": "site/basket_hk/hk_conglo.html",
+      "before_sha256": "4e92a851ea04ecc512adc19393e1f587459be298c6490151339d7be2b83b037c",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 5,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e1746639b62f85cbe21ec93db6fa3ed8f08487ce06016233eae5293704eac667"
+    },
+    {
+      "path": "site/basket_hk/hk_consumer.html",
+      "before_sha256": "6e7e69c1a8039700d04cbbfb77f1c04b189a3ad44cbe83071c50aa994fcf67b8",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 17,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "0fcc44c6939a2872f5533da05e5bf954efbc43b14bcd7c4605258214e2803602"
+    },
+    {
+      "path": "site/basket_hk/hk_dividend.html",
+      "before_sha256": "4d866ba893a10769a09a6a7e8eb881bcffeb746e94bf610984e4eae3487bfad0",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "945d32bfa926c69d90d3607b276f3389d466268587f3c9a96f179297576be1bf"
+    },
+    {
+      "path": "site/basket_hk/hk_energy.html",
+      "before_sha256": "2615deffdace55476804364bb78e695ba2bfde6cd2ec241062665091f66ca8cc",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 10,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3d3b261e5b5899fd36869ff4bf1be238b45686392d85ecd010ad079e4c9de4db"
+    },
+    {
+      "path": "site/basket_hk/hk_ev.html",
+      "before_sha256": "ff69cbc86baf33164d336203ef65fcf94e41d07275007458a8044bf84e6f919f",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "303222f148907180195ed1473d87a602e472e3aa7d6f0a1b93a87bdc6c474b2c"
+    },
+    {
+      "path": "site/basket_hk/hk_gaming.html",
+      "before_sha256": "5bb6b895411c1e9993b41b0a4bc4213a52edd78047098786655e1c7e87d6b72f",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 5,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "fd132850c9fe78682cd523ce1af821d254ca10e099e6ce1c72eb894d3a57d642"
+    },
+    {
+      "path": "site/basket_hk/hk_industrials.html",
+      "before_sha256": "82e5baefdbfb9d73e49f598b591d2127909029788aabfc9ae3a4fbd77345646a",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "7c6f994c15f9db6a44e9e3ff62c1ee350a9b60775d8da613769e43cd7ce5a70c"
+    },
+    {
+      "path": "site/basket_hk/hk_insurers.html",
+      "before_sha256": "1a53e5f0ec5297a0985983ad175530e541f3cedf21cec2872f12ba9c93d2b41c",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 8,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "9cc252ba68f692ca00600c516f9737a58e37d235bfa054712a5d4bacaf7023c6"
+    },
+    {
+      "path": "site/basket_hk/hk_materials.html",
+      "before_sha256": "f9d090e347b6bc63c3765e8246e2d361d9425931c3ec176323636b6b3a5a77f6",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 11,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "55bcbb4cd22b9e9cc6eb7045b3ffef2ab4d68cb982a32ef4c01ae41fdb740974"
+    },
+    {
+      "path": "site/basket_hk/hk_miners.html",
+      "before_sha256": "e425b25ae93d0d53c1b77209555a113bee6fd15b77aaaf47c011431d5374f99e",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 6,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "86a68c7b0cdb4488b829df63edb48616d041ac421fe8d923d44935d6dc4139ca"
+    },
+    {
+      "path": "site/basket_hk/hk_platform_tech.html",
+      "before_sha256": "517bef5f57f094b9960ba4dbf1851cf0a46a430a4a64e976e1c36cbc62e402b1",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "81a2b39819b5102c079c443a339a031998f3f9212d90ed255d369cebb9269282"
+    },
+    {
+      "path": "site/basket_hk/hk_property.html",
+      "before_sha256": "f8994315dd72b102527019dd7d0606b8c71851fe099929b924e4bd6d419112aa",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "681345240be3142f9ee95cdfd0217dd4185ba511983c600e087b58a88cd57849"
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "before_sha256": "e1e26d2d457681a569c6436c04ceb977b2072101bd284c28d6a4ac0d723a1cb7",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 6,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "8d5e2aff67edc52b1c68edb50c1d8e4f5b6ec6c92c8776f5d7441bfef17a59bb"
+    },
+    {
+      "path": "site/basket_hk/hk_telco_util.html",
+      "before_sha256": "4da9861297f962720ccdcded38f06b111c6a28e6f5a3e22ee21918c34c828957",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 12:52 UTC",
+      "members": 12,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3710e89d01a4dc47e11e3b26c7fa3acfd210bf81941223b8ac32789e94a2fe51"
+    },
+    {
+      "path": "site/basket_intl/intl_automation.html",
+      "before_sha256": "84ed3f5ce2c2f8d93abef281fdaf862273b135d7557f62ad4ce2e7407ced58d6",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "cc5029b8cbb082f4f0e037016003b8e0f627dadbe3f61462473e301a73c008a6"
+    },
+    {
+      "path": "site/basket_intl/intl_autos.html",
+      "before_sha256": "e73a155b80cd725b947387947754084abb2f3104e186aa1bd3c412044063e154",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 17,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "5c9508bf24fa5a9583721627cb04fd5f47ddf233994f1b1c869520f024118ad3"
+    },
+    {
+      "path": "site/basket_intl/intl_banks.html",
+      "before_sha256": "ebfdf0261af3ed3f5735a59885cf97180ea2f35aa2ca5a18d38a15af23096461",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 23,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e9a73599db920f1a8a2dda8e9110b7113ec23a22df0e6a725b2f244fdefe9190"
+    },
+    {
+      "path": "site/basket_intl/intl_defense.html",
+      "before_sha256": "7f458c23e0fba9aac7e0a09abc3f4c8c0d57b5c051d604ceb1db199bce5cc9c7",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "4aea06d3dc9ec185f6a2ca6eff408f9d478e714fba6dce60977201147881e0fb"
+    },
+    {
+      "path": "site/basket_intl/intl_energy.html",
+      "before_sha256": "789a13c8bd5e25084f2e2b4f214cc16a0b2aeb3dedfc6efd1787127eca0c76aa",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "ee55c8b536236c12c3b1242ef21ce4077fa87140d8730e6ac2e4618a961d813a"
+    },
+    {
+      "path": "site/basket_intl/intl_india.html",
+      "before_sha256": "3d83ebe6880eaf17fb4e0fc3529cd14f118ecea512f31d0e1ae13d2f8447cd82",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "9d0e1096c953670e992c9482223ffb337fe3e63a5b55ae73f002106ea977450d"
+    },
+    {
+      "path": "site/basket_intl/intl_insurers.html",
+      "before_sha256": "f49148a910c9a4102d6407f9687153021b820ce61f7fac2206e9fb55221f49d4",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "48a59c0b3becd3570aee8ff89365f809753cd7b61dd462b3eca2b3ed4294cc71"
+    },
+    {
+      "path": "site/basket_intl/intl_japan.html",
+      "before_sha256": "833b28caebe5ef52ea5c52660c74ff3df0f2a179929eb85c6563a52f4fa918f3",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "9fba157b7d0c4493edcea2c6375755e3650beb676572ff51175a50a98ea39854"
+    },
+    {
+      "path": "site/basket_intl/intl_korea.html",
+      "before_sha256": "70fe55ab7f0108ba38c4c2593b18c19dc2b011c41009a430bb8b821c7d30eb29",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "d2f395c8601d7d641a0e46a20898671b13e738a0a1cc4e0d2e5804b754874742"
+    },
+    {
+      "path": "site/basket_intl/intl_luxury.html",
+      "before_sha256": "355f3c817b531d0c9e8a5a97b4aa8851d7ac6d6a506b244b928e3f9387301cb0",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 9,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "42edec670305e975dd44acbb483984fbadfc8f713b332c59cbc5500ac8cfa712"
+    },
+    {
+      "path": "site/basket_intl/intl_mining.html",
+      "before_sha256": "4881b1f97c8f7341fb3382470abc0f43be956f881325280ad0db5c64120964e3",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3414a6073e8e5d2fb84434b15ea2be657246a0b0c20f53e532324ab45b80df2b"
+    },
+    {
+      "path": "site/basket_intl/intl_pharma.html",
+      "before_sha256": "5287a4f9709dc4ae534cf97bbf39c2629efba9fd8370eb1c06925c1f719509f6",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "986b35a407d30af6a5536f2a8b05a9d1ece838f0e13b1197078a60c120385ee4"
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "before_sha256": "5cb030e873af097f5505231552e5b182528e6798635af8d437bf1a2f0417b826",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 19,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "47b328ebefaeeea68a448a335b0719c3f51d11d2bd74b34fedba35c0a62d7bb0"
+    },
+    {
+      "path": "site/basket_intl/intl_software.html",
+      "before_sha256": "8cc12b1690e7722ba5018b97664c8ee86175c337c48792528eed1ece7c6911f8",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 14,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "e0f4ff6f774e3f9dd948e095d609b77b15c94e9bc95e483d2e80ea26aaca9a4a"
+    },
+    {
+      "path": "site/basket_intl/intl_tech_hw.html",
+      "before_sha256": "3a003c4db7c60898099127e0644c4be1063e30ef075eb92cb095197b3739cd40",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 16,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "a428f2dea0fdc360b1e84c255bb4e65eec9b2ff6d6f77febafd7d4813846393f"
+    },
+    {
+      "path": "site/basket_intl/intl_telecom.html",
+      "before_sha256": "0c6d03532e31dd71e74dde65cedaaa125dcbe3796a093f2708c3eec39d3f4d1f",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 15,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "50dd1f90e73c1794598eb9e6eca28e0aefd1aef3c5576f6f6535cd632a97ae15"
+    },
+    {
+      "path": "site/basket_intl/intl_uk.html",
+      "before_sha256": "bd229d82c37e504b8a3acd168701664f534d7b51dadf80eec9f864b968181e9f",
+      "as_of": "2026-09-22",
+      "generation_stamp": "2026-09-22 06:03 UTC",
+      "members": 18,
+      "status_buys_coverage_unchanged": true,
+      "all_non_explanation_data_unchanged": true,
+      "after_sha256": "3545361c21a69bbea578b30a205a9115006c6d4fc8f2f37758a8031251e969f9"
+    }
+  ],
+  "scope": "render existing embedded inputs; no collection, no new prices or scores; original observation and generation dates retained"
+}

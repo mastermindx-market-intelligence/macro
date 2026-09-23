@@ -169,10 +169,21 @@ function absCracks(t){
 // The faster counter-textures that DISAGREE with a constructive label. Each entry is
 // [en, zh] — purely descriptive, computed from already-published payload fields.
 function rolloverReasonText(reasons, zh=false){
-  return (reasons||[]).map(value=>{
-    const text=String(value==null?'':value);
-    return /^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text)
-      ?(zh?'相对强势偏高':'high relative strength'):text;
+  const translated={
+    'momentum rolling over':'动量转弱','decelerating':'动量减速',
+    'breadth weakening':'广度转弱','breadth narrowing':'广度收窄',
+    'more new lows':'新低增多','below 50d':'低于50日均线',
+    'rolling off the high':'自高位回落'
+  };
+  if(!Array.isArray(reasons)) return '';
+  return reasons.filter(value=>typeof value==='string'&&value.trim()).map(text=>{
+    if(/^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text))
+      return zh?'相对强势偏高':'high relative strength';
+    if(!zh) return text;
+    if(Object.prototype.hasOwnProperty.call(translated,text)) return translated[text];
+    const fade=text.match(/^momentum fading \(hist ([-+\d.e]+)→([-+\d.e]+), (\d+) straight declines\)$/);
+    if(fade) return '动量放缓（柱状值'+fade[1]+'→'+fade[2]+'，连续'+fade[3]+'次下降）';
+    return '来源条件（中文说明暂缺）';
   }).join(' · ');
 }
 function contestedTextures(t, cyc){

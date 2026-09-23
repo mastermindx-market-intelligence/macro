@@ -449,7 +449,11 @@ def _timing_cards(payload):
     import subprocess
     src = _src('basket_detail.html.j2')
     assert 'function timingCardsHtml(' in src
-    helper = src[src.index('function timingCardsHtml('):src.index('// Native details is the state owner.')]
+    import re
+    # Include the actual shared formatter dependency; retain all native-output assertions.
+    formatter = re.search(r'function rolloverReasonText\(reasons, zh=false\)\{.*?\n\}', src, re.S)
+    assert formatter
+    helper = formatter.group(0) + '\n' + src[src.index('function timingCardsHtml('):src.index('// Native details is the state owner.')]
     setup = "const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));const L=(en,zh)=>'<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+zh+'</span>';const cssv=s=>s;"
     return subprocess.check_output(['node', '-e', setup + helper + '\nconsole.log(timingCardsHtml(' + json.dumps(payload) + '));'], text=True)
 
@@ -584,3 +588,12 @@ def test_basket_holdings_use_canonical_scroll_wrapper_before_late_load():
         text = page.read_text(encoding="utf-8")
         assert text.count(wrapper) == 1, page
         assert old not in text, page
+
+
+def test_timing_rollover_does_not_reintroduce_price_extension_from_rs():
+    html = _timing_cards({'rollover_risk': {'band': 'elevated', 'band_zh': '升高',
+                        'reasons': ['extended (RS 87%ile)', 'momentum rolling over',
+                                    'momentum fading (hist 1.25→0.5, 3 straight declines)']}})
+    assert 'high relative strength' in html
+    assert '相对强势偏高' in html and '连续3次下降' in html
+    assert 'extended (RS' not in html and '涨幅偏高' not in html

@@ -546,10 +546,21 @@ function convCell(c){
 // "Contested": the (slow, validated) lifecycle label is constructive while >=2 of the faster
 // descriptive textures disagree. Computed purely from already-published payload fields.
 function rolloverReasonText(reasons, zh=false){
-  return (reasons||[]).map(value=>{
-    const text=String(value==null?'':value);
-    return /^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text)
-      ?(zh?'相对强势偏高':'high relative strength'):text;
+  const translated={
+    'momentum rolling over':'动量转弱','decelerating':'动量减速',
+    'breadth weakening':'广度转弱','breadth narrowing':'广度收窄',
+    'more new lows':'新低增多','below 50d':'低于50日均线',
+    'rolling off the high':'自高位回落'
+  };
+  if(!Array.isArray(reasons)) return '';
+  return reasons.filter(value=>typeof value==='string'&&value.trim()).map(text=>{
+    if(/^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text))
+      return zh?'相对强势偏高':'high relative strength';
+    if(!zh) return text;
+    if(Object.prototype.hasOwnProperty.call(translated,text)) return translated[text];
+    const fade=text.match(/^momentum fading \(hist ([-+\d.e]+)→([-+\d.e]+), (\d+) straight declines\)$/);
+    if(fade) return '动量放缓（柱状值'+fade[1]+'→'+fade[2]+'，连续'+fade[3]+'次下降）';
+    return '来源条件（中文说明暂缺）';
   }).join(' · ');
 }
 function contestedList(th,b){
@@ -1129,13 +1140,17 @@ function timingCardsHtml(textures){
   const zhLabels={neutral:'中性',elevated:'偏高',overbought:'超买',oversold:'超卖',high:'高',low:'低',young:'初期',building:'上升中',mature:'成熟',aging:'老化',downtrend:'下行'};
   const label=(en,zh)=>words(en,zh||(Object.prototype.hasOwnProperty.call(zhLabels,en)?zhLabels[en]:en));
   const reasonsZh={'accelerating':'动量加速','not extended':'涨幅未过度延伸','RSI room':'RSI仍有空间','breadth supportive':'广度支持','above 200d trend':'位于200日趋势上方','shallow pullback':'浅幅回调','momentum rolling over':'动量转弱','decelerating':'动量减速','breadth weakening':'广度转弱','more new lows':'新低增多','below 50d':'低于50日均线','rolling off the high':'自高位回落'};
-  const reasons=(en,zh)=>{
+  const reasons=(en,zh,rollover=false)=>{
     if(!Array.isArray(en)) return '';
     return en.map((r,i)=>{
       if(typeof r!=='string'||!r.trim()) return '';
       let translated=Array.isArray(zh)&&typeof zh[i]==='string'?zh[i]:null;
       if(!translated&&Object.prototype.hasOwnProperty.call(reasonsZh,r)) translated=reasonsZh[r];
-      if(!translated){const m=r.match(/^extended \(RS (\d+)%ile\)$/);if(m) translated='涨幅偏高（相对强弱第'+m[1]+'百分位）';}
+      if(rollover){
+        const enReason=rolloverReasonText([r]);
+        if(!translated||enReason!==r) translated=rolloverReasonText([r],true);
+        return words(enReason,translated);
+      }
       return words(r,translated||r);
     }).filter(Boolean).join(' · ');
   };
@@ -1154,13 +1169,15 @@ function timingCardsHtml(textures){
     +card('bull_age',(ba.in_bull===true?'--up':ba.in_bull===false?'--down':'--muted'),'Uptrend age','上升趋势时长',age,ageDetail.join(' · '))
     +card('overbought',(finite(ob.value)&&ob.value>=0.6?'--down':finite(ob.value)&&ob.value>=0.35?'--warn':'--muted'),'Overbought','超买度',label(ob.band,ob.band_zh),obDetail)
     +card('clean_entry',(ce.flag===true?'--up':'--muted'),'Clean entry','干净入场',clean,reasons(ce.reasons,ce.reasons_zh))
-    +card('rollover_risk',(rr.band==='high'?'--down':rr.band==='elevated'?'--warn':rr.band==='low'?'--up':'--muted'),'Roll-over risk','回落风险',label(rr.band,rr.band_zh),reasons(rr.reasons,rr.reasons_zh))+'</div>';
+    +card('rollover_risk',(rr.band==='high'?'--down':rr.band==='elevated'?'--warn':rr.band==='low'?'--up':'--muted'),'Roll-over risk','回落风险',label(rr.band,rr.band_zh),reasons(rr.reasons,rr.reasons_zh,true))+'</div>';
 }
 // Read the existing stock-entry owner's complete diagnostic projection. No
 // client-side eligibility inference, reranking, targets or actionable fallback.
 function stockEntryChecksHtml(an, stockLink){
   const rows=an&&an.entry_checks, summary=an&&an.entry_summary;
-  if(!Array.isArray(rows)||!rows.length||!summary) return '';
+  const missing=`<p id="stock-entry-checks" tabindex="-1" role="status" class="muted sm">${L('Stock entry reasons are unavailable.','个股入场原因暂缺。')}</p>`;
+  if(!Array.isArray(rows)||!rows.length) return '';
+  if(!summary) return missing;
   const valid=rows.every(x=>x&&typeof x.symbol==='string'&&x.symbol
     &&typeof x.eligible==='boolean'&&(!x.eligible||x.score!=null)
     &&typeof x.reason_en==='string'&&typeof x.reason_zh==='string');
@@ -1168,7 +1185,7 @@ function stockEntryChecksHtml(an, stockLink){
   const unavailable=rows.filter(x=>x&&x.score==null).length;
   if(!valid||summary.members!==rows.length||summary.qualified!==qualified
       ||summary.unavailable!==unavailable||summary.waiting!==rows.length-qualified-unavailable){
-    return `<p class="muted sm">${L('Stock entry reasons are unavailable.','个股入场原因暂缺。')}</p>`;
+    return missing;
   }
   return `<details class="ftr-entry-checks" id="stock-entry-checks">
     <summary style="min-height:40px;line-height:40px">${L('Review stock entries','查看个股入场条件')}</summary>
@@ -1185,19 +1202,19 @@ function stockEntryChecksHtml(an, stockLink){
 // Native details is the state owner. Carry only its open/focus state across DOM refreshes.
 function basketScoreState(app){
   const detail=app&&app.querySelector('details.ftr-anatomy-disclosure');
-  const entries=app&&app.querySelector('details.ftr-entry-checks');
+  const entries=app&&app.querySelector('#stock-entry-checks');
   if(!detail&&!entries) return null;
   return {open:!!(detail&&detail.open),focused:!!(detail&&detail.querySelector('summary')===document.activeElement),
-    entryOpen:!!(entries&&entries.open),entryFocused:!!(entries&&entries.querySelector('summary')===document.activeElement)};
+    entryOpen:!!(entries&&entries.open),entryFocused:!!(entries&&(entries.querySelector('summary')||entries)===document.activeElement)};
 }
 function restoreBasketScoreState(app,state){
   if(!state||!app) return;
   const detail=app.querySelector('details.ftr-anatomy-disclosure');
-  const entries=app.querySelector('details.ftr-entry-checks');
+  const entries=app.querySelector('#stock-entry-checks');
   if(detail){detail.open=state.open;
     if(state.focused){const summary=detail.querySelector('summary');if(summary) summary.focus({preventScroll:true});}}
-  if(entries){entries.open=state.entryOpen;
-    if(state.entryFocused){const summary=entries.querySelector('summary');if(summary) summary.focus({preventScroll:true});}}
+  if(entries){if(entries.matches('details')) entries.open=state.entryOpen;
+    if(state.entryFocused){const target=entries.querySelector('summary')||entries;target.focus({preventScroll:true});}}
 }
 
 // Native header buttons own keyboard activation; _sort remains the existing order owner.
@@ -1487,8 +1504,8 @@ function render(){
   document.getElementById('app').innerHTML=h;
   app.querySelectorAll('[data-stock-entry-link]').forEach(link=>{
     link.onclick=event=>{const detail=app.querySelector('#stock-entry-checks');
-      if(detail){event.preventDefault();detail.open=true;const summary=detail.querySelector('summary');
-        if(summary) summary.focus();}};
+      if(detail){event.preventDefault();if(detail.matches('details')) detail.open=true;
+        const target=detail.querySelector('summary')||detail;target.focus();}};
   });
   // sortable holdings
   document.querySelectorAll('#hold th[data-s]').forEach(th2=>{

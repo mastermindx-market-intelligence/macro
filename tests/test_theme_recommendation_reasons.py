@@ -376,3 +376,20 @@ def test_native_entry_audit_literals_remain_bound_to_the_existing_owner():
     native = ast.get_source_segment(source, function)
     assert "rs_p < 0.75" in native and "q >= 0.6" in native
     assert basket_score.clean_entry.__module__ == "engine.basket_score"
+
+
+@pytest.mark.parametrize('path', ['templates/baskets_desk.js', 'templates/basket_detail.html.j2'])
+def test_rollover_chinese_translates_all_native_conditions_not_just_relative_strength(path):
+    import re, subprocess
+    source = (ROOT / path).read_text()
+    helper = re.search(r'function rolloverReasonText\(reasons, zh=false\)\{.*?\n\}', source, re.S)
+    native = ['extended (RS 87%ile)', 'momentum rolling over', 'decelerating',
+              'breadth weakening', 'more new lows', 'below 50d', 'rolling off the high',
+              'momentum fading (hist 1.25→0.5, 3 straight declines)']
+    code = helper.group(0) + '\nconsole.log(JSON.stringify(rolloverReasonText(' + json.dumps(native) + ',true)));'
+    text = json.loads(subprocess.check_output(['node', '-e', code], text=True))
+    assert '相对强势偏高' in text and '连续3次下降' in text
+    for phrase in ['momentum', 'decelerating', 'breadth', 'below', 'rolling', 'straight']:
+        assert phrase not in text
+    assert '1.25' in text and '0.5' in text
+    assert '涨幅偏高' not in text
