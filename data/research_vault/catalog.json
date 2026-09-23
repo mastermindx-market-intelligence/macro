@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T16:54:57.527024+00:00",
-  "count": 2721,
+  "generated_at": "2026-09-23T17:43:14.397164+00:00",
+  "count": 2724,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -100,6 +100,48 @@
   ],
   "items": [
     {
+      "id": "marketdesk-yhemhztl4kw-4369e6",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T17:23:57Z",
+      "summary_points": [
+        "Geopolitical Catalysts: US/Iran negotiations and UN meetings (US/China; US/Iran; NATO+UKR/Russia) driving energy/yield/stock volatility; USD rally amid tactical caution.",
+        "Eurozone PMI Data: Mfg 52.7, Svcs 53.0, Composite 53.1 stronger than expected, flattening yield curves as growth/inflation inflect higher.",
+        "Geopolitical Scenarios: Three US/Iran outcomes: (1) Deal this week (RTY short squeeze, EU outperforms), (2) No deal/no escalation (NDX > EU > SPX), (3) No deal/escalation (oil $100/bbl, 10Y yield >5%).",
+        "AI Trust Erosion: Meta’s untrustworthiness (Hugging Face scenario) as core risk overriding AI narratives, catalyzing systemic de-risking in banking/wealth management.",
+        "Fed Data Cluster: SEP 23-25 Fed speakers (Williams, Hammack), PMI, ADP, durable goods orders critical for rate expectations and growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-augnhdcr2jm-0cbff4",
+      "title": "Europe Automobiles Chinese OEM Competition Monitor Aug 26 Chinese share hits new high of 8 on softer individual premium br...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T16:51:06Z",
+      "summary_points": [
+        "Chinese OEM Market Share Surge: Europe-5 registrations up 199% YoY (43,825 units Aug-26), market share at 8.13% (+524bps YoY), directly eroding VW Group mass brands (-188bps) and Renault (-44bps) as total China-owned brands capture 12.48% share.",
+        "Policy Shift & Pricing Discipline: Chinese ministries’ Aug 24 guidelines mandate cost-based pricing and anti-disruptive competition abroad, ending aggressive price wars—providing near-term reprieve for European incumbents while positioning Chinese brands for sustainable long-term growth.",
+        "BYD Dominance & Structural Shift: BYD leads with 3.16% Europe-5 share (Aug-26) and 2.98% R3M growth (+166bps), outpacing VW mass brands (-19.48% volume, -139bps) and Stellantis (-15.11% volume, -59bps), signaling irreversible market share transfer.",
+        "Germany as Strategic Battleground: Chinese brands sold 9,679 units in Germany (+311% YoY), capturing 241bps gain in market share; Germany dominates EU auto retail (31.1% of sales), making it critical for European premium automakers’ competitive positioning.",
+        "European Production Acceleration: Chinese brands’ European production to grow 15% CAGR (2025–2030), with Spain as dominant hub (46%/58% volume in 2026/2027), reflecting strategic localization and supply chain maturity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-t5oi11yvmsb-6b195e",
       "title": "SMIC (0981.HK) AI to drive 2H26 growth; strongest revenues QoQ in 2Q26 among global top 10 foundries; Buy",
       "institution": "Goldman Sachs",
@@ -116,6 +158,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7uvidie2gly-956ddc",
+      "title": "Bristol Myers Squibb Co. (BMY) Complicated Setup for Upcoming Admilparant Phase 3 IPF Readout",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:58Z",
+      "summary_points": [
+        "ALOFT-IPF Readout: Equal success/failure probability for admiparant (IPF treatment); critical near-term event amid $4bn market expansion; FDA approvals recent.",
+        "LIBREXIA-AF Strategic Shift: Post-ALOFT focus shifts to LIBREXIA-AF (Factor XI drug); potential for overreaction beyond DCF consensus; Q1 2027 outcome critical for sentiment.",
+        "DCF & Valuation: Admiparant = ~5% DCF swing factor; BMY trades at 8.2x P/E (12/25) with 12.5% FCF yield (undervalued), but slowing growth (1.6% EPS) and operational inefficiencies (72.6 inventory days) pose near-term risks.",
+        "LIBREXIA-AF Sentiment Risk: Disappointment in Q1 2027 could disproportionately hurt P/E multiple; 0.5x equity move = ~5% impact from clinical disappointments.",
+        "Admiparant Commercial Upside: Success implies $2.7bn peak sales (2035, 50% POS); failure yields 5% DCF downside; primary endpoint (FVC decline: 100-125ml, 30-50% vs placebo) defines efficacy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
