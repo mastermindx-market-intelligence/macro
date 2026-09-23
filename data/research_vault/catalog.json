@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T17:55:10.578455+00:00",
-  "count": 2724,
+  "generated_at": "2026-09-23T18:25:07.703401+00:00",
+  "count": 2725,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -179,6 +179,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3riyzropziw-c520a4",
+      "title": "LATAM Today September 23, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:49Z",
+      "summary_points": [
+        "Argentina Growth Divergence: Primary sector drives 2.2% real growth (Jul), secondary/tertiary lagging - Brazil Confidence Decline: FGV index down 3.6pt to 84.7 (Aug), extending May-Jul downward trend - Sectoral Risk Signal: Argentina's primary/secondary divergence indicates uneven economic momentum - Consumer Sentiment Risk: Brazil's sustained confidence decline signals weakening domestic demand trajectory"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
