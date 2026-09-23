@@ -308,11 +308,9 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-lab-track i{position:absolute;display:block}
 .oew-lab-wall{top:2px;width:1px;height:10px;background:var(--ink-2)}
 .oew-lab-flip{top:5px;width:1px;height:4px;background:var(--muted)}
-.oew-lab-spot{top:4px;width:6px;height:6px;border-radius:50%;
-  background:var(--ink-2);margin-left:-3px}
-.oew-lab-be{top:3px;width:7px;height:7px;border-radius:50%;
-  background:var(--oew-accent);margin-left:-3.5px;
-  box-shadow:0 0 0 1px var(--tile)}
+.oew-lab-spot{top:4px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:3px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
+  outline:1px solid var(--tile)}
 .oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
   font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
   margin-top:4px}
@@ -325,10 +323,10 @@ html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
 .oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
 .oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
 /* Light override: ink-weight ticks (2px walls) instead of luminance dots;
-   accent stays the page's #4c55a8 (set on html[data-theme="light"] .oew
-   above) — no redefinition, no ring, no shadow. */
+   accent stays the page's light-mode token (set on html[data-theme="light"]
+   .oew above) — no redefinition, no ring, no shadow. */
 html[data-theme="light"] .oew-lab-wall{width:2px}
-html[data-theme="light"] .oew-lab-be{box-shadow:none}
+html[data-theme="light"] .oew-lab-be{outline:none}
 @media (max-width:640px){
   .oew-lab-row{grid-template-columns:1fr;gap:2px}
   .oew-lab-track{width:100%}

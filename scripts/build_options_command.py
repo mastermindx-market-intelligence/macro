@@ -937,13 +937,19 @@ def _payoff_lab_straddle_summary(root: dict, expiry_en: str) -> tuple[str, str] 
 def _payoff_lab_risk_word(value, en_unit_word: str, zh_unit_word: str) -> tuple[str, str]:
     """max_loss/max_gain → plain words.  UNBOUNDED string sentinel maps to
     'no cap' / '无上限'; a None value reads 'no number' / '无数字'; numeric
-    values format as 'most you can lose: the cost' (string interpolation is
-    the caller's job — we never re-derive the amount)."""
+    values format as '$1,234 a share' (per-share division happens at the
+    call site — we never re-derive the amount here).  `loss_per_share` is
+    negative by convention (a -50 loss); the page reads it as an absolute
+    amount because 'most you can lose' is by definition a positive figure."""
     if value == "UNBOUNDED":
         return "no cap", "无上限"
     if value is None:
         return "—", "—"
-    return f"{_num(value):,.0f}" if _num(value) is not None else str(value), str(value)
+    n = _num(value)
+    if n is None:
+        return str(value), str(value)
+    abs_n = abs(n)
+    return f"${abs_n:,.2f} a share", f"每股 ${abs_n:,.2f}"
 
 
 def _payoff_lab_format_breakeven(value) -> str:
@@ -1005,15 +1011,39 @@ def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
         if not out["pays_en"]:
             out["pays_en"] = "no breakeven today"
             out["pays_zh"] = "今日无盈亏平衡点"
-        loss_en, _ = _payoff_lab_risk_word(payoff.get("max_loss"), "loss", "dollar")
-        gain_en, _ = _payoff_lab_risk_word(payoff.get("max_gain"), "gain", "dollar")
-        loss_word = "the cost" if loss_en == "—" or _num(payoff.get("max_loss")) == -abs(cost_per_share or 0) else loss_en
-        gain_word = "no cap" if gain_en == "no cap" else gain_en
-        out["risk_en"] = f"most you can lose: {loss_word} · most you can make: {gain_word}"
-        out["risk_zh"] = f"最多损失：{loss_word} · 最多盈利：{gain_word}"
+        # Producer's max_loss / max_gain are per-contract; convert to per-share
+        # so the page reads in the same units the cost line uses (the spec's
+        # "the cost is the most you can lose" wording only holds when both
+        # are per-share — see DEC-F03-W2-5B-…).
+        loss_per_contract = _num(payoff.get("max_loss"))
+        gain_per_contract = _num(payoff.get("max_gain"))
+        loss_per_share = (loss_per_contract / _PAYOFF_LAB_PER_SHARE_DIVISOR
+                          if loss_per_contract is not None else None)
+        gain_per_share = (gain_per_contract / _PAYOFF_LAB_PER_SHARE_DIVISOR
+                          if gain_per_contract is not None else None)
+        # "the cost" wording only fires when the per-share loss equals the
+        # per-share cost within a small round tolerance (cost has its own
+        # division already).
+        loss_is_cost = (
+            loss_per_share is not None
+            and cost_per_share is not None
+            and abs(loss_per_share - (-abs(cost_per_share))) < 0.005
+        )
+        if loss_is_cost:
+            loss_word_en, loss_word_zh = "the cost", "成本金额"
+        elif payoff.get("max_loss") == "UNBOUNDED":
+            loss_word_en, loss_word_zh = "no cap", "无上限"
+        else:
+            loss_word_en, loss_word_zh = _payoff_lab_risk_word(loss_per_share, "loss", "dollar")
+        gain_word_en, gain_word_zh = _payoff_lab_risk_word(gain_per_share, "gain", "dollar")
+        out["risk_en"] = f"most you can lose: {loss_word_en} · most you can make: {gain_word_en}"
+        out["risk_zh"] = f"最多损失：{loss_word_zh} · 最多盈利：{gain_word_zh}"
     else:
         # Producer's prose wins on ≤ 10 plain words; the closed-vocab string
         # above is the default when the payload gives us nothing more specific.
+        # ZH stays on its own closed-vocab string — we never copy EN prose into
+        # ZH (a producer that ships EN-only null_reason would otherwise expose
+        # English in the Chinese locale).
         out["null_en"] = _PAYOFF_LAB_NULL_EN
         out["null_zh"] = _PAYOFF_LAB_NULL_ZH
         states = record.get("states") or []
@@ -1024,7 +1054,6 @@ def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
                 words = [w for w in prose.split() if w]
                 if 0 < len(words) <= 10:
                     out["null_en"] = prose
-                    out["null_zh"] = prose  # no automatic ZH mirror; producer emits EN prose
                     break
     return out
 
