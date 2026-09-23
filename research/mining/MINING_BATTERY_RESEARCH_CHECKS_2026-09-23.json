@@ -1,0 +1,313 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_COUNTEREXAMPLES_ONLY",
+  "run_utc": "2026-09-23T11:39:56.748925+00:00",
+  "command": "python check_battery_research.py",
+  "document": "MINING_BATTERY_RARE_EARTH_ECONOMICS_2026-09-23.md",
+  "document_words": 5848,
+  "document_bytes": 44366,
+  "document_sha256": "15c170a918e8ed574ff3f9ac6470c34bbaa1d48c8d426effc46925affe9fc75d",
+  "document_git_blob_sha1": "1bef33fc71eaf25f3627988ccb746bd3c827852c",
+  "script_git_blob_sha1": "f303bc877add96f4deece97fc97b6ae8bc1ad1bd",
+  "total": 37,
+  "passed": 37,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "source_index",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": [
+        "S3-01",
+        "S3-02",
+        "S3-03",
+        "S3-04",
+        "S3-05",
+        "S3-06",
+        "S3-07",
+        "S3-08",
+        "S3-09",
+        "S3-10",
+        "S3-11",
+        "S3-12",
+        "S3-13",
+        "S3-14",
+        "S3-15",
+        "S3-16",
+        "S3-17"
+      ]
+    },
+    {
+      "check": "source_references_resolve",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Index/reference identity, not source authentication"
+    },
+    {
+      "check": "nine_dossiers",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "B01..B09"
+    },
+    {
+      "check": "twenty_four_prospective_requirements",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "MB-01..MB-24 are NOT executed application tests"
+    },
+    {
+      "check": "six_persona_tasks",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Six proposed user tasks"
+    },
+    {
+      "check": "seventeen_source_urls",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Unique URLs within Pass03 only"
+    },
+    {
+      "check": "explicit_hold",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Research remains incomplete"
+    },
+    {
+      "check": "exact_carrier_and_pin",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Same research carrier; current procedure pin"
+    },
+    {
+      "check": "albemarle_q2_reported_cash_arithmetic",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "USD_millions": "638.266",
+        "source": "S3-01"
+      }
+    },
+    {
+      "check": "windfield_naive_share_and_unresolved_residual",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "naive_USD_m": "225.96595",
+        "unexplained_USD_m": "60.13095",
+        "source": "S3-02",
+        "not_accounting_reconciliation": true
+      }
+    },
+    {
+      "check": "reject_unlike_period_bridge",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Synthetic period mismatch; do not force six-month deferral change into quarter residual"
+    },
+    {
+      "check": "ppls_weighted_grade_conformity",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "total_tonnes": "3561",
+        "implied_percent": "98.2476832350463352990732940185341196",
+        "source": "S3-03",
+        "rounded_inputs": true,
+        "not_recovery_or_customer_acceptance": true
+      }
+    },
+    {
+      "check": "ppls_simple_average_is_different",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "98.5% unweighted versus approximately 98.25% weighted"
+    },
+    {
+      "check": "hypothetical_converter_margin_regimes",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": [
+        "3500.0",
+        "-1000.0",
+        "2000.0"
+      ]
+    },
+    {
+      "check": "reject_incompatible_mass_bases",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Synthetic gross concentrate versus final-product/period mismatch"
+    },
+    {
+      "check": "hypothetical_mp_floor_below",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "30000000"
+    },
+    {
+      "check": "hypothetical_mp_floor_above_zero",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "No shortfall above threshold in simplified example"
+    },
+    {
+      "check": "hypothetical_mp_upside_trigger",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "Capacity condition changes partial illustrative formula"
+    },
+    {
+      "check": "unknown_mp_trigger_stays_unknown",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Unknown does not silently become zero or true"
+    },
+    {
+      "check": "duplicate_designation_rejected",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Synthetic duplicate across categories; no native records"
+    },
+    {
+      "check": "lynas_product_directions",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "REO_percent": "7.67089390658830807299721620785648000",
+        "NdPr_percent": "-6.96392785571142284569138276553106210",
+        "source": "S3-08"
+      }
+    },
+    {
+      "check": "lynas_budget_revision",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "percent": "63.3333333333333333333333333333333330",
+        "source": "S3-08",
+        "not_wholly_same_scope_overrun": true
+      }
+    },
+    {
+      "check": "firm_quantity_is_subset",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Do not add firm quantity to its containing availability envelope"
+    },
+    {
+      "check": "hypothetical_jare_annual_cap",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "Raw sharing $30m; assumed unused annual cap $10m"
+    },
+    {
+      "check": "hypothetical_jare_remaining_cap",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "Earlier $7m consumes part of annual cap"
+    },
+    {
+      "check": "unknown_jare_cap_stays_unknown",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Missing cumulative settlement is not unused cap"
+    },
+    {
+      "check": "invalid_jare_cap_rejected",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Synthetic consumed cap exceeds assumed limit"
+    },
+    {
+      "check": "neo_release_chronology",
+      "passed": true,
+      "kind": "CHRONOLOGY",
+      "evidence": "Period end, guidance change, results, commercial update, retrieval; not PIT retention"
+    },
+    {
+      "check": "neo_guidance_midpoint_change",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "percent": "38.0952380952380952380952380952380950",
+        "source": "S3-16",
+        "not_consensus_surprise": true
+      }
+    },
+    {
+      "check": "neo_reported_metric_arithmetic",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "USD_m": "88.110",
+        "source": "S3-12",
+        "definition": "Adjusted EBITDA less capex net recognized JTF grant"
+      }
+    },
+    {
+      "check": "neo_operating_cash_less_gross_spending",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "USD_m": "-66.204",
+        "source": "S3-13",
+        "definition": "Our OCF less gross PPE/intangible cash spending"
+      }
+    },
+    {
+      "check": "neo_definitions_not_interchangeable",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "Definition refusal, not accusation of issuer arithmetic error"
+    },
+    {
+      "check": "neo_cash_statement_bridge",
+      "passed": true,
+      "kind": "ARITHMETIC",
+      "evidence": {
+        "change_USD_m": "57.864",
+        "source": "S3-13",
+        "not_self_funded_growth": true
+      }
+    },
+    {
+      "check": "hypothetical_single_cycle_recycling",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "Single cycle and one element-equivalent basis, not issuer recovery"
+    },
+    {
+      "check": "hypothetical_serial_and_commercial_bounds",
+      "passed": true,
+      "kind": "HYPOTHETICAL",
+      "evidence": "Compatible units, steady state, no inventory; not a predictive score"
+    },
+    {
+      "check": "forecast_horizon_not_current_mix",
+      "passed": true,
+      "kind": "COUNTEREXAMPLE",
+      "evidence": "S3-17 estimates do not establish current revenue weights"
+    },
+    {
+      "check": "unresolveds_and_access_limits_preserved",
+      "passed": true,
+      "kind": "DOCUMENT",
+      "evidence": "Missing evidence is retained, not filled by arithmetic"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "accepted native contract engine",
+    "CI",
+    "independent research review",
+    "issuer accounting reconciliation",
+    "canonical Agent OS validation",
+    "customer confirmation",
+    "data rights/admission",
+    "historical PIT retention",
+    "browser proof",
+    "investment validation",
+    "Fable handoff or dispatch"
+  ]
+}
