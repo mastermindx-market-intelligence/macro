@@ -114,3 +114,18 @@ Current collision facts at the planning pin:
 A material implementation constraint is explicit rather than hidden: current \`data/theme_graph/evidence.parquet\` is Git-tracked in the public Macro repository. Therefore no live full-fidelity curation assertion may be committed there. Task 7 requires proof of an incumbent approved private owner/publication binding before Task 8 admits a real assertion. If that cannot be satisfied without a second evidence/latest-state plane, the live-admission lane returns to the architecture owner instead of weakening the privacy law.
 
 NEXT GATE: Chairman reviews the written implementation plan and selects execution method. No implementation task has STARTed, no child worker/Executive Attempt is implied, and no watcher is armed by this checkpoint.
+
+
+## 2026-09-23 — Chairman selected Fable CEO orchestration for execution
+
+The live Chairman selected the execution method after the written spec approval: **Fable owns the remaining end-to-end program as principal CEO/orchestrator and must use the existing subagent/capacity fabric for bounded implementation/research/test/review work.**
+
+Master handoff:
+- `agentos/handoffs/GMI-ROBOTICS-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md`
+- operation `gmi-robotics-fable-ceo-e2e-20260923-chairman-001`
+- first committed at `d2edc38be927698a2ab579b66394a4af74988b00`
+- PR #7773 visibility comment `5791769671`
+
+This selection closes the implementation-plan execution-method gate. It **does not** self-assign a concrete provider session. Current routing state is `WAITING_CAPACITY / needs_placement=true` with `PREFERRED_AVENUE: Fable` and `RECEIVER_BINDING_MODE: CAPACITY_SELECTABLE`. Deliberate live delivery to a concrete eligible Fable session becomes receiver assignment; that session then owes separate PICKUP_ACK and START receipts under current law.
+
+The #7773 branch remains research/spec/plan/handoff truth only. Fable must create one fresh implementation carrier from then-current Macro main after current collision/effect reconciliation. Do not turn this branch into the implementation base.
