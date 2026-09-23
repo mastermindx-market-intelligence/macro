@@ -1,0 +1,38 @@
+--- a/templates/transmission.html.j2
++++ b/templates/transmission.html.j2
+@@ -21,0 +22,7 @@
++{%- endmacro %}
++{% macro scenario_row(m, scale, positive=false) -%}
++{% set en = (m.label.en if m.label is mapping else m.label)|default(m.asset, true) %}
++{% set known = (tx.transmission or {}).get(m.asset, {}) %}
++{% set labels = m.label if m.label is mapping else known.get('label', {}) %}
++{% set zh = (labels.get('zh') if labels is mapping else '') or en %}
++<div class="sx-item" data-asset="{{ m.asset }}"><span class="nm">{{ t(en.split(' (')[0], zh.replace('(', '（').split('（')[0]) }}</span><span class="v {{ 'u' if positive else 'd' }}">{{ '+' if positive else '' }}{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="{{ 'u' if positive else 'd' }}" style="width:{{ ((m.implied_move_pct|abs)/scale*100)|round(1) }}%"></i></span></div>
+@@ -387,0 +395,11 @@
++
++/* Scenario detail uses native disclosure; retain the four-row glance view. */
++.sx-card .sx-item .nm{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0}
++.sx-card details.sx-extra{margin:6px 0 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
++.sx-extra>summary{display:flex;align-items:center;gap:6px;min-height:40px;padding:6px 0;box-sizing:border-box;list-style:none;color:var(--ink-link,var(--ink));font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation}
++.sx-extra>summary::-webkit-details-marker{display:none}
++.sx-extra>summary::after{content:'+';margin-left:auto}
++.sx-extra[open]>summary::after{content:'−'}
++.sx-extra>summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
++.sx-extra>summary .sx-hide,.sx-extra[open]>summary .sx-show{display:none}
++.sx-extra[open]>summary .sx-hide{display:inline}
+@@ -685 +703 @@
+-          <div class="sx-item"><span class="nm">{{ (m.label.en if m.label is mapping else m.label).split(' (')[0] }}</span><span class="v d">{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="d" style="width:{{ ((m.implied_move_pct|abs)/smax*100)|round(1) }}%"></i></span></div>
++          {{ scenario_row(m, smax, false) }}
+@@ -687 +705,3 @@
+-          {% if sc.headwinds|length > 4 %}<div class="sx-more">+{{ sc.headwinds|length - 4 }} {{ t('more','项') }}</div>{% endif %}
++          {% if sc.headwinds|length > 4 %}<details class="sx-extra"><summary><span class="sx-show">{{ t('Show ' ~ (sc.headwinds|length - 4) ~ ' more', '再看 ' ~ (sc.headwinds|length - 4) ~ ' 项') }}</span><span class="sx-hide">{{ t('Show fewer', '收起') }}</span></summary>
++            {% for m in sc.headwinds[4:] %}{{ scenario_row(m, smax, false) }}{% endfor %}
++          </details>{% endif %}
+@@ -691 +711 @@
+-          <div class="sx-item"><span class="nm">{{ (m.label.en if m.label is mapping else m.label).split(' (')[0] }}</span><span class="v u">+{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="u" style="width:{{ ((m.implied_move_pct|abs)/smax*100)|round(1) }}%"></i></span></div>
++          {{ scenario_row(m, smax, true) }}
+@@ -693 +713,3 @@
+-          {% if sc.tailwinds|length > 4 %}<div class="sx-more">+{{ sc.tailwinds|length - 4 }} {{ t('more','项') }}</div>{% endif %}
++          {% if sc.tailwinds|length > 4 %}<details class="sx-extra"><summary><span class="sx-show">{{ t('Show ' ~ (sc.tailwinds|length - 4) ~ ' more', '再看 ' ~ (sc.tailwinds|length - 4) ~ ' 项') }}</span><span class="sx-hide">{{ t('Show fewer', '收起') }}</span></summary>
++            {% for m in sc.tailwinds[4:] %}{{ scenario_row(m, smax, true) }}{% endfor %}
++          </details>{% endif %}

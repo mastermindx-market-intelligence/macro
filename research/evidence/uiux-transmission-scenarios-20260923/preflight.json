@@ -1,0 +1,51 @@
+{
+  "base": "668237947e016f679782e41e61c91c9133a5ea99",
+  "source_base": "c159115451e5dd5f33a2565dac2c7e9221b03ee1",
+  "closure": {
+    "templates/transmission.html.j2": {
+      "before": "6bff0eddbcc488f6392190dc9362a77ae43f9ce4",
+      "now": "6bff0eddbcc488f6392190dc9362a77ae43f9ce4"
+    },
+    "site/transmission.html": {
+      "before": "b25bee65f6f3a12efe394b1a1f9bdf8fe1a25cb7",
+      "now": "5f6a06ceec0db362dac57f7a1c49be0f533bc329"
+    },
+    "tests/test_transmission_publish.py": {
+      "before": "f2947f891190a2d132fa6e926aa455499084d022",
+      "now": "f2947f891190a2d132fa6e926aa455499084d022"
+    },
+    "data/transmission/latest.json": {
+      "before": "139ce6abd6a57e22bfeb691bf2aadc2e59d24a49",
+      "now": "e33e1e797ea1a61a8419f070085c295b24a3e28c"
+    },
+    "scripts/build_transmission.py": {
+      "before": "846557b18fc565b93ad5bcdd4cd689454bada753",
+      "now": "846557b18fc565b93ad5bcdd4cd689454bada753"
+    },
+    "engine/rate_inflation_transmission.py": {
+      "before": "766a1c23fb0d8cdd2d424218c522894ba1c1632c",
+      "now": "766a1c23fb0d8cdd2d424218c522894ba1c1632c"
+    },
+    "site/theme.js": {
+      "before": "65d29fac37eac4fa8843b52ac053394e92e750d6",
+      "now": "65d29fac37eac4fa8843b52ac053394e92e750d6"
+    },
+    "site/theme.css": {
+      "before": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973",
+      "now": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973"
+    },
+    "site/live.js": {
+      "before": "6c15cdfc1feea10cb86d988af6fcbc6d9e13e275",
+      "now": "6c15cdfc1feea10cb86d988af6fcbc6d9e13e275"
+    },
+    "config/site_access.yml": {
+      "before": "41a8bdeb5a9147893890c54997cc6a1ae0119e59",
+      "now": "41a8bdeb5a9147893890c54997cc6a1ae0119e59"
+    }
+  },
+  "changed": [],
+  "material_data_render_reconciled": [
+    "site/transmission.html",
+    "data/transmission/latest.json"
+  ]
+}
