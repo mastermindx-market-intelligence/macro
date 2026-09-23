@@ -4,7 +4,7 @@ STATUS: COMPLETE
 ## 1. SOURCE_SHA + PATHS READ
 
 - SOURCE_SHA: `b47cab58e79ab825e07f640c4a37826095eecc78` (`git rev-parse origin/main`).
-- Governing fallback records were read by exact `git show` from PR refs, not from `origin/main`: ruling `d3b1fb743cbcde38a23ff13def1db47e42335514`, cycle census `68ece597765bb8d842a16434be9c8fc67200ee53`, issuer census `6c0539e253fbab4a8caee8fe02a0732d2f3fb341`. The three are absent from `origin/main`; §9 records the three exact fallback commands.
+- Governing fallback records were read by exact `git show` from PR refs, not from `origin/main`: ruling `d3b1fb743cbcde38a23ff13def1db47e42335514`, cycle census `68ece597765bb8d842a16434be9c8fc67200ee53`, issuer census `6c0539e253fbab4a8caee8fe02a0732d2f3fb341`. The ruling and issuer census are still absent from `origin/main`; the cycle census subsequently landed at `b61a3f1930` and the same PR-head object remains the governing version read here. §9 records the three exact fallback commands.
 - Paths read with `git show origin/main:<path>`:
   1. `data/fred_vintage/vintages.parquet`
   2. `data/fred_vintage/alfred_depth_audit.json`
