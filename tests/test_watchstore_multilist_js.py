@@ -1395,7 +1395,7 @@ def test_T2_failed_push_is_persisted_retried_on_online_and_clears_on_success():
                            {id: 'w1', watchlist_id: 'L-W', symbol: 'NVDA', position: 0}]});
         // the user's intent: their list should be {NVDA, AAPL} in the cloud.
         WS._setTestSession(USER, db.client);
-        WS.symbols.list('L-W').then(function () {
+        WS.pull().then(function () {
           // Inject failure: insert rejects with an RLS-shaped error. The push's
           // delete half (no-op here) would still succeed, but the insert fails.
           var realFrom = db.client.from;
@@ -1668,3 +1668,50 @@ def test_T4_markers_and_tombstones_are_list_scoped_and_dropped_on_signout():
     assert out["after"].get("pendingPushes", {}) == {}
     assert out["after"].get("tombstones", {}) == {}
     assert out["after"].get("pendingInserts", {}) == {}
+
+
+@needs_node
+def test_T4_failed_single_symbol_insert_is_retried_and_cleared_on_success():
+    """A single-symbol write failure needs the same durable retry path as a
+    full-list push: the marker survives while writes fail, then the online
+    event retries the INSERT and clears it only after the write lands."""
+    out = _ws(
+        CHIP_SPY + SYNC_BLOB + """
+        installChipSpy();
+        var db = makeDb({watchlists: [{id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0}],
+                         watchlist_symbols: [
+                           {id: 'w1', watchlist_id: 'L-W', symbol: 'NVDA', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS._setTestLists({activeId: 'L-W'});
+        WS.symbols.list('L-W').then(function () {
+          var realFrom = db.client.from;
+          db.client.from = function (table) {
+                var api = realFrom(table);
+                if (table === 'watchlist_symbols') {
+                  api.insert = function () {
+                    return Promise.reject(new Error('rls denied'));
+                  };
+            }
+            return api;
+          };
+          return WS.symbols.add('L-W', 'AAPL').catch(function () {
+            var afterFail = readSyncBlob('L-W');
+            db.client.from = realFrom;
+            window.dispatchEvent(new CustomEvent('online'));
+            return wait(250).then(function () {
+              restoreChipSpy();
+              OUT({failed: true,
+                   pendingAfterFail: (afterFail && afterFail.pendingInserts) || {},
+                   pendingAfterRetry: (readSyncBlob('L-W') || {}).pendingInserts || {},
+                   saved: symbolsOf(db, 'L-W'),
+                   saves: wsSaves()});
+            });
+          });
+        });
+        """,
+        {"USER": USER},
+    )
+    assert "AAPL" in out["pendingAfterFail"].get("L-W", {}), out
+    assert out["pendingAfterRetry"] == {}
+    assert out["saved"] == ["AAPL", "NVDA"]
+    assert "saved" in out["saves"]

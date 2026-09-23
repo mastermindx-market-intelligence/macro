@@ -9,7 +9,7 @@
    W2: this module no longer OWNS any sync UI. The Account Sync panel is deleted and
    the header save-state chip is the page's only disclosure of where the list lives,
    so the store's job here is to publish the state and nothing else:
-     • `ws-save` document event, detail.state ∈ saved | saving | local | offline
+     • `ws-save` document event, detail.state ∈ saved | saving | clean | local | offline
        (watchlist.js paints the chip; this file never touches its DOM)
      • sign-in / sign-out go through the global MDXAuth modal, wired by the page
 
@@ -104,10 +104,10 @@
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { signin: 'Sign in to sync', signout: 'Sign out', synced: 'Synced', syncing: 'Syncing…',
-          local: 'Local only', offline: 'Offline — local only', finishing: 'Finishing sign-in…',
+          clean: 'Up to date', local: 'Local only', offline: 'Offline — local only', finishing: 'Finishing sign-in…',
           hello: 'Signed in as' },
     zh: { signin: '登录以同步', signout: '退出登录', synced: '已同步', syncing: '同步中…',
-          local: '仅本地', offline: '离线——仅本地', finishing: '正在完成登录…',
+          clean: '已是最新', local: '仅本地', offline: '离线——仅本地', finishing: '正在完成登录…',
           hello: '已登录：' }
   };
   function L(k) { return (T[lang()] || T.en)[k]; }
@@ -141,7 +141,7 @@
      markup it is the ONLY sync disclosure, so it is painted verbatim as before. */
   function lgPaintPill(state) {
     var p = el('wl_syncpill'); if (!p) return;
-    var map = { synced: L('synced'), syncing: L('syncing'), local: L('local'),
+    var map = { synced: L('synced'), syncing: L('syncing'), clean: L('clean'), local: L('local'),
                 offline: L('offline'), finishing: L('finishing') };
     p.textContent = map[state] || '';
     p.className = 'wl-pill wl-pill-' + (state === 'finishing' ? 'syncing' : state);
@@ -229,6 +229,7 @@
   function cacheWrite(listId, symbols) {
     if (!listId) return false;
     var prev = cacheRead(listId);
+    syncOutboxEnsure(prev);
     var byT = {};
     prev.items.forEach(function (it) { byT[it.t] = it; });
     var order = (symbols || []).slice();
@@ -240,7 +241,10 @@
         return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '' };
       }),
       order: order,
-      settings: prev.settings
+      settings: prev.settings,
+      pendingPushes: prev.pendingPushes,
+      pendingInserts: prev.pendingInserts,
+      tombstones: prev.tombstones
     };
     if (cacheSig(next) === cacheSig(prev)) return false;   // no-op: do not re-persist
     try { localStorage.setItem(cacheKey(listId), JSON.stringify(next)); return true; }
@@ -719,6 +723,7 @@
     var c = _cloudOf(listId);
     if (!c) return { symbol: t, skipped: true };     // unread -> refuse, never blind-insert
     if (c.set[t]) return { symbol: t, skipped: true };
+    setPill('syncing');
     return sb.from('watchlist_symbols')
       .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
       .then(function (res) {
@@ -726,6 +731,7 @@
         _noteInserted(listId, [t]);
         // WRITE landed — say so. Clear any stale insert pending marker.
         _syncClearInsertPending(listId, t);
+        setPill('synced');
         return { symbol: t };
       }, function (err) {
         // D05 W1-honesty: a failed single-symbol insert is remembered for the
