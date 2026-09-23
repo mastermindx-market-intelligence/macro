@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T19:40:19.291238+00:00",
-  "count": 2729,
+  "generated_at": "2026-09-23T19:55:22.781748+00:00",
+  "count": 2730,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -155,6 +155,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m04zrgkxyce-22a813",
+      "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:18Z",
+      "summary_points": [
+        "F1Q2027 Beat & Guidance Raise: Revenue beat (10.9% y/y), organic growth accelerated to 8.9% y/y, margins expanded 90 bps to 23.6% (value-based pricing); F2027 revenue guidance raised to 8.4% (from 8.1%) and EPS to $5.50 (from $5.43).",
+        "UNF Acquisition Impact: Expected closing before CY2026 end to drive margin expansion and growth; $144m transaction expenses noted, excluding acquisition impact from revised guidance.",
+        "Valuation Upside & Consensus: $231 price target (19.8% premium to $192.37) based on 25x NTM EBITDA; consensus revenue/EPS estimates revised upward ($12.22B/$5.51 vs. raised $12.21B/$5.49).",
+        "Key Risk Factors: Cyclical exposure, pricing deceleration, and acquisition integration risks highlighted as critical for portfolio management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
