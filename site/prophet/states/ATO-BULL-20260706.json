@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ATO-BULL-20260706",
-  "asof": "2026-09-19",
+  "asof": "2026-09-23",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.4,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.13,
+    "dist_to_stop_r": -0.427,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 33.3,
-    "p1": -0.753,
-    "p2": -0.3765,
+    "horizon_pct_used": 42.2,
+    "p1": -0.9513,
+    "p2": -0.4757,
     "p3": null,
-    "move_r": -1.13,
+    "move_r": -1.427,
     "mfe_r": 0.041,
-    "mae_r": -1.146
+    "mae_r": -1.435
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.27000732421873863,
-  "_mae": -7.609997558593761,
+  "_mae": -9.529995727539074,
   "_max_p1": 0.027109169098266987,
   "_first_trigger_ts": "2026-09-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.3333
+  "days_elapsed": 19,
+  "tau": 0.4222
 }

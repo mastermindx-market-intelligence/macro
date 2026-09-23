@@ -3,23 +3,23 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-09-20",
-  "generated_utc": "2026-09-20T06:07:25.301660+00:00",
+  "generated_asof": "2026-09-23",
+  "generated_utc": "2026-09-23T08:08:55.868305+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
   "n_entries": 426,
   "n_tagged": 335,
   "n_stageable": 335,
   "n_matured": {
-    "21": 196,
+    "21": 211,
     "63": 0,
     "126": 0,
     "clean15_126": 0,
-    "clean8_21": 196
+    "clean8_21": 211
   },
   "integrity_projection": {
     "raw_rows": 426,
-    "revision_rows": 196,
+    "revision_rows": 211,
     "effective_rows": 426,
     "quarantined_excluded": 0,
     "quarantined_ids": [],
@@ -29,9 +29,15 @@
     "basis": "append-only shadow revisions overlay immutable raw PIT tags; canonical Prophet clocks and current quarantine are applied before grading, every summary split, and median_tilt"
   },
   "ec_source": {
-    "state": "unavailable",
-    "path": "data/stage_analysis/backfill/earnings_calls.parquet",
-    "reason": "no earnings-call source on this host \u2014 the EquityDesk backfill parquet is local-only and absent on CI/deploy, so every earnings lookup answers null"
+    "state": "available",
+    "path": "data/earnings_calls/history.parquet",
+    "tier": "r2_history",
+    "generation": {
+      "generation_id": "b81515ced740f5faee93136e",
+      "published_at": "2026-09-23T06:48:29.694908+00:00",
+      "rows": 50982
+    },
+    "reason": null
   },
   "split": {
     "stage2": {
@@ -42,9 +48,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 93,
+        "n_matured": 98,
         "n_win": 19,
-        "win_rate": 0.20430107526881722
+        "win_rate": 0.19387755102040816
       }
     },
     "rest": {
@@ -55,9 +61,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 103,
-        "n_win": 35,
-        "win_rate": 0.33980582524271846
+        "n_matured": 113,
+        "n_win": 37,
+        "win_rate": 0.3274336283185841
       }
     },
     "fresh_stage2": {
@@ -68,9 +74,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 18,
+        "n_matured": 21,
         "n_win": 1,
-        "win_rate": 0.05555555555555555
+        "win_rate": 0.047619047619047616
       }
     },
     "positive_ec": {
