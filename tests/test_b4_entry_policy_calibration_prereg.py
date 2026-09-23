@@ -16,7 +16,7 @@ def load_prereg():
 
 
 def resolve_cell_aliases(registration):
-    aliases = registration["amendments"][0]["alias_map"]
+    aliases = registration["alias_map"]
     cell_ids = {cell["id"] for cell in registration["cells"]}
     resolved = [aliases.get(cell_id, cell_id) for cell_id in cell_ids]
     return {cell_id if cell_id in cell_ids else aliases[cell_id] for cell_id in resolved}
@@ -24,14 +24,14 @@ def resolve_cell_aliases(registration):
 
 def test_alias_map_collapses_to_six_existing_distinct_configurations():
     registration = load_prereg()
-    aliases = registration["amendments"][0]["alias_map"]
+    aliases = registration["alias_map"]
 
     assert aliases == {
         "C6_TIGHT_LIQUIDITY_BASELINE_GAP": "C2_TIGHT_LIQUIDITY",
         "C7_BASELINE_LIQUIDITY_TIGHT_GAP": "C4_TIGHT_GAP",
     }
-    assert registration["amendments"][0]["distinct_configurations"] == 6
-    assert registration["amendments"][0]["distinct_cell_ids"] == [
+    assert registration["distinct_configurations"] == 6
+    assert registration["distinct_cell_ids"] == [
         "C0_OBSERVE_ONLY",
         "C1_CURRENT_BASELINE",
         "C2_TIGHT_LIQUIDITY",
