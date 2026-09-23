@@ -50,7 +50,41 @@ After a distinct `ORDER` trough followed by a positive `ORDER` value within six 
 
 ## DISCLOSURES
 
+- This is macro-only, internal-only, and retrospective. It contains no issuer, no issuer mapping, no sector population, and no trade; survivorship is therefore inapplicable as an issuer-selection fact and is reported as a limitation because aggregate macro series cannot represent failed or delisted firms.
+- Rule-5 posture is controlling: every FRED leg is internal-only because FRED/ALFRED model use and redistribution remain unresolved in `research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md`. Neither this diagnostic nor its output may be exposed on a user-facing surface.
+- `AWHMAN` is a diagnostic-only fourth leg. Report `HOURS` descriptive readings beside eligible episodes, but never use `HOURS` to anchor an episode, define eligibility, alter the endpoint, or rehabilitate a failed hypothesis.
+- This diagnostic can describe publication-clock timing among order flow, inventories, output, and the report-only hours measure. It cannot prove causation, select a sector, admit a pilot or trade, support a position or sizing rule, establish capacity, or make any market-direction or profitability claim.
+- A failed or passing sequence test says only whether these macro mechanisms cohered in this ratified source-clock window. A failure is not evidence that the broader mechanism family lacks value; a pass is not evidence of alpha.
+
 ## RUN CONTRACT
+
+A later run must first verify that this file is merged at a named commit SHA on `origin/main`, record that SHA in its output, and only then compute the endpoint. The run is read-only with respect to all sources.
+
+Required source command:
+
+```text
+git show origin/main:data/fred_vintage/vintages.parquet > "$RUN_SCRATCH/vintages.parquet"
+```
+
+Required source query:
+
+```text
+SELECT series, period, value, realtime_start
+FROM read_parquet('$RUN_SCRATCH/vintages.parquet')
+WHERE series IN ('NEWORDER', 'ISRATIO', 'INDPRO', 'AWHMAN')
+QUALIFY ROW_NUMBER() OVER (
+  PARTITION BY series, period ORDER BY realtime_start ASC, realtime_end ASC
+) = 1
+```
+
+Required source integrity checks, using only that query result:
+
+```text
+SELECT series, MIN(realtime_start), MAX(realtime_start), COUNT(*) FROM initial_releases GROUP BY series;
+SELECT series, COUNT(*) FROM initial_releases WHERE period >= DATE '2002-09-01' AND period <= DATE '2025-05-01' GROUP BY series;
+```
+
+The run must materialize each transformed value only from those initial-release rows, classify every target month available or blocked under the frozen publication rule, and write the endpoint result and complete episode table to `research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_RESULT_2026-09-23.md`. It must not open a return, price, outcome, ledger, scoreboard, or trial artifact before that result and its preregistration compliance review are complete.
 
 ## EVIDENCE
 
