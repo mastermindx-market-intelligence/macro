@@ -1127,3 +1127,44 @@ def test_accrue_sole_leg_returns_0_when_store_misses_complete_session(tmp_path,
     )
     assert receipt["dates_backfilled"] == 0
     assert receipt["rows_added"] + receipt["rows_replaced"] == 0
+
+
+def test_accrue_sole_leg_returns_0_when_store_covers_session_but_panel_is_empty(
+        tmp_path, monkeypatch, capsys):
+    """A-F03-W2-8 seat round 4 (round-3 lane review BLOCKER): the store COVERS
+    the complete session (a chain file exists, `dates_backfilled == len(dates)`)
+    but the panel yields zero ledger rows (`skew_map(chain)` empty), so every
+    count is zero. That is "something to accrue and it did not land" — a real
+    failure the runner's BLOCKER-2 verify step must still catch — NOT a
+    caught-up no-op. The rc-3 surface additionally requires
+    `rows_unchanged > 0` (the backfill compared real rows and found them
+    byte-equal); here it must stay rc 0 with no caught-up notice."""
+    _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for root in _COMPLETE_STORE_ROOTS:
+        for asof in (_D1, _D2):
+            seeded.append(dict(
+                date=asof, underlying=root, asof=asof, spot=100.0,
+                tenor_days=30.0, otm_put_iv=0.40, atm_call_iv=0.30,
+                skew=0.10, n_strikes=4, source="thetadata",
+            ))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+    # The chain is present (store covers the date) but produces no skew rows.
+    monkeypatch.setattr(S, "skew_map", lambda chain, drops=None: {})
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    assert rc == 0, f"covered-but-empty panel must NOT exit ACCRUE_NOOP_EXIT, got {rc}"
+    out = capsys.readouterr().out
+    assert not [l for l in out.splitlines() if l.startswith("::notice title=options-skew-accrual::")]
+    assert _sha256(ledger) == pinned

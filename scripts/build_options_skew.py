@@ -42,8 +42,9 @@ log = logging.getLogger("build_options_skew")
 # ruling makes that a lawful rc=0 exit at the runner, but the builder's own
 # `--accrue`-only invocation still needs a way to surface the no-op distinctly
 # from "the builder fell through to its default no-op (rc=0)". This constant
-# is the SO PIN — it is documented here next to the argparse help so the
-# launchd runner can grep for the exact constant and stay wired.
+# is the SO PIN — documented here next to the argparse help; the launchd
+# runner branches on the literal rc 3 (`accrue_rc == 3`) and
+# tests/test_skew_accrual_launchd.py's FAKE_ACCRUE_NOOP exits 3 to pin it.
 # exit 3 = accrue leg selected alone and the ledger was already caught up:
 # the complete store session is on the ledger, nothing to write.
 ACCRUE_NOOP_EXIT = 3
@@ -169,12 +170,19 @@ def accrue(today=None) -> tuple[int, str]:
     # no-op (`rows_touched == 0`). Either signal alone is ambiguous:
     # `rows_touched == 0` is shared by store-miss + weekend-skip +
     # caught-up; `dates_backfilled == len(dates)` is shared by caught-up +
-    # real-write (which has rows_touched > 0). Pinned by
-    # tests/test_options_skew.py:store-miss + bootstrap RED tests.
+    # real-write (which has rows_touched > 0). Seat round 4: a store that
+    # COVERS the session but whose panel yields zero ledger rows (empty
+    # `skew_map(chain)`) also reports dates_backfilled == len(dates) with
+    # all-zero counts — that is "something to accrue and it did not land",
+    # so the no-op additionally requires `rows_unchanged > 0`: the backfill
+    # must have COMPARED real rows and found every one byte-equal. Pinned by
+    # tests/test_options_skew.py: store-miss, covered-but-empty-panel and
+    # bootstrap RED tests.
     if (
         dates
         and receipt["dates_backfilled"] == len(dates)
         and rows_touched == 0
+        and receipt["rows_unchanged"] > 0
     ):
         # A-F03-W2-8 (2026-09-23): caught-up ledger is a LAWFUL no-op.
         # The complete store session S is already on the ledger with

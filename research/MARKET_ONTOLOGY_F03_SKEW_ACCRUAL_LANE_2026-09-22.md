@@ -532,10 +532,9 @@ destination change at the seat-install level.
 
 ## 10. Caught-up no-op (holiday / re-landed session) — A-F03-W2-8 (2026-09-23)
 
-Sits at the end of this doc per the §9 round-6 amendment precedent
-(`commit 8425a434d7` appended a new round-6 section the same way; see
-`#641` below for the per-section anchor argument and `#644` for the
-decision to keep §10 here vs. inserting after the §2 step list).
+Placed at the end of this doc by seat ruling (A-F03-W2-8 seat round 4,
+2026-09-23): the §2 runner step list is the numbered contract and stays
+untouched; the caught-up case is a behavior appended here.
 
 **The case.** On a Mon-morning invocation where Friday's complete session
 S is already on the ledger, or a holiday-rerun where the maintainer's
