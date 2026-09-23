@@ -2,7 +2,7 @@
 workstream: "WS:GMI-THEME-GRAPH"
 session: sol/theme-intelligence-c-early-leadership-20260919
 model: sol
-ended_because: checkpointed_continuation
+ended_because: ci_handoff
 mission: >
   Deliver one bounded closed-session parent/subtheme leadership observation through the
   incumbent subsector rotation publisher into an actual ThemeState consumer, preserving
@@ -38,6 +38,9 @@ verified:
   - claim: "The current GitHub synthetic merge ref is not a current-main integration receipt."
     command: "refs/pull/7455/merge"
     result: "08c3a12545c59ab0c59f53e60c1390cc32a34c82 joins fdd731f... to fc429295... and predates current main 668237947e016f679782e41e61c91c9133a5ea99."
+  - claim: "The release candidate now owns its required CI registrations without creating a new job."
+    command: "compose #7455 against main 080d488183e51415302904bf4d56cfd92351e9e4 and reattach the three held suites to their existing owners"
+    result: "integration commit 0396c39df38266fd801cfdf500cdaa4801b00151; main diff is the ten Lane C paths plus one seven-line legacy-jobs.yml registration delta; later main movement to acec95b438ac7044a2a2827393640342fb24fb0e is research-vault-catalog only."
 unverified:
   - claim: "The exact fdd731f head plus reattached CI registration composes cleanly against current main."
     what_would_verify: "One immutable current-main integration candidate or refreshed merge ref after the same #7455 carrier reattaches its three test registrations."
@@ -48,14 +51,14 @@ unverified:
   - claim: "The observation has predictive edge or acceptable false-alert economics."
     what_would_verify: "Evaluation/F preregistered baselines, prospective outcomes, false-alert tests, and formal promotion."
 unresolved:
-  - "CURRENT RELEASE BLOCKER: current main intentionally lacks the three Lane C test registrations. #7678 says the eventual #7455 implementation must reattach them; do not create a new CI job or sibling manifest carrier."
-  - "CURRENT INTEGRATION BLOCKER: refs/pull/7455/merge is stale against fc429295..., not current main 668237947...."
+  - "CURRENT RELEASE GATE: #7455 integration candidate 0396c39df38266fd801cfdf500cdaa4801b00151 reattaches all three Lane C suites to the existing owners. Current main lacks them until merge by design; hosted qualification of the reattached candidate remains pending."
+  - "CURRENT INTEGRATION STATE: 0396c39df38266fd801cfdf500cdaa4801b00151 is a two-parent composition of prior #7455 head fc773f0a17d745be7704973eada358e027df6a29 and current-main base 080d488183e51415302904bf4d56cfd92351e9e4. Later main acec95b438ac7044a2a2827393640342fb24fb0e moved only data/research_vault/catalog.json."
   - "GMI/F04 still owns canonical identity/exposure decisions for dedicated CPU, accelerator, HBM/DRAM, NAND/SSD, server, storage, and optics subthemes."
   - "Production/browser acceptance and predictive promotion remain separate from source acceptance."
 next_actions:
-  - "On the SAME #7455 branch, re-pin current main and reattach the three Lane C suites to their existing CI owners exactly as required by #7678; create no new CI job/queue/control plane."
-  - "Obtain an immutable current-main composition for fdd731f + the CI reattachment, run the focused owner suites and applicable hosted CI/contract-delta, and reconcile any genuine current-base conflict without broad product churn."
-  - "If current-base qualification is green, preserve Lane F semantic PASS for unchanged product bytes, obtain the release-owner decision, then merge through the incumbent path and perform natural deployed-byte/browser proof."
+  - "Consume hosted fences/contract-delta/semantic packs on the exact reattached candidate after this metadata-only enum repair; do not redo the manifest wiring unless a genuine current-source failure proves it necessary."
+  - "If exact-head/current-base qualification is green, preserve Lane F semantic PASS for unchanged product bytes, obtain the release-owner decision, and merge through the incumbent path."
+  - "After merge, perform natural completed-session publication, deployed-byte identity, and real browser consumer proof; predictive promotion remains separately gated."
 do_not_redo:
   - "Do not redo the accepted NYSE-calendar/internal-gap/stale-tail/reclaim repair from 2208fe40039d356929fac0f96b626edc33d42288."
   - "Do not redo the accepted health propagation, evidence-family/observation identity, deduplication, and committed real-input proof from 07db23e43d0df0b7161c8a51e6d82595ee974bbe / fdd731f."
@@ -143,15 +146,20 @@ blobs are unchanged; refresh the integration candidate around the actual CI regi
 
 ## Exact next action
 
-1. Stay on **PR #7455 / the same branch**.
-2. Re-pin current main and reattach the three Lane C suites to their **existing** CI owners, per
-   #7678. Do not create a new logical CI job, runner, queue, or sibling carrier.
-3. Produce one immutable current-main integration candidate/ref.
-4. Run focused owner tests plus current contract-delta and applicable hosted CI on that candidate.
-5. Preserve Lane F's PASS for unchanged semantic product bytes; request new semantic review only if
-   product semantics or governing material source changes.
-6. Only after current-base release qualification may the incumbent release owner merge. Then prove
-   a natural completed-session publication, deployed-byte identity and real browser consumption.
+1. **CI reattachment is now implemented on this same carrier.** Integration commit
+   `0396c39df38266fd801cfdf500cdaa4801b00151` reattaches the two producer suites to
+   `unrun-subsector-themes` and the consumer receipt beside `test_thematic_state.py`; no new job,
+   runner, queue, or control plane was created.
+2. Consume exact-head fences, contract-delta and applicable hosted semantic packs after this
+   metadata-only Agent OS enum repair. Do not churn product bytes or redo the manifest unless an
+   attributable current-source failure requires it.
+3. Latest main `acec95b438ac7044a2a2827393640342fb24fb0e` is path-disjoint from the candidate
+   after its `080d488183e51415302904bf4d56cfd92351e9e4` integration base; only the research-vault
+   catalog moved, so semantic review reuse remains appropriate while product blobs stay unchanged.
+4. If qualification is green, preserve Lane F's exact-head semantic PASS, obtain the incumbent
+   release-owner decision, and merge through the existing release path.
+5. After merge/deployment, prove one natural completed-session publication, deployed-byte identity
+   and real browser consumption. Predictive edge/promotion remains separately gated.
 
 ## Held / non-goals
 
