@@ -147,6 +147,34 @@ def test_non_risk_on_and_non_us_keep_existing_headline_contract():
     assert ms._headline_for("RISK_ON", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) == ms._HEADLINES["RISK_ON"]
 
 
+def test_committed_macro_risk_on_thesis_is_participation_qualified():
+    """The VPS publishes committed site/macro.html; template-only fixes are not release-complete."""
+    import html as html_lib
+    import re
+    from pathlib import Path
+
+    shipped = (Path(__file__).resolve().parents[1] / "site" / "macro.html").read_text(encoding="utf-8")
+    unsafe = "the tape, breadth and cross-asset signals line up"
+    assert unsafe not in shipped.lower()
+
+    word_match = re.search(r'id="ms-word"[^>]*>(.*?)</p>', shipped, flags=re.S)
+    thesis_match = re.search(r'<p class="v-thesis[^\"]*"[^>]*>(.*?)</p>', shipped, flags=re.S)
+    assert word_match is not None
+    assert thesis_match is not None
+
+    def visible_text(fragment: str) -> str:
+        return " ".join(html_lib.unescape(re.sub(r"<[^>]+>", " ", fragment)).split())
+
+    word = visible_text(word_match.group(1))
+    thesis = visible_text(thesis_match.group(1))
+    if "Risk-on" in word:
+        assert (
+            thesis.startswith("Broad risk-on")
+            or thesis.startswith("Selective risk-on")
+            or "participation is unverified" in thesis
+        ), thesis
+
+
 def test_snapshot_keeps_score_and_verdict_while_exposing_selective_scope():
     comps = _risk_on_components(0)
     readers = tuple((lambda _latest, c=c: c) for c in comps)
