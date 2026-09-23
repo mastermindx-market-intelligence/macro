@@ -1061,6 +1061,16 @@
     body.page-china .cnx-links.cnx-mobile-index{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 0 10px;padding-bottom:2px}
     body.page-china .cnx-links.cnx-mobile-index a{flex:0 0 auto;scroll-snap-align:start}
     body.page-china .cnx-links.cnx-mobile-index::-webkit-scrollbar{display:none}
+    /* Preserve the full deep dashboard on mobile, but remove desktop-sized air
+       between repeated cards/rows so users scan more intelligence per viewport. */
+    body.page-china .cnx-rack2,
+    body.page-china .cnx-rack3{gap:10px;margin-bottom:10px}
+    body.page-china .cnx-card{padding:12px 14px}
+    body.page-china .cnx-row,
+    body.page-china .cnx-kv{padding:6px 0}
+    body.page-china .cnx-links{gap:7px;margin:5px 0 10px}
+    body.page-china .cnx-links a{padding:6px 12px}
+    body.page-china .cnx-secbar{margin:16px 2px 9px}
   }
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
