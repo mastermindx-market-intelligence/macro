@@ -119,3 +119,38 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 research/prophet/cpu_leadership/d
 The actual run, input revisions, implementation hashes, counts and limitations are in
 `accepted-source-rehearsal.json` and `accepted-source-verification.json`. Do not replace
 the original `final-writer-status.json` refusal with this control result.
+
+
+## September 23 — current-source full-output acceptance
+
+The next committed input generation is a material invalidator: main
+`668237947e016f679782e41e61c91c9133a5ea99` now includes the September 21 TURN WATCH
+sidecar and updated candidate/Door artifacts. A complete nonwriting report on those
+exact inputs passes without `--accepted-input-ref`. The old conflicting-input refusal
+is not the current pin's result, and a historical-input substitution is no longer
+needed for this qualification.
+
+The proof now observes the existing full writer's builder result without changing the
+call arguments, inputs, output or runtime source. It checks every submitted Door
+identity AND receipt against the actual full output and requires all prior immutable
+records to survive unchanged. A pass from the isolated Door stage is not sufficient.
+
+Full output: 5,067 inputs, 1,148 computed event appends across all sources. All 171
+submitted Door keys are accounted for; 150 new keys become 121 observation events and
+29 explicit suppressions. The isolated Door stage returns 119/31 instead: separate
+scopes, not interchangeable counts. The full output contains the actual INTC/MU
+September 10 and AMD September 18 source receipts with September 23 ingestion times.
+No ARM flag, earlier entry, score, historical fill or performance claim is invented.
+
+Seven focused lineage tests and 172 complete owner tests pass, with zero failures or
+skips. The queued focused run loaded already-added code; no RED-before claim is made.
+Runtime source and all prepared input/history bytes remain unchanged. See
+`current-source-qualification.json`, `current-source-lineage.json`, and the named test
+logs. The current committed September 21 board separately still cap-displaces MU and
+ARM before final scoring; `current-board-cap-cases.json` preserves that evidence.
+
+Current-source report success is NOT deployment, a natural scheduled advance, present
+market-session freshness or independent approval. Stable v1 retry evidence remains
+#7227's scope. Release still requires genuine non-author review and the normal
+production proof. No manual nightly, registry cutover, canonical rewrite or live
+rank/entry/sizing change is performed by this unit.

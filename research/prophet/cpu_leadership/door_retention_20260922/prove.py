@@ -35,6 +35,69 @@ def verify_fixture_inputs(expected, bodies):
     return dict(expected)
 
 
+def verify_full_lineage(submitted, events, suppressions, *,
+                        previous_events=(), previous_suppressions=()):
+    """Verify source retention in the FULL computed output, without assigning policy.
+
+    Canonical identity and serialization remain owned by the episode module.
+    The caller supplies the unmodified nonwriting builder's event/suppression lists.
+    An isolated Door-core result is not an acceptable substitute for these lists.
+    """
+    owned = {}
+    for row in (*events, *suppressions):
+        key = _ordinary_source_key(row)
+        if key in owned:
+            raise ValueError('duplicate full-writer source ownership')
+        owned[key] = row
+    required = {_ordinary_source_key(row): row for row in submitted}
+    for key, row in required.items():
+        if key not in owned:
+            raise ValueError('submitted source is missing from full-writer output')
+        if owned[key].get('source_receipt') != row.get('source_receipt'):
+            raise ValueError('full-writer source receipt mismatch')
+    prior = (*previous_events, *previous_suppressions)
+    full_bytes = {canonical_json(row) for row in (*events, *suppressions)}
+    if any(canonical_json(row) not in full_bytes for row in prior):
+        raise ValueError('prior immutable record changed in full-writer output')
+    prior_keys = {_ordinary_source_key(row) for row in prior}
+    new_keys = set(required) - prior_keys
+    event_keys = {_ordinary_source_key(row) for row in events}
+    suppression_keys = {_ordinary_source_key(row) for row in suppressions}
+    case_fields = ('source_system', 'source_schema', 'source_event_id', 'source_receipt',
+                   'event_type', 'episode_id', 'occurred_at', 'known_at',
+                   'recorded_at', 'observation_session', 'reason')
+    cases = [{field: owned[key].get(field) for field in case_fields}
+             for key in sorted(required)
+             if key[0] == 'doors' and key[2].rsplit(':', 1)[-1] in ('AMD', 'INTC', 'ARM', 'MU')]
+    return {'submitted': len(required), 'all_accounted': True,
+            'source_receipts_match': True, 'prior_records_preserved': True,
+            'new_events': len(new_keys & event_keys),
+            'new_suppressions': len(new_keys & suppression_keys),
+            'motivating_cases': cases, 'entry_authority_changed': False,
+            'scope': 'exact submitted source keys in the complete nonwriting output; not trades'}
+
+
+def observe_full_writer(root, clock, submitted, previous_events, previous_suppressions):
+    """Observe one real report call; never substitute its arguments, inputs or result."""
+    from unittest.mock import patch
+    original = writer._load_and_build
+    captured = []
+    def observe(*args, **kwargs):
+        result = original(*args, **kwargs)
+        captured.append(result)
+        return result
+    with patch.object(writer, '_load_and_build', side_effect=observe):
+        receipt = writer.reconcile(repo_root=root, nightly=False, replay=False,
+                                   recorded_at=clock, correction_path=None)
+    if len(captured) != 1 or captured[0][0] != receipt:
+        raise ValueError('full-writer receipt is not bound to one observed computation')
+    if receipt.get('mode') != 'report' or receipt.get('durable_write') is not False:
+        raise ValueError('full-writer proof must remain nonwriting report mode')
+    lineage = verify_full_lineage(submitted, captured[0][2], captured[0][3],
+        previous_events=previous_events, previous_suppressions=previous_suppressions)
+    return receipt, lineage
+
+
 def proof_exit_code(full_writer):
     """A diagnostic process returning a refusal must not be mistaken for a pass."""
     return 0 if full_writer.get('status') in ('passed', 'not_requested') else 1
@@ -189,9 +252,9 @@ def main(argv=None):
         if args.full_writer:
             before_full = digest_files(root)
             try:
-                full_receipt = writer.reconcile(repo_root=root, nightly=False, replay=False,
-                    recorded_at=clock, correction_path=None)
-                full_writer = {'status': 'passed', 'receipt': full_receipt}
+                full_receipt, lineage = observe_full_writer(root, clock,
+                    [*candidate.observations, *candidate.suppressions], saved.events, saved.suppressions)
+                full_writer = {'status': 'passed', 'receipt': full_receipt, 'lineage': lineage}
             except Exception as exc:
                 full_writer = {'status': 'refused', 'error_type': type(exc).__name__, 'error': str(exc)}
                 # Frozen fixture stays unchanged; a separate read identifies conflicting

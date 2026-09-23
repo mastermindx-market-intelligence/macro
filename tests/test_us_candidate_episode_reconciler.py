@@ -1643,3 +1643,73 @@ def test_retention_rehearsal_resource_limits_never_truncate_inputs():
 @pytest.mark.parametrize("state,expected", [("passed", 0), ("not_requested", 0), ("refused", 1), ("unknown", 1)])
 def test_retention_rehearsal_refusal_is_nonzero_not_acceptance(state, expected):
     assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+
+
+# Full-writer proof must inspect its actual output, not borrow isolated-core success.
+def _lineage_row(ticker="INTC", *, source="doors", receipt="a", **extra):
+    return {"source_system": source, "source_schema": "prophet_doors/v1",
+            "source_event_id": f"doors:2026-09-10:T:{ticker}",
+            "source_receipt": "sha256:" + receipt * 64, **extra}
+
+
+def test_retention_full_lineage_joins_actual_event_and_suppression_outputs():
+    helper = _retention_proof_module().verify_full_lineage
+    event = _lineage_row(event_type="OBSERVED", episode_id="real-output")
+    suppressed = _lineage_row("MU", reason="MISSING_STRUCTURAL_ANCHOR")
+    result = helper([_lineage_row(), _lineage_row("MU")], [event], [suppressed])
+    assert result["submitted"] == 2 and result["all_accounted"] is True
+    assert result["new_events"] == 1 and result["new_suppressions"] == 1
+    assert result["entry_authority_changed"] is False
+    assert {r["source_event_id"] for r in result["motivating_cases"]} == {
+        event["source_event_id"], suppressed["source_event_id"]}
+
+
+def test_retention_full_lineage_missing_output_refuses_even_if_receipt_is_green():
+    with pytest.raises(ValueError, match="missing"):
+        _retention_proof_module().verify_full_lineage([_lineage_row()], [], [])
+
+
+def test_retention_full_lineage_changed_receipt_is_not_a_match():
+    with pytest.raises(ValueError, match="receipt"):
+        _retention_proof_module().verify_full_lineage(
+            [_lineage_row()], [_lineage_row(receipt="b")], [])
+
+
+def test_retention_full_lineage_different_source_same_id_is_not_a_match():
+    with pytest.raises(ValueError, match="missing"):
+        _retention_proof_module().verify_full_lineage(
+            [_lineage_row()], [_lineage_row(source="candidate")], [])
+
+
+def test_retention_full_lineage_duplicate_ownership_refuses():
+    row = _lineage_row()
+    with pytest.raises(ValueError, match="duplicate"):
+        _retention_proof_module().verify_full_lineage([row], [row], [row])
+
+
+def test_retention_full_lineage_requires_old_records_unchanged():
+    row = _lineage_row(event_type="OBSERVED", known_at="2026-09-10T20:00:00Z")
+    changed = {**row, "known_at": "2026-09-23T12:00:00Z"}
+    with pytest.raises(ValueError, match="prior"):
+        _retention_proof_module().verify_full_lineage(
+            [row], [changed], [], previous_events=[row])
+    result = _retention_proof_module().verify_full_lineage(
+        [row], [row], [], previous_events=[row])
+    assert result["new_events"] == 0 and result["prior_records_preserved"] is True
+
+
+def test_retention_full_lineage_observes_one_real_nonwriting_call(tmp_path):
+    helper = _retention_proof_module()
+    from engine.us_candidate_episode_intake import load_identity_spine
+    _seed_sources(tmp_path)
+    source = _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    clock = "2026-11-30T21:05:00Z"
+    batch = writer._door_backlog_intake(source, load_identity_spine(tmp_path / "data"),
+        recorded_at=clock, existing_events=[], existing_suppressions=[])
+    before = _snapshot(tmp_path)
+    receipt, lineage = helper.observe_full_writer(tmp_path, clock,
+        [*batch.observations, *batch.suppressions], (), ())
+    assert receipt["mode"] == "report" and receipt["durable_write"] is False
+    assert lineage["submitted"] == 2 and lineage["all_accounted"] is True
+    assert lineage["new_events"] == 2
+    assert _snapshot(tmp_path) == before

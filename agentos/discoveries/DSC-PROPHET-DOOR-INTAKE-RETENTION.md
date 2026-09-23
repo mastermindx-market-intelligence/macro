@@ -12,8 +12,10 @@ falsifier: >-
   Demonstrate an older completed
   unowned Door row silently omitted, changed prior source bytes accepted, duplicate
   events on retry, rewritten history, premature future ingestion, or a manufactured
-  anchor/trade. Exact-final nonwriting full-writer qualification now records an immutable-source
-  refusal. That failure is not waived by local or composed test success.
+  anchor/trade. Current-source full-writer qualification at 668237947e016f679782e41e61c91c9133a5ea99
+  now passes with every submitted Door source key and receipt verified in the actual
+  complete output. This supersedes the prior refusal only for that changed input pin;
+  scheduled production consumption and independent release acceptance remain unproved.
 so_what: >-
   Early economic leadership cannot become a useful workflow when its research sightings
   are silently skipped. Repair retention in the existing B1 writer, without replacing
@@ -155,3 +157,53 @@ source-admission challenger are not reproduced or rerouted onto this retention c
 #7227 remains1f7aa1bb4e067a9a6fecd783857f984a8b6a2e87 pending non-author re-review.
 The existing new-session protocol adoption and current-source full-writer proof remain
 separate from this historical-input control. MISSION_COMPLETE:false.
+
+
+## Current committed-input qualification — 2026-09-23
+
+Procedure: protected Mastermind@c917a75b0168a524a51b2ba0603a99118e93ef1f;
+all required Skillpack 1.0.1 sources freshly read at that revision, matching the
+previously consumed blobs. The same #7684 carrier began at cf3ccae74ed2c186e657fb3e5062928169a19c24.
+Direct work is a bounded principal acceptance intervention; no worker START or alternate
+provider/credential route was used. Runtime semantic source remains d2ec700e98b584e25db695711db8f1655f2e9c6f.
+
+Material invalidator: current main668237947e016f679782e41e61c91c9133a5ea99 contains a
+new September21 TURN WATCH envelope and updated Door/candidate data. The complete
+nonwriting reconciler now PASSES with every input taken from that one commit and
+accepted_source_control=null. The former immutable-source refusal remains accurate
+for its old input set but must not be carried forward as the result for this new pin.
+This is current-committed-input qualification, NOT today's market freshness or deployment.
+
+New proof capability: the existing report call is observed once without changing its
+arguments, inputs or result; exact submitted source keys AND receipts are checked in
+its actual complete event/suppression output. Prior immutable records must be present
+byte-for-byte. Missing output, changed evidence, duplicate ownership and cross-source
+identity substitutions fail qualification. The proof no longer borrows isolated-core
+case results to assert complete-pipeline retention. Runtime writer/core/intake untouched.
+
+Actual complete result: 5,067 inputs ->1,148 computed event appends across all sources.
+All171 submitted Door source keys are accounted for;150 were previously unowned and
+now become121 observations/29 explicit suppressions in the COMPLETE output. The isolated
+Door test reports119/31; do not conflate these scopes. INTC/MU September10 and AMD
+September18 exact receipts occur in the full output with September23 ingestion clocks.
+No ARM sighting, historical trade, structural anchor or score was invented. Every
+prepared file remains unchanged; no canonical publication is performed by the proof.
+
+Seven new full-lineage tests pass; complete four-owner battery172 passed/0 failed/0
+skipped. The initially queued focused run loaded already-added code, so it is GREEN
+coverage, not a RED-before claim. Evidence: current-source-{qualification,lineage}.json,
+current-source-{owner,focused}-tests.txt in the existing research directory.
+
+The September21 US board still cap-displaces MU(pool26,T1) and ARM(pool45,tier null),
+with prophet=null for both. Source-bound excerpt: current-board-cap-cases.json. This
+is a separate current selection defect, not a new entry recommendation. A separate
+parquet cohort-inspection request was platform-blocked and not rerun; no full-cohort
+scoring experiment or new ranking result is claimed. #7572 retains that research scope.
+
+Next: eligible non-author exact-source review of #7684, then the existing release path
+and actual natural-generation retention proof. #7227 retains its v1 retry-integrity/v2
+adoption scope and its independent review; current-input PASS does not authorize that
+cutover or waive recurrence risk. #7572/#7567 still require independent user-path release
+acceptance; #6992 controlled China ranking activation and #7180 publication remain
+separate. No production run was cancelled, restarted or manually dispatched. Do not
+redo accepted historical-control or threshold studies. MISSION_COMPLETE:false.
