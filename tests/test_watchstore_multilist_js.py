@@ -1490,20 +1490,37 @@ def test_T3_failed_unwatch_is_tombstoned_and_pull_does_not_resurrect_it():
           db.client.from = function (table) {
             var api = realFrom(table);
             if (table === 'watchlist_symbols') {
-              // Replace `insert` / `delete` with no-ops so the FAKE_DB does NOT
-              // mutate db.tables before the terminal rejects (its `insert()`
-              // pushes rows eagerly, before `__run`). The chain
-              // (`.insert()/delete()` + `.eq().in().then(...)`) stays intact
-              // and only the final result rejects with an RLS-shaped error.
-              api.insert = function () { return api; };
-              api.delete = function () { return api; };
+              // Fail only writes. SELECT must still resolve, or pull() exits in
+              // its catch path before it can hand filtered rows to WL.merge.
+              var realRun = api.__run;
+              api.insert = function () { api.__failedWrite = true; return api; };
+              api.delete = function () { api.__failedWrite = true; return api; };
               api.__run = function () {
-                return Promise.resolve({data: null, error: {code: '42501', message: 'rls denied'}});
+                if (api.__failedWrite) {
+                  return Promise.resolve({data: null, error: {code: '42501', message: 'rls denied'}});
+                }
+                return realRun();
               };
             }
             return api;
           };
           // user removes AAPL from their list — local intent is now [NVDA]
+          var mergePayloads = [];
+          var installBoundMergeSpy = function (value) {
+            var realMerge = value.merge;
+            value.merge = function (blob) {
+              mergePayloads.push(blob);
+              return realMerge.apply(value, arguments);
+            };
+          };
+          window.WL = {merge: function () {}};
+          installBoundMergeSpy(window.WL);
+          document.addEventListener('wl-list-change', function (e) {
+            window.WL = {getBlob: function () {
+              return {items: [{t: 'NVDA'}]};
+            }};
+            installBoundMergeSpy(window.WL);
+          });
           return WS.symbols.push('L-W', ['NVDA']).then(function () {
             var sync = readSyncBlob('L-W');
             // Snapshot the cloud BEFORE the pull/retry — the retry below will
@@ -1535,6 +1552,7 @@ def test_T3_failed_unwatch_is_tombstoned_and_pull_does_not_resurrect_it():
                      syncedAfterFail: syncedAtFail,
                      tombstoneAfterPull: (afterPull && afterPull.tombstones) || {},
                      blobAfterPull: blobItems,
+                     mergePayloads: mergePayloads,
                      syncedAfterRetry: synced,
                      tombstoneAfterRetry: (afterRetry && afterRetry.tombstones) || {},
                      finalSaves: finalSaves});
@@ -1561,6 +1579,10 @@ def test_T3_failed_unwatch_is_tombstoned_and_pull_does_not_resurrect_it():
         "tombstone survives the merge (the merge must not erase it)"
     assert "AAPL" not in out["blobAfterPull"], \
         f"the merge must EXCLUDE tombstoned symbols; blob has {out['blobAfterPull']}"
+    assert out["mergePayloads"], "pull() must hand the filtered cloud rows to WL.merge"
+    mergeSymbols = [item.get("t") for payload in out["mergePayloads"] for item in payload.get("items", [])]
+    assert "AAPL" not in mergeSymbols, \
+        f"the rows handed to WL.merge must exclude tombstoned symbols; got {mergeSymbols}"
     # The `online` retry ran the DELETE and the tombstone is now cleared.
     assert (out["tombstoneAfterRetry"] or {}) == {}, \
         f"successful DELETE must clear the tombstone; got {out['tombstoneAfterRetry']}"
