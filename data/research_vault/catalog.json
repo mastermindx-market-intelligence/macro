@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T15:09:37.545777+00:00",
-  "count": 2716,
+  "generated_at": "2026-09-23T19:25:47.444273+00:00",
+  "count": 2729,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -100,6 +100,206 @@
   ],
   "items": [
     {
+      "id": "marketdesk-qugizra4u2p-58f2a2",
+      "title": "GS Duttenhoefer BEST of DAY 3 at our German Corp Conference in Munich 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:57:48Z",
+      "summary_points": [
+        "German Equities Outlook: Consensus 17% EPS growth (2027) vs 9% STOXX 600, DAX at 15x P/E with under-owned positioning (20% revs from Autos/Chemicals); key growth driver: manufacturing recovery through 2027/28.",
+        "Mercedes-Benz China Risks: JV volumes down 24%, ICE market down 40% in China; pricing sensitivity and labour negotiations (40h workweek focus) threaten near-term sales.",
+        "German Defence Procurement: Budget increase drove 10x approval volumes; Iran war boosted Brenntag SE (€8.6bn MCAP) amid improved bureaucracy, though geopolitical risks (room crowding 3/10) threaten gains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6kjignza40c-5e0949",
+      "title": "GS Feiler GS Consumer Top Stocks & Trading Themes in Focus 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:57:46Z",
+      "summary_points": [
+        "Fundamental Catalysts: FIVE's 3Q strength (P/E 20x vs >30x spring) and ONON's top-line high-teens growth/margin expansion signal near-term earnings momentum beyond positioning-driven sell-offs.",
+        "Valuation Contrasts: RCL's 11x P/E (vs 2027 Caribbean/Europe set-up) and Sandals deal $3BN outlay adjustment highlight undervaluation versus peers, with cross-sell opportunities.",
+        "Positioning Shift: \"Sell what has not been sold\" (positioning risk) driving recent moves; \"out of favor\" stocks (e.g., CPR) with single-digit multiples offer resilience amid market corrections."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kjugndp41gc-ed44e2",
+      "title": "GOAL Post The name is bond — rethinking duration in balanced portfolios",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:41:49Z",
+      "summary_points": [
+        "Bond Yield Regime Shift: US 10-year yields near pre-GFC highs driven by Middle East conflict, energy prices, fiscal concerns, and AI capital competition; real yields surged (US 2-year +120bp YTD), signaling higher neutral rates and capital competition.",
+        "60/40 Portfolio Drag: Bonds have dragged risk-adjusted returns for 60/40 portfolios (Exhibit 3), with Sharpe ratios lagging standalone equities due to 2022 drawdowns for both assets.",
+        "MPT-Driven Allocation Mechanics: Optimal bond weight reduced to near-zero since 2021 (steep efficient frontier), driven by higher equity/bond correlations, elevated equity risk premia, and reduced diversification benefits.",
+        "Geopolitical & Fiscal Drivers: Middle East war-driven energy prices, AI capex boom, and fiscal policies elevated equity valuations relative to bonds, with bond yields now near long-run averages (Exhibit 4).",
+        "Bond-Cash Underperformance: Long-dated US bonds materially underperformed cash over 5 years (Exhibit 18), contrasting with historical periods where bonds outperformed cash (e.g., 1910s, 1960s-80s)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rjf1mjsp3wm-701b17",
+      "title": "Commodity Analyst Copper, Silver, PGMs Tariff Uncertainty Likely to Persist",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:39Z",
+      "summary_points": [
+        "Copper Mine Development Time: Global copper mine development requires >15 years, creating structural supply constraints that outweigh tariff policy impacts.",
+        "US Silver Self-Sufficiency Gap: US silver production covers only ~5 years of current imports, with minimal expansion incentive despite tariff-driven price spikes.",
+        "Platinum/Palladium Supply Concentration: 82%/46% of platinum/palladium supply concentrated in Southern Africa, creating high geopolitical disruption risk.",
+        "US Inventory Concentration Tightens Global Liquidity: US warehouses hold growing global copper inventories, reducing ex-US liquidity and amplifying volatility risks.",
+        "Investor Demand Amplifies Copper Volatility: Broadened investor interest in copper (COMEX) within a less liquid market causes disproportionate price impacts from modest inflows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yhemhztl4kw-4369e6",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T17:23:57Z",
+      "summary_points": [
+        "Geopolitical Catalysts: US/Iran negotiations and UN meetings (US/China; US/Iran; NATO+UKR/Russia) driving energy/yield/stock volatility; USD rally amid tactical caution.",
+        "Eurozone PMI Data: Mfg 52.7, Svcs 53.0, Composite 53.1 stronger than expected, flattening yield curves as growth/inflation inflect higher.",
+        "Geopolitical Scenarios: Three US/Iran outcomes: (1) Deal this week (RTY short squeeze, EU outperforms), (2) No deal/no escalation (NDX > EU > SPX), (3) No deal/escalation (oil $100/bbl, 10Y yield >5%).",
+        "AI Trust Erosion: Meta’s untrustworthiness (Hugging Face scenario) as core risk overriding AI narratives, catalyzing systemic de-risking in banking/wealth management.",
+        "Fed Data Cluster: SEP 23-25 Fed speakers (Williams, Hammack), PMI, ADP, durable goods orders critical for rate expectations and growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-augnhdcr2jm-0cbff4",
+      "title": "Europe Automobiles Chinese OEM Competition Monitor Aug 26 Chinese share hits new high of 8 on softer individual premium br...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T16:51:06Z",
+      "summary_points": [
+        "Chinese OEM Market Share Surge: Europe-5 registrations up 199% YoY (43,825 units Aug-26), market share at 8.13% (+524bps YoY), directly eroding VW Group mass brands (-188bps) and Renault (-44bps) as total China-owned brands capture 12.48% share.",
+        "Policy Shift & Pricing Discipline: Chinese ministries’ Aug 24 guidelines mandate cost-based pricing and anti-disruptive competition abroad, ending aggressive price wars—providing near-term reprieve for European incumbents while positioning Chinese brands for sustainable long-term growth.",
+        "BYD Dominance & Structural Shift: BYD leads with 3.16% Europe-5 share (Aug-26) and 2.98% R3M growth (+166bps), outpacing VW mass brands (-19.48% volume, -139bps) and Stellantis (-15.11% volume, -59bps), signaling irreversible market share transfer.",
+        "Germany as Strategic Battleground: Chinese brands sold 9,679 units in Germany (+311% YoY), capturing 241bps gain in market share; Germany dominates EU auto retail (31.1% of sales), making it critical for European premium automakers’ competitive positioning.",
+        "European Production Acceleration: Chinese brands’ European production to grow 15% CAGR (2025–2030), with Spain as dominant hub (46%/58% volume in 2026/2027), reflecting strategic localization and supply chain maturity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t5oi11yvmsb-6b195e",
+      "title": "SMIC (0981.HK) AI to drive 2H26 growth; strongest revenues QoQ in 2Q26 among global top 10 foundries; Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T16:33:53Z",
+      "summary_points": [
+        "SMIC Revenue Growth & China AI Demand: Q226 QoQ revenue growth at 20% (vs. top 10 foundries’ 11.5% avg), driven by China’s generative AI trend, localization, and +15% YoY China Semis Capex growth in 2026-28E.",
+        "AI Chip TAM & Capex Allocation: China’s AI chip TAM to reach US$4.123bn by 2030 (base case), with SMIC allocating 54-71% of capex to 7nm/advanced nodes, supported by strong analog/power IC demand.",
+        "US Geopolitical Risk: BIS Entity List restrictions threaten critical equipment/material supply, posing a direct operational and growth risk for SMIC.",
+        "2H26 Revenue Outlook: Q3/Q4 2026 revenues projected at +12% Hoh, +27% YoY; capacity tightness for AI chips supports stable ASPs despite rising depreciation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7uvidie2gly-956ddc",
+      "title": "Bristol Myers Squibb Co. (BMY) Complicated Setup for Upcoming Admilparant Phase 3 IPF Readout",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:58Z",
+      "summary_points": [
+        "ALOFT-IPF Readout: Equal success/failure probability for admiparant (IPF treatment); critical near-term event amid $4bn market expansion; FDA approvals recent.",
+        "LIBREXIA-AF Strategic Shift: Post-ALOFT focus shifts to LIBREXIA-AF (Factor XI drug); potential for overreaction beyond DCF consensus; Q1 2027 outcome critical for sentiment.",
+        "DCF & Valuation: Admiparant = ~5% DCF swing factor; BMY trades at 8.2x P/E (12/25) with 12.5% FCF yield (undervalued), but slowing growth (1.6% EPS) and operational inefficiencies (72.6 inventory days) pose near-term risks.",
+        "LIBREXIA-AF Sentiment Risk: Disappointment in Q1 2027 could disproportionately hurt P/E multiple; 0.5x equity move = ~5% impact from clinical disappointments.",
+        "Admiparant Commercial Upside: Success implies $2.7bn peak sales (2035, 50% POS); failure yields 5% DCF downside; primary endpoint (FVC decline: 100-125ml, 30-50% vs placebo) defines efficacy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3riyzropziw-c520a4",
+      "title": "LATAM Today September 23, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:49Z",
+      "summary_points": [
+        "Argentina Growth Divergence: Primary sector drives 2.2% real growth (Jul), secondary/tertiary lagging - Brazil Confidence Decline: FGV index down 3.6pt to 84.7 (Aug), extending May-Jul downward trend - Sectoral Risk Signal: Argentina's primary/secondary divergence indicates uneven economic momentum - Consumer Sentiment Risk: Brazil's sustained confidence decline signals weakening domestic demand trajectory"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:45Z",
+      "summary_points": [
+        "F1Q Beat & FY27 Guidance: Adj EPS beat ($0.75 vs $0.72); FY27 guidance slightly below consensus (EPS $3.00-$3.20 vs $3.12/$3.08), but $750mm cost savings offsetting higher input inflation (4-5%).",
+        "Margin Strength: Gross margin 33.3% (above consensus 33.0%) and operating margin 14.4% (vs consensus 13.7%) despite net sales down -2.8% y/y.",
+        "Valuation Anchor: Neutral rating underpinned by 50/50 P/E blend (10x/11x/12x) and EV/EBITDA (9.5x/10x/10.5x) for $35 target.",
+        "Critical Risks: Downside from economic slowdown, trade-down to private label, and input cost inflation not fully passed through to margins."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vxqbq7fg0xc-a29f7b",
       "title": "Brenntag SE (BNRGn.DE) 15th German Corporate Conference — Key Takeaways",
       "institution": "Goldman Sachs",
@@ -136,6 +336,66 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ergkmhwhsow-e05c9a",
+      "title": "GS European Express Carbonomics, Telcos, Daimler, Heidelberg, ABI, Macro, Global, Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:59Z",
+      "summary_points": [
+        "Carbonomics BTM Power Outlook: $55bn cumulative equipment opportunity for data centers by 2030 (67GW BTM power forecast), favoring Ceres Power, Weichai Power, Delta Electronics due to execution strength.",
+        "Fed Dovish Shift: Core PCE slowed to 2.5% annualized, Fed abandoned no-hike forecast, signaling dovish shift impacting rate expectations and asset valuations.",
+        "German Telco Consolidation: Bullish on telco consolidation (buy ratings on DT, United Internet, 1&1, Ionos, Vodafone) with modest cost efficiency gains.",
+        "Daimler Truck Fundamentals: Robust North America demand (replacement-driven), 15-20% discount vs Chinese OEMs, feasible peak margins, Torc autonomous ops targeting."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zh7ydul7to8-059686",
+      "title": "UBS Group (UBSG.S) Swiss parliament upper house votes for 90% CET1 backing for foreign subsidiaries",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:45Z",
+      "summary_points": [
+        "Swiss Regulatory Shift: 90% CET1 capital backing for foreign subsidiaries (vs. 50% proposal) mandates $17bn capital increase, exposing $7bn CET1 shortfall at UBS parent (Q26) and $9bn gap with mitigation, driven by foreign subs and ordinance changes.",
+        "Regulatory Timeline Risk: Bill faces lower house debate and plebiscite risk, delaying final ruling until 2027—creating prolonged uncertainty for capital-intensive banking operations and compliance planning.",
+        "Leverage Vulnerability: Leverage rises to 18.5x (from 17.9x), signaling heightened credit risk and susceptibility to interest rate volatility despite strong revenue (+10.0%) and net income growth (+47.0%).",
+        "Capital Shortfall Escalation: 90% CET1 backing scenario reveals $7bn shortfall (Q26), escalating to $9bn with mitigation; upstreaming adjustments (e.g., $3bn UK repatriation) fail to resolve critical gap."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nohhot47ht3-f9b42c",
+      "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:32Z",
+      "summary_points": [
+        "BTM Power Forecast Surge: Goldman Sachs raises global behind-the-meter (BTM) power generation forecast to 67GW by 2030 (from 40GW), driven by AI/data center infrastructure constraints, with fuel cells supplying ~12GW of US data center capacity by 2030.",
+        "Fuel Cell Execution Dominance: Fuel cells (SOFC) lead data center power solutions with highest weighted score (76.6 vs. 67-68 for alternatives), excelling in deployment speed (6-12 months), reliability, and site efficiency, critical amid tight supply chains.",
+        "Cost Premium Risk: Fuel cells face 45%+ higher LCOE ($117/MWh vs.",
+        "$81/MWh for reciprocating engines) and 30% higher cost than gas turbines, creating significant capital cost risk despite execution advantages."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
       "language": "en",
       "needs_metadata": false
     },
