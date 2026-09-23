@@ -143,3 +143,42 @@
   .mkt-col-read { grid-column: span 5; }
   .mkt-col-side { grid-column: span 4; }
 }
+
+/* ---- mobile: the detail is an in-flow card under the chart, never a fixed sheet ----
+   cycle.css's ≤880px rule turns .cyc-detail into a fixed bottom sheet that peeks 126px
+   at rest. Measured 2026-09-23 at 390×844 (Playwright, en+zh, dark+light): at rest the
+   peek sat on the chip row (0,718 390×440 over #cyc-chips) and, once a market was
+   focused, the expanded sheet covered the whole 340px chart it was meant to sit under.
+   markets.html reads its detail as a card — the curated regime narrative at rest, a
+   market dossier on focus — so on mobile it flows under the chart exactly as the
+   desktop underbar does, in the same material (--panel / --line / --card-shadow: a 1px
+   luminance ridge in dark, a soft shadow in light). Focusing a market glides the page
+   so chart and card share the screen (markets_app.js revealDetail). markets.css is
+   loaded by markets.html only and after cycle.css, so the sector/cycle pages keep their
+   sheets and desktop ≥881px is untouched. */
+@media (max-width: 880px) {
+  .cyc-wrap { padding-bottom: 40px; }            /* the 120px sheet clearance is no longer needed */
+  .cyc-detail, .cyc-detail.expanded {
+    position: static; transform: none; height: auto; max-height: none; display: block;
+    z-index: auto; border-radius: var(--rad); border-bottom: 1px solid var(--line);
+    box-shadow: var(--card-shadow); transition: none; }
+  .cyc-handle { display: none; }
+  .cyc-panels { overflow: visible; }
+  /* the card is 28px narrower than the viewport-wide sheet was: let the stage track and
+     the two-column facts grid shrink to it instead of inflating the whole stage */
+  .cyc-stage { grid-template-columns: minmax(0, 1fr); }
+  .cyc-detail { min-width: 0; }
+  .cyc-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cyc-facts .f { min-width: 0; overflow-wrap: anywhere; }
+  .cyc-facts-eng .f .fk { min-width: 0; }
+}
+
+/* ---- zh designed-null for the curated regime card (markets_app.js regField) ------
+   Shown only under data-lang="zh" when markets_i18n.js carries no hand-curated regime
+   block: a quiet hairline chip on the eyebrow and the subtitle drops from the amber
+   stance ink to muted, so an "awaiting translation" state never reads as a market call. */
+.rg-null-chip { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .04em;
+  text-transform: none; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+  padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
+.rg-head.is-null .rg-sub { color: var(--muted); }
+.cyc-panel.rg-null .rg-tilt { border-left-color: var(--line); }
