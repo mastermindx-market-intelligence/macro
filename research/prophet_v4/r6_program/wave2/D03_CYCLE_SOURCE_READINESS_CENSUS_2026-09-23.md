@@ -154,7 +154,28 @@ Applications:
 
 ## Q6 GAPS + MUST-NOTS
 
-TODO
+UNKNOWNs and exact closure evidence:
+
+1. **Configured-leg vintage depth.** Every Q1 first usable vintage remains UNKNOWN because the approved parquet is omitted in this sparse worktree. After a lawful keyed production collection, run `python3 -m scripts.audit_alfred_depth --series AWHMAN,PERMIT,NEWORDER,CMRMTSPL,INDPRO,ISRATIO,MNFCTRIRSA,AMTMUO,AMTMVS,CAPUTLG3344S,CAPUTLG334S,CAPUTLG331S,PCU334413334413,PCU331110331110,IPG2211S,CAPUTLG2211S,WPU0543 --output data/fred_vintage/alfred_depth_d03_cycle.json`; require `earliest_vintage`, `n_periods`, and a verdict per leg. Do not write or restore `data/` in this census.
+2. **Keyless-to-keyed vintage equivalence.** Q2 proves public single-ID FRED/ALFRED history exists, but not that the default CSV equals the repo collector's keyed output-type-4 initial-release contract. Closure needs a keyed audit receipt exposing `realtime_start` and the first-published value per period for each candidate.
+3. **Remaining M3 exact crosswalks.** Exact FRED status remains unknown for `A33XMVS`/`A33XMUO`/`A33XMTI` counterparts, farm-machinery `A33ANO`/`A33AUO`, and all turbine `A33J*` measures. Needed artifact is the authoritative Census-to-FRED series crosswalk and, where Census-only, the historical file contract and vintage clock.
+4. **Historical issuer mapping.** Required artifact is a licensed dated industry/segment history with event/snapshot clocks, dead-name/failed coverage, and explicit rename/spin predecessor lineage. No current GICS/SIC/basket/concept map may be backdated.
+5. **Membership first dates and coverage.** `data/baskets/membership_history.parquet`, `data/themes_heatmap/tree_history.jsonl`, and THS history are omitted. A full-checkout read-only audit must report each suite's first date, membership rows, dead names, and identity coverage.
+6. **Census rights.** A Census terms/open-data record or written source-owner ruling must answer acquisition, processing, storage, model use and user redistribution separately. Public file accessibility is not a grant.
+7. **Issuer/segment provider rights.** Required artifact is a provider entitlement record separating all five rights dimensions and specifying historical-cut access, derivative display and failed-name coverage. No assumed Massive coverage.
+8. **Massive dead-name coverage.** Restore the R2 canonical store in a full/production runner, then audit manifest and per-ticker coverage against the licensed historical issuer universe. The sparse tree was deliberately not restored.
+9. **ALFRED ingestion availability.** Per-series exact first eligibility can come only from measured `realtime_start` receipts; documentation and modeled lags cannot mint dates.
+
+Forbidden shortcuts considered and refused:
+
+- Did not infer series absence from the failed multi-ID pipe request; the exact-ID probes replaced that invalid conclusion.
+- Did not backdate current membership, sector, index, curated-basket, or concept mappings.
+- Did not relabel `INDPRO`, durable goods, total manufacturing, or aggregate capital-goods series as granular machinery themes.
+- Did not convert `PUB_LAG_M`, CSV first observation dates, or prose release schedules into first-vintage dates.
+- Did not read, use, print or copy credentials or keys; no keyed FRED/ALFRED call was made.
+- Did not open, compute or cite strategy returns, trade outcomes, or protected outcome artifacts.
+- Did not invent unavailable membership, failures, licenses, vintage dates, or production schedules.
+- Did not opt into sparse trees, restore `data/`, run the full test suite, force-push, rebase, or rewrite history.
 
 ## EVIDENCE INDEX
 
