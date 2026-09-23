@@ -183,7 +183,7 @@ def _bind_owner_confluence(
     if signal_gate_artifact is None:
         return "UNKNOWN", None
     if not isinstance(signal_gate_artifact, Mapping):
-        raise RuntimeOwnerFactError("signal_gate_artifact must be an object")
+        return _confluence_result("UNKNOWN", "confluence_malformed")
 
     as_of = signal_gate_artifact.get("as_of")
     validity = signal_gate_artifact.get("validity")

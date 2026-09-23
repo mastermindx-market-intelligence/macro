@@ -764,6 +764,15 @@ def test_b4_runtime_adapter_degrades_legacy_signal_gate_to_unknown_and_unavailab
     assert "OWNER_CONFLUENCE_UNKNOWN" in availability["blockers"]
 
 
+def test_b4_confluence_non_mapping_artifact_is_unknown():
+    artifact, runtime_kwargs, projection = _b4_confluence_case()
+    runtime_kwargs["signal_gate_artifact"] = ["not-an-object"]
+    facts = compose_runtime_owner_facts(projection, episode_id=_b4_cid(), **runtime_kwargs)
+    verdict, receipts = facts["deterministic_gates"]["owner_confluence"], facts["source_receipts"]
+    assert verdict == "UNKNOWN"
+    assert any(receipt.endswith("confluence_malformed") for receipt in receipts)
+
+
 def test_b4_confluence_c3_expired_pair_is_unknown():
     verdict, receipts = _b4_confluence_gate(
         artifact={
