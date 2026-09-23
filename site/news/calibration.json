@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-09-22",
-  "n_events_logged": 831,
+  "n_events_logged": 853,
   "n_events_graded": 530,
   "classes": [
     {
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 273,
+      "n": 287,
       "n_graded": 193,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -99,7 +99,7 @@
     {
       "event_type": "equity_offering",
       "direction": "bearish",
-      "n": 27,
+      "n": 29,
       "n_graded": 13,
       "hit_5d": 0.23076923076923078,
       "hit_21d": 0.5555555555555556,
@@ -125,7 +125,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 39,
+      "n": 40,
       "n_graded": 21,
       "hit_5d": 0.7142857142857143,
       "hit_21d": 0.5,
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 191,
+      "n": 194,
       "n_graded": 167,
       "hit_5d": 0.5209580838323353,
       "hit_21d": 0.4225352112676056,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 88,
+      "n": 89,
       "n_graded": 20,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 11,
+      "n": 12,
       "n_graded": 5,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1283,
+    "n_sampled": 1301,
     "n_graded": 0,
     "classes": []
   }

@@ -299,12 +299,12 @@
     "name": "Memory, HBM & Storage",
     "name_zh": "\u5185\u5b58\u3001HBM \u4e0e\u5b58\u50a8",
     "score": 0.9997,
-    "streak_sessions": 3
+    "streak_sessions": 1
   },
   "radar_xref": {
-    "state": "caution",
+    "state": "calm",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 3.59
+  "_timing_s": 3.41
 }

@@ -4007,3 +4007,5 @@
 {"date":"2026-09-22","ticker":"TXN","departed":true,"left_desk":"2026-09-22","last_rank":null,"last_score":18}
 {"date":"2026-09-22","ticker":"USAR","departed":true,"left_desk":"2026-09-22","last_rank":null,"last_score":16}
 {"date":"2026-09-22","ticker":"VRT","departed":true,"left_desk":"2026-09-22","last_rank":null,"last_score":16}
+{"date":"2026-09-22","ticker":"PH","rank":30,"score":28,"lean":1,"broken":false}
+{"date":"2026-09-22","ticker":"F","rank":null,"score":22,"lean":1,"broken":true}
