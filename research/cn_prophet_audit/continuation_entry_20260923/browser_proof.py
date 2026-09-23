@@ -14,18 +14,35 @@ sys.path.insert(0, str(ROOT))
 from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
-from engine.china_act_now import assemble_act_now, load_member_names
+from engine.china_act_now import assemble_act_now, load_member_names, load_cycle_rows
 from engine.i18n import tr as source_tr
 
-OUT = Path(__file__).resolve().parent / 'browser'
+MIXED = '--mixed' in sys.argv
+OUT = Path(__file__).resolve().parent / ('mixed-browser' if MIXED else 'browser')
 OUT.mkdir(exist_ok=True)
 def git(*args):
     return subprocess.check_output(['git', '-C', str(ROOT), *args])
-source_commit = 'd34993def9fa00e88c930f39a498b6ecad97455b'
+source_commit = ('88a3f1cfd18f391d2802e9086dc00f6fe5545607' if MIXED else
+                 'd34993def9fa00e88c930f39a498b6ecad97455b')
 source_path = 'site/chinabasketdata/baskets.json'
 raw = git('show', f'{source_commit}:{source_path}')
 source_blob = git('rev-parse', f'{source_commit}:{source_path}').decode().strip()
 intel = json.loads(raw)['theme_intel']
+sectors, snapshot_cycles, extra_inputs = [], [], {}
+if MIXED:
+    sectors_path = 'site/chinabasketdata/act_now_cn.json'
+    sectors_raw = git('show', f'{source_commit}:{sectors_path}')
+    sectors = list(json.loads(sectors_raw)['sectors_by_ticker'].values())
+    cycle_path = 'data/china_sector_cycles/forward_log.parquet'
+    cycle_raw = git('show', f'{source_commit}:{cycle_path}')
+    with tempfile.TemporaryDirectory(prefix='cn-action-proof-cycles-') as temp_dir:
+        cycle_file = Path(temp_dir) / 'forward_log.parquet'
+        cycle_file.write_bytes(cycle_raw)
+        snapshot_cycles = load_cycle_rows(str(cycle_file))
+    assert sectors and snapshot_cycles
+    extra_inputs = {path: hashlib.sha256(data).hexdigest() for path, data in
+                    ((sectors_path, sectors_raw), (cycle_path, cycle_raw))}
+
 # Use the real member-name loader on the SAME already-loaded frozen basket bytes.
 # This is temporary proof input, never a write to a product artifact.
 with tempfile.TemporaryDirectory(prefix='cn-action-proof-names-') as temp_dir:
@@ -39,8 +56,8 @@ original = deepcopy(intel)
 baseline = types.ModuleType('baseline_china_action_board')
 baseline.__file__ = str(ROOT / 'engine/china_act_now.py')
 exec(git('show', '2f469476aefd14e6d31c4608d874f0dc20fdb0ad:engine/china_act_now.py'), baseline.__dict__)
-before = baseline.assemble_act_now([], intel, [], member_names=member_names)
-after = assemble_act_now([], intel, [], observed_at=clock, member_names=member_names)
+before = baseline.assemble_act_now(sectors, intel, snapshot_cycles, member_names=member_names)
+after = assemble_act_now(sectors, intel, snapshot_cycles, observed_at=clock, member_names=member_names)
 assert original == intel
 assert before['lanes'] == after['lanes']
 env = Environment(loader=FileSystemLoader(ROOT / 'templates'), autoescape=True)
@@ -52,6 +69,8 @@ body_class = ' '.join(host.body.get('class', []))
 js = (ROOT / 'templates/theme.js').read_text()
 report = {'proof_kind': 'repository-input component; not production or historical-performance proof',
           'input_commit': source_commit, 'input_blob': source_blob,
+          'mixed_input': MIXED, 'sector_count': len(sectors), 'cycle_count': len(snapshot_cycles),
+          'extra_input_sha256': extra_inputs,
           'input_path': source_path, 'input_sha256': hashlib.sha256(raw).hexdigest(),
           'host_css_paths': css_paths, 'host_body_class': body_class,
           'harness_note': 'Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.',
@@ -82,18 +101,25 @@ scenarios = [('current', intel, clock, []), ('missing-members', missing, clock, 
              ('source-conflict', conflict, clock, []), ('final-demotions', demotion, clock, []),
              ('settling', intel, datetime.fromisoformat('2026-09-22T08:00:00+00:00'), []),
              ('duplicate-evidence', intel, clock, cycles)]
-report['negative_state_scope'] = 'Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.'
+scenarios = [(name, source, at, snapshot_cycles + cycle) for name, source, at, cycle in scenarios]
+report['negative_state_scope'] = ('Controlled negative theme states on immutable repository inputs, not live observations. '
+    + ('The actual sector and latest cycle rows are included unchanged; their freshness policy is not modified.' if MIXED
+       else 'Sector and native-cycle inputs are omitted in this mode.'))
 
 with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
     try:
         for scenario, source, at, cycle in scenarios:
-            view = assemble_act_now([], source, cycle, observed_at=at, member_names=member_names)
+            view = assemble_act_now(sectors, source, cycle, observed_at=at, member_names=member_names)
+            for rows in view["display_lanes"].values():
+                for row in rows:
+                    if row.get("theme_decision", {}).get("status") == "UNAVAILABLE":
+                        assert not row.get("dual_read") and not row.get("action_disagreement")
             for theme in ('dark', 'light'):
                 for lang in ('en', 'zh'):
                     env.globals.update(t=lambda en, zh, lng=lang: zh if lng == 'zh' else en,
                                        tr=source_tr, help=lambda *a, **kw: '')
-                    component = env.get_template('_china_act_now_board.html.j2').render(act_now_v2=view)
+                    component = env.get_template('_china_act_now_board.html.j2').render(act_now_v2=view, sectors_by_ticker={r['ticker']: r for r in sectors})
                     for width in (1440, 390):
                         page = browser.new_page(viewport={'width': width, 'height': 960})
                         errors = []

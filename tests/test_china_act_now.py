@@ -1046,8 +1046,14 @@ def test_parent_and_subtheme_remain_distinct():
 
 
 def test_conflicting_action_sources_are_visible_and_not_promoted():
-    item = {"id": "cn_semis", "name": "Semiconductors"}
-    result = assemble_act_now([], {"act_now": {"buy": [item], "reduce": [item]}}, [])
+    # Current qualified conflicting observations stay visible. Missing-session
+    # fixtures belong to the unavailable-data tests, not current advice.
+    from copy import deepcopy
+    ti = _continuation_fixture(clean=True)
+    item = deepcopy(ti["act_now"]["buy"][0])
+    item.update(action="avoid", action_en="AVOID")
+    ti["act_now"]["reduce"] = [item]
+    result = _continuation_board(ti, cycles=[])
     assert result["display_lanes"]["buy_now"] == []
     row = result["display_lanes"]["reduce_avoid"][0]
     assert row["action_disagreement"] is True
@@ -1380,3 +1386,65 @@ def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
     assert 'not a change in the theme thesis' not in html
     assert '不表示主题逻辑发生变化' not in html
     assert 'No new entry is confirmed' in html
+
+
+@pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+def test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence(clock):
+    from bs4 import BeautifulSoup
+    ti = _continuation_fixture(final='avoid')
+    item = ti['act_now']['add_on_pullback'].pop()
+    item.update(action='avoid', action_en='AVOID')
+    ti['act_now']['reduce'] = [item]
+    cycles = [{'id': 'b-cn_example', 'kind': 'basket', 'name': 'Example leader',
+               'phase': 'Trough', 'osc_slope': 1.2, 'pos': .3, 'rs_63d': .05}]
+    board = _continuation_board(ti, clock, cycles)
+    row, = board['display_lanes']['reduce_avoid']
+    assert row['theme_decision']['status'] == 'UNAVAILABLE'
+    assert row['dual_read'] is False
+    assert row['dual_chip_en'] is row['dual_chip_zh'] is None
+    assert row['action_disagreement'] is False
+    assert board['lanes']['reduce_avoid'][0]['dual_read'] is True
+    assert any(r['row']['dual_read'] for r in row['source_reads'])
+    html = BeautifulSoup(render(board), 'html.parser')
+    assert 'may be bottoming' not in html.get_text().lower()
+    assert 'longer trend still says reduce' not in str(html)
+    assert board['theme_data_note']['en'] in html.get_text()
+
+
+@pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+def test_all_unavailable_theme_cards_have_one_visible_board_disclosure(clock):
+    board = _continuation_board(_continuation_fixture(), clock)
+    note = board['theme_data_note']
+    assert note and note['en'] and note['zh']
+    assert render(board).count(note['en']) == 1
+
+
+@pytest.mark.parametrize('degraded', [False, True])
+def test_data_note_is_partial_without_disqualifying_the_current_theme(degraded):
+    from copy import deepcopy
+    ti = _continuation_fixture()
+    second = deepcopy(ti['themes'][0])
+    second['id'] = 'cn_second'
+    second['observation']['aggregate_eligible'] = not degraded
+    ti['themes'].append(second)
+    item = deepcopy(ti['act_now']['add_on_pullback'][0])
+    item['id'] = 'cn_second'
+    ti['act_now']['add_on_pullback'].append(item)
+    board = _continuation_board(ti)
+    assert any(row['id'] == 'cn_example' for row in board['display_lanes']['buy_now'])
+    if degraded:
+        assert board['theme_data_note']['en'].startswith('Some theme inputs')
+    else:
+        assert board['theme_data_note'] is None
+        assert 'data-theme-data-status' not in render(board)
+
+
+def test_current_defensive_dual_read_is_preserved():
+    ti = _continuation_fixture(final='avoid')
+    item = ti['act_now']['add_on_pullback'].pop()
+    item.update(action='avoid', action_en='AVOID')
+    ti['act_now']['reduce'] = [item]
+    cycles = [{'id': 'b-cn_example', 'kind': 'basket', 'name': 'Example leader',
+               'phase': 'Trough', 'osc_slope': 1.2, 'pos': .3, 'rs_63d': .05}]
+    row, = _continuation_board(ti, cycles=cycles)['display_lanes']['reduce_avoid']
+    assert row['dual_read'] is True and row['reco'] == 'avoid'

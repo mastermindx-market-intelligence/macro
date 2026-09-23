@@ -594,11 +594,28 @@ def assemble_act_now(
         "bottoming_watch": bottoming_watch,
         "reduce_avoid": reduce_avoid,
     }
+    display_lanes = _continuation_display_lanes(_display_lanes(lanes), theme_intel, observed_at)
+    decisions = [row["theme_decision"] for rows in display_lanes.values() for row in rows
+                 if row.get("kind") == "THEME" and row.get("theme_decision")]
+    unavailable = [d for d in decisions if d["status"] == "UNAVAILABLE"]
+    data_note = None
+    if unavailable:
+        if len(unavailable) < len(decisions):
+            en = "Some theme inputs are unavailable; use only cards with current data."
+            zh = "部分主题输入暂缺；仅参考数据有效的卡片。"
+        elif all(d["source_status"] == "UNSETTLED" for d in unavailable):
+            en = "Theme session data is settling; lane labels are not current recommendations."
+            zh = "主题交易日数据待确认；分栏标签不代表当前建议。"
+        else:
+            en = "Theme inputs are unavailable; lane labels are not current recommendations."
+            zh = "主题输入暂缺；分栏标签不代表当前建议。"
+        data_note = {"en": en, "zh": zh}
     return {
         "lanes": lanes,
-        "display_lanes": _continuation_display_lanes(_display_lanes(lanes), theme_intel, observed_at),
+        "display_lanes": display_lanes,
         "as_of": as_of,
         "notes": notes,
+        "theme_data_note": data_note,
     }
 
 
@@ -773,8 +790,11 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                 # must not survive as an apparently current score/leadership read.
                 for field in ("score", "rel20", "rel5", "breadth_pct50", "leadership",
                               "leaders_en", "leaders_zh", "n_members", "phase", "osc_slope",
-                              "pos", "rs_63d", "rs_rank", "organ_state", "organ_chip_en", "organ_chip_zh"):
+                              "pos", "rs_63d", "rs_rank", "organ_state", "organ_chip_en", "organ_chip_zh",
+                              "dual_chip_en", "dual_chip_zh"):
                     row[field] = None
+                row["dual_read"] = False
+                row["action_disagreement"] = False
                 row["reasons"] = []
                 row.pop("entry_route", None)
                 settling = status == "UNSETTLED"

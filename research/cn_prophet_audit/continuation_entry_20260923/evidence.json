@@ -4,19 +4,19 @@
   "state": "BUILT_NOT_PROVEN",
   "carrier": "sol/cn-act-now-coherence-20260921",
   "source_base": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
-  "procedure_pin": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "procedure_pin": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
   "engine_implemented": true,
   "release_allowed": false,
   "remaining_required_guard": null,
   "remaining_guard_write": "COMPLETE",
   "source_sha256": {
-    "engine/china_act_now.py": "0b3da78e010b9126eaf311b4dfac0013d0fb58518cf06881de41306bd1636ab0",
-    "templates/_china_act_now_board.html.j2": "bcca18fc3e979abec029579389c19adba015a4b6d4c48688ec0e35875cf55568",
-    "tests/test_china_act_now.py": "b9f732ab4a18c03d3031cb99c7f427c86a29ca55506c82fb0aafd9868265a424",
-    "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "cef9a161206ef2dfb8f58f2d556a6b6852ee836c62d41c487b51d9a1b62d2116"
+    "engine/china_act_now.py": "59e5bcb0d52186adfa17eb0713628b0606ec8a33c75c650fe6ad3e2dbe99c7bd",
+    "templates/_china_act_now_board.html.j2": "d53f0e5e708facea904e2802cf1b4935120214f428e0758a1469718292fcce64",
+    "tests/test_china_act_now.py": "3072aed469ffb4ec5f8f764aae03e9acc624a7717c556ad9de41f51022707df6",
+    "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "9af642dc18042e71e366968132ec3cc9e5fe400405d5acba39dac8a108d57987"
   },
   "tests": {
-    "current_passed": 324,
+    "current_passed": 331,
     "current_failed": 0,
     "waived": 0,
     "scope": "same seven affected owner suites; not full repository",
@@ -29,8 +29,8 @@
       "tests/test_cn_board_unified_grid.py",
       "tests/test_stock_board_v2.py"
     ],
-    "final_log": "minor-review-owner-tests.txt",
-    "log_sha256": "d2dab98fbb015d5d7084ed3134854cc49ea31ce5f6194f3e26c789a4a1ac3e48",
+    "final_log": "derived-advice-qualified-tests.txt",
+    "log_sha256": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
     "qualified_red": {
       "failed": 7,
       "passed": 1,
@@ -51,19 +51,21 @@
         "sha256": "ac3660e2739ecbd0a9c5f2cd78f5a5159d45cf3c61456cf19ca6a17acf08da87",
         "normalization": "trailing whitespace only; no result/assertion changes"
       }
-    }
+    },
+    "new_semantic_red_failed": 4
   },
   "browser": {
-    "captures": 48,
-    "popover_captures": 24,
-    "page_error_count": 0,
-    "overflow_count": 0,
-    "proof_sha256": "ade0de4df9336a0716eb4101ed4b3560bbcd202008e4c5b60590ed58e4fd1fca",
-    "source_hashes_match": true,
-    "scope": "frozen repository themes and labelled negative perturbations; no actual mixed/full-page/production claim",
-    "translation": "real incumbent translator and same-source member names; existing numeric English fallback remains"
+    "directory": "mixed-browser",
+    "board_captures": 48,
+    "hover_captures": 24,
+    "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+    "sector_count": 16,
+    "theme_count": 22,
+    "cycle_rows": 53,
+    "proof_sha256": "5ec0b2d3dae96fb26ffb2b7fb35883711cfa2b4e88968b404b35c2300a638c5f",
+    "scope": "immutable mixed-input component plus labelled negative scenarios; not full-page/live/historical availability proof"
   },
-  "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
+  "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
   "input_as_of": "2026-09-22",
   "continuation_cases": [
     "cn_pharma_cxo"
@@ -109,16 +111,12 @@
     "authenticated full-path production proof"
   ],
   "review": {
-    "reviewed_source": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+    "source_sha": "5ccbf0ca715bf4511054467680684bba2685e661",
     "status": "PARTIAL",
-    "prior_source_majors_closed": true,
-    "dark_light_independently_adjudicated": true,
-    "report": "template-independent-review.md",
-    "report_sha256": "3ac2069d19950dd2642219a221354439177ac48025508d6ba802a315102077fe",
-    "closure": "template-review-closure.md",
-    "active_child": false,
-    "minor_A_B": "repaired locally; current candidate review owed",
-    "harness_C": "incumbent names and translator used; source numeric fallback disclosed"
+    "receipt": "5cc-review-receipt.json",
+    "source_findings": "derived dual-read advice / conflict flags / board disclosure repaired after this review",
+    "new_semantic_review": "REQUIRED",
+    "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED"
   },
   "recovery": {
     "host_read_ready": true,
@@ -237,5 +235,97 @@
       "new_semantic_review": "REQUIRED"
     }
   },
-  "current_composition_tree": "30d2274b10bb6aa3655679c988184f5770062970"
+  "current_composition_tree": "30d2274b10bb6aa3655679c988184f5770062970",
+  "previous_324_evidence": {
+    "source_sha256": {
+      "engine/china_act_now.py": "0b3da78e010b9126eaf311b4dfac0013d0fb58518cf06881de41306bd1636ab0",
+      "templates/_china_act_now_board.html.j2": "bcca18fc3e979abec029579389c19adba015a4b6d4c48688ec0e35875cf55568",
+      "tests/test_china_act_now.py": "b9f732ab4a18c03d3031cb99c7f427c86a29ca55506c82fb0aafd9868265a424",
+      "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "cef9a161206ef2dfb8f58f2d556a6b6852ee836c62d41c487b51d9a1b62d2116"
+    },
+    "tests": {
+      "current_passed": 331,
+      "current_failed": 0,
+      "waived": 0,
+      "scope": "same seven affected owner suites; not full repository",
+      "suites": [
+        "tests/test_china_act_now.py",
+        "tests/test_china_board_rank.py",
+        "tests/test_china_board_rank_v3.py",
+        "tests/test_china_board_rank_v4.py",
+        "tests/test_china_intel_interest.py",
+        "tests/test_cn_board_unified_grid.py",
+        "tests/test_stock_board_v2.py"
+      ],
+      "final_log": "derived-advice-qualified-tests.txt",
+      "log_sha256": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "qualified_red": {
+        "failed": 7,
+        "passed": 1,
+        "log": "minor-review-red-qualified.txt"
+      },
+      "development_only_logs": [
+        "minor-review-red.txt",
+        "minor-review-runtime-preflight.txt"
+      ],
+      "red_log_normalization": {
+        "minor-review-red.txt": {
+          "raw_sha256": "914cff5d4e8d79451a7d78a27c85bb035dd5757df3867c59952f973cc3c3cc67",
+          "sha256": "bb18a9645d430f79a841adb738406ef8e30c6dd9c1d2381d1ba3455e0159aa27",
+          "normalization": "trailing whitespace only; no result/assertion changes"
+        },
+        "minor-review-red-qualified.txt": {
+          "raw_sha256": "e5741910285b6d9c465ed3239d157034a82ca4aeb1a7b435ff9e027b6d25976d",
+          "sha256": "ac3660e2739ecbd0a9c5f2cd78f5a5159d45cf3c61456cf19ca6a17acf08da87",
+          "normalization": "trailing whitespace only; no result/assertion changes"
+        }
+      },
+      "new_semantic_red_failed": 4
+    },
+    "browser": {
+      "captures": 48,
+      "popover_captures": 24,
+      "page_error_count": 0,
+      "overflow_count": 0,
+      "proof_sha256": "ade0de4df9336a0716eb4101ed4b3560bbcd202008e4c5b60590ed58e4fd1fca",
+      "source_hashes_match": true,
+      "scope": "frozen repository themes and labelled negative perturbations; no actual mixed/full-page/production claim",
+      "translation": "real incumbent translator and same-source member names; existing numeric English fallback remains"
+    },
+    "review": {
+      "reviewed_source": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+      "status": "PARTIAL",
+      "prior_source_majors_closed": true,
+      "dark_light_independently_adjudicated": true,
+      "report": "template-independent-review.md",
+      "report_sha256": "3ac2069d19950dd2642219a221354439177ac48025508d6ba802a315102077fe",
+      "closure": "template-review-closure.md",
+      "active_child": false,
+      "minor_A_B": "repaired locally; current candidate review owed",
+      "harness_C": "incumbent names and translator used; source numeric fallback disclosed"
+    }
+  },
+  "semantic_parent": "5ccbf0ca715bf4511054467680684bba2685e661",
+  "development_log_digests": {
+    "derived-advice-red.txt": {
+      "raw": "4da2c2ca39bfa03f75aeb4ef45a897771cd4d78b0fd1ed89b0844f6027d565f9",
+      "normalized": "4da2c2ca39bfa03f75aeb4ef45a897771cd4d78b0fd1ed89b0844f6027d565f9",
+      "change": "trailing whitespace only"
+    },
+    "derived-advice-tests.txt": {
+      "raw": "8783c3be6e43b4969503de4404fa960708a5e89b11fc4b7139686503d5652bed",
+      "normalized": "8783c3be6e43b4969503de4404fa960708a5e89b11fc4b7139686503d5652bed",
+      "change": "trailing whitespace only"
+    },
+    "derived-advice-qualified-tests.txt": {
+      "raw": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "normalized": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "change": "trailing whitespace only"
+    },
+    "mixed-browser-tests.txt": {
+      "raw": "30076e860629399ca6905b5af78ef9d19426f231522dcb4b2179ff96b9bda46d",
+      "normalized": "30076e860629399ca6905b5af78ef9d19426f231522dcb4b2179ff96b9bda46d",
+      "change": "trailing whitespace only"
+    }
+  }
 }
