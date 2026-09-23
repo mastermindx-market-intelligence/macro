@@ -2346,6 +2346,15 @@ lanes:
       # in-process build_china_library ProcessPool also gets the box to itself here.
       - id: build_china
         module: scripts.build_china
+      - id: publish_china_heatmap
+        module: scripts.build_market_heatmap
+        args: [--market, china, --render-page]
+        note: >
+          Publish the China heatmap payload and its matching crawler-visible SSR
+          shell from the settled Asia close through the same JSON-to-page owner
+          used by build_site. This advances no analytical ledger and creates no
+          second publication plane; asia-close.yml keeps the step resilient so a
+          failed heatmap publish cannot erase other settled CN/HK outputs.
       - id: build_cn_live_pack
         module: scripts.build_cn_live_pack
         note: >
