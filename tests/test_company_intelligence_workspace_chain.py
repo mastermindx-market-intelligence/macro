@@ -586,7 +586,7 @@ _D5_GENERATION_ID = "peg:" + "e" * 64
 
 def _d5_episode(*, cut: str = "2026-01-31T12:00:00Z") -> dict:
     anchor = {
-        "kind": "reset_low",
+        "kind": "turn_watch_reset_low",
         "time": cut,
         "price": "100.0000",
         "basis": "turn_watch.reset_low",
