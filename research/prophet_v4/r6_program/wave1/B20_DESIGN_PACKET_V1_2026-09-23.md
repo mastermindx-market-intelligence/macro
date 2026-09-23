@@ -378,7 +378,7 @@ Commands and outputs are recorded at final-head audit time:
 3. `rg -n 'AVAILABILITY_STATES|ENTRY_OPEN|APPROACHING_ENTRY|NOT_READY|WAIT_PULLBACK|RAN_DONT_CHASE|INVALIDATED|UNAVAILABLE_DATA' engine/prophet_entry_availability.py` → lines 35–43 and implementation lines 356–440.
 4. `git grep -n availability_state -- templates | wc -l` → `0`.
 5. Token receipts: `grep -n -- '--bg' templates/theme.css` → 63 and 210; `--panel` → 63 and 210; `--panel2` → 63; `--text` → 63 and 210; `--muted` → 64 and 211; `--line` → 69 and 218; `--card-shadow` → 236; `--ink-ok` and `--ink-warning` → 373.
-6. Ban audit uses the expression frozen in `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`; it returns only §12 or record-path lines: 11 hits at lines 43, 76, 86, 98, 100, 101, 102, 151, 173, 292, 392.
+6. Ban audit uses the expression frozen in `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md`; it returns only §12 or record-path lines: 11 hits at lines 43, 76, 87, 99, 101, 102, 103, 152, 174, 293, 393.
 
 ## 12. CHANGELOG (critique ID → repair)
 
