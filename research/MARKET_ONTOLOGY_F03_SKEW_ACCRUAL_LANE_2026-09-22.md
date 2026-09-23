@@ -89,19 +89,23 @@ canonical surface that satisfies both requirements:
 
 ```sh
 # As the mac user who owns the M1 ops host (NOT root).
-# The repo root is wherever `git rev-parse --show-toplevel` lands for THIS
-# macro clone — for the operator's designated local root see CLAUDE.md.
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-echo "source repo root: $REPO_ROOT"
-
-# Create the dedicated lane checkout off fresh origin/main.
-git clone --no-local --no-checkout --origin origin \
-    "$REPO_ROOT" /Users/chriswong/skew-ops-wt
+# ORIGIN MUST BE GITHUB, never a local checkout (seat correction 2026-09-22,
+# W2-3): the runner's `git fetch origin && git checkout --detach origin/main`
+# follows whatever `origin` names, and a clone taken from a local repo root
+# makes `origin/main` that root's stale LOCAL main (theta-ops-wt sits at
+# 08-23), so the lane would never see a merged change. Blobless + a
+# dissociated reference to the existing clone keeps the object download
+# small (~305 MB measured) without leaving an alternates dependency.
+export GIT_TERMINAL_PROMPT=0
+git clone --filter=blob:none --no-checkout --origin origin \
+    --reference-if-able /Users/chriswong/theta-ops-wt --dissociate \
+    https://github.com/mastermindx-market-intelligence/macro.git \
+    /Users/chriswong/skew-ops-wt
 cd /Users/chriswong/skew-ops-wt
-git checkout --detach origin/main
-git config core.sparseCheckout true
 git sparse-checkout init --cone
 git sparse-checkout set engine scripts lib config ops data/options_skew
+git checkout --detach origin/main
+git remote get-url origin   # must print the github.com URL
 # data/options_skew IS sparse-included: the launchd job writes the parquet
 # there and the publish_r2 leg reads it. The other 87% of `data/` (3.31 GiB of
 # 3.8 GiB repo) stays out of the checkout per the R8 sparse policy
@@ -109,6 +113,21 @@ git sparse-checkout set engine scripts lib config ops data/options_skew
 ```
 
 ### 3.2 Stage the .env file
+
+**Seat install 2026-09-22 (what was actually done):** the M1 producers already
+run through `ops/launchd/run_with_env.sh /Users/chriswong/flow-ops-wt/.env`,
+and that file carries every key this lane needs (`R2_ENDPOINT`,
+`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `THETADATA_STORE`,
+`THETA_API_KEY`, `GITHUB_TOKEN` — names only; values never leave the host).
+The lane checkout's `.env` is therefore a symlink, not a second secret file:
+
+```sh
+ln -sfn /Users/chriswong/flow-ops-wt/.env /Users/chriswong/skew-ops-wt/.env
+```
+
+`.env` is gitignored and the runner's `git clean -fd` carries no `-x`, so the
+symlink survives every refresh. Stage a standalone file (below) only on a host
+without an existing producer env.
 
 Required keys (names only — values live in 1Password / the operator's
 secrets manager, never in the repo):
@@ -177,16 +196,39 @@ scheduled launch before `run_skew_accrual.sh` gets to run its own
 `mkdir -p "$STATE_DIR" "$STATE_DIR/logs"` (which covers every LATER run and
 any `SKEW_STATE_DIR` override the runner sees).
 
-### 3.4 First-run smoke (dry-run)
+### 3.3b Seed R2 once before the first run (seat correction 2026-09-22, W2-3)
+
+`scripts/fetch_r2.py` exits 1 on `ZERO objects under options_skew/ on R2`,
+and `step_hydrate_ledger` refuses to accrue or publish on any non-zero
+hydrate — so a fresh bucket can never be bootstrapped by the runner itself.
+Publish the committed bootstrap ledger ONCE from the lane checkout before
+the first run (the `options_skew` floor in `scripts/publish_r2.py` clears on
+this bootstrap — pinned by
+`tests/test_skew_accrual_launchd.py::test_publish_r2_options_skew_floor_clears_actual_bootstrap`):
 
 ```sh
-set -a
-source /Users/chriswong/skew-ops-wt/.env
-set +a
+cd /Users/chriswong/skew-ops-wt
+ops/launchd/run_with_env.sh .env \
+    /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.publish_r2 --dirs options_skew
+# Prove the hydrate now succeeds (rc=0) before installing the plist:
+ops/launchd/run_with_env.sh .env \
+    /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.fetch_r2 --dirs options_skew
+```
 
+Measured on the seat install 2026-09-22: seed → `options_skew hydrated from
+R2 (rc=0)` on the very next runner start, `pre-accrue row count: 12375`.
+
+### 3.4 First-run smoke (dry-run)
+
+The runner reads its env exactly the way launchd does — through the wrapper —
+so use the wrapper rather than `source`-ing the file into an interactive
+shell (nothing below prints a secret):
+
+```sh
 # Dry-run: skip the freshness wait loop AND skip the publish_r2 leg.
 # The ledger WILL accrue locally; the only thing skipped is the R2 upload.
-SKEW_FRESHNESS_BYPASS=1 SKEW_DRY_RUN=1 \
+/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh /Users/chriswong/skew-ops-wt/.env \
+    /usr/bin/env SKEW_FRESHNESS_BYPASS=1 SKEW_DRY_RUN=1 \
     /Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh
 ```
 
@@ -207,11 +249,8 @@ Expected line-start receipts on stdout (every step emits one):
 After the dry-run exits 0, drop the dry-run flag to publish:
 
 ```sh
-set -a
-source /Users/chriswong/skew-ops-wt/.env
-set +a
-
-SKEW_FRESHNESS_BYPASS=1 \
+/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh /Users/chriswong/skew-ops-wt/.env \
+    /usr/bin/env SKEW_FRESHNESS_BYPASS=1 \
     /Users/chriswong/skew-ops-wt/ops/launchd/run_skew_accrual.sh
 ```
 
