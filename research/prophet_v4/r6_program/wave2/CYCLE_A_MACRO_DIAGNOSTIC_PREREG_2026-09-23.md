@@ -11,7 +11,7 @@ STATUS: IN_PROGRESS
 
 ### Frozen publication-clock transformation
 
-For each calendar period `t`, select the initial-release row for each series as the row with the minimum `realtime_start` for that `(series, period)` in `data/fred_vintage/vintages.parquet`; `realtime_start` is the publication clock. Do not select a later revised row, infer an absent row, interpolate, normalize levels, or use a latest-revised fallback. A target month is available only when every required initial-release row and every transformation input has published by that target row's `realtime_start`; a missing or late required row blocks that month.
+For each calendar period `t`, select the initial-release row for each series as the row with the minimum `realtime_start` for that `(series, period)` in `data/fred_vintage/vintages.parquet`; `realtime_start` is the publication clock. Do not select a later revised row, infer an absent row, interpolate, normalize levels, or use a latest-revised fallback. A target month is available only when every required target and input initial-release row exists and each input's `realtime_start` is no later than the publication date assigned by the fixed series-availability rule; a missing or late required row blocks that month. The run must define that fixed rule from only the observed initial-release publication lags before evaluating any hypothesis, then report each series' minimum, median, and maximum lag.
 
 - `ORDER(t) = NEWORDER_first(t) - NEWORDER_first(t-3)`. Positive means order flow strengthening; negative means order flow weakening.
 - `INVENTORY(t) = ISRATIO_first(t) - ISRATIO_first(t-3)`. Positive means inventory pressure building; negative means inventory pressure easing.
@@ -35,10 +35,10 @@ After a distinct `ORDER` trough followed by a positive `ORDER` value within six 
 ## PRIMARY ENDPOINT
 
 - **Primary hypothesis:** H1. There is exactly one primary endpoint: the **publication-clock sequence concordance rate**, the proportion of distinct eligible `ORDER`-trough anchor episodes in which the H1 inventory and output conditions both hold.
-- **Estimator:** number of H1-concordant anchor episodes divided by the number of distinct eligible `ORDER`-trough anchor episodes after blocked or unavailable episodes are counted in the denominator. Use the exact one-sided binomial 95% confidence interval for the proportion.
+- **Estimator:** number of H1-concordant anchor episodes divided by the number of distinct eligible `ORDER`-trough anchor episodes after unavailable or blocked anchor episodes are counted in the denominator. Use the exact one-sided binomial 95% confidence interval for the proportion.
 - **Null:** the H1 concordance probability is at most 0.50.
 - **Pass/fail threshold:** H1 passes only if there are at least 12 distinct eligible anchor episodes, the point estimate is at least 0.60, and the exact lower 95% binomial confidence bound exceeds 0.50. Otherwise it fails; no H2 or H3 result may rescue it.
-- **Honest N:** distinct episode count, not months or event fires. Each episode begins at its allocated `ORDER` trough; overlapping candidates within six months belong to the same episode; unavailable or blocked intervals remain ineligible only when the frozen transformation cannot be evaluated, and their count is reported separately without removing them from the attempted-episode census.
+- **Honest N:** distinct episode count, not months or event fires. Each episode begins at its allocated `ORDER` trough; overlapping candidates within six months belong to the same episode; unavailable or blocked anchors count as failed sequences, and their count is reported separately within the attempted-episode census.
 - H2 and H3 are registered mechanism falsifiers and descriptive disclosures, not primary or rescue endpoints. All hypothesis-specific results and blocked episodes must be reported in one table.
 
 ## WINDOW AND ERA HANDLING
