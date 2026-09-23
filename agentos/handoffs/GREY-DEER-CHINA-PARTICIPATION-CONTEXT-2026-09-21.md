@@ -67,6 +67,13 @@ verified:
   result: 544 passed,10 inherited warnings;14 new coverage cases;17 JS/CSS stamps
     match; six pinned input/ledger files unchanged. Final browser acceptance remains
     false.
+- claim: Participation clock qualifies independent time without changing measurement
+    functions.
+  command: python -m pytest tests/test_china_participation.py -k 'test_timing_ or
+    test_clock_' -q
+  result: '31 passed; original15 pending cases promoted to owning suite. Real September21
+    data are delayed2 sessions versus expected September23;27 existing function ASTs
+    and8 data/history/ledger hashes unchanged. Evidence: research/grey_deer/CHINA_PARTICIPATION_CLOCK_20260923.json.'
 unverified:
 - claim: Current production deployment, fresh collection and release acceptance.
   what_would_verify: Later exact-source CI/integration, accepted release and real
@@ -75,10 +82,11 @@ unverified:
     predictive pullback accuracy.
   what_would_verify: Matched-universe constituent weights/history and separate accepted
     calibration; this sample is not that evidence.
-- claim: Independent settled-session freshness and official weighted index attribution.
-  what_would_verify: Resolve the exact platform-refused clock edit before implementing/passing
-    its15 pending cases. Attribution additionally needs an accepted historical-membership
-    and official starting-weight source; neither is manufactured from library caps.
+- claim: Complete page-clock acceptance and official historical attribution.
+  what_would_verify: The participation clock is implemented and31 contract cases pass.
+    Reconcile3 old presentation expectations at the exact refused edit, then actual
+    page/browser proof. This conservative calendar check is not vendor publication-time
+    or official weighted-index proof.
 - claim: Automatic official-weight source supply
   what_would_verify: Resolve the exact protective refresh-test append refusal, then
     implement and verify the existing-source refresh without bypass. The current reader
@@ -95,12 +103,12 @@ unresolved:
 - Benchmark observation dates do not certify complete exchange-calendar availability
   or source publication timestamps.
 next_actions:
-- Resolve the exact post-Lens browser proof gate without bypass; source9c6bef3f37f9,
-  expected-input receipt and unchanged failed first-click assertion are preserved.
-- Resolve existing source-clock and automatic-weight-supply gates;15 pending clock
-  tests remain excluded; do not reimplement refused operations through another actor.
-- When release work resumes, qualify then-current source/CI and accepted production
-  publication; do not restart or overwrite PR7592/6860 owners.
+- Qualify the actual page with the newly implemented clock; retain3 failing legacy
+  presentation expectations until the exact edit gate is resolved.
+- Resolve the exact held touch diagnostic and automatic-weight-source gate without
+  alternate carriers.
+- When release resumes, qualify current-base CI and production publication; preserve
+  original PR7592/6860 source custody.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -125,51 +133,26 @@ prs:
 ---
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001; same PR7622 source custody.
-Procedure:Mastermind@89582a372aa2a57ec500868ce6d79cd156219445,1.0.1/bootstrap1.
-Chairman continues accuracy capability; CI/release deferred, Draft/HOLD retained.
-Source0b945c1f9cdb9c91bee67e61104651e48dc817c8. No foreign branch/controller change.
-DO_NOT_REDO: prior integrity, participation/cohort, optional official weights,
-missing-member, source-current, regime-copy and four-input vintage ablation.
+Operation:china-participation-context-20260921-sol-001; same PR7622 and Studio carrier.
+Procedure:Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc; compatible1.0.1/bootstrap1.
+Chairman continues accuracy work; CI/release deferred. No worker or source EFFECT_UNKNOWN.
+Prior saved/display6592-value proof, desktop click repair and packaged page are DO_NOT_REDO.
+Current backend71803 accepted the actual clock implementation; original refusal was41474.
 
-Saved/display mismatch RESOLVED: five additions, no changed saved measurements.
-Actual builder qualification verifies6592 saved scalar values, independently checks
-four chart renderings and one separate same-session breadth context. Enginecalls0;
-eight inputs/history/ledger hashes unchanged. Strict proof rejects changed/removed
-values, unknown additions and altered expected outputs.408 tests at this boundary.
-Qualified copy now reaches the actual normalized committed China page.
+Independent participation clock is now implemented. The original15 RED cases pass
+and are in the registered tests.16 extra source/UI cases bring the contract to31.
+The27 existing non-loader function ASTs are unchanged. Actual stored Sep21 inputs
+read delayed versus expected Sep23 (2 sessions);8 input/history/ledger files unchanged.
+No new calendar, collector, risk score/probability, feed, sizing or release authority.
+The page's existing panel now exposes expected session and scoped input-date details.
 
-Actual browser then found dedicated desktop Lens clicks also opening the parent
-Playbook dialog. Its movement triggered hover dismissal. A provisional hover/focus
-change was rejected and removed; the minimal repair consumes only the dedicated
-click. Original6860 gesture guard and ordinary hover/explicit dismissal remain.
-Final seven-suite regression525 passed. Root event probe now stays open at all
-four checkpoints both initially and after the risk/participation journey.
-Final DC process46463 exited1:16 resting/focus captures passed, but the first
-touch case loses its Lens before350ms. No final interaction acceptance. The scoped
-mobile event probe was safety-status refused; helper unchanged, no retry. The
-generic old post-Lens blocker is replaced by this exact observed failure/gate.
-
-Runtime material invalidator:current backend71803 vs prior41474; scoped same-carrier
-inspection/browser calls now execute. Original clock source is STILL unchanged;
-its explicit15-case recheck is RED. Automatic weight supply remains absent.
-This turn's compound archival/generated-output restore was safety-refused, no
-effect;24 auxiliary generated files remain dirty and unaccepted, explicitly listed
-in mockups/evidence/china-display-boundary-20260923/qualification.json. Do not
-blanket-stage, claim clean, re-route or retry that exact cleanup. No model/ledger
-mutation, trade authority, recalibration, fresh collection or deployment is claimed.
-
-Next: resolve the exact mobile diagnostic gate; then source-clock/weight-supply work and
-normal current-main/CI/publication/live gates when release resumes. No source
-custody transfer. Mission incomplete; historical proof retains its own provenance.
-
-FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE:false
-Boundary:the previously unknown saved/display mismatch now has exact independent
-qualification and the actual corrected page is packaged. Subsequent cross-device
-proof exposed a narrower touch failure; its diagnostic is explicitly held after
-substantial tool-heavy debugging. Persisted state covers all effects, including
-24 dirty unaccepted auxiliary outputs. Do not claim clean/deployed/all-interactions
-passed or re-run the accepted four-input ablation. Resume on this same PR/carrier
-from this checkpoint plus minimal fresh canonical state, not the old transcript.
-No source custody transfer, active worker, watcher or autonomous wake is implied.
+Four-suite regression:436 passed,3 existing presentation expectations need reconciliation.
+Their proposed fixture/null-copy adjustment was safety-status refused, no effect.
+Do not hide those failures or reroute the refused edit. The31 current-clock contract
+cases pass separately. Real builder/browser qualification for this new source is next.
+Earlier narrower touch diagnostic and24 generated-output cleanup remain held.
+Original weight-supply gate remains; no automatic source feed or production claim.
+Evidence:research/grey_deer/CHINA_PARTICIPATION_CLOCK_20260923.json and current
+section of CHINA_INTEGRATED_CONTEXT_20260921.md. Source/tests are selectively staged;
+24 unrelated generated outputs remain excluded and dirty. No blanket staging/restore.
+MISSION_COMPLETE:false. Active continuation; next is real stored-input page qualification.

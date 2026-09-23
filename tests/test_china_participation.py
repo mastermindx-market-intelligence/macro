@@ -1410,3 +1410,217 @@ def test_member_gap_detail_limits_visible_rows_without_hiding_the_total():
     soup=BeautifulSoup(html,'html.parser')
     assert all(len(table.select('tbody tr')) == 5 for table in soup.select('.cnx-member-gaps'))
     assert '6 affected members' in html and 'First 5 affected members shown.' in html
+
+
+# Independent build-time clock: equal old source dates must not certify freshness.
+def _timed_context(monkeypatch, *, now=None, asof="2026-09-18", change=None):
+    from datetime import datetime, timezone
+    from engine import china_participation as pc
+    from lib import store
+    prices, bench, _ = _price_context_fixture()
+    inputs = {("china_search", "closes"): prices,
+              ("china", "510300.SS"): bench.to_frame("close"),
+              ("china_board_breadth", "breadth"): _board_fixture(),
+              ("china", "ETF"): prices.iloc[:, 0].to_frame("close")}
+    if change:
+        change(inputs)
+    monkeypatch.setattr(store, "read", lambda g, n: inputs.get((g, n)))
+    return pc.load_breadth_context(asof=asof, sector_universe={"ETF": ["Banks"]},
+        now=now if now is not None else datetime(2026, 9, 18, 10, tzinfo=timezone.utc))
+
+
+def test_timing_identically_old_inputs_are_delayed_not_current(monkeypatch):
+    from datetime import datetime, timezone
+    r = _timed_context(monkeypatch, now=datetime(2026, 9, 21, 12, tzinfo=timezone.utc))
+    assert r["timing"]["expected_session"] == "2026-09-21"
+    assert r["timing"]["status"] == "delayed"
+    assert r["sample"]["status"] == r["daily_board"]["status"] == "delayed"
+    assert r["sample"]["asof"] == "2026-09-18"
+    assert r["sample"]["current_comparison"] is None
+    assert r["sectors"]["eligible"] == 0
+    assert r["timing"]["sources"]["sample"]["sessions_behind"] == 1
+
+
+@pytest.mark.parametrize("instant,expected,state", [
+    ("2026-09-18T09:00:00+00:00", "2026-09-18", "current"),
+    ("2026-09-20T12:00:00+00:00", "2026-09-18", "current"),
+    ("2026-09-21T08:59:00+00:00", "2026-09-18", "current"),
+    ("2026-09-21T09:00:00+00:00", "2026-09-21", "delayed"),
+    ("2026-09-25T12:00:00+00:00", "2026-09-24", "delayed"),
+])
+def test_timing_uses_existing_settle_weekend_and_holiday_rules(monkeypatch, instant, expected, state):
+    from datetime import datetime
+    r = _timed_context(monkeypatch, now=datetime.fromisoformat(instant))
+    assert r["timing"]["expected_session"] == expected
+    assert r["timing"]["status"] == state
+    assert r["timing"]["calendar_basis"] == "lib.cn_calendar.conservative_rules"
+
+
+def test_timing_unsettled_assessment_cannot_include_same_day_spike(monkeypatch):
+    from datetime import datetime, timezone
+    def future(inputs):
+        for key in (("china_search", "closes"), ("china", "510300.SS"), ("china", "ETF")):
+            inputs[key].loc[pd.Timestamp("2026-09-21")] = 9999.0
+    r = _timed_context(monkeypatch, asof="2026-09-21", change=future,
+                       now=datetime(2026, 9, 21, 8, tzinfo=timezone.utc))
+    assert r["assessment_asof"] == "2026-09-21"
+    assert r["timing"]["calculation_asof"] == "2026-09-18"
+    assert r["timing"]["status"] == "unsettled"
+    assert r["sample"]["windows"]["20"]["median_return_pct"] == 0
+    assert r["timing"]["sources"]["sample"]["observed_through"] == "2026-09-21"
+    assert r["timing"]["sources"]["sample"]["after_cutoff_rows"] == 1
+    assert r["sample"]["current_comparison"] is None
+
+
+def test_timing_different_board_and_sample_dates_are_explicit(monkeypatch):
+    def older_board(inputs):
+        inputs[("china_board_breadth", "breadth")].index = pd.to_datetime(["2026-09-17"])
+    r = _timed_context(monkeypatch, change=older_board)
+    assert r["timing"]["status"] == "mixed"
+    assert r["timing"]["sources"]["daily_board"]["used_asof"] == "2026-09-17"
+    assert r["timing"]["sources"]["sample"]["used_asof"] == "2026-09-18"
+
+
+def test_timing_fresh_row_with_bad_benchmark_has_no_valid_clock(monkeypatch):
+    def bad_benchmark(inputs):
+        inputs[("china", "510300.SS")].iloc[-1] = np.nan
+    r = _timed_context(monkeypatch, change=bad_benchmark)
+    b = r["timing"]["sources"]["benchmark"]
+    assert b["frame_through"] == "2026-09-18"
+    assert b["observed_through"] == "2026-09-17"
+    assert b["status"] == "unavailable"
+    assert r["timing"]["status"] == "partial"
+
+
+def test_timing_fresh_but_undercovered_panel_remains_partial(monkeypatch):
+    def thin(inputs):
+        inputs[("china_search", "closes")].iloc[-1, 4:] = np.nan
+    r = _timed_context(monkeypatch, change=thin)
+    assert r["timing"]["status"] == "partial"
+    assert r["timing"]["sources"]["sample"]["status"] == "insufficient_coverage"
+    assert r["sample"]["quote_count"] == 4
+
+
+def test_timing_calendar_failure_keeps_old_values_but_no_current_claim(monkeypatch):
+    from lib import cn_calendar
+    def unavailable(_now):
+        raise ValueError("calendar unavailable")
+    monkeypatch.setattr(cn_calendar, "expected_last_session", unavailable)
+    r = _timed_context(monkeypatch)
+    assert r["timing"]["status"] == "unavailable"
+    assert r["timing"]["expected_session"] is None
+    assert r["sample"]["current_comparison"] is None
+    assert r["sample"]["status"] != "current"
+
+
+@pytest.mark.parametrize("clock", ["not a clock", float("nan"), pd.NaT])
+def test_timing_invalid_clock_never_defaults_to_fresh(monkeypatch, clock):
+    r = _timed_context(monkeypatch, now=clock)
+    assert r["timing"]["status"] == "unavailable"
+    assert r["sample"]["current_comparison"] is None
+
+
+def test_timing_current_measurements_match_prior_arithmetic(monkeypatch):
+    import json
+    prices, bench, names = _price_context_fixture()
+    expected = _price_context(prices, bench, names)
+    r = _timed_context(monkeypatch)
+    assert r["timing"]["status"] == "current"
+    assert r["sample"]["windows"] == expected["windows"]
+    assert r["sample"]["trend"] == expected["trend"]
+    json.dumps(r, allow_nan=False)
+
+
+@pytest.mark.parametrize('bad', [np.nan, np.inf, 0.0, -1.0, True])
+def test_clock_invalid_latest_benchmark_cannot_be_fresh(monkeypatch, bad):
+    def invalid(inputs):
+        key = ('china', '510300.SS')
+        inputs[key] = inputs[key].astype(object)
+        inputs[key].iloc[-1, 0] = bad
+    result = _timed_context(monkeypatch, change=invalid)
+    source = result['timing']['sources']['benchmark']
+    assert source['frame_through'] == '2026-09-18'
+    assert source['observed_through'] == '2026-09-17'
+    assert source['status'] == 'unavailable'
+    assert result['timing']['status'] == 'partial'
+    assert result['sample']['current_comparison'] is None
+
+
+def test_clock_sector_lag_is_not_hidden_by_current_core_sources(monkeypatch):
+    def older(inputs):
+        inputs[('china', 'ETF')] = inputs[('china', 'ETF')].iloc[:-1]
+    result = _timed_context(monkeypatch, change=older)
+    assert result['timing']['status'] == 'mixed'
+    assert result['timing']['sources']['sector:ETF']['used_asof'] == '2026-09-17'
+    assert result['timing']['sources']['sector:ETF']['status'] == 'delayed'
+    assert result['sectors']['eligible'] == 0
+    assert result['sample']['current_comparison'] is None
+
+
+def test_clock_invalid_board_tail_is_not_an_observation(monkeypatch):
+    def bad_board(inputs):
+        key = ('china_board_breadth', 'breadth')
+        older = inputs[key].copy()
+        older.index = pd.to_datetime(['2026-09-17'])
+        inputs[key] = pd.concat([older, inputs[key]])
+        inputs[key].loc[pd.Timestamp('2026-09-18'), 'n'] = 1
+    result = _timed_context(monkeypatch, change=bad_board)
+    source = result['timing']['sources']['daily_board']
+    assert source['frame_through'] == '2026-09-18'
+    assert source['observed_through'] == '2026-09-17'
+    assert source['status'] == 'unavailable'
+    assert result['timing']['status'] == 'partial'
+
+
+def test_clock_naive_wall_time_does_not_guess_a_timezone(monkeypatch):
+    from datetime import datetime
+    result = _timed_context(monkeypatch, now=datetime(2026, 9, 18, 10))
+    assert result['timing']['status'] == 'unavailable'
+    assert result['sample']['current_comparison'] is None
+
+
+def test_clock_future_calendar_result_is_not_accepted(monkeypatch):
+    from datetime import date
+    from lib import cn_calendar
+    monkeypatch.setattr(cn_calendar, 'expected_last_session', lambda _: date(2026, 9, 22))
+    result = _timed_context(monkeypatch)
+    assert result['timing']['status'] == 'unavailable'
+
+
+def _render_clock_panel(context):
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, ChainableUndefined
+    env = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parents[1] / 'templates')),
+                      undefined=ChainableUndefined, autoescape=True)
+    return str(env.get_template('_china_participation_context.html.j2').module.participation_panel(context))
+
+
+@pytest.mark.parametrize('status,en,zh', [
+    ('delayed', 'Dated snapshot', '历史快照'),
+    ('unsettled', 'Unsettled assessment', '尚未结算'),
+    ('mixed', 'Different source dates', '来源日期不同'),
+    ('partial', 'Incomplete inputs', '输入不完整'),
+    ('unavailable', 'Timing unavailable', '时间核验暂不可用'),
+])
+def test_clock_panel_labels_noncurrent_evidence(monkeypatch, status, en, zh):
+    context = _timed_context(monkeypatch)
+    context['timing']['status'] = status
+    html = _render_clock_panel(context)
+    assert en in html and zh in html
+    assert 'Expected completed session' in html and '预期已完成交易日' in html
+    assert '2026-09-18' in html
+    assert 'lib.cn_calendar' not in html
+    assert 'Check source timing' in html and '核对来源时间' in html
+
+
+def test_clock_panel_discloses_its_calendar_and_scope_limit(monkeypatch):
+    html = _render_clock_panel(_timed_context(monkeypatch))
+    assert 'Conservative calendar rules' in html and '保守日历规则' in html
+
+
+def test_clock_missing_receipt_does_not_default_to_current(monkeypatch):
+    context = _timed_context(monkeypatch)
+    context.pop('timing')
+    html = _render_clock_panel(context)
+    assert 'Timing unavailable' in html
+    assert 'Read the index alongside' not in html

@@ -1,0 +1,219 @@
+{
+  "base": "b7da88a718d700a707be6edf67669e1fa5061e45",
+  "procedure": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "new_contract_tests": "31 passed",
+  "four_suite_regression": "436 passed, 3 existing presentation expectations require reconciliation",
+  "unchanged_existing_functions": [
+    "_data_path",
+    "_load_turnover",
+    "_load_margin",
+    "_load_limit_breadth",
+    "_load_southbound",
+    "_load_etf_flows",
+    "_load_qvix",
+    "_load_broker_rs",
+    "_zscore",
+    "_classify_regime",
+    "_classify_who_controls",
+    "_classify_risk",
+    "_build_evidence",
+    "_build_contradictions",
+    "_notna",
+    "build_tape",
+    "latest_snapshot",
+    "_context_daily_frame",
+    "_context_prices",
+    "price_breadth_context",
+    "board_breadth_context",
+    "sector_breadth_context",
+    "index_member_breadth_context",
+    "load_index_member_breadth_context",
+    "index_weight_context",
+    "load_index_weight_context",
+    "_index_member_price_gaps"
+  ],
+  "assessment_date": "2026-09-21",
+  "timing": {
+    "status": "delayed",
+    "checked_at": "2026-09-23T10:04:37.588233+00:00",
+    "expected_session": "2026-09-23",
+    "calculation_asof": "2026-09-21",
+    "calendar_basis": "lib.cn_calendar.conservative_rules",
+    "sources": {
+      "sample": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "daily_board": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "benchmark": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512800.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512880.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512690.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:159928.SZ": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512170.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:159992.SZ": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512760.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515000.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515030.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515790.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512660.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512400.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515220.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512200.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:515250.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      },
+      "sector:512980.SS": {
+        "status": "delayed",
+        "used_asof": "2026-09-21",
+        "frame_through": "2026-09-21",
+        "observed_through": "2026-09-21",
+        "after_cutoff_rows": 0,
+        "sessions_behind": 2
+      }
+    },
+    "data_gaps": []
+  },
+  "sample_status": "delayed",
+  "current_comparison": null,
+  "sector_eligible_now": 0,
+  "preserved_inputs": {
+    "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+    "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+    "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+    "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+    "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+    "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+    "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+    "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+  },
+  "source_sha256": {
+    "engine/china_participation.py": "c3ef768d87b6a2e9e7c287bbe8d3e265b34e510269cbfd16fbb68f0b3edf4a0f",
+    "templates/_china_participation_context.html.j2": "3fa6477bbf2b4b912b671c977ea388e5845cf4177e6a51eef3fcae8a2bf185f3",
+    "tests/test_china_participation.py": "da1946cb0f5be43706f6c9e9cd05ede947d92d1dd222eaa5cb5286242f1e0184"
+  },
+  "fresh_collection": false,
+  "risk_calibration_changed": false,
+  "production": false
+}

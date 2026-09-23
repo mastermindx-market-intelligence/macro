@@ -1053,35 +1053,156 @@ def board_breadth_context(board: pd.DataFrame, *, asof: str) -> dict:
     return r
 
 
-def load_breadth_context(*, asof: str, sector_universe: dict | None = None) -> dict:
-    """Read existing stores once. No collection, mutation, ledger or new artifact."""
+def _breadth_context_clock(asof, now):
+    """Qualify one read against the incumbent calendar; never infer time from data."""
+    from datetime import datetime, timezone
+    from lib import cn_calendar
+    result = {'status': 'unavailable', 'checked_at': None, 'expected_session': None,
+              'calculation_asof': str(asof), 'calendar_basis': 'lib.cn_calendar.conservative_rules',
+              'sources': {}, 'data_gaps': []}
+    try:
+        requested = pd.Timestamp(asof)
+        if pd.isna(requested) or requested.tz is not None or requested != requested.normalize():
+            raise ValueError('invalid assessment date')
+        instant = datetime.now(timezone.utc) if now is None else now
+        if not isinstance(instant, datetime) or pd.isna(instant) or instant.utcoffset() is None:
+            raise ValueError('an aware build-time clock is required')
+        expected = pd.Timestamp(cn_calendar.expected_last_session(instant))
+        if pd.isna(expected) or expected.tz is not None or expected != expected.normalize():
+            raise ValueError('invalid expected session')
+        if expected.date() > instant.astimezone(cn_calendar.CST).date():
+            raise ValueError('expected session lies after the build date')
+        result.update(checked_at=instant.astimezone(timezone.utc).isoformat(),
+                      expected_session=str(expected.date()),
+                      calculation_asof=str(min(requested, expected).date()),
+                      status='unsettled' if requested > expected else 'qualified')
+    except (ValueError, TypeError, AttributeError, OverflowError) as exc:
+        result['data_gaps'].append(str(exc))
+    return result
+
+
+def _breadth_session_lag(used, expected):
+    """Count via the existing session resolver; no independent holiday policy."""
+    from datetime import datetime, time, timedelta, timezone
+    from lib import cn_calendar
+    if used is None or expected is None:
+        return None
+    start, end = pd.Timestamp(used).date(), pd.Timestamp(expected).date()
+    span = (end-start).days
+    if span < 0 or span > 3660:
+        return None
+    count = 0
+    for offset in range(1, span+1):
+        day = start + timedelta(days=offset)
+        check = datetime.combine(day, time(12), tzinfo=timezone.utc)
+        count += pd.Timestamp(cn_calendar.expected_last_session(check)).date() == day
+    return int(count)
+
+
+def _breadth_source_clock(frame, *, used, status, cutoff, expected, price=True):
+    receipt = {'status': status, 'used_asof': used, 'frame_through': None,
+               'observed_through': None, 'after_cutoff_rows': 0, 'sessions_behind': None}
+    try:
+        df = _context_daily_frame(frame)
+        receipt['frame_through'] = str(df.index[-1].date())
+        if price:
+            valid = _context_prices(df).notna().any(axis=1)
+        else:
+            counts = df[['n', 'adv', 'dec', 'flat']].map(
+                lambda value: np.nan if isinstance(value, (bool, np.bool_)) else value)
+            counts = counts.apply(pd.to_numeric, errors='coerce')
+            median = df['med_pct'].map(lambda value: np.nan if isinstance(value, (bool, np.bool_)) else value)
+            median = pd.to_numeric(median, errors='coerce')
+            valid = (np.isfinite(counts).all(axis=1) & counts.ge(0).all(axis=1)
+                     & counts.mod(1).eq(0).all(axis=1) & counts['n'].ge(3000)
+                     & counts[['adv', 'dec', 'flat']].sum(axis=1).eq(counts['n'])
+                     & np.isfinite(median))
+        receipt['observed_through'] = str(df.index[valid][-1].date()) if valid.any() else None
+        receipt['after_cutoff_rows'] = int((df.index > pd.Timestamp(cutoff)).sum())
+        receipt['sessions_behind'] = _breadth_session_lag(used, expected)
+    except (ValueError, TypeError, AttributeError, IndexError, KeyError, OverflowError):
+        receipt['status'] = 'unavailable'
+    return receipt
+
+
+def load_breadth_context(*, asof: str, sector_universe: dict | None = None, now=None) -> dict:
+    """Read each existing store once, then qualify dates without changing arithmetic."""
     from lib import store
-    gaps = []
+    timing = _breadth_context_clock(asof, now)
+    cutoff, expected = timing['calculation_asof'], timing['expected_session']
+    gaps, cache = [], {}
     def read(group, name):
-        try:
-            df = store.read(group, name)
-            return df if isinstance(df, pd.DataFrame) else pd.DataFrame()
-        except Exception as exc:  # context leaf cannot take the page down
-            gaps.append(f'{group}/{name}: {type(exc).__name__}')
-            return pd.DataFrame()
-    closes = read('china_search','closes')
-    bench = read('china','510300.SS')
-    board = read('china_board_breadth','breadth')
+        key = (group, name)
+        if key not in cache:
+            try:
+                df = store.read(group, name)
+                cache[key] = df if isinstance(df, pd.DataFrame) else pd.DataFrame()
+            except Exception as exc:
+                gaps.append(f'{group}/{name}: {type(exc).__name__}')
+                cache[key] = pd.DataFrame()
+        return cache[key]
+    closes = read('china_search', 'closes')
+    bench = read('china', '510300.SS')
+    board = read('china_board_breadth', 'breadth')
     def ashare(symbol):
-        if not isinstance(symbol,str) or len(symbol) != 9 or not symbol[:6].isdigit():
-            return False
-        return ((symbol.endswith('.SS') and symbol.startswith(('60','68')))
-                or (symbol.endswith('.SZ') and symbol.startswith(('00','30'))))
+        return (isinstance(symbol, str) and len(symbol) == 9 and symbol[:6].isdigit()
+                and ((symbol.endswith('.SS') and symbol.startswith(('60', '68')))
+                     or (symbol.endswith('.SZ') and symbol.startswith(('00', '30')))))
     members = [s for s in closes.columns if ashare(s)]
-    sample = price_breadth_context(closes, bench.get('close',pd.Series(dtype=float)),
-                                  members=members, asof=asof)
-    sectors = sector_breadth_context(
-        {t: read('china',t) for t in (sector_universe or {})},
-        bench.get('close',pd.Series(dtype=float)),names=sector_universe or {},asof=asof)
+    sample = price_breadth_context(closes, bench.get('close', pd.Series(dtype=float)),
+                                  members=members, asof=cutoff)
+    daily = board_breadth_context(board, asof=cutoff)
+    sectors = sector_breadth_context({t: read('china', t) for t in (sector_universe or {})},
+        bench.get('close', pd.Series(dtype=float)), names=sector_universe or {}, asof=cutoff)
+    def state(used, existing):
+        if existing in ('unavailable', 'insufficient_coverage'):
+            return existing
+        if expected is None:
+            return 'unavailable_clock'
+        return 'current' if used == expected else 'delayed'
+    month = sample.get('windows', {}).get('20', {})
+    sample_status = sample['status']
+    if sample_status != 'unavailable' and month.get('status') != 'ok':
+        sample_status = 'insufficient_coverage'
+    sample['status'] = state(sample.get('asof'), sample_status)
+    daily['status'] = state(daily.get('asof'), daily['status'])
+    benchmark_status = state(sample.get('asof'), 'current')
+    if month.get('benchmark_return_pct') is None:
+        benchmark_status = 'unavailable'
+    timing['sources'] = {
+        'sample': _breadth_source_clock(closes.reindex(columns=members),
+            used=sample.get('asof'), status=sample['status'], cutoff=cutoff, expected=expected),
+        'daily_board': _breadth_source_clock(board, used=daily.get('asof'),
+            status=daily['status'], cutoff=cutoff, expected=expected, price=False),
+        'benchmark': _breadth_source_clock(bench[['close']] if 'close' in bench else pd.DataFrame(),
+            used=sample.get('asof') if benchmark_status != 'unavailable' else None,
+            status=benchmark_status, cutoff=cutoff, expected=expected)}
+    for row in sectors['rows']:
+        frame = read('china', row['ticker'])
+        timing['sources']['sector:' + row['ticker']] = _breadth_source_clock(
+            frame[['close']] if 'close' in frame else pd.DataFrame(),
+            used=row.get('asof'), status=state(row.get('asof'), row['status']),
+            cutoff=cutoff, expected=expected)
+    if timing['status'] == 'qualified':
+        states = [source['status'] for source in timing['sources'].values()]
+        dates = {source['used_asof'] for source in timing['sources'].values()}
+        timing['status'] = ('partial' if any(s in ('unavailable', 'insufficient_coverage') for s in states)
+                            else 'mixed' if len(dates) > 1 else 'delayed' if 'delayed' in states else 'current')
+    if timing['status'] != 'current':
+        sample['current_comparison'] = None
+    if timing['status'] in ('unsettled', 'unavailable'):
+        sample['status'] = timing['status']
+    for row in sectors['rows']:
+        row['status'] = state(row.get('asof'), row['status'])
+        if timing['status'] in ('unsettled', 'unavailable'):
+            row['status'] = timing['status']
+    usable = [row for row in sectors['rows'] if row['status'] == 'current' and row['return_pct'] is not None]
+    sectors['eligible'] = len(usable)
+    sectors['rising'] = sum(row['return_pct'] > 0 for row in usable)
     return {'authority': 'context_only', 'assessment_asof': str(asof),
-            'benchmark': 'CSI 300 ETF (510300.SS)',
-            'sample': sample, 'daily_board': board_breadth_context(board,asof=asof),
-            'sectors':sectors, 'data_gaps': gaps}
+            'benchmark': 'CSI 300 ETF (510300.SS)', 'sample': sample, 'daily_board': daily,
+            'sectors': sectors, 'data_gaps': gaps, 'timing': timing}
+
 
 
 def sector_breadth_context(prices: dict, benchmark: pd.Series, *, names: dict, asof: str) -> dict:

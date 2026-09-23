@@ -329,3 +329,31 @@ watcher, production deployment, fresh source supply or forecast validation exist
 CHECKPOINTED_CONTINUATION;MISSION_COMPLETE:false. The saved/display and qualified
 page boundary is closed; resume the exact touch diagnostic and pending independent
 clock/feed obligations from the current same-carrier record, not a replay of history.
+
+## September23 independent participation clock implemented
+Protected procedure bf764f494b9cd0ecede6234bb472c3344c8e77cc; same PR7622.
+The original clock write belonged to backend41474. On current71803, the actual
+same-carrier implementation now succeeds; no alternate provider or source writer.
+The formerly pending15 cases first failed again, then passed unchanged. They are
+now in the existing registered test_china_participation suite, not a parallel suite.
+Sixteen additional source/UI boundary cases bring this contract to31 passing cases.
+
+The existing reader uses the existing conservative cn_calendar session resolver
+and an independent aware build-time clock. It caps calculations at the completed
+session, records observed/used/frame dates, exposes invalid tails and lag, and
+removes current-comparison claims for delayed/mixed/partial/unsettled/unknown time.
+Sector clocks participate; invalid traded-board rows cannot certify observations.
+The existing27 measurement/helper function ASTs are unchanged. No collector,
+calendar policy, risk engine, score, probability, weight feed or sizing authority
+was added or changed. Per-call cache ensures each source is read once.
+
+Actual stored-input read:assessment2026-09-21 versus expected2026-09-23 => delayed,
+two sessions behind. Historical values remain, current_comparison is None, and
+no stale sector aggregate is presented as current. Eight input/history/ledger
+files retain their fingerprints. This is not new collection or vendor-time proof.
+
+New panel copy exposes expected session and scoped source-time details in EN/ZH.
+Four-suite run:436 passed,3 existing presentation expectations fail because they
+lack the now-required independent clock. The proposed fixture/null-copy adjustment
+was safety-status refused; no effect is claimed and it was not rerouted. The31
+new clock-contract cases pass separately; overall release is NOT qualified.
