@@ -4195,6 +4195,15 @@
     '.set-seg-btn.active{background:var(--link,var(--blue));color:#fff}',
     '.set-seg-btn:hover:not(.active){background:color-mix(in srgb,var(--text,#fff) 9%,transparent);color:var(--text,var(--ink))}',
     '.set-seg-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
+    /* Narrow phones: keep labels readable and move full-size controls below them. */
+    '@media (max-width:360px){',
+    '.settings-row:not(.settings-acct){display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:11px;row-gap:8px;align-items:center}',
+    '.settings-row:not(.settings-acct)>.sr-ctrl{grid-column:1 / -1;width:100%;min-width:0}',
+    '.settings-row:not(.settings-acct) .set-theme-seg{width:100%;box-sizing:border-box;min-width:0}',
+    '.settings-row:not(.settings-acct) .set-seg-btn{flex:1 1 0;min-width:40px;padding-left:6px;padding-right:6px}',
+    '.settings-row:not(.settings-acct) .lang-toggle{width:100%;box-sizing:border-box}',
+    '.settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;min-width:0}',
+    '}',
     /* on/off toggle button */
     '.set-toggle-btn{position:relative;width:44px;height:24px;border-radius:999px;border:1px solid var(--line,var(--grid));background:var(--bg,var(--card));cursor:pointer;padding:0;transition:background .25s,border-color .25s}',
     '.set-toggle-btn[aria-checked="true"]{background:var(--link,var(--blue));border-color:var(--link,var(--blue))}',
@@ -4331,6 +4340,12 @@
     }
 
     function isOpen() { return pop.classList.contains('open'); }
+    function isHoverPresented() {
+      return !!(window.matchMedia &&
+        window.matchMedia('(hover:hover) and (pointer:fine)').matches &&
+        wrap.matches && wrap.matches(':hover') &&
+        !wrap.classList.contains('settings-dismissed'));
+    }
     function open() {
       if (isOpen()) return;
       wrap.classList.remove('settings-dismissed');
@@ -4338,18 +4353,30 @@
       gear.setAttribute('aria-expanded', 'true');
       pop.focus();
     }
-    function close() {
-      if (!isOpen()) return;
+    function dismiss() {
       pop.classList.remove('open');
       gear.setAttribute('aria-expanded', 'false');
       // A click or Escape is an explicit close, so do not let the desktop hover
       // rule redraw the pane until the pointer leaves and deliberately returns.
       wrap.classList.add('settings-dismissed');
     }
+    function close() {
+      if (!isOpen()) return;
+      dismiss();
+    }
     // Pointer focus fires before click. Suppress the focus-open path for that
     // gesture so the click remains the single toggle; keyboard/programmatic
     // focus still opens the accessible pane immediately.
     var _gearPointerDown = false;
+    var _gearFocusRestore = false;
+    function restoreGearFocus() {
+      // Focus restoration is part of closing, not a fresh request to open.
+      // Some browsers report relatedTarget=null on programmatic focus; without
+      // this one-shot guard the focusin handler can immediately reopen the pane.
+      _gearFocusRestore = true;
+      try { gear.focus(); } catch (e) {}
+      setTimeout(function () { _gearFocusRestore = false; }, 0);
+    }
     gear.addEventListener('pointerdown', function () {
       _gearPointerDown = true;
       setTimeout(function () { _gearPointerDown = false; }, 0);
@@ -4358,7 +4385,7 @@
       _gearPointerDown = false;
       isOpen() ? close() : open();
     });
-    pop.querySelector('.settings-close').addEventListener('click', function () { close(); gear.focus(); });
+    pop.querySelector('.settings-close').addEventListener('click', function () { close(); restoreGearFocus(); });
     // expand → open the full settings dashboard (Account when signed in, else Preferences)
     var expandBtn = pop.querySelector('.settings-expand');
     if (expandBtn) expandBtn.addEventListener('click', function () {
@@ -4367,10 +4394,11 @@
     // no scrim: a click anywhere outside the gear + its dropdown closes it
     document.addEventListener('mousedown', function (e) { if (isOpen() && !wrap.contains(e.target)) close(); });
     document.addEventListener('keydown', function (e) {
-      if (!isOpen() || e.key !== 'Escape') return;
+      if (e.key !== 'Escape' || (!isOpen() && !isHoverPresented())) return;
       // account management now lives in the full settings dashboard (its own Esc
-      // handler owns closing it); here Escape simply closes the popover.
-      close(); gear.focus();
+      // handler owns closing it). A desktop hover can reveal this popover without
+      // the JS .open class, so Escape dismisses the presented state directly.
+      dismiss(); restoreGearFocus();
     });
     // Desktop also opens the panel on hover (pure CSS above). If a stray click set
     // .open, make sure leaving the gear + panel always closes it so it never stays
@@ -4387,6 +4415,7 @@
       // programmatic focus opens here; internal close-button focus restoration
       // does not reopen the pane.
       if (isOpen() || wrap.contains(e.relatedTarget)) return;
+      if (e.target === gear && _gearFocusRestore) { _gearFocusRestore = false; return; }
       if (e.target === gear && _gearPointerDown) return;
       open();
     });

@@ -21,7 +21,9 @@ this repo, and a silent regression here is invisible until two live products dis
 """
 from __future__ import annotations
 
+import json
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -150,3 +152,295 @@ def test_the_deployed_artifact_matches_the_template_for_this_block(src: str, dep
     preference-sync block is copied verbatim, and any drift between them means one of the two was
     hand-edited instead of regenerated."""
     assert _save_pref_fn(src) == _save_pref_fn(deployed)
+
+
+# ---------------------------------------------------------------------------
+# Shared Settings host contract
+#
+# The theme/lang atomics above are only useful if the shared Settings host can
+# present them without collision and dismiss predictably. This suite is the
+# existing CI owner that actually runs whenever templates/site theme.js changes,
+# so the two Batch A host regressions live here rather than in an untriggered
+# navigation suite.
+# ---------------------------------------------------------------------------
+
+def _run_settings_focus_runtime(source: str, *, old_focus_restore: bool = False) -> dict:
+    """Execute the shipped Settings dismissal/focus fragment in a tiny DOM stub."""
+    start = source.index("    function isOpen() {")
+    end = source.index("    // account section", start)
+    fragment = source[start:end]
+
+    if old_focus_restore:
+        guard = """    var _gearPointerDown = false;
+    var _gearFocusRestore = false;
+    function restoreGearFocus() {
+      // Focus restoration is part of closing, not a fresh request to open.
+      // Some browsers report relatedTarget=null on programmatic focus; without
+      // this one-shot guard the focusin handler can immediately reopen the pane.
+      _gearFocusRestore = true;
+      try { gear.focus(); } catch (e) {}
+      setTimeout(function () { _gearFocusRestore = false; }, 0);
+    }
+"""
+        assert guard in fragment
+        fragment = fragment.replace(guard, "    var _gearPointerDown = false;\n", 1)
+        fragment = fragment.replace("restoreGearFocus();", "gear.focus();")
+        fragment = fragment.replace(
+            "      if (e.target === gear && _gearFocusRestore) "
+            "{ _gearFocusRestore = false; return; }\n",
+            "",
+            1,
+        )
+
+    driver = r"""
+const timers = [];
+function events(name) {
+  const own = {};
+  return {
+    name,
+    addEventListener(type, fn) { (own[type] ||= []).push(fn); },
+    emit(type, event = {}) { for (const fn of own[type] || []) fn(event); }
+  };
+}
+function classes(initial = []) {
+  const set = new Set(initial);
+  return {
+    contains(x) { return set.has(x); },
+    add(x) { set.add(x); },
+    remove(x) { set.delete(x); }
+  };
+}
+const wrap = events('wrap');
+wrap.classList = classes();
+wrap.contains = node => node === wrap || node === gear || node === pop || node === closeButton;
+const closeButton = events('close');
+const pop = events('pop');
+pop.classList = classes();
+pop.focus = () => {
+  const prev = document.activeElement;
+  document.activeElement = pop;
+  wrap.emit('focusin', { target: pop, relatedTarget: prev });
+};
+pop.querySelector = selector => selector === '.settings-close' ? closeButton : null;
+const gear = events('gear');
+gear.attrs = {};
+gear.setAttribute = (k, v) => { gear.attrs[k] = v; };
+gear.focus = () => {
+  const prev = document.activeElement;
+  document.activeElement = gear;
+  wrap.emit('focusin', { target: gear, relatedTarget: null, previous: prev });
+};
+const document = events('document');
+document.activeElement = null;
+const window = { matchMedia: () => ({ matches: false }), MMSettings: null };
+const setTimeout = fn => { timers.push(fn); return timers.length; };
+const _curUser = null;
+""" + fragment + r"""
+function snapshot() {
+  return {
+    open: isOpen(),
+    expanded: gear.attrs['aria-expanded'] || null,
+    active: document.activeElement && document.activeElement.name
+  };
+}
+open();
+document.emit('keydown', { key: 'Escape' });
+const afterEscape = snapshot();
+
+open();
+closeButton.emit('click', {});
+const afterCloseButton = snapshot();
+
+wrap.emit('focusin', { target: gear, relatedTarget: null });
+const afterFreshFocus = snapshot();
+
+console.log(JSON.stringify({ afterEscape, afterCloseButton, afterFreshFocus }));
+"""
+    result = subprocess.run(
+        ["node", "-e", driver],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, (
+        f"node Settings focus harness failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+    )
+    return json.loads(result.stdout)
+
+
+def test_settings_focus_restore_executes_without_reopening(src: str, deployed: str) -> None:
+    """Escape/x restore focus without reopening; fresh external focus still opens."""
+    for source in (src, deployed):
+        fixed = _run_settings_focus_runtime(source)
+        for key in ("afterEscape", "afterCloseButton"):
+            assert fixed[key] == {"open": False, "expanded": "false", "active": "gear"}
+        assert fixed["afterFreshFocus"] == {
+            "open": True,
+            "expanded": "true",
+            "active": "pop",
+        }
+
+        # Discrimination: reinstating the historical implementation must fail
+        # the close contract by reopening immediately on restored focus.
+        old = _run_settings_focus_runtime(source, old_focus_restore=True)
+        assert old["afterEscape"]["open"] is True
+        assert old["afterCloseButton"]["open"] is True
+
+
+
+def _run_settings_hover_escape_runtime(source: str) -> dict:
+    """Exercise the CSS-hover-only Settings presentation against shipped JS."""
+    start = source.index("    function isOpen() {")
+    end = source.index("    // account section", start)
+    fragment = source[start:end]
+
+    driver = r"""
+const timers = [];
+function events(name) {
+  const own = {};
+  return {
+    name,
+    addEventListener(type, fn) { (own[type] ||= []).push(fn); },
+    emit(type, event = {}) { for (const fn of own[type] || []) fn(event); }
+  };
+}
+function classes(initial = []) {
+  const set = new Set(initial);
+  return {
+    contains(x) { return set.has(x); },
+    add(x) { set.add(x); },
+    remove(x) { set.delete(x); }
+  };
+}
+let hovering = true;
+const wrap = events('wrap');
+wrap.classList = classes();
+wrap.matches = selector => selector === ':hover' && hovering;
+wrap.contains = node => node === wrap || node === gear || node === pop || node === closeButton;
+const closeButton = events('close');
+const pop = events('pop');
+pop.classList = classes();
+pop.focus = () => {
+  const prev = document.activeElement;
+  document.activeElement = pop;
+  wrap.emit('focusin', { target: pop, relatedTarget: prev });
+};
+pop.querySelector = selector => selector === '.settings-close' ? closeButton : null;
+const gear = events('gear');
+gear.attrs = {'aria-expanded': 'false'};
+gear.focusCount = 0;
+gear.setAttribute = (k, v) => { gear.attrs[k] = v; };
+gear.focus = () => {
+  gear.focusCount += 1;
+  const prev = document.activeElement;
+  document.activeElement = gear;
+  wrap.emit('focusin', { target: gear, relatedTarget: null, previous: prev });
+};
+const outside = { name: 'outside' };
+const document = events('document');
+document.activeElement = outside;
+const window = {
+  matchMedia: q => ({ matches: q.indexOf('(hover:hover)') !== -1 }),
+  MMSettings: null
+};
+const setTimeout = fn => { timers.push(fn); return timers.length; };
+const _curUser = null;
+""" + fragment + r"""
+function snapshot() {
+  return {
+    open: isOpen(),
+    expanded: gear.attrs['aria-expanded'] || null,
+    dismissed: wrap.classList.contains('settings-dismissed'),
+    active: document.activeElement && document.activeElement.name,
+    focusCount: gear.focusCount
+  };
+}
+wrap.emit('mouseenter', {});
+const beforeEscape = snapshot();
+document.emit('keydown', { key: 'Escape' });
+const afterEscape = snapshot();
+document.emit('keydown', { key: 'Escape' });
+const afterRepeatedEscape = snapshot();
+while (timers.length) timers.shift()();
+hovering = false;
+wrap.emit('mouseleave', {});
+hovering = true;
+wrap.emit('mouseenter', {});
+const afterReenter = snapshot();
+console.log(JSON.stringify({ beforeEscape, afterEscape, afterRepeatedEscape, afterReenter }));
+"""
+    result = subprocess.run(
+        ["node", "-e", driver],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, (
+        f"node Settings hover/Escape harness failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+    )
+    return json.loads(result.stdout)
+
+
+def test_settings_hover_only_escape_dismisses_without_reopen(src: str, deployed: str) -> None:
+    """Escape must dismiss CSS-only desktop hover without stealing focus on hover."""
+    for source in (src, deployed):
+        state = _run_settings_hover_escape_runtime(source)
+        assert state["beforeEscape"] == {
+            "open": False,
+            "expanded": "false",
+            "dismissed": False,
+            "active": "outside",
+            "focusCount": 0,
+        }
+        assert state["afterEscape"] == {
+            "open": False,
+            "expanded": "false",
+            "dismissed": True,
+            "active": "gear",
+            "focusCount": 1,
+        }
+        assert state["afterRepeatedEscape"]["focusCount"] == 1
+        assert state["afterRepeatedEscape"]["dismissed"] is True
+        assert state["afterReenter"]["open"] is False
+        assert state["afterReenter"]["dismissed"] is False
+
+
+def test_settings_narrow_phone_reflow_hosts_shared_preferences(src: str, deployed: str) -> None:
+    """At <=360px theme/lang controls move below labels instead of obscuring them."""
+    for source in (src, deployed):
+        settings_css = source.split("  var SETTINGS_CSS = [", 1)[1].split(
+            "  ].join('');", 1
+        )[0]
+        assert "@media (max-width:360px){" in settings_css
+        assert (
+            ".settings-row:not(.settings-acct){display:grid;"
+            "grid-template-columns:18px minmax(0,1fr);column-gap:11px;"
+            "row-gap:8px;align-items:center}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct)>.sr-ctrl{grid-column:1 / -1;"
+            "width:100%;min-width:0}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .set-theme-seg{width:100%;"
+            "box-sizing:border-box;min-width:0}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .set-seg-btn{flex:1 1 0;"
+            "min-width:40px;padding-left:6px;padding-right:6px}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .lang-toggle{width:100%;"
+            "box-sizing:border-box}"
+        ) in settings_css
+        assert (
+            ".settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;"
+            "min-width:0}"
+        ) in settings_css
+        narrow = settings_css.split("@media (max-width:360px){", 1)[1].split(
+            "'}',", 1
+        )[0]
+        assert ".settings-acct .sa-btns" not in narrow
+        assert ".settings-acct-in" not in narrow
