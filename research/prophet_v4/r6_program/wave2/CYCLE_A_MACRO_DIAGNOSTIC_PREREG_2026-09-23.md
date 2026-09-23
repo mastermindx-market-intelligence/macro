@@ -88,4 +88,22 @@ The run must materialize each transformed value only from those initial-release 
 
 ## EVIDENCE
 
+- Skeleton-first execution: created this file, committed its headings with `STATUS: IN_PROGRESS`, and pushed commit `d9a9a5b172` before substantive work.
+- 2026-09-23: `git fetch origin refs/pull/7845/head:refs/remotes/pr/7845` — `* [new ref] refs/pull/7845/head -> pr/7845`.
+- 2026-09-23: `git fetch origin refs/pull/7842/head:refs/remotes/pr/7842` — `* [new ref] refs/pull/7842/head -> pr/7842`.
+- 2026-09-23: `git show pr/7845:.../R6-B16-01a_ERA_RATIFICATION_2026-09-23.md` — §2 ratified `2002-12 → 2025-05-15`; §3 admitted a macro-only, internal-only, retrospective diagnostic and excluded pilots, public use, and B18 release.
+- 2026-09-23: `git show pr/7842:.../R6-B16-01_ADMISSION_2026-09-23.md` — §1 adjudicated independent mechanisms and §3 opened only the macro-only path after rule-4 treatment.
+- 2026-09-23: `git show origin/main:.../R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md` — §1 rules 1–5 were read verbatim, including missing-row blocking, macro-only clauses, definition handling, and internal-only rights.
+- 2026-09-23: `git show pr/7842:.../D03_SOURCE_READINESS_MATRIX_2026-09-23.md` — §2 recorded `NEWORDER` first realtime `1997-03-26` / 354 months, `ISRATIO` `1997-04-15` / 354, `INDPRO` `1997-01-17` / 357, and no missing vintage months.
+- 2026-09-23: `git show pr/7845:.../CYCLE_A_ERA_TREATMENT_RECORD_2026-09-23.md` — publication-clock breaks supplied the two excluded eras and the `INDPRO` 2002-12 / 2025-11-24 boundaries; `AWHMAN` remained UNKNOWN.
+- 2026-09-23: `git show origin/main:research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md` — FRED/ALFRED posture: internal-only, model use absent.
+- 2026-09-23: `git show origin/main:data/fred_vintage/vintages.parquet` into a temporary worktree file, then pandas `read_parquet` printed schema and counts only: series strings; `period` and `realtime_start` timestamps; `AWHMAN` 357 rows, first `1997-01-10`; `INDPRO` 357, first `1997-01-17`; `ISRATIO` 354, first `1997-04-15`; `NEWORDER` 354, first `1997-03-26`. A separate three-row-per-series preview confirmed initial rows are keyed by minimum `realtime_start` and selected the 3-month transformation.
+- 2026-09-23: `git show origin/main:config/dataset_registry.yml` — grain `(series, period, realtime_start)` and `realtime_start` publication-clock semantics; `git show origin/main:research/prophet_v4/B4_ENTRY_POLICY_CALIBRATION_PREREG_2026-09-23.md` supplied the mirrored gate/endpoint format.
+
 ## GAPS + MUST-NOTS REFUSED
+
+- No hypothesis result, transformed value, episode, endpoint, confidence interval, or test statistic was computed in this preregistration lane.
+- No return, outcome, ledger, scoreboard or trial artifact was opened. No price artifact was opened, and the work contracted above never uses one.
+- No `data/` file was written or modified; the tracked parquet was only read from `origin/main`. No latest-revised fallback, interpolation, modeled lag, or inferred vintage row was used.
+- No issuer, sector, membership, failed-issuer universe, public surface, production DDL, credential, or credential-bearing path was accessed or created. This lane does not reopen B16, unblock B18, select a trade, or resolve FRED rights.
+- Gaps left for the later run: select initial rows with the required query, evaluate availability/blocking, allocate distinct episodes, compute H1 and the two registered falsifiers, and write the result receipt. The current `AWHMAN` break-history UNKNOWN remains a diagnostic-only limitation.
