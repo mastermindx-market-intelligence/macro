@@ -151,8 +151,12 @@ def main(argv: list[str] | None = None) -> int:
             added, accrual_state = accrue()
         payload = emit(accrual_state=accrual_state) if do_emit else None
         if payload is not None:
-            log.info("options_skew: accrued %d rows, emitted %d names (scored=%s, %s)",
-                     added, payload["n"], payload["scored"], payload["gate_status"])
+            # A-F03-W2-4c · the source_windows count surfaces the source break
+            # in the lane's summary log so an operator skimming build_options_skew
+            # output can tell at a glance whether this run mixed vendors.
+            log.info("options_skew: accrued %d rows, emitted %d names (scored=%s, %s, windows=%d)",
+                     added, payload["n"], payload["scored"], payload["gate_status"],
+                     len(payload.get("source_windows") or []))
         elif do_accrue:
             log.info("options_skew: accrued %d rows (emit skipped)", added)
         return 0

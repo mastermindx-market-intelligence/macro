@@ -453,6 +453,84 @@ def _is_weekend_iso(value: str) -> bool:
         return False
 
 
+def source_windows(df) -> list[dict]:
+    """Ascending list of maximal contiguous runs of one source across session days.
+
+    A-F03-W2-4c: the skew ledger now mixes sources BY DATE — ThetaData for the
+    pre-backfill history (2026-06-22..2026-08-13), the legacy Polygon feed for
+    the backfill gap (2026-08-14..2026-09-19), and ThetaData again from the
+    launchd accrual onward (2026-09-22+).  This helper is the producer-side
+    fact that lets the consumer render one plain-language sentence about the
+    break without re-deriving it.
+
+    Session-only dates: weekend as-of rows never count (the W2-4b emit path
+    drops them via `_is_weekend_iso` before picking the latest session — the
+    helper mirrors that exclusion so a Saturday-only ledger stays empty rather
+    than fabricating a Saturday window).
+
+    PURE (no I/O, no clock); empty/invalid input returns [].
+    """
+    if df is None or getattr(df, "empty", True):
+        return []
+    try:
+        import pandas as pd
+    except Exception:  # noqa: BLE001
+        return []
+    if "date" not in df.columns:
+        return []
+    work = df.copy()
+    if "source" not in work.columns:
+        work["source"] = _SOURCE_POLYGON
+    else:
+        work["source"] = work["source"].map(_source_of)
+    work["date"] = work["date"].map(_iso_date)
+    work = work[work["date"].astype(str).str.len() > 0]
+    if work.empty:
+        return []
+    weekend = work["date"].map(_is_weekend_iso)
+    if bool((~weekend).any()):
+        work = work.loc[~weekend]
+    else:
+        # only weekend rows — by the W2-4b rule, a ledger with no weekday dates
+        # has no session to count; keep that honest and return [].
+        return []
+    by_date = (
+        work.groupby("date")["source"]
+        .agg(lambda s: s.iloc[0] if s.nunique() == 1 else
+             # mixed sources on a single date are not a real window — drop the
+             # date entirely rather than picking the row-majority winner.
+             None)
+        .dropna()
+        .sort_index()
+    )
+    if by_date.empty:
+        return []
+    out: list[dict] = []
+    current_source = None
+    current_dates: list[str] = []
+    for stamp, src in by_date.items():
+        if src == current_source:
+            current_dates.append(str(stamp))
+            continue
+        if current_source is not None and current_dates:
+            out.append({
+                "source": current_source,
+                "first_date": current_dates[0],
+                "last_date": current_dates[-1],
+                "n_dates": len(current_dates),
+            })
+        current_source = src
+        current_dates = [str(stamp)]
+    if current_source is not None and current_dates:
+        out.append({
+            "source": current_source,
+            "first_date": current_dates[0],
+            "last_date": current_dates[-1],
+            "n_dates": len(current_dates),
+        })
+    return out
+
+
 def _chain_asof_dates(chain) -> set[str]:
     """Distinct YYYY-MM-DD stamps on a chain frame. Empty when the column is absent."""
     if chain is None or "asof" not in getattr(chain, "columns", []):
@@ -593,6 +671,10 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     stale_days = None
     n_weekend_rows_excluded = 0
     history_sources: list[str] = []
+    # A-F03-W2-4c defaults — overwritten below when the ledger has any session rows.
+    windows: list[dict] = []
+    history_dates = 0
+    source_break = False
     if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
         norm = _normalize_ledger(hist)
         history_sources = sorted({
@@ -628,6 +710,14 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
                 stale_days = (today - date.fromisoformat(ledger_asof)).days
             except ValueError:
                 stale_days = None
+        # A-F03-W2-4c: report which source each session came from and whether the
+        # history crosses a source boundary — the consumer renders this verbatim on
+        # options.html as a one-sentence footnote.  Reuses the session-only `norm`
+        # frame above (weekends already excluded) so the windows match the names
+        # the panel prints.
+        history_dates = int(norm["date"].nunique())
+        windows = source_windows(norm)
+        source_break = bool(len(windows) > 1)
     if not names:
         source_state = "empty_ledger"
     elif stale_days is not None and stale_days > _STALE_DAYS:
@@ -660,6 +750,13 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         "accrual_state": accrual_state,
         "n_weekend_rows_excluded": n_weekend_rows_excluded,
         "history_sources": history_sources,
+        # A-F03-W2-4c — additive keys the consumer reads to render one sentence
+        # about the source break on the Directional read panel.  Schema string
+        # unchanged; downstream consumers that pre-date the packet see None for
+        # source_break (None is not the truthy check) and stay silent.
+        "source_windows": windows,
+        "source_break": source_break,
+        "history_dates": history_dates,
     }
 
 

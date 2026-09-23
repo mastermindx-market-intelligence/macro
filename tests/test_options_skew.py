@@ -630,3 +630,104 @@ def test_no_live_skew_caller_pins_the_legacy_chain_and_every_caller_emits():
     assert found[".github/workflows/render.yml"] >= 2
     assert found["scripts/ci/daily_engine_regional_desk_builders.sh"] == 1
     assert found[".github/workflows/closing-bell.yml"] == 1
+
+
+# --------------------------------------------------------------------------- #
+# A-F03-W2-4c — source_windows + additive emit payload keys
+# --------------------------------------------------------------------------- #
+def _mixed_source_ledger():
+    """Three-window fixture mirroring the live backfill receipt:
+    2026-06-22..2026-08-13 thetadata, 2026-08-14..2026-09-18 polygon_gex
+    (legacy gap, never backfilled), 2026-09-22..2026-09-23 thetadata launchd.
+    Every date is a weekday — a Saturday in this window would be excluded by
+    the W2-4b rule the helper mirrors."""
+    rows = []
+    # window 1 — ThetaData
+    rows += [_ledger_row("AAA", "2026-06-22", 0.10, source="thetadata")]
+    rows += [_ledger_row("AAA", "2026-06-23", 0.10, source="thetadata")]
+    rows += [_ledger_row("AAA", "2026-08-13", 0.10, source="thetadata")]
+    # window 2 — legacy polygon gap
+    rows += [_ledger_row("AAA", "2026-08-14", 0.10, source="polygon_gex")]
+    rows += [_ledger_row("AAA", "2026-09-18", 0.10, source="polygon_gex")]
+    # window 3 — ThetaData launchd
+    rows += [_ledger_row("AAA", "2026-09-22", 0.10, source="thetadata")]
+    rows += [_ledger_row("AAA", "2026-09-23", 0.10, source="thetadata")]
+    return pd.DataFrame(rows)
+
+
+def test_source_windows_returns_three_contiguous_runs_in_order():
+    """(a) mixed synthetic ledger → three windows in ascending order, exact bounds."""
+    windows = S.source_windows(_mixed_source_ledger())
+    assert [w["source"] for w in windows] == [
+        "thetadata", "polygon_gex", "thetadata",
+    ]
+    assert windows[0]["first_date"] == "2026-06-22"
+    assert windows[0]["last_date"] == "2026-08-13"
+    assert windows[0]["n_dates"] == 3
+    assert windows[1]["first_date"] == "2026-08-14"
+    assert windows[1]["last_date"] == "2026-09-18"
+    assert windows[1]["n_dates"] == 2
+    assert windows[2]["first_date"] == "2026-09-22"
+    assert windows[2]["last_date"] == "2026-09-23"
+    assert windows[2]["n_dates"] == 2
+
+
+def test_source_windows_treats_missing_column_as_polygon():
+    """(b) missing `source` column → one polygon_gex window covering every session."""
+    rows = [
+        _ledger_row("AAA", "2026-06-22", 0.10),  # source=None → polygon_gex
+        _ledger_row("AAA", "2026-06-23", 0.10),
+        _ledger_row("AAA", "2026-06-24", 0.10),
+    ]
+    df = pd.DataFrame(rows)
+    assert "source" not in df.columns
+    windows = S.source_windows(df)
+    assert windows == [
+        {
+            "source": "polygon_gex",
+            "first_date": "2026-06-22",
+            "last_date": "2026-06-24",
+            "n_dates": 3,
+        }
+    ]
+
+
+def test_source_windows_excludes_weekend_rows():
+    """(c) weekend-dated rows never count, even when the rest of the ledger is
+    a single weekday date."""
+    rows = [
+        _ledger_row("AAA", "2026-06-20", 0.10, source="polygon_gex"),  # Saturday
+        _ledger_row("AAA", "2026-06-21", 0.10, source="polygon_gex"),  # Sunday
+        _ledger_row("AAA", "2026-06-22", 0.10, source="thetadata"),    # Monday
+        _ledger_row("AAA", "2026-06-27", 0.10, source="thetadata"),    # Saturday
+    ]
+    windows = S.source_windows(pd.DataFrame(rows))
+    assert windows == [{
+        "source": "thetadata",
+        "first_date": "2026-06-22",
+        "last_date": "2026-06-22",
+        "n_dates": 1,
+    }]
+
+
+def test_emit_payload_carries_source_windows_and_history_dates(tmp_path, monkeypatch):
+    """(d) emit() payload carries source_windows, source_break, history_dates."""
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    pd.DataFrame(_mixed_source_ledger()).to_parquet(ledger)
+    payload = S.emit_from_ledger(today=date(2026, 9, 23), accrual_state="ledger_only")
+    assert payload["source_break"] is True
+    assert payload["history_dates"] == 7
+    sources_in_windows = [w["source"] for w in payload["source_windows"]]
+    assert sources_in_windows == ["thetadata", "polygon_gex", "thetadata"]
+    # Schema string unchanged — additive keys only.
+    assert payload["schema"] == "options_skew.v1"
+    # Quiet ledger → source_break False and zero windows.
+    quiet = pd.DataFrame([_ledger_row("AAA", "2026-06-22", 0.10, source="thetadata")])
+    quiet.to_parquet(ledger)
+    quiet_payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert quiet_payload["source_break"] is False
+    assert quiet_payload["history_dates"] == 1
+    assert len(quiet_payload["source_windows"]) == 1
+    assert quiet_payload["source_windows"][0]["source"] == "thetadata"

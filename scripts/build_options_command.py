@@ -198,6 +198,110 @@ def load_payoff_lab(root: Path) -> dict | None:
     return _load(root / "site" / "options_payoff_lab" / "latest.json")
 
 
+def load_skew_source(root: Path) -> dict | None:
+    """Fail-soft loader for the skew source-break artifact.
+
+    Written by scripts/build_options_skew --emit (engine/options_skew.py
+    emit_from_ledger; schema options_skew.v1; A-F03-W2-4c adds the additive
+    `source_windows`, `source_break`, and `history_dates` keys). Absent or
+    corrupt -> None; the consumer stays silent when there is no break (the
+    Directional read panel already covers skew through its own rows).  Same
+    DELIBERATELY SEPARATE loader pattern as load_intel_brief / load_payoff_lab
+    above — load_stores() is pinned BYTE-FOR-BYTE by
+    tests/test_render_options_workspace_scope.py and this packet's scope
+    excludes touching it."""
+    return _load(root / "site" / "options_skew" / "latest.json")
+
+
+_SKEW_NOTE_EN = (
+    "Put-skew history comes from two sources: ThetaData end-of-day option "
+    "chains for {theta_ranges}, and the earlier Polygon feed for "
+    "{polygon_ranges}. A skew change that crosses one of those boundaries "
+    "is not like-for-like."
+)
+_SKEW_NOTE_ZH = (
+    "认沽偏度历史来自两个来源：{theta_ranges}使用 ThetaData 日终期权链，"
+    "{polygon_ranges}使用较早的 Polygon 数据。跨越这些边界的偏度变化不可直接比较。"
+)
+_SKEW_MONTH_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def _skew_source_format_ranges(windows, locale: str) -> str:
+    """Render the same-source windows of one source as "22 Jun 2026" (EN) or
+    "2026年6月22日" (ZH).  A single-window pair becomes "22 Jun 2026–13 Aug
+    2026" / "2026年6月22日–2026年8月13日"; multiple ranges joined with
+    " and " / "和".  The year stays on BOTH ends of every range so a reader
+    never has to guess the second calendar year."""
+    from datetime import date as _date
+    out: list[str] = []
+    for window in windows:
+        if not isinstance(window, dict):
+            continue
+        first = str(window.get("first_date") or "")[:10]
+        last = str(window.get("last_date") or "")[:10]
+        if not first:
+            continue
+        try:
+            first_d = _date.fromisoformat(first)
+        except ValueError:
+            continue
+        last_d = None
+        if last and last != first:
+            try:
+                last_d = _date.fromisoformat(last)
+            except ValueError:
+                last_d = None
+        if locale == "zh":
+            range_text = f"{first_d.year}年{first_d.month}月{first_d.day}日"
+            if last_d is not None:
+                range_text = f"{range_text}–{last_d.year}年{last_d.month}月{last_d.day}日"
+        else:
+            mon_first = _SKEW_MONTH_EN[first_d.month - 1]
+            range_text = f"{first_d.day} {mon_first} {first_d.year}"
+            if last_d is not None:
+                mon_last = _SKEW_MONTH_EN[last_d.month - 1]
+                range_text = f"{range_text}–{last_d.day} {mon_last} {last_d.year}"
+        out.append(range_text)
+    joiner = "和" if locale == "zh" else " and "
+    return joiner.join(out) if out else ""
+
+
+def skew_source_note(payload) -> tuple[str, str] | None:
+    """One plain-language sentence about the source boundary in skew history.
+
+    Returns (en, zh) ONLY when `source_break` is truthy AND at least one
+    window of EACH source (thetadata + polygon_gex) exists. Otherwise None —
+    no sentence when there is no break, because the Directional read panel
+    already explains the skew leg on its own cards.
+
+    The vendor names "ThetaData" and "Polygon" are allowed (F03 doctrine:
+    plain words, vendor names are fine; only internal slugs are banned). The
+    source *slugs* `thetadata` / `polygon_gex` MUST NEVER reach the page
+    (tests/test_options_skew_source_note.py::test_no_source_slug_leaks_into_page
+    pins this)."""
+    if not isinstance(payload, dict):
+        return None
+    if not payload.get("source_break"):
+        return None
+    windows = payload.get("source_windows")
+    if not isinstance(windows, list):
+        return None
+    theta_windows = [w for w in windows if isinstance(w, dict) and w.get("source") == "thetadata"]
+    polygon_windows = [w for w in windows if isinstance(w, dict) and w.get("source") == "polygon_gex"]
+    if not theta_windows or not polygon_windows:
+        return None
+    theta_en = _skew_source_format_ranges(theta_windows, "en")
+    polygon_en = _skew_source_format_ranges(polygon_windows, "en")
+    theta_zh = _skew_source_format_ranges(theta_windows, "zh")
+    polygon_zh = _skew_source_format_ranges(polygon_windows, "zh")
+    if not (theta_en and polygon_en and theta_zh and polygon_zh):
+        return None
+    en = _SKEW_NOTE_EN.format(theta_ranges=theta_en, polygon_ranges=polygon_en)
+    zh = _SKEW_NOTE_ZH.format(theta_ranges=theta_zh, polygon_ranges=polygon_zh)
+    return en, zh
+
+
 _AIB_STATE_SLUG = {"LONG": "up", "SHORT": "down", "VOLATILITY": "vol", "RISK_ONLY": "risk"}
 
 _AIB_BAND_EN = {"tentative": "Tentative", "moderate": "Moderate", "firm": "Firm"}
@@ -2018,7 +2122,8 @@ def _missing_stores(stores: dict) -> list[str]:
 
 
 def build_context(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
-                  payoff_lab: dict | None = None, *, now: datetime | None = None) -> dict:
+                  payoff_lab: dict | None = None, skew_source: dict | None = None,
+                  *, now: datetime | None = None) -> dict:
     """Assemble the whole workspace context from the committed stores.
 
     `intel_brief` is the AD-1 board's OWN artifact (site/options_intel_brief.json),
@@ -2032,6 +2137,13 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
     renders its honest empty state when the payload is absent.  See
     load_payoff_lab() above for the loader and build_payoff_lab() for the
     pass-through adapter.
+
+    `skew_source` is the F03-W2-4c skew source-break artifact
+    (site/options_skew/latest.json).  Optional and additive — every caller
+    that never passes it gets None for the new `skew_source_note_en/zh`
+    context keys and the template branch silently emits no note.  See
+    load_skew_source() above for the loader and skew_source_note() for the
+    plain-language sentence builder.
     """
     stores = load_stores(root) if stores is None else stores
 
@@ -2053,6 +2165,12 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
     leaders = stores.get("leaders") if isinstance(stores.get("leaders"), dict) else {}
     n_boards = sum(1 for k in ("board_a", "board_b") if leaders.get(k))
 
+    # F03-W2-4c — one plain-language sentence about the source break; None
+    # when the ledger is single-source, absent, or hasn't been parsed.
+    skew_note_pair = skew_source_note(skew_source)
+    skew_source_note_en = skew_note_pair[0] if skew_note_pair else None
+    skew_source_note_zh = skew_note_pair[1] if skew_note_pair else None
+
     return {
         "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "session": session,
@@ -2070,6 +2188,12 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
         # through — see build_payoff_lab() above; an empty/absent payload
         # renders {} and the fold's Jinja guard `{% if lab %}` short-circuits.
         "payoff_lab": build_payoff_lab(payoff_lab, stores),
+        # F03-W2-4c · skew source-break note (Directional read foot).  Two
+        # parallel string keys so the template can render `t(en, zh)` without
+        # one conditional on the other.  Both are None when there is no break
+        # and the template's `{% if skew_source_note_en %}` short-circuits.
+        "skew_source_note_en": skew_source_note_en,
+        "skew_source_note_zh": skew_source_note_zh,
         # Evidence-capture only: when capture_page_evidence.py needs the SPY
         # fold open in the screenshot, the build is invoked with
         # OEW_PAYOFF_LAB_FORCE_OPEN=1 (a build-time env, never a user-facing
@@ -2148,9 +2272,10 @@ def _sector_zh_json(stores: dict) -> str:
 
 
 def render(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
-           payoff_lab: dict | None = None, *, now: datetime | None = None) -> str:
+           payoff_lab: dict | None = None, skew_source: dict | None = None,
+           *, now: datetime | None = None) -> str:
     """Render options.html.j2 and return the HTML string."""
-    ctx = build_context(root, stores, intel_brief, payoff_lab, now=now)
+    ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source, now=now)
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
@@ -2182,7 +2307,9 @@ def main(argv: list[str] | None = None) -> int:
         stores = load_stores(root)
         intel_brief = load_intel_brief(root)
         payoff_lab = load_payoff_lab(root)
-        html = render(root, stores=stores, intel_brief=intel_brief, payoff_lab=payoff_lab)
+        skew_source = load_skew_source(root)
+        html = render(root, stores=stores, intel_brief=intel_brief,
+                      payoff_lab=payoff_lab, skew_source=skew_source)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         # write_page is the ONLY write path. The fail-soft law above covers a
@@ -2193,7 +2320,7 @@ def main(argv: list[str] | None = None) -> int:
         from lib.pages import write_page  # noqa: PLC0415
         write_page(out_path, html)
 
-        ctx = build_context(root, stores, intel_brief, payoff_lab)
+        ctx = build_context(root, stores, intel_brief, payoff_lab, skew_source)
         sess = ctx["session"]
         log.info(
             "options workspace -> %s | session=%s coverage=%s/%s (%s%%) quality=%s missing=%s aib=%s",
