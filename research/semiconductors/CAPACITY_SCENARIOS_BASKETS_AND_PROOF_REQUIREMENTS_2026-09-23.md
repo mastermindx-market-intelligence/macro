@@ -113,39 +113,39 @@ Wolfspeed's reported application momentum coexists with negative margins and a f
 
 ## 6. Ten falsifiable research cards
 
-Each card is an analytical proposal; none is a validated forecast or proven shortage.
+The IDs below align with the verified structured companion. Each card is an analytical proposal; none is a validated forecast or proven shortage.
 
-| ID | Mechanism | Necessary evidence | Alternative / falsifier |
+| ID | Question and basket | Mechanism and necessary evidence | Alternative / falsifier |
 |---|---|---|---|
-| HQ01 | Larger wafers improve useful cost economics | Compatible good-die output, recipe cost, mix and loading | Yield/ramp loss dominates; controlled good-unit cost fails to improve. |
-| HQ02 | Added supply eases the actual bottleneck | Customer-approved configuration, allocation, lead time and output | New capacity serves another application; relevant lead times do not improve. |
-| HQ03 | Capacity relief moves the binding constraint downstream | Compatible production path and successive stage observations | Upstream growth leaves finished output unchanged; verify package/test/allocation bottleneck. |
-| HQ04 | Specialty-foundry results reflect productive recovery | Comparable output, pricing, mix, cost and operating-income series | Replenishment or non-operating effects dominate; recurring operating trend does not confirm. |
-| HQ05 | Optical equipment orders convert into useful earnings | Order mix, deliveries/acceptance, price, margin and advances | Deferral, cancellation or funding changes explain cash; order growth fails to convert. |
-| HQ06 | Diversified sites provide an alternative production path | Physical sites, qualification, customer binding and upstream suppliers | Different flags share a critical dependency or unqualified site; no validated alternative. |
-| HQ07 | GaN architecture expands captured value | Product/application qualification, net content and selling economics | Price competition or displaced discrete content offsets expansion. |
-| HQ08 | Ramp financing creates durable operating capacity | Funding, actual ramp, usable output, margin and cash bridge | Advances or accounting transfers appear stronger than recurring operations. |
-| HQ09 | A reported platform milestone broadens customer access | Named stage, product scope, access and shipment evidence | One-customer result is not a general launch; access remains narrower than headline. |
-| HQ10 | Customer/software disclosure establishes an economic relationship | Exact counterparty, asset/contract scope, reporting period | Missing SKU/recognition terms prevent royalty or revenue-purity inference. |
+| HQ01 | Bigger wafers help only through usable economics / RB02 | Larger area must become economically useful good units; compare die counts, recipe cost, die size and ramp loading. | Yield/ramp loss dominates; controlled good-unit cost fails to improve. |
+| HQ02 | New supply eases the relevant bottleneck / RB01 | Customer-approved configuration, allocation, lead time and actual output support usable alternatives. | Another voltage/package/customer gets the capacity; relevant lead times do not improve. |
+| HQ03 | Foundry recovery improves recurring margin / RB03 | Productive work improves absorption; compare output utilization, prices, inventory and operating margins. | Replenishment, finance income or definitions explain the rise; sell-through and recurring margins do not confirm. |
+| HQ04 | Optical demand converts into supplier economics / RB04 | Orders become accepted equipment deliveries and useful wafer work; inspect conversion, backlog terms and actual customer volume. | Advances or one customer explain a jump; deferral/cancellation or poor conversion weakens it. |
+| HQ05 | Geographic diversification reduces common dependence / RB05 | Second site is an eligible route; inspect qualification, transfer rights, upstream inputs and test. | Both paths share a binding dependency; loss of that dependency still blocks both. |
+| HQ06 | Integration expands the supplier value pool / RB06 | Captured value per deployed system increases; compare non-overlapping configuration content and supplier share. | Fewer externally purchased devices offset integration; net recognized content declines. |
+| HQ07 | Funded ramps become self-supporting / RB07 | Funding transitions to recurring profitable output; inspect advance unwind, shipments, cash and productive capital. | Funding hides start-up losses or idle capacity; cash conversion weakens as advances normalize. |
+| HQ08 | Process-control necessity creates pricing power / RB08 | Difficult qualified steps produce durable economic capture; inspect competition, price, contracts and switching. | Equivalent suppliers constrain capture; price/margins fail to improve despite technical importance. |
+| HQ09 | A target has become a realized milestone / RB01 | A dated source explicitly establishes the promised event at the right configuration. | Repeated future tense, elapsed time or another product/site is mistaken for execution. |
+| HQ10 | A company label still describes marginal growth / RB04 | Current incremental orders/revenue arise from the labeled subtheme; inspect within-company mix. | An adjacent business drives the increment; update the research rationale rather than reuse the old label. |
 
 Research priority, forecasting and trade authority remain separate. A hypothesis can deserve investigation without earning an automatic stock score or portfolio position.
 
 ## 7. Ten concrete user journeys for the shared template
 
-Reuse the existing Themes entry, GMI native evidence/identity and F04 composition; no template fork. The user should move from a research question to an intelligible mechanism, inspect the source and return to the existing company workflow.
+The IDs below align with the verified structured companion. Reuse existing Themes navigation, GMI native evidence/identity and F04 composition; no template fork. The user should move from a research question to an intelligible mechanism, inspect the source and return to the existing company workflow.
 
-| Task | What must be visible | Discriminating proof |
+| ID | User question | Visible flow and discriminating proof |
 |---|---|---|
-| UJ01 What changed in SiC supply? | Plan vintages, ST reported start and remaining output/qualification limits | Correctly distinguishes reported ramp from full capacity. |
-| UJ02 Can another supplier replace this part? | Function/voltage/package/process/site and approval comparison | Similar labels cannot produce a blanket yes. |
-| UJ03 Does a larger wafer improve margin? | Supported inputs or clearly hypothetical scenario and offsets | Unknown yield prevents a numeric issuer claim, not the entire research view. |
-| UJ04 Why did foundry utilization change? | Native numerator, denominator, units, period and methodology | No shipment-to-output substitution or 100% clamp. |
-| UJ05 What caused equipment order growth? | Product/application order mix, conversion and cash bridge | Does not assign optical acceleration to every power-electronics theme. |
-| UJ06 What does this factory actually do? | Fabrication/packaging/test role, stage and site ownership | Co-located unlike outputs cannot be summed. |
-| UJ07 How geographically diverse is this supply path? | Physical sites and known common upstream dependencies | No headquarters proxy or invented independent-risk probability. |
-| UJ08 Which shareholders capture the results? | Business perimeter, consolidation and parent/NCI reconciliation | Does not confuse physical output with parent-attributable profit. |
-| UJ09 What was knowable on a historical date? | Source publication and event clocks, revisions and time uncertainty | Later evidence excluded from earlier knowledge. |
-| UJ10 Why is this business in the research basket? | Source-backed role, mechanism, counterargument, missing evidence and native company link | Research relevance neither invents a security nor changes trade policy. |
+| UJ01 | What changed in SiC supply? | Show dated plans, the ST reported start and remaining limits; distinguish realized start from full-run-rate output. CP03/CP17. |
+| UJ02 | Can another supplier replace this component? | Compare function, material/process, voltage, package, site and approval; similar labels cannot establish compatibility. CP10/CP12/CP16. |
+| UJ03 | Why did this equipment company grow? | Explain the issuer-reported order driver and cash-quality bridge; do not relabel optical acceleration as power recovery. CP20. |
+| UJ04 | Is this capacity number comparable? | Expose units, diameter conversion, period, output/shipments and denominator; reproduce only compatible normalizations. CP05/CP06/CP18. |
+| UJ05 | Does this new campus ease HBM supply? | Separate co-located NAND wafer and HBM package projects; cleanroom area is not stack output. CP15. |
+| UJ06 | Who earns from this factory? | Separate physical site, legal owner, consolidation and minority economics; one factory is one physical node. CP08/CP17/CP20. |
+| UJ07 | What did we know at an earlier date? | Preserve source availability and business applicability separately; never backfill a later report or auto-promote elapsed targets. CP03/CP11. |
+| UJ08 | Is bigger-wafer production cheaper? | Expose yield/cost/load assumptions and missing actual inputs; synthetic arithmetic cannot become observed fab economics. CP06/CP09. |
+| UJ09 | Is exposure material to shareholders? | Show available denominators and limitations; chip counts, order mix and revenue shares stay separate. CP13/CP14/CP20. |
+| UJ10 | What would overturn this thesis? | Pair mechanisms with the next discriminating observation and alternative; useful synthesis must accompany source links. CP01/CP03/CP19. |
 
 The first sentence should answer what changed and why it matters. Evidence supports that synthesis; an evidence drawer alone is not the product. The map needs a synchronized accessible table and distinct physical, commercial and ownership views. Unknown quantities use unweighted links, not invented flow widths.
 
@@ -217,7 +217,7 @@ Portable expanded dossier SHA-256: `a475dfac319b90ef2af775db5f3c15d50d1cf429f3bf
 Diagnostic result SHA-256: `5ac85b931717e6498cd4ff34fb14a93e8973fea68c36b17402b2bb598d56df87`.
 The portable dossier is separately rendered editorial content, not represented as a byte-identical canonical download.
 
-Self-review clarified customer funding versus formal cash-flow classification. The wording edit exposed a local Python quoting error; its exact line was diagnosed and corrected before complete rerun and clean-directory reproduction. No source value or uncertainty was weakened.
+Self-review clarified customer funding versus formal cash-flow classification. A wording edit exposed a local Python quoting error; its exact line was diagnosed and corrected before complete rerun and clean-directory reproduction. A later canonical-versus-companion review caught mismatched HQ/UJ row ordering in the first committed synthesis. This revision aligns the ten hypothesis IDs and ten task IDs to the verified companion without changing source observations, arithmetic or the companion hashes. No source value or uncertainty was weakened. This editorial correction is not a production test pass.
 
 Open research: current SMIC primary capacity; compatible qualified output/allocation/yield/price series; material remaining competitor and source gaps; business-model-specific recurring economics; point-in-time expectations and independent challenge of high-impact hypotheses. Hua Hong and ST operation-start gaps are narrowed as stated, not left falsely unresolved. Mirrors, earlier excerpt-only records, native issuer bindings, retention and private publication remain explicit gates.
 
