@@ -1405,9 +1405,16 @@ def _normalize_evidence_refs(value: object) -> list[str]:
         except (TypeError, ValueError):
             return [value] if value.strip() else []
         value = parsed
+    to_list = getattr(value, "tolist", None)
+    if callable(to_list):
+        value = to_list()
     if isinstance(value, (list, tuple)):
-        return [str(x) for x in value]
-    return [str(value)]
+        out: list[str] = []
+        for item in value:
+            out.extend(_normalize_evidence_refs(item))
+        return out
+    text = str(value).strip()
+    return [text] if text else []
 
 
 def supersede_ths_membership_doc_edges(

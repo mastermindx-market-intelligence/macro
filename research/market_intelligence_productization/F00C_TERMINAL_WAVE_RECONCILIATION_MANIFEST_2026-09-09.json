@@ -649,5 +649,130 @@
       "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_2026-09-19_held_for_sol.json (31 cells)"
     },
     "rows_note": "W6/W7 + heal merges of 2026-09-19 recorded on the 8 written rows - exactly the PRs named in the 13 appended cells: macro #7110 #7122 #7125 #7126 #7132 #7134 #7362 #7425 and terminal #648; every BUILT_NOT_PROVEN row stays unproven until a signed-in readback; MO-PAID-047 was already BUILT_NOT_PROVEN on main and only gains the terminal#648 note (corrected after Grok h_rec4_rv1 minor 1: the earlier note over-listed PRs that this pass did not write)"
+  },
+  "seat_records_pass_2026_09_20_c": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Fable 5.1)",
+    "ledger_sha_source": "origin/main at e338508d (macro #7451 merge, 2026-09-20T00:40:06Z) = ledger blob 70505eaa (last ledger commit 5b4bbbc9 = #7447 records pass)",
+    "single_writer_note": "append-only in-cell notes on 3 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell; tests/test_mo_b_ledger_reconciliation_2026_09_18.py untouched and green (5 passed); commits 99acab58 (ledger) + 6e5523c8 (this manifest block) + 8baae5bc (#7132 source head corrected to its merge commit e1e8de31 after Grok h_rec5_rv1 MAJOR 1) form one records PR (#7465)",
+    "rows_written": [
+      "MO-DELTA-021",
+      "MO-PAID-059",
+      "MO-PAID-078"
+    ],
+    "held_for_sol": {
+      "why": "same freeze as the _b block: #7390 pins capability_state_c2 for the 80 union rows and byte-freezes the other 50; the 31 cells held out of #7447 are replayed verbatim by this pass's applier and held again, plus 2 new held cells (MO-PAID-062 adjudication_notes: #7127 headroom-panel evidence; MO-DELTA-018 adjudication_notes: W8-1 note on an outside-50 row) - the seat does not edit Sol's pins; Sol re-pins or authorises a follow-up records PR that updates the test constants (SOL_UNHOLD=1 path in the staged applier)",
+      "rows": {
+        "MO-PAID-008": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-032": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "missing_contract_or_proof",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-022": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-026": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-017": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-DELTA-018": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "next_bounded_child",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-062": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-DELTA-038": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": []
+        },
+        "MO-PAID-056": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-052": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-041": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-PAID-055": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "real_consumer",
+            "missing_contract_or_proof"
+          ]
+        },
+        "MO-PAID-011": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-031": {
+          "proposed_state": null,
+          "cells": [
+            "adjudication_notes"
+          ]
+        }
+      },
+      "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_rec3_held_for_sol.json (33 row/cell pairs; proposed states unchanged from the _b block)"
+    },
+    "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 e1e8de31 (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
+  },
+  "seat_records_pass_2026_09_20_d": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Opus 5)",
+    "ledger_sha_source": "origin/main at 07550eee (2026-09-20) = ledger blob ebe00922 (unchanged since the #7465 records pass)",
+    "single_writer_note": "FREEZE-LAWFUL append-only pass. Exactly 4 cells on 2 rows already inside Sol's 80-row union; only next_bounded_child and adjudication_notes are written; capability_state_c2 and granular_disposition are never assigned, so macro#7390's test_all_80_integration_rows_pin_disposition_and_capability holds by construction; no OUTSIDE-50 row is touched, so test_other_50_rows_are_byte_identical_to_integration_baseline keeps digest b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d; neither row is in the 33-pair held-for-Sol set and neither carries a textual assertion in test_sol_adjudicated_closure_fields_are_not_stale. All four checks were replicated locally against the applied file with pristine origin/main as the positive control.",
+    "why": "Both rows' next_bounded_child contradicted their own real_producer cell on main. MO-DELTA-021 said the headroom child was 'not on HEAD' while engine/covenant_headroom.py is on main; MO-PAID-059 said the XBRL debt-maturity producer had to be built first while that producer plus engine/cash_runway.py are on main.",
+    "rows_written": [
+      "MO-DELTA-021",
+      "MO-PAID-059"
+    ],
+    "source_heads": {
+      "macro#7127": "52ecfd96 (covenant headroom view-model + cs-covenant-room panel)",
+      "macro#7451": "e338508d (W8-1 cash runway engine + ticker block)",
+      "macro#7472": "efa374ea (seven direct _resolve_cash_runway branch tests)"
+    },
+    "open_blockers_named_not_claimed": {
+      "render_lane": "macro#7163 and macro#7215 both OPEN. This is now the ONLY gate on MO-PAID-059's page half; the data half is on main as of 9f49dec1. No promotion is proposed here - any capability_state_c2 move is Sol's.",
+      "debt_maturity_cache": "RESOLVED during this pass's review. Drip run 35498174229 completed success at 2026-09-20T09:39:10Z and its persist step wrote the cache to main as commit 9f49dec1 (09:38:48Z, 201 files). As of 9f49dec1, data/debt_maturity/cache holds 200 CIK*.json files against data/regime = 36 as the positive control, and 32 of the first 40 carry all three cash-runway tags, so engine/cash_runway.py can resolve real issuers. Before 9f49dec1 it had never landed: persist reached main only at the macro#7121 merge cc32ad62 (2026-09-19T10:02:14Z) while the 09-19 run 35429631272 started 07:33:04Z from main sha 9aae769b, whose checked-out workflow had no persist step."
+    },
+    "rows_note": "No state move is claimed or implied by this pass. The 33 held-for-Sol pairs remain unwritten and the unhold applier remains staged and unrun. The 12 OUTSIDE-50 rows and 7 pin conflicts that macro#7357 and macro#7358 want to edit are raised on macro#7390 for Sol's decision.",
+    "review_history": "Grok h_rec5b_rv1 at eb02ffcb: FIX_REQUIRED 0/1/1 - a false universal ('every ticker resolves not_loaded', disproved by the seat's own #7472 tests) and a merge-timing mis-framing (dated by branch commit af9d8ea2 instead of the #7121 merge). Grok h_rec5b_rv2 at 1227d294: FIX_REQUIRED 0/1/1 - the rewritten note still asserted a present-tense empty cache, which the drip's 9f49dec1 persist commit falsified three minutes before that commit was authored. Round 3 re-anchors every quantity to the immutable commit that produced it instead of to a moving branch, which is the durable fix for this class of error."
   }
 }

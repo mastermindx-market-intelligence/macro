@@ -1,6 +1,7 @@
 """scripts/drain_alert_outbox.py -- entry point for the fired-alert delivery drain.
 
     python -m scripts.drain_alert_outbox [--dry-run] [--limit N] [--now ISO8601]
+        [--fire-event-id ID]
 
 Wires ``engine.alert_delivery_drain.drain`` (pure decisions + isolated PostgREST IO)
 to ``app.mailer.send_alert`` (the only place that actually touches SMTP). Importing
@@ -38,7 +39,14 @@ def main(argv=None) -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=200)
     parser.add_argument("--now", default=None, help="ISO8601 override, for tests/ops.")
+    parser.add_argument("--fire-event-id", default=None,
+                        help="Select exactly one fired alert for a bounded canary.")
     args = parser.parse_args(argv)
+
+    if args.fire_event_id is not None and not str(args.fire_event_id).strip():
+        print("::error title=alert-drain-selector-invalid::"
+              "--fire-event-id must not be blank", flush=True)
+        return 2
 
     enabled = (os.environ.get("ALERT_DRAIN_ENABLE") or "").strip() == "1"
     dry_run = args.dry_run or not enabled
@@ -53,22 +61,43 @@ def main(argv=None) -> int:
             now_utc = now_utc.replace(tzinfo=timezone.utc)
 
     send_fn = None if dry_run else mailer.send_alert
-    result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit, dry_run=dry_run)
+    result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit,
+                             dry_run=dry_run, fire_event_id=args.fire_event_id)
 
-    if result.read_state == drain_mod.READ_UNAVAILABLE:
+    selector_failed = args.fire_event_id is not None and (
+        result.read_state == drain_mod.READ_UNAVAILABLE or result.selector_state is not None)
+    if selector_failed:
+        print("::error title=alert-drain-selector-failed::"
+              "fire_event_id %r was not uniquely and exactly selected (%s) -- "
+              "0 sends, 0 writes"
+              % (args.fire_event_id, result.selector_state or result.error_class), flush=True)
+    elif result.read_state == drain_mod.READ_UNAVAILABLE:
         print("::warning title=alert-drain-read-unavailable::"
               "alert_outbox/alert_runs not readable (%s) -- 0 sends, 0 writes"
               % result.error_class, flush=True)
 
     print("alert-drain: outcome=%s evaluated=%d fired=%d unevaluable=%d deferred=%d "
-          "suppressed=%d failed=%d category_unfiltered=%d duplicate=%d receipt_written=%s "
-          "run_id=%s"
+          "suppressed=%d failed=%d category_unfiltered=%d duplicate=%d "
+          "effect_unknown=%d in_flight=%d receipt_written=%s run_id=%s"
           % (result.outcome, result.evaluated_n, result.fired_n, result.unevaluable_n,
              result.deferred_n, result.suppressed_n, result.failed_n,
-             result.category_unfiltered_n, result.duplicate_n, result.receipt_written,
+             result.category_unfiltered_n, result.duplicate_n,
+             result.effect_unknown_n, result.in_flight_n, result.receipt_written,
              result.run_id),
           flush=True)
-    return 0
+
+    # effect_unknown rows are quarantined, never retried and never marked delivered, so
+    # nothing downstream will ever resolve them — this line plus the per-row ::warning
+    # from the drain are the ONLY places a human learns they exist. alert_runs carries
+    # no column for either counter and none is invented here (review round 3 MAJOR-3:
+    # an unproven column 400s every close_receipt PATCH and silently forces
+    # outcome='partial' on every run).
+    if result.effect_unknown_n:
+        print("::warning title=alert-drain-effect-unknown-total::"
+              "%d alert row(s) quarantined with an undetermined delivery effect -- "
+              "check the relay log before replaying any of them by hand"
+              % result.effect_unknown_n, flush=True)
+    return 2 if selector_failed else 0
 
 
 if __name__ == "__main__":
