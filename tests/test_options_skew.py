@@ -1028,9 +1028,11 @@ def test_accrue_sole_leg_exits_0_when_a_session_was_written(tmp_path, monkeypatc
     monkeypatch.setattr(
         "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
     )
-    # Empty ledger — catch_up_sessions("D2", hist) returns ["D1", "D2"]
-    # (the full backfill range), backfill_from_store writes 12 rows
-    # (6 roots × 2 dates), and main() falls through to rc 0.
+    # Empty ledger — `S.catch_up_sessions("D2", None)` returns ["D2"]
+    # (no D1 walk-back without a theta-history `have` to stop at; the
+    # helper treats a None / empty hist as "no prior sessions to walk
+    # back through" and yields the target itself). backfill_from_store
+    # writes 6 rows for D2, and main() falls through to rc 0.
     ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
     ledger.parent.mkdir(parents=True, exist_ok=True)
     assert not ledger.exists()
@@ -1048,3 +1050,80 @@ def test_accrue_sole_leg_exits_0_when_a_session_was_written(tmp_path, monkeypatc
     assert set(after["date"].astype(str)) == {_D2}
     assert set(after["underlying"].astype(str)) == set(_COMPLETE_STORE_ROOTS)
     assert len(after) == len(_COMPLETE_STORE_ROOTS)
+
+
+def test_accrue_sole_leg_returns_0_when_store_misses_complete_session(tmp_path,
+                                                                       monkeypatch):
+    """A-F03-W2-8 BLOCKER RED (2026-09-23): a zero-row backfill is not
+    enough to declare the ledger caught-up. The store must actually
+    HAVE the complete session AND the backfill must observe a byte-equal
+    no-op. This test pins the discriminator: when the manifest claims
+    S=D2 but the store greeks cover D1 only, `complete_store_session`
+    resolves S=D2, but `backfill_from_store([D2])` reports
+    `dates_not_in_store=1, dates_backfilled=0` — that is a real failure
+    surface, NOT a caught-up no-op, and the rc-3 branch must NOT fire.
+
+    RED on the round-2 head: the prior check
+    `if dates and rows_touched == 0:` fires on store-miss too, so
+    `main(["--accrue"])` returned rc 3 (and `0, "caught_up"` from
+    `accrue()`). That mis-classified a real failure as a lawful no-op,
+    and the runner's BLOCKER-2 verify step never reached — exactly the
+    confusion the W2-8 ruling forbids ("it cannot tell 'nothing to
+    accrue' from 'something to accrue and it did not land'"). FIX:
+    tighten the check to `dates_backfilled == len(dates) AND
+    rows_touched == 0` so the rc-3 surface is STRICTLY the byte-equal
+    caught-up case."""
+    _patch_dirs(monkeypatch, tmp_path)
+    # Store greeks cover D1 only — D2 is NOT in the store.
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1] for root in _COMPLETE_STORE_ROOTS},
+    })
+    # Manifest claims S=D2 with greeks_S_roots=6 (the round-2 head
+    # round-trip: the manifest value ties or beats breadth under
+    # _COMPLETE_SESSION_MIN_FRACTION × widest=0.95×6=5.7, so the
+    # resolver picks D2 via "manifest" method).
+    (store / "_manifest.json").write_text(json.dumps({
+        "daily_refresh": {"D": _D2, "S": _D2, "greeks_S_roots": 6},
+    }))
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Ledger already has D1 (lone-date "have" makes D1 complete, so
+    # catch_up_sessions(D2, hist) stops at have and returns [D2]).
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for i, root in enumerate(_COMPLETE_STORE_ROOTS):
+        seeded.append(_ledger_row(root, _D1, 0.10 + i * 0.001, source="thetadata"))
+    pd.DataFrame(seeded).to_parquet(ledger)
+    pinned = _sha256(ledger)
+
+    from scripts.build_options_skew import main
+    rc = main(["--accrue"])
+    # Failure surface: BLOCKER-2 must still abort loud in the runner.
+    # The builder's own rc here is 0 (the caught-up discriminator no
+    # longer fires on store-miss), so `main()` falls through.
+    assert rc == 0, (
+        f"store-miss is not caught-up; main must exit 0 (BLOCKER-2 "
+        f"stays intact in the runner), got rc={rc}"
+    )
+    assert rc != 3, (
+        "ACCRUE_NOOP_EXIT was fired on a store-miss — the rc-3 surface "
+        "is reserved for the byte-equal caught-up case."
+    )
+    # Ledger unchanged: backfill's no-op write under store-miss is not
+    # a caught-up no-op, but the builder still didn't write rows because
+    # the store didn't have the requested date.
+    assert _sha256(ledger) == pinned
+    # Sanity: the receipt's failure signature must surface; this proves
+    # the store-miss reached backfill_from_store (so BLOCKER-2 in the
+    # runner has something to refuse).
+    from engine import options_skew as S
+    hist = S.load_history()
+    dates = S.catch_up_sessions(_D2, hist)
+    receipt = S.backfill_from_store(dates, store=store)
+    assert receipt["dates_not_in_store"] == 1, (
+        f"expected the store to miss S=D2, got receipt={receipt}"
+    )
+    assert receipt["dates_backfilled"] == 0
+    assert receipt["rows_added"] + receipt["rows_replaced"] == 0

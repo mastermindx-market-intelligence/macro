@@ -42,8 +42,9 @@
 #   4. step_freshness_gate         — SPY eod >= T-1 NYSE session
 #   5. step_precheck_w21b          — W2-1b --accrue flag exists in source
 #   6. step_accrue                 — append today's skew to the ledger
-#   7. step_verify_ledger          — ledger has at least one row and grew
-#   8. step_publish                — publish to R2 (skipped under SKEW_DRY_RUN=1)
+#   7. step_verify_ledger          — ledger has at least one row AND grew
+#                                     (BLOCKER-2; skipped on rc 3)
+#   8. step_publish                — publish to R2 (skipped on rc 3 OR SKEW_DRY_RUN=1)
 #
 # Dry-run (SKEW_DRY_RUN=1) performs steps 1-7 and skips step 8 — the ledger is
 # written locally, the R2 leg is dropped. Used for smoke / integration checks
@@ -101,13 +102,17 @@
 #      anchor. scripts.skew_accrual_verify_ledger is unchanged.
 #
 #   2. Zero-row accrue under a CAUGHT-UP ledger (the complete store session
-#      S is already on the ledger, so catch_up_sessions returns [] and the
-#      builder exits 3): the runner logs `NOOP_CAUGHT_UP run_tag=… ledger=…`,
-#      SKIPS step_verify_ledger AND step_publish, and exits 0. The seat
-#      ruling treats this as a lawful no-op — the daily maintainer's session
-#      already landed, the lane did its job, and the operator wants a clean
-#      rc-0 exit, not a launchd failure for every weekday-after-holiday tick.
-#      See A-F03-W2-8 (2026-09-23) for the full ruling.
+#      S is already on the ledger byte-for-byte, so the backfill receipt
+#      reports `dates_backfilled == len(dates)` AND `rows_added + rows_replaced == 0`
+#      — see scripts/build_options_skew.py for the discriminator; the spec's
+#      "`catch_up_sessions` returns `[]`" line is misleading, the helper
+#      always returns at least the target session itself): the runner logs
+#      `NOOP_CAUGHT_UP run_tag=… ledger=…`, SKIPS step_verify_ledger AND
+#      step_publish, and exits 0. The seat ruling treats this as a lawful
+#      no-op — the daily maintainer's session already landed, the lane did
+#      its job, and the operator wants a clean rc-0 exit, not a launchd
+#      failure for every weekday-after-holiday tick. See A-F03-W2-8
+#      (2026-09-23) for the full ruling.
 #
 # BYPASS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -422,14 +427,14 @@ except Exception:
     log "pre-accrue row count: $pre_rows"
     printf '%s\n' "$pre_rows" > "$PRE_ROWS_FILE"
     log "launching python -m scripts.build_options_skew --accrue (W2-1b)"
-    # Explicit rc-capture BEFORE any control flow. Use `|| rc=$?` so the
-    # rc-3 (caught-up no-op) return from python does NOT propagate as a
-    # fatal `set -e` exit at the call site — the main sequence reads
-    # `accrue_rc` and branches on it explicitly. Do NOT `set +e` / `set -e`
-    # around the python call: in POSIX shell, `set` mutates the GLOBAL
-    # option state, so re-enabling `set -e` here would leak into the call
-    # site and abort the script before main sequence's rc capture runs
-    # (the A-F03-W2-8 caught-up branch would never fire).
+    # Explicit rc-capture BEFORE any control flow. The `|| rc=$?` form
+    # swallows the python non-zero exit (including rc 3) at the call site
+    # so `set -e` does not abort the function — the main sequence reads
+    # `accrue_rc` and branches on it explicitly. (The main sequence uses
+    # the `set +e … rc=$? … set -e` shape below; both patterns are valid.
+    # Inside step_accrue we use `|| rc=$?` only because the function body
+    # keeps executing past the python call, so the explicit form is
+    # cleaner than bracketing the python call with set +e/set -e.)
     rc=0
     "$PYTHON" -m scripts.build_options_skew --accrue || rc=$?
     if [ "$rc" -eq 3 ]; then

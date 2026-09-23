@@ -544,13 +544,15 @@ rows because the ledger was already current.
 through to `main()`'s rc 0 default, indistinguishable from a fresh
 session write that also landed 0 rows because the chain parsed empty.
 The runner then ran the verify + publish leg (BLOCKER-2 would refuse the
-publish, ABORT at the verify step, exit 1). That was a `2.2:00 PM` lane
-fault: holiday Mondays logged an "ABORT at verify" line for a perfectly
-fine ledger. The fix is a distinct exit code from `--accrue`-only so
-the runner can branch (one-line receipt + skip verify + skip publish +
-exit 0) WITHOUT touching the verify helper's BLOCKER-2 rule (that rule
-still refuses a no-op under the `--emit` leg where the ledger was
-manually pinned or the chain returned empty for the entire panel).
+publish, ABORT at the verify step with rc 5 — see
+`ops/launchd/run_skew_accrual.sh::step_verify_ledger`). That was a
+`2.2:00 PM` lane fault: holiday Mondays logged an "ABORT at verify"
+line for a perfectly fine ledger. The fix is a distinct exit code
+from `--accrue`-only so the runner can branch (one-line receipt +
+skip verify + skip publish + exit 0) WITHOUT touching the verify
+helper's BLOCKER-2 rule (that rule still refuses a no-op under the
+`--emit` leg where the ledger was manually pinned or the chain returned
+empty for the entire panel).
 
 **The contract.** The constant is `ACCRUE_NOOP_EXIT = 3` in
 `scripts/build_options_skew.py`. Three callsites read it:
@@ -586,8 +588,8 @@ builder marks as caught-up still has BLOCKER-2 in effect (the ledger
 did not grow, but `--emit` is a re-render of an existing ledger, not a
 publish — the runner never invokes verify on that path).
 
-**Tests.** Three new W2-8 tests were added to existing homes (no CI
-waivers):
+**Tests.** Four new W2-8 tests are added to existing homes (no CI
+exemption rows):
 
 - `tests/test_options_skew.py::test_accrue_sole_leg_exits_3_when_caught_up`
   — seeds D1+D2 with values `compute_skew` would emit for the chain
@@ -606,6 +608,23 @@ waivers):
   S, since `catch_up_sessions` returns `[S]` when there is no theta
   history to walk back through); rc stays 0. Pins the symmetric
   behavior — the rc-3 exit is STRICTLY the caught-up case.
+- `tests/test_options_skew.py::test_accrue_sole_leg_returns_0_when_store_misses_complete_session`
+  — RED on the round-2 head, GREEN on this head. Store greeks cover
+  D1 only; manifest claims S=D2 with `greeks_S_roots=6`
+  (under `_COMPLETE_SESSION_MIN_FRACTION × widest=0.95×6=5.7`); the
+  ledger holds D1 only. `complete_store_session` resolves S=D2 via
+  the manifest method; `catch_up_sessions(D2, hist)` returns `[D2]`
+  (lone-date "have" rule makes D1 complete); `backfill_from_store([D2])`
+  reports `dates_not_in_store=1, dates_backfilled=0, rows_added=0,
+  rows_replaced=0`. Without the strict discriminator, the prior
+  round's `if dates and rows_touched == 0:` would fire and `main`
+  would return rc 3 (caught-up) on a real failure — the runner
+  would skip BLOCKER-2 verify and the operator would never see the
+  store-miss. With the strict discriminator
+  (`dates_backfilled == len(dates)` AND `rows_touched == 0`),
+  `main(["--accrue"])` returns rc 0, the receipt's failure signature
+  surfaces in the receipt log, and the runner's BLOCKER-2 step sees
+  the call.
 - `tests/test_skew_accrual_launchd.py::test_runner_caught_up_noop_exits_zero_and_skips_verify_and_publish`
   — FAKE_ACCRUE_NOOP exits 3; asserts rc=0, the `NOOP_CAUGHT_UP` receipt
   line, the verify + publish markers absent, the pre_rows sidecar gone.

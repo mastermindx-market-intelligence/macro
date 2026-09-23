@@ -366,10 +366,14 @@ sys.exit(0)
 FAKE_ACCRUE_NOOP = '''"""Fake accrue — A-F03-W2-8 caught-up no-op (rc 3).
 
 The builder exits 3 when the store's complete session S is already on
-the ledger (catch_up_sessions returns []). The fake mirrors that
-contract: exit 3 AND append no row to the ledger (a real caught-up
-accrue writes nothing). The runner is the unit under test — it must
-treat rc 3 as a one-line receipt + skip verify + skip publish + exit 0.
+the ledger byte-for-byte (the receipt reports
+`dates_backfilled == len(dates)` AND `rows_added + rows_replaced == 0`;
+the spec's "`catch_up_sessions` returns `[]`" line is misleading — the
+helper always returns at least the target itself). The fake mirrors
+that contract at the runner level: exit 3 AND append no row to the
+ledger (a real caught-up accrue writes nothing). The runner is the
+unit under test — it must treat rc 3 as a one-line receipt + skip
+verify + skip publish + exit 0.
 """
 import sys
 sys.exit(3)
@@ -1007,10 +1011,14 @@ def test_fetch_r2_docstring_routes_data_dir_to_data_subtree():
 # The skew-accrual lane resolves the COMPLETE store session S via
 # engine.options_skew.complete_store_session (W2-6, PR #7832) and backfills
 # every missed session on the path from the ledger's newest complete
-# thetadata row. When S is already on the ledger, catch_up_sessions returns
-# [] and the builder exits 3. The launchd runner treats that rc as a
-# one-line receipt + SKIP verify AND publish + exit 0 — a caught-up ledger
-# is exactly what the verify step's BLOCKER-2 rule was written to refuse
+# thetadata row. When S is already on the ledger byte-for-byte, the
+# backfill receipt reports `dates_backfilled == len(dates)` AND
+# `rows_added + rows_replaced == 0` (the spec's "`catch_up_sessions`
+# returns `[]`" line is misleading — the helper always returns at least
+# the target itself; the discriminator lives in the receipt), and the
+# builder exits 3. The launchd runner treats that rc as a one-line
+# receipt + SKIP verify AND publish + exit 0 — a caught-up ledger is
+# exactly what the verify step's BLOCKER-2 rule was written to refuse
 # (post_rows <= pre_rows), but refusing the publish under "nothing to
 # accrue" is the wrong outcome: the daily maintainer's session has already
 # landed, the lane did its job, and the operator wants a clean rc-0 exit,

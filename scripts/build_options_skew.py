@@ -154,12 +154,30 @@ def accrue(today=None) -> tuple[int, str]:
     dates = S.catch_up_sessions(session, S.load_history())
     receipt = S.backfill_from_store(dates, store=td)
     rows_touched = receipt["rows_added"] + receipt["rows_replaced"]
-    if dates and rows_touched == 0:
+    # A-F03-W2-8 (2026-09-23): the rc-3 (caught-up) surface is RESERVED for
+    # the byte-equal-COMPLETE-STORE-SESSION-on-the-ledger case. A zero-row
+    # backfill alone is NOT enough — a store-miss (`dates_not_in_store > 0`,
+    # `dates_backfilled < len(dates)`) also reports zero rows touched, but
+    # that outcome is a real failure and must keep the rc-0 path so the
+    # runner's BLOCKER-2 verify step can still abort loud. The
+    # discriminator: every requested date was found in the store
+    # (`dates_backfilled == len(dates)`) AND the backfill was a byte-equal
+    # no-op (`rows_touched == 0`). Either signal alone is ambiguous:
+    # `rows_touched == 0` is shared by store-miss + weekend-skip +
+    # caught-up; `dates_backfilled == len(dates)` is shared by caught-up +
+    # real-write (which has rows_touched > 0). Pinned by
+    # tests/test_options_skew.py:store-miss + bootstrap RED tests.
+    if (
+        dates
+        and receipt["dates_backfilled"] == len(dates)
+        and rows_touched == 0
+    ):
         # A-F03-W2-8 (2026-09-23): caught-up ledger is a LAWFUL no-op.
-        # The complete store session S is already on the ledger, so the
-        # daily maintainer's backfill wrote zero rows. Bare `print()` —
-        # never the logger — so the GitHub annotation parser picks it up
-        # at line start (tests/test_gh_annotation_line_start.py).
+        # The complete store session S is already on the ledger with
+        # byte-equal values, so the daily maintainer's backfill wrote
+        # zero rows. Bare `print()` — never the logger — so the GitHub
+        # annotation parser picks it up at line start
+        # (tests/test_gh_annotation_line_start.py).
         print(
             f"::notice title=options-skew-accrual::caught up — complete "
             f"session {session} already on the ledger; nothing to accrue",
