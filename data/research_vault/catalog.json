@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T13:54:20.598000+00:00",
-  "count": 2713,
+  "generated_at": "2026-09-23T16:54:57.527024+00:00",
+  "count": 2721,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -100,6 +100,146 @@
   ],
   "items": [
     {
+      "id": "marketdesk-t5oi11yvmsb-6b195e",
+      "title": "SMIC (0981.HK) AI to drive 2H26 growth; strongest revenues QoQ in 2Q26 among global top 10 foundries; Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T16:33:53Z",
+      "summary_points": [
+        "SMIC Revenue Growth & China AI Demand: Q226 QoQ revenue growth at 20% (vs. top 10 foundries’ 11.5% avg), driven by China’s generative AI trend, localization, and +15% YoY China Semis Capex growth in 2026-28E.",
+        "AI Chip TAM & Capex Allocation: China’s AI chip TAM to reach US$4.123bn by 2030 (base case), with SMIC allocating 54-71% of capex to 7nm/advanced nodes, supported by strong analog/power IC demand.",
+        "US Geopolitical Risk: BIS Entity List restrictions threaten critical equipment/material supply, posing a direct operational and growth risk for SMIC.",
+        "2H26 Revenue Outlook: Q3/Q4 2026 revenues projected at +12% Hoh, +27% YoY; capacity tightness for AI chips supports stable ASPs despite rising depreciation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:45Z",
+      "summary_points": [
+        "F1Q Beat & FY27 Guidance: Adj EPS beat ($0.75 vs $0.72); FY27 guidance slightly below consensus (EPS $3.00-$3.20 vs $3.12/$3.08), but $750mm cost savings offsetting higher input inflation (4-5%).",
+        "Margin Strength: Gross margin 33.3% (above consensus 33.0%) and operating margin 14.4% (vs consensus 13.7%) despite net sales down -2.8% y/y.",
+        "Valuation Anchor: Neutral rating underpinned by 50/50 P/E blend (10x/11x/12x) and EV/EBITDA (9.5x/10x/10.5x) for $35 target.",
+        "Critical Risks: Downside from economic slowdown, trade-down to private label, and input cost inflation not fully passed through to margins."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vxqbq7fg0xc-a29f7b",
+      "title": "Brenntag SE (BNRGn.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:41Z",
+      "summary_points": [
+        "Guidance Upgrade: Revised FY revenue guidance to €1,450m (up from €1,350m), driven by new operating strategy execution and cost-out program (€150m savings in 2024, €200-250m by 2027), partially offsetting oil price volatility risks.",
+        "Geopolitical Pricing Impact: Middle East conflict directly boosting pricing power in sector, enhancing near-term margin visibility amid energy cost pressures.",
+        "China Competitive Dynamics: China emerging as medium-term chemical manufacturing competitor in essentials/semi-specialty segments (not high-end), with Brenntag positioned as global supply chain enabler to navigate competitive shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-y7x0pveddcd-777f0f",
+      "title": "Global Markets Daily Brazilian Real (BRL) — Navigating the Election",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:35Z",
+      "summary_points": [
+        "Brazilian Election Catalyst: Oct 4 election (potential Oct 25 runoff) drives BRL volatility; historical patterns show 4.5% BRL strength post-first round (2022) and peak USD/BRL ahead of second rounds (2014, 2022).",
+        "Fiscal Deficit & BRL Risk: 9% GDP fiscal deficit (primary 0.7%) and high real rates sustain carry trade but lack sustainability; negative fiscal outcomes imply 14% BRL depreciation to ~5.80.",
+        "USD/BRL Fair Value Range: Market-friendly outcomes (tighter fiscal policy) target 4.50–4.80; fiscal premium persistence (e.g., Dec 2024) implies 5.80 (14% depreciation risk).",
+        "Election-Driven Policy Shifts: Proactive fiscal adjustment (lowering premium) boosts BRL; passive shifts or policy delivery failures amplify FX volatility (2014: Rouseff re-election + orthodox appointments spurred rally).",
+        "Critical Sensitivity: USD/BRL moves 5.3% appreciation (to 4.80) if fiscal premium reduces vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ergkmhwhsow-e05c9a",
+      "title": "GS European Express Carbonomics, Telcos, Daimler, Heidelberg, ABI, Macro, Global, Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:59Z",
+      "summary_points": [
+        "Carbonomics BTM Power Outlook: $55bn cumulative equipment opportunity for data centers by 2030 (67GW BTM power forecast), favoring Ceres Power, Weichai Power, Delta Electronics due to execution strength.",
+        "Fed Dovish Shift: Core PCE slowed to 2.5% annualized, Fed abandoned no-hike forecast, signaling dovish shift impacting rate expectations and asset valuations.",
+        "German Telco Consolidation: Bullish on telco consolidation (buy ratings on DT, United Internet, 1&1, Ionos, Vodafone) with modest cost efficiency gains.",
+        "Daimler Truck Fundamentals: Robust North America demand (replacement-driven), 15-20% discount vs Chinese OEMs, feasible peak margins, Torc autonomous ops targeting."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zh7ydul7to8-059686",
+      "title": "UBS Group (UBSG.S) Swiss parliament upper house votes for 90% CET1 backing for foreign subsidiaries",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:45Z",
+      "summary_points": [
+        "Swiss Regulatory Shift: 90% CET1 capital backing for foreign subsidiaries (vs. 50% proposal) mandates $17bn capital increase, exposing $7bn CET1 shortfall at UBS parent (Q26) and $9bn gap with mitigation, driven by foreign subs and ordinance changes.",
+        "Regulatory Timeline Risk: Bill faces lower house debate and plebiscite risk, delaying final ruling until 2027—creating prolonged uncertainty for capital-intensive banking operations and compliance planning.",
+        "Leverage Vulnerability: Leverage rises to 18.5x (from 17.9x), signaling heightened credit risk and susceptibility to interest rate volatility despite strong revenue (+10.0%) and net income growth (+47.0%).",
+        "Capital Shortfall Escalation: 90% CET1 backing scenario reveals $7bn shortfall (Q26), escalating to $9bn with mitigation; upstreaming adjustments (e.g., $3bn UK repatriation) fail to resolve critical gap."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nohhot47ht3-f9b42c",
+      "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:32Z",
+      "summary_points": [
+        "BTM Power Forecast Surge: Goldman Sachs raises global behind-the-meter (BTM) power generation forecast to 67GW by 2030 (from 40GW), driven by AI/data center infrastructure constraints, with fuel cells supplying ~12GW of US data center capacity by 2030.",
+        "Fuel Cell Execution Dominance: Fuel cells (SOFC) lead data center power solutions with highest weighted score (76.6 vs. 67-68 for alternatives), excelling in deployment speed (6-12 months), reliability, and site efficiency, critical amid tight supply chains.",
+        "Cost Premium Risk: Fuel cells face 45%+ higher LCOE ($117/MWh vs.",
+        "$81/MWh for reciprocating engines) and 30% higher cost than gas turbines, creating significant capital cost risk despite execution advantages."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ks7yulaakge-837989",
       "title": "GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
       "institution": "S&T",
@@ -116,6 +256,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-au8capm9s1w-de037c",
+      "title": "GS Bartlett GS TMT TODAY 9.23.26 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:01Z",
+      "summary_points": [
+        "AI Competitive Shift: Anthropic/OpenAI cost-cutting models (GPT-6 Sol, Claude Opus 5.5) pressure Chinese AI stocks (BABA -3%, BIIDU -2.5%) amid open-weight competition.",
+        "Geopolitical Policy Volatility: Trump-Xi UN meeting, Besent as US \"AI czar\" candidate pushing US-China AI security notification mechanism, and Jensen Huang’s Trump/Xi dinner signal heightened tech tensions and regulatory uncertainty.",
+        "TMT Structural Momentum vs.",
+        "Risk: Memory Exposed (+183.94% YTD) and AI Data Center (+65.21% YTD) surge driven by infrastructure demand, contrasting with China Internet underperformance (-25.96% YTD) and sector-specific risks.",
+        "Critical Risk Factor: China Internet (-25.96% YTD) and Software (-4.18% YTD) underperformance due to geopolitical headwinds, amplified by LLM data security probes and sector crowding risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
