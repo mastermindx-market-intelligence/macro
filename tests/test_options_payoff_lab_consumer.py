@@ -697,3 +697,344 @@ def test_engine_render_yml_text_pins():
         for s in j.get("steps", []) if isinstance(s, dict)
     )
     assert max_run < 20_500, f"step run length {max_run} exceeds 20,500"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RED-first tests for round-4 seat rulings (PR #7763 round 4/N)
+# ─────────────────────────────────────────────────────────────────────────────
+def test_built_when_only_max_loss_is_non_null():
+    """Round-4 fix (MAJOR 1): a structure whose producer contract carries
+    ONLY `expiry_payoff.max_loss` (max_gain == None — e.g. a debit-only spread
+    whose profit is theoretically unbounded) is still BUILT per the producer's
+    own `_structure_is_built`. The consumer's row-level `built` flag must
+    match, so the fold renders the row instead of dropping it to NULL.
+
+    On the previous head the row-level check was already correct (it read
+    `max_gain OR max_loss`), but the ROOT-level `any_built` short-circuit in
+    `build_payoff_lab` only looked at max_gain — so a root whose every
+    structure carried only max_loss was silently skipped and the WHOLE fold
+    disappeared. This test exercises the root-level path: a SPY root with one
+    debit-only structure (max_loss=-500.0, max_gain=None) still renders the
+    fold for SPY.
+    """
+    spy = _root(
+        "SPY", spot=773.50, expiration="2026-09-26", tenor_days=21,
+        structures=[
+            # Debit-only: max_loss set, max_gain None. Per the producer's
+            # _structure_is_built this is BUILT — max_loss is non-null.
+            {
+                "name": "put_spread_95_90",
+                "selection_rule": [],
+                "summary": {
+                    "cost": 320.0, "max_gain": None, "max_loss": -500.0,
+                    "breakevens": [770.0], "horizon_days": 21,
+                    "horizon_expiry": "2026-09-26", "liquidity": "ok",
+                    "prerequisites_met": True, "states": (), "assumptions": {},
+                    "structure": {"legs": [
+                        {"right": "P", "qty": 1, "strike": 735.0},
+                        {"right": "P", "qty": -1, "strike": 700.0},
+                    ]},
+                },
+                "expiry_payoff": {
+                    "max_gain": None, "max_loss": -500.0, "cost": 320.0,
+                    "cost_per_unit": 3.2, "breakevens": [770.0],
+                    "spots": [], "pnl": [], "pnl_per_unit": [],
+                    "assumptions": {}, "states": (),
+                },
+                "scenario_grids": {}, "greeks_drift": {}, "assumptions": {},
+                "evidence_recipe": {}, "states": [],
+            },
+        ],
+    )
+    payload = _payload(roots=[spy])
+    out = build_payoff_lab(payload, _stores())
+    assert "SPY" in out, (
+        "root-level any_built must fire when max_loss is non-null even if "
+        "max_gain is None — the producer's contract counts it as BUILT"
+    )
+    rows = out["SPY"]["rows"]
+    put_spread_row = next(r for r in rows if r.get("name_en") == "Downside hedge")
+    assert put_spread_row["built"] is True, (
+        "row-level built must be True when max_loss is non-null"
+    )
+    # And the risk line must render — not the NULL fallback.
+    assert put_spread_row["risk_en"], "risk_en must render for debit-only BUILT"
+    assert put_spread_row["risk_zh"], "risk_zh must render for debit-only BUILT"
+
+
+def test_zh_debit_cost_carries_pct_parity():
+    """Round-4 fix (MAJOR 2): ZH debit cost line mirrors EN meaning end-to-end.
+    The EN line is `costs $X.XX a share · Y.Y% of the index`; the ZH line
+    must carry the same two facts — `成本 $X.XX/股 · 占指数 Y.Y%`. On the
+    previous head (9731865033) the ZH line dropped the `% of the index`
+    half, breaking parity. This test pins ZH to carry both."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    record = {
+        "name": "atm_straddle",
+        "summary": {
+            "cost": 1590.0, "max_gain": 12000.0, "max_loss": -1590.0,
+            "breakevens": [630.0, 660.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-25", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": 12000.0, "max_loss": -1590.0, "cost": 1590.0,
+            "cost_per_unit": 15.9, "breakevens": [630.0, 660.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    row = _payoff_lab_row_text(record, spot=645.0)
+    # EN baseline (pinned already by copy tests).
+    assert "costs $15.90 a share" in row["cost_en"], row["cost_en"]
+    assert "% of the index" in row["cost_en"], row["cost_en"]
+    # ZH must carry the per-share AND the pct, mirroring the EN structure.
+    assert "成本 $15.90/股" in row["cost_zh"], (
+        f"cost_zh must carry the per-share figure: {row['cost_zh']!r}"
+    )
+    assert "占指数" in row["cost_zh"], (
+        f"cost_zh must carry the as-%-of-index (parity with EN): {row['cost_zh']!r}"
+    )
+    assert "%" in row["cost_zh"], (
+        f"cost_zh must carry a percent sign: {row['cost_zh']!r}"
+    )
+    # And the EN-side pct value must appear in the ZH line (same number).
+    assert "2.5%" in row["cost_zh"], (
+        f"cost_zh must carry the same pct value (2.5% of index at spot 645): {row['cost_zh']!r}"
+    )
+
+
+def test_zh_credit_uses_shou_ru_not_huo_de():
+    """Round-4 fix (MAJOR 2): ZH credit (negative cost_per_share) uses `收入`
+    (income), not `获得` (obtain) — `获得` is also a valid Chinese verb but
+    `收入` is the financial-vocabulary word for credit / income and is what
+    the EN `brings in` translates to in this domain."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    record = {
+        "name": "rr25",
+        "summary": {
+            "cost": -150.0, "max_gain": 10000.0, "max_loss": -5000.0,
+            "breakevens": [620.0, 670.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-25", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+            # legs missing here — the rr25 strike-copy helper will fall back
+            # to the standard max_loss/max_gain copy, which is fine; we are
+            # only asserting the credit cost word on this fixture.
+        },
+        "expiry_payoff": {
+            "max_gain": 10000.0, "max_loss": -5000.0, "cost": -150.0,
+            "cost_per_unit": -1.5, "breakevens": [620.0, 670.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    row = _payoff_lab_row_text(record, spot=645.0)
+    assert "收入 $1.50/股" in row["cost_zh"], (
+        f"cost_zh credit must use 收入: {row['cost_zh']!r}"
+    )
+    assert "获得" not in row["cost_zh"], (
+        f"cost_zh credit must NOT use 获得 (use 收入 instead): {row['cost_zh']!r}"
+    )
+
+
+def test_rr25_risk_uses_strikes_not_spot_to_zero_loss():
+    """Round-4 SEAT ADDITION: for an rr25 structure the producer's
+    `expiry_payoff.max_loss` is the short put's spot-to-zero bound — a
+    per-contract figure like SPY −75387.0 that would render as `$753.87 a
+    share` after the per-share division and mislead the reader. The fold's
+    rr25 row MUST use strike-based risk copy instead, pulling the short put
+    strike and long call strike from `summary.structure.legs`.
+
+    This test exercises the real receipt numbers (SPY spot 773.50,
+    straddle max_loss −2291.5 → `$22.92 a share`, rr25 max_loss
+    −75387.0 → strike copy with NO `$753.87` anywhere on the row)."""
+    from scripts.build_options_command import _payoff_lab_row_text
+
+    # Real receipt values from the W2-5a store-host receipt (2026-09-21).
+    rr25_record = {
+        "name": "rr25",
+        "summary": {
+            "cost": -250.0, "max_gain": None, "max_loss": -75387.0,
+            "breakevens": [770.0, 780.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-26", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+            # The legs the rr25 structure carries (per engine/options_payoff_lab
+            # .py::_catalog_specs): C at call_strike qty +1, P at put_strike
+            # qty -1. Put strike 745, call strike 800 — illustrative.
+            "structure": {"legs": [
+                {"right": "C", "qty": 1, "strike": 800.0,
+                 "expiration": "2026-09-26"},
+                {"right": "P", "qty": -1, "strike": 745.0,
+                 "expiration": "2026-09-26"},
+            ]},
+        },
+        "expiry_payoff": {
+            "max_gain": None, "max_loss": -75387.0, "cost": -250.0,
+            "cost_per_unit": -2.5, "breakevens": [770.0, 780.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    row = _payoff_lab_row_text(rr25_record, spot=773.50)
+
+    # 1. The risk line MUST be strike-based, not the standard max_loss copy.
+    assert "loses like the index" in row["risk_en"], (
+        f"rr25 risk_en must use strike-based copy: {row['risk_en']!r}"
+    )
+    assert "gains like the index" in row["risk_en"], (
+        f"rr25 risk_en must use strike-based copy: {row['risk_en']!r}"
+    )
+    assert "低于" in row["risk_zh"] and "与指数同跌" in row["risk_zh"], (
+        f"rr25 risk_zh must use strike-based copy: {row['risk_zh']!r}"
+    )
+    assert "高于" in row["risk_zh"] and "与指数同涨" in row["risk_zh"], (
+        f"rr25 risk_zh must use strike-based copy: {row['risk_zh']!r}"
+    )
+
+    # 2. The strikes (745, 800) MUST appear on the line.
+    assert "745" in row["risk_en"], (
+        f"rr25 risk_en must carry the put strike 745: {row['risk_en']!r}"
+    )
+    assert "800" in row["risk_en"], (
+        f"rr25 risk_en must carry the call strike 800: {row['risk_en']!r}"
+    )
+
+    # 3. The misleading spot-to-zero figure MUST NOT appear anywhere.
+    assert "$753.87" not in row["risk_en"], (
+        f"rr25 risk_en must not carry '$753.87 a share' "
+        f"(spot-to-zero would mislead): {row['risk_en']!r}"
+    )
+    assert "$753.87" not in row["risk_zh"], (
+        f"rr25 risk_zh must not carry '$753.87' "
+        f"(spot-to-zero would mislead): {row['risk_zh']!r}"
+    )
+    # The raw per-contract figure 75387.0 must not leak into either line.
+    assert "75,387" not in row["risk_en"], (
+        f"rr25 risk_en must not carry the raw per-contract figure: {row['risk_en']!r}"
+    )
+    assert "75,387" not in row["risk_zh"], (
+        f"rr25 risk_zh must not carry the raw per-contract figure: {row['risk_zh']!r}"
+    )
+
+    # 4. The standard copy must NOT appear on an rr25 row.
+    assert "most you can lose" not in row["risk_en"], (
+        f"rr25 risk_en must NOT use the standard max_loss copy: {row['risk_en']!r}"
+    )
+    assert "最多损失" not in row["risk_zh"], (
+        f"rr25 risk_zh must NOT use the standard max_loss copy: {row['risk_zh']!r}"
+    )
+
+    # 5. Companion assertion — for the straddle on the SAME receipt (spot
+    # 773.50, max_loss −2292.0), the per-share division lands on $22.92 and
+    # the standard copy renders. We deliberately set `cost ≠ |max_loss|` so
+    # the "the cost" shortcut doesn't fire and the per-share figure renders.
+    # This pins that the strike-based copy only fires for rr25 and the
+    # straddle still uses the standard per-share copy.
+    straddle_record = {
+        "name": "atm_straddle",
+        "summary": {
+            "cost": 1800.0, "max_gain": None, "max_loss": -2292.0,
+            "breakevens": [750.0, 795.0], "horizon_days": 21,
+            "horizon_expiry": "2026-09-26", "liquidity": "ok",
+            "prerequisites_met": True, "states": (), "assumptions": {},
+        },
+        "expiry_payoff": {
+            "max_gain": None, "max_loss": -2292.0, "cost": 1800.0,
+            "cost_per_unit": 18.0, "breakevens": [750.0, 795.0],
+            "spots": [], "pnl": [], "pnl_per_unit": [], "assumptions": {}, "states": (),
+        },
+        "states": [],
+    }
+    straddle_row = _payoff_lab_row_text(straddle_record, spot=773.50)
+    assert "$22.92 a share" in straddle_row["risk_en"], (
+        f"straddle risk_en must carry per-share '$22.92 a share': "
+        f"{straddle_row['risk_en']!r}"
+    )
+    assert "loses like the index" not in straddle_row["risk_en"], (
+        f"straddle risk_en must NOT use strike-based copy: "
+        f"{straddle_row['risk_en']!r}"
+    )
+
+
+def test_tenor_days_passes_int_through_and_none_on_non_int():
+    """Round-4 fix (MINOR 2): the contract is `tenor_days: int`. The consumer
+    passes an int through unchanged; a non-int (None, partial float, str)
+    becomes None — the fold never prints tenor, so a None here is silent.
+
+    This test exercises the row-level envelope at `build_payoff_lab`: when
+    `tenor_days` is an int it lands as int on the envelope; when it is a
+    partial float (21 / 365.0) it lands as None."""
+    full_int = _root(
+        "SPY", spot=773.50, expiration="2026-09-26", tenor_days=21,
+        structures=[
+            _structure("atm_straddle", breakevens=(750.0, 795.0),
+                      cost_per_contract=2291.5, max_gain=None, max_loss=-2291.5),
+        ],
+    )
+    out_int = build_payoff_lab(_payload(roots=[full_int]), _stores())
+    assert out_int["SPY"]["tenor_days"] == 21, (
+        f"tenor_days=21 (int) must pass through as int: {out_int['SPY']['tenor_days']!r}"
+    )
+
+    full_float = _root(
+        "SPY", spot=773.50, expiration="2026-09-26", tenor_days=21 / 365.0,
+        structures=[
+            _structure("atm_straddle", breakevens=(750.0, 795.0),
+                      cost_per_contract=2291.5, max_gain=None, max_loss=-2291.5),
+        ],
+    )
+    out_float = build_payoff_lab(_payload(roots=[full_float]), _stores())
+    assert out_float["SPY"]["tenor_days"] is None, (
+        f"tenor_days=21/365.0 (partial float) must become None: "
+        f"{out_float['SPY']['tenor_days']!r}"
+    )
+
+    full_none = _root(
+        "SPY", spot=773.50, expiration="2026-09-26", tenor_days=None,
+        structures=[
+            _structure("atm_straddle", breakevens=(750.0, 795.0),
+                      cost_per_contract=2291.5, max_gain=None, max_loss=-2291.5),
+        ],
+    )
+    out_none = build_payoff_lab(_payload(roots=[full_none]), _stores())
+    assert out_none["SPY"]["tenor_days"] is None, (
+        f"tenor_days=None must stay None: {out_none['SPY']['tenor_days']!r}"
+    )
+
+
+def test_css_oew_lab_track_height_is_4px():
+    """Round-4 fix (MAJOR 3): the fold's track is a 4px hairline rail — the
+    previous head had it at 14px. The marks (walls, flip, spot, breakeven)
+    overhang the rail by design (ink-weight ticks rising from a hairline)."""
+    text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+    m = re.search(r"\.oew-lab-track\s*\{([^{}]*)\}", text, flags=re.S)
+    assert m, "expected .oew-lab-track rule block"
+    block = m.group(1)
+    # The 4px token must be present on the track rule.
+    assert re.search(r"height:\s*4px", block), (
+        f".oew-lab-track must carry height:4px: {block!r}"
+    )
+    # And the 14px value (the previous-head regression) must not.
+    assert "height:14px" not in block, (
+        f".oew-lab-track must NOT carry height:14px: {block!r}"
+    )
+
+
+def test_css_oew_lab_row_v_has_mono_class_in_markup():
+    """Round-4 fix (MAJOR 3): the fold's row values carry the page's mono
+    treatment — `class="v mono"` on the per-row value spans inside the fold.
+    A regression to `class="v"` alone would leave them on the page's
+    proportional face."""
+    text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+    # The fold row value spans carry class="v mono" — pin the exact form.
+    assert re.search(r'class="v mono">\{\{\s*t\(r\.(cost_en|cost_zh)', text), (
+        "fold cost row value must carry class=\"v mono\""
+    )
+    assert re.search(r'class="v mono">\{\{\s*t\(r\.(pays_en|pays_zh)', text), (
+        "fold pays row value must carry class=\"v mono\""
+    )
+    assert re.search(r'class="v mono">\{\{\s*t\(r\.(risk_en|risk_zh)', text), (
+        "fold risk row value must carry class=\"v mono\""
+    )

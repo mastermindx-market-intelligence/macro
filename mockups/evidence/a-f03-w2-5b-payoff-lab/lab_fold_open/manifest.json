@@ -23,7 +23,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-23T04:52:32Z",
+  "generated_at": "2026-09-23T05:29:53Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -32,12 +32,7 @@
   "outcome": "captured",
   "pages": [
     {
-      "console_errors": [
-        {
-          "source_url": "http://127.0.0.1:64649/illus.css",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
-        }
-      ],
+      "console_errors": [],
       "failed_responses": [],
       "gaps": [
         {
@@ -87,18 +82,18 @@
         "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 3392,
+            "document_height_px": 2888,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 6665,
+            "document_height_px": 5231,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 1,
-        "document_height_px": 3392,
+        "console_error_count": 0,
+        "document_height_px": 2888,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -118,16 +113,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 636984,
+        "payload_bytes_total": 622820,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 17,
+        "request_count": 19,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 1155
+        "visible_word_count": 766
       },
       "page_id": "options.html",
       "registry_route": "/options.html",
@@ -138,13 +133,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 664549,
+          "bytes": 556523,
           "captured": true,
-          "file": "f3773b49a1a21671.png",
+          "file": "680065951484dace.png",
           "force_state": null,
-          "height": 3392,
+          "height": 2888,
           "locale": "en",
-          "sha256": "f3773b49a1a21671a899c0aa08f013dab3fd5c52520569db0488af26ccd9408a",
+          "sha256": "680065951484dace24bab30633743d4b917427558271038bf8bfc204a31d893a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -155,13 +150,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 668090,
+          "bytes": 555265,
           "captured": true,
-          "file": "288bf97119d3f3df.png",
+          "file": "2b665a065c9baad7.png",
           "force_state": null,
-          "height": 3393,
+          "height": 2889,
           "locale": "en",
-          "sha256": "288bf97119d3f3dffa1bc7277eff643149ddc7cfe0cf66550aec2baae4fed1b4",
+          "sha256": "2b665a065c9baad7b755753d89a01c94b63297919a9ca09193f0ef8be4982f3e",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -172,13 +167,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 638648,
+          "bytes": 502072,
           "captured": true,
-          "file": "35ce2e2cc08d1b29.png",
+          "file": "21745ea70007ba78.png",
           "force_state": null,
-          "height": 6665,
+          "height": 5231,
           "locale": "en",
-          "sha256": "35ce2e2cc08d1b29b6c9f2c811467929bb02138585e647c23332e88435e1b30f",
+          "sha256": "21745ea70007ba78cf78bceab3b0b6796eb33a976dfec8d57190b3302ba62f82",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -189,13 +184,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 650263,
+          "bytes": 508728,
           "captured": true,
-          "file": "f0963221715faebb.png",
+          "file": "dde59c84de6d58e4.png",
           "force_state": null,
-          "height": 6666,
+          "height": 5232,
           "locale": "en",
-          "sha256": "f0963221715faebbbe0f0e4d10f0a17671ca43a79b24a49f3410c88366c0ae54",
+          "sha256": "dde59c84de6d58e4ef2951a4ea689240c833dc3e8709c702950e40a91fee965b",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -222,10 +217,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w2_5b",
-    "resolved_sha_or_none": "973186503320fdf525eaacd1a6fe2e4400b5b870",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w2_5b (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Users/chriswong/lanes/wt/mo-ext-fix-mo_a3_w2_5b/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-7763",
+    "resolved_sha_or_none": "26685973134bda141325acbca159202f6564b7c4",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-7763 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/lanes/wt/mo-ext-fix-7763/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

@@ -972,6 +972,42 @@ def _payoff_lab_cost_pct(cost_per_share: float | None, spot: float | None) -> fl
     return cost_per_share / spot * 100.0
 
 
+def _payoff_lab_rr25_strikes(summary: dict) -> tuple[float, float] | None:
+    """Return (short_put_strike, long_call_strike) for an rr25 structure.
+
+    Pulled from `summary.structure.legs` — the producer writes the Structure
+    dataclass nested inside StructureSummary, and asdict() flattens it to
+    `summary['structure']['legs']`. The rr25 legs are
+    [_leg("C", call_strike, expiration, +1), _leg("P", put_strike, expiration, -1)]
+    (per engine/options_payoff_lab.py::_catalog_specs). When either strike is
+    missing or unparseable, returns None — the caller falls back to the
+    standard max_loss/max_gain copy rather than printing a half-formed line.
+    """
+    structure = summary.get("structure") if isinstance(summary, dict) else None
+    if not isinstance(structure, dict):
+        return None
+    legs = structure.get("legs")
+    if not isinstance(legs, list) or len(legs) < 2:
+        return None
+    put_strike = None
+    call_strike = None
+    for leg in legs:
+        if not isinstance(leg, dict):
+            continue
+        right = leg.get("right")
+        qty = leg.get("qty")
+        strike = _num(leg.get("strike"))
+        if strike is None or right is None or qty is None:
+            continue
+        if right == "P" and qty == -1 and put_strike is None:
+            put_strike = strike
+        elif right == "C" and qty == 1 and call_strike is None:
+            call_strike = strike
+    if put_strike is None or call_strike is None:
+        return None
+    return put_strike, call_strike
+
+
 def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
     """One row of the fold's four-row table — fixed order, fixed plain names."""
     out = {"name_en": "", "name_zh": "", "cost_en": "", "cost_zh": "",
@@ -995,11 +1031,16 @@ def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
     if built:
         if cost_per_share is not None and cost_per_share < 0:
             out["cost_en"] = f"brings in ${abs(cost_per_share):.2f} a share"
-            out["cost_zh"] = f"获得 ${abs(cost_per_share):.2f}/股"
+            out["cost_zh"] = f"收入 ${abs(cost_per_share):.2f}/股"
         elif cost_per_share is not None:
             pct_text = f" · {cost_pct:.1f}% of the index" if cost_pct is not None else ""
             out["cost_en"] = f"costs ${cost_per_share:.2f} a share{pct_text}"
-            out["cost_zh"] = f"成本 ${cost_per_share:.2f}/股"
+            # ZH mirrors the EN meaning end-to-end — debit cost carries both the
+            # per-share figure AND the as-%-of-index share, the same two facts
+            # the EN line carries. The previous head dropped the pct half,
+            # breaking ZH parity.
+            pct_text_zh = f" · 占指数 {cost_pct:.1f}%" if cost_pct is not None else ""
+            out["cost_zh"] = f"成本 ${cost_per_share:.2f}/股{pct_text_zh}"
         else:
             out["cost_en"] = "cost unavailable"
             out["cost_zh"] = "成本暂不可用"
@@ -1042,8 +1083,34 @@ def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
             gain_word_en, gain_word_zh = "no cap", "无上限"
         else:
             gain_word_en, gain_word_zh = _payoff_lab_risk_word(gain_per_share, "gain", "dollar")
-        out["risk_en"] = f"most you can lose: {loss_word_en} · most you can make: {gain_word_en}"
-        out["risk_zh"] = f"最多损失：{loss_word_zh} · 最多盈利：{gain_word_zh}"
+        # SEAT ADDITION (W2-5b round 4): for the rr25 (Upside for downside)
+        # structure, the producer's `expiry_payoff.max_loss` is the short
+        # put's spot-to-zero bound — a number like SPY −75387.0 that would
+        # render as `$753.87 a share` (per-share division) and MISLEAD the
+        # reader. The rr25 row's risk copy is strike-based: below the put
+        # strike the structure loses like the index; above the call strike it
+        # gains like the index. Strikes are pulled from
+        # `summary.structure.legs` (right="P", qty=-1 → put strike;
+        # right="C", qty=+1 → call strike). When the legs are missing or
+        # unparseable we fall through to the standard max_loss/max_gain copy.
+        if record.get("name") == "rr25":
+            rr_strikes = _payoff_lab_rr25_strikes(summary)
+            if rr_strikes is not None:
+                put_strike, call_strike = rr_strikes
+                out["risk_en"] = (
+                    f"below {put_strike:.0f} it loses like the index; "
+                    f"above {call_strike:.0f} it gains like the index"
+                )
+                out["risk_zh"] = (
+                    f"低于 {put_strike:.0f} 时与指数同跌；"
+                    f"高于 {call_strike:.0f} 时与指数同涨"
+                )
+            else:
+                out["risk_en"] = f"most you can lose: {loss_word_en} · most you can make: {gain_word_en}"
+                out["risk_zh"] = f"最多损失：{loss_word_zh} · 最多盈利：{gain_word_zh}"
+        else:
+            out["risk_en"] = f"most you can lose: {loss_word_en} · most you can make: {gain_word_en}"
+            out["risk_zh"] = f"最多损失：{loss_word_zh} · 最多盈利：{gain_word_zh}"
     else:
         # Producer's prose wins on ≤ 10 plain words; the closed-vocab string
         # above is the default when the payload gives us nothing more specific.
@@ -1141,9 +1208,17 @@ def build_payoff_lab(payload: dict | None, stores: dict) -> dict:
         if not isinstance(root, dict):
             continue
         structures = root.get("structures") or []
+        # Mirror the producer's own `_structure_is_built`: a structure is BUILT
+        # when EITHER `expiry_payoff.max_gain` OR `expiry_payoff.max_loss` is
+        # non-null. A risk-reward with only a max_loss (e.g. debit-only spread)
+        # still counts — that is the producer's contract and the consumer must
+        # not silently drop it.
         if not any(
             isinstance(s, dict)
-            and (s.get("expiry_payoff") or {}).get("max_gain") is not None
+            and (
+                (s.get("expiry_payoff") or {}).get("max_gain") is not None
+                or (s.get("expiry_payoff") or {}).get("max_loss") is not None
+            )
             for s in structures
         ):
             continue
@@ -1154,7 +1229,16 @@ def build_payoff_lab(payload: dict | None, stores: dict) -> dict:
         expiry_iso = root.get("expiration")
         expiry_en = _payoff_lab_expiry_en(expiry_iso)
         expiry_zh = _payoff_lab_expiry_zh(expiry_iso)
-        tenor_days = int(_num(root.get("tenor_days")) or 0) if _num(root.get("tenor_days")) is not None else 0
+        # The contract is `tenor_days: int` (whole days to expiry). Pass the int
+        # through unchanged; a non-int (None, partial float, str) becomes None
+        # — the fold never prints tenor, so a None here is silent.
+        _raw_tenor = root.get("tenor_days")
+        if isinstance(_raw_tenor, int) and not isinstance(_raw_tenor, bool):
+            tenor_days: int | None = _raw_tenor
+        elif isinstance(_raw_tenor, float) and _raw_tenor.is_integer():
+            tenor_days = int(_raw_tenor)
+        else:
+            tenor_days = None
         summary_pair = _payoff_lab_straddle_summary(root, expiry_en)
         if summary_pair is None:
             summary_en, summary_zh = _PAYOFF_LAB_SUMMARY_FALLBACK_EN, _PAYOFF_LAB_SUMMARY_FALLBACK_ZH

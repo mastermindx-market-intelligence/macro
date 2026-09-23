@@ -303,13 +303,13 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
    only the treatment of the wall/spot/flip marks changes — see html[data-
    theme="light"] override below.  Inline `left:%` values are data-driven
    geometry (allowed); nothing else inline. */
-.oew-lab-track{position:relative;height:14px;background:var(--hair);
-  border:1px solid var(--tile);margin-top:2px}
+.oew-lab-track{position:relative;height:4px;background:var(--hair);
+  border:1px solid var(--tile);margin-top:6px}
 .oew-lab-track i{position:absolute;display:block}
-.oew-lab-wall{top:2px;width:1px;height:10px;background:var(--ink-2)}
-.oew-lab-flip{top:5px;width:1px;height:4px;background:var(--muted)}
-.oew-lab-spot{top:4px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
-.oew-lab-be{top:3px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
+.oew-lab-wall{top:-3px;width:1px;height:10px;background:var(--ink-2)}
+.oew-lab-flip{top:-3px;width:1px;height:4px;background:var(--muted)}
+.oew-lab-spot{top:-1px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:-2px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
   outline:1px solid var(--tile)}
 .oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
   font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
@@ -1466,9 +1466,9 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
                 data-tip-en="{{ r.what_en }}" data-tip-zh="{{ r.what_zh }}">
                 <span class="k">{{ t(r.name_en, r.name_zh) }}</span>
                 {%- if r.built %}
-                <span class="v">{{ t(r.cost_en, r.cost_zh) }}</span>
-                <span class="v">{{ t(r.pays_en, r.pays_zh) }}</span>
-                <span class="v">{{ t(r.risk_en, r.risk_zh) }}</span>
+                <span class="v mono">{{ t(r.cost_en, r.cost_zh) }}</span>
+                <span class="v mono">{{ t(r.pays_en, r.pays_zh) }}</span>
+                <span class="v mono">{{ t(r.risk_en, r.risk_zh) }}</span>
                 {%- else %}
                 <span class="v oew-lab-null">{{ t(r.null_en, r.null_zh) }}</span>
                 {%- endif %}
