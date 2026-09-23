@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-23T15:20:11+00:00",
+  "generated_at": "2026-09-23T17:02:32+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-09-21",
+      "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 2,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
-        "graded_n": 35
+        "graded_n": 36
       },
       "windows": {
         "full": {
@@ -21,9 +21,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 34,
+            "n": 35,
             "tp": 0,
-            "tn": 34,
+            "tn": 35,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -43,9 +43,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 34,
+            "n": 35,
             "tp": 0,
-            "tn": 34,
+            "tn": 35,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -62,34 +62,34 @@
         "definition": "us_issued_probability_audit.v1",
         "as_of": "2026-09-23",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 52,
+        "input_rows": 53,
         "min_display_n": 5,
         "horizons": {
           "h5": {
-            "n": 35,
+            "n": 36,
             "excluded_n": 17,
             "excluded": {
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-08-20",
+            "through": "2026-08-21",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.028229,
+            "mean_forecast": 0.028,
             "observed_rate": 0.0,
-            "brier": 0.000842,
-            "paired_n": 31,
+            "brier": 0.000829,
+            "paired_n": 32,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.000778,
+            "paired_model_brier": 0.000767,
             "paired_base_brier": 0.001296,
-            "paired_brier_delta": -0.000518,
+            "paired_brier_delta": -0.000529,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 35,
-                "mean_forecast": 0.028229,
+                "n": 36,
+                "mean_forecast": 0.028,
                 "observed_rate": 0.0
               },
               {
@@ -127,30 +127,30 @@
             ]
           },
           "h10": {
-            "n": 35,
+            "n": 36,
             "excluded_n": 17,
             "excluded": {
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-08-20",
+            "through": "2026-08-21",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.076,
+            "mean_forecast": 0.075556,
             "observed_rate": 0.0,
-            "brier": 0.005931,
-            "paired_n": 31,
+            "brier": 0.005867,
+            "paired_n": 32,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.005639,
+            "paired_model_brier": 0.005575,
             "paired_base_brier": 0.007396,
-            "paired_brier_delta": -0.001757,
+            "paired_brier_delta": -0.001821,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 31,
-                "mean_forecast": 0.072903,
+                "n": 32,
+                "mean_forecast": 0.0725,
                 "observed_rate": 0.0
               },
               {
@@ -188,23 +188,23 @@
             ]
           },
           "h21": {
-            "n": 35,
+            "n": 36,
             "excluded_n": 17,
             "excluded": {
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-08-20",
+            "through": "2026-08-21",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.154,
+            "mean_forecast": 0.153333,
             "observed_rate": 0.0,
-            "brier": 0.024066,
-            "paired_n": 35,
+            "brier": 0.023867,
+            "paired_n": 36,
             "missing_baseline_n": 0,
-            "paired_model_brier": 0.024066,
+            "paired_model_brier": 0.023867,
             "paired_base_brier": 0.031684,
-            "paired_brier_delta": -0.007618,
+            "paired_brier_delta": -0.007817,
             "bins": [
               {
                 "lower": 0.0,
@@ -218,8 +218,8 @@
                 "lower": 0.1,
                 "upper": 0.2,
                 "upper_inclusive": false,
-                "n": 35,
-                "mean_forecast": 0.154,
+                "n": 36,
+                "mean_forecast": 0.153333,
                 "observed_rate": 0.0
               },
               {
