@@ -3343,6 +3343,21 @@ jobs:
         # The extracted helper keeps the five-file candidate unreachable until the
         # metadata replay is accepted, and keeps this workflow below GitHub's cap.
         run: bash scripts/ci/options_signal_nightly.sh publish-episode
+      - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)
+        id: options_catalyst_links
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        # consumes only the date-keyed events stage already read by the episode step
+        # writes site/options_catalyst_links/ only
+        # all authority false
+        # first production caller of engine/options_catalyst_link.py
+        run: python -m scripts.build_options_catalyst_links || echo "::warning::build_options_catalyst_links non-fatal failure"
       - name: OIP campaign v2 — checkpoint the exact three canonical ledgers
         id: options_signal_campaign_publish
         if: >-
