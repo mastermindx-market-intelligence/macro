@@ -29,7 +29,8 @@ changed:
     what: This record.
 verified:
   - claim: The independent external review of the R6 delta concluded ACCEPT_WITH_REPAIRS (B1 verifier could not run without the omitted archive; M1 B00 technical-owner label; m1 verifier scope) and B1 is repaired byte-exact.
-    how: research/prophet_v4/r6_program/reviews/R6_INDEPENDENT_REVIEW_GLM53_2026-09-23.md; `cd research/prophet_v4/r6_fable_meta_ceo_handoff && python3 verify_handoff.py` → rc=0 at the repaired head (110 manifest files, 28 baseline members); `shasum -a 256 archives/R5_source_packet.zip` = ded2d954…5635 as MANIFEST.json lists
+    command: "cd research/prophet_v4/r6_fable_meta_ceo_handoff && python3 verify_handoff.py; echo rc=$?"
+    result: "rc=0 at the repaired head (110 manifest files, 28 baseline members); shasum -a 256 archives/R5_source_packet.zip = ded2d954…5635 as MANIFEST.json lists; review record = research/prophet_v4/r6_program/reviews/R6_INDEPENDENT_REVIEW_GLM53_2026-09-23.md"
     note: M1 is declined, not fixed — `technical_owner` is a frozen R5 semantic field (verify_handoff.py rejects any change outside owner/status), and the DEC record already scopes accountability to Fable; the label denotes the incumbent source owner only.
   - claim: The delivered packet is internally consistent (documents, hashes, graph, authority).
     command: cd research/prophet_v4/r6_fable_meta_ceo_handoff && python3 verify_handoff.py | tail -25
