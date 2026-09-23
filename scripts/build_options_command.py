@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -181,6 +182,20 @@ def load_intel_brief(root: Path) -> dict | None:
     has no board_state for a missing file, so absence is a consumer-side
     concern, same _load() convention as every other store this builder reads."""
     return _load(root / "site" / "options_intel_brief.json")
+
+
+def load_payoff_lab(root: Path) -> dict | None:
+    """Fail-soft loader for the index-ETF payoff lab artifact.
+
+    Written by the store-host producer (scripts/build_options_payoff_lab --emit)
+    and committed alongside site/options_intel_brief.json at the SAME path
+    convention.  Absent/corrupt -> None; the fold then renders its own honest
+    absent state, exactly like intel_brief — this loader is a DELIBERATELY
+    SEPARATE function, not a load_stores() member, for the same reason as
+    load_intel_brief above (tests/test_render_options_workspace_scope.py pins
+    load_stores()'s literal source + a runtime probe, which this packet's
+    scope excludes touching)."""
+    return _load(root / "site" / "options_payoff_lab" / "latest.json")
 
 
 _AIB_STATE_SLUG = {"LONG": "up", "SHORT": "down", "VOLATILITY": "vol", "RISK_ONLY": "risk"}
@@ -815,6 +830,331 @@ def build_aib(intel_brief: dict | None, *, now: datetime | None = None) -> dict:
         "freshness": freshness,
         "built_at": built_at_utc,
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F03-W2-5b · Index-ETF Payoff Lab — pass-through card adapter
+# (research/MARKET_ONTOLOGY_F03_PAYOFF_LAB_CONSUMER_2026-09-23.md; producer
+# contract: engine/options_payoff_lab.py SCHEMA "mastermind.options_payoff_lab/v1",
+# published via scripts/build_options_payoff_lab --emit to
+# site/options_payoff_lab/latest.json).
+#
+# This adapter computes NOTHING — every number on the fold is copied verbatim
+# from the producer's payload (StructureSummary + expiry_payoff) and the gex
+# store's own summary fields.  Everything below is PRESENTATION ONLY — sign
+# lookups, breakeven formatting, pad percent math, and the four-clause plain-
+# word verdict.  Never a new threshold, never a re-ranking, never a re-
+# ordering, never a derivation of a price.
+#
+# The fold lives ONLY on the SPY / QQQ / IWM cards (SPX has no chain in the
+# lab; DIA is not a card on this page).  Empty when the payload is absent or
+# when no root carries a BUILT structure — the SPX card and the whole panel
+# stay byte-identical to today.
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-share cost: StructureSummary.cost is PER-CONTRACT (multiplier applied
+# in engine/options_payoff.py: structure_summary uses curve.cost which is
+# `sum(leg.qty * leg.multiplier * leg.entry_price)`).  For ETF standard
+# contracts the multiplier is 100 (engine/options_payoff_lab.py
+# ETF_STANDARD_MULTIPLIER).  The card displays PER-SHARE cost, so we divide
+# by 100 — the DEC record states this division explicitly.  cost_per_unit
+# from PayoffCurve is the same value computed the same leg, used as a
+# tie-breaker; the canonical per-share figure on the page comes from
+# StructureSummary.cost / 100.0 (DEC-F03-W2-5B-…).
+_PAYOFF_LAB_PER_SHARE_DIVISOR = 100.0
+# A name -> (en, zh, what-line en, what-line zh) closed vocabulary, in the
+# fixed order the fold renders them.  Never the producer's slugs on the face.
+_PAYOFF_LAB_ROWS = (
+    ("atm_straddle", "Straddle", "跨式",
+     "pays if the index moves more than the cost, either way",
+     "指数向任一方向的波动超过成本即获利"),
+    ("rr25", "Upside for downside", "以下行换上行",
+     "buy an upside call, pay for it by selling a downside put",
+     "买入上行看涨，卖出下行看跌以支付成本"),
+    ("put_spread_95_90", "Downside hedge", "下行保护",
+     "pays if the index falls 5–10%; the cost is the most you can lose",
+     "指数下跌5–10%时获利；最多损失成本"),
+    ("call_spread_105_110", "Upside play", "上行押注",
+     "pays if the index rises 5–10%; the cost is the most you can lose",
+     "指数上涨5–10%时获利；最多损失成本"),
+)
+# Plain-word NULL row copy (when the producer's null_reason diverges from
+# this exact wording, the producer's prose wins on ≤ 10 plain words).
+_PAYOFF_LAB_NULL_EN = "not priced today — one leg had no quote"
+_PAYOFF_LAB_NULL_ZH = "今日未定价——某一腿无报价"
+# Fallback fold summary when the straddle is NULL.
+_PAYOFF_LAB_SUMMARY_FALLBACK_EN = "What a structure pays"
+_PAYOFF_LAB_SUMMARY_FALLBACK_ZH = "结构的盈亏"
+
+
+def _payoff_lab_expiry_en(expiration: str | None) -> str:
+    """Render an ISO date as 'Oct 17' (no leading zero, short month)."""
+    if not expiration or not isinstance(expiration, str):
+        return ""
+    try:
+        from datetime import date as _date
+        d = _date.fromisoformat(expiration[:10])
+    except Exception:  # noqa: BLE001
+        return expiration
+    return d.strftime("%b %-d") if hasattr(d.strftime("%-d"), "__call__") else f"{d.strftime('%b')} {d.day}"
+
+
+def _payoff_lab_expiry_zh(expiration: str | None) -> str:
+    if not expiration or not isinstance(expiration, str):
+        return ""
+    try:
+        from datetime import date as _date
+        d = _date.fromisoformat(expiration[:10])
+    except Exception:  # noqa: BLE001
+        return expiration
+    return f"{d.month}月{d.day}日"
+
+
+def _payoff_lab_straddle_summary(root: dict, expiry_en: str) -> tuple[str, str] | None:
+    """Return (summary_en, summary_zh) for the straddle row of the fold, or
+    None if no expiration can be displayed.  Priced move = (upper breakeven
+    − spot) / spot, displayed as one decimal percentage.  When the straddle
+    is NULL, returns the fold's heading copy."""
+    expiration = root.get("expiration")
+    spot = _num(root.get("spot"))
+    structures = root.get("structures") or []
+    straddle = next((s for s in structures if isinstance(s, dict)
+                     and s.get("name") == "atm_straddle"), None)
+    summary = (straddle.get("summary") if isinstance(straddle, dict) else None) or {}
+    breakevens = summary.get("breakevens") or []
+    expiry_text_en = _payoff_lab_expiry_en(expiration)
+    if not expiry_text_en or spot is None or len(breakevens) < 2:
+        return None
+    be = sorted(_num(b) for b in breakevens if _num(b) is not None)
+    if len(be) < 2 or spot <= 0:
+        return None
+    upper = max(be)
+    priced_move = (upper - spot) / spot * 100.0
+    summary_en = f"Priced move to {expiry_text_en}: ±{priced_move:.1f}%"
+    summary_zh = f"至{expiry_text_en}的定价波幅：±{priced_move:.1f}%"
+    return summary_en, summary_zh
+
+
+def _payoff_lab_risk_word(value, en_unit_word: str, zh_unit_word: str) -> tuple[str, str]:
+    """max_loss/max_gain → plain words.  UNBOUNDED string sentinel maps to
+    'no cap' / '无上限'; a None value reads 'no number' / '无数字'; numeric
+    values format as 'most you can lose: the cost' (string interpolation is
+    the caller's job — we never re-derive the amount)."""
+    if value == "UNBOUNDED":
+        return "no cap", "无上限"
+    if value is None:
+        return "—", "—"
+    return f"{_num(value):,.0f}" if _num(value) is not None else str(value), str(value)
+
+
+def _payoff_lab_format_breakeven(value) -> str:
+    """Breakeven prices are index-ETF whole numbers — no decimals on this page."""
+    v = _num(value)
+    return f"{v:,.0f}" if v is not None else "—"
+
+
+def _payoff_lab_cost_per_share(cost) -> float | None:
+    """StructureSummary.cost is per-contract; the page reads per-share."""
+    v = _num(cost)
+    if v is None:
+        return None
+    return v / _PAYOFF_LAB_PER_SHARE_DIVISOR
+
+
+def _payoff_lab_cost_pct(cost_per_share: float | None, spot: float | None) -> float | None:
+    if cost_per_share is None or spot in (None, 0):
+        return None
+    return cost_per_share / spot * 100.0
+
+
+def _payoff_lab_row_text(record: dict | None, spot: float | None) -> dict:
+    """One row of the fold's four-row table — fixed order, fixed plain names."""
+    out = {"name_en": "", "name_zh": "", "cost_en": "", "cost_zh": "",
+           "pays_en": "", "pays_zh": "", "risk_en": "", "risk_zh": "",
+           "what_en": "", "what_zh": "", "built": False, "null_en": "", "null_zh": ""}
+    if not isinstance(record, dict):
+        return out
+    name = record.get("name")
+    spec = next((row for row in _PAYOFF_LAB_ROWS if row[0] == name), None)
+    if spec is None:
+        return out
+    out["name_en"], out["name_zh"], what_en, what_zh = spec[1], spec[2], spec[3], spec[4]
+    out["what_en"], out["what_zh"] = what_en, what_zh
+    summary = (record.get("summary") if isinstance(record.get("summary"), dict) else {})
+    payoff = (record.get("expiry_payoff") if isinstance(record.get("expiry_payoff"), dict) else {})
+    breakevens = summary.get("breakevens") or []
+    cost_per_share = _payoff_lab_cost_per_share(summary.get("cost"))
+    cost_pct = _payoff_lab_cost_pct(cost_per_share, spot)
+    built = payoff.get("max_gain") is not None or payoff.get("max_loss") is not None
+    out["built"] = bool(built)
+    if built:
+        if cost_per_share is not None and cost_per_share < 0:
+            out["cost_en"] = f"brings in ${abs(cost_per_share):.2f} a share"
+            out["cost_zh"] = f"获得 ${abs(cost_per_share):.2f}/股"
+        elif cost_per_share is not None:
+            pct_text = f" · {cost_pct:.1f}% of the index" if cost_pct is not None else ""
+            out["cost_en"] = f"costs ${cost_per_share:.2f} a share{pct_text}"
+            out["cost_zh"] = f"成本 ${cost_per_share:.2f}/股"
+        else:
+            out["cost_en"] = "cost unavailable"
+            out["cost_zh"] = "成本暂不可用"
+        if len(breakevens) >= 2:
+            be = sorted(_num(b) for b in breakevens if _num(b) is not None)
+            if len(be) >= 2:
+                out["pays_en"] = f"pays past {_payoff_lab_format_breakeven(be[0])} or {_payoff_lab_format_breakeven(be[-1])}"
+                out["pays_zh"] = f"在 {_payoff_lab_format_breakeven(be[0])} 或 {_payoff_lab_format_breakeven(be[-1])} 之外获利"
+        if not out["pays_en"]:
+            out["pays_en"] = "no breakeven today"
+            out["pays_zh"] = "今日无盈亏平衡点"
+        loss_en, _ = _payoff_lab_risk_word(payoff.get("max_loss"), "loss", "dollar")
+        gain_en, _ = _payoff_lab_risk_word(payoff.get("max_gain"), "gain", "dollar")
+        loss_word = "the cost" if loss_en == "—" or _num(payoff.get("max_loss")) == -abs(cost_per_share or 0) else loss_en
+        gain_word = "no cap" if gain_en == "no cap" else gain_en
+        out["risk_en"] = f"most you can lose: {loss_word} · most you can make: {gain_word}"
+        out["risk_zh"] = f"最多损失：{loss_word} · 最多盈利：{gain_word}"
+    else:
+        # Producer's prose wins on ≤ 10 plain words; the closed-vocab string
+        # above is the default when the payload gives us nothing more specific.
+        out["null_en"] = _PAYOFF_LAB_NULL_EN
+        out["null_zh"] = _PAYOFF_LAB_NULL_ZH
+        states = record.get("states") or []
+        for st in states:
+            if isinstance(st, dict) and st.get("reason"):
+                prose = str(st.get("reason")).strip()
+                # Keep the override short — ≤ 10 plain words.
+                words = [w for w in prose.split() if w]
+                if 0 < len(words) <= 10:
+                    out["null_en"] = prose
+                    out["null_zh"] = prose  # no automatic ZH mirror; producer emits EN prose
+                    break
+    return out
+
+
+def _payoff_lab_bracket(root: dict, stores: dict) -> dict | None:
+    """Wall-bracket geometry for the track + plain-word verdict.
+
+    Track domain = [min(put_wall, lo) − 2%·spot, max(call_wall, hi) + 2%·spot].
+    Returns a dict with 0–100 pct positions on the track and the verdict
+    strings, or None when any of: spot/walls/breakevens is missing.  Walls
+    compare at EXPIRY horizon vs walls measured at this close — the lens
+    tip says so, and the verdict does not claim today's intraday walls.
+    """
+    summary = ((stores.get("gex") or {}).get(root.get("root")) or {}).get("summary") or {}
+    spot = _num(summary.get("spot"))
+    put_wall = _num(summary.get("put_wall"))
+    gamma_flip = _num(summary.get("gamma_flip"))
+    call_wall = _num(summary.get("call_wall"))
+    if spot in (None, 0) or put_wall is None or gamma_flip is None or call_wall is None:
+        return None
+    structures = root.get("structures") or []
+    straddle = next((s for s in structures if isinstance(s, dict)
+                     and s.get("name") == "atm_straddle"), None)
+    if not isinstance(straddle, dict):
+        return None
+    bes = (((straddle.get("summary") or {}).get("breakevens")) or [])
+    be = sorted(_num(b) for b in bes if _num(b) is not None)
+    if len(be) < 2:
+        return None
+    lo, hi = be[0], be[-1]
+    pad = 0.02 * spot
+    track_lo = min(put_wall, lo) - pad
+    track_hi = max(call_wall, hi) + pad
+    span = track_hi - track_lo
+    if span <= 0:
+        return None
+    pct_pos = lambda v: (v - track_lo) / span * 100.0
+    floor_pct = pct_pos(put_wall)
+    flip_pct = pct_pos(gamma_flip)
+    ceiling_pct = pct_pos(call_wall)
+    spot_pct = pct_pos(spot)
+    lo_pct = pct_pos(lo)
+    hi_pct = pct_pos(hi)
+    # Verdict — only four plain-word outcomes.
+    if lo > put_wall and hi < call_wall:
+        verdict_en, verdict_zh = "Priced move stays inside the walls", "定价波幅在墙位之内"
+    elif hi >= call_wall and lo > put_wall:
+        verdict_en, verdict_zh = "Priced move reaches the ceiling", "定价波幅触及上方墙"
+    elif lo <= put_wall and hi < call_wall:
+        verdict_en, verdict_zh = "Priced move reaches the floor", "定价波幅触及下方墙"
+    else:
+        verdict_en, verdict_zh = "Priced move clears both walls", "定价波幅越过上下墙位"
+    return {
+        "floor_pct": round(floor_pct, 1),
+        "flip_pct": round(flip_pct, 1),
+        "ceiling_pct": round(ceiling_pct, 1),
+        "spot_pct": round(spot_pct, 1),
+        "lo_pct": round(lo_pct, 1),
+        "hi_pct": round(hi_pct, 1),
+        "verdict_en": verdict_en, "verdict_zh": verdict_zh,
+    }
+
+
+def build_payoff_lab(payload: dict | None, stores: dict) -> dict:
+    """Adapter for the index-ETF payoff lab — per-symbol card_dict, keyed by
+    SPY / QQQ / IWM only (SPX has no chain in the lab; DIA is not a card on
+    this page).  Returns `{}` when the payload is absent, accrual_state is
+    'absent', roots is empty, or no root carries a BUILT structure."""
+    out: dict[str, dict] = {}
+    if not isinstance(payload, dict):
+        return out
+    if payload.get("accrual_state") == "absent":
+        return out
+    roots = payload.get("roots") or []
+    if not isinstance(roots, list) or not roots:
+        return out
+    any_built = False
+    for root in roots:
+        if not isinstance(root, dict):
+            continue
+        structures = root.get("structures") or []
+        if not any(
+            isinstance(s, dict)
+            and (s.get("expiry_payoff") or {}).get("max_gain") is not None
+            for s in structures
+        ):
+            continue
+        any_built = True
+        sym = root.get("root")
+        if sym not in ("SPY", "QQQ", "IWM"):
+            continue
+        expiry_iso = root.get("expiration")
+        expiry_en = _payoff_lab_expiry_en(expiry_iso)
+        expiry_zh = _payoff_lab_expiry_zh(expiry_iso)
+        tenor_days = int(_num(root.get("tenor_days")) or 0) if _num(root.get("tenor_days")) is not None else 0
+        summary_pair = _payoff_lab_straddle_summary(root, expiry_en)
+        if summary_pair is None:
+            summary_en, summary_zh = _PAYOFF_LAB_SUMMARY_FALLBACK_EN, _PAYOFF_LAB_SUMMARY_FALLBACK_ZH
+        else:
+            summary_en, summary_zh = summary_pair
+        # Build the four rows in fixed order, regardless of whether a root
+        # carries every structure — the fold always shows the catalog.
+        rows: list[dict] = []
+        spec_order = [name for name, *_ in _PAYOFF_LAB_ROWS]
+        record_by_name = {
+            (s.get("name") if isinstance(s, dict) else None): s
+            for s in structures if isinstance(s, dict)
+        }
+        spot = _num(root.get("spot"))
+        for name in spec_order:
+            rows.append(_payoff_lab_row_text(record_by_name.get(name), spot))
+        bracket = _payoff_lab_bracket(root, stores)
+        # asof_note only when ledger_asof differs from the card's own asof.
+        ledger_asof = payload.get("ledger_asof")
+        card_asof = payload.get("asof")
+        asof_note_en = ""
+        asof_note_zh = ""
+        if ledger_asof and card_asof and str(ledger_asof) != str(card_asof):
+            asof_note_en = f"Structures as of {ledger_asof}"
+            asof_note_zh = f"结构定价截至 {ledger_asof}"
+        out[sym] = {
+            "expiry_en": expiry_en, "expiry_zh": expiry_zh,
+            "tenor_days": tenor_days,
+            "summary_en": summary_en, "summary_zh": summary_zh,
+            "rows": rows, "bracket": bracket,
+            "asof_note_en": asof_note_en, "asof_note_zh": asof_note_zh,
+        }
+    if not any_built:
+        return {}
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1559,13 +1899,20 @@ def _missing_stores(stores: dict) -> list[str]:
 
 
 def build_context(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
-                  *, now: datetime | None = None) -> dict:
+                  payoff_lab: dict | None = None, *, now: datetime | None = None) -> dict:
     """Assemble the whole workspace context from the committed stores.
 
     `intel_brief` is the AD-1 board's OWN artifact (site/options_intel_brief.json),
     kept OUT of `stores`/load_stores() on purpose — see the AD-1 section above.
     Default None: every pre-existing caller that never passes it renders the
     board in its honest "unavailable" state, with zero other behaviour change.
+
+    `payoff_lab` is the F03-W2-5b index-ETF payoff lab artifact
+    (site/options_payoff_lab/latest.json), threaded the same way as
+    `intel_brief`: a separate optional parameter, default None, the fold
+    renders its honest empty state when the payload is absent.  See
+    load_payoff_lab() above for the loader and build_payoff_lab() for the
+    pass-through adapter.
     """
     stores = load_stores(root) if stores is None else stores
 
@@ -1600,6 +1947,17 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
         "bets": bets,
         "rail": rail,
         "aib": build_aib(intel_brief, now=clock),
+        # F03-W2-5b · index-ETF payoff lab fold on the four index cards.  Pass-
+        # through — see build_payoff_lab() above; an empty/absent payload
+        # renders {} and the fold's Jinja guard `{% if lab %}` short-circuits.
+        "payoff_lab": build_payoff_lab(payoff_lab, stores),
+        # Evidence-capture only: when capture_page_evidence.py needs the SPY
+        # fold open in the screenshot, the build is invoked with
+        # OEW_PAYOFF_LAB_FORCE_OPEN=1 (a build-time env, never a user-facing
+        # state).  The template's <details> then carries the `open` attribute.
+        # Default 0 — the fold stays collapsed like every other summary on the
+        # page.
+        "payoff_lab_force_open": bool(int(os.environ.get("OEW_PAYOFF_LAB_FORCE_OPEN", "0") or 0)),
         "counts": {
             "scanner": session.get("universe"),
             "ticker": "SPY" if "SPY" in (stores.get("gex") or {}) else (INDEX_KEYS[0]),
@@ -1671,9 +2029,9 @@ def _sector_zh_json(stores: dict) -> str:
 
 
 def render(root: Path, stores: dict | None = None, intel_brief: dict | None = None,
-           *, now: datetime | None = None) -> str:
+           payoff_lab: dict | None = None, *, now: datetime | None = None) -> str:
     """Render options.html.j2 and return the HTML string."""
-    ctx = build_context(root, stores, intel_brief, now=now)
+    ctx = build_context(root, stores, intel_brief, payoff_lab, now=now)
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
@@ -1704,7 +2062,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         stores = load_stores(root)
         intel_brief = load_intel_brief(root)
-        html = render(root, stores=stores, intel_brief=intel_brief)
+        payoff_lab = load_payoff_lab(root)
+        html = render(root, stores=stores, intel_brief=intel_brief, payoff_lab=payoff_lab)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         # write_page is the ONLY write path. The fail-soft law above covers a
@@ -1715,7 +2074,7 @@ def main(argv: list[str] | None = None) -> int:
         from lib.pages import write_page  # noqa: PLC0415
         write_page(out_path, html)
 
-        ctx = build_context(root, stores, intel_brief)
+        ctx = build_context(root, stores, intel_brief, payoff_lab)
         sess = ctx["session"]
         log.info(
             "options workspace -> %s | session=%s coverage=%s/%s (%s%%) quality=%s missing=%s aib=%s",

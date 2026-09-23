@@ -296,6 +296,43 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-aib-detail summary:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-aib-detailbody{margin-top:6px;display:flex;flex-direction:column;gap:7px}
 .oew-aib-dline{display:flex;flex-direction:column;gap:2px;font-size:11px}
+/* ── A-F03-W2-5b · PAYOFF LAB fold (dark + light are two art directions, TP-0
+   2026-08-27). Dark = command center (luminance depth: the accent dots are
+   the brightest thing in the fold, no glow). Light = research workspace
+   (ink weight instead of luminance; hairline discipline). Geometry is shared;
+   only the treatment of the wall/spot/flip marks changes — see html[data-
+   theme="light"] override below.  Inline `left:%` values are data-driven
+   geometry (allowed); nothing else inline. */
+.oew-lab-track{position:relative;height:14px;background:var(--hair);
+  border:1px solid var(--tile);margin-top:2px}
+.oew-lab-track i{position:absolute;display:block}
+.oew-lab-wall{top:2px;width:1px;height:10px;background:var(--ink-2)}
+.oew-lab-flip{top:5px;width:1px;height:4px;background:var(--muted)}
+.oew-lab-spot{top:4px;width:6px;height:6px;border-radius:50%;
+  background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:3px;width:7px;height:7px;border-radius:50%;
+  background:var(--oew-accent);margin-left:-3.5px;
+  box-shadow:0 0 0 1px var(--tile)}
+.oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  margin-top:4px}
+html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
+.oew-lab-verdict{font-size:12px;font-weight:650;margin:0}
+.oew-lab-row{display:grid;grid-template-columns:auto 1fr;gap:6px var(--s2);
+  font-size:11.5px;align-items:baseline;padding:2px 0}
+.oew-lab-row .k{font-weight:650;color:var(--text)}
+.oew-lab-row .v{color:var(--ink-2);line-height:1.35}
+.oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
+.oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
+/* Light override: ink-weight ticks (2px walls) instead of luminance dots;
+   accent stays the page's #4c55a8 (set on html[data-theme="light"] .oew
+   above) — no redefinition, no ring, no shadow. */
+html[data-theme="light"] .oew-lab-wall{width:2px}
+html[data-theme="light"] .oew-lab-be{box-shadow:none}
+@media (max-width:640px){
+  .oew-lab-row{grid-template-columns:1fr;gap:2px}
+  .oew-lab-track{width:100%}
+}
 .oew-aib-dline .k{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .oew-aib-dline .v{color:var(--ink-2);line-height:1.4}
 .oew-aib-empty,.oew-aib-degraded{font-size:12.5px;color:var(--ink-2);line-height:1.5}
@@ -1403,6 +1440,46 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
             {% else %}<span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>{% endif %}
             <span class="oew-ic-em mono">{{ ix.em }}</span>
           </div>
+          {%- set lab = payoff_lab.get(ix.sym) if payoff_lab else None -%}
+          {%- if lab -%}
+          <details class="oew-aib-detail oew-lab"{% if payoff_lab_force_open %} open{% endif %}>
+            <summary>{{ t(lab.summary_en, lab.summary_zh) }}</summary>
+            <div class="oew-aib-detailbody oew-lab-body">
+              {%- if lab.bracket -%}
+              <div class="oew-lab-track" role="img"
+                data-tip-en="The two dots are where a straddle bought at this close breaks even at expiry — the move the options market is charging for. The ticks are the dealer-hedging walls measured today. Walls can move before expiry; this compares a to-expiry price with a same-day map. Model estimate from end-of-day mid prices, no fees, not a quote."
+                data-tip-zh="两个圆点标示收盘时买入跨式到期盈亏平衡的价格——即期权市场正在定价的波动幅度。刻度为今日测算的做市商对冲墙位。墙位在到期前可能移动；这里比较的是到期价格与当日墙位。模型估算来自收盘中间价，不含费用，并非实时报价。">
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.floor_pct }}%"></i>
+                <i class="oew-lab-wall" style="left:{{ lab.bracket.ceiling_pct }}%"></i>
+                <i class="oew-lab-flip" style="left:{{ lab.bracket.flip_pct }}%"></i>
+                <i class="oew-lab-spot" style="left:{{ lab.bracket.spot_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.lo_pct }}%"></i>
+                <i class="oew-lab-be" style="left:{{ lab.bracket.hi_pct }}%"></i>
+              </div>
+              <div class="oew-lab-legend mono">
+                <span>{{ t('Floor', '下方墙') }}</span>
+                <span>{{ t('Flip', '翻转位') }}</span>
+                <span>{{ t('Ceiling', '上方墙') }}</span>
+              </div>
+              <p class="oew-lab-verdict">{{ t(lab.bracket.verdict_en, lab.bracket.verdict_zh) }}</p>
+              {%- endif -%}
+              {%- for r in lab.rows -%}
+              <div class="oew-lab-row{% if not r.built %} is-null{% endif %}"
+                data-tip-en="{{ r.what_en }}" data-tip-zh="{{ r.what_zh }}">
+                <span class="k">{{ t(r.name_en, r.name_zh) }}</span>
+                {%- if r.built %}
+                <span class="v">{{ t(r.cost_en, r.cost_zh) }}</span>
+                <span class="v">{{ t(r.pays_en, r.pays_zh) }}</span>
+                <span class="v">{{ t(r.risk_en, r.risk_zh) }}</span>
+                {%- else %}
+                <span class="v oew-lab-null">{{ t(r.null_en, r.null_zh) }}</span>
+                {%- endif %}
+              </div>
+              {%- endfor -%}
+              <p class="oew-lab-foot">{{ t('End-of-day mid prices, ' ~ lab.expiry_en ~ ' expiry · ThetaData', '收盘中间价，' ~ lab.expiry_zh ~ '到期 · ThetaData') }}{% if lab.asof_note_en %} · {{ t(lab.asof_note_en, lab.asof_note_zh) }}{% endif %}</p>
+            </div>
+          </details>
+          {%- endif -%}
         </div>
         {% endfor %}
       </div>
