@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T10:29:31.064109+00:00",
-  "count": 2702,
+  "generated_at": "2026-09-23T11:24:00.999042+00:00",
+  "count": 2705,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1573,6 +1573,45 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-iqzxspdbmim-58c49d",
+      "title": "USA GS Economic Indicators Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:31Z",
+      "summary_points": [
+        "GS US Financial Conditions Index Tightening: Nominal FCI tightened 1.8bp to 98.67, real FCI tightened 4.1bp to 98.25; negative Real GDP Growth Impulse dampens near-term growth outlook.",
+        "Credit & Equity Stress: BBB Credit Spread (-3.6 bps) and Log SPX (-1.0 bps) indicate deteriorating credit conditions and equity market stress, offsetting lower equity prices; Fed Funds (+1.1 bps) and 10-yr TSy (+1.8 bps) reflect restrictive policy stance.",
+        "Structural Wage Growth: GS Wage Tracker shows sustained 5% wage growth (peaking 2023-2024), outpacing ECI/median earnings, signaling persistent labor tightness driving inflation and delaying monetary policy normalization.",
+        "US MAP Index & Leading Indicators: MAP Index at +0.7 signals positive economic surprises; Manufacturing Survey Tracker (blue) outperforms ISM Manufacturing Index (red), and Non-Manufacturing Tracker (blue) recovers faster than ISM Services Index (red), indicating sector resilience and leading indicator status."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dtkibmuajv3-ed61f1",
+      "title": "The 720 The Refining Super Cycle, China Online Games NetEase & XD, Xiaomi, Toray, Busy Ming, Sansera Engg, Ramelius",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:29Z",
+      "summary_points": [
+        "Refining Super Cycle: Goldman Sachs upgrades SK Innovation (12m TP W140,000) with 27%/24%/17% EBITDA estimate hikes for 2026-2028, driven by tight supply and refining margins; highlights S-Oil, Thai Oil, Valero, Marathon, Repsol for robust cash flow.",
+        "China Consumer Durables Demand: August NBS data shows +2% YoY domestic appliance retail growth, with exports surging from Latin America/emerging market restocking; targets Midea, Roborock, Anker for growth potential.",
+        "Global Cross-Asset Repricing: Fed/BoJ 25bp hikes and Brent crude >$100/bbl trigger cross-asset repricing; maintains neutral (3mo), pro-risk (12mo) stance: overweight equities, underweight credit/bonds/real estate as recession hedges."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rerdwz2ob94-e3e252",
       "title": "GOAL Kickstart Markets repricing around higher rates and oil prices",
       "institution": "Goldman Sachs",
@@ -1587,6 +1626,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wq5nh13jemi-90cfd2",
+      "title": "Global GS Economic Indicators Update Current Activity in DMs Above Potential",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:20Z",
+      "summary_points": [
+        "DM CAI Above Potential: Goldman Sachs' DM Current Activity Indicator (CAI) exceeds potential threshold (1.6%) as of Sep-26, signaling stronger-than-expected developed market economic momentum.",
+        "Global ex Russia FCI Tightening: 3.8bps weekly FCI tightening driven by exchange rates (1.6bps), amplifying FX volatility amid geopolitical tensions and signaling heightened market stress.",
+        "Asia Growth Revisions vs Europe: Positive GDP revisions across Asia (esp.",
+        "Asia Pacific) contrast with negative Western Europe revisions, highlighting regional growth divergence critical for allocation.",
+        "EM CAI Outperformance: EM CAI at 4.2% vs DM CAI at 1.6%, fueling EM capital flows but indicating sustainability risks for portfolio managers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
       "language": "en",
       "needs_metadata": false
     },
