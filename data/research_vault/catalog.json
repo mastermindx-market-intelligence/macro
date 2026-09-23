@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T01:22:38.163079+00:00",
-  "count": 2676,
+  "generated_at": "2026-09-23T01:53:50.454210+00:00",
+  "count": 2677,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-panyzaaoyqm-fef318",
+      "title": "GERMANY: MERZ IN TROUBLE AFTER STATE ELECTION DISASTER",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-22T23:49:12Z",
+      "summary_points": [
+        "CDU Collapse: CDU drops below 5% in MWP election (worst result ever), triggering leadership chaos and threatening pro-growth reform timelines amid coalition instability.",
+        "Berlin Political Shift: Left party secures 25.7% in Berlin regional election (overtaking CDU), signaling strong resistance to pension reforms and pro-growth agenda.",
+        "Reform Softening: Coalition likely delays entitlement cuts (e.g., extended early retirement transition) but accelerates defense/infrastructure spending via 2025 fiscal rules to offset political backlash."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-lld02x88wkk-044b41",
       "title": "insights india",
