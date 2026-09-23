@@ -3146,6 +3146,16 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     suites inspect committed site/ artifacts, not historical blobs). Do not
     replace the PACK checkout with sparse checkout. W3 contains only ci-plan's
     working tree; ci-pack materialization remains W4.
+
+    And no ``filter: blob:none`` on the pack checkout (2026-09-23,
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION): a pack materialises the whole
+    tree anyway, so the filter only moved ~5 GiB of blobs out of the retried
+    ``git fetch`` into one unretried promisor request issued by ``git
+    checkout``. Three of those died at 65–67 minutes ("N bytes of body are
+    still expected" / "could not fetch 20ced735… from promisor remote" — the
+    first index entry, not a corrupt object): runs 35876013221, 35885173966,
+    35886408213. An unfiltered depth-1 fetch is retried by actions/checkout
+    and leaves the checkout step with no network to fail on.
     """
     workflow = _yaml(WORKFLOW)
     pack = workflow["jobs"]["ci-pack"]
@@ -3154,7 +3164,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
         for step in pack["steps"]
         if str(step.get("uses", "")).startswith("actions/checkout@")
     )
-    assert checkout["with"]["filter"] == "blob:none"
+    assert "filter" not in checkout["with"]
     assert checkout["with"]["fetch-depth"] == 1
     assert "sparse-checkout" not in checkout["with"]
     plan = workflow["jobs"]["ci-plan"]

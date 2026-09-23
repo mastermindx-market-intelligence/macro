@@ -3763,7 +3763,9 @@ def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> Non
     one's object database through ``objects/info/alternates``. Alternates share
     OBJECTS, never the partial-clone extension or the promisor remote that can
     go and get the omitted ones — so on a ``blob:none`` runner checkout
-    (ci.yml gives every pack ``filter: blob:none``) the borrowing repository
+    (every hosted pack's shape until 2026-09-23; see
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION for why the hosted packs now fetch
+    the full tree, which makes this a no-op there) the borrowing repository
     cannot lazily fetch, and ``git checkout`` dies with "unable to read sha1
     file" on precisely the blobs the PR changed. Hydrating here, in the
     checkout that DOES hold the promisor remote and its credentials, is what
