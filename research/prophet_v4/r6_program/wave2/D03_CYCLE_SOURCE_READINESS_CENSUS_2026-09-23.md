@@ -7,7 +7,25 @@
 
 ## ANCHORS READ
 
-TODO
+- Decision D03, verbatim field basis: `research/prophet_v4/r6_fable_meta_ceo_handoff/effective/DECISION_REGISTER.json:62@5f02cd6c95ab3`.
+- Q01 verbatim scope: `research/prophet_v4/r6_fable_meta_ceo_handoff/effective/RESEARCH_DOCKET.json:6@5f02cd6c95ab3`.
+- Q07 verbatim scope: `research/prophet_v4/r6_fable_meta_ceo_handoff/effective/RESEARCH_DOCKET.json:172@5f02cd6c95ab3`.
+- Configured vintage set and explicit depth caveats: `config.yml:124@5f02cd6c95ab3`, `config.yml:143@5f02cd6c95ab3`, `config.yml:154@5f02cd6c95ab3`.
+- Business-cycle lag model: `engine/business_cycle.py:94@5f02cd6c95ab3`; table: `engine/business_cycle.py:124@5f02cd6c95ab3`.
+- Business-cycle vintage selection: `engine/business_cycle.py:137@5f02cd6c95ab3`; `engine/business_cycle.py:151@5f02cd6c95ab3`; `engine/business_cycle.py:178@5f02cd6c95ab3`.
+- ALFRED initial-release fetch/store: `collectors/fred.py:176@5f02cd6c95ab3`; `collectors/fred.py:197@5f02cd6c95ab3`.
+- ALFRED point-in-time reader semantics: `collectors/fred.py:239@5f02cd6c95ab3`; `collectors/fred.py:255@5f02cd6c95ab3`.
+- Vintage store registration: `config/dataset_registry.yml:206@5f02cd6c95ab3`; schema/`realtime_start`: `config/dataset_registry.yml:235@5f02cd6c95ab3`.
+- Read-only audit contract: `scripts/audit_alfred_depth.py:1@5f02cd6c95ab3`; `scripts/audit_alfred_depth.py:10@5f02cd6c95ab3`.
+- Macro/thematic cycles: `engine/cycle_proxies.py:299@5f02cd6c95ab3`; bottleneck legs `config.yml:433@5f02cd6c95ab3`.
+- Membership PIT: `scripts/build_baskets.py:13@5f02cd6c95ab3`; `engine/basket_membership_pit.py:71@5f02cd6c95ab3`; `engine/basket_membership_pit.py:140@5f02cd6c95ab3`.
+- Finviz/THS vintage ladders: `engine/theme_graph/local_sources.py:1@5f02cd6c95ab3`; `engine/theme_graph/local_sources.py:132@5f02cd6c95ab3`; `engine/theme_graph/local_sources.py:312@5f02cd6c95ab3`; `engine/theme_graph/local_sources.py:343@5f02cd6c95ab3`.
+- Identity authority and current-only limits: `config/identity_seams.yml:49@5f02cd6c95ab3`; `config/identity_seams.yml:69@5f02cd6c95ab3`; `config/identity_seams.yml:94@5f02cd6c95ab3`; rename seam `config/identity_seams.yml:108@5f02cd6c95ab3`.
+- Price plane: `collectors/massive_stock_day.py:1@5f02cd6c95ab3`; `collectors/massive_stock_day.py:17@5f02cd6c95ab3`; `collectors/massive_stock_day.py:146@5f02cd6c95ab3`; registration `config/dataset_registry.yml:135@5f02cd6c95ab3`.
+- Rights records: `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:1@5f02cd6c95ab3`; `config/theme_sources.yml:21@5f02cd6c95ab3`; `config/theme_sources.yml:29@5f02cd6c95ab3`; `config/theme_sources.yml:36@5f02cd6c95ab3`.
+- Institutional clocks: `engine/institutional_census/models.py:250@5f02cd6c95ab3`; `engine/institutional_census/models.py:287@5f02cd6c95ab3`.
+- Episode admission ceiling: `engine/stock_identity/analog_pit.py:1@5f02cd6c95ab3`; `engine/stock_identity/analog_pit.py:26@5f02cd6c95ab3`.
+- Current sector-map current-only evidence: `scripts/build_sector_map.py:1@5f02cd6c95ab3`; `scripts/build_sector_map.py:592@5f02cd6c95ab3`; `scripts/build_sector_map.py:626@5f02cd6c95ab3`.
 
 ## Q1 VINTAGE LEG INVENTORY
 
@@ -156,4 +174,49 @@ Forbidden shortcuts considered and refused:
 
 ## EVIDENCE INDEX
 
-TODO
+Evidence key: source-code citations use `path:line@5f02cd6c95ab3`. PR-head line citations use the final head SHA, recorded here after commit. Commands show the output tail and rc; no credential values were captured.
+
+| Claim family | Citation / command |
+|---|---|
+| D03 required evidence and forbidden shortcuts | `DECISION_REGISTER.json:62@5f02cd6c95ab3`; forbidden shortcut line `DECISION_REGISTER.json:68@5f02cd6c95ab3`. |
+| Q01 configured set, depth warning, and explicit empty fallback | `config.yml:124@5f02cd6c95ab3`; `config.yml:143@5f02cd6c95ab3`; `config.yml:154@5f02cd6c95ab3`. |
+| Q01 modeled lags | `engine/business_cycle.py:102@5f02cd6c95ab3`–`118@5f02cd6c95ab3`; executable table `engine/business_cycle.py:124@5f02cd6c95ab3`. |
+| Q01 vintage map and fallback semantics | `engine/business_cycle.py:137@5f02cd6c95ab3`; `engine/business_cycle.py:191@5f02cd6c95ab3`. |
+| Q1 ALFRED initial-release and as-of semantics | `collectors/fred.py:182@5f02cd6c95ab3`; `collectors/fred.py:239@5f02cd6c95ab3`; `collectors/fred.py:255@5f02cd6c95ab3`. |
+| Q1 first-vintage measurement command | `python3 -m scripts.audit_alfred_depth --output data/fred_vintage/alfred_depth_d03_cycle.json`; not run because the local store is omitted. |
+| Q2 FRED IDs/units/rights for M3 candidates | keyless HTML metadata command, rc 0, output tails: `NEWORDER` = nondefense capital goods excluding aircraft, millions SA; `AMTMUO`, `AMTMVS`, `AMTMNO`, `AMTMTI`, `ACOGNO`, `A34SNO` also returned millions SA with Census/FRED source metadata; `A34SMNO`, `A34SMUO`, `A34SMVS`, `A34SMTI`, `A33XMNO`, `A33XMUO`, `A33XMVS`, `A33XMTI` each returned HTTP 404. |
+| Q2 Census six-character code law and machinery categories | command `curl -fsSL .../aggseries.pdf | pdftotext -layout - -`, rc 0, output includes `NXA Nondefense Capital Goods Excluding Aircraft`, `33S Machinery`, `33A`, `33C`, `33D`, `33E`, `33I`, turbine categories, and `33M`; item suffixes `VS`, `NO`, `UO`, `TI`. |
+| Q2 SIC→NAICS/benchmark break | command `curl -fsSL .../summary.pdf | pdftotext -layout - -`, rc 0, output says May 21, 2001 revision of January 1992–March 2001, 1997 Economic Census/1998–1999 ASM and 1999 unfilled-order benchmarks. |
+| Q2 semiconductor M3 break | command `curl -fsSL https://www.census.gov/manufacturing/m3/historical/timeseries.html`, rc 0, visible-text output: April 2010 report ends separately published semiconductor estimates. |
+| Q2 FRED realtime semantics | command `curl -fsSL https://fred.stlouisfed.org/docs/api/fred/realtime_period.html`, rc 0, output tails: real-time period marks when facts were true/known; default is today; `realtime_start/realtime_end` is closed-closed. |
+| Q3 US PIT membership contract | `scripts/build_baskets.py:19@5f02cd6c95ab3`; `engine/basket_membership_pit.py:73@5f02cd6c95ab3`; keep-first key `engine/basket_membership_pit.py:140@5f02cd6c95ab3`. |
+| Q3 observed membership intervals/censoring | `engine/theme_graph/local_sources.py:3@5f02cd6c95ab3`; `engine/theme_graph/local_sources.py:14@5f02cd6c95ab3`; `engine/theme_graph/local_sources.py:312@5f02cd6c95ab3`; THS mapping fence `engine/theme_graph/local_sources.py:355@5f02cd6c95ab3`. |
+| Q3 current-only identity limits | `config/identity_seams.yml:49@5f02cd6c95ab3`; `config/identity_seams.yml:77@5f02cd6c95ab3`; `config/identity_seams.yml:94@5f02cd6c95ab3`. |
+| Q3 current sector map | `scripts/build_sector_map.py:1@5f02cd6c95ab3`; priority/merge `scripts/build_sector_map.py:592@5f02cd6c95ab3` and `626@5f02cd6c95ab3`; display firewall `scripts/build_sector_map.py:29@5f02cd6c95ab3`. |
+| Q4 FRED license metadata split | keyless HTML command rc 0: M3/census/G.17/BLS/Census legs show `public domain: citation requested`; `CMRMTSPL` shows `copyrighted: citation required`. |
+| Q4 Massive rights | `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:9@5f02cd6c95ab3`–`44@5f02cd6c95ab3`; acquisition/window `collectors/massive_stock_day.py:3@5f02cd6c95ab3`, `146@5f02cd6c95ab3`; R2/storage `17@5f02cd6c95ab3`. |
+| Q4 membership provider rights posture | `config/theme_sources.yml:21@5f02cd6c95ab3`; Finviz unresolved `29@5f02cd6c95ab3`; THS unresolved `36@5f02cd6c95ab3`. |
+| Q5 housing alternative monitors | `engine/cycle_proxies.py:299@5f02cd6c95ab3`–`302@5f02cd6c95ab3`. |
+| Q5 episode ceiling/no outcome use | `engine/stock_identity/analog_pit.py:11@5f02cd6c95ab3`; `26@5f02cd6c95ab3`. |
+| Sparse checkout constraint | command `python3 scripts/worktree_sparse.py status`; rc 0; tail: `SPARSE checkout — omitting data, mockups, site, verify_shots`. |
+| No sparse data writes | command `python3 scripts/worktree_sparse.py clean`; deliberately not run because no writer touched an omitted path and the command can delete in force mode. |
+
+Local command receipt:
+
+```text
+git rev-parse HEAD
+5f02cd6c95ab3aa26f6ec61cffc775fb85b14af2
+rc=0
+
+git rev-parse HEAD~1
+1e28f99cd110a9cfd6078baaecc7c4bae4a97a8c
+rc=0
+
+git rev-parse origin/main
+f517796c69904fb2b891e40bad6cc5e89fc47bc9
+rc=0
+
+python3 scripts/worktree_sparse.py status
+worktree-sparse: SPARSE checkout — omitting data, mockups, site, verify_shots
+rc=0
+```
