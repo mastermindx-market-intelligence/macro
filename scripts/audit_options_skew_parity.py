@@ -991,7 +991,9 @@ def _render(
     lines.append(
         f"The tenor flag is on {payload['n_tenor_mismatch']} compared keys and the "
         f"spot flag is on {payload['n_spot_mismatch']} compared keys. "
-        f"{payload['n_both_mismatch']} keys have both flags. A key with both flags "
+        f"{payload['n_both_mismatch']} "
+        f"{'key has' if payload['n_both_mismatch'] == 1 else 'keys have'} both flags. "
+        "A key with both flags "
         "is counted in the tenor share, not in both shares. "
         f"Assignment counts: put {payload['n_assigned_put']}, "
         f"call {payload['n_assigned_call']}, tenor {payload['n_assigned_tenor']}, "
