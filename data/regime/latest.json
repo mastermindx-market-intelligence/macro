@@ -58,171 +58,171 @@
   "sector_rs": [
     {
       "ticker": "XLE",
-      "rs": 0.08119063169520321,
-      "mom_20d_pct": -1.44,
-      "mom_60d_pct": 10.31,
+      "rs": 0.08108072615010603,
+      "mom_20d_pct": -1.57,
+      "mom_60d_pct": 10.16,
       "above_200d_trend": true,
-      "pctile_252d": 78.2,
+      "pctile_252d": 77.8,
       "rank": 1
     },
     {
       "ticker": "XLK",
-      "rs": 0.2539622617683088,
-      "mom_20d_pct": 7.55,
-      "mom_60d_pct": 2.09,
+      "rs": 0.2535758229063103,
+      "mom_20d_pct": 7.38,
+      "mom_60d_pct": 1.93,
       "above_200d_trend": true,
       "pctile_252d": 96.8,
       "rank": 2
     },
     {
       "ticker": "XLC",
-      "rs": 0.1471698093352259,
-      "mom_20d_pct": 0.12,
-      "mom_60d_pct": 1.12,
+      "rs": 0.14746985382881683,
+      "mom_20d_pct": 0.32,
+      "mom_60d_pct": 1.33,
       "above_200d_trend": false,
-      "pctile_252d": 19.4,
+      "pctile_252d": 20.6,
       "rank": 3
     },
     {
       "ticker": "GC=F",
-      "rs": 5.629408191688354,
-      "mom_20d_pct": -8.74,
-      "mom_60d_pct": -0.07,
+      "rs": 5.6281554553950555,
+      "mom_20d_pct": -8.76,
+      "mom_60d_pct": -0.09,
       "above_200d_trend": false,
       "pctile_252d": 12.7,
       "rank": 4
     },
     {
       "ticker": "XLV",
-      "rs": 0.21910864607265573,
-      "mom_20d_pct": -4.12,
-      "mom_60d_pct": -0.25,
+      "rs": 0.2193772830673004,
+      "mom_20d_pct": -4.0,
+      "mom_60d_pct": -0.13,
       "above_200d_trend": true,
-      "pctile_252d": 49.6,
+      "pctile_252d": 50.0,
       "rank": 5
     },
     {
       "ticker": "QUAL",
-      "rs": 0.28943395273361255,
-      "mom_20d_pct": -1.3,
-      "mom_60d_pct": -1.28,
+      "rs": 0.2892790965099784,
+      "mom_20d_pct": -1.35,
+      "mom_60d_pct": -1.33,
       "above_200d_trend": false,
-      "pctile_252d": 19.8,
+      "pctile_252d": 18.7,
       "rank": 6
     },
     {
       "ticker": "USMV",
-      "rs": 0.12856213799838362,
-      "mom_20d_pct": -3.29,
-      "mom_60d_pct": -2.29,
+      "rs": 0.1286411371914929,
+      "mom_20d_pct": -3.23,
+      "mom_60d_pct": -2.23,
       "above_200d_trend": false,
       "pctile_252d": 9.1,
       "rank": 7
     },
     {
       "ticker": "XLF",
-      "rs": 0.07121665522737324,
-      "mom_20d_pct": -6.51,
-      "mom_60d_pct": -2.99,
+      "rs": 0.07139925029937205,
+      "mom_20d_pct": -6.27,
+      "mom_60d_pct": -2.74,
       "above_200d_trend": false,
       "pctile_252d": 11.1,
       "rank": 8
     },
     {
       "ticker": "RSP",
-      "rs": 0.2757449624750935,
-      "mom_20d_pct": -5.02,
-      "mom_60d_pct": -4.3,
+      "rs": 0.2761565917244395,
+      "mom_20d_pct": -4.88,
+      "mom_60d_pct": -4.16,
       "above_200d_trend": false,
-      "pctile_252d": 8.3,
+      "pctile_252d": 10.7,
       "rank": 9
     },
     {
       "ticker": "XLB",
-      "rs": 0.06566688373791528,
-      "mom_20d_pct": -6.23,
-      "mom_60d_pct": -7.03,
+      "rs": 0.06558776017055756,
+      "mom_20d_pct": -6.35,
+      "mom_60d_pct": -7.14,
       "above_200d_trend": false,
-      "pctile_252d": 16.3,
+      "pctile_252d": 15.5,
       "rank": 10
     },
     {
-      "ticker": "SMH",
-      "rs": 0.7807390837213322,
-      "mom_20d_pct": 8.74,
-      "mom_60d_pct": -7.17,
-      "above_200d_trend": true,
-      "pctile_252d": 85.3,
+      "ticker": "XLP",
+      "rs": 0.10734971411629196,
+      "mom_20d_pct": -5.9,
+      "mom_60d_pct": -7.24,
+      "above_200d_trend": false,
+      "pctile_252d": 1.6,
       "rank": 11
     },
     {
-      "ticker": "XLP",
-      "rs": 0.10717631472188618,
-      "mom_20d_pct": -6.05,
-      "mom_60d_pct": -7.39,
-      "above_200d_trend": false,
-      "pctile_252d": 1.2,
+      "ticker": "SMH",
+      "rs": 0.7769547183715624,
+      "mom_20d_pct": 8.21,
+      "mom_60d_pct": -7.62,
+      "above_200d_trend": true,
+      "pctile_252d": 84.9,
       "rank": 12
     },
     {
       "ticker": "MTUM",
-      "rs": 0.4120559642744592,
-      "mom_20d_pct": 4.61,
-      "mom_60d_pct": -7.83,
+      "rs": 0.4110131536011454,
+      "mom_20d_pct": 4.34,
+      "mom_60d_pct": -8.06,
       "above_200d_trend": true,
-      "pctile_252d": 83.3,
+      "pctile_252d": 82.5,
       "rank": 13
     },
     {
       "ticker": "XLY",
-      "rs": 0.14437214957481093,
-      "mom_20d_pct": -6.85,
-      "mom_60d_pct": -8.0,
+      "rs": 0.14416016923736535,
+      "mom_20d_pct": -6.99,
+      "mom_60d_pct": -8.14,
       "above_200d_trend": false,
       "pctile_252d": 0.4,
       "rank": 14
     },
     {
       "ticker": "LQD",
-      "rs": 0.13508783661861581,
-      "mom_20d_pct": -2.7,
-      "mom_60d_pct": -9.2,
+      "rs": 0.13542338449440064,
+      "mom_20d_pct": -2.46,
+      "mom_60d_pct": -8.98,
       "above_200d_trend": false,
       "pctile_252d": 0.4,
       "rank": 15
     },
     {
       "ticker": "IWM",
-      "rs": 0.3677488487109629,
-      "mom_20d_pct": -5.76,
-      "mom_60d_pct": -10.58,
+      "rs": 0.368026372894345,
+      "mom_20d_pct": -5.69,
+      "mom_60d_pct": -10.51,
       "above_200d_trend": false,
-      "pctile_252d": 21.4,
+      "pctile_252d": 22.2,
       "rank": 16
     },
     {
       "ticker": "XLI",
-      "rs": 0.22208848803091452,
-      "mom_20d_pct": -5.26,
-      "mom_60d_pct": -10.63,
+      "rs": 0.22232863380648313,
+      "mom_20d_pct": -5.15,
+      "mom_60d_pct": -10.54,
       "above_200d_trend": false,
-      "pctile_252d": 1.2,
+      "pctile_252d": 1.6,
       "rank": 17
     },
     {
       "ticker": "XLRE",
-      "rs": 0.05469121790273514,
-      "mom_20d_pct": -7.34,
-      "mom_60d_pct": -11.35,
+      "rs": 0.0548052316086306,
+      "mom_20d_pct": -7.15,
+      "mom_60d_pct": -11.16,
       "above_200d_trend": false,
       "pctile_252d": 0.4,
       "rank": 18
     },
     {
       "ticker": "XLU",
-      "rs": 0.05182173163687632,
-      "mom_20d_pct": -8.01,
-      "mom_60d_pct": -17.83,
+      "rs": 0.052021838989411255,
+      "mom_20d_pct": -7.66,
+      "mom_60d_pct": -17.52,
       "above_200d_trend": false,
       "pctile_252d": 0.4,
       "rank": 19
@@ -238,7 +238,7 @@
     ],
     "actual_ranks": {
       "XLE": 1,
-      "XLP": 12,
+      "XLP": 11,
       "XLV": 5,
       "GC=F": 4
     },
@@ -248,28 +248,28 @@
   },
   "pair_ratios": {
     "xly_xlp": {
-      "level": 1.3471,
-      "chg_20d_pct": -1.24
+      "level": 1.3429,
+      "chg_20d_pct": -1.55
     },
     "xlk_xlu": {
-      "level": 4.9007,
-      "chg_20d_pct": 15.9
+      "level": 4.8744,
+      "chg_20d_pct": 15.28
     },
     "hyg_lqd": {
-      "level": 0.7529,
-      "chg_20d_pct": 0.75
+      "level": 0.7521,
+      "chg_20d_pct": 0.64
     },
     "sphb_splv": {
-      "level": 2.1245,
-      "chg_20d_pct": 8.24
+      "level": 2.1195,
+      "chg_20d_pct": 7.98
     },
     "vix_ratio": {
-      "level": 0.8368,
-      "chg_20d_pct": -1.02
+      "level": 0.8296,
+      "chg_20d_pct": -1.87
     },
     "copper_gold": {
       "level": 0.0016,
-      "chg_20d_pct": 10.2
+      "chg_20d_pct": 10.48
     }
   },
   "alerts": [
@@ -855,20 +855,20 @@
       "read": "persistent (sticky-led)"
     },
     "risk_appetite": {
-      "vrp": 4.551914840315479,
-      "vrp_pctile": 0.4365079365079365,
+      "vrp": 4.251590826032576,
+      "vrp_pctile": 0.4166666666666667,
       "vrp_state": "normal",
-      "realized_vol": 10.528085083390575,
-      "vix_term": 0.8368479212334893,
+      "realized_vol": 10.648408792497698,
+      "vix_term": 0.8296214018970686,
       "vix_term_state": "contango (calm)",
       "vix_term_lead_lag": "coincident",
       "skew": 144.8,
       "skew_pctile": 0.44146825396825395,
-      "stock_bond_corr": 0.4628424321394806,
+      "stock_bond_corr": 0.460583393217671,
       "stock_bond_regime": "breakdown (bonds not hedging)",
-      "roro": 0.6729278543799179,
+      "roro": 0.6956523566559295,
       "roro_state": "risk-on",
-      "vol_target_scalar": 1.1398084176705185,
+      "vol_target_scalar": 1.1269289368806503,
       "news_sentiment": 0.014352913945913315,
       "news_sentiment_z": 0.6785842046279683,
       "news_sentiment_state": "optimistic"
@@ -943,11 +943,11 @@
       "strong": false,
       "state": "watch",
       "vix_low": true,
-      "vix_pctile": 0.14484126984126985,
+      "vix_pctile": 0.11706349206349206,
       "contango": true,
-      "vix_term": 0.8368479212334893,
+      "vix_term": 0.8296214018970686,
       "breadth_div": true,
-      "spy_high_prox": 0.9903947993651017,
+      "spy_high_prox": 0.9890351906995688,
       "breadth_above200_pctile": 0.14285714285714285,
       "credit_widen": false,
       "hy_oas_chg_21d_bp": -4.0,
@@ -971,9 +971,9 @@
     "tiers": {
       "leading": {
         "asof": "2026-09-30",
-        "index": 95.26281787951135,
-        "mom6": 0.7609821579572866,
-        "trend": 0.7558405952019713,
+        "index": 95.26218149426619,
+        "mom6": 0.7603457727121281,
+        "trend": 0.7556587708462117,
         "diffusion": 100.0,
         "n_legs": 4,
         "direction": "rising",
@@ -9117,9 +9117,9 @@
       "state": "dormant",
       "label": "Entry timer arms only inside a buyable washout.",
       "measured": "Matched buyable washouts (2006+): waiting for the term un-inversion lifted hit 61\u219267%, median 63d return +2.2\u2192+4.6%, median drawdown \u22124.5\u2192\u22122.9%; the 1-in-10 tail was marginally worse. A confirm, not a bottom-caller.",
-      "vix_term": 0.837,
+      "vix_term": 0.83,
       "backwardation_ratio": 1.0,
-      "distance_to_backwardation": 0.163
+      "distance_to_backwardation": 0.17
     },
     "catalyst_narrative": null,
     "geo_reversibility": null,
@@ -9133,16 +9133,16 @@
       "breakeven_asof_basis": "source",
       "breakeven_stale_bd": 1,
       "primary_trend": "up",
-      "spy_drawdown_pct": -1.0,
-      "vix": 15.1,
-      "vix_term": 0.837,
+      "spy_drawdown_pct": -1.1,
+      "vix": 14.9,
+      "vix_term": 0.83,
       "vix_front_future": 15.6,
-      "vix_vs_front": 0.97,
+      "vix_vs_front": 0.96,
       "vix_reliable": true,
-      "vix_intraday_high": 15.4,
-      "vix_wick_pct": 2.5,
-      "vrp_pctile": 0.44,
-      "vrp_pctile_raw": 0.4365,
+      "vix_intraday_high": 14.9,
+      "vix_wick_pct": 0.1,
+      "vrp_pctile": 0.42,
+      "vrp_pctile_raw": 0.4167,
       "capitulation_active": false,
       "capitulation_strong": false,
       "capitulation_signals": [],
@@ -9169,7 +9169,7 @@
   "cross_asset": {
     "asof": "2026-09-23",
     "verdict": "converging",
-    "summary": "CONVERGING \u00b7 0.48 5y-pctile",
+    "summary": "CONVERGING \u00b7 0.49 5y-pctile",
     "headline": "CONVERGING \u2014 cross-asset correlation is mid-range; the dominant cluster (US, Commodities, Crypto, Dollar) is partly one bet.",
     "window_d": 63,
     "markets": [
@@ -9181,16 +9181,16 @@
       "Dollar"
     ],
     "absorption_ratio": 0.363,
-    "absorption_pctile_5y": 0.48,
+    "absorption_pctile_5y": 0.49,
     "absorption_floor": 0.167,
-    "mean_abs_corr": 0.236,
+    "mean_abs_corr": 0.237,
     "pc1_loadings": {
       "US": 0.52,
       "Crypto": 0.45,
-      "China": 0.31,
+      "China": 0.3,
       "HK": 0.22,
       "Commodities": 0.46,
-      "Dollar": 0.42
+      "Dollar": 0.43
     },
     "dominant_cluster": [
       "US",
@@ -9205,16 +9205,16 @@
         "Crypto": 0.31,
         "China": 0.29,
         "HK": 0.1,
-        "Commodities": 0.48,
-        "Dollar": 0.33
+        "Commodities": 0.47,
+        "Dollar": 0.34
       },
       "Crypto": {
         "US": 0.31,
         "Crypto": 1.0,
         "China": 0.1,
         "HK": 0.21,
-        "Commodities": 0.26,
-        "Dollar": 0.4
+        "Commodities": 0.25,
+        "Dollar": 0.41
       },
       "China": {
         "US": 0.29,
@@ -9233,19 +9233,19 @@
         "Dollar": 0.15
       },
       "Commodities": {
-        "US": 0.48,
-        "Crypto": 0.26,
+        "US": 0.47,
+        "Crypto": 0.25,
         "China": 0.27,
         "HK": -0.08,
         "Commodities": 1.0,
-        "Dollar": 0.28
+        "Dollar": 0.27
       },
       "Dollar": {
-        "US": 0.33,
-        "Crypto": 0.4,
+        "US": 0.34,
+        "Crypto": 0.41,
         "China": -0.04,
         "HK": 0.15,
-        "Commodities": 0.28,
+        "Commodities": 0.27,
         "Dollar": 1.0
       }
     },
@@ -9397,23 +9397,23 @@
     "dir_sign": 1,
     "confidence": "low",
     "confidence_zh": "\u4f4e",
-    "strength": 1.92,
-    "dominance_ratio": 1.16,
+    "strength": 1.81,
+    "dominance_ratio": 1.11,
     "agreement": 1.0,
     "runner_up": "crypto_liquidity",
     "runner_up_label": "Crypto liquidity",
     "runner_up_label_zh": "\u52a0\u5bc6\u6d41\u52a8\u6027",
-    "headline": "Mixed \u2014 AI / semis + Crypto liquidity jointly leading (semis RS +1.8\u03c3, growth vs value +2.0\u03c3, tech vs utilities +1.9\u03c3); no single dominant driver.",
+    "headline": "Mixed \u2014 AI / semis + Crypto liquidity jointly leading (semis RS +1.6\u03c3, growth vs value +2.0\u03c3, tech vs utilities +1.8\u03c3); no single dominant driver.",
     "evidence": [
-      "semis RS +1.8\u03c3",
+      "semis RS +1.6\u03c3",
       "growth vs value +2.0\u03c3",
-      "tech vs utilities +1.9\u03c3"
+      "tech vs utilities +1.8\u03c3"
     ],
     "evidence_legs": [
       {
         "en": "semis RS",
         "zh": "\u534a\u5bfc\u4f53\u76f8\u5bf9\u5f3a\u5ea6",
-        "z": 1.8
+        "z": 1.6
       },
       {
         "en": "growth vs value",
@@ -9423,20 +9423,20 @@
       {
         "en": "tech vs utilities",
         "zh": "\u79d1\u6280\u5bf9\u516c\u7528\u4e8b\u4e1a",
-        "z": 1.9
+        "z": 1.8
       }
     ],
     "invalidation": "Fades if semis RS reverses and the rest of the equity-leadership fingerprint stops confirming.",
     "invalidation_zh": "\u82e5\u534a\u5bfc\u4f53\u76f8\u5bf9\u5f3a\u5ea6\u53cd\u8f6c\u3001\u4e14\u80a1\u7968\u9886\u6da8\u6307\u7eb9\u5176\u4f59\u817f\u505c\u6b62\u786e\u8ba4\uff0c\u6b64\u5224\u8bfb\u5c06\u6d88\u9000\u3002",
-    "absorption_pctile": 0.52,
+    "absorption_pctile": 0.53,
     "scores": [
       {
         "driver": "ai_semis",
         "label": "AI / semis",
         "label_zh": "AI/\u534a\u5bfc\u4f53",
         "family": "equity-leadership",
-        "projection": 1.92,
-        "strength": 1.92,
+        "projection": 1.81,
+        "strength": 1.81,
         "direction": "AI/semis leadership \u2014 narrow tech-led tape"
       },
       {
@@ -9444,8 +9444,8 @@
         "label": "Crypto liquidity",
         "label_zh": "\u52a0\u5bc6\u6d41\u52a8\u6027",
         "family": "crypto",
-        "projection": 1.65,
-        "strength": 1.65,
+        "projection": 1.63,
+        "strength": 1.63,
         "direction": "crypto liquidity surging \u2014 BTC/ETH lead up"
       },
       {
@@ -9453,8 +9453,8 @@
         "label": "Real-rate shock",
         "label_zh": "\u5b9e\u9645\u5229\u7387\u51b2\u51fb",
         "family": "rates",
-        "projection": -0.91,
-        "strength": 0.91,
+        "projection": -0.88,
+        "strength": 0.88,
         "direction": "real yields falling \u2014 easing, gold & duration bid"
       },
       {
@@ -9462,8 +9462,8 @@
         "label": "Oil shock",
         "label_zh": "\u6cb9\u4ef7\u51b2\u51fb",
         "family": "inflation",
-        "projection": -0.81,
-        "strength": 0.81,
+        "projection": -0.8,
+        "strength": 0.8,
         "direction": "oil collapsing \u2014 energy lags, breakevens down"
       },
       {
@@ -9471,8 +9471,8 @@
         "label": "China stimulus",
         "label_zh": "\u4e2d\u56fd\u523a\u6fc0",
         "family": "china",
-        "projection": 0.74,
-        "strength": 0.74,
+        "projection": 0.75,
+        "strength": 0.75,
         "direction": "China risk-on \u2014 A-shares/HK & copper lead up"
       },
       {
@@ -9480,35 +9480,35 @@
         "label": "Credit stress",
         "label_zh": "\u4fe1\u7528\u538b\u529b",
         "family": "credit",
-        "projection": -0.38,
-        "strength": 0.38,
+        "projection": -0.33,
+        "strength": 0.33,
         "direction": "credit spreads compressing \u2014 risk-on"
-      },
-      {
-        "driver": "liquidity_impulse",
-        "label": "Liquidity impulse",
-        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
-        "family": "liquidity",
-        "projection": 0.31,
-        "strength": 0.31,
-        "direction": "net liquidity expanding \u2014 broad risk-on tailwind"
       },
       {
         "driver": "usd_shock",
         "label": "USD shock",
         "label_zh": "\u7f8e\u5143\u51b2\u51fb",
         "family": "fx",
-        "projection": 0.25,
-        "strength": 0.25,
+        "projection": 0.27,
+        "strength": 0.27,
         "direction": "dollar surging \u2014 squeeze, commodities & EM pressured"
+      },
+      {
+        "driver": "liquidity_impulse",
+        "label": "Liquidity impulse",
+        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
+        "family": "liquidity",
+        "projection": 0.27,
+        "strength": 0.27,
+        "direction": "net liquidity expanding \u2014 broad risk-on tailwind"
       },
       {
         "driver": "fed_repricing",
         "label": "Fed repricing",
         "label_zh": "\u7f8e\u8054\u50a8\u91cd\u5b9a\u4ef7",
         "family": "rates",
-        "projection": 0.23,
-        "strength": 0.23,
+        "projection": 0.25,
+        "strength": 0.25,
         "direction": "hawkish repricing \u2014 cuts priced out, front-end up"
       }
     ],
@@ -9570,15 +9570,15 @@
           "China": 0.115,
           "HK": 0.124,
           "Commodities": 0.091,
-          "Dollar": 0.444
+          "Dollar": 0.443
         },
         "risk_contrib": {
           "US": 0.207,
           "Crypto": 0.154,
           "China": 0.143,
           "HK": 0.136,
-          "Commodities": 0.196,
-          "Dollar": 0.164
+          "Commodities": 0.195,
+          "Dollar": 0.165
         },
         "port_vol_ann": 0.086,
         "diversification_ratio": 1.62,
@@ -9591,7 +9591,7 @@
           "Crypto": 0.066,
           "China": 0.126,
           "HK": 0.139,
-          "Commodities": 0.079,
+          "Commodities": 0.08,
           "Dollar": 0.453
         },
         "risk_contrib": {
@@ -9602,7 +9602,7 @@
           "Commodities": 0.167,
           "Dollar": 0.167
         },
-        "port_vol_ann": 0.084,
+        "port_vol_ann": 0.085,
         "diversification_ratio": 1.64,
         "max_risk_contrib": 0.167
       }
@@ -9749,7 +9749,7 @@
   },
   "fed_path": {
     "asof": "2026-09-23",
-    "built": "2026-09-23T18:22:24.930395+00:00",
+    "built": "2026-09-23T17:02:06.474436+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -10145,7 +10145,7 @@
         "zh": "\u76c8\u4e8f\u5e73\u8861\u5927\u81f4\u5e73\u7a33\u2014\u2014\u65e0\u53ef\u64cd\u4f5c\u53d8\u52a8\u3002"
       },
       "costate": {
-        "oil_chg_20d_pct": 11.7,
+        "oil_chg_20d_pct": 12.1,
         "real10y_chg_20d_bp": 28.0,
         "nom10y_chg_20d_bp": 30.0,
         "hy_oas_z": -0.86,
@@ -12083,7 +12083,7 @@
     "defer_to": null,
     "drivers": {
       "one_factor": false,
-      "absorption_pctile": 0.48,
+      "absorption_pctile": 0.49,
       "macro_shock": false,
       "primary": "ai_semis",
       "primary_label": "AI / semis",
@@ -16808,14 +16808,14 @@
           "cluster_dilution": {
             "cluster_id": "c2",
             "cluster_size": 2,
-            "enb_cluster": 1.33,
-            "factor": 0.665,
+            "enb_cluster": 1.34,
+            "factor": 0.67,
             "note": "dilution = min(1, ENB=1.3 / size=2) = 0.67"
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
             "earliness_tilt": 1.25,
-            "cluster_dilution": 0.665,
+            "cluster_dilution": 0.67,
             "product": 0.08
           }
         }
@@ -16934,14 +16934,14 @@
           "cluster_dilution": {
             "cluster_id": "c2",
             "cluster_size": 2,
-            "enb_cluster": 1.33,
-            "factor": 0.665,
+            "enb_cluster": 1.34,
+            "factor": 0.67,
             "note": "dilution = min(1, ENB=1.3 / size=2) = 0.67"
           },
           "size_mult_breakdown": {
             "stage_cap": 0.1,
             "earliness_tilt": 0.9853,
-            "cluster_dilution": 0.665,
+            "cluster_dilution": 0.67,
             "product": 0.07
           }
         }
@@ -19242,15 +19242,201 @@
     "heat_threshold_note": "PROVISIONAL \u2014 chosen to be REACHABLE under the new denominator semantics so the board is not\u6c38-empty \u2014 NOT evidence-based; shadow calibration pending. Candidates [0.30, 0.40, 0.50] are wired in foresight_shadow.SHADOW_GRID and accrue heat-verdict rows in shadow_log.jsonl (type='heat'); grading not yet wired \u2014 labeled 'accruing' in the promotion report.",
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
-  "foresight_analyst": null,
+  "foresight_analyst": {
+    "regime_read": "The board is mostly in WATCH with single-surface signals that do not cohere. Only one theme, data_center_power, lights three independent surfaces simultaneously (physical bottleneck, customer capex, and management guidance) while still carrying a high earliness score, making it the only genuine multi-leg convergence candidate today.",
+    "regime_read_zh": "\u770b\u677f\u5927\u591a\u5904\u4e8e WATCH \u9636\u6bb5\uff0c\u4ec5\u70b9\u4eae\u5355\u4e00\u8868\u9762\u4fe1\u53f7\uff0c\u5c1a\u672a\u5f62\u6210\u5171\u632f\u3002\u552f\u4e00\u4e3b\u9898 data_center_power \u540c\u65f6\u70b9\u4eae\u4e09\u4e2a\u72ec\u7acb\u8868\u9762\uff08\u7269\u7406\u74f6\u9888\u3001\u5ba2\u6237\u8d44\u672c\u5f00\u652f\u3001\u7ba1\u7406\u5c42\u6307\u5f15\uff09\uff0c\u4e14\u63d0\u524d\u5ea6\u8bc4\u5206\u4ecd\u9ad8\uff0c\u662f\u4eca\u65e5\u552f\u4e00\u771f\u6b63\u7684\u591a\u817f\u5171\u632f\u5019\u9009\u3002",
+    "theses": [
+      {
+        "theme": "data_center_power",
+        "mechanism": "A physical bottleneck in power and cooling is tightening at the exact time customer capex is accelerating and management teams are raising guidance. Independently, the physical constraint should eventually cap growth unless capacity expands; the customer capex signal shows demand is already pulling through; and the guidance raisers indicate operators are seeing the tightness in their order books and are confident enough to lift outlooks. Three different sources \u2014 physical supply conditions, downstream spending, and corporate signaling \u2014 are all pointing in the same direction without yet being reflected in analyst revisions.",
+        "non_obvious": "What a human scanning headlines would miss is the sequence: the physical bottleneck is tightening while analyst revision breadth is only 0.702 and earliness is 0.588 \u2014 meaning the street is still under-modeling the second-order effect where power and cooling become the binding constraint on data-center buildout. The cross-surface pattern is not 'data centers are growing' (obvious), but that the supply side is tightening while the sell-side is only partially through its estimate reset, creating a window where guidance raises have not yet forced consensus revisions to catch up.",
+        "kill_criteria": [
+          "physical bottleneck_band reverts to NEUTRAL or loosens",
+          "guidance_band stops RAISING and shifts to NEUTRAL or guidance cuts appear",
+          "customer capex demand_band decelerates out of ACCELERATING",
+          "revision_breadth broadens beyond ~0.8 while guidance raises stop, indicating the street has fully priced the reset and is rolling over"
+        ],
+        "evidence": [
+          {
+            "text": "[physical] bottleneck_band TIGHTENING",
+            "ungrounded": true
+          },
+          {
+            "text": "[demand] demand_band ACCELERATING (customer capex)",
+            "ungrounded": true
+          },
+          {
+            "text": "[guidance] guidance_band RAISING, guidance_raisers=2",
+            "ungrounded": true
+          },
+          {
+            "text": "[earliness] earliness=0.588, revision_breadth=0.702",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The physical bottleneck is confirmed text-level but the heat score is only 0.406 and the stage is still WATCH. A n=2 guidance raisers sample is tiny and could reflect company-specific factors rather than a sector-wide supply squeeze. The policy pipeline shows no imminent rule changes that would constrain power capacity, so the bottleneck could self-correct as new generation and cooling projects come online.",
+        "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      }
+    ],
+    "confidence": "low",
+    "asof": "2026-09-23",
+    "n_theses": 1,
+    "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
+  },
   "thesis_monitor": {
     "asof": "2026-09-23",
-    "n_open": 7,
-    "n_broken": 4,
+    "n_open": 11,
+    "n_broken": 9,
     "n_weakening": 0,
-    "n_deterministic": 2,
+    "n_deterministic": 10,
     "n_llm": 6,
     "monitored": [
+      {
+        "theme": "ag_fertilizer",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "PRECIPICE (text)",
+        "opened": "2026-08-08",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "WEAKENING",
+          "BROKEN"
+        ],
+        "n_criteria": 2
+      },
+      {
+        "theme": "data_center_power",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-08-02",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "WEAKENING",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "INTACT",
+        "llm_heat_at_open": 0.406,
+        "llm_heat_now": 0.406,
+        "llm_opened_asof": "2026-09-23",
+        "llm_kill_criteria": [
+          "bottleneck_band reverts to NEUTRAL",
+          "guidance_band turns to NEUTRAL or CUTS",
+          "revision_breadth broadens then rolls over (signaling late-cycle catch-up)",
+          "demand_band decelerates from ACCELERATING to NEUTRAL"
+        ]
+      },
+      {
+        "theme": "space_satellite",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-08-01",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "BROKEN",
+        "llm_heat_at_open": 0.608,
+        "llm_heat_now": 0.314,
+        "llm_opened_asof": "2026-09-06",
+        "llm_kill_criteria": [
+          "altdata gov-award accel goes silent or reverses for 2+ quarters",
+          "edgar_scarcity signal fades in annual/quarterly filing fingerprints",
+          "revision_breadth rolls over and confirms a post re-rating stagnation",
+          "policy pipeline (comment close in 12d) yields no final rule or funding follow-through"
+        ]
+      },
+      {
+        "theme": "rare_earth_critical_min",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "PRECIPICE (text)",
+        "opened": "2026-08-08",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "BROKEN",
+        "llm_heat_at_open": 0.287,
+        "llm_heat_now": 0.287,
+        "llm_opened_asof": "2026-09-23",
+        "llm_kill_criteria": [
+          "guidance_raisers fails to accumulate (no additional raisings in the next two quarters)",
+          "bottleneck_band stays NEUTRAL while the policy pipeline closes comments without effect",
+          "revision_breadth remains below 0.3 while guidance raisers stay at one"
+        ]
+      },
+      {
+        "theme": "copper_steel_electrify",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-07-25",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2
+      },
       {
         "theme": "defense_aerospace",
         "source": "llm",
@@ -19367,22 +19553,6 @@
           "revision_breadth stays negative through the next quarter while demand remains accelerating (signal refusal)",
           "customer capex growth turns negative or stalls",
           "bottleneck text signal resolves to NEUTRAL on numeric physical confirmation"
-        ]
-      },
-      {
-        "theme": "data_center_power",
-        "source": "llm",
-        "status": "INTACT",
-        "heat_at_open": 0.406,
-        "heat_now": 0.406,
-        "n_surfaces_now": 3,
-        "physical_now": true,
-        "opened_asof": "2026-09-23",
-        "kill_criteria": [
-          "bottleneck_band reverts to NEUTRAL",
-          "guidance_band turns to NEUTRAL or CUTS",
-          "revision_breadth broadens then rolls over (signaling late-cycle catch-up)",
-          "demand_band decelerates from ACCELERATING to NEUTRAL"
         ]
       }
     ],
@@ -19715,7 +19885,7 @@
     "dominant_scare": "growth",
     "dominant_label_en": "Growth scare / defensive rotation",
     "dominant_label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
-    "top_score": 34.1,
+    "top_score": 35.8,
     "conjunction": false,
     "scares": [
       {
@@ -19748,10 +19918,20 @@
         "tier": "A",
         "label_en": "Credit stress",
         "label_zh": "\u4fe1\u7528\u538b\u529b",
-        "score": 51.9,
+        "score": 52.7,
         "band": "calm",
-        "firing_legs": [],
-        "lead_weighted": 51.9,
+        "firing_legs": [
+          {
+            "leg": "credit_hyg_tlt",
+            "pctile": 0.556,
+            "confirmed": false,
+            "lift_2020": 1.02,
+            "lead_d": 12,
+            "era_robust": false,
+            "accruing": false
+          }
+        ],
+        "lead_weighted": 26.3,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
@@ -19786,10 +19966,10 @@
         "tier": "A",
         "label_en": "Trend extension watch",
         "label_zh": "\u8d8b\u52bf\u5ef6\u4f38\u89c2\u5bdf",
-        "score": 37.3,
+        "score": 36.2,
         "band": "calm",
         "firing_legs": [],
-        "lead_weighted": 37.3,
+        "lead_weighted": 36.2,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
@@ -19800,12 +19980,12 @@
         "tier": "A",
         "label_en": "Growth scare / defensive rotation",
         "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
-        "score": 34.1,
+        "score": 35.8,
         "band": "calm",
         "firing_legs": [
           {
             "leg": "growth_cyc_def",
-            "pctile": 0.637,
+            "pctile": 0.659,
             "confirmed": false,
             "lift_2020": 1.63,
             "lead_d": 12,
@@ -19813,7 +19993,7 @@
             "accruing": false
           }
         ],
-        "lead_weighted": 55.6,
+        "lead_weighted": 58.4,
         "n_legs_registered": 2,
         "n_legs_resolved": 2,
         "weight_coverage": 1.0,
@@ -19838,10 +20018,10 @@
         "tier": "B",
         "label_en": "Volatility event",
         "label_zh": "\u6ce2\u52a8\u7387\u4e8b\u4ef6",
-        "score": 11.4,
+        "score": 10.3,
         "band": "calm",
         "firing_legs": [],
-        "lead_weighted": 11.4,
+        "lead_weighted": 10.3,
         "n_legs_registered": 3,
         "n_legs_resolved": 1,
         "weight_coverage": 0.5,
@@ -19996,11 +20176,11 @@
     },
     "gross_factor": 1.0,
     "trajectory": {
-      "intensity": 51.9,
+      "intensity": 52.7,
       "peak": 76.5,
       "peak_days_ago": 27,
-      "off_peak": 24.6,
-      "velocity": -16.5,
+      "off_peak": 23.8,
+      "velocity": -15.8,
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
@@ -20031,16 +20211,16 @@
         55.6,
         54.1,
         55.3,
-        51.9
+        52.7
       ],
-      "spark_pts": "3.0,10.6 6.9,9.6 10.8,19.7 14.7,23.0 18.7,21.1 22.6,21.4 26.5,17.1 30.4,19.4 34.3,22.1 38.2,14.9 42.1,12.7 46.0,14.8 50.0,9.9 53.9,3.0 57.8,8.8 61.7,12.5 65.6,12.6 69.5,8.7 73.4,7.1 77.3,14.1 81.3,15.2 85.2,16.1 89.1,15.4 93.0,17.5",
+      "spark_pts": "3.0,10.6 6.9,9.6 10.8,19.7 14.7,23.0 18.7,21.1 22.6,21.4 26.5,17.1 30.4,19.4 34.3,22.1 38.2,14.9 42.1,12.7 46.0,14.8 50.0,9.9 53.9,3.0 57.8,8.8 61.7,12.5 65.6,12.6 69.5,8.7 73.4,7.1 77.3,14.1 81.3,15.2 85.2,16.1 89.1,15.4 93.0,17.0",
       "spark_peak": {
         "x": 53.9,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 17.5
+        "y": 17.0
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -20048,18 +20228,18 @@
       "drivers": {
         "faded": [
           {
-            "key": "growth",
-            "label_en": "Growth scare / defensive rotation",
-            "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
-            "peak": 75.1,
-            "now": 34.1
-          },
-          {
             "key": "bubble",
             "label_en": "Bubble / blow-off unwind",
             "label_zh": "\u6ce1\u6cab/\u89c1\u9876\u56de\u5410",
             "peak": 76.5,
-            "now": 37.3
+            "now": 36.2
+          },
+          {
+            "key": "growth",
+            "label_en": "Growth scare / defensive rotation",
+            "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
+            "peak": 75.1,
+            "now": 35.8
           },
           {
             "key": "global",
@@ -20084,23 +20264,23 @@
       "eligible": true,
       "reason": "radar receding on the dominant scare; h21 drawdown_prob falling",
       "receding_scare": "growth",
-      "dominant_velocity": -17.4,
+      "dominant_velocity": -15.7,
       "drawdown_prob_h21": 0.13,
       "drawdown_prob_trend": "falling",
       "deescalated": [
-        {
-          "key": "growth",
-          "label_en": "Growth scare / defensive rotation",
-          "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
-          "from": 75.1,
-          "to": 34.1
-        },
         {
           "key": "bubble",
           "label_en": "Bubble / blow-off unwind",
           "label_zh": "\u6ce1\u6cab/\u89c1\u9876\u56de\u5410",
           "from": 76.5,
-          "to": 37.3
+          "to": 36.2
+        },
+        {
+          "key": "growth",
+          "label_en": "Growth scare / defensive rotation",
+          "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
+          "from": 75.1,
+          "to": 35.8
         },
         {
           "key": "global",
@@ -20180,31 +20360,31 @@
       "schema": "washout_counterread.v1",
       "as_of": "2026-09-23",
       "show": false,
-      "growth_score": 34.1,
+      "growth_score": 35.8,
       "growth_band": "calm",
       "growth_extreme": false,
       "price_depths": [
         {
           "index": "SPY",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": -0.96,
-          "depth_pctile": 48.3,
+          "drawdown_pct": -1.1,
+          "depth_pctile": 50.4,
           "extreme": false,
           "n_hist": 2520
         },
         {
           "index": "QQQ",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": -0.06,
-          "depth_pctile": 19.5,
+          "drawdown_pct": -0.29,
+          "depth_pctile": 24.5,
           "extreme": false,
           "n_hist": 2520
         },
         {
           "index": "XLK",
           "metric": "price_63d_drawdown_pctile",
-          "drawdown_pct": 0.0,
-          "depth_pctile": 17.9,
+          "drawdown_pct": -0.13,
+          "depth_pctile": 20.2,
           "extreme": false,
           "n_hist": 2520
         }
@@ -20273,7 +20453,7 @@
     ],
     "gate_clamped": false,
     "forward_log": {
-      "n_graded": 35,
+      "n_graded": 36,
       "alert_precision": null,
       "n_alerts": 0,
       "n_true_pos": 0,
@@ -20285,7 +20465,7 @@
           "hit_rate": 0.0
         },
         "watch": {
-          "n": 10,
+          "n": 11,
           "hit_rate": 0.0
         },
         "calm": {
@@ -20294,7 +20474,7 @@
         }
       },
       "context_gate_counterfactual": {
-        "n_rows_with_ungated": 12,
+        "n_rows_with_ungated": 13,
         "n_clamped_by_gate": 0,
         "n_alerts_ungated": 0,
         "n_true_pos_ungated": 0,
@@ -20305,7 +20485,7 @@
       "recent_mistakes": [],
       "asof_range": [
         "2026-06-23",
-        "2026-08-20"
+        "2026-08-21"
       ]
     },
     "recovery_log": {
@@ -20392,8 +20572,8 @@
         "lit": false,
         "fresh": false,
         "since": null,
-        "detail_en": "20d log-RS slope=-0.0515 (negative)",
-        "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0515\uff08\u8d1f\u5411\uff09",
+        "detail_en": "20d log-RS slope=-0.0500 (negative)",
+        "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0500\uff08\u8d1f\u5411\uff09",
         "source": "yahoo/RSP,SPY"
       },
       {
@@ -20419,7 +20599,7 @@
       "items": [
         {
           "id": "SMH",
-          "ignition_score": 0.9944,
+          "ignition_score": 0.9933,
           "state": "igniting",
           "components": {
             "breadth_thrust": null,
@@ -20427,8 +20607,8 @@
               0,
               0
             ],
-            "rs_slope_change": 0.9917,
-            "rs_slope_raw": 0.11945,
+            "rs_slope_change": 0.9899,
+            "rs_slope_raw": 0.11459,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20442,7 +20622,7 @@
         },
         {
           "id": "XLK",
-          "ignition_score": 0.9656,
+          "ignition_score": 0.9635,
           "state": "igniting",
           "components": {
             "breadth_thrust": null,
@@ -20450,8 +20630,8 @@
               0,
               0
             ],
-            "rs_slope_change": 0.9483,
-            "rs_slope_raw": 0.07275,
+            "rs_slope_change": 0.9453,
+            "rs_slope_raw": 0.07123,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20465,7 +20645,7 @@
         },
         {
           "id": "memory_storage",
-          "ignition_score": 0.9529,
+          "ignition_score": 0.9551,
           "state": "igniting",
           "components": {
             "breadth_thrust": 1.0,
@@ -20473,8 +20653,8 @@
               4,
               4
             ],
-            "rs_slope_change": 0.8823,
-            "rs_slope_raw": 0.05036,
+            "rs_slope_change": 0.8879,
+            "rs_slope_raw": 0.05173,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20488,7 +20668,7 @@
         },
         {
           "id": "data_center_power",
-          "ignition_score": 0.9154,
+          "ignition_score": 0.9171,
           "state": "igniting",
           "components": {
             "breadth_thrust": 0.875,
@@ -20496,8 +20676,8 @@
               7,
               8
             ],
-            "rs_slope_change": 0.9135,
-            "rs_slope_raw": 0.05893,
+            "rs_slope_change": 0.9177,
+            "rs_slope_raw": 0.0603,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20511,7 +20691,7 @@
         },
         {
           "id": "reshoring",
-          "ignition_score": 0.8942,
+          "ignition_score": 0.8968,
           "state": "igniting",
           "components": {
             "breadth_thrust": 0.875,
@@ -20519,8 +20699,8 @@
               14,
               16
             ],
-            "rs_slope_change": 0.8604,
-            "rs_slope_raw": 0.04547,
+            "rs_slope_change": 0.8669,
+            "rs_slope_raw": 0.04684,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20534,7 +20714,7 @@
         },
         {
           "id": "ai_neoclouds",
-          "ignition_score": 0.8778,
+          "ignition_score": 0.8779,
           "state": "igniting",
           "components": {
             "breadth_thrust": 0.7,
@@ -20542,8 +20722,8 @@
               7,
               10
             ],
-            "rs_slope_change": 0.9945,
-            "rs_slope_raw": 0.12979,
+            "rs_slope_change": 0.9948,
+            "rs_slope_raw": 0.13116,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20557,7 +20737,7 @@
         },
         {
           "id": "industrial_distribution",
-          "ignition_score": 0.857,
+          "ignition_score": 0.8591,
           "state": "igniting",
           "components": {
             "breadth_thrust": 0.75,
@@ -20565,8 +20745,8 @@
               9,
               12
             ],
-            "rs_slope_change": 0.8925,
-            "rs_slope_raw": 0.05292,
+            "rs_slope_change": 0.8977,
+            "rs_slope_raw": 0.0543,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20580,7 +20760,7 @@
         },
         {
           "id": "non_ai_tech",
-          "ignition_score": 0.8498,
+          "ignition_score": 0.8512,
           "state": "igniting",
           "components": {
             "breadth_thrust": 0.6923,
@@ -20588,8 +20768,8 @@
               9,
               13
             ],
-            "rs_slope_change": 0.9322,
-            "rs_slope_raw": 0.06551,
+            "rs_slope_change": 0.9356,
+            "rs_slope_raw": 0.06689,
             "mtf_confirm": 1.0,
             "mtf_ok": true,
             "commodity_flip": false
@@ -20607,13 +20787,13 @@
           "id": "defense",
           "name": "Defense & Aerospace",
           "name_zh": "\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929",
-          "ignition_score": 0.6319,
+          "ignition_score": 0.6341,
           "state": "igniting",
           "reason": "geopolitical event sector outside broad ignition (suspension 2026-07-23: single-sector bids \u2260 ignition)"
         }
       ],
       "n_scored": 61,
-      "n_qualifying": 38,
+      "n_qualifying": 39,
       "null": false,
       "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
       "as_of": "2026-09-23"
@@ -20622,7 +20802,7 @@
       "basket_id": "SMH",
       "name": "SMH",
       "name_zh": "SMH",
-      "score": 0.9944,
+      "score": 0.9933,
       "streak_sessions": 2
     },
     "radar_xref": {
@@ -20630,23 +20810,23 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 2.49,
+    "_timing_s": 2.51,
     "forward_log": {
       "market": "us",
-      "n_graded": 8,
+      "n_graded": 9,
       "n_broad_graded": 0,
       "broad_tp_rate": null,
       "narrow": {
         "criterion": "alert TP iff basket-minus-SPY excess h40 > 0 (pre-registered 2026-08-05, census #4564 \u00a74)",
-        "n_items_graded": 40,
-        "n_alerts_gradeable": 15,
-        "alert_tp_rate_h40": 0.333,
-        "n_event_excluded": 12,
-        "n_ungradeable": 13
+        "n_items_graded": 45,
+        "n_alerts_gradeable": 16,
+        "alert_tp_rate_h40": 0.375,
+        "n_event_excluded": 14,
+        "n_ungradeable": 15
       },
       "asof_range": [
         "2026-07-11",
-        "2026-07-25"
+        "2026-07-27"
       ],
       "note": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Broad graded on SPY absolute return + MAE at h21/h63 (h126 printed). Narrow graded on basket-minus-SPY excess at h20/h40 (same ruler as HK/CA, IGN-R5); pre-registered narrow criterion: alert TP iff excess_h40 > 0, event sectors excluded from alert denominators outside broad ignition (census #4564 \u00a74, 2026-08-05).",
       "log_meta": {
@@ -20671,7 +20851,7 @@
       "start": "2026-08-27",
       "sessions": 19,
       "cw_ret": 0.037047,
-      "spy_ret": -0.000897
+      "spy_ret": -0.002269
     },
     "k7": {
       "trend": 5,
@@ -20682,7 +20862,7 @@
       "r5": 0.032521,
       "r10": 0.037799,
       "r20": 0.056548,
-      "rel20": 0.04746
+      "rel20": 0.048845
     },
     "ew": {
       "r10": 0.043523,
@@ -20695,7 +20875,7 @@
         "r5": 0.017238,
         "r10": 0.072303,
         "r20": 0.091126,
-        "rs20": 0.082038,
+        "rs20": 0.083423,
         "above50": true,
         "above200": true,
         "mtf": null,
@@ -20707,7 +20887,7 @@
         "r5": 0.015847,
         "r10": 0.013058,
         "r20": 0.012934,
-        "rs20": 0.003846,
+        "rs20": 0.005231,
         "above50": true,
         "above200": true,
         "mtf": null,
@@ -20719,7 +20899,7 @@
         "r5": 0.056288,
         "r10": 0.011279,
         "r20": 0.061689,
-        "rs20": 0.052601,
+        "rs20": 0.053986,
         "above50": true,
         "above200": true,
         "mtf": null,
@@ -20731,7 +20911,7 @@
         "r5": 0.019393,
         "r10": -0.006616,
         "r20": -0.039569,
-        "rs20": -0.048657,
+        "rs20": -0.047272,
         "above50": false,
         "above200": true,
         "mtf": null,
@@ -20743,7 +20923,7 @@
         "r5": -0.003179,
         "r10": 0.033661,
         "r20": -0.014296,
-        "rs20": -0.023384,
+        "rs20": -0.021999,
         "above50": false,
         "above200": true,
         "mtf": null,
@@ -20755,7 +20935,7 @@
         "r5": 0.11029,
         "r10": 0.143615,
         "r20": 0.31141,
-        "rs20": 0.302322,
+        "rs20": 0.303707,
         "above50": true,
         "above200": true,
         "mtf": null,
@@ -20767,7 +20947,7 @@
         "r5": 0.062751,
         "r10": 0.034637,
         "r20": 0.08651,
-        "rs20": 0.077422,
+        "rs20": 0.078807,
         "above50": true,
         "above200": false,
         "mtf": null,
@@ -20796,32 +20976,32 @@
         "id": "mag7",
         "en": "Mag 7",
         "zh": "\u4e03\u5de8\u5934",
-        "r10_rel": 0.037326,
-        "r20_rel": 0.063741,
+        "r10_rel": 0.038707,
+        "r20_rel": 0.065126,
         "word": "running"
       },
       {
         "id": "ai_semiconductors",
         "en": "AI chips",
         "zh": "AI\u82af\u7247",
-        "r10_rel": 0.07174,
-        "r20_rel": 0.121689,
+        "r10_rel": 0.073121,
+        "r20_rel": 0.123074,
         "word": "surging"
       },
       {
         "id": "memory_storage",
         "en": "Memory",
         "zh": "\u5b58\u50a8",
-        "r10_rel": 0.011333,
-        "r20_rel": 0.093237,
+        "r10_rel": 0.012714,
+        "r20_rel": 0.094622,
         "word": "flat"
       },
       {
         "id": "ai_software",
         "en": "Software",
         "zh": "\u8f6f\u4ef6",
-        "r10_rel": 0.037415,
-        "r20_rel": 0.063735,
+        "r10_rel": 0.038796,
+        "r20_rel": 0.06512,
         "word": "running"
       }
     ],
@@ -20914,13 +21094,13 @@
         "region": "US",
         "grids": {
           "1D": {
-            "macd": -2.765,
-            "signal": -3.515,
-            "hist": 0.75,
-            "hist_vel3": 1.385,
-            "k": 75.929,
-            "d": 58.96,
-            "depth_pctile": 32.063,
+            "macd": -2.853,
+            "signal": -3.544,
+            "hist": 0.691,
+            "hist_vel3": 1.326,
+            "k": 74.302,
+            "d": 58.418,
+            "depth_pctile": 31.429,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
@@ -20968,13 +21148,13 @@
             ]
           },
           "3B": {
-            "macd": -0.044,
-            "signal": 0.537,
-            "hist": -0.581,
-            "hist_vel3": -0.083,
-            "k": 18.615,
-            "d": 19.967,
-            "depth_pctile": 46.825,
+            "macd": -0.094,
+            "signal": 0.521,
+            "hist": -0.615,
+            "hist_vel3": -0.116,
+            "k": 17.45,
+            "d": 19.579,
+            "depth_pctile": 46.587,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
@@ -21030,13 +21210,13 @@
         "region": "US",
         "grids": {
           "1D": {
-            "macd": 1.381,
-            "signal": -0.422,
-            "hist": 1.802,
-            "hist_vel3": 1.914,
-            "k": 99.451,
-            "d": 87.523,
-            "depth_pctile": 59.206,
+            "macd": 1.251,
+            "signal": -0.465,
+            "hist": 1.716,
+            "hist_vel3": 1.828,
+            "k": 97.496,
+            "d": 86.871,
+            "depth_pctile": 58.571,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
@@ -21168,13 +21348,13 @@
             ]
           },
           "3B": {
-            "macd": -2.071,
-            "signal": -2.432,
-            "hist": 0.362,
-            "hist_vel3": 0.579,
+            "macd": -2.115,
+            "signal": -2.447,
+            "hist": 0.332,
+            "hist_vel3": 0.55,
             "k": 68.245,
             "d": 59.887,
-            "depth_pctile": 34.928,
+            "depth_pctile": 34.571,
             "pctile_window_bars": 2236,
             "pctile_window_days": 3130,
             "fast_reclaim": false,
@@ -21185,9 +21365,9 @@
                 "grid": "3B",
                 "date": "2026-09-23",
                 "direction": "bull",
-                "depth_at_cross": -2.071,
-                "depth_pctile": 34.9,
-                "hist_vel3": 0.579,
+                "depth_at_cross": -2.115,
+                "depth_pctile": 34.6,
+                "hist_vel3": 0.55,
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
@@ -21217,13 +21397,13 @@
         "region": "US",
         "grids": {
           "1D": {
-            "macd": -9.225,
-            "signal": -8.805,
-            "hist": -0.419,
-            "hist_vel3": 0.473,
-            "k": 19.069,
-            "d": 18.539,
-            "depth_pctile": 4.167,
+            "macd": -9.246,
+            "signal": -8.813,
+            "hist": -0.434,
+            "hist_vel3": 0.459,
+            "k": 18.582,
+            "d": 18.376,
+            "depth_pctile": 4.087,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
@@ -21294,13 +21474,13 @@
         "region": "US",
         "grids": {
           "1D": {
-            "macd": 1.11,
-            "signal": -0.818,
-            "hist": 1.929,
-            "hist_vel3": 1.653,
+            "macd": 1.019,
+            "signal": -0.849,
+            "hist": 1.868,
+            "hist_vel3": 1.592,
             "k": 100.0,
             "d": 85.904,
-            "depth_pctile": 58.849,
+            "depth_pctile": 58.254,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
@@ -22578,11 +22758,11 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 2.4
+    "_timing_s": 2.18
   },
   "vol_shock": {
-    "score": 38.5,
-    "score_int": 38,
+    "score": 38.8,
+    "score_int": 39,
     "band": "low",
     "band_zh": "\u504f\u4f4e",
     "asof": "2026-09-23",
@@ -22592,14 +22772,14 @@
         "key": "concentration",
         "label": "Cross-asset concentration",
         "label_zh": "\u8de8\u8d44\u4ea7\u96c6\u4e2d\u5ea6",
-        "value": 0.48,
+        "value": 0.49,
         "weight": 1.0,
         "available": true,
-        "sub": 48.0,
+        "sub": 49.0,
         "note": "cross-asset correlation mid-range",
         "note_zh": "\u8de8\u8d44\u4ea7\u76f8\u5173\u6027\u5904\u4e8e\u4e2d\u4f4d",
         "color": "#e0a030",
-        "points": 9.1
+        "points": 9.2
       },
       {
         "key": "dealer_gamma",
@@ -22662,11 +22842,11 @@
         "value": "normal",
         "weight": 0.7,
         "available": true,
-        "sub": 50.2,
+        "sub": 51.2,
         "note": "variance premium mid-range",
         "note_zh": "\u6ce2\u52a8\u98ce\u9669\u6ea2\u4ef7\u5904\u4e8e\u4e2d\u4f4d",
         "color": "#e0a030",
-        "points": 6.6
+        "points": 6.8
       },
       {
         "key": "put_call",
@@ -22756,7 +22936,7 @@
   },
   "froth_fragility": {
     "asof": "2026-09-23",
-    "headline": 29.9,
+    "headline": 29.8,
     "band": "calm",
     "band_zh": "\u5e73\u9759",
     "quadrant": "benign",
@@ -22867,7 +23047,7 @@
       "low_naaim_flag": false
     },
     "face_b": {
-      "score": 33.2,
+      "score": 33.0,
       "n_available": 5,
       "legs": [
         {
@@ -22923,11 +23103,11 @@
           "label": "Leadership distribution (generals retreating)",
           "label_zh": "\u9f99\u5934\u6d3e\u53d1\uff08\u5c06\u5e05\u64a4\u9000\uff09",
           "value": -0.074,
-          "sub": 20.0,
+          "sub": 19.2,
           "weight": 0.24,
           "available": true,
           "scored": true,
-          "points": 4.8,
+          "points": 4.6,
           "note": "median mega-cap leader -7% off its 52wk-high vs index -1% (+6pp gap; 2/7 below 50dma) \u2014 generals retreating under a held index",
           "note_zh": "\u9f99\u5934\u4e2d\u4f4d\u8f83 52 \u5468\u9ad8\u70b9\u56de\u64a4 -7%\uff0c\u6307\u6570\u4ec5 -1%\uff08\u5dee +6 \u4e2a\u767e\u5206\u70b9\uff1b2/7 \u8dcc\u7834 50 \u65e5\u7ebf\uff09\u2014\u2014\u5c06\u5e05\u5728\u88ab\u6258\u4f4f\u7684\u6307\u6570\u4e0b\u64a4\u9000",
           "color": "#5a9bd4",
@@ -22938,14 +23118,14 @@
           "key": "B4_absorption",
           "label": "Cross-asset absorption",
           "label_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4",
-          "value": 0.48,
+          "value": 0.49,
           "sub": 0.0,
           "weight": 0.13,
           "available": true,
           "scored": true,
           "points": 0.0,
-          "note": "cross-asset absorption 48% of 5y \u2014 markets tightly coupled",
-          "note_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4\u5904\u4e8e 5 \u5e74 48% \u5206\u4f4d\u2014\u2014\u5e02\u573a\u9ad8\u5ea6\u8026\u5408",
+          "note": "cross-asset absorption 49% of 5y \u2014 markets tightly coupled",
+          "note_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4\u5904\u4e8e 5 \u5e74 49% \u5206\u4f4d\u2014\u2014\u5e02\u573a\u9ad8\u5ea6\u8026\u5408",
           "color": "#5a9bd4",
           "pill": null,
           "thin": false
@@ -22999,7 +23179,7 @@
           "thin": false
         }
       ],
-      "leaddist_sub": 0.2000311067660927,
+      "leaddist_sub": 0.19203340873354646,
       "leaders_dist": false
     },
     "stealth": {
@@ -23056,7 +23236,7 @@
           "lit": true,
           "available": true,
           "weight": 0.1,
-          "note": "VIX asleep (pctile 14%) while internals deteriorate",
+          "note": "VIX asleep (pctile 12%) while internals deteriorate",
           "color": "#d04545"
         }
       ]
@@ -23189,15 +23369,15 @@
         "ticker": "XLC",
         "name": "Communications",
         "call": "TOO EARLY",
-        "why": "Momentum just turned up (+0.1% this month) but it's still below its long-term trend vs the market. Tempting \u2014 and historically a losing entry (-0.73%/3m avg). Wait for the trend line to actually break.",
-        "why_zh": "\u52a8\u91cf\u521a\u8f6c\u4e3a\u5411\u4e0a\uff08\u672c\u6708 +0.1%\uff09\uff0c\u4f46 \u76f8\u5bf9\u5e02\u573a\u4ecd\u4f4e\u4e8e\u5176\u957f\u671f\u8d8b\u52bf\u3002\u9887\u5177\u8bf1\u60d1 \u2014 \u4f46\u5386\u53f2\u4e0a\u662f\u4e8f\u635f\u7684\u5165\u573a\u70b9 \uff083 \u4e2a\u6708\u5e73\u5747 -0.73%\uff09\u3002\u7b49\u5f85\u8d8b\u52bf\u7ebf\u771f\u6b63\u7a81\u7834\u3002"
+        "why": "Momentum just turned up (+0.3% this month) but it's still below its long-term trend vs the market. Tempting \u2014 and historically a losing entry (-0.73%/3m avg). Wait for the trend line to actually break.",
+        "why_zh": "\u52a8\u91cf\u521a\u8f6c\u4e3a\u5411\u4e0a\uff08\u672c\u6708 +0.3%\uff09\uff0c\u4f46 \u76f8\u5bf9\u5e02\u573a\u4ecd\u4f4e\u4e8e\u5176\u957f\u671f\u8d8b\u52bf\u3002\u9887\u5177\u8bf1\u60d1 \u2014 \u4f46\u5386\u53f2\u4e0a\u662f\u4e8f\u635f\u7684\u5165\u573a\u70b9 \uff083 \u4e2a\u6708\u5e73\u5747 -0.73%\uff09\u3002\u7b49\u5f85\u8d8b\u52bf\u7ebf\u771f\u6b63\u7a81\u7834\u3002"
       },
       {
         "ticker": "XLE",
         "name": "Energy",
         "call": "REGIME-TAPE CONFLICT",
-        "why": "The regime map favors it but the market is selling it (-1.4% vs the market this month). Tape wins \u2014 stand aside until it stabilizes above trend.",
-        "why_zh": "\u5468\u671f\u56fe\u504f\u597d\u5b83\uff0c\u4f46\u5e02\u573a\u6b63\u5728\u629b\u552e\u5b83 \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -1.4%\uff09\u3002\u76d8\u9762\u4e3a\u738b \u2014 \u6682\u65f6\u89c2\u671b\uff0c\u76f4\u5230\u5176\u5728\u8d8b\u52bf\u4e4b\u4e0a\u4f01\u7a33\u3002"
+        "why": "The regime map favors it but the market is selling it (-1.6% vs the market this month). Tape wins \u2014 stand aside until it stabilizes above trend.",
+        "why_zh": "\u5468\u671f\u56fe\u504f\u597d\u5b83\uff0c\u4f46\u5e02\u573a\u6b63\u5728\u629b\u552e\u5b83 \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -1.6%\uff09\u3002\u76d8\u9762\u4e3a\u738b \u2014 \u6682\u65f6\u89c2\u671b\uff0c\u76f4\u5230\u5176\u5728\u8d8b\u52bf\u4e4b\u4e0a\u4f01\u7a33\u3002"
       },
       {
         "ticker": "XLK",
@@ -23210,8 +23390,8 @@
         "ticker": "XLP",
         "name": "Consumer Staples",
         "call": "REGIME-TAPE CONFLICT",
-        "why": "The regime map favors it but the market is selling it (-6.0% vs the market this month). Tape wins \u2014 stand aside until it stabilizes above trend.",
-        "why_zh": "\u5468\u671f\u56fe\u504f\u597d\u5b83\uff0c\u4f46\u5e02\u573a\u6b63\u5728\u629b\u552e\u5b83 \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -6.0%\uff09\u3002\u76d8\u9762\u4e3a\u738b \u2014 \u6682\u65f6\u89c2\u671b\uff0c\u76f4\u5230\u5176\u5728\u8d8b\u52bf\u4e4b\u4e0a\u4f01\u7a33\u3002"
+        "why": "The regime map favors it but the market is selling it (-5.9% vs the market this month). Tape wins \u2014 stand aside until it stabilizes above trend.",
+        "why_zh": "\u5468\u671f\u56fe\u504f\u597d\u5b83\uff0c\u4f46\u5e02\u573a\u6b63\u5728\u629b\u552e\u5b83 \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -5.9%\uff09\u3002\u76d8\u9762\u4e3a\u738b \u2014 \u6682\u65f6\u89c2\u671b\uff0c\u76f4\u5230\u5176\u5728\u8d8b\u52bf\u4e4b\u4e0a\u4f01\u7a33\u3002"
       }
     ],
     "momentum_tilt": {
@@ -23219,17 +23399,17 @@
         {
           "ticker": "XLE",
           "name": "Energy",
-          "mom_252d_pct": 24.94
+          "mom_252d_pct": 24.77
         },
         {
           "ticker": "XLK",
           "name": "Technology",
-          "mom_252d_pct": 20.34
+          "mom_252d_pct": 20.16
         },
         {
           "ticker": "XLV",
           "name": "Health Care",
-          "mom_252d_pct": 7.03
+          "mom_252d_pct": 7.16
         }
       ],
       "note": "Top-3 by 12-month relative momentum \u2014 the only sector tilt with a persistent (if mild) historical edge: +0.27% avg vs SPY over ~6 months, 51.0% hit rate. A tilt, not a trade.",
@@ -23290,20 +23470,20 @@
       {
         "ticker": "XLF",
         "name": "Financials",
-        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-6.5% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +5.0% more outperformance vs the market to confirm \u2014 already 0% of the way there from its recent low. Seasonality: Oct: +2.0% avg, up 67% of years (n=27).",
-        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -6.5%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +5.0% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 0% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +2.0%\uff0c67% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
+        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-6.3% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +4.7% more outperformance vs the market to confirm \u2014 already 0% of the way there from its recent low. Seasonality: Oct: +2.0% avg, up 67% of years (n=27).",
+        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -6.3%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +4.7% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 0% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +2.0%\uff0c67% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
       },
       {
         "ticker": "XLI",
         "name": "Industrials",
-        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-5.3% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +7.9% more outperformance vs the market to confirm \u2014 already 12% of the way there from its recent low. Seasonality: Oct: +1.1% avg, up 59% of years (n=27).",
-        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -5.3%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +7.9% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 12% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +1.1%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
+        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-5.2% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +7.8% more outperformance vs the market to confirm \u2014 already 13% of the way there from its recent low. Seasonality: Oct: +1.1% avg, up 59% of years (n=27).",
+        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -5.2%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +7.8% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 13% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +1.1%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
       },
       {
         "ticker": "XLB",
         "name": "Materials",
-        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-6.2% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +6.9% more outperformance vs the market to confirm \u2014 already 24% of the way there from its recent low. Seasonality: Oct: +1.7% avg, up 56% of years (n=27).",
-        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -6.2%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +6.9% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 24% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +1.7%\uff0c56% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
+        "why": "Historically favored if the regime shifts to Reflation. Currently lagging (-6.3% vs the market this month). Don't buy in anticipation \u2014 wait for the trend cross. Trigger distance: needs +7.0% more outperformance vs the market to confirm \u2014 already 22% of the way there from its recent low. Seasonality: Oct: +1.7% avg, up 56% of years (n=27).",
+        "why_zh": "\u82e5\u5468\u671f\u8f6c\u5411 \u518d\u901a\u80c0\uff0c\u5386\u53f2\u4e0a\u53d7\u9752\u7750\u3002\u5f53\u524d\u4e3a\u843d\u540e \uff08\u672c\u6708\u76f8\u5bf9\u5e02\u573a -6.3%\uff09\u3002\u4e0d\u8981\u63d0\u524d\u4e70\u5165 \u2014 \u7b49\u5f85\u8d8b\u52bf\u4ea4\u53c9\u3002 \u89e6\u53d1\u8ddd\u79bb\uff1a\u8fd8\u9700\u76f8\u5bf9\u5e02\u573a\u518d\u591a +7.0% \u7684\u8d85\u989d\u8868\u73b0\u65b9\u53ef\u786e\u8ba4 \u2014 \u81ea\u8fd1\u671f\u4f4e\u70b9\u5df2\u5b8c\u6210 22% \u7684\u8def\u7a0b\u3002 \u5b63\u8282\u6027\uff1a10\u6708\uff1a\u5e73\u5747 +1.7%\uff0c56% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09\u3002"
       }
     ],
     "triggers": [
@@ -23328,21 +23508,21 @@
       {
         "name": "Materials",
         "stage": "lagging",
-        "mom_20d_pct": -6.23,
-        "mom_60d_pct": -7.03,
-        "mom_252d_pct": -2.88,
+        "mom_20d_pct": -6.35,
+        "mom_60d_pct": -7.14,
+        "mom_252d_pct": -3.0,
         "above_trend": false,
-        "pctile_252d": 16.3,
+        "pctile_252d": 15.5,
         "extended": false,
         "ticker": "XLB",
-        "tech_price": 50.47,
+        "tech_price": 50.33,
         "tech_above50": false,
         "tech_above200": true,
-        "tech_pct_vs_50dma": -2.0,
-        "tech_pct_vs_200dma": 0.9,
-        "tech_rsi14": 43.0,
+        "tech_pct_vs_50dma": -2.3,
+        "tech_pct_vs_200dma": 0.7,
+        "tech_rsi14": 42.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -5.5,
+        "tech_off_52w_high_pct": -5.8,
         "rate_inflation": {
           "ticker": "XLB",
           "covered": true,
@@ -23506,7 +23686,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -2.48,
+            "avg_pct": -2.49,
             "hit_pct": 39.0,
             "n": 28
           },
@@ -23527,27 +23707,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 6.9,
-        "trigger_progress_pct": 24.0
+        "trigger_gap_pct": 7.0,
+        "trigger_progress_pct": 22.0
       },
       {
         "name": "Communications",
         "stage": "improving",
-        "mom_20d_pct": 0.12,
-        "mom_60d_pct": 1.12,
-        "mom_252d_pct": -17.79,
+        "mom_20d_pct": 0.32,
+        "mom_60d_pct": 1.33,
+        "mom_252d_pct": -17.62,
         "above_trend": false,
-        "pctile_252d": 19.4,
+        "pctile_252d": 20.6,
         "extended": false,
         "ticker": "XLC",
-        "tech_price": 113.1,
+        "tech_price": 113.18,
         "tech_above50": true,
         "tech_above200": false,
         "tech_pct_vs_50dma": 2.0,
         "tech_pct_vs_200dma": -0.1,
-        "tech_rsi14": 53.0,
+        "tech_rsi14": 54.0,
         "tech_macd_pos": true,
-        "tech_off_52w_high_pct": -5.0,
+        "tech_off_52w_high_pct": -4.9,
         "rate_inflation": {
           "ticker": "XLC",
           "covered": false,
@@ -23661,7 +23841,7 @@
             "n": 9
           },
           "9": {
-            "avg_pct": -1.61,
+            "avg_pct": -1.6,
             "hit_pct": 44.0,
             "n": 9
           },
@@ -23682,27 +23862,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 8.2,
-        "trigger_progress_pct": 27.0
+        "trigger_gap_pct": 8.0,
+        "trigger_progress_pct": 29.0
       },
       {
         "name": "Energy",
         "stage": "weakening",
-        "mom_20d_pct": -1.44,
-        "mom_60d_pct": 10.31,
-        "mom_252d_pct": 24.94,
+        "mom_20d_pct": -1.57,
+        "mom_60d_pct": 10.16,
+        "mom_252d_pct": 24.77,
         "above_trend": true,
-        "pctile_252d": 78.2,
+        "pctile_252d": 77.8,
         "extended": false,
         "ticker": "XLE",
-        "tech_price": 62.4,
+        "tech_price": 62.22,
         "tech_above50": true,
         "tech_above200": true,
-        "tech_pct_vs_50dma": 2.1,
-        "tech_pct_vs_200dma": 13.1,
-        "tech_rsi14": 47.0,
+        "tech_pct_vs_50dma": 1.9,
+        "tech_pct_vs_200dma": 12.8,
+        "tech_rsi14": 46.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -4.8,
+        "tech_off_52w_high_pct": -5.1,
         "rate_inflation": {
           "ticker": "XLE",
           "covered": true,
@@ -23829,7 +24009,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -0.82,
+            "avg_pct": -0.83,
             "hit_pct": 50.0,
             "n": 28
           },
@@ -23854,21 +24034,21 @@
       {
         "name": "Financials",
         "stage": "lagging",
-        "mom_20d_pct": -6.51,
-        "mom_60d_pct": -2.99,
-        "mom_252d_pct": -12.16,
+        "mom_20d_pct": -6.27,
+        "mom_60d_pct": -2.74,
+        "mom_252d_pct": -11.93,
         "above_trend": false,
         "pctile_252d": 11.1,
         "extended": false,
         "ticker": "XLF",
-        "tech_price": 54.73,
+        "tech_price": 54.79,
         "tech_above50": false,
         "tech_above200": true,
-        "tech_pct_vs_50dma": -3.9,
-        "tech_pct_vs_200dma": 2.7,
+        "tech_pct_vs_50dma": -3.8,
+        "tech_pct_vs_200dma": 2.8,
         "tech_rsi14": 32.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -6.2,
+        "tech_off_52w_high_pct": -6.1,
         "rate_inflation": {
           "ticker": "XLF",
           "covered": true,
@@ -24032,7 +24212,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -1.3,
+            "avg_pct": -1.29,
             "hit_pct": 43.0,
             "n": 28
           },
@@ -24053,27 +24233,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 5.0,
+        "trigger_gap_pct": 4.7,
         "trigger_progress_pct": 0.0
       },
       {
         "name": "Industrials",
         "stage": "lagging",
-        "mom_20d_pct": -5.26,
-        "mom_60d_pct": -10.63,
-        "mom_252d_pct": -3.28,
+        "mom_20d_pct": -5.15,
+        "mom_60d_pct": -10.54,
+        "mom_252d_pct": -3.17,
         "above_trend": false,
-        "pctile_252d": 1.2,
+        "pctile_252d": 1.6,
         "extended": false,
         "ticker": "XLI",
-        "tech_price": 170.68,
+        "tech_price": 170.62,
         "tech_above50": false,
         "tech_above200": false,
         "tech_pct_vs_50dma": -4.2,
         "tech_pct_vs_200dma": -0.1,
-        "tech_rsi14": 40.0,
+        "tech_rsi14": 39.0,
         "tech_macd_pos": true,
-        "tech_off_52w_high_pct": -8.2,
+        "tech_off_52w_high_pct": -8.3,
         "rate_inflation": {
           "ticker": "XLI",
           "covered": false,
@@ -24208,27 +24388,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 7.9,
-        "trigger_progress_pct": 12.0
+        "trigger_gap_pct": 7.8,
+        "trigger_progress_pct": 13.0
       },
       {
         "name": "Technology",
         "stage": "leading",
-        "mom_20d_pct": 7.55,
-        "mom_60d_pct": 2.09,
-        "mom_252d_pct": 20.34,
+        "mom_20d_pct": 7.38,
+        "mom_60d_pct": 1.93,
+        "mom_252d_pct": 20.16,
         "above_trend": true,
         "pctile_252d": 96.8,
         "extended": true,
         "ticker": "XLK",
-        "tech_price": 195.17,
+        "tech_price": 194.61,
         "tech_above50": true,
         "tech_above200": true,
-        "tech_pct_vs_50dma": 6.4,
-        "tech_pct_vs_200dma": 20.1,
-        "tech_rsi14": 66.0,
+        "tech_pct_vs_50dma": 6.1,
+        "tech_pct_vs_200dma": 19.7,
+        "tech_rsi14": 65.0,
         "tech_macd_pos": true,
-        "tech_off_52w_high_pct": -1.3,
+        "tech_off_52w_high_pct": -1.6,
         "rate_inflation": {
           "ticker": "XLK",
           "covered": true,
@@ -24346,9 +24526,9 @@
           "hit_pct": 49.7,
           "avg_excess_pct": 0.11
         },
-        "season_this": "Sep: -1.7% avg, up 50% of years (n=28)",
+        "season_this": "Sep: -1.8% avg, up 50% of years (n=28)",
         "season_next": "Oct: +2.9% avg, up 67% of years (n=27)",
-        "season_this_zh": "9\u6708\uff1a\u5e73\u5747 -1.7%\uff0c50% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=28\uff09",
+        "season_this_zh": "9\u6708\uff1a\u5e73\u5747 -1.8%\uff0c50% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=28\uff09",
         "season_next_zh": "10\u6708\uff1a\u5e73\u5747 +2.9%\uff0c67% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
         "season_all": {
           "1": {
@@ -24392,7 +24572,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -1.74,
+            "avg_pct": -1.75,
             "hit_pct": 50.0,
             "n": 28
           },
@@ -24417,14 +24597,14 @@
       {
         "name": "Consumer Staples",
         "stage": "lagging",
-        "mom_20d_pct": -6.05,
-        "mom_60d_pct": -7.39,
-        "mom_252d_pct": -8.29,
+        "mom_20d_pct": -5.9,
+        "mom_60d_pct": -7.24,
+        "mom_252d_pct": -8.14,
         "above_trend": false,
-        "pctile_252d": 1.2,
+        "pctile_252d": 1.6,
         "extended": false,
         "ticker": "XLP",
-        "tech_price": 82.36,
+        "tech_price": 82.39,
         "tech_above50": false,
         "tech_above200": false,
         "tech_pct_vs_50dma": -2.3,
@@ -24595,7 +24775,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -0.79,
+            "avg_pct": -0.78,
             "hit_pct": 43.0,
             "n": 28
           },
@@ -24616,27 +24796,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 8.1,
-        "trigger_progress_pct": 13.0
+        "trigger_gap_pct": 7.9,
+        "trigger_progress_pct": 14.0
       },
       {
         "name": "Real Estate",
         "stage": "lagging",
-        "mom_20d_pct": -7.34,
-        "mom_60d_pct": -11.35,
-        "mom_252d_pct": -10.49,
+        "mom_20d_pct": -7.15,
+        "mom_60d_pct": -11.16,
+        "mom_252d_pct": -10.3,
         "above_trend": false,
         "pctile_252d": 0.4,
         "extended": false,
         "ticker": "XLRE",
-        "tech_price": 42.03,
+        "tech_price": 42.06,
         "tech_above50": false,
         "tech_above200": false,
-        "tech_pct_vs_50dma": -4.8,
-        "tech_pct_vs_200dma": -1.0,
-        "tech_rsi14": 33.0,
+        "tech_pct_vs_50dma": -4.7,
+        "tech_pct_vs_200dma": -0.9,
+        "tech_rsi14": 34.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -7.9,
+        "tech_off_52w_high_pct": -7.8,
         "rate_inflation": {
           "ticker": "XLRE",
           "covered": true,
@@ -24771,27 +24951,27 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 8.9,
+        "trigger_gap_pct": 8.7,
         "trigger_progress_pct": 0.0
       },
       {
         "name": "Utilities",
         "stage": "lagging",
-        "mom_20d_pct": -8.01,
-        "mom_60d_pct": -17.83,
-        "mom_252d_pct": -17.05,
+        "mom_20d_pct": -7.66,
+        "mom_60d_pct": -17.52,
+        "mom_252d_pct": -16.73,
         "above_trend": false,
         "pctile_252d": 0.4,
         "extended": false,
         "ticker": "XLU",
-        "tech_price": 39.83,
+        "tech_price": 39.92,
         "tech_above50": false,
         "tech_above200": false,
-        "tech_pct_vs_50dma": -8.0,
-        "tech_pct_vs_200dma": -9.2,
-        "tech_rsi14": 25.0,
+        "tech_pct_vs_50dma": -7.8,
+        "tech_pct_vs_200dma": -9.0,
+        "tech_rsi14": 26.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -14.8,
+        "tech_off_52w_high_pct": -14.6,
         "rate_inflation": {
           "ticker": "XLU",
           "covered": true,
@@ -24930,7 +25110,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -0.12,
+            "avg_pct": -0.11,
             "hit_pct": 61.0,
             "n": 28
           },
@@ -24951,25 +25131,25 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 19.1,
+        "trigger_gap_pct": 18.6,
         "trigger_progress_pct": 0.0
       },
       {
         "name": "Health Care",
         "stage": "weakening",
-        "mom_20d_pct": -4.12,
-        "mom_60d_pct": -0.25,
-        "mom_252d_pct": 7.03,
+        "mom_20d_pct": -4.0,
+        "mom_60d_pct": -0.13,
+        "mom_252d_pct": 7.16,
         "above_trend": true,
-        "pctile_252d": 49.6,
+        "pctile_252d": 50.0,
         "extended": false,
         "ticker": "XLV",
-        "tech_price": 168.38,
+        "tech_price": 168.36,
         "tech_above50": true,
         "tech_above200": true,
         "tech_pct_vs_50dma": 1.2,
         "tech_pct_vs_200dma": 8.8,
-        "tech_rsi14": 52.0,
+        "tech_rsi14": 51.0,
         "tech_macd_pos": false,
         "tech_off_52w_high_pct": -3.8,
         "rate_inflation": {
@@ -25148,21 +25328,21 @@
       {
         "name": "Consumer Discretionary",
         "stage": "lagging",
-        "mom_20d_pct": -6.85,
-        "mom_60d_pct": -8.0,
-        "mom_252d_pct": -20.67,
+        "mom_20d_pct": -6.99,
+        "mom_60d_pct": -8.14,
+        "mom_252d_pct": -20.79,
         "above_trend": false,
         "pctile_252d": 0.4,
         "extended": false,
         "ticker": "XLY",
-        "tech_price": 110.95,
+        "tech_price": 110.64,
         "tech_above50": false,
         "tech_above200": false,
-        "tech_pct_vs_50dma": -3.5,
-        "tech_pct_vs_200dma": -4.6,
-        "tech_rsi14": 40.0,
+        "tech_pct_vs_50dma": -3.7,
+        "tech_pct_vs_200dma": -4.8,
+        "tech_rsi14": 39.0,
         "tech_macd_pos": false,
-        "tech_off_52w_high_pct": -10.3,
+        "tech_off_52w_high_pct": -10.6,
         "rate_inflation": {
           "ticker": "XLY",
           "covered": false,
@@ -25276,7 +25456,7 @@
             "n": 28
           },
           "9": {
-            "avg_pct": -0.89,
+            "avg_pct": -0.9,
             "hit_pct": 43.0,
             "n": 28
           },
@@ -25297,7 +25477,7 @@
           }
         },
         "season_month": 9,
-        "trigger_gap_pct": 13.2,
+        "trigger_gap_pct": 13.3,
         "trigger_progress_pct": 0.0
       }
     ],
@@ -25317,32 +25497,32 @@
       {
         "ticker": "GC=F",
         "name": "Gold",
-        "price": 4326.2,
+        "price": 4319.3,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -1.7,
-        "pct_vs_200dma": -5.0,
-        "rsi14": 40.0,
+        "pct_vs_50dma": -1.9,
+        "pct_vs_200dma": -5.2,
+        "rsi14": 39.0,
         "macd_pos": false,
-        "off_52w_high_pct": -18.7,
+        "off_52w_high_pct": -18.8,
         "season_this": "Sep: +0.5% avg, up 48% of years (n=27)",
         "season_this_zh": "9\u6708\uff1a\u5e73\u5747 +0.5%\uff0c48% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 8.0
+        "mom_60d_pct": 7.8
       },
       {
         "ticker": "CL=F",
         "name": "Crude Oil",
-        "price": 91.82,
+        "price": 92.14,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 4.1,
-        "pct_vs_200dma": 10.7,
+        "pct_vs_50dma": 4.4,
+        "pct_vs_200dma": 11.1,
         "rsi14": 46.0,
         "macd_pos": false,
-        "off_52w_high_pct": -18.7,
+        "off_52w_high_pct": -18.4,
         "season_this": "Sep: -0.9% avg, up 41% of years (n=27)",
         "season_this_zh": "9\u6708\uff1a\u5e73\u5747 -0.9%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 17.5
+        "mom_60d_pct": 17.9
       },
       {
         "ticker": "HG=F",
@@ -25350,24 +25530,24 @@
         "price": 6.76,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 2.9,
-        "pct_vs_200dma": 9.9,
+        "pct_vs_50dma": 3.0,
+        "pct_vs_200dma": 10.0,
         "rsi14": 59.0,
         "macd_pos": true,
-        "off_52w_high_pct": -0.7,
+        "off_52w_high_pct": -0.6,
         "season_this": "Sep: +0.3% avg, up 59% of years (n=27)",
         "season_this_zh": "9\u6708\uff1a\u5e73\u5747 +0.3%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 8.4
+        "mom_60d_pct": 8.5
       },
       {
         "ticker": "DX-Y.NYB",
         "name": "US Dollar",
-        "price": 101.06,
+        "price": 101.12,
         "above50": true,
         "above200": true,
         "pct_vs_50dma": 1.4,
-        "pct_vs_200dma": 1.8,
-        "rsi14": 73.0,
+        "pct_vs_200dma": 1.9,
+        "rsi14": 74.0,
         "macd_pos": true,
         "off_52w_high_pct": -0.5,
         "season_this": "Sep: -0.3% avg, up 45% of years (n=56)",
@@ -25448,7 +25628,7 @@
   },
   "freshness": {
     "asof": "2026-09-23",
-    "built_at": "2026-09-23T18:23:08Z",
+    "built_at": "2026-09-23T17:03:27Z",
     "age_days": 0,
     "age_sessions": 0,
     "max_age_sessions": 1,
@@ -29703,11 +29883,11 @@
     "global_breadth_scare_score": 57.5,
     "deescalation_eligible": true,
     "deescalation_trajectory": {
-      "intensity": 51.9,
+      "intensity": 52.7,
       "peak": 76.5,
       "peak_days_ago": 27,
-      "off_peak": 24.6,
-      "velocity": -16.5,
+      "off_peak": 23.8,
+      "velocity": -15.8,
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
@@ -29738,16 +29918,16 @@
         55.6,
         54.1,
         55.3,
-        51.9
+        52.7
       ],
-      "spark_pts": "3.0,10.6 6.9,9.6 10.8,19.7 14.7,23.0 18.7,21.1 22.6,21.4 26.5,17.1 30.4,19.4 34.3,22.1 38.2,14.9 42.1,12.7 46.0,14.8 50.0,9.9 53.9,3.0 57.8,8.8 61.7,12.5 65.6,12.6 69.5,8.7 73.4,7.1 77.3,14.1 81.3,15.2 85.2,16.1 89.1,15.4 93.0,17.5",
+      "spark_pts": "3.0,10.6 6.9,9.6 10.8,19.7 14.7,23.0 18.7,21.1 22.6,21.4 26.5,17.1 30.4,19.4 34.3,22.1 38.2,14.9 42.1,12.7 46.0,14.8 50.0,9.9 53.9,3.0 57.8,8.8 61.7,12.5 65.6,12.6 69.5,8.7 73.4,7.1 77.3,14.1 81.3,15.2 85.2,16.1 89.1,15.4 93.0,17.0",
       "spark_peak": {
         "x": 53.9,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 17.5
+        "y": 17.0
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -29755,18 +29935,18 @@
       "drivers": {
         "faded": [
           {
-            "key": "growth",
-            "label_en": "Growth scare / defensive rotation",
-            "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
-            "peak": 75.1,
-            "now": 34.1
-          },
-          {
             "key": "bubble",
             "label_en": "Bubble / blow-off unwind",
             "label_zh": "\u6ce1\u6cab/\u89c1\u9876\u56de\u5410",
             "peak": 76.5,
-            "now": 37.3
+            "now": 36.2
+          },
+          {
+            "key": "growth",
+            "label_en": "Growth scare / defensive rotation",
+            "label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8",
+            "peak": 75.1,
+            "now": 35.8
           },
           {
             "key": "global",

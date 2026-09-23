@@ -1,8 +1,8 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-09-21",
-  "generated_utc": "2026-09-23T07:52:25Z",
+  "as_of": "2026-09-22",
+  "generated_utc": "2026-09-23T18:33:14Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
@@ -445,7 +445,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-09-21"
+      "as_of": "2026-09-22"
     },
     "membership": {
       "path": "data/baskets/membership.json",
