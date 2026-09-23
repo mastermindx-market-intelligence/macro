@@ -302,6 +302,32 @@ ops/launchd/run_with_env.sh .env \
     /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.publish_r2 --dirs options_skew
 ```
 
+### 3.8 Restore the shared checkout after ANY manual session (seat correction 2026-09-23)
+
+Every manual step in §3.4–§3.7 runs inside `/Users/chriswong/skew-ops-wt`, the
+checkout BOTH launchd lanes (`com.macro.skewaccrual`, `com.macro.payofflab`)
+refresh at the start of every run. A manual hydrate/backfill leaves the tracked
+`data/options_skew/snapshots.parquet` MODIFIED and a dry-run leaves
+`data/options_payoff_lab/` untracked. Measured 2026-09-23 12:30Z: the scheduled
+accrual aborted at `step_refresh` ("git checkout --detach origin/main failed —
+refusing to run") because the runner detached BEFORE its own reset/clean and git
+refused to overwrite the dirty tracked file; the day's session would have been
+silently skipped. The runners now reset/clean before the detach as well
+(2026-09-23 hardening), but the manual discipline stands — finish every seat
+session in that checkout with:
+
+```bash
+cd /Users/chriswong/skew-ops-wt
+git fetch origin && git reset --hard && git clean -fd && git checkout --detach origin/main && git reset --hard && git clean -fd
+git status --short | wc -l   # must print 0
+```
+
+The durable state is on R2 (`publish_r2 --dirs options_skew`), never in this
+checkout, so discarding local bytes loses nothing once the publish step has
+run. Recovery when a scheduled run has already aborted: restore the checkout as
+above, then `launchctl kickstart gui/$(id -u)/com.macro.skewaccrual` (same
+receipt log) — the accrual is idempotent for the session it targets.
+
 ## 4. Reading the receipt log
 
 The plist's `StandardOutPath` is
