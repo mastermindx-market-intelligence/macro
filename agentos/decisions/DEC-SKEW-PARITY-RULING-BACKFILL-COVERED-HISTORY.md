@@ -38,7 +38,7 @@ evidence:
   - "research/MARKET_ONTOLOGY_F03_SKEW_PARITY_RECEIPT_2026-09-23.md — parity receipt for the covered keys (spot mismatch 46.4%, 1,680 keys over 2%; both IV legs move; tenor never)"
   - "PR #7756 — W2-4 parity audit, read only"
   - "W2-2 lane receipts: research/MARKET_ONTOLOGY_F03_SKEW_ACCRUAL_LANE_2026-09-22.md and DSC:SKEW-THETADATA-RECOMPUTE-DIVERGES-FROM-POLYGON-LEDGER (3,965 priceable keys, 8,410 unpriceable, 2,875 weekend rows)"
-  - "python -m pytest tests/test_options_skew_backfill.py tests/test_options_skew.py tests/test_audit_options_skew_parity.py tests/test_skew_accrual_launchd.py -q -p no:cacheprovider"
+  - "python -m pytest tests/test_options_skew_backfill.py tests/test_options_skew.py tests/test_audit_options_skew_overlap.py tests/test_skew_accrual_launchd.py -q -p no:cacheprovider"
 affects:
   - engine/options_skew.py
   - scripts/build_options_skew.py
@@ -53,9 +53,9 @@ decided_at: 2026-09-23
 
 # Backfill the covered skew history from the store
 
-The polygon_gex ledger and a fresh read of the same names from the ThetaData
-store disagree on the sign of skew about 40% of the time where both can price
-a key. The gap is mostly a spot mismatch: the legacy row was not priced at the
+The discovery this question cites records that the sign agrees on only 60
+percent of the keys both sources can price (2,392 match, 1,563 flip). The
+gap is mostly a spot mismatch: the legacy row was not priced at the
 end-of-day close. Both volatility legs move with that spot. The tenor does not.
 
 The covered dates are therefore recomputed from the store. Where the store
