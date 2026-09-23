@@ -201,6 +201,20 @@ step_refresh() {
         log "ERROR: git fetch origin failed (network? rate limit?) — refusing to run"
         return 1
     fi
+    # 2026-09-23 abort (12:30Z skew accrual): a tracked file left MODIFIED by a
+    # manual session in this shared checkout (the seat's one-time backfill left
+    # data/options_skew/snapshots.parquet dirty) makes `git checkout --detach`
+    # refuse BEFORE the reset/clean below could ever run, and the lane aborts
+    # for the day. The checkout is disposable by design (durable state is R2),
+    # so discard local bytes FIRST, then detach, then reset/clean again.
+    if ! git reset --hard >/dev/null 2>&1; then
+        log "ERROR: pre-detach git reset --hard failed — refusing to run"
+        return 1
+    fi
+    if ! git clean -fd >/dev/null 2>&1; then
+        log "ERROR: pre-detach git clean -fd failed — refusing to run"
+        return 1
+    fi
     # Detach on origin/main so the next run's fetch does not collide with a
     # local branch that is no longer at HEAD. A detached HEAD is the canonical
     # shape for read-only nightly lanes.
