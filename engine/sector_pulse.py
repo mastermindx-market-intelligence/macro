@@ -41,7 +41,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -121,7 +121,8 @@ def _load_theme_intel(region: str) -> dict | None:
             ti = payload.get("theme_intel") if isinstance(payload, dict) else None
             if ti and ti.get("themes"):
                 return ti
-        # Fallback: recompute live (slower but correct when file is stale/absent)
+        # Fallback only when absent/empty. A persisted historical observation
+        # remains historical; freshness/publication is owned by its producer.
         from engine.theme_scoring import compute_theme_intel
         return compute_theme_intel(region)
     except Exception:  # noqa: BLE001
@@ -157,6 +158,58 @@ def _load_archive_snapshots(region: str) -> list[dict]:
     except Exception:  # noqa: BLE001
         log.debug("sector_pulse: archive unavailable for region=%s", region)
         return []
+
+
+def _observation_date(value: object) -> str | None:
+    """Accept the producer's ISO session date; never substitute the build clock."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return value if parsed.isoformat() == value else None
+
+
+def _archive_through_observation(snapshots: list[dict], as_of: str, region: str) -> list[dict]:
+    """Anchor deltas to the current theme observation, not the archive tail.
+
+    The archive is keep-FIRST per asof (signal_archive.archive_snapshot). Preserve
+    that law, discard malformed/future rows, and count each date once. The current
+    theme may be rendered before its archive write; a zero-offset anchor prevents
+    that sequencing difference from shifting every comparison back an observation.
+    This is observation-date alignment, not a claim of logged-at/PIT replay.
+    """
+    by_date: dict[str, dict] = {}
+    for snap in snapshots:
+        if not isinstance(snap, dict):
+            continue
+        observed = _observation_date(snap.get("asof"))
+        rows = snap.get("themes")
+        if (observed is None or observed >= as_of
+                or not isinstance(rows, list) or not rows):
+            continue
+        by_date.setdefault(observed, snap)
+    # No source is mutated. Offset helpers never consume this anchor's values:
+    # the current theme is the measurement, and comparison offsets start at 1.
+    anchor = {"asof": as_of, "themes": []}
+    if region == "us":
+        from lib.nyse_calendar import session_n_back
+
+        reference = date.fromisoformat(as_of)
+        if session_n_back(reference, 0) is None:
+            return [anchor]
+        aligned = []
+        for offset in range(20, 0, -1):
+            target = session_n_back(reference, offset)
+            day = target.isoformat() if target is not None else None
+            # An absent session stays an empty slot; it cannot stretch a 5-day
+            # window into 6+ sessions or make an older print mean yesterday.
+            aligned.append(by_date.get(day, {"asof": day, "themes": []}))
+        return aligned + [anchor]
+    # Other regions retain their dated archive-observation convention. They do
+    # not borrow the US calendar or silently claim session-complete horizons.
+    return [by_date[day] for day in sorted(by_date)] + [anchor]
 
 
 def _rank_map_at(snapshots: list[dict], offset_sessions: int) -> dict[str, int]:
@@ -369,8 +422,8 @@ def _build_theme_row(th: dict, n_themes: int,
 # Public API
 # ---------------------------------------------------------------------------
 
-def build_pulse(region: str = "us") -> dict | None:
-    """Build the Sector Pulse payload for a region.
+def _build_pulse_from_theme_intel(ti: dict, region: str) -> dict | None:
+    """Shared Sector Pulse projection for readers, enrichment and publication.
 
     Returns a dict with schema/as_of/region/n_themes, plus:
       "themes"  — list of pulse rows (one per theme, sorted by rank ascending)
@@ -382,18 +435,21 @@ def build_pulse(region: str = "us") -> dict | None:
     the requested look-back ("history accruing" semantics).
     """
     try:
-        ti = _load_theme_intel(region)
         if not ti:
             return None
         themes_raw = ti.get("themes") or []
         if not themes_raw:
             return None
 
-        as_of = ti.get("as_of") or datetime.now(timezone.utc).date().isoformat()
+        as_of = _observation_date(ti.get("as_of"))
+        if as_of is None:
+            log.warning("sector_pulse: missing/invalid theme observation date for region=%s", region)
+            return None
         n = len(themes_raw)
 
-        # Load archive snapshots for rank/score delta computation.
-        snapshots = _load_archive_snapshots(region)
+        # The theme observation is the reference clock. A newer archive cannot
+        # revise an older tape, and repeated writes are not new observations.
+        snapshots = _archive_through_observation(_load_archive_snapshots(region), as_of, region)
 
         rank_1d = _rank_map_at(snapshots, 1)
         rank_5d = _rank_map_at(snapshots, 5)
@@ -425,6 +481,23 @@ def build_pulse(region: str = "us") -> dict | None:
             "as_of": as_of,
             "region": region,
             "n_themes": n,
+            # Actual evidence dates and requested dates are separate: a missing
+            # US session must stay unknown, not silently use an older print.
+            "history": {
+                "basis": ("nyse_sessions" if region == "us"
+                          else "distinct_dated_archive_observations"),
+                "comparison_as_of": {
+                    f"{offset}d": (snapshots[-(offset + 1)]["asof"]
+                                    if len(snapshots) > offset
+                                    and snapshots[-(offset + 1)]["themes"] else None)
+                    for offset in (1, 5, 20)
+                },
+                "expected_comparison_as_of": {
+                    f"{offset}d": (snapshots[-(offset + 1)]["asof"]
+                                    if len(snapshots) > offset else None)
+                    for offset in (1, 5, 20)
+                },
+            },
             "themes": rows,
             "heating": heating,
             "cooling": cooling,
@@ -434,6 +507,15 @@ def build_pulse(region: str = "us") -> dict | None:
                             for t in ("heating", "hot", "cooling", "broken")} if heat_cal else {},
         }
     except Exception:  # noqa: BLE001
+        log.warning("sector_pulse.build_pulse failed for region=%s", region, exc_info=True)
+        return None
+
+
+def build_pulse(region: str = "us") -> dict | None:
+    """Read the current dated theme payload through the shared pulse projection."""
+    try:
+        return _build_pulse_from_theme_intel(_load_theme_intel(region), region)
+    except Exception:  # noqa: BLE001 — additive context remains never-fatal
         log.warning("sector_pulse.build_pulse failed for region=%s", region, exc_info=True)
         return None
 
@@ -568,46 +650,27 @@ def merge_pulse_into_theme_intel(ti: dict, region: str) -> None:
         if not themes_raw:
             return
 
-        n = len(themes_raw)
-        snapshots = _load_archive_snapshots(region)
-        rank_1d = _rank_map_at(snapshots, 1)
-        rank_5d = _rank_map_at(snapshots, 5)
-        rank_20d = _rank_map_at(snapshots, 20)
-        score_5d = _score_map_at(snapshots, 5)
-        score_20d = _score_map_at(snapshots, 20)
-        heat_cal = _heat_calibration()
-
+        payload = _build_pulse_from_theme_intel(ti, region)
+        if payload is None:
+            return
+        pulse_by_id = {row["id"]: row for row in payload["themes"] if row.get("id")}
+        fields = {
+            "pulse_heat": "heat",
+            "pulse_rank_delta_1d": "rank_delta_1d",
+            "pulse_rank_delta_5d": "rank_delta_5d",
+            "pulse_rank_delta_20d": "rank_delta_20d",
+            "pulse_score_delta_5d": "score_delta_5d",
+        }
         for th in themes_raw:
-            try:
-                tid = th.get("id")
-                cur_rank = th.get("rank")
-                cur_score = th.get("score")
-                label = th.get("label", "neutral")
-
-                def _rd(cur, hist):
-                    return (hist[tid] - cur) if (cur is not None and tid in hist) else None
-
-                def _sd(cur, hist):
-                    return (cur - hist[tid]) if (cur is not None and tid in hist) else None
-
-                rd1 = _rd(cur_rank, rank_1d)
-                rd5 = _rd(cur_rank, rank_5d)
-                rd20 = _rd(cur_rank, rank_20d)
-                sd5 = _sd(cur_score, score_5d)
-                heat = _heat_tier(cur_rank or 9999, n, label, rd5, sd5)
-
-                hs = _heat_strength(heat, heat_cal)
-
-                # Additive: set only if not already present (never overwrite existing data)
-                th.setdefault("pulse_heat", heat)
-                th.setdefault("pulse_heat_grade", (hs or {}).get("grade"))
-                th.setdefault("pulse_rank_delta_1d", rd1)
-                th.setdefault("pulse_rank_delta_5d", rd5)
-                th.setdefault("pulse_rank_delta_20d", rd20)
-                th.setdefault("pulse_score_delta_5d", sd5)
-            except Exception:  # noqa: BLE001
-                log.debug("merge_pulse_into_theme_intel: skipping theme %s", th.get("id"),
-                          exc_info=True)
+            if not isinstance(th, dict):
+                continue
+            row = pulse_by_id.get(th.get("id"))
+            if row is None:
+                continue
+            # Additive only: never alter the source rank, score or recommendation.
+            for target, source in fields.items():
+                th.setdefault(target, row.get(source))
+            th.setdefault("pulse_heat_grade", (row.get("heat_strength") or {}).get("grade"))
     except Exception:  # noqa: BLE001
         log.warning("merge_pulse_into_theme_intel failed for region=%s", region, exc_info=True)
 
@@ -623,55 +686,15 @@ def write_pulse(ti: dict, region: str, out_dir: Any) -> None:
     try/except so a failure here can never break the containing build step.
     """
     try:
-        from lib import config as _cfg
+        payload = _build_pulse_from_theme_intel(ti, region)
+        if payload is None:
+            log.warning("write_pulse: unavailable observation for region=%s — file not written", region)
+            return
         p = Path(out_dir)
         p.mkdir(parents=True, exist_ok=True)
         fname = "sector_pulse.json" if region == "us" else f"sector_pulse_{region}.json"
-
-        # Build the pulse from the freshly-computed theme_intel dict.
-        # We monkeypatch _load_theme_intel by temporarily injecting ti directly
-        # to avoid redundant file I/O inside write_pulse.
-        as_of = ti.get("as_of") or datetime.now(timezone.utc).date().isoformat()
-        themes_raw = ti.get("themes") or []
-        n = len(themes_raw)
-
-        snapshots = _load_archive_snapshots(region)
-        rank_1d = _rank_map_at(snapshots, 1)
-        rank_5d = _rank_map_at(snapshots, 5)
-        rank_20d = _rank_map_at(snapshots, 20)
-        score_5d = _score_map_at(snapshots, 5)
-        score_20d = _score_map_at(snapshots, 20)
-        heat_cal = _heat_calibration()
-
-        rows: list[dict] = []
-        for th in themes_raw:
-            try:
-                rows.append(_build_theme_row(th, n, rank_1d, rank_5d, rank_20d,
-                                             score_5d, score_20d, heat_cal))
-            except Exception:  # noqa: BLE001
-                log.debug("write_pulse: skipping theme %s", th.get("id"), exc_info=True)
-
-        if not rows:
-            log.warning("write_pulse: no rows built for region=%s — file not written", region)
-            return
-
-        rows.sort(key=lambda r: (r["rank"] is None, r["rank"] or 9999))
-        heating = [r["id"] for r in rows if r["heat"] == "heating"]
-        cooling = [r["id"] for r in rows if r["heat"] == "cooling"]
-
-        payload = {
-            "schema": SCHEMA,
-            "as_of": as_of,
-            "region": region,
-            "n_themes": n,
-            "themes": rows,
-            "heating": heating,
-            "cooling": cooling,
-            "heat_grades": {t: (_heat_strength(t, heat_cal) or {}).get("grade")
-                            for t in ("heating", "hot", "cooling", "broken")} if heat_cal else {},
-        }
         (p / fname).write_text(json.dumps(payload, separators=(",", ":"), default=str))
-        log.info("sector_pulse: wrote %s (%d themes)", fname, len(rows))
+        log.info("sector_pulse: wrote %s (%d themes)", fname, len(payload["themes"]))
     except Exception:  # noqa: BLE001
         log.warning("sector_pulse.write_pulse failed for region=%s", region, exc_info=True)
 

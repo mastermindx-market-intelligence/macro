@@ -1319,6 +1319,7 @@ jobs:
       - "collectors/edgar_facts.py"
       # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
       - "engine/debt_maturity.py"
+      - "engine/capital_need.py"
       - "scripts/build_debt_maturity.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_scenario.py"
@@ -2294,6 +2295,8 @@ jobs:
       - "engine/cycles.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -2965,6 +2968,9 @@ jobs:
       # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
       # engine.cash_runway is a pure module under this job's engine/*.py glob and the
       # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
+      # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
+      # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
+      # engine.capital_need plus the same debt-maturity render boundary. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2974,6 +2980,7 @@ jobs:
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
           tests/test_cash_runway.py
+          tests/test_capital_need.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -3017,6 +3024,7 @@ jobs:
           tests/test_pick_autopsy_selection.py
           tests/test_trade_memory.py
           tests/test_options_stamp.py tests/test_options_entry_state.py tests/test_sector_pulse_wiring.py
+          tests/test_sector_pulse.py tests/test_sector_pulse_observation_clock.py
           tests/test_news_page_render.py tests/test_china_lens_hub.py
           tests/test_news_rank_aging.py
           tests/test_build_netliq_daily.py
@@ -7443,6 +7451,8 @@ jobs:
         run: python -m pytest tests/test_mailer_alert_template.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
         run: python -m pytest tests/test_alert_delivery_drain.py -v
+      - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
+        run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
   serving-observability:
     if: ${{ false }}
@@ -7964,6 +7974,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -8594,6 +8606,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -11033,6 +11047,7 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -12366,6 +12381,8 @@ jobs:
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -14471,6 +14488,8 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
+      # F09 capital-need adapter closure widening 2026-09-22 (contract-delta).
+      - "engine/capital_need.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -16076,6 +16095,43 @@ jobs:
       - name: markets risk-regime strip
         run: python -m pytest tests/test_markets_regime_strip.py -q
 
+  options-skew-engine:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # A-F03-W2-1b (2026-09-22). tests/test_options_skew.py used to be a step on
+    # flow-surface, which is gate:data and never runs in a PR pack. This job is
+    # the gate:code home. scope: exclusive — the paths below are the measured
+    # import closure of that one pytest file, plus every live caller the
+    # legacy-source pin reads (engine-render, closing-bell, render.yml, and
+    # the nightly engine shell). No data/** fallback.
+    scope: exclusive
+    paths:
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/render.yml"
+      - "engine/__init__.py"
+      - "engine/options_skew.py"
+      - "engine/thetadata_store.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_skew.py"
+      - "scripts/ci/daily_engine_regional_desk_builders.sh"
+      - "scripts/validate_options_skew.py"
+      - "tests/test_options_skew.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install options-skew engine test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: options skew engine
+        run: python -m pytest tests/test_options_skew.py -q
+
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
     gate: code
@@ -16131,3 +16187,71 @@ jobs:
         run: pip install pytest
       - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
         run: python -m pytest tests/test_recurring_briefs.py -q
+
+  skew-accrual-lane:
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
+    # The five suite runs this job names are the entire W2-2 test surface
+    # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
+    # test_audit_options_skew_overlap). These are end-to-end tests of the
+    # M1-host launchd lane that builds data/options_skew/snapshots.parquet
+    # and publishes it to R2; they have no signal-contract / render subject,
+    # so they were parked in config/unrun_test_waivers.yml in error. They
+    # are now wired into a real merge-gate job and the waiver rows are
+    # deleted (round 5/N, Meta-CEO A binding ruling). scope: exclusive
+    # replaces inference because every helper script has its own argparse
+    # surface and the runner is sh-only and not visible to AST inference.
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    scope: exclusive
+    # Paths are the page-equivalent family for the W2-2 store-host lane
+    # plus the measured import closure of the five suites
+    # (suite_dependency_closure reports them on the merged tree). Listed
+    # literally so exclusivity covers every file the suites actually
+    # read or run; an unlisted closure file is an uncovered path. No
+    # tests/** catch-all.
+    paths:
+      - "ops/launchd/run_skew_accrual.sh"
+      - "ops/launchd/run_with_env.sh"
+      - "ops/launchd/com.macro.skewaccrual.plist"
+      - "scripts/skew_accrual_gate.py"
+      - "scripts/skew_accrual_precheck.py"
+      - "scripts/skew_accrual_verify_ledger.py"
+      - "scripts/audit_options_skew_overlap.py"
+      - "scripts/publish_r2.py"
+      - "scripts/fetch_r2.py"
+      - "scripts/build_options_skew.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "engine/__init__.py"
+      - "engine/options_skew.py"
+      - "engine/thetadata_store.py"
+      - "tests/test_skew_accrual_gate.py"
+      - "tests/test_skew_accrual_launchd.py"
+      - "tests/test_audit_options_skew_overlap.py"
+      - "tests/test_skew_accrual_precheck.py"
+      - "tests/test_skew_accrual_verify_ledger.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install skew-accrual-lane test dependencies
+        # pandas + pyarrow are exercised by the verify-ledger suite
+        # (parquet read of data/options_skew/snapshots.parquet) and by
+        # the audit suite (legacy ledger read). No signal-contract /
+        # render deps; the launcher + argparse helpers are stdlib-only.
+        # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
+        # (12 publish_r2 registration tests red without it — run 35782263306).
+        run: pip install pytest pandas pyarrow pyyaml
+      - name: skew-accrual lane — gate, precheck, verify, launchd, real-overlap audit
+        run: |
+          python -m pytest \
+            tests/test_skew_accrual_gate.py \
+            tests/test_skew_accrual_launchd.py \
+            tests/test_audit_options_skew_overlap.py \
+            tests/test_skew_accrual_precheck.py \
+            tests/test_skew_accrual_verify_ledger.py \
+            -q

@@ -15,7 +15,7 @@
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-19",
+      "asof": "2026-09-22",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,26 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 10
+        "ohlcv_absent": 8
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Hardware": {
-          "theme_thrust_frac": 0.2222,
+        "Crypto & Blockchain": {
+          "theme_thrust_frac": 0.2308,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Nanotechnology": {
-          "theme_thrust_frac": 0.1212,
+        "Semiconductors": {
+          "theme_thrust_frac": 0.3235,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 74,
-      "tickers_read": 84
+      "tickers_ok": 60,
+      "tickers_read": 68
     },
     "keys": [
       "relay_count_3d",
@@ -66,8 +66,8 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 139,
-      "n_covered": 0,
+      "members_indexed": 126,
+      "n_covered": 83,
       "reason": null,
       "window_sessions": 21
     },
@@ -108,8 +108,8 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "TMO",
-      "PI"
+      "RMBS",
+      "COIN"
     ],
     "W": []
   },
@@ -119,41 +119,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-22 11:21:34",
-  "runtime_s": 108.7,
+  "run_utc": "2026-09-22 22:30:04",
+  "runtime_s": 116.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
     "asof": "2026-09-22",
-    "n_members": 139,
+    "n_members": 126,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 5.133,
+        "emerging_score": 5.214,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.244,
+        "emerging_score": 2.02,
         "rank": 2,
         "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 2.094,
+        "emerging_score": 1.659,
         "rank": 3,
         "theme": "Space Tech"
       },
       {
-        "emerging_score": 1.638,
+        "emerging_score": 1.644,
         "rank": 4,
-        "theme": "Nanotechnology"
+        "theme": "Crypto & Blockchain"
       },
       {
-        "emerging_score": 1.456,
+        "emerging_score": 1.415,
         "rank": 5,
-        "theme": "Hardware"
+        "theme": "Nanotechnology"
       }
     ]
   },
@@ -163,15 +163,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-21",
-    "asof_mismatch": 0,
+    "asof_max": "2026-09-22",
+    "asof_mismatch": 4,
     "asof_run": "2026-09-21",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.6,
+    "runtime_s": 26.4,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 76,

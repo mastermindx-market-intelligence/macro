@@ -3514,6 +3514,29 @@ CURATED_EXCLUSIVE = {
     # collectors/ and engine.market_state chains), so exclusivity loses no
     # owner and contract-delta stays at 0 introduced.
     "markets-regime-strip",
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
+    # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
+    # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
+    # + test_audit_options_skew_overlap). The lane has no signal-contract /
+    # render subject — its subjects are the launchd plist, the sh runner,
+    # argparse helpers, and the publish_r2._DATA_DIRS options_skew
+    # registration — and it was previously parked in
+    # config/unrun_test_waivers.yml, which the waiver file's own header
+    # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
+    # name exactly the five suites plus the load-bearing scripts they
+    # actually invoke and the engine/lib chains those scripts import.
+    "skew-accrual-lane",
+    # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
+    # gate:code home for tests/test_options_skew.py. The suite previously
+    # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
+    # the migration test was dark on every pull request. Curated for
+    # COVERAGE: paths are the measured import closure (options_skew,
+    # thetadata_store, the builder, and the validate_options_skew import
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
+    "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
