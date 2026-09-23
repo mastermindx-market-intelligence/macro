@@ -559,20 +559,35 @@ def _jobs_launching_skew(path: Path) -> set[str]:
     return hits
 
 
-def test_every_live_skew_caller_exports_the_legacy_flag():
-    """Every process that publishes skew today must set the legacy source.
+def _assert_hydrate_step_precedes_builder(path: Path, launching: set[str]) -> None:
+    """The options_skew R2 restore is its own step and sits before every emit."""
+    import yaml
 
-    engine-render.yml and closing-bell.yml were pinned in W2-1b. The nightly
-    engine job runs scripts/ci/daily_engine_regional_desk_builders.sh, and
-    render.yml (default runner render-linux, scope all and scope gex) also
-    launches the builder. A pin that only matches `brun options_skew` leaves
-    the run_py lines, and those two files, free to emit the old ledger.
+    doc = yaml.safe_load(path.read_text()) or {}
+    jobs = doc.get("jobs") or {}
+    for name in sorted(launching):
+        steps = (jobs.get(name) or {}).get("steps") or []
+        builder_at: list[int] = []
+        hydrate_at: list[int] = []
+        for index, step in enumerate(steps):
+            run = str((step or {}).get("run") or "")
+            if _live_skew_invocations(run):
+                builder_at.append(index)
+            if "fetch_r2 --dirs options_skew" in run:
+                hydrate_at.append(index)
+        assert builder_at, (path.name, name)
+        assert hydrate_at, (path.name, name, "missing options_skew hydrate step")
+        assert min(hydrate_at) < min(builder_at), (
+            path.name, name, hydrate_at, builder_at,
+        )
 
-    Two pin shapes are lawful: (a) `export OPTIONS_SKEW_LEGACY_CHAIN=1` on the
-    line before the launch and `unset` on the line after; (b) a job-level
-    `env: OPTIONS_SKEW_LEGACY_CHAIN: "1"` on every job that launches the
-    builder — render.yml uses (b) because its re-render step's run expression
-    sits 76 chars under the 20,500-char guard in test_public_render_fastlane.
+
+def test_no_live_skew_caller_pins_the_legacy_chain_and_every_caller_emits():
+    """Every live skew caller emits from the ledger and pins nothing.
+
+    Render hosts have no ThetaData store. They copy the store-host ledger down
+    from R2, then run the builder with --emit. The legacy chain flag stays
+    available for a local process. CI does not set it.
     """
     root = Path(__file__).resolve().parents[1]
     required = {
@@ -581,6 +596,9 @@ def test_every_live_skew_caller_exports_the_legacy_flag():
         ".github/workflows/render.yml",
         "scripts/ci/daily_engine_regional_desk_builders.sh",
     }
+    for rel in sorted(required):
+        text = (root / rel).read_text()
+        assert "OPTIONS_SKEW_LEGACY_CHAIN" not in text, rel
     found: dict[str, int] = {}
     for base in (root / ".github" / "workflows", root / "scripts" / "ci"):
         for path in sorted(base.rglob("*")):
@@ -592,24 +610,21 @@ def test_every_live_skew_caller_exports_the_legacy_flag():
             if not hits:
                 continue
             found[rel] = len(hits)
-            if path.suffix in {".yml", ".yaml"}:
-                launching = _jobs_launching_skew(path)
-                pinned = _job_level_pin(path)
-                if launching and launching <= pinned:
-                    # shape (b): every launching job carries the env pin; the
-                    # dated cutover comment must sit on the pin itself.
-                    assert "A-F03-W2-1b (2026-09-22)" in "\n".join(lines), rel
-                    continue
             for i in hits:
-                assert lines[i - 1].strip() == "export OPTIONS_SKEW_LEGACY_CHAIN=1", (
-                    rel, i + 1, lines[max(0, i - 3): i + 2]
-                )
-                assert lines[i + 1].strip() == "unset OPTIONS_SKEW_LEGACY_CHAIN", (
-                    rel, i + 1, lines[i: i + 2]
-                )
-                comment = "\n".join(lines[max(0, i - 4): i])
-                assert "A-F03-W2-1b (2026-09-22)" in comment, (rel, comment)
-    assert required <= set(found), sorted(required - set(found))
+                assert lines[i].rstrip().endswith("--emit"), (rel, i + 1, lines[i])
+            if path.suffix in {".yml", ".yaml"}:
+                assert _job_level_pin(path) == set(), rel
+                launching = _jobs_launching_skew(path)
+                assert launching, rel
+                _assert_hydrate_step_precedes_builder(path, launching)
+            else:
+                fetch_at = [
+                    i for i, line in enumerate(lines)
+                    if "fetch_r2 --dirs options_skew" in line
+                ]
+                assert fetch_at, rel
+                assert min(fetch_at) < min(hits), (rel, fetch_at, hits)
+    assert set(found) == required, sorted(set(found) ^ required)
     # The narrow gex scope is a second launch in each render workflow.
     assert found[".github/workflows/engine-render.yml"] >= 2
     assert found[".github/workflows/render.yml"] >= 2
