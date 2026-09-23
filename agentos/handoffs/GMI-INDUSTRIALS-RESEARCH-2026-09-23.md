@@ -2,50 +2,40 @@
 
 Operation: `gmi-industrials-sector-research-20260923-sol-001`.
 Carrier: Macro Draft/HOLD PR #7789, branch `sol/industrials-sector-research-20260923`.
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
-Capability: SPEC_ONLY / research and proposed design, not built product.
+Capability: SPEC_ONLY / principal research in progress. This is not an Executive lifecycle record.
 
-## Mission and present authority
+## Mission, authority and source
 
-The live Chairman instruction of 23 September 2026 assigns Sol extensive multi-turn Industrials research, analysis and planning before any final Fable CEO build handoff. Difficult research and synthesis remain principal-owned here; no research subagent was commissioned. Fable remains the intended eventual build orchestrator, not a bound or STARTed worker for this Industrials operation.
+The current Chairman assigns this session extensive multi-turn Industrials research, analysis and planning before the final Fable CEO build handoff. Principal judgment and synthesis stay here; no research subagent is dispatched. Economics, earnings, cash, capital returns, expectations and valuation govern the sector research. Physical dependencies are conditional supporting lenses. The current continuation asks for more substantial productive turns with proactive checkpoints, not a minimum wall-clock duration or a promised hidden limit.
 
-The current correction is economics-first: demand, earnings, cash conversion, reinvestment, cycle transitions, expectations and valuation rerating. Physical BOMs and supply bottlenecks are conditional supporting lenses, not the universal industrial model. The incidental Finance wording in the mixed-sector instruction does not transfer another sector program.
+Protected Mastermind master and INDEX were revalidated unchanged at `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1. Same-pin COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT remain controlling. Original Macro interface/base is `c4da107fe729e46b4d4036b3e0e290390315d0fd`. PR head at turn entry was `0174d541357156e2e489c561e21d83ebb66b1bf5`.
 
-Protected Skillpack: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, version 1.0.1/bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT were read from that commit. Macro interface/base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Direct research rationale: PRINCIPAL_JUDGMENT and current Chairman assignment. The user reports Pro enabled; no hidden platform mode, budget, admission or runtime attestation is inferred.
+## Preserved foundation — DO NOT REDO
 
-## Material result and immutable evidence
+`research/industrials/INDUSTRIALS_RESEARCH_FOUNDATION_2026-09-23.md` at commit `eace175816aae1606aef85ed66d494f0688ce81b`, blob `28772b8e2cd57bb4f205c656b2c7ab8f54b66f1b`, remains the Wave 1 foundation: 12 economic archetypes, seven rerating mechanisms, twelve hypotheses, 21 source entries and 28 proposed acceptance cases. It is not complete sector research, production data, an empirical validation or an accepted build specification.
 
-First research foundation: `research/industrials/INDUSTRIALS_RESEARCH_FOUNDATION_2026-09-23.md`.
-Research commit: `eace175816aae1606aef85ed66d494f0688ce81b`.
-Exact Git blob: `28772b8e2cd57bb4f205c656b2c7ab8f54b66f1b`.
-SHA-256: `4d9391de1e47b40bbd3b12d3ec4829b2c42c4ce6c185950d58c305664346ee65`.
-Size: 47,219 UTF-8 bytes; 6,095 whitespace-delimited words.
+Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` remains a reference for the shared native-evidence/detail-page design, not this carrier. Do not modify or repeat its template work. Native proposed assertions are not assumed enrolled/live. Preserve GMI curation, Data OS identity, K1, relationship/forecast owners, private publication and existing Theme Tracker analytical owners. No second graph/store/score/publisher/lifecycle; no rank, entry, sizing or trading change.
 
-The document contains 12 proposed economic archetypes, seven rerating mechanisms, 12 falsifiable research hypotheses, 21 source entries and 28 proposed acceptance cases. Sources cover 16 industrial groups, one additional captive-finance release, three macro/definition sources and one valuation-methodology source. This is a bounded illustrative cohort, not a complete global census or admitted live company graph.
+## New verified material result
 
-Resolved distinctions include organic versus acquisition growth; rolling orders versus quarterly flows; RPO versus estimated service-agreement backlog; original equipment versus aftermarket economics; software segment sales versus ARR; prior charges/business-sale gains versus recurring profitability; operating cash versus post-capital cash; and diffusion surveys versus measured output. These are research/model requirements, not established current stock mispricing.
+`research/industrials/INDUSTRIALS_WAVE2_EVIDENCE_2026-09-23.md` was created at commit `c90b71a9d1daac3781c8024657aa410b11872f25`.
+GitHub immutable readback blob: `67d3d5acd272ab32056d17c7ca452f6c86cc8427`, exactly matching the local portable file's calculated Git blob.
+SHA-256: `8e86ab8db675024c6a8a33d03a6513e1a0531bfb14567548dbfc63cd4e161df3`.
+19,534 bytes; 2,356 words; 20 primary-source records across thirteen company groups. This is original selected public editorial research, not current full-fidelity private GMI data or raw reports.
 
-Fourteen local document-integrity checks passed, including source/ID coverage, explicit limitations, illustrative arithmetic, and exact equality of the portable document's calculated Git blob with GitHub's immutable readback. Zero application tests, empirical backtests, independent factual-review receipts or browser proofs are claimed. The 28 acceptance cases are specifications, not executed tests.
+Material findings: separate sequential and annual margin comparisons; hardware/software/service mixtures; software workflow and order-coverage exclusions; consolidated versus continuing cash; segment-sum versus group profit; customer-funded working capital; pending versus completed ownership; translated fiscal/negative-sign pitfalls; and earlier announcement versus subsequent order booking.
 
-## DO_NOT_REDO and source custody
+The important correction to Wave 1 is explicit: order -> delivery -> revenue must not be a universal accounting sequence. Powell's filing shows substantial over-time revenue recognition. Commercial commitments, physical progress, recognized accounting results and cash must remain distinct linked measurements. Strong advance cash is neither automatically recurring earnings nor automatically low quality.
 
-Robotics reference: Macro #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, including `docs/superpowers/specs/2026-09-23-robotics-theme-evidence-vertical-design.md`. Do not modify that carrier or repeat its generic template research. Its proposed native assertion contract is not assumed enrolled or live.
+## Current next action — useful work remains
 
-Reuse existing GMI curation/evidence, Data OS identity, K1 references, economic relationship and forecasting owners, and shared Theme Tracker/detail composition. No second graph, entity master, store, score, publisher, watcher, or lifecycle. Existing rank, entry, sizing and trading authority are unchanged. Current `scripts/build_state_of_themes.py` was read at the exact Macro interface pin and already displays bottleneck/consensus/cycle/entry/crowding/falsifier/orthogonality dimensions.
+Continue the same principal turn with economic-model synthesis: define granular automation/electrical research slices; business-scope membership limits; order, software, margin and cash mechanisms; valuation/reinvestment scenarios; and falsifiable research/product acceptance cases. The evidence register is persisted before this longer synthesis phase. The final Fable handoff remains held.
 
-The public repository holds original methodological/editorial research only. No paid/raw corpus, private live full-fidelity GMI snapshot, secret, or production curation row was written. Refresh shared-template custody and private source/publication bindings before any future product-interface modification.
+## Effects, limits and recovery
 
-## Effects, unknowns and remaining obligations
+Verified current-turn effect: one evidence document on the existing research carrier, plus this cumulative checkpoint update. No implementation, merge, deployment, native evidence admission, worker, Executive Attempt or watcher. EFFECT_UNKNOWN: none known. No source-custody transfer or autonomous wake.
 
-Verified effects are the research branch, Draft/HOLD PR, foundation document and this cumulative continuation update. No implementation, basket/score mutation, provider acquisition, worker, Executive Attempt, watcher, merge or deployment was started by this operation. No ambiguous modifying response is known; EFFECT_UNKNOWN: none. No semantic workstream parent was invented.
+Unresolved: full global/small-cap census and exposure denominators; SMC current quarterly document retrieval; Schneider presentation download; ABB presentation visual table retrieval; immutable native source retention; point-in-time consensus/current valuation panel; empirical validation; final accepted architecture/implementation plan. Disjoint research remains usable. Failed reads do not authorize invented figures.
 
-Remaining research gaps: global/small-cap business coverage; granular revenue/profit exposure and customers; multi-period normalized earnings/cash models; point-in-time consensus and market valuation data; causal/held-out validation; final accepted integration design/plan. Fastenal's rolling source was available as primary search-indexed release text but direct open redirected to a shell; retained immutable source bytes remain outstanding. Some publication timestamps remain unknown. Management statements are attributed and not independent corroboration.
-
-## Justified boundary and exact next action
-
-This is the end of the cross-archetype foundation and comparative-evidence chunk, after substantial source/tool context. The next unit changes scope to deep business-level mapping and requires new matched-period disclosures. Preserve the foundation rather than replaying its tool history. The continuation checkpoint must be verified at its resulting commit before finalization; no source-custody transfer or autonomous wake is implied.
-
-Resume with the principal Industrials research session in Pro as requested, or a fresh session at this checkpoint when context requires. Recover the minimum fresh canonical pin and material invalidators only. Next action: Wave 2, automation versus electrical infrastructure. Build a business/product/end-market comparison anchored by Eaton, Rockwell and Siemens and selected global primary-source peers. Trace order-to-margin-to-cash mechanisms, separate hardware/software and short/long-cycle exposures, capture competing explanations and unknown denominators. Select peers for research contrast, not stock attractiveness. Do not rerun the 21-source foundation or create a second research carrier.
-
-The final Fable handoff remains held until the substantive sector research, valuation/expectations framework, evidence feasibility, counterarguments and implementation specification are ready. No further Chairman approval is needed merely to continue this already assigned research scope.
+On interruption, verify this same checkpoint's latest committed revision, read the wave 2 evidence document, and resume the economic-model synthesis. Do not rerun the broad source search, repeat accepted Wave 1 work, open a replacement research carrier or send Fable a premature commission.
