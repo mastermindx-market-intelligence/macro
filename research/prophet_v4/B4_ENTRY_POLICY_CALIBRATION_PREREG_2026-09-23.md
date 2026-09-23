@@ -80,3 +80,12 @@ Capture has not started: there is no live B4 runtime on main. This amendment is 
 9. A cell is supported only by the single primary endpoint with its non-inferiority bound; the old any-of-K support path is superseded. Pareto dominance and non-identifiability remain grounds to kill a cell. The original decision-law arrays are preserved under `decision_law.superseded_by_A1`.
 
 The clock law still forbids historical backfill, the cohort start is unchanged, and all research-only authority flags remain false. This record authorizes evaluation only; it does not rank, admit, size, execute, trade, or promote policy.
+# Amendment A1 (2026-09-23, pre-capture)
+
+STATUS: IN_PROGRESS
+
+## Result
+
+## Evidence
+
+## Gaps and Deviations
