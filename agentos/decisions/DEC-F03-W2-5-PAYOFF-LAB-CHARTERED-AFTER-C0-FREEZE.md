@@ -1,59 +1,64 @@
 ---
 key: F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE
 question: >
-  After the C0-FREEZE (Phase-0 / Phase-1A scope) closed the canonical
-  workspace surfaces and gated the F0-F2 wave behind a display-tier
-  charter, is the F03 W2-5 (index-ETF payoff lab) program authorized to
-  build, and if so under which scope + ownership?
+  Who commissions the options payoff and structure consumer now that the
+  Options Intelligence C0 program is terminal?
 answer: >
-  Yes — the F03 W2-5 program is CHARTERED under the F0-F2 wave. The
-  W2-5a store-host producer (engine/options_payoff_lab.py +
-  scripts/build_options_payoff_lab.py; R2 published as
-  site/options_payoff_lab/latest.json) and the W2-5b consumer (the
-  four-card fold on templates/options.html.j2) both belong to the F03
-  workstream, owned by WS-MARKET-OS. The producer ships to R2 and
-  commits the artifact via engine-render.yml's --emit leg; the consumer
-  reads the committed artifact via a SEPARATE loader and never computes
-  a new price, threshold, or ranking. The charter is display-tier only;
-  gauntlet promotion remains the F0-F2 path's binding authority.
+  The Meta-CEO A seat charters W2-5 as normal Market Ontology packets.
+  W2-5a is the producer on the store host (this change). W2-5b is the
+  consumer surface and ships after the producer is live. Issue 6604 is
+  removed as a dependency, under the 2026-09-06 charter clause A-F03-1/2.
 rationale: >
-  The C0-FREEZE closed the Phase-0/1A scope and froze the canonical
-  workspace surfaces; F0-F2 is the F-series wave that follows, and
-  F03 is the "options" sub-stream of that wave. The payoff lab artifact
-  is a DERIVED display from already-published gex/chain surfaces — it
-  reads existing JSON files and does not introduce a new data plane.
-  Chartering it under F03 is consistent with the F0-F2 scope rule
-  ("display tier only until gauntleted") and with the WS-MARKET-OS
-  ownership (the same workstream that owns the Options workspace and
-  the gex/skim/skew artifacts the lab reads).
+  engine/options_payoff.py landed in pull request 6935 and had no consumer.
+  The rows MO-DELTA-034 and MO-PAID-077 had been marked absorbed by issue
+  6604. That program is terminal: the 2026-08-28 consolidated masterplan
+  is records only and starts no implementation wave. Render hosts do not
+  hold the ThetaData store, so the same split already used for the skew
+  ledger applies here. The store host computes the frozen index-ETF catalog
+  and publishes the JSON to R2. Render hosts only read that file. The
+  artifact is display-tier research expression. It has zero entry authority.
+  The plist can be installed and removed by the seat.
 alternatives:
-  - option: "Defer the program to the F3+ wave (after Phase 2 gauntleted the Options surface)"
-    why_not: "F0-F2 explicitly charters derived display surfaces from already-published data; deferral would mean F03 owns nothing on the workspace until 2027 H1."
-  - option: "Charter the consumer-only half (W2-5b) and leave the producer (W2-5a) under ad-hoc build"
-    why_not: "The consumer's contract IS the producer's SCHEMA mastermind.options_payoff_lab/v1; splitting them orphans the contract on the producer side."
+  - option: Wait for a successor to the C0 program
+    why_not: >
+      No successor is chartered. Leaving the payoff engine with zero
+      consumers keeps MO-DELTA-034 at built-but-not-proven.
+  - option: Compute the payoff catalog on the render hosts
+    why_not: >
+      Render hosts do not hold the ThetaData store. Hydrating it there
+      repeats the failure mode the skew lane already rejected
+      (DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST).
+  - option: A live or intraday payoff surface
+    why_not: >
+      That surface belongs to WS:INTRADAY-FLOW-P0-RECOVERY and is out of
+      scope for this end-of-day catalog.
 evidence:
-  - file: "agentos/workstreams/WS-MARKET-OS.md"
-    note: owning workstream; F03 sub-stream under F0-F2
-  - file: "research/MASTERMIND_SUPERINTELLIGENCE_MASTERPLAN.md"
-    note: F-series wave charter; F0-F2 = display tier only
-  - file: "engine/options_payoff_lab.py SCHEMA 'mastermind.options_payoff_lab/v1'"
-    note: the producer's contract the consumer reads
-  - pr: "#7759"
-    note: W2-5a store-host producer (DRAFT, seat-gated)
-  - pr: "#7763"
-    note: W2-5b consumer (DRAFT, seat-gated) — this PR
-  - memo: "research/MARKET_ONTOLOGY_F03_PAYOFF_LAB_CONSUMER_2026-09-23.md"
-    note: consumer's data path + liveness recipe
+  - "MO-DELTA-034: Structure Builder strategies plus P and L, scenario, and
+    Greeks drift were built but not proven. engine/options_payoff.py landed
+    in pull request 6935 with zero consumers."
+  - "MO-PAID-077: the P and L surface was partial, and both rows had been
+    marked absorbed by issue 6604."
+  - "DEC:OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL and
+    research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:
+    the C0 program is records only and starts no implementation wave."
+  - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md clause
+    A-F03-1/2: if issue 6604 is stale or terminal, A converts the rows into
+    normal packets, removes 6604 as a dependency, and records that choice
+    as a DEC."
+  - "DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST: the store host computes and
+    publishes; render hosts hydrate and emit. This packet follows that split."
 affects:
-  - WS-MARKET-OS
-  - engine/options_payoff_lab.py
-  - scripts/build_options_payoff_lab.py
-  - scripts/build_options_command.py
-  - templates/options.html.j2
-  - .github/workflows/engine-render.yml
+  - "engine/options_payoff_lab.py"
+  - "scripts/build_options_payoff_lab.py"
+  - "ops/launchd/com.macro.payofflab.plist"
+  - "ops/launchd/run_options_payoff_lab.sh"
+  - "scripts/publish_r2.py"
 confidence: high
 reversibility: easy
-decided_by: session
+decided_by: "META-CEO A seat, packet A-F03-W2-5a, 2026-09-23"
 decided_at: 2026-09-23
-review_by: 2026-12-31
 ---
+
+The seat installs the launchd agent on the store host after merge. Until
+that install, the plist is only a file in the repo. W2-5b, the page that
+reads `site/options_payoff_lab/latest.json`, is a later packet.
