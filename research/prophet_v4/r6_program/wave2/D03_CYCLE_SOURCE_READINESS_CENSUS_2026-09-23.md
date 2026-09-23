@@ -266,6 +266,6 @@ grep -v 'TODO_COUNT' research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READI
 rc=0
 
 git diff --stat origin/main...HEAD
-research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 274 +++++++++++++++++++++
-1 file changed, 274 insertions(+)
+research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md | 271 +++++++++++++++++++++
+1 file changed, 271 insertions(+)
 ```
