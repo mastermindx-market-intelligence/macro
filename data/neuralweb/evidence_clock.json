@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-09-23",
-  "generated_utc": "2026-09-23T10:02:35Z",
+  "generated_utc": "2026-09-23T21:25:38Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 317,
@@ -229,7 +229,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 38426,
+        "n_open": 39038,
         "n_past_check_by": 27098
       },
       "allowed_actions": [
@@ -277,7 +277,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 38426,
+        "n_open": 39038,
         "n_past_check_by": 27098
       },
       "allowed_actions": [
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5076,
+        "n_open": 5256,
         "n_past_check_by": 3821
       },
       "allowed_actions": [
@@ -513,7 +513,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 90,
+        "n_open": 91,
         "n_past_check_by": 76
       },
       "allowed_actions": [
@@ -577,7 +577,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 1492,
+        "n_open": 1495,
         "n_past_check_by": 589
       },
       "allowed_actions": [
@@ -2769,12 +2769,9 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
-          "market",
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "cortex",
-          "claim_reliability",
           "government_revenue"
         ]
       },
@@ -2858,8 +2855,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 107088,
-        "n_with_falsifier": 975,
+        "n_claims": 108501,
+        "n_with_falsifier": 993,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -9715,7 +9712,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 94,
+        "n_open": 96,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9747,7 +9744,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 33,
+        "n_open": 36,
         "n_past_check_by": 0
       },
       "allowed_actions": [

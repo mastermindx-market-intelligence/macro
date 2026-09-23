@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T20:25:25.855143+00:00",
-  "count": 2732,
+  "generated_at": "2026-09-23T21:25:36.224933+00:00",
+  "count": 2734,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -202,6 +202,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-uc6giunqscq-05fcee",
+      "title": "KB Home (KBH) F3Q26 Recap Benefits of Shift to BTO Offset by Rising Operating Headwinds Led by Higher Rates & Macro Uncerta...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:23Z",
+      "summary_points": [
+        "Revised EPS Forecast Down 16%: Full-year EPS revised to $3.40 (from $3.55) due to BTO transition, geographic mix, price adjustments, and higher energy costs, signaling deteriorating near-term fundamentals despite operational metrics.",
+        "Undervaluation Signal: P/E of 9.3x (11/25) below sector norms, with price trading below S&P 500, indicating potential mispricing amid housing sector interest rate sensitivity.",
+        "Price Target vs.",
+        "Current Price Gap: 12-mo target $61 exceeds closing price $56.32 (10-Jul-26), while historical targets frequently lagged closing prices, highlighting volatile analyst sentiment and short-term mispricing risk.",
+        "Key Downside Risks: Volatile rates, permitting delays, and inflation threaten margin recovery, with F4Q gross margin guide down 50bps amid pricing pressure and input cost headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-m04zrgkxyce-22a813",
       "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
       "institution": "Goldman Sachs",
@@ -218,6 +239,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ankofapgobe-844d3b",
+      "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:06Z",
+      "summary_points": [
+        "Fuel Cell Cost Premium: Fuel cells have 45% higher LCOE ($117/MWh vs.",
+        "$81/MWh for reciprocating engines), driven by $4,750/kW capital costs, posing significant adoption risk despite technical advantages.",
+        "Execution Over Economics: Time-to-power (20% weighting) and availability now outweigh LCOE in data center power selection, with fuel cells deploying in 6–12 months vs. gas turbines’ 5–7 years (historically 2–3 years).",
+        "Supply Chain Bottlenecks: Gas turbine OEMs face severe backlogs (Siemens: 69GW, GE: 2030 capacity), extending lead times to 3–4 years and tightening supply, directly impacting data center project timelines."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
       "language": "en",
       "needs_metadata": false
     },
