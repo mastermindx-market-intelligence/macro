@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23T13:00:59.227296+00:00",
+  "generated_at": "2026-09-23T15:19:29.374439+00:00",
   "grade_horizons": [
     5,
     21,
@@ -3255,18 +3255,18 @@
   },
   "counts": {
     "n_claims": 107150,
-    "n_grades": 152421,
+    "n_grades": 152334,
     "n_placebo": 1224,
     "n_rejected": 19,
     "grades_by_fill_convention": {
       "asof_legacy": 2780,
-      "next_bar": 149641
+      "next_bar": 149554
     },
     "grades_by_clock_basis": {
       "legacy_calendar_unstamped": 86390,
       "explicit_unit_v1:trading_days:US": 62095,
       "explicit_unit_v1:calendar_days:US": 178,
-      "explicit_unit_v1:trading_days:CN": 3758
+      "explicit_unit_v1:trading_days:CN": 3671
     },
     "n_claims_horizon_unit_declared": 60520,
     "n_claims_unstamped_regime": 6673
@@ -4881,7 +4881,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-09-23T13:02:34.716000+00:00",
+  "ladder_states_at": "2026-09-23T15:21:05.925934+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -5353,7 +5353,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=27 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:CN'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=26 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:CN'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:CN",
         "clock_migration": true,
         "clock_prior_n_dates": {
@@ -5461,7 +5461,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=27 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:CN'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=26 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:CN'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:CN",
         "clock_migration": true,
         "clock_prior_n_dates": {
@@ -7707,5 +7707,5 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-09-23T13:04:37.344538+00:00"
+  "promotion_readiness_at": "2026-09-23T15:23:03.341190+00:00"
 }
