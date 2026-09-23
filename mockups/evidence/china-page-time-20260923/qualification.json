@@ -1,0 +1,116 @@
+{
+  "procedure": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "semantic_source_commit": "e2e8f4f4c1dcc1a80f83ef006227d4241d6455ff",
+  "source_sha256": {
+    "scripts/build_china.py": "b2bc524292929dc50653e66a8fd54b542769fe23bd7f3c84614fdbc60e9a20f4",
+    "templates/china.html.j2": "b6bddb7932482027fd9005ab222b3fa174e958c7d712d6478de1bf77d403bcfc",
+    "templates/china_risk_state_live.js": "d83042de9f135335c2cf210295988d0ca70b4aecce31aed3b6229ec8911ae2fb",
+    "site/china_risk_state_live.js": "d83042de9f135335c2cf210295988d0ca70b4aecce31aed3b6229ec8911ae2fb",
+    "tests/test_china_archetype_d_s1.py": "e2a7c3924f1e4243fd52d6f58c5b765b1971b894f10406003f69139db419b5e4",
+    "research/grey_deer/capture_china_page_time.py": "004b46955e188283565b3cf9394f900e62b67b45d6ca6fd6ad1d8655d78a411f"
+  },
+  "tests": {
+    "passed": 515,
+    "failed": 0,
+    "warnings": 0,
+    "new_cases": 23,
+    "initial_red": 12,
+    "additional_read_error_red": 1
+  },
+  "builder": {
+    "source_commit": "e2e8f4f4c1dcc1a80f83ef006227d4241d6455ff",
+    "assessment_date": "2026-09-21",
+    "raw_page_sha256": "7b4f5912e1f63e7b9212664a380576725102894449c402b0e11d8d28c78e0b8d",
+    "raw_page_bytes": 471450,
+    "engine_run_calls": 0,
+    "preserved_input_sha256": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "saved_projection_check": {
+      "saved_measurements_unchanged": true,
+      "saved_leaf_count": 6592,
+      "reviewed_additions": [
+        "conditions.breadth",
+        "conditions.drawdown_html",
+        "conditions.recession_html",
+        "conditions.roro_html",
+        "fear_euphoria.chart_html"
+      ],
+      "breadth_is_separate_derived_context": true
+    },
+    "risk_score": 94,
+    "copy_present": true,
+    "fresh_collection": false,
+    "browser_proof": false,
+    "production": false
+  },
+  "formatting": {
+    "before_sha256": "ef1d1f416fa05772f2f3d636373eb1634a5bbb809f22913f072333d780cea213",
+    "page_sha256": "4f1e68b7809480278453df041bfc49ac9e186fa64d5421ab6ee699b4dd643bfd",
+    "page_bytes": 279492,
+    "only_whitespace_lines": true,
+    "dom_text_scripts_preserved": true
+  },
+  "asset_references": [
+    "site/theme.css",
+    "site/illus.css",
+    "site/assets/css/3d9e7d76.css",
+    "site/product-nav-icons.css",
+    "site/assets/css/f7e9b02b.css",
+    "site/navigation-refresh.css",
+    "site/assets/css/fd2baf90.css",
+    "site/assets/css/f7e9b02b.css",
+    "site/navigation-refresh.css",
+    "site/logo_config.js",
+    "site/stock-logos.js",
+    "site/live_config.js",
+    "site/live.js",
+    "site/assets/css/fd2baf90.css",
+    "site/theme.js",
+    "site/china_risk_state_live.js",
+    "site/illus.js",
+    "site/chart_i18n.js",
+    "site/mtf.js",
+    "site/tablesort.js"
+  ],
+  "builder_functions_changed": [
+    "_health_rows"
+  ],
+  "browser": {
+    "static_captures": 24,
+    "source_disclosure_journeys": 8,
+    "synthetic_intraday_scenarios": 32,
+    "servers_closed": true,
+    "static_states": "resting, source-summary focus, source-summary hover; desktop/mobile x EN/ZH x dark/light"
+  },
+  "observer_repairs": [
+    "Mock response now carries required china_risk_state.v1 schema; ingress guard unchanged",
+    "SVG score uses text_content; stale-feed rejection compares exact baseline score"
+  ],
+  "adapted_source_prs": {
+    "7722": "b66434165afe64a7e4946d97c87d2c4b7ef2b2f1",
+    "7723": "3c802f57a9b562dd4d2a3b632308dfbba228d993"
+  },
+  "event_calendar_changed": false,
+  "event_clock_test_append": "safety-status refused; not retried",
+  "auxiliary_generated_outputs_excluded": 24,
+  "prior_unaccepted_images_excluded": 4,
+  "fresh_collection": false,
+  "production": false,
+  "interaction_observer_sha256": "014a77b23b970b8551e60fafa27f9b62991dc5a7d5ebaae673781daf05cd8c8a",
+  "static_observer_difference": "Added focus/hover capture axes only; identical gesture code. Exact earlier observer preserved by verified digest.",
+  "governance_checks": {
+    "agentos_errors": 0,
+    "agentos_existing_warnings": 64,
+    "design_added_blockers": 0,
+    "visual_evidence_guard": "passed after actual focus and hover captures"
+  },
+  "events_test_not_written": true
+}

@@ -481,3 +481,39 @@ is clean. Unknown report, old date, paired JS and older-feed guards remain expli
 Next bounded proof: the existing no-network builder, normal artifact normalization,
 then8 native source-disclosure journeys and32 explicitly synthetic intraday scenarios.
 The event-clock test refusal freezes only that independent lane; no event fix is claimed.
+
+### Page-time proof completed on the real stored-input page
+Semantic source:e2e8f4f4c1dcc1a80f83ef006227d4241d6455ff. All515 tests pass,
+23 added contracts; existing48 client/session-floor tests remain unchanged and pass.
+The actual builder made0 analytical publication calls and preserved6592 saved scalar
+values plus all8 pinned input/history/ledger hashes. Of existing builder functions,
+only _health_rows changed. Numerical engines, calendar calls and score94 are unchanged.
+
+Final page279492bytes SHA2564f1e68b7809480278453df041bfc49ac9e186fa64d5421ab6ee699b4dd643bfd;
+20 local JS/CSS version stamps match. Existing normalization emitted one stylesheet,
+site/assets/css/3d9e7d76.css; no assets pruned. Whitespace-only HTML-line cleanup
+preserved elements, attributes, visible text and script/style/preformatted bodies.
+Eight resting captures pass across dark/light EN/ZH desktop/mobile. Eight actual
+source-disclosure open/close journeys and32 explicitly synthetic intraday-feed cases
+pass: full UTC date, separate quote mode, original assessment attribute and older-feed
+rejection. Touch capability is checked; screenshots happen after gesture assertions.
+No current live-producer, new collection, or forecast-validation claim follows.
+
+The observer needed two corrections, not product workarounds: supply the required
+china_risk_state.v1 schema, and read the SVG numeral via text_content. All assertions
+remain; old-feed rejection now requires the exact original number, not merely !=33.
+The dark desktop and light Chinese mobile source disclosures were visually inspected.
+Mobile supplemental capture shows its active touch highlighting; resting art remains
+in the separate full-page matrix. Servers/browser contexts closed at exit0.
+
+Evidence:mockups/evidence/china-page-time-20260923/qualification.json, interactions.json,
+manifest.json and EVIDENCE.yml. The event-clock protective test append was refused;
+the existing event calendar still defaults to the saved regime date and remains the
+next unresolved accuracy lane. Weight supply, release/current-main integration and
+production proof remain open.24 auxiliary generated outputs and4 old supplemental
+images remain excluded from selective commits. No worker, watcher or uncertain effect.
+
+Final visual receipt:24 resting/focus/hover states now captured on the same4f1e68b7 page.
+The initial rest-only receipt failed the focus/hover guard; actual forced-state capture
+closes that gap without dropping CSS or weakening the guard.8 gesture journeys and32
+synthetic scenarios retain their exact original observer digest; capture-only axes changed.

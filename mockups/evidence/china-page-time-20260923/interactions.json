@@ -1,0 +1,116 @@
+{
+  "source_commit": "e2e8f4f4c1dcc1a80f83ef006227d4241d6455ff",
+  "page_sha256": "4f1e68b7809480278453df041bfc49ac9e186fa64d5421ab6ee699b4dd643bfd",
+  "static_captures": 8,
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "source_rows": 7,
+      "health_open_close": true,
+      "snapshot_cases": [
+        "delayed",
+        "marked_realtime",
+        "unverified"
+      ],
+      "older_feed_rejected": true
+    }
+  ],
+  "local_servers_closed": true,
+  "intraday_responses": "explicit synthetic fixtures; no live producer acceptance",
+  "fresh_collection": false,
+  "production": false,
+  "event_calendar_changed": false
+}

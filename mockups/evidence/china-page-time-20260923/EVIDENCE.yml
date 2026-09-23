@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - site/china.html
+  - templates/china_risk_state_live.js
+  - site/china_risk_state_live.js
+manifest: mockups/evidence/china-page-time-20260923/manifest.json

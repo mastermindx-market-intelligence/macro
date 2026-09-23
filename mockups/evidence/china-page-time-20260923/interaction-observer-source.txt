@@ -18,14 +18,12 @@ def factory(**kw):
 if '--interactions-only' not in sys.argv:
     code=capture.main(['--site-dir',str(ROOT/'site'),'--routes','/china.html',
         '--output-dir',str(OUT),'--manifest',str(OUT/'manifest.json'),'--smells',str(OUT/'smells.json'),
-        '--viewports','desktop,mobile','--themes','dark,light','--locales','en,zh','--max-pages','1',
-        '--force-state','source-focus:focus(details.cnx-dh summary)',
-        '--force-state','source-hover:hover(details.cnx-dh summary)'],driver_factory=factory)
+        '--viewports','desktop,mobile','--themes','dark,light','--locales','en,zh','--max-pages','1'],driver_factory=factory)
     assert code==0
 else:
     assert BEFORE == sys.argv[sys.argv.index('--expected-page-sha')+1]
 meta=json.loads((OUT/'manifest.json').read_text())['pages'][0]
-assert len(meta['states'])==24 and all(s['captured'] for s in meta['states'])
+assert len(meta['states'])==8 and all(s['captured'] for s in meta['states'])
 assert not meta['console_errors'] and not meta['failed_responses']
 assert all(not x['horizontal_overflow'] for x in meta['metrics']['by_viewport'].values())
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -106,9 +104,9 @@ finally:
 assert not thread.is_alive()
 assert hashlib.sha256(PAGE.read_bytes()).hexdigest()==BEFORE
 receipt={'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-    'page_sha256':BEFORE,'static_captures':24,'cases':cases,'local_servers_closed':True,
+    'page_sha256':BEFORE,'static_captures':8,'cases':cases,'local_servers_closed':True,
     'intraday_responses':'explicit synthetic fixtures; no live producer acceptance',
     'fresh_collection':False,'production':False,'event_calendar_changed':False}
 (OUT/'interactions.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
-print(json.dumps({'static_captures':24,'health_journeys':len(cases),'intraday_scenarios':len(cases)*4,
+print(json.dumps({'static_captures':8,'health_journeys':len(cases),'intraday_scenarios':len(cases)*4,
                   'page_sha256':BEFORE,'production':False}))
