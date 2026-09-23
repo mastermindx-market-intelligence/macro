@@ -123,7 +123,7 @@ The round-5 commit chain (commit → push → PR-body rewrite) is complete and v
 
 Ladder rung at hand-off (proven on evidence above): **RUNNING**. CI packs in flight; no rung reached beyond CI from inside this session. PRODUCTION_PROOF and ACCEPTANCE are out of scope for this worker — both belong to the seat-ratification→merge→deploy arc the standing ship chain runs after the seat acts.
 
-The accurate handoff path is the durable watcher named above (PR #7763 check-state + this record). Per CLAUDE.md §"Shared workspace + completion" PARKED law: terminal for the current ship/merge attempt, NOT SHIPPED, and not a retryable SHIP LOOP BLOCKED. Per §"Hold notes do not END the Stop loop": "When a long external wait is owned by an armed watcher/cron and the guard keeps blocking, check the escape-ladder threshold... once met, end the turn ONCE with the literal `SHIP LOOP BLOCKED:` evidence report — literal first characters, naming the PR, exact head, check state, and watcher id + cadence — and then STAY QUIET: no per-Stop hold notes, no tailing your own watcher's output file between its ticks. Real events (watcher exit, cron fire, task notification, operator message) re-invoke the session."
+The accurate handoff path is the seat: PR #7763 stays a lane-gated DRAFT until the Meta-CEO A seat comments `RATIFIED at <head>`, readies, arms and merges it. This is NOT a `PARKED / HOLD-FOR-SOL` state — no Sol hold exists under the Chairman override of 2026-09-06, and the worker never had merge authority to park. A worker that has pushed its exact head and rewritten the PR body is simply done; the seat's ratification, the merge and the live proof (next engine-render bake of options.html) follow outside the worker's session.
 
 That lawful end is below.
 
