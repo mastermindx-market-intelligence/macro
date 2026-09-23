@@ -19,6 +19,11 @@ snapshot ledger + a dormant validation gate (scripts/validate_options_skew.py); 
 gate stays closed — and the leg stays context — until the panel is wide and long
 enough to earn a verdict. PURE compute; disk IO is isolated in snapshot()/load_*/
 load_chain().
+
+`backfill_from_store` recomputes an explicit list of dates from the ThetaData
+store and upserts them under the same canonical-wins rule as `snapshot`.
+`emit_from_ledger` drops weekend-dated rows before it chooses the latest
+snapshot when a weekday row remains, and reports that count.
 """
 from __future__ import annotations
 
@@ -440,11 +445,143 @@ def load_history():
     return pd.read_parquet(p) if p.exists() else None
 
 
+def _is_weekend_iso(value: str) -> bool:
+    """True for a Saturday or Sunday calendar day. Anything else is not a weekend."""
+    try:
+        return date.fromisoformat(str(value)[:10]).weekday() >= 5
+    except ValueError:
+        return False
+
+
+def _chain_asof_dates(chain) -> set[str]:
+    """Distinct YYYY-MM-DD stamps on a chain frame. Empty when the column is absent."""
+    if chain is None or "asof" not in getattr(chain, "columns", []):
+        return set()
+    found: set[str] = set()
+    for value in chain["asof"].tolist():
+        if value is None:
+            continue
+        if hasattr(value, "date") and not isinstance(value, str):
+            text = str(value.date())
+        else:
+            text = str(value).strip()
+        text = text[:10]
+        if text:
+            found.add(text)
+    return found
+
+
+def _backfill_row_counts(chain, requested: str) -> dict[str, int]:
+    """How many ledger keys this chain would replace, add, or leave unchanged.
+
+    Counts against the ledger as it sits now. A polygon_gex row at the same
+    (date, underlying) is a replacement. A missing key is an add. An equal
+    thetadata row is unchanged. Does not write.
+    """
+    rows = [
+        {"date": (metric.get("asof") or requested), **metric, "source": _SOURCE_THETA}
+        for metric in skew_map(chain).values()
+    ]
+    if not rows:
+        return {"rows_replaced": 0, "rows_added": 0, "rows_unchanged": 0}
+    fresh = _normalize_ledger(_ledger_frame(rows))
+    existing: dict[tuple[str, str], dict] = {}
+    path = _snap_path()
+    if path.exists():
+        import pandas as pd
+        prev = _normalize_ledger(pd.read_parquet(path))
+        for rec in prev.to_dict(orient="records"):
+            existing[(rec["date"], rec["underlying"])] = rec
+    replaced = added = unchanged = 0
+    for rec in fresh.to_dict(orient="records"):
+        old = existing.get((rec["date"], rec["underlying"]))
+        if old is None:
+            added += 1
+        elif old == rec:
+            unchanged += 1
+        else:
+            # polygon_gex -> thetadata, or a thetadata row whose values differ.
+            replaced += 1
+    return {"rows_replaced": replaced, "rows_added": added, "rows_unchanged": unchanged}
+
+
+def backfill_from_store(
+    dates: Sequence[str],
+    *,
+    store=None,
+    roots=None,
+    dry_run: bool = False,
+) -> dict:
+    """Recompute each requested session from the ThetaData store into the ledger.
+
+    Weekend dates are counted and skipped. A date the store does not cover is
+    counted and skipped. Neither case is filled from a neighbouring session.
+    A non-empty chain for that exact as-of calls `snapshot` with source
+    thetadata (dry_run only counts). A second call reports no replacements
+    and no additions. The store-unresolved warning is the one `load_chain`
+    already prints; this function does not raise for that.
+    """
+    wanted = [str(item).strip()[:10] for item in dates]
+    receipt: dict = {
+        "dates_requested": len(wanted),
+        "dates_weekend_skipped": 0,
+        "dates_not_in_store": 0,
+        "dates_backfilled": 0,
+        "rows_replaced": 0,
+        "rows_added": 0,
+        "rows_unchanged": 0,
+        "per_date": [],
+    }
+    for requested in wanted:
+        if _is_weekend_iso(requested):
+            receipt["dates_weekend_skipped"] += 1
+            receipt["per_date"].append({"date": requested, "status": "weekend_skipped"})
+            continue
+        chain, state = load_chain(asof=requested, store=store, roots=roots)
+        if state == "thetadata_store_unresolved":
+            receipt["per_date"].append({
+                "date": requested,
+                "status": "thetadata_store_unresolved",
+                "state": state,
+            })
+            continue
+        asofs = _chain_asof_dates(chain)
+        uncovered = chain is None or getattr(chain, "empty", True) or (
+            bool(asofs) and asofs != {requested}
+        )
+        if uncovered:
+            receipt["dates_not_in_store"] += 1
+            receipt["per_date"].append({
+                "date": requested,
+                "status": "not_in_store",
+                "state": state if not asofs or asofs == {requested} else "asof_not_requested_date",
+            })
+            continue
+        counts = _backfill_row_counts(chain, requested)
+        if not dry_run:
+            snapshot(
+                today=date.fromisoformat(requested),
+                chain=chain,
+                source=_SOURCE_THETA,
+            )
+        receipt["dates_backfilled"] += 1
+        for key in ("rows_replaced", "rows_added", "rows_unchanged"):
+            receipt[key] += counts[key]
+        receipt["per_date"].append({
+            "date": requested,
+            "status": "backfilled",
+            "state": state,
+            **counts,
+        })
+    return receipt
+
+
 def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_only") -> dict:
     """Display payload read from the committed ledger. Never opens a chain store.
 
     `accrual_state` is `accrued_today` when this process just wrote the ledger,
     otherwise `ledger_only`. Names are the rows on the ledger's newest date.
+    Weekend-dated rows are dropped before that pick when a weekday row remains.
     """
     if accrual_state not in ("accrued_today", "ledger_only"):
         raise ValueError(f"accrual_state must be accrued_today or ledger_only, got {accrual_state!r}")
@@ -454,8 +591,19 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     ledger_asof = None
     source = None
     stale_days = None
+    n_weekend_rows_excluded = 0
+    history_sources: list[str] = []
     if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
         norm = _normalize_ledger(hist)
+        history_sources = sorted({
+            str(item) for item in norm["source"].tolist() if str(item)
+        })
+        weekend = norm["date"].map(_is_weekend_iso)
+        # A weekday row means weekend as-of rows are not a session. A ledger
+        # with only weekend dates keeps those rows, so the count stays zero.
+        if bool((~weekend).any()):
+            n_weekend_rows_excluded = int(weekend.sum())
+            norm = norm.loc[~weekend]
         dates = [d for d in norm["date"].tolist() if d]
         if dates:
             ledger_asof = max(dates)
@@ -510,6 +658,8 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         },
         "ledger_asof": ledger_asof,
         "accrual_state": accrual_state,
+        "n_weekend_rows_excluded": n_weekend_rows_excluded,
+        "history_sources": history_sources,
     }
 
 

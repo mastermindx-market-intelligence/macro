@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-22",
+  "date": "2026-09-23",
   "regime": "mixed / no clear trend",
   "breadth": 0.08,
   "favored": [
@@ -8,7 +8,7 @@
     "equity_intl"
   ],
   "correlation": "diversified",
-  "asof": "2026-09-22",
+  "asof": "2026-09-23",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
@@ -176,19 +176,19 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 83.0
+        "pctile": 81.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 66.018,
+        "ratio": 65.441,
         "trend": "mid",
-        "pctile": 26.0
+        "pctile": 24.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.021,
+        "ratio": 0.02,
         "trend": "mid",
-        "pctile": 64.0
+        "pctile": 60.0
       },
       {
         "pair": "stocks_gold",
@@ -284,30 +284,11 @@
       "spread_bp": -3.0
     },
     "confirm": {
-      "verdict": "diverge",
+      "verdict": "confirm",
       "agree_pct": 100,
-      "n_blind_flags": 2,
-      "flags_top": [
-        {
-          "key": "credit",
-          "en": "High-yield credit widening from tight \u2014 credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress).",
-          "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u4ece\u504f\u7d27\u8d70\u9614 \u2014 \u4fe1\u7528\u98ce\u9669\u504f\u597d\u8f6c\u5411\uff08\u7ecfEBP\u5177\u90e8\u5206\u9886\u5148\u6027\uff0c\u4f46\u5e38\u4e0e\u80a1\u7968\u538b\u529b\u540c\u6b65\uff09\u3002",
-          "severity": "medium",
-          "owner": "bonds",
-          "lead": "leading",
-          "equity_blind": true
-        },
-        {
-          "key": "usd_triple_red",
-          "en": "Triple-red \u2014 USD, equities & Treasuries falling together: the dollar is NOT acting as a safe haven (a US-idiosyncratic 'sell-America' configuration).",
-          "zh": "\u4e09\u7ea2 \u2014 \u7f8e\u5143\u3001\u80a1\u7968\u4e0e\u56fd\u503a\u540c\u6b65\u4e0b\u8dcc\uff1a\u7f8e\u5143\u672a\u53d1\u6325\u907f\u9669\u4f5c\u7528\uff08\u7f8e\u56fd\u7279\u6709\u7684\u2018\u629b\u552e\u7f8e\u56fd\u2019\u914d\u7f6e\uff09\u3002",
-          "severity": "high",
-          "owner": "fx",
-          "lead": "coincident",
-          "equity_blind": true
-        }
-      ],
-      "asof": "2026-09-18"
+      "n_blind_flags": 0,
+      "flags_top": [],
+      "asof": "2026-09-21"
     },
     "dollar": {
       "usd_dir": "weakening",
@@ -331,7 +312,7 @@
       "fx_stress": {
         "dominant": null,
         "top_key": "dollar_wrecking_ball",
-        "top_val": 27.1
+        "top_val": 24.3
       }
     },
     "shadow": {
