@@ -56,7 +56,17 @@ decisions:
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+  - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
 landmines:
+  - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
+    to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
+    prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
+    5793983971). No Astra/Sol return is a prerequisite; existing technical owners,
+    independent review, source custody, rights, budget and release gates are unchanged.
+    Labor runs on the external fabric only; Fable/Opus children are permitted solely as
+    sub-orchestrators or adversarial auditors (Chairman live instruction, same day).
+    Incumbent carriers #7581/#7180/#7572 stay on their original writers until a
+    same-carrier custody statement is read."
   - "THE OUTAGE was LIVE at 0A (2026-08-17) and still unresolved at the 0B pin
     (2026-08-18T00Z: source_asof=2026-08-13, 206 plans). That historical fact is
     preserved. A1 is now RESOLVED by adoption of A1R #6320 plus the ordinary scheduled
@@ -153,6 +163,9 @@ artifacts:
   - research/prophet_v4/V4_A1_AVAILABILITY_RECOVERY_HANDOFF.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-b1-built.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FABLE_META_CEO_EXECUTION_HANDOFF.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FIRST_WAVE_RUNBOOK.md
 waves:
   - id: 0a
     title: "V4-0A — estate archaeology + architecture freeze. Merged #5832

@@ -1,15 +1,15 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-23T10:02:32.533396+00:00",
+  "produced_at": "2026-09-23T10:18:31.572705+00:00",
   "as_of": "2026-09-18T19:51:14+00:00",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "fresh",
-    "tool_call_batches": 6,
-    "individual_tool_calls": 11,
+    "cortex_status": "degraded",
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "context_stale": false,
-    "summary": "cortex ran (11 tool calls); memo as_of 2026-09-18T19:51:14+00:00"
+    "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
     {
@@ -17,6 +17,13 @@
       "id": "system",
       "summary": "as_of advanced from 2026-09-18 to 2026-09-18T19:51:14+00:00",
       "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: fresh → degraded",
+      "severity": "warn",
       "evidence_path": "data/neuralweb/health.json"
     },
     {
@@ -640,6 +647,12 @@
       "action_type": "inspect"
     },
     {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
+      "action_type": "ops_fix"
+    },
+    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 538.04h vs SLA 36h",
@@ -996,7 +1009,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "29 evidence-clock items overdue — see admin Observatory",
+      "summary": "55 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -1005,24 +1018,24 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-18",
+    "as_of": "2026-09-23",
     "counts": {
-      "overdue": 29,
-      "due": 45,
+      "overdue": 55,
+      "due": 24,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 238,
+      "accruing": 234,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "29 overdue, 45 due, 1 missing, 1 stale, 2 blocked, 238 accruing. Top due: qledger:placebo."
+    "morning_line": "55 overdue, 24 due, 1 missing, 1 stale, 2 blocked, 234 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
