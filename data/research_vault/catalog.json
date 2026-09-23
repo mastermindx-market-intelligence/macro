@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T03:22:55.517480+00:00",
-  "count": 2682,
+  "generated_at": "2026-09-23T03:52:59.313657+00:00",
+  "count": 2683,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -290,6 +290,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eeuk1gjz5sq-4670ab",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T22:44:43Z",
+      "summary_points": [
+        "Brazil Structural Fix Catalyst: 54% upside target (P/E 13.3x vs current 8.6x); derivatives desk active (EWZ call ladders, spreads contingent on GLD lower, D1 Brazilian Fins basket).",
+        "Fed Hawkish Tilt & Selic Correlation: Musalem/Goolsbee signal aggressive hikes; 0.5% Selic decline → 41% MSCI Brazil upside (structural fix period 2016-2020).",
+        "Iranian Escalation Risk: Houthi attacks, Iranian airlines shutdown threat (Scott Bessent), Trump-Yemen call without military support; Belarus potash deal dispute (Belarus denies Western supply).",
+        "AI Pullback as Dip-Buy: AI \"Vulnerable\" names reversing (NFLX, CPNG, APP) amid tax-loss focus; Meta Connect (Sep 23-24) pivotal for AI/cloud sentiment.",
+        "Critical Near-Term Data: US ADP Employment, Philly Fed Non-Mfg, Richmond Fed Mfg (Sep 22-25); weak readings may trigger rate cut expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
