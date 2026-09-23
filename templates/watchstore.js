@@ -880,18 +880,42 @@
      a tombstone retry is a per-symbol DELETE. Failures are remembered (markers
      stay); only a successful retry clears them.
 
-     Tracks touched lists in a module-local set (rather than walking
-     localStorage keys — the SHIM does not implement `localStorage.length` /
-     `.key`, and even in production a key scan would be fragile). The set is
-     populated every time an outbox entry is recorded against a list. */
+    Existing in-memory sources survive ordinary activity, but a reload empties
+    them. Storage key discovery closes that gap: only exact per-list cache keys
+    are considered, then each blob must parse and carry an outbox field before
+    its list id is admitted to the retry scan. */
   var _touchedLists = {};
   function _touchList(listId) { if (listId) _touchedLists[listId] = true; }
+  function _discoverOutboxListIds() {
+    var ids = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || key.length <= CACHE_PREFIX.length + CACHE_SUFFIX.length ||
+            key.indexOf(CACHE_PREFIX) !== 0 ||
+            key.slice(key.length - CACHE_SUFFIX.length) !== CACHE_SUFFIX) continue;
+        var id = key.slice(CACHE_PREFIX.length, key.length - CACHE_SUFFIX.length);
+        if (!id) continue;
+        var blob;
+        try { blob = JSON.parse(localStorage.getItem(key)); } catch (e) { continue; }
+        var hasOutbox = blob && typeof blob === 'object' && (
+          (blob.pendingPushes && typeof blob.pendingPushes === 'object') ||
+          (blob.pendingInserts && typeof blob.pendingInserts === 'object') ||
+          (blob.tombstones && typeof blob.tombstones === 'object'));
+        if (hasOutbox) ids.push(id);
+      }
+    } catch (e) {}
+    return ids;
+  }
   function _retryOutboxBeforePull() {
     var keys = [];
     if (wlId) keys.push(cacheKey(wlId));
     listsCache.forEach(function (l) { if (l && l.id) keys.push(cacheKey(l.id)); });
     Object.keys(_touchedLists).forEach(function (lid) {
       if (lid) keys.push(cacheKey(lid));
+    });
+    _discoverOutboxListIds().forEach(function (lid) {
+      keys.push(cacheKey(lid));
     });
     keys.push('mdash.watchlist.v1');
     var seen = {};

@@ -46,7 +46,9 @@ global.localStorage = {
     return Object.prototype.hasOwnProperty.call(__store, k) ? __store[k] : null;
   },
   setItem: function (k, v) { __sets.push(k); __store[k] = String(v); },
-  removeItem: function (k) { delete __store[k]; }
+  removeItem: function (k) { delete __store[k]; },
+  get length() { return Object.keys(__store).length; },
+  key: function (i) { return Object.keys(__store)[i] === undefined ? null : Object.keys(__store)[i]; }
 };
 global.CustomEvent = function (t, o) { this.type = t; this.detail = o && o.detail; };
 // D05 W1-honesty tests need (a) a spyable `document.dispatchEvent` so the chip dispatch
@@ -1671,7 +1673,7 @@ def test_T4_markers_and_tombstones_are_list_scoped_and_dropped_on_signout():
 
 
 @needs_node
-def test_T4_failed_single_symbol_insert_is_retried_and_cleared_on_success():
+def test_T5_failed_single_symbol_insert_is_retried_and_cleared_on_success():
     """A single-symbol write failure needs the same durable retry path as a
     full-list push: the marker survives while writes fail, then the online
     event retries the INSERT and clears it only after the write lands."""
@@ -1715,3 +1717,98 @@ def test_T4_failed_single_symbol_insert_is_retried_and_cleared_on_success():
     assert out["pendingAfterRetry"] == {}
     assert out["saved"] == ["AAPL", "NVDA"]
     assert "saved" in out["saves"]
+
+
+@needs_node
+def test_T6_sibling_list_outbox_markers_are_retried_after_reload_without_reading_it():
+    """A reload intentionally loses `_touchedLists`; the durable per-list key is the
+    only remaining discovery record. The first pull must find and retry a sibling
+    failed INSERT and DELETE without first rendering that sibling list."""
+    out = _ws(
+        SYNC_BLOB + """
+        localStorage.setItem('mdash.wl.L-SIB.v1', JSON.stringify({
+          v: 1, updated: '2026-09-23T00:00:00.000Z',
+          items: [{t: 'MSFT'}, {t: 'NEM'}], order: ['MSFT', 'NEM'], settings: {},
+          pendingInserts: {'L-SIB': {AAPL: '2026-09-23T00:01:00.000Z'}},
+          tombstones: {'L-SIB': {NEM: '2026-09-23T00:02:00.000Z'}}
+        }));
+        var db = makeDb({watchlists: [
+          {id: 'L-ACTIVE', user_id: 'u1', name: 'Active', position: 0},
+          {id: 'L-SIB', user_id: 'u1', name: 'Sibling', position: 1}],
+          watchlist_symbols: [
+            {id: 'a1', watchlist_id: 'L-ACTIVE', symbol: 'SPY', position: 0},
+            {id: 's1', watchlist_id: 'L-SIB', symbol: 'MSFT', position: 0},
+            {id: 's2', watchlist_id: 'L-SIB', symbol: 'NEM', position: 1}]});
+        WS._setTestSession(USER, db.client);
+        var siblingRead = false;
+        var realFrom = db.client.from;
+        db.client.from = function (table) {
+          var api = realFrom(table);
+          var realRun = api.__run;
+          var __filters = [];
+          api.__run = function () {
+            if (table === 'watchlist_symbols' &&
+                __filters.some(function (f) { return String(f.val) === 'L-SIB'; })) siblingRead = true;
+            return realRun.apply(api, arguments);
+          };
+          ['eq', 'in'].forEach(function (method) {
+            var real = api[method];
+            api[method] = function (column, value) {
+              __filters.push({column: column, value: value});
+              return real.apply(api, arguments);
+            };
+          });
+          return api;
+        };
+        WS.pull().then(function () {
+          var marker = readSyncBlob('L-SIB') || {};
+          OUT({active: symbolsOf(db, 'L-ACTIVE'),
+               sibling: symbolsOf(db, 'L-SIB'),
+               siblingRead: siblingRead,
+               inserts: db.ops.filter(function (o) {
+                 return o.kind === 'insert' && o.table === 'watchlist_symbols' &&
+                   o.rows.some(function (r) { return r.watchlist_id === 'L-SIB'; });}).length,
+               deletes: db.ops.filter(function (o) {
+                 return o.kind === 'delete' && o.table === 'watchlist_symbols' &&
+                   o.filters.some(function (f) { return String(f.val) === 'L-SIB'; });}).length,
+               pendingInserts: marker.pendingInserts || {},
+               tombstones: marker.tombstones || {}});
+        });
+        """,
+        {"USER": USER},
+    )
+    assert out["sibling"] == sorted(["AAPL", "MSFT"]), out
+    assert out["inserts"] == 1, out
+    assert out["deletes"] == 1, out
+    assert out["siblingRead"] is False, "retry must not require reading the sibling list"
+    assert out["pendingInserts"] == {}, out
+    assert out["tombstones"] == {}, out
+
+
+def test_public_ws_save_vocabulary_and_plain_fallback_copy_match_shipped_consumer():
+    """The public event vocabulary is proven against the page that consumes it. This
+    avoids coupling the product contract to WatchStore's private dispatch aliases."""
+    import re
+
+    store = WATCHSTORE.read_text()
+    consumer = WATCHLIST.read_text()
+    mapping = store[store.index("var CHIP_STATE ="):store.index("var lastChip")]
+    emitted = set(re.findall(r":\s*'([^']+)'", mapping))
+    listener = consumer[consumer.index("document.addEventListener('ws-save'"):consumer.index("document.addEventListener('pf-save'")]
+    assert "if (e && e.detail && e.detail.state) setChip(e.detail.state, 'watchlists');" in listener
+    assert "function setChip(state, scope) {" in consumer
+    assert "if (!CHIP[state]) return;" in consumer
+    chip = consumer[consumer.index("var CHIP = {"):consumer.index("var chipState")]
+    expected = {
+        "clean": ("Up to date", "已是最新"),
+        "saved": ("Saved", "已保存"),
+        "saving": ("Saving…", "保存中…"),
+        "failed": ("Change not saved", "更改未保存"),
+    }
+    for state, (english, chinese) in expected.items():
+        block = re.search(
+            r"\b%s:\s*\['is-[^']+',\s*'([^']+)',\s*'([^']+)'," % state, chip
+        )
+        assert block, state
+        assert (block.group(1), block.group(2)) == (english, chinese)
+    assert emitted == {"saved", "saving", "clean", "local", "offline"}
