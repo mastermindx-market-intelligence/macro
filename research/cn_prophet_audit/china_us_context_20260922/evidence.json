@@ -3,7 +3,7 @@
   "mission_complete": false,
   "state": "BUILT_NOT_PROVEN",
   "source_base": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
-  "procedure_pin": "b4493b52810a43a413e381a07e1194ca905b4851",
+  "procedure_pin": "c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6",
   "source_sha256": {
     "engine/narrative_crossmarket.py": "15a96675d6da49b76c2c974e1b175461862e57a2bcf1a56b413fcd1a76716b1e",
     "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
@@ -126,5 +126,21 @@
     "local_stock_command_unchanged": true,
     "production_proven": false,
     "buy_now_implemented": false
+  },
+  "ci_owner_repair": {
+    "failing_run": 35808216618,
+    "failing_job": 107015602342,
+    "introduced_closure_failures": 5,
+    "manifest_sha256": "f6db49e5ffd4a2ce5e4f333396ada7d426884f4d186fb9b16696c3b92aa5f72f",
+    "targeted_canonical_scope_check": "5 of 5 derived, zero uncovered paths; not full hosted contract-delta",
+    "explicit_registered_suites": [
+      "tests/test_china_intel_hub_command.py",
+      "tests/test_narrative_crossmarket.py"
+    ],
+    "existing_job": "unrun-brain-desks",
+    "new_jobs": 0,
+    "waivers": 0,
+    "current_test_subset_passed": 89,
+    "hosted_requalification": "owed on new head"
   }
 }

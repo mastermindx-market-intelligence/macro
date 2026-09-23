@@ -149,3 +149,15 @@ The proof includes the actual briefing sequence: current context -> same-session
 Remaining gates: normal #7567 engine-write access for the actual continuation/card implementation; #7753 existing-owner CI registration/qualification and independent review; authenticated production input-to-result proof (the earlier official routes returned 401). No credentials, access controls, CI requirements or blocked tool requests were bypassed. No autonomous worker or watcher was started.
 
 Resume the same branches, not replacements. Preserve the #7567 prospective tests and original coherence implementation; continue #7753 from the newly published semantic head and its cumulative evidence. Do not reinterpret the current source-content repair as completing Buy Now eligibility. No live recommendation, stock admission, score, sector quota or sizing changed.
+
+## Current CI-owner repair — 2026-09-23
+
+Current protected procedure pin: Mastermind `c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6`. All five required skill contents were read from that exact revision and matched the previously fully read 1.0.1 blobs. MISSION_COMPLETE remains false.
+
+Hosted run `35808216618`, job `107015602342`, failed on five introduced exclusive-scope omissions for `engine/narrative_crossmarket.py`: biocatalyst-history, biocatalyst-serving, flow-surface, unrun-government-revenue-candidate-projection and unrun-government-revenue-grader. The failing gate was not an unexplained global outage. Its separate unwired render-dead-ref notice was inherited, not this PR's change.
+
+The normal manifest edit succeeded on the original #7753 carrier in this continuation. Each of those five existing owners now includes the exact imported path. The two existing narrative/command suites were also added to the existing unrun-brain-desks command. No new job, runner, waiver, check bypass, threshold or gate removal was introduced.
+
+The existing scope-inference owner was executed against the five affected jobs: all five now have zero uncovered closure paths. This is bounded local closure proof, not a replacement for the complete hosted contract-delta gate. The explicit three-suite context/command/briefing test set passed 89 tests. Runtime source bytes and their prior 237-test proof are unchanged.
+
+Current evidence: `china_us_context_20260922/ci-closure-proof.json` and `ci-owner-tests.txt`. Exact-head hosted rerun, independent review, current-base qualification and authenticated production proof remain owed. This CI repair is independent of #7567's current final member-observation gate, whose write was blocked before effect; it does not bypass that block.
