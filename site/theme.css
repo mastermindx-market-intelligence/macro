@@ -60,14 +60,13 @@
   --fs-sm:12.5px;      /* secondary copy / table body */
   --fs-label:11px;     /* MONO eyebrows · caps        */
   --fs-micro:10px;     /* dense ticks · table heads   */
-  /* ── DS-PR-0a scales (master doc §2.2; specimen port) ── */
+  /* ── DS-PR-0a scales (master doc §2.2; specimen port) — DEFERRED to DS-PR-0c because live pages already consume the names (bare or with divergent fallbacks; see research/prophet_v4/r6_program/wave2/DSPR0A_LANDING_RECORD_2026-09-23.md §TOKEN CONSUMER CENSUS): --sp-2, --sp-3, --r-ctl, --r-btn, --r-card, --r-panel, --r-pill, --t-fast ── */
   /* spacing = the shipped body.page-macro scale, renumbered contiguously (its
      shipped --sp-8:32 becomes --sp-7; 44 is the shipped footer/section band) */
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+  --sp-1:4px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
   --sp-7:32px; --sp-8:44px;
   --gap-grid:18px;
-  --r-ctl:8px; --r-btn:10px; --r-card:12px; --r-panel:14px; --r-pill:999px;
-  --t-fast:.16s; --t-med:.2s; --t-slow:.55s;
+  --t-med:.2s; --t-slow:.55s;
   --ease-std:ease; --ease-lift:cubic-bezier(.2,.7,.3,1);
   --shadow-hover:0 14px 30px -16px color-mix(in srgb, var(--link) 40%, transparent);
   --ser-1:#5b9bf0; --ser-2:#d4a017; --ser-3:#0ea5e9; --ser-4:#e08b45;
@@ -2081,14 +2080,7 @@ html[data-theme="dark"] .public-nav a.public-nav-login:visited { color: var(--mu
   border-radius:var(--r-card,12px); padding:10px 14px; font-size:var(--fs-sm); background:color-mix(in srgb, var(--warn) 6%, var(--panel)); }
 .mx-error b { color:var(--ink-warn); }
 
-/* ── DS-PR-0a primitives (master doc §2.2; specimen port, verbatim) ── */
-.mx-vh{ padding:var(--sp-5) 0 var(--sp-4); }
-.mx-vh .mx-vh-word{ font-size:var(--fs-display); font-weight:800; letter-spacing:-.03em; line-height:.95; margin:2px 0 6px; }
-.mx-vh .mx-vh-clause{ font-size:var(--fs-md); color:var(--text); max-width:62ch; }
-.mx-vh .mx-vh-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-3); margin-top:10px; }
-.mx-sec{ display:flex; align-items:baseline; gap:8px; margin:0 0 10px; }
-.mx-sec h3, .mx-sec h2{ font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; margin:0; }
-.mx-sec .mx-asof{ margin-left:auto; color:var(--muted); font-size:var(--fs-micro); font-variant-numeric:tabular-nums; }
+/* ── DS-PR-0a primitives (master doc §2.2; specimen port, verbatim): .mx-tbl, .mx-tblbox, .mx-tabset, .mx-rail. DEFERRED to DS-PR-0c because live markup already carries the class names: .mx-vh, .mx-sec, .mx-callout, .mx-disc (page-local copies in bonds/dashboard/_unified_dashboard_hero/sanctions_map/us_stocks/risk_envelope_live.js). ── */
 .mx-tbl{ width:100%; min-width:420px; border-collapse:collapse; font-size:var(--fs-sm); }
 .mx-tbl th{ font-size:var(--fs-micro); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
   color:var(--muted); text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
@@ -2098,29 +2090,18 @@ html[data-theme="dark"] .public-nav a.public-nav-login:visited { color: var(--mu
 .mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
 .mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
   color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
-  transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
+  transition:color var(--t-fast,.16s) var(--ease-std), border-color var(--t-fast,.16s) var(--ease-std); }
 .mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
-.mx-callout{ border-left:3px solid var(--c,var(--ink-info)); border-radius:0 var(--r-ctl) var(--r-ctl) 0;
-  background:color-mix(in srgb, var(--c,var(--ink-info)) 8%, var(--panel)); padding:10px 14px; font-size:var(--fs-sm); }
-.mx-callout b{ color:var(--c,var(--ink-info)); }
-.mx-callout--warn{ --c:var(--ink-warn); }
-.mx-callout--act{ --c:var(--ink-act); }
-.mx-callout--ok{ --c:var(--ink-ok); }
-.mx-disc{ border:1px solid var(--line); border-radius:var(--r-card); background:var(--panel); }
-.mx-disc summary{ cursor:pointer; padding:10px 14px; font-size:var(--fs-sm); font-weight:600; color:var(--text); }
-.mx-disc summary small{ color:var(--muted); font-weight:400; margin-left:6px; }
-.mx-disc .mx-disc-body{ padding:0 14px 12px; color:var(--muted); font-size:var(--fs-sm); }
 /* lifecycle rail — stage encoded by WEIGHT only (packet §0): future=hollow,
    done=filled muted, current=larger solid + thicker segment + 700 label. No hue. */
 .mx-rail{ display:flex; align-items:flex-start; gap:0; margin:8px 0; padding:0; }
 .mx-rail li{ list-style:none; flex:1; position:relative; padding-top:16px; font-size:var(--fs-micro); color:var(--muted); text-align:center; }
 .mx-rail li::before{ content:""; position:absolute; top:5px; left:0; right:0; height:2px; background:var(--line); }
-.mx-rail li::after{ content:""; position:absolute; top:1px; left:calc(50% - 5px); width:8px; height:8px; border-radius:var(--r-pill); background:var(--panel); border:2px solid var(--muted); }
+.mx-rail li::after{ content:""; position:absolute; top:1px; left:calc(50% - 5px); width:8px; height:8px; border-radius:var(--r-pill,999px); background:var(--panel); border:2px solid var(--muted); }
 .mx-rail li.done::after{ background:var(--muted); }
 .mx-rail li.now{ color:var(--text); font-weight:700; }
 .mx-rail li.now::before{ height:3px; background:var(--text); }
 .mx-rail li.now::after{ top:-1px; left:calc(50% - 6px); width:12px; height:12px; background:var(--text); border-color:var(--text); }
-html[data-lang="zh"] :is(h1,h2,h3,.eyebrow,.mx-vh-word){ letter-spacing:0; text-transform:none; }
 
 /* Count ladder — control form; the active cell reads as WEIGHT (solid underline
    + 800), never as hue.

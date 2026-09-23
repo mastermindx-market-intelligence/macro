@@ -5,14 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mastermind Design System — Specimen (visual constitution)</title>
 <!-- The specimen links the REAL theme.css + tier_preview.css so it always renders
-     current law. The DS-PR-0a tokens and ported .mx-* primitives now ship from
-     theme.css. MOCKUP TIER ONLY:
-     nothing imports this page in production. All NEW primitives are namespaced
-     .mx-* (red-team 2026-08-12: unprefixed names collide with 11+ existing
+     current law. DS-PR-0a (PR #7849) landed the §2.2 scales EXCEPT --sp-2/--sp-3/--r-*/
+     --t-fast, plus the .mx-tbl/.mx-tblbox/.mx-tabset/.mx-rail primitives. Everything left
+     in the "proposed" block below is DS-PR-0c material (deferred because live pages
+     already consume those names or classes) and is deleted from here when it lands.
+     MOCKUP TIER ONLY: nothing imports this page in production. All NEW primitives are
+     namespaced .mx-* (red-team 2026-08-12: unprefixed names collide with 11+ existing
      page-local class families across templates/). -->
 <link rel="stylesheet" href="../../templates/theme.css">
 <link rel="stylesheet" href="../../templates/tier_preview.css">
 <style>
+/* ═══ PROPOSED — DS-PR-0c (deferred) tokens (master doc §2.2); delete when landed ═══ */
+:root{
+  --sp-2:8px; --sp-3:12px;
+  --r-ctl:8px; --r-btn:10px; --r-card:12px; --r-panel:14px; --r-pill:999px;
+  --t-fast:.16s;
+}
+/* CJK: no tracking / no uppercase mangling on zh (DS-PR-0 lands the estate rule) */
+html[data-lang="zh"] :is(h1,h2,h3,.eyebrow,.mx-vh-word,.mockup-note){ letter-spacing:0; text-transform:none; }
+
 /* ═══ Specimen scaffolding (page-local; not part of the system) ═══ */
 body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body); line-height:1.55; }
 .wrap{ max-width:1180px; margin:0 auto; padding:var(--sp-6) var(--sp-4) var(--sp-8); }
@@ -46,9 +57,17 @@ body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body
 
 /* ── canonical component previews (anatomy per master doc §11; .mx-* names final) ── */
 .eyebrow{ display:block; margin-bottom:6px; }
+.mx-vh{ padding:var(--sp-5) 0 var(--sp-4); }
+.mx-vh .mx-vh-word{ font-size:var(--fs-display); font-weight:800; letter-spacing:-.03em; line-height:.95; margin:2px 0 6px; }
+html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
+.mx-vh .mx-vh-clause{ font-size:var(--fs-md); color:var(--text); max-width:62ch; }
+.mx-vh .mx-vh-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-3); margin-top:10px; }
 .mx-stance{ display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:var(--fs-sm);
   padding:4px 11px; border-radius:var(--r-pill); border:1px solid color-mix(in srgb, var(--c,var(--muted)) 34%, transparent);
   background:color-mix(in srgb, var(--c,var(--muted)) 12%, var(--panel)); color:var(--c,var(--muted)); }
+.mx-sec{ display:flex; align-items:baseline; gap:8px; margin:0 0 10px; }
+.mx-sec h3, .mx-sec h2{ font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; margin:0; }
+.mx-sec .mx-asof{ margin-left:auto; color:var(--muted); font-size:var(--fs-micro); font-variant-numeric:tabular-nums; }
 .mtile-demo{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
 /* .mtile itself is SHIPPED law (theme.css:534) — only layout wrapper is local */
 .good{ color:var(--ink-ok); }
@@ -62,6 +81,12 @@ body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body
   .mx-chg-row{ flex-wrap:wrap; row-gap:4px; }
   .mx-chg-what{ flex-basis:100%; order:3; }
 }
+.mx-callout{ border-left:3px solid var(--c,var(--ink-info)); border-radius:0 var(--r-ctl) var(--r-ctl) 0;
+  background:color-mix(in srgb, var(--c,var(--ink-info)) 8%, var(--panel)); padding:10px 14px; font-size:var(--fs-sm); }
+.mx-callout b{ color:var(--c,var(--ink-info)); }
+.mx-callout--warn{ --c:var(--ink-warn); }
+.mx-callout--act{ --c:var(--ink-act); }
+.mx-callout--ok{ --c:var(--ink-ok); }
 .mx-empty{ padding:var(--sp-6) var(--sp-4); text-align:center; }
 .mx-empty-line{ font-size:var(--fs-md); font-weight:600; }
 .mx-empty-why{ color:var(--muted); font-size:var(--fs-sm); margin-top:4px; }
@@ -70,6 +95,12 @@ body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body
 .mx-error{ display:flex; align-items:flex-start; gap:10px; border:1px solid color-mix(in srgb, var(--warn) 34%, var(--line));
   border-radius:var(--r-card); padding:10px 14px; font-size:var(--fs-sm); background:color-mix(in srgb, var(--warn) 6%, var(--panel)); }
 .mx-error b{ color:var(--ink-warn); }
+.mx-disc{ border:1px solid var(--line); border-radius:var(--r-card); background:var(--panel); }
+.mx-disc summary{ cursor:pointer; padding:10px 14px; font-size:var(--fs-sm); font-weight:600; color:var(--text); }
+.mx-disc summary small{ color:var(--muted); font-weight:400; margin-left:6px; }
+.mx-disc .mx-disc-body{ padding:0 14px 12px; color:var(--muted); font-size:var(--fs-sm); }
+/* lifecycle rail — stage encoded by WEIGHT only (packet §0): future=hollow,
+   done=filled muted, current=larger solid + thicker segment + 700 label. No hue. */
 /* count ladder — control form; active cell = weight (solid underline + 800), never hue */
 .mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow:hidden; }
 .mx-ladder .mx-lad-total{ padding:8px 14px; font-weight:800; font-size:var(--fs-md); border-right:1px solid var(--line); background:var(--panel2); }
