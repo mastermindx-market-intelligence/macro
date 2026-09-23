@@ -8,74 +8,79 @@ mission_complete: false
 finalization_classification: CHECKPOINTED_CONTINUATION
 ---
 
-# Consumer Cyclical — cumulative R1 research checkpoint
+# Consumer Cyclical — cumulative R1/R2 checkpoint, 2026-09-23
 
-## Mission and corrected authority
+## Mission and authority
 
-The live Chairman explicitly clarified Consumer Cyclical as the intended sector. Healthcare in the original prompt was a typo, another session owns Healthcare, and the assistant's former Healthcare normalization was wrong. This session owns extensive direct principal Consumer Cyclical research, synthesis and planning before a later Fable CEO build/integration handoff. Direct-work rationale: PRINCIPAL_JUDGMENT. No fundamental research was delegated.
+The Chairman explicitly corrected this session to Consumer Cyclical; Healthcare was a typo and belongs to another session. The current live continuation authorizes substantial direct principal research, synthesis and planning before a mature later Fable CEO implementation/integration handoff. Direct-work rationale: PRINCIPAL_JUDGMENT. No fundamental research was delegated.
 
-Preserve the full user job: granular categories/themes/subthemes and company exposures; changing household demand; real unit economics and cash capture; macro, competition, supply/capacity and substitution; valuation/re-rating and dated expectations; useful integration with existing Theme Tracker/Sector Intelligence/Prophet consumers, with validation before any decision authority. This is not a renamed Healthcare or Robotics program.
+Preserve the complete job: granular categories/themes/subthemes and company exposures; household/category demand; actual economic ownership and cash capture; macro, competition, supply/capacity and substitution; valuation/re-rating and dated expectations; useful existing Theme Tracker/Sector Intelligence/Prophet integration with validation before decision authority. Do not turn this into only provenance machinery or a renamed Robotics/Healthcare program.
 
-## Canonical references and source custody
+## Current canonical frontier
 
-- Protected Mastermind master: `bf764f494b9cd0ecede6234bb472c3344c8e77cc`; compatible Skillpack 1.0.1/bootstrap 1. INDEX freshly checked; same-revision COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT retained from actual canonical reads; RECONCILE_STATE additionally read at this pin.
-- Macro inspection/base: `147d245a6a7207daf59b994b54ab5adb545ef8be`.
-- Carrier: **Draft/HOLD Macro PR #7804**, branch `sol/consumer-cyclical-research-20260923`.
-- Research-content head before this checkpoint update: `fab94ce52e9c51a63a8693612d8f38c7d69ccac7`.
+- Protected Mastermind pin: `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, protected status verified, Skillpack 1.0.1/bootstrap 1 compatible. INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT were fetched at that same revision; unchanged full-file blob identities matched the procedures fully read earlier. Previous protected pin: `bf764f494b9cd0ecede6234bb472c3344c8e77cc`.
+- Carrier: Draft/HOLD Macro PR #7804, branch `sol/consumer-cyclical-research-20260923`.
+- R2 recovery and pre-write head: `ecc678f424f1e9752fbfb5547de34a6232789243`, unchanged before effects.
+- Current research-content head before this checkpoint: `154da512ebeb6da83ef1efaae4dce944399fa67e`.
+- Original Macro research base: `147d245a6a7207daf59b994b54ab5adb545ef8be`; later PR base metadata `fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8` is not release qualification. No rebase/mergeability/CI work was required or claimed.
 - Existing parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md`, blob `cd2067041dc441bf5bc44302ee8c458bdfd42b45`.
 - Existing STSI design: `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`, blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971`.
-- Robotics #7773 is a method/template precedent, not source custody or a new assignment. GMI/STSI/F04, existing financial, identity, evidence, relationship, market, evaluation and publication owners remain canonical.
+- GMI/STSI/F04, financial/event/identity/evidence/relationship/market/evaluation/publication owners remain canonical. Robotics #7773 is a method/template precedent, not this session's source custody.
 
-The erroneous Healthcare contribution on #7788/comment `5792936000` was corrected additively by comment `5793251526`, successfully read back. That correction supersedes only this session's mistaken mandate/next-action. Historical Healthcare evidence remains for the actual owner to assess; Healthcare branch/files/Agent OS record and owner were not changed or transferred. No further Healthcare research belongs here.
+Healthcare scope correction is already durable on #7788/comment `5793251526`, superseding only this session's mandate/next action in comment `5792936000`. Actual Healthcare work/ownership was not canceled, transferred or changed. Do not repeat this correction or continue Healthcare.
 
-Bounded Consumer Cyclical/Consumer Discretionary PR searches found no matching current research carrier before this one was established; this does not prove all local workspaces idle. Exact branch absence was checked before creation. Only `research/consumer_cyclical/` and this continuity file are writable here. PR file enumeration confirmed exactly the two research files and this checkpoint, with no product-source paths.
+## R1 preserved — DO NOT REDO
 
-Macro main had advanced to `fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8` in the PR-creation response. No rebase, integration qualification, CI or mergeability acceptance is claimed; no such release work is needed for this held research tranche. Reconcile relevant interfaces and custody when an implementation proposal actually depends on them.
+`research/consumer_cyclical/CONSUMER_CYCLICAL_RESEARCH_FOUNDATION_2026-09-23.md`: creation `7500f95706a65ed33db6fbfd253912fdfcf0f902`; blob `767a0b93e86fb7addb6afad37bbd9d152e61b7ab`; SHA256 `375fff17879bb0e34a39dd09cdf5ea0112ac877cd94e036e65363b9d07d17321`. Initial 14-family coverage map, eight economic-role models, nine re-rating hypotheses, 13 examples and 17 source locators remain intact.
 
-## Material R1 result and verification
+`research/consumer_cyclical/CONSUMER_CYCLICAL_PROSPECTIVE_CASES_2026-09-23.json`: creation `fab94ce52e9c51a63a8693612d8f38c7d69ccac7`; blob `dbb60c2e4a291c809c3acbebb21ef1731cd690df`; 32 NOT_EXECUTED prospective cases. Prior R1 integrity/ZIP receipts are historical, not rerun product tests.
 
-Before: this session had the wrong sector assignment and no Consumer Cyclical research foundation. After: correct scope and an original source-backed Consumer Cyclical foundation are recoverable on one research carrier.
+## Material R2 result and exact verification
 
-`research/consumer_cyclical/CONSUMER_CYCLICAL_RESEARCH_FOUNDATION_2026-09-23.md`
-- Created at `7500f95706a65ed33db6fbfd253912fdfcf0f902`.
-- Blob: `767a0b93e86fb7addb6afad37bbd9d152e61b7ab`.
-- 36,345 bytes; SHA-256 `375fff17879bb0e34a39dd09cdf5ea0112ac877cd94e036e65363b9d07d17321`.
-- 4,597 words; 14 provisional coverage families; eight economic-role models; nine re-rating hypotheses with falsifiers; 13 company examples; 17 primary-source locators and acquisition/clock limitations.
+Before R2: broad economic framework and illustrative company examples. After R2: seven source-backed business/exposure dossiers, 30 typed observations including eight directly disclosed Nike geography/channel cells, 12 scoped metric definitions, three dated lululemon management-guidance vintages, four raw EDGAR acceptance clocks, and 12 additional prospective cases. This is research progress, not accepted design or a live capability.
 
-`research/consumer_cyclical/CONSUMER_CYCLICAL_PROSPECTIVE_CASES_2026-09-23.json`
-- Created at research-content head `fab94ce52e9c51a63a8693612d8f38c7d69ccac7`.
-- Blob: `dbb60c2e4a291c809c3acbebb21ef1731cd690df`.
-- 12,534 bytes; SHA-256 `8890b3fbd3e5bfaea0ea6a4afe3bb23726f871cf3b2f33b34dd047aabd9a65f4`.
-- 32 prospective cases CC-R01..CC-R32; all NOT_EXECUTED, not an approved production schema or implemented tests.
+New report:
+`research/consumer_cyclical/CONSUMER_CYCLICAL_BUSINESS_EXPOSURE_AND_INFLECTION_R2_2026-09-23.md`
+- Creation commit `2d411f48ad1eedc23e697723350839a9ac528805`.
+- Blob `b30a366f633a52419d286481925c860154c0117a`.
+- 39,558 bytes; 5,098 words; SHA256 `832cf0620fb7062a5855c0ba48cee4eeb07004aa31f2a6ace7f9aba3c8410fb9`.
 
-Both files were read through the GitHub connector at immutable creation revisions; returned blob identities exactly matched independently calculated local Git blob hashes. Fifteen local document/JSON/arithmetic integrity checks passed, including resolved source IDs, sequential case IDs, non-executed status, serialization and explicitly hypothetical arithmetic. Portable ZIP integrity passed. These checks do not audit company disclosures or establish investment predictive value. Zero application tests, executed prospective cases, backtests, live-source ingestion tests, independent design acceptance or browser proofs.
+New structured research:
+`research/consumer_cyclical/CONSUMER_CYCLICAL_R2_RESEARCH_RECORDS_2026-09-23.json`
+- Creation commit `154da512ebeb6da83ef1efaae4dce944399fa67e`.
+- Blob `6760792eb061f27084db9463637904c507264d3e`.
+- 19,026 bytes; SHA256 `9549711cfb7579626e36c43f96b044f3a8a03964cd36c88463bb7eee5d5317c3`.
 
-Portable copies and integrity receipts are conversation artifacts, not a second canonical state owner. The two research file bytes match GitHub; the local verification script/receipt/ZIP are not claimed to be repository files.
+Both files were fetched at immutable creation commits; returned blob identities matched independently calculated local Git blob hashes. JSON readback was response-truncated, so its metadata was recovered from the same response resource rather than re-fetching its full body. Exact blob equality establishes the local/remote byte identity used here.
 
-## Research decisions and open hypotheses
+Twenty-five local document/JSON/arithmetic integrity checks passed after final serialization, followed by explicit equality checks against both remote blobs. These check reference/count/scope consistency and arithmetic, not the issuer disclosures, causal claims or forecast usefulness. All 12 R2 prospective cases remain NOT_EXECUTED. Zero application tests, investment backtests, live-source ingestion tests, browser proofs or independent design acceptances. Portable verification scripts/receipts are conversation artifacts, not claimed repository files.
 
-Proposed chain: household/cohort capacity -> category demand -> brand/channel -> delivered activity -> contractual/owned economics -> attributable cash per share -> expectations/valuation -> separately governed market confirmation. Keep household demand, category inventory/replacement/capacity, company competitive/product cycle, earnings expectations and security market state separate.
+## Findings and proposals that must survive
 
-Worked evidence includes D.R. Horton volume versus pretax income; Home Depot's scoped transaction/ticket exclusions; Nike margin recovery and inventory-unit/mix differences; lululemon geographic growth versus comparable declines; TJX refunds with linked compensation; Chipotle sales versus restaurant margin; McDonald's systemwide versus consolidated scope; CarMax retail/finance and allowance reclassification; Amazon and Alibaba mixed businesses/gross-net/segment vintages; Booking booking/consumption clocks; Royal Caribbean occupancy convention; and Hermes currency basis.
+The economic models now distinguish financing-supported housing conversion and capital turns; renovation demand from acquired distribution; brand desirability from channel mix; off-price purchasing optionality from customer substitution; and restaurant traffic/contribution from franchisor/operator economics.
 
-No blanket consumer-strength/weakness call, broad shortage, trade-down winner, approved company purity score, current valuation bargain, calibrated alpha or automatic basket membership is accepted. Hypotheses require matching economic scope, first-known evidence, competing explanations and falsifiers. The report distinguishes proposals from observed disclosures. Several exact source filing/publication timestamps remain unknown; source reads do not prove historical corpus completeness or licensed feed feasibility.
+Preserve revenue/profit/capital/optionality as different exposure questions. Nike's eight regional/channel intersections are disclosed; do not invent undisclosed joints by multiplying marginal shares. D.R. Horton/Forestar consolidation and minority ownership are dated, related observations, not independent confirmations. Home Depot Other is not all Pro exposure. TJX ticket means per item, unlike Home Depot's per transaction. Company/system comp cohorts and definition vintages differ.
 
-Rejected directions: another generic consumer score, a standalone graph/dashboard/template, treating Robotics bottlenecks as a universal model, treating a macro average as issuer-customer evidence, or mistaking a persuasive explanation for trading authority. Missing exposure and profitability allocations remain null.
+The guidance example distinguishes lululemon's delivered quarter, specified benefit and lower annual outlook; it is management guidance, not consensus or market expectations. TJX is a positive control because its specified adjustment still leaves margin improvement. Chipotle is a mixed control: improving transaction direction and weaker margin can coexist. These findings nominate descriptive dossier requirements, not calibrated investment features.
 
-## Effects and holds
+The proposed first product expression is an earnings-inflection dossier inside the existing theme/detail workflow, including measured exposure, economic mechanism, contrary evidence and next observable condition. No separate consumer score, graph, metric registry, event store or publisher. No scheme was accepted or enrolled.
 
-Completed remote effects: one additive Healthcare scope-correction comment; one new Consumer research branch; two Consumer research files; this cumulative checkpoint; Draft/HOLD PR #7804. No unknown effect remains from the completed tool calls. No source writer was replaced or transferred. No worker, watcher, runtime Attempt or automatic wake was created.
+## Effects, custody and holds
 
-**HOLD FOR SOL — do not merge, mark Ready, arm auto-merge, deploy, dispatch Fable, enroll schemas or change graph facts/baskets/ranking/gating/entry/sizing/trading.** Public Git contains original synthesis/public locators, not licensed corpora or full-fidelity restricted data. Event, publication and identity machinery remain with their existing owners. Fable handoff: NOT_ISSUED.
+R2 effects: two new research files on the incumbent branch and this cumulative checkpoint; bounded PR metadata may be updated to reflect R2 without changing Draft/HOLD. Current GitHub principal `mastermindx-3` and repository admin permission were verified before writes. File enumeration confirmed exactly R1's two research files, R2's two research files and this checkpoint—no shared implementation paths.
 
-## Exact next action and remaining obligations
+EFFECT_UNKNOWN: none from completed calls. No source writer or operation was re-homed. No runtime Attempt, worker, watcher, Fable delivery or autonomous wake was created. No live evidence, theme membership, baskets, rank/gate/entry/size/trade, auth, CI configuration or publication changed.
 
-Continue direct principal research on this same carrier with a source-backed company/business-unit and metric-definition census for housing/remodeling (D.R. Horton/Home Depot), brands/value retail (Nike/lululemon/TJX), and restaurant operating models (Chipotle/McDonald's). For each, establish economic rights, comparative definitions, region/channel scope, measured versus unknown exposure, first-known history and negative evidence. These names are research cases, not an approved basket or recommendation.
+HOLD FOR SOL: do not merge, mark Ready, arm auto-merge, deploy, enroll production schemas or dispatch Fable. Only `research/consumer_cyclical/` and this checkpoint remain writable. Public Git contains original synthesis/public-source observations and locators, not licensed corpora. FABLE_HANDOFF: NOT_ISSUED.
 
-Then extend autos/durables, global commerce, travel/capacity and uncovered families; investigate historical cycles/failed recoveries and expectations; verify rights/source feasibility and native interfaces; produce reviewed design and bounded implementation plan before the eventual Fable CEO orchestration handoff. Broad company coverage, actual valuation distributions, empirical causal/forecast tests and investment validation remain owed.
+## Unfinished obligations and exact next action
 
-## Continuation boundary and WHAT MUST NOT BE REDONE
+R3: broaden direct principal research into autos and household durables. Establish source-backed business-unit exposure and metric/clock definitions across an OEM/captive-finance model, vehicle distribution/aftermarket, and appliance/furniture replacement demand. Discriminate factory shipments, retail sales, dealer/channel inventory, incentives, credit performance and attributable cash. Choose companies by research coverage, not as an approved stock basket. Preserve geographic and financing differences and explicit unavailable fields.
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. This is a source-heavy R1 research-tranche boundary after substantial public-source reading, synthesis, artifact creation and exact-byte verification, before a different-depth business-unit/historical census. The cumulative checkpoint must be read back after this write before persistence is considered verified. Resume in an active principal research conversation from this checkpoint and the two research artifacts, not the full prior tool history. No autonomous continuation or custody transfer is implied.
+Then deepen travel/lodging/capacity, luxury and global commerce; integrate the cross-family driver matrix; investigate historical and failed recoveries; verify native source/rights feasibility and actual valuation/expectation histories; prepare reviewed design and bounded implementation slices before Fable. Cash/capital allocations, customer cohorts, contract economics, unit-maturation histories and investment validation remain owed. No blanket consumer-strength call, current cheap/expensive label or alpha is accepted.
 
-Do not redo Healthcare research, Robotics/template work, initial scope correction, R1 source recovery or its artifact publication absent a material invalidator. Do not create another research carrier for the same operation, another canonical owner plane, or treat these unexecuted cases as passing product tests. Preserve all historical effects and the full Consumer Cyclical mission.
+## Continuation boundary
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. The specific boundary is completion of the seven-company R2 exposure/definition/guidance tranche, before a different sector-coverage unit, after substantial source reads and exact-byte artifact verification. Read this checkpoint back at its returned immutable commit before claiming current persistence. Resume in an active principal research conversation from this checkpoint and the R2 report; retrieve individual source details only as needed. No autonomous wake, custody transfer or mission completion is implied.
+
+WHAT MUST NOT BE REDONE: Healthcare scope repair; R1 publication/framework; the seven R2 dossiers and disclosed arithmetic absent material invalidation; Robotics/template work; owner-plane creation; the same research branch/PR. Never call the prospective cases executed tests or treat research associations as live basket/decision authority.
