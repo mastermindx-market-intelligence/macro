@@ -18,9 +18,8 @@ from typing import Any, Mapping
 
 import pandas as pd
 
-_REPO = Path(__file__).resolve().parent.parent
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine import earnings_blackout
 from engine.earnings_catalyst import fields_from_assessment

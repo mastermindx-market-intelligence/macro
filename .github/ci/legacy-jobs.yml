@@ -5377,7 +5377,8 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+        # jsonschema: engine/options_signal_episode.py, reached via scripts.build_options_signal_episode.fetch_event_stage.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 jsonschema
       - name: options catalyst links
         run: python -m pytest tests/test_build_options_catalyst_links.py tests/test_options_catalyst_link.py tests/test_options_catalyst_links_nightly_shape.py -q
   uk-policy-desk:
