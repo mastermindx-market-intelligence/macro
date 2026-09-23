@@ -1,6 +1,6 @@
 ## SOURCE_SHA
 
-1fc095fe9ab6a6958f2d57d482efb6df0c5d716b+
+1fc095fe9ab6a6958f2d57d482efb6df0c5d716b
 
 ## WHAT LANDED
 
@@ -21,16 +21,17 @@
 
 ## GATES
 
-- `python3 scripts/check_design_system.py --mode enforce-added` — exit 0.
-  - `::warning title=design-system::enforce-added ran with no --diff-file: no line counts as added, so nothing can block. Pass --diff-file (or '-' for stdin) with the PR's own unified diff.`
-  - `::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25312 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)`
-  - `design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25312)`
+- `git diff origin/main...HEAD -- templates/theme.css templates/dashboard.html.j2 > /tmp/pr7849.diff` — prepared the PR diff before the gate.
+- `python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/pr7849.diff` — exit 0.
+  - `::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25304 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)`
+  - `design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25304)`
+- Review repair on the previous head: the same `--diff-file` command exited 1 with seven `literal-custom-property` findings at `templates/dashboard.html.j2:1903` and one `radius-literal` finding at `templates/theme.css:2118`. Commit `bc3944fb90dcf5c749c841a67035119424b1827a` removes the page-local spacing declarations, which now inherit the promoted values from `theme.css`, and changes only the new unused rail dot’s radius from `50%` to the numerically identical `var(--r-pill)`.
 - `python3 scripts/check_runtime_style_injection.py` — exit 0.
   - `runtime style injection guard OK (197 .js files scanned, 44 injecting, 89 total hits — all within frozen allowances)`
 - `python -m scripts.check_template_site_sync --fix` — exit 0.
   - `template↔site sync OK (101 pairs checked)`
 - `cmp templates/theme.css site/theme.css` — exit 0.
-  - `templates/theme.css` byte size: `222978`.
+  - `templates/theme.css` byte size: `222988`.
 - `python3 -m pytest tests/test_check_design_system.py tests/test_public_chrome.py -q` — exit 0.
   - `104 passed in 1.00s`
 
@@ -63,13 +64,18 @@
 ## PIXEL-NEUTRALITY ARGUMENT
 
 - No markup or script consumer of a newly ported `.mx-vh`, `.mx-sec`, `.mx-tbl`, `.mx-tblbox`, `.mx-tabset`, `.mx-callout`, `.mx-disc`, or `.mx-rail` selector exists outside `theme.css`; the class-collision scan returned 0 lines.
-- The ported token declarations are additive at `:root`; the report-only page-local scans show existing local scopes and no consumer line was added in this PR.
-- The dashboard change only renames `--sp-8:32px` to `--sp-7:32px`; `var(--sp-8)` had zero occurrences there, so the name changes while the value and declaration line are preserved.
+- The ported token declarations are additive at `:root`. A scan of added lines under `templates`, `app`, and `site` finds token consumers only inside the ported, zero-consumer `.mx-*` primitive rules; this PR adds no markup, script, or existing-rule consumer.
+- The report-only token-declaration scan finds same-name declarations in local scopes, but this PR neither edits those scopes nor adds a consumer to them. Their declarations are out-shipped by specificity in their existing scopes and were not affected by this PR.
+- The dashboard change removes its local `--sp-1` through `--sp-7` declarations and inherits the identically valued global scale (`4`, `8`, `12`, `16`, `20`, `24`, and `32` pixels). Its three existing consumers use `--sp-3`, `--sp-4`, and `--sp-5`, and `var(--sp-8)` had zero occurrences before the change; no consumer changed.
+- The review repair changes only the new, zero-consumer `.mx-rail` dot radius from `50%` to `var(--r-pill)`, whose promoted value is exactly `999px`; for its fixed 8px square dot this remains a fully rounded circle.
 - The provenance alias resolves to the existing `--prov-ink` value in each theme and does not rename or re-express the source token.
 
 ## EVIDENCE
 
-TBD
+- Skeleton record opened and pushed by `9a1d0542357aa392d475b0737648ee952c930757`.
+- DS-PR-0a implementation landed by `48ae8c7b8c2642a39e3fcf6164452f7196351b10`.
+- Reviewer gate fixes landed by `bc3944fb90dcf5c749c841a67035119424b1827a`.
+- Evidence record updated by this record commit.
 
 ## DEVIATIONS
 
