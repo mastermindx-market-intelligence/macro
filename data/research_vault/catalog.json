@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T11:24:00.999042+00:00",
-  "count": 2705,
+  "generated_at": "2026-09-23T15:09:37.545777+00:00",
+  "count": 2716,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,148 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vxqbq7fg0xc-a29f7b",
+      "title": "Brenntag SE (BNRGn.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:41Z",
+      "summary_points": [
+        "Guidance Upgrade: Revised FY revenue guidance to €1,450m (up from €1,350m), driven by new operating strategy execution and cost-out program (€150m savings in 2024, €200-250m by 2027), partially offsetting oil price volatility risks.",
+        "Geopolitical Pricing Impact: Middle East conflict directly boosting pricing power in sector, enhancing near-term margin visibility amid energy cost pressures.",
+        "China Competitive Dynamics: China emerging as medium-term chemical manufacturing competitor in essentials/semi-specialty segments (not high-end), with Brenntag positioned as global supply chain enabler to navigate competitive shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-y7x0pveddcd-777f0f",
+      "title": "Global Markets Daily Brazilian Real (BRL) — Navigating the Election",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:35Z",
+      "summary_points": [
+        "Brazilian Election Catalyst: Oct 4 election (potential Oct 25 runoff) drives BRL volatility; historical patterns show 4.5% BRL strength post-first round (2022) and peak USD/BRL ahead of second rounds (2014, 2022).",
+        "Fiscal Deficit & BRL Risk: 9% GDP fiscal deficit (primary 0.7%) and high real rates sustain carry trade but lack sustainability; negative fiscal outcomes imply 14% BRL depreciation to ~5.80.",
+        "USD/BRL Fair Value Range: Market-friendly outcomes (tighter fiscal policy) target 4.50–4.80; fiscal premium persistence (e.g., Dec 2024) implies 5.80 (14% depreciation risk).",
+        "Election-Driven Policy Shifts: Proactive fiscal adjustment (lowering premium) boosts BRL; passive shifts or policy delivery failures amplify FX volatility (2014: Rouseff re-election + orthodox appointments spurred rally).",
+        "Critical Sensitivity: USD/BRL moves 5.3% appreciation (to 4.80) if fiscal premium reduces vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ks7yulaakge-837989",
+      "title": "GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:05Z",
+      "summary_points": [
+        "Anthropic's Claude Opus 5.5: Competitive Shift: 40% lower cost vs Astra, stronger coding/agent capabilities, potential frontier leader status signaling superior value for AI-driven coding applications.",
+        "Muse's Second-Order Effects: Sector Impact: Agent-driven automation pressures Consumer Inertia (GSXUSWCH) and Financials, with immediate price drops in Planet Fitness, Everquote, indicating sector-wide risk.",
+        "2s-10s Spread Flattening: Sharp decline from ~98 to 89.90 (10.5% drop) coinciding with Muse I launch, signaling weakening growth expectations requiring immediate duration risk adjustment.",
+        "Yield Curve Signal for Duration Risk: Steep 2s-10s spread drop (70 to 18.257bps) demands urgent repositioning in duration and interest rate sensitivity analysis."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-au8capm9s1w-de037c",
+      "title": "GS Bartlett GS TMT TODAY 9.23.26 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:01Z",
+      "summary_points": [
+        "AI Competitive Shift: Anthropic/OpenAI cost-cutting models (GPT-6 Sol, Claude Opus 5.5) pressure Chinese AI stocks (BABA -3%, BIIDU -2.5%) amid open-weight competition.",
+        "Geopolitical Policy Volatility: Trump-Xi UN meeting, Besent as US \"AI czar\" candidate pushing US-China AI security notification mechanism, and Jensen Huang’s Trump/Xi dinner signal heightened tech tensions and regulatory uncertainty.",
+        "TMT Structural Momentum vs.",
+        "Risk: Memory Exposed (+183.94% YTD) and AI Data Center (+65.21% YTD) surge driven by infrastructure demand, contrasting with China Internet underperformance (-25.96% YTD) and sector-specific risks.",
+        "Critical Risk Factor: China Internet (-25.96% YTD) and Software (-4.18% YTD) underperformance due to geopolitical headwinds, amplified by LLM data security probes and sector crowding risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-movqr9urdl6-efef34",
+      "title": "GS Privorotsky GS Basics Agentic Proliferation Oil's Fragile Calm Extreme Flattening 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:59Z",
+      "summary_points": [
+        "Agentic Revolution Productivity Dividend: AI proliferation (Inference Economy) driving structural disinflation via CPU chain productivity gains, creating long-term portfolio alpha through reduced friction and productivity dividend spread.",
+        "Russia-Ukraine Conflict Risk: 30% probability of NATO-Russia clash (geopolitical risk factor), overshadowing oil diplomacy stalemate (US-Iran/Trump-XI) and elevating portfolio volatility.",
+        "Rates Flattening Growth Signal: Extreme front-end yield pressure with real rates at cycle highs reflects robust near-term growth dynamics, not persistent inflation—critical for rate-sensitive positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cyxqyhf0iin-b93d17",
+      "title": "GS Novak GS U.S. Industrials & Materials moving pieces 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:55Z",
+      "summary_points": [
+        "GBX Railcar Order: $600mm Saudi SAR order (3,400 units) drives book-to-bill near 1x, signaling robust industrial demand and sector strength.",
+        "Prime Book Industrials Shift: Gross exposure surged 33% (10.5%→14%) from 2022-2025, indicating strategic portfolio reallocation with heightened concentration risk.",
+        "Macro Data Catalysts: Critical releases (Chicago Fed, ADP, PMIs, Durable Goods) Sept 21-25 pivotal for rate expectations, growth trajectory, and volatility.",
+        "AZO EPS Beat: $56.05 EPS vs.",
+        "$54.08 estimate, driven by margin expansion and improving exit rate, boosting 2027 outlook."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7yl0z9bvzby-adeeb0",
+      "title": "GS Duttenhoefer BEST of DAY 2 at our German Corp Conference in Munich 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:49Z",
+      "summary_points": [
+        "Siemens AG: Digital Industries momentum (semiconductors/defense) with €6bn datacenter backlog, software monetization focus, and mid-term margin expansion (17-20%); room crowding 9/10 signals under-owned opportunity despite China exposure risks.",
+        "BMW AG: China market down ~40% driving profit warning, ICE portfolio vulnerability, and pricing pressures; Europe tariff concerns compound risks amid EV rollout delays (iX3 Q1).",
+        "Sartorius Outlook: Net-net bullish with H1 bioprocess growth (9%+), APAC/China support, and structural growth visibility; room crowding 4/10 indicates low positioning for upside.",
+        "KRONES AG: Net-net negative due to valuation concerns, pricing challenges, and geopolitical delays; mid-term guidance (3/10 rating) lacks clear catalysts amid customer pushout.",
+        "GERRESHEIMER AG: Strategic divestiture (U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nmuie7j0as1-4f0c24",
       "title": "JPM Asia Pacific Equity Derivs",
@@ -1752,6 +1894,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-1smfjyn2yor-65b836",
+      "title": "FIS WeeklyUpdate",
+      "institution": "Piper Sandler",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:59:44Z",
+      "summary_points": [
+        "Fed tightening & credit stress: Fed raised rates 25bp (median 4.1% year-end), flattening yield curve (2yr 4.76%, 10yr 5.00%), Caa yields surged to 14% signaling acute credit stress risk.",
+        "RMBS spread opportunities: NA RMBS 5.5 SEQ/PT at 6.0% yield vs Treasury (4.8%) offers 1.2% spread (largest opportunity), with steeper mid-term (5-8yr) slopes indicating structural yield curve advantage.",
+        "Yield curve steepening: Treasury yields rose 8-11bps (1-3yr) vs 3-6bps (5-7yr), signaling growth expectations and favoring short-duration portfolios.",
+        "Geopolitical supply chain risks: Houthi attacks/Saudi disruptions + Russian refinery outages tighten diesel markets, elevating crude supply risks amid heavy Treasury supply ($183bn)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vm8omtilvgh-73d0d7",
       "title": "WestpacWeekly20260921",
       "institution": "Westpac",
@@ -1810,6 +1972,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-relvlyiuqc4-a03142",
+      "title": "How will Fed rate hikes impact markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:40:17Z",
+      "summary_points": [
+        "Fed Policy Shift: Fed raised rates to 3.75–4.00% (first hike in 3 years); markets price 3 additional hikes by 2027 vs 1 expected in December.",
+        "Equity Resilience: Resilient growth and earnings support equities absorbing moderately higher yields despite rate hikes.",
+        "Tactical Bond Opportunities: Selective medium-to-long duration high-quality bonds offer opportunities amid higher yields; caution on longest maturities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -1895,6 +2076,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-19xikmb4chm-8d87e4",
+      "title": "JPM US Market Intelligence Afternoon Briefing Sept 21",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:27:48Z",
+      "summary_points": [
+        "US Tech-Driven Rally & Geopolitical Oil Shock: SPX/NDX surge (1.5%/2.8%) led by Meta (+12% on AI app), Semis; Houthi attack on Saudi capital (RTS) drives WTI surge (contrasting Trump’s airstrike comments causing 5% drop earlier), creating immediate energy volatility.",
+        "Fed Policy Contradiction & Hawkish Signals: Goolsbee’s stance against reversing 2025 rate cuts clashes with Musalem’s push for earlier hikes, amid inflation above target and supply shocks, heightening rate uncertainty.",
+        "AI Sector Flow Dynamics & Technical Catalysts: \"AI Vulnerable\" names (NFLX, CPNG) reverse due to tax-loss concerns, while Meta Muse-driven gains (CPU demand focus) and GOOGL outperformance (despite ad revenue lag) highlight sector-specific flow shifts.",
+        "Critical Geopolitical Triggers & Data Focus: Trump-Xi summit (Sep 23), US-China AI talks, and Houthi attacks intersect with key data (ADP, PMIs, Sep 21-25 Fed speeches), amplifying volatility around oil, rates, and sector rotation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-18eq6v5baum-321e40",
       "title": "Mi weekly market brief",
       "institution": "J.P. Morgan",
@@ -1951,6 +2152,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2uhqbsj2pcc-243e1b",
+      "title": "GS Equities Color US EQUITIES COLOR SEEING GREEN 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T00:07:48Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
