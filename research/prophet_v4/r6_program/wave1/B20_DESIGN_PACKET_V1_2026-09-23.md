@@ -73,7 +73,7 @@ The current US Prophet board route is `/us_stocks.html`, rendered from `template
 | `NOT_READY` | Watch — don't chase / 观察，勿追 | Not ready / 尚未就绪 | muted ink |
 | `WAIT_PULLBACK` | Watch — don't chase / 观察，勿追 | Wait for pullback / 等待回调 | muted ink |
 | `RAN_DONT_CHASE` | Stand aside / 观望 | Ran — don't chase / 已启动，勿追 | muted ink |
-| `INVALIDATED` | Ignore / 忽略 | Invalidated / 已失效 | struck stance, muted ink, no red alarm |
+| `INVALIDATED` | Ignore / 忽略 | Invalidated / 已失效 | struck stance, muted ink, no red alarm (`research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A) |
 <!-- `research/prophet_v4/r6_program/rulings/R6-B20-01_DIRECTION_2026-09-23.md` R-A -->
 | `UNAVAILABLE_DATA` or no producer row | (no stance) No read yet / 暂无判断 | No read yet / 暂无判断 | muted ink, dashed leading rule |
 
