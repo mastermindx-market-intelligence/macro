@@ -21,9 +21,10 @@
 .pw-block{display:grid;gap:var(--sp-3,12px);padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
 .pw-block>h2{margin:0;color:var(--text);font-size:var(--fs-h3);line-height:1.25}
 .pw-stack{display:grid;gap:var(--sp-2,8px)}
+.l-zh{display:none}[data-lang="zh"] .l-en{display:none}[data-lang="zh"] .l-zh{display:inline}
 .mx-ladder.pw-identity{min-width:0}
 .pw-lad-count{color:var(--muted)}
-.pw-lad-count[data-absent="true"]{color:var(--muted);font-style:italic}
+.pw-lad-count[data-absent="1"]{color:var(--muted);font-style:italic}
 .pw-lad-count[data-withheld="true"]{background:repeating-linear-gradient(135deg,var(--panel) 0 5px,color-mix(in srgb,var(--line) 40%,var(--panel)) 5px 10px)}
 .pw-stance{display:inline-flex;align-items:center;gap:var(--sp-1,4px);min-height:40px;padding:7px var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--text);font:700 var(--fs-label)/1 var(--font-ui)}
 .pw-stance small{font:650 var(--fs-label)/1 var(--font-ui);color:var(--muted)}
@@ -108,21 +109,33 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
     <section class="pw-block" aria-labelledby="shell-heading">
       <h2 id="shell-heading">ProphetWorkspaceShell · default · §4</h2>
       <div class="pw-context"><h1 class="pw-title"><span class="l-en">Prophet US</span><span class="l-zh">Prophet 美国</span></h1><span class="pw-chip"><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span><span class="pw-asof"><span class="l-en">As of Sep 23, 2026 09:05 PDT</span><span class="l-zh">数据截至 9月23日 09:05 PDT</span></span></div>
-      <nav class="pw-tabs" aria-label="Workspace destinations"><a href="#action-desk" aria-current="page"><span class="l-en">Action Desk</span><span class="l-zh">行动台</span></a><a href="#radar"><span class="l-en">Radar</span><span class="l-zh">雷达</span></a><a href="#all-candidates"><span class="l-en">All Candidates</span><span class="l-zh">全部候选</span></a><a href="#themes"><span class="l-en">Themes</span><span class="l-zh">主题</span></a><a class="pw-track-record" href="/us_track_record.html"><span class="l-en">Track Record</span><span class="l-zh">战绩</span></a></nav>
+      <nav class="pw-tabs" aria-labelledby="workspace-destinations-label"><span id="workspace-destinations-label" class="l-en" hidden>Workspace destinations</span><span id="workspace-destinations-label-zh" class="l-zh" hidden>工作区目的地</span><a href="#action-desk" aria-current="page"><span class="l-en">Action Desk</span><span class="l-zh">行动台</span></a><a href="#radar"><span class="l-en">Radar</span><span class="l-zh">雷达</span></a><a href="#all-candidates"><span class="l-en">All Candidates</span><span class="l-zh">全部候选</span></a><a href="#themes"><span class="l-en">Themes</span><span class="l-zh">主题</span></a><a class="pw-track-record" href="/us_track_record.html"><span class="l-en">Track Record</span><span class="l-zh">战绩</span></a></nav>
     </section>
 
     <section class="pw-block" aria-labelledby="ladder-heading">
       <h2 id="ladder-heading">CountLadderIdentity · live · absent · withheld · loading · error · §4</h2>
-      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-label="Lifecycle counts">
-        <button class="mx-cell" type="button" data-life="watch"><span class="mx-cell-n">21</span><span class="mx-cell-l"><span class="l-en">Watch</span><span class="l-zh">观察</span></span></button>
-        <button class="mx-cell" type="button" data-life="ready"><span class="mx-cell-n">9</span><span class="mx-cell-l"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span></button>
-        <button class="mx-cell" type="button" data-life="entered"><span class="mx-cell-n">3</span><span class="mx-cell-l"><span class="l-en">Entered</span><span class="l-zh">入场</span></span></button>
-        <button class="mx-cell" type="button" data-life="delivering"><span class="mx-cell-n">7</span><span class="mx-cell-l"><span class="l-en">Delivering</span><span class="l-zh">达标</span></span></button>
-        <button class="mx-cell" type="button" data-life="overtime"><span class="mx-cell-n">4</span><span class="mx-cell-l"><span class="l-en">Overtime</span><span class="l-zh">超时</span></span></button>
-        <button class="mx-cell mx-cell--last-live pw-lad-count" type="button" data-life="invalidated" data-absent="true"><span class="mx-cell-n">—</span><span class="mx-cell-l"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span></button>
-        <button class="mx-cell pw-lad-count" type="button" data-life="resolved" data-withheld="true"><span class="mx-cell-n">12</span><span class="mx-cell-l"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span></button>
+      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-labelledby="ladder-live-label">
+        <span id="ladder-live-label" class="l-en" hidden>Lifecycle counts</span><span id="ladder-live-label-zh" class="l-zh" hidden>生命周期计数</span>
+        <button class="mx-cell" type="button" data-life="watch" aria-pressed="false"><span class="mx-cell-n">21</span><span class="mx-cell-l"><span class="l-en">Watch</span><span class="l-zh">观察</span></span></button>
+        <button class="mx-cell" type="button" data-life="ready" aria-pressed="false"><span class="mx-cell-n">9</span><span class="mx-cell-l"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span></button>
+        <button class="mx-cell" type="button" data-life="entered" aria-pressed="false"><span class="mx-cell-n">3</span><span class="mx-cell-l"><span class="l-en">Entered</span><span class="l-zh">入场</span></span></button>
+        <button class="mx-cell" type="button" data-life="delivering" aria-pressed="false"><span class="mx-cell-n">7</span><span class="mx-cell-l"><span class="l-en">Delivering</span><span class="l-zh">达标</span></span></button>
+        <button class="mx-cell" type="button" data-life="overtime" aria-pressed="false"><span class="mx-cell-n">4</span><span class="mx-cell-l"><span class="l-en">Overtime</span><span class="l-zh">超时</span></span></button>
+        <button class="mx-cell mx-cell--last-live pw-lad-count" type="button" data-life="invalidated" data-absent="1"><span class="mx-cell-n">—</span><span class="mx-cell-l"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span></button>
+        <span class="mx-ladder-gap" aria-hidden="true"></span>
+        <div class="mx-cell mx-cell--term pw-lad-count" data-life="resolved" data-withheld="true"><span class="mx-cell-n">12</span><span class="mx-cell-l"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span></div>
       </div>
-      <div class="skel pw-load pw-load--long" aria-hidden="true"></div>
+      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-labelledby="ladder-loading-label" data-state="loading">
+        <span id="ladder-loading-label" class="l-en" hidden>Lifecycle counts</span><span id="ladder-loading-label-zh" class="l-zh" hidden>生命周期计数</span>
+        <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <div class="mx-cell mx-cell--last-live"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+        <span class="mx-ladder-gap" aria-hidden="true"></span>
+        <div class="mx-cell mx-cell--term"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
+      </div>
       <div class="mx-error" role="alert"><b><span class="l-en">The action list is unavailable. Required data did not load.</span><span class="l-zh">行动列表暂不可用。必需数据未能加载。</span></b></div>
     </section>
 
@@ -142,13 +155,16 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
     <section class="pw-block" aria-labelledby="row-heading">
       <h2 id="row-heading">ProphetRow · collapsed · expanded · loading · unavailable · invalidated · stale · corrected · preview · §4</h2>
       <div class="pw-rows">
-        <button class="pw-row" type="button" aria-expanded="false" aria-controls="row-evidence-collapsed" data-availability="WAIT_PULLBACK"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="WAIT_PULLBACK"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
-        <button class="pw-row" type="button" aria-expanded="true" aria-controls="row-evidence-expanded" data-availability="ENTRY_OPEN"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="ENTRY_OPEN"><b><span class="l-en">Act</span><span class="l-zh">可行动</span></b></span><span class="pw-row-action"><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" aria-controls="row-evidence-collapsed" data-availability="WAIT_PULLBACK"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="WAIT_PULLBACK"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="true" aria-controls="row-evidence-expanded" data-availability="ENTRY_OPEN"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="ENTRY_OPEN"><b><span class="l-en">Act</span><span class="l-zh">可行动</span></b></span><span class="pw-row-action"><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="APPROACHING_ENTRY"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b></span><span class="pw-row-action"><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="NOT_READY"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="NOT_READY"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="RAN_DONT_CHASE"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="RAN_DONT_CHASE"><b><span class="l-en">Stand aside</span><span class="l-zh">观望</span></b></span><span class="pw-row-action"><span class="l-en">Ran — don't chase</span><span class="l-zh">已启动，勿追</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
         <button class="pw-row" type="button" aria-expanded="false" aria-busy="true" data-loading="true"><span class="pw-name">EXMPL</span><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span><span aria-hidden="true"></span></button>
-        <button class="pw-row" type="button" aria-expanded="false" data-availability="UNAVAILABLE_DATA"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="UNAVAILABLE_DATA"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-row-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
-        <button class="pw-row" type="button" aria-expanded="false" data-availability="INVALIDATED"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="INVALIDATED"><b><span class="l-en">Ignore</span><span class="l-zh">忽略</span></b></span><span class="pw-row-action"><span class="l-en">Invalidated</span><span class="l-zh">已失效</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
-        <button class="pw-row" type="button" aria-expanded="false" data-availability="NOT_READY" data-stale="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="NOT_READY"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
-        <button class="pw-row" type="button" aria-expanded="false" data-availability="APPROACHING_ENTRY" data-corrected="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b></span><span class="pw-row-action"><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="UNAVAILABLE_DATA"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="UNAVAILABLE_DATA"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-row-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="INVALIDATED"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="INVALIDATED"><b><span class="l-en">Ignore</span><span class="l-zh">忽略</span></b></span><span class="pw-row-action"><span class="l-en">Invalidated</span><span class="l-zh">已失效</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="NOT_READY" data-stale="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="NOT_READY"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="APPROACHING_ENTRY" data-corrected="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p><span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b></span><span class="pw-row-action"><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
         <div class="pw-row" data-preview="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></p></div>
       </div>
     </section>
@@ -156,13 +172,16 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
     <section class="pw-block" aria-labelledby="evidence-heading">
       <h2 id="evidence-heading">ExpandedEvidenceRow · fresh · missing · stale · corrected · loading · error · §2, §4</h2>
       <div class="pw-stack">
-        <div class="pw-evidence" id="row-evidence-expanded" data-state="fresh" role="region" aria-label="Entry open / 入场窗口开启">
+        <div class="pw-evidence" id="row-evidence-expanded" data-state="fresh" role="region" aria-labelledby="evidence-fresh-label">
+          <span id="evidence-fresh-label" class="l-en" hidden>Entry open</span><span id="evidence-fresh-label-zh" class="l-zh" hidden>入场窗口开启</span>
           <section class="pw-evidence-col"><ul><li><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></li></ul></section>
-          <section class="pw-evidence-col"><p><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></p><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/EXMPL</span><span class="l-zh">完整档案 /prophet/EXMPL</span></a></section>
+          <section class="pw-evidence-col"><p><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></p><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/<T></span><span class="l-zh">完整档案 /prophet/<T></span></a></section>
         </div>
-        <div class="pw-evidence" id="row-evidence-collapsed" data-state="missing" role="region" aria-label="No read yet / 暂无判断" hidden><section class="pw-evidence-col"><p><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></p><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></section></div>
-        <div class="pw-evidence" data-state="loading" role="region" aria-label="No read yet / 暂无判断"><section class="pw-evidence-col"><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span></section><section class="pw-evidence-col"><span class="skel pw-load pw-load--short"></span></section></div>
-        <div class="pw-evidence" data-state="error" role="region" aria-label="Required data did not load. / 必需数据未能加载。"><div class="mx-error" role="alert"><b><span class="l-en">Required data did not load.</span><span class="l-zh">必需数据未能加载。</span></b></div></div>
+        <div class="pw-evidence" id="row-evidence-collapsed" data-state="missing" role="region" aria-labelledby="evidence-missing-label" hidden><span id="evidence-missing-label" class="l-en" hidden>No read yet</span><span id="evidence-missing-label-zh" class="l-zh" hidden>暂无判断</span><section class="pw-evidence-col"><p><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></p></section></div>
+        <div class="pw-evidence" data-state="stale" role="region" aria-labelledby="evidence-stale-label"><span id="evidence-stale-label" class="l-en" hidden>Price is stale</span><span id="evidence-stale-label-zh" class="l-zh" hidden>价格数据已过期</span><section class="pw-evidence-col"><p><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span></section></div>
+        <div class="pw-evidence" data-state="corrected" role="region" aria-labelledby="evidence-corrected-label"><span id="evidence-corrected-label" class="l-en" hidden>Corrected · prior value available</span><span id="evidence-corrected-label-zh" class="l-zh" hidden>已更正 · 可查看原值</span><section class="pw-evidence-col"><p><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></section></div>
+        <div class="pw-evidence" data-state="loading" role="region" aria-labelledby="evidence-loading-label"><span id="evidence-loading-label" class="l-en" hidden>No read yet</span><span id="evidence-loading-label-zh" class="l-zh" hidden>暂无判断</span><section class="pw-evidence-col"><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span></section><section class="pw-evidence-col"><span class="skel pw-load pw-load--short"></span></section></div>
+        <div class="pw-evidence" data-state="error" role="region" aria-labelledby="evidence-error-label"><span id="evidence-error-label" class="l-en" hidden>Required data did not load.</span><span id="evidence-error-label-zh" class="l-zh" hidden>必需数据未能加载。</span><div class="mx-error" role="alert"><b><span class="l-en">Required data did not load.</span><span class="l-zh">必需数据未能加载。</span></b></div></div>
       </div>
     </section>
 
@@ -170,6 +189,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 
     <section class="pw-block" aria-labelledby="stamp-heading">
       <h2 id="stamp-heading">AsOfStamp · fresh · stale · corrected · §4</h2>
+      <span class="pw-asof"><span class="l-en">As of <date time></span><span class="l-zh">数据截至 <date time></span></span>
       <span class="pw-asof"><time datetime="2026-09-23T09:05:00-07:00"><span class="l-en">As of Sep 23, 2026 09:05 PDT</span><span class="l-zh">数据截至 9月23日 09:05 PDT</span></time></span>
       <span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span>
       <span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span>
@@ -182,7 +202,8 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="pending" disabled><span class="l-en">Saving your list choice…</span><span class="l-zh">正在保存您的列表选择…</span></button></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="saved"><span class="l-en">Saved to &lt;list&gt;</span><span class="l-zh">已保存至 &lt;list&gt;</span></button><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your list choice did not save. Try again.</span><span class="l-zh">您的列表选择未保存。请重试。</span></button></div>
-        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Removed from &lt;list&gt;</span><span class="l-zh">已从 &lt;list&gt; 移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your change did not save. Try again.</span><span class="l-zh">您的更改未保存。请重试。</span></button></div>
+        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Removed from <list></span><span class="l-zh">已从 <list> 移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
         <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Saved on this device only</span><span class="l-zh">仅保存在此设备</span></span></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" disabled><span class="l-en">Not saved yet</span><span class="l-zh">暂未保存</span></button></div>
       </div>
@@ -200,6 +221,10 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
       <div class="pw-preview" data-state="preview"><b>2</b><span><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></span></div>
       <div class="pw-preview" data-state="locked"><span><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></span></div>
       <div class="mx-empty"><div class="mx-empty-line"><span class="l-en">No candidates match this filter.</span><span class="l-zh">没有候选符合此筛选条件。</span></div></div>
+      <div class="mx-empty"><div class="mx-empty-line"><span class="l-en">Nothing to act on today. Rows appear here when an entry opens.</span><span class="l-zh">今日无可行动项。入场窗口开启时会在此显示。</span></div></div>
+      <div class="mx-empty"><div class="mx-empty-line"><span class="l-en">No themes have enough members yet.</span><span class="l-zh">目前没有主题达到最低成员数。</span></div></div>
+      <div class="mx-empty"><div class="mx-empty-line"><span class="l-en">No records are ready to show yet.</span><span class="l-zh">暂无可以展示的记录。</span></div></div>
+      <div class="mx-error" role="alert"><b><span class="l-en">This page cannot finish loading safely. Refresh it.</span><span class="l-zh">此页面无法安全完成加载。请刷新。</span></b></div>
     </section>
   </main>
   <script>
@@ -211,6 +236,10 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
       const next = root.dataset.lang === 'zh' ? 'en' : 'zh';
       root.dataset.lang = next;
       root.lang = next;
+      document.querySelectorAll('span[aria-labelledby], nav[aria-labelledby], div[aria-labelledby]').forEach((element) => {
+        const references = element.getAttribute('aria-labelledby').split(/\s+/);
+        element.setAttribute('aria-labelledby', references.map((reference) => next === 'zh' ? `${reference}-zh` : reference.replace(/-zh$/, '')).join(' '));
+      });
     });
   </script>
 </body>

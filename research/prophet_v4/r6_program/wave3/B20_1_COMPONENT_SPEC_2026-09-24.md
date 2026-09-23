@@ -1,6 +1,6 @@
 ## SOURCE_SHA
 
-- **B20 v2 packet:** `origin/main` at `366533a9c21f` (`research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md`).
+- **B20 v2 packet:** `origin/main` at `ee69c3614e4b8451644e8b362cde673462c6781b`; blob `a2e31ffcc7ccb76832c87331391c689def639590` (`research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md`).
 - **DS-PR-0a prerequisite:** PR #7849 merge ref `f6e49ea0b15315598eac18213ba7cc6b89bb2b3f` (head `4a1be688dba0ad195db909d849100fab8124becb`); this branch merges the exact merge ref. R6-B20-02 §Ruling says: “B20-1 onward may start on 0a's merge sha.”
 - **This specification head is recorded in `## EVIDENCE`; `SOURCE_SHA` is immutable source lineage, not the mutable branch head.**
 
@@ -28,7 +28,9 @@ Verified against `templates/theme.css` **after** the prerequisite merge.
     <span class="pw-chip">Research only / 仅研究</span>
     <span class="pw-asof">As of <bake-time> / 数据截至 <bake-time></span>
   </div>
-  <nav class="pw-tabs" aria-label="Workspace destinations">
+  <nav class="pw-tabs" aria-labelledby="<workspace-destinations-label>">
+    <span id="<workspace-destinations-label>" class="l-en" hidden>Workspace destinations</span>
+    <span id="<workspace-destinations-label>" class="l-zh" hidden>工作区目的地</span>
     <a href="#action-desk">Action Desk / 行动台</a>
     <a href="#radar">Radar / 雷达</a>
     <a href="#all-candidates">All Candidates / 全部候选</a>
@@ -54,9 +56,10 @@ Verified against `templates/theme.css` **after** the prerequisite merge.
 .pw-block{display:grid;gap:var(--sp-3,12px);padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
 .pw-block>h2{margin:0;color:var(--text);font-size:var(--fs-h3);line-height:1.25}
 .pw-stack{display:grid;gap:var(--sp-2,8px)}
+.l-zh{display:none}[data-lang="zh"] .l-en{display:none}[data-lang="zh"] .l-zh{display:inline}
 .mx-ladder.pw-identity{min-width:0}
 .pw-lad-count{color:var(--muted)}
-.pw-lad-count[data-absent="true"]{color:var(--muted);font-style:italic}
+.pw-lad-count[data-absent="1"]{color:var(--muted);font-style:italic}
 .pw-lad-count[data-withheld="true"]{background:repeating-linear-gradient(135deg,var(--panel) 0 5px,color-mix(in srgb,var(--line) 40%,var(--panel)) 5px 10px)}
 .pw-stance{display:inline-flex;align-items:center;gap:var(--sp-1,4px);min-height:40px;padding:7px var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--text);font:700 var(--fs-label)/1 var(--font-ui)}
 .pw-stance small{font:650 var(--fs-label)/1 var(--font-ui);color:var(--muted)}
@@ -144,21 +147,26 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 **Purpose (§4):** seven-cell lifecycle identity with honest absent and withheld counts.
 
 ```html
-<div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-label="Lifecycle counts / 生命周期计数">
+<div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-labelledby="<ladder-label>">
+  <span id="<ladder-label>" class="l-en" hidden>Lifecycle counts</span>
+  <span id="<ladder-label>" class="l-zh" hidden>生命周期计数</span>
   <button class="mx-cell" type="button" data-life="watch" aria-pressed="false">
     <span class="mx-cell-n">21</span><span class="mx-cell-l">Watch / 观察</span>
   </button>
   <!-- ready, entered, delivering, overtime follow in frozen order -->
-  <button class="mx-cell mx-cell--last-live" type="button" data-life="invalidated" data-absent="true">
+  <button class="mx-cell mx-cell--last-live" type="button" data-life="invalidated" data-absent="1">
     <span class="mx-cell-n">—</span><span class="mx-cell-l">Invalidated / 失效</span>
   </button>
-  <button class="mx-cell" type="button" data-life="resolved" data-withheld="true">
+  <span class="mx-ladder-gap" aria-hidden="true"></span>
+  <div class="mx-cell mx-cell--term" data-life="resolved" data-withheld="true">
     <span class="mx-cell-n">12</span><span class="mx-cell-l">Resolved / 已结</span>
-  </button>
+  </div>
 </div>
 ```
 
-**CSS:** no component-defined ladder geometry: **the ladder must reuse `.mx-ladder`**, specifically `.mx-ladder--board`; `pw-identity` may set only `min-width:0`, while `pw-lad-count` may carry absent/withheld ink and material states from the shell CSS above. A loading count uses `.skel`, never a dash or zero. Source geometry remains `templates/theme.css` `.mx-ladder--board`.
+**CSS:** no component-defined ladder geometry: **the ladder must reuse `.mx-ladder`**, specifically `.mx-ladder--board`; `pw-identity` may set only `min-width:0`, while `pw-lad-count` may carry absent/withheld ink and material states from the shell CSS above. A loading count uses `.skel` inside a child of `.mx-ladder`, never a dash, zero, or an outside-row skeleton. Source geometry remains `templates/theme.css` `.mx-ladder--board`.
+
+**Shipped selector contract (`templates/theme.css`):** `.mx-ladder:not(.mx-ladder--board)`, `.mx-ladder:not(.mx-ladder--board) .mx-lad-total`, `.mx-ladder:not(.mx-ladder--board) button`, `.mx-ladder:not(.mx-ladder--board) button[aria-pressed="true"]`; `.mx-ladder--board`; `.mx-ladder--board .mx-cell`; `.mx-ladder--board .mx-cell:first-child`; `.mx-ladder--board .mx-cell--last-live`; `.mx-ladder--board button.mx-cell`; `.mx-ladder--board .mx-cell:focus-visible`; `.mx-ladder--board .mx-cell-n`; `.mx-ladder--board .mx-cell-l`; `.mx-ladder--board .mx-cell[data-zero="1"]`; `.mx-ladder--board .mx-cell[data-absent="1"]`; `.mx-ladder--board .mx-ladder-gap`; `.mx-ladder--board .mx-cell--term`; `.mx-ladder--board .mx-ladder-termnote`; `.mx-ladder--board .mx-cell[aria-pressed="true"]`; the `.mx-cap--watch/ready/entered/delivering/overtime/invalidated/resolved` weight marks and their mobile/light scoped variants. B20-1 never defines geometry under those selectors.
 
 **State table:** live count; published-and-absent (`—` + `data-absent`); withheld (`data-withheld`, ghost material); loading (count skeleton); error (`.mx-error` beside the unchanged ladder). Cells and labels are Watch · Ready · Entered · Delivering · Overtime · Invalidated · Resolved, verbatim from packet §3 and MP-1 §4b. The terminal Resolved count remains outside the live sum (MP-1 §4b).
 
@@ -193,7 +201,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
   aria-controls="<evidence-id>" data-availability="WAIT_PULLBACK"
   data-stale="true" data-corrected="true" data-preview="true" data-loading="true">
   <span class="pw-name">EXMPL</span>
-  <p class="pw-change">No source note yet. / 此字段暂无来源说明。</p>
+  <p class="pw-change">No source note yet / 暂无来源说明</p>
   <span class="pw-stance" data-availability="WAIT_PULLBACK"><b>Watch — don't chase</b></span>
   <span class="pw-row-action">Wait for pullback</span>
   <span class="pw-chevron" aria-hidden="true">›</span>
@@ -216,10 +224,12 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 
 ```html
 <div class="pw-evidence" id="<evidence-id>" data-state="fresh|missing|stale|corrected|loading|error"
-  role="region" aria-label="<exact state sentence from §8.1>">
+  role="region" aria-labelledby="<evidence-state-label>">
+  <span id="<evidence-state-label>" class="l-en" hidden><exact state sentence from §8.1></span>
+  <span id="<evidence-state-label>" class="l-zh" hidden><exact state sentence from §8.1></span>
   <section class="pw-evidence-col"><p>No source note yet / 暂无来源说明</p></section>
   <section class="pw-evidence-col"><p>Entry open / 入场窗口开启</p>
-    <a class="pw-evidence-link" href="/prophet/EXMPL">Full dossier at /prophet/EXMPL / 完整档案 /prophet/EXMPL</a>
+    <a class="pw-evidence-link" href="/prophet/EXMPL">Full dossier at /prophet/<T> / 完整档案 /prophet/<T></a>
   </section>
 </div>
 ```
@@ -286,7 +296,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 
 **CSS:** every Watch state, disabled treatment, tombstone/Undo, and focus rules in the shared CSS above.
 
-**State table (§9):** idle; pending; saved; failed; unwatched tombstone + Undo; local-only; disabled; watch failure (same exact failed message as §8.1). Only a successful WatchStore write paints Saved. A pull never resurrects the list-scoped tombstone.
+**State table (§9):** the machine’s six states are idle, pending, saved, failed, and unwatched, plus the local-only outcome; the fixture also renders the packet’s exact disabled-save sentence and exact §8.1 watch-failure twin. Only a successful WatchStore write paints Saved. A pull never resurrects the list-scoped tombstone.
 
 **Copy:** all seven machine-state behavior strings and disabled copy are verbatim §8.1/§9. `Undo / 撤销` is supplied by §9. A sleeve/list-chooser confirmation label is an OPEN QUESTION.
 
@@ -353,18 +363,24 @@ All recipes retain Research only, AsOf, four tabs, and Track Record separate rou
 
 ## FIXTURE INDEX
 
-| Fixture block | Component × state × theme |
+| Fixture block | Component | State | Packet § |
 |---|---|
-| `shell-heading` | Shell default × dark/light × EN/ZH × responsive. |
-| `ladder-heading` | Ladder live, absent, withheld, loading skeleton, error × dark/light × EN/ZH. |
-| `availability-heading` | Availability all seven states × dark/light × EN/ZH. |
-| `row-heading` | Rows collapsed, expanded, loading, unavailable, invalidated, stale, corrected, preview × dark/light × EN/ZH. |
-| `evidence-heading` | Evidence fresh, missing, stale, corrected, loading, error × dark/light × EN/ZH. |
-| `chip-heading` | Research chip default × dark/light × EN/ZH. |
-| `stamp-heading` | Stamp fresh, stale, corrected × dark/light × EN/ZH. |
-| `watch-heading` | Watch idle, pending, saved, failed, unwatched tombstone, local-only, disabled × dark/light × EN/ZH. |
-| `tier-heading` | Tier lock locked, preview, unavailable × dark/light × EN/ZH. |
-| `preview-heading` | Preview preview, locked, empty × dark/light × EN/ZH. |
+| `shell-heading` | ProphetWorkspaceShell | default | §4 |
+| `ladder-heading` | CountLadderIdentity | live; absent (`data-absent="1"`); withheld; loading; error | §4 |
+| `availability-heading` | AvailabilityStance | ENTRY_OPEN; APPROACHING_ENTRY; NOT_READY; WAIT_PULLBACK; RAN_DONT_CHASE; INVALIDATED; UNAVAILABLE_DATA | §3 |
+| `row-heading` | ProphetRow | collapsed; expanded; all seven availability values; loading; stale; corrected; preview | §4 |
+| `evidence-heading` | ExpandedEvidenceRow | fresh; missing; stale; corrected; loading; error | §4 |
+| `chip-heading` | ResearchOnlyChip | default | §4 |
+| `stamp-heading` | AsOfStamp | fresh; stale; corrected | §4 |
+| `watch-heading` | WatchAction | idle; pending; saved; failed; unwatched; local-only; disabled; watch failure | §9 |
+| `tier-heading` | TierLockProphet | locked; preview; unavailable | §4 |
+| `preview-heading` | PreviewRowState | preview; locked; empty | §4 |
+
+Every indexed block is present once and switches dark/light plus EN/ZH from `data-theme` and `data-lang`. Plain-language copy is carried by `.l-en`/`.l-zh` children; grouped controls use paired hidden label targets selected through `aria-labelledby`.
+
+## INTERACTION
+
+The fixture exposes only two controls: the theme control writes `document.documentElement.dataset.theme`, and the language control writes `data-lang` plus `lang`. The fixture CSS hides `.l-zh` by default and `.l-en` under `[data-lang="zh"]`. Paired `aria-labelledby` targets carry distinct `-zh` IDs, and the fixture-only language control rewrites those ID references at toggle time. No production interaction JavaScript is specified in B20-1.
 
 ## OPEN QUESTIONS FOR THE SEAT
 
@@ -381,14 +397,24 @@ All recipes retain Research only, AsOf, four tabs, and Track Record separate rou
 
 ## EVIDENCE
 
-- `python3 scripts/worktree_sparse.py add mockups` → `worktree-sparse: materialized mockups`.
+- `git rev-parse origin/main` → `ee69c3614e4b8451644e8b362cde673462c6781b`.
+- `git rev-parse origin/main:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md` → `a2e31ffcc7ccb76832c87331391c689def639590`.
+- `git show ee69c3614e4b8451644e8b362cde673462c6781b:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
+- `grep -o -E 'data-availability="[A-Z_]+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → seven lines: `APPROACHING_ENTRY`, `ENTRY_OPEN`, `INVALIDATED`, `NOT_READY`, `RAN_DONT_CHASE`, `UNAVAILABLE_DATA`, `WAIT_PULLBACK`.
+- `grep -o -E 'data-state="(fresh|missing|stale|corrected|loading|error)"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → six evidence states including separate `stale` and `corrected` instances.
+- `grep -Ec 'class="mx-ladder mx-ladder--board' mockups/prophet_workspace/b20_1_fixture.html` → `2`; `grep -c -E 'mx-ladder[^>]*>[^<]*<[^>]*skel' mockups/prophet_workspace/b20_1_fixture.html` → `1`; the loading cells are children of the second ladder.
+- `grep -c -F 'Your change did not save. Try again.' mockups/prophet_workspace/b20_1_fixture.html` → `1`; `grep -c -F '您的更改未保存。请重试。' mockups/prophet_workspace/b20_1_fixture.html` → `1`.
+- `grep -c -E 'mx-ladder-gap|mx-cell--term|data-absent="1"' mockups/prophet_workspace/b20_1_fixture.html` → `6`.
+- Packet-pair audit (single Python command over §8.1) → `pairs=21 missing=0`: every `/`-separated EN/ZH pair occurs verbatim in the fixture.
+- `python3 - <<'PY'` HTML parser audit (`HTMLParser.feed`/`.close`) → `HTML parser OK`; duplicate-ID audit → no output.
+- `grep -n -E '\.mx-(vh|sec|callout|disc)|class="[^"]*mx-(vh|sec|callout|disc)' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1.
 - `python3 scripts/check_design_system.py --mode report --root . 2>&1 | tail -n 3` → three pre-existing `templates/winner_health.html.j2` findings (`:1015`, `:397`, `:411`); exit 0, report-only.
 - Fallback-aware literal scan of the fixture style (removing complete `var(...)` expressions first) → `color literals: 0; px radius literals: 0; duration literals: 0`.
 - `python3 scripts/check_validated_claims.py --help` → accepts only `--list` and `--selftest`, not a path. `--list` is therefore not applicable to this two-file, no-copy-claim artifact and was not run as a path gate.
 - `grep -n -E '(UNAVAILABLE_FIELD|producer|nomination|episode)' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1.
 - `grep -n 'title="' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1 (`grep -c` prints `0`).
 - `diff <(sed -n '/^```css$/,/^```$/p' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md | sed '1d;$d') <(sed -n '/<style>/,/<\/style>/p' mockups/prophet_workspace/b20_1_fixture.html | sed '1d;$d')` → empty, exit 0.
-- Static audit → 10/10 required fixture blocks, 0 HTML parser errors; seven availability states present; watch idle/pending/saved/failed/unwatched/local-only/disabled present; `pw-ladder` count 0; one `/us_track_record.html` link.
+- Static audit → 10/10 required fixture blocks; watch idle/pending/saved/failed/unwatched/local-only/disabled plus exact watch-failure twins present; `pw-ladder` count 0; one `/us_track_record.html` link.
 - RED-first pytest is ruled out by the ruling’s scope: this design-only unit changes a research specification and mockup, no production behavior or test-owned module.
 
 ## GAPS
