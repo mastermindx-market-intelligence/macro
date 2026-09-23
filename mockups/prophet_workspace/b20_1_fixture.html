@@ -6,7 +6,212 @@
   <title>B20-1 Component Fixture</title>
   <link rel="stylesheet" href="../../templates/theme.css">
   <link rel="stylesheet" href="../../templates/tier_preview.css">
+  <style>
+.pw-harness{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2,8px);margin:0 0 var(--sp-4,16px)}
+.pw-harness button{appearance:none;border:1px solid var(--line);border-radius:var(--r-btn,10px);min-height:40px;padding:9px var(--sp-3,12px);font:650 var(--fs-sm)/1 var(--font-ui);color:var(--text);background:var(--panel);cursor:pointer}
+.pw-shell{display:grid;gap:var(--sp-3,12px);color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:var(--sp-4,16px)}
+.pw-context{display:flex;align-items:baseline;gap:var(--sp-2,8px);flex-wrap:wrap}
+.pw-title{margin:0;font-size:var(--fs-h2);line-height:1.2}
+.pw-context-row{display:flex;align-items:center;gap:var(--sp-2,8px);flex-wrap:wrap}
+.pw-tabs{display:flex;align-items:center;gap:var(--sp-1,4px);overflow-x:auto;padding-bottom:var(--sp-1,4px);border-bottom:1px solid var(--line)}
+.pw-tabs a{flex:none;min-height:40px;display:inline-flex;align-items:center;padding:9px var(--sp-2,8px);border-radius:var(--r-ctl,8px);color:var(--muted);font:650 var(--fs-sm)/1 var(--font-ui);text-decoration:none}
+.pw-tabs a[aria-current="page"]{color:var(--text);background:color-mix(in srgb,var(--text) 8%,var(--panel))}
+.pw-track-record{margin-left:auto}
+.pw-main{display:grid;gap:var(--sp-4,16px)}
+.pw-block{display:grid;gap:var(--sp-3,12px);padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.pw-block>h2{margin:0;color:var(--text);font-size:var(--fs-h3);line-height:1.25}
+.pw-stack{display:grid;gap:var(--sp-2,8px)}
+.mx-ladder.pw-identity{min-width:0}
+.pw-lad-count{color:var(--muted)}
+.pw-lad-count[data-absent="true"]{color:var(--muted);font-style:italic}
+.pw-lad-count[data-withheld="true"]{background:repeating-linear-gradient(135deg,var(--panel) 0 5px,color-mix(in srgb,var(--line) 40%,var(--panel)) 5px 10px)}
+.pw-stance{display:inline-flex;align-items:center;gap:var(--sp-1,4px);min-height:40px;padding:7px var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--text);font:700 var(--fs-label)/1 var(--font-ui)}
+.pw-stance small{font:650 var(--fs-label)/1 var(--font-ui);color:var(--muted)}
+.pw-stance[data-availability="APPROACHING_ENTRY"]{color:var(--ink-link,var(--link));border-color:color-mix(in srgb,var(--link) 35%,var(--line))}
+.pw-stance[data-availability="NOT_READY"],.pw-stance[data-availability="WAIT_PULLBACK"],.pw-stance[data-availability="RAN_DONT_CHASE"]{color:var(--muted);background:var(--panel)}
+.pw-stance[data-availability="INVALIDATED"]{color:var(--muted)}
+.pw-stance[data-availability="INVALIDATED"] b{text-decoration:line-through}
+.pw-stance[data-availability="UNAVAILABLE_DATA"]{color:var(--muted);border-style:dashed;background:var(--panel)}
+.pw-stance[data-availability="ENTRY_OPEN"]{color:var(--ink-ok);border-color:color-mix(in srgb,var(--ink-ok) 38%,var(--line));background:color-mix(in srgb,var(--ink-ok) 9%,var(--panel))}
+.pw-rows{display:grid;gap:var(--sp-2,8px)}
+.pw-row{display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr) auto auto 28px;align-items:center;gap:var(--sp-2,8px);min-height:44px;padding:9px var(--sp-2,8px);border:1px solid var(--line);border-left-width:3px;border-left-style:solid;border-left-color:var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.pw-row:hover{background:color-mix(in srgb,var(--text) 5%,var(--panel2))}
+.pw-name{font:750 var(--fs-sm)/1.1 var(--font-ui)}
+.pw-change{margin:0;color:var(--muted);font-size:var(--fs-sm);line-height:1.25}
+.pw-row-action{color:var(--muted);font:650 var(--fs-label)/1.2 var(--font-ui)}
+.pw-chevron{justify-self:end;color:var(--muted);font-size:var(--fs-sm);transition:transform var(--t-med,.2s) var(--ease-std)}
+.pw-row[aria-expanded="true"] .pw-chevron{transform:rotate(90deg)}
+.pw-row[data-availability="ENTRY_OPEN"]{border-left-color:var(--ink-ok)}
+.pw-row[data-availability="UNAVAILABLE_DATA"]{border-left-style:dashed}
+.pw-row[data-availability="INVALIDATED"] .pw-name{text-decoration:line-through;color:var(--muted)}
+.pw-row[data-stale="true"] .pw-change{color:var(--muted);border-bottom:1px solid color-mix(in srgb,var(--ink-warn) 55%,var(--line))}
+.pw-row[data-corrected="true"] .pw-name::after{content:"†";color:var(--muted);font-weight:400}
+.pw-row[data-preview="true"]{border-left-style:dashed;background:var(--panel)}
+.pw-row[data-loading="true"]{cursor:default;pointer-events:none}
+.pw-load{display:block;height:12px;border-radius:var(--r-ctl,8px)}
+.pw-load--short{width:40%}
+.pw-load--long{width:82%}
+.pw-evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px);padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
+.pw-evidence[hidden]{display:none}
+.pw-evidence-col{display:grid;gap:var(--sp-2,8px);align-content:start}
+.pw-evidence-col h3{margin:0;color:var(--muted);font-size:var(--fs-label);line-height:1.2}
+.pw-evidence-col dl{margin:0;display:grid;gap:var(--sp-2,8px)}
+.pw-evidence-col dt{color:var(--muted);font-size:var(--fs-micro)}
+.pw-evidence-col dd{margin:0;font-size:var(--fs-sm);line-height:1.35}
+.pw-evidence-link{justify-self:start;min-height:40px;display:inline-flex;align-items:center;color:var(--ink-link,var(--link));font-size:var(--fs-sm);text-decoration:none;text-decoration:underline;text-underline-offset:3px}
+.pw-evidence[data-state="missing"]{border-style:dashed}
+.pw-evidence[data-state="loading"] .skel{display:block;height:12px}
+.pw-evidence[data-state="error"]{border-color:color-mix(in srgb,var(--ink-warn) 40%,var(--line))}
+.pw-chip{display:inline-flex;align-items:center;min-height:24px;padding:4px var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);color:var(--muted);background:var(--panel);font:700 var(--fs-micro)/1 var(--font-ui)}
+.pw-asof{display:inline-flex;align-items:center;gap:var(--sp-1,4px);color:var(--muted);font-size:var(--fs-micro);font-variant-numeric:tabular-nums}
+.pw-asof-mark{display:inline-flex;min-height:24px;align-items:center;padding:3px var(--sp-1,4px);border-radius:var(--r-pill,999px);font-size:var(--fs-micro)}
+.pw-asof-mark[data-status="stale"]{color:var(--ink-warn);border-bottom:1px solid color-mix(in srgb,var(--ink-warn) 55%,var(--line))}
+.pw-asof-mark[data-status="corrected"]{color:var(--muted)}
+.pw-watch-panel{display:grid;gap:var(--sp-2,8px)}
+.pw-watch{justify-self:start;appearance:none;min-height:40px;border:1px solid var(--line);border-radius:var(--r-btn,10px);padding:9px var(--sp-3,12px);color:var(--text);background:var(--panel);font:700 var(--fs-sm)/1 var(--font-ui);cursor:pointer;transition:background var(--t-med,.2s) var(--ease-std)}
+.pw-watch:hover{background:color-mix(in srgb,var(--text) 7%,var(--panel))}
+.pw-watch:disabled{opacity:.4;border-color:var(--line);cursor:default}
+.pw-watch[data-state="pending"]{color:var(--muted)}
+.pw-watch[data-state="saved"],.pw-watch[data-state="local-only"]{color:var(--text);background:color-mix(in srgb,var(--text) 7%,var(--panel))}
+.pw-watch[data-state="failed"]{color:var(--ink-warn);border-color:color-mix(in srgb,var(--ink-warn) 40%,var(--line))}
+.pw-watch-meta{color:var(--muted);font-size:var(--fs-sm)}
+.pw-undo{appearance:none;min-height:40px;border:0;padding:9px var(--sp-2,8px);color:var(--ink-link,var(--link));background:var(--panel);font:700 var(--fs-sm)/1 var(--font-ui);cursor:pointer}
+.pw-tier{position:relative;overflow:hidden;border-radius:var(--r-card,12px)}
+.pw-tier-ghost{padding:var(--sp-4,16px);filter:blur(var(--sp-1,4px)) saturate(.35);opacity:.46;pointer-events:none;user-select:none}
+.pw-tier .mx-tier-gate{margin:0}
+.pw-tier[data-state="preview"] .mx-tier-gate{border-style:dashed}
+.pw-preview{display:flex;align-items:center;gap:var(--sp-2,8px);min-height:44px;padding:9px var(--sp-2,8px);border-left:3px dashed var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--muted);font-size:var(--fs-sm)}
+.pw-preview b{color:var(--text);font-variant-numeric:tabular-nums}
+.pw-preview[data-state="locked"] .pw-tier-ghost{display:none}
+:where(.pw-harness button,.pw-tabs a,.mx-ladder.pw-identity .mx-cell,.pw-row,.pw-evidence-link,.pw-watch,.pw-undo):focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+html[data-theme="light"] .pw-shell{background:var(--bg)}
+html[data-theme="light"] .pw-block{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .pw-row{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .pw-evidence{background:var(--panel)}
+html[data-theme="light"] .pw-row:hover{background:var(--panel)}
+html[data-theme="light"] .pw-row[data-preview="true"]{box-shadow:none;border-style:solid;border-left-style:dashed}
+html[data-theme="light"] .pw-watch:disabled{opacity:.5;border-style:dashed}
+html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3);opacity:.5}
+@media (min-width:1440px){.pw-shell{padding:var(--sp-5,20px);gap:var(--sp-4,16px)}.pw-main{gap:var(--sp-5,20px)}}
+@media (max-width:1023px){.pw-evidence{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:390px){.pw-shell{padding:var(--sp-2,8px);border-radius:var(--r-card,12px)}.pw-context,.pw-context-row{display:grid;grid-template-columns:minmax(0,1fr)}.pw-tabs{margin:0 calc(-1 * var(--sp-2,8px));padding-left:var(--sp-2,8px);padding-right:var(--sp-2,8px)}.pw-track-record{margin-left:0}.pw-row{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--sp-1,4px)}.pw-name{grid-column:1}.pw-change{grid-column:1 / -1}.pw-stance{grid-column:1;justify-self:start}.pw-row-action{grid-column:2;grid-row:1}.pw-chevron{grid-column:2;grid-row:2}}
+@media (prefers-reduced-motion:reduce){.pw-chevron{transition:none}.pw-row:hover{background:inherit}}
+  </style>
 </head>
 <body>
+  <main class="pw-shell pw-fixture" data-surface="action-desk">
+    <div class="pw-harness">
+      <button type="button" data-toggle="theme"><span class="l-en">Theme</span><span class="l-zh">主题</span></button>
+      <button type="button" data-toggle="lang"><span class="l-en">Language</span><span class="l-zh">语言</span></button>
+    </div>
+
+    <section class="pw-block" aria-labelledby="shell-heading">
+      <h2 id="shell-heading">ProphetWorkspaceShell · default · §4</h2>
+      <div class="pw-context"><h1 class="pw-title"><span class="l-en">Prophet US</span><span class="l-zh">Prophet 美国</span></h1><span class="pw-chip"><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span><span class="pw-asof"><span class="l-en">As of Sep 23, 2026 09:05 PDT</span><span class="l-zh">数据截至 9月23日 09:05 PDT</span></span></div>
+      <nav class="pw-tabs" aria-label="Workspace destinations"><a href="#action-desk" aria-current="page"><span class="l-en">Action Desk</span><span class="l-zh">行动台</span></a><a href="#radar"><span class="l-en">Radar</span><span class="l-zh">雷达</span></a><a href="#all-candidates"><span class="l-en">All Candidates</span><span class="l-zh">全部候选</span></a><a href="#themes"><span class="l-en">Themes</span><span class="l-zh">主题</span></a><a class="pw-track-record" href="/us_track_record.html"><span class="l-en">Track Record</span><span class="l-zh">战绩</span></a></nav>
+    </section>
+
+    <section class="pw-block" aria-labelledby="ladder-heading">
+      <h2 id="ladder-heading">CountLadderIdentity · live · absent · withheld · loading · error · §4</h2>
+      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-label="Lifecycle counts">
+        <button class="mx-cell" type="button" data-life="watch"><span class="mx-cell-n">21</span><span class="mx-cell-l"><span class="l-en">Watch</span><span class="l-zh">观察</span></span></button>
+        <button class="mx-cell" type="button" data-life="ready"><span class="mx-cell-n">9</span><span class="mx-cell-l"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span></button>
+        <button class="mx-cell" type="button" data-life="entered"><span class="mx-cell-n">3</span><span class="mx-cell-l"><span class="l-en">Entered</span><span class="l-zh">入场</span></span></button>
+        <button class="mx-cell" type="button" data-life="delivering"><span class="mx-cell-n">7</span><span class="mx-cell-l"><span class="l-en">Delivering</span><span class="l-zh">达标</span></span></button>
+        <button class="mx-cell" type="button" data-life="overtime"><span class="mx-cell-n">4</span><span class="mx-cell-l"><span class="l-en">Overtime</span><span class="l-zh">超时</span></span></button>
+        <button class="mx-cell mx-cell--last-live pw-lad-count" type="button" data-life="invalidated" data-absent="true"><span class="mx-cell-n">—</span><span class="mx-cell-l"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span></button>
+        <button class="mx-cell pw-lad-count" type="button" data-life="resolved" data-withheld="true"><span class="mx-cell-n">12</span><span class="mx-cell-l"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span></button>
+      </div>
+      <div class="skel pw-load pw-load--long" aria-hidden="true"></div>
+      <div class="mx-error" role="alert"><b><span class="l-en">The action list is unavailable. Required data did not load.</span><span class="l-zh">行动列表暂不可用。必需数据未能加载。</span></b></div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="availability-heading">
+      <h2 id="availability-heading">AvailabilityStance · seven states · §3, §4</h2>
+      <div class="pw-stack">
+        <span class="pw-stance" data-availability="ENTRY_OPEN"><b><span class="l-en">Act</span><span class="l-zh">可行动</span></b><small><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></small></span>
+        <span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b><small><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></small></span>
+        <span class="pw-stance" data-availability="NOT_READY"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b><small><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></small></span>
+        <span class="pw-stance" data-availability="WAIT_PULLBACK"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b><small><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></small></span>
+        <span class="pw-stance" data-availability="RAN_DONT_CHASE"><b><span class="l-en">Stand aside</span><span class="l-zh">观望</span></b><small><span class="l-en">Ran — don't chase</span><span class="l-zh">已启动，勿追</span></small></span>
+        <span class="pw-stance" data-availability="INVALIDATED"><b><span class="l-en">Ignore</span><span class="l-zh">忽略</span></b><small><span class="l-en">Invalidated</span><span class="l-zh">已失效</span></small></span>
+        <span class="pw-stance" data-availability="UNAVAILABLE_DATA"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b><small><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></small></span>
+      </div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="row-heading">
+      <h2 id="row-heading">ProphetRow · collapsed · expanded · loading · unavailable · invalidated · stale · corrected · preview · §4</h2>
+      <div class="pw-rows">
+        <button class="pw-row" type="button" aria-expanded="false" aria-controls="row-evidence-collapsed" data-availability="WAIT_PULLBACK"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="WAIT_PULLBACK"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Wait for pullback</span><span class="l-zh">等待回调</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="true" aria-controls="row-evidence-expanded" data-availability="ENTRY_OPEN"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="ENTRY_OPEN"><b><span class="l-en">Act</span><span class="l-zh">可行动</span></b></span><span class="pw-row-action"><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" aria-busy="true" data-loading="true"><span class="pw-name">EXMPL</span><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span><span aria-hidden="true"></span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="UNAVAILABLE_DATA"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="UNAVAILABLE_DATA"><b><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></b></span><span class="pw-row-action"><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="INVALIDATED"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="INVALIDATED"><b><span class="l-en">Ignore</span><span class="l-zh">忽略</span></b></span><span class="pw-row-action"><span class="l-en">Invalidated</span><span class="l-zh">已失效</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="NOT_READY" data-stale="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="NOT_READY"><b><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></b></span><span class="pw-row-action"><span class="l-en">Not ready</span><span class="l-zh">尚未就绪</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <button class="pw-row" type="button" aria-expanded="false" data-availability="APPROACHING_ENTRY" data-corrected="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">No source note yet.</span><span class="l-zh">此字段暂无来源说明。</span></p><span class="pw-stance" data-availability="APPROACHING_ENTRY"><b><span class="l-en">Get ready</span><span class="l-zh">准备</span></b></span><span class="pw-row-action"><span class="l-en">Approaching</span><span class="l-zh">接近入场</span></span><span class="pw-chevron" aria-hidden="true">›</span></button>
+        <div class="pw-row" data-preview="true"><span class="pw-name">EXMPL</span><p class="pw-change"><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></p></div>
+      </div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="evidence-heading">
+      <h2 id="evidence-heading">ExpandedEvidenceRow · fresh · missing · stale · corrected · loading · error · §2, §4</h2>
+      <div class="pw-stack">
+        <div class="pw-evidence" id="row-evidence-expanded" data-state="fresh" role="region" aria-label="Entry open / 入场窗口开启">
+          <section class="pw-evidence-col"><ul><li><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></li></ul></section>
+          <section class="pw-evidence-col"><p><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></p><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/EXMPL</span><span class="l-zh">完整档案 /prophet/EXMPL</span></a></section>
+        </div>
+        <div class="pw-evidence" id="row-evidence-collapsed" data-state="missing" role="region" aria-label="No read yet / 暂无判断" hidden><section class="pw-evidence-col"><p><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></p><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></section></div>
+        <div class="pw-evidence" data-state="loading" role="region" aria-label="No read yet / 暂无判断"><section class="pw-evidence-col"><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span></section><section class="pw-evidence-col"><span class="skel pw-load pw-load--short"></span></section></div>
+        <div class="pw-evidence" data-state="error" role="region" aria-label="Required data did not load. / 必需数据未能加载。"><div class="mx-error" role="alert"><b><span class="l-en">Required data did not load.</span><span class="l-zh">必需数据未能加载。</span></b></div></div>
+      </div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="chip-heading"><h2 id="chip-heading">ResearchOnlyChip · default · §4</h2><span class="pw-chip"><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span></section>
+
+    <section class="pw-block" aria-labelledby="stamp-heading">
+      <h2 id="stamp-heading">AsOfStamp · fresh · stale · corrected · §4</h2>
+      <span class="pw-asof"><time datetime="2026-09-23T09:05:00-07:00"><span class="l-en">As of Sep 23, 2026 09:05 PDT</span><span class="l-zh">数据截至 9月23日 09:05 PDT</span></time></span>
+      <span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span>
+      <span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span>
+    </section>
+
+    <section class="pw-block" aria-labelledby="watch-heading">
+      <h2 id="watch-heading">WatchAction · idle · pending · saved · failed · unwatched · local-only · disabled · §9</h2>
+      <div class="pw-stack">
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="idle"><span class="l-en">Watch</span><span class="l-zh">关注</span></button></div>
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="pending" disabled><span class="l-en">Saving your list choice…</span><span class="l-zh">正在保存您的列表选择…</span></button></div>
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="saved"><span class="l-en">Saved to &lt;list&gt;</span><span class="l-zh">已保存至 &lt;list&gt;</span></button><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your list choice did not save. Try again.</span><span class="l-zh">您的列表选择未保存。请重试。</span></button></div>
+        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Removed from &lt;list&gt;</span><span class="l-zh">已从 &lt;list&gt; 移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
+        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Saved on this device only</span><span class="l-zh">仅保存在此设备</span></span></div>
+        <div class="pw-watch-panel"><button class="pw-watch" type="button" disabled><span class="l-en">Not saved yet</span><span class="l-zh">暂未保存</span></button></div>
+      </div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="tier-heading">
+      <h2 id="tier-heading">TierLockProphet · locked · preview · unavailable · §4</h2>
+      <div class="pw-tier" data-state="locked"><div class="pw-tier-ghost" aria-hidden="true"><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span></div><div class="mx-tier-gate mx-tier-gate--prophet"><div class="mx-tier-copy"><span class="mx-tier-eyebrow"><span class="mx-tier-mark" aria-hidden="true">◇</span><span class="l-en">Research only</span><span class="l-zh">仅研究</span></span><b><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></b><small><span class="l-en">Watch saves research to your list. It does not place a trade.</span><span class="l-zh">关注会把研究保存到您的列表，不会下单。</span></small></div></div></div>
+      <div class="pw-tier" data-state="preview"><div class="mx-tier-gate mx-tier-gate--prophet"><div class="mx-tier-copy"><b><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></b></div></div></div>
+      <div class="mx-error" role="alert"><b><span class="l-en">Required data did not load.</span><span class="l-zh">必需数据未能加载。</span></b></div>
+    </section>
+
+    <section class="pw-block" aria-labelledby="preview-heading">
+      <h2 id="preview-heading">PreviewRowState · preview · locked · empty · §4</h2>
+      <div class="pw-preview" data-state="preview"><b>2</b><span><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></span></div>
+      <div class="pw-preview" data-state="locked"><span><span class="l-en">You have reached the limit for this plan.</span><span class="l-zh">您已达到当前方案的上限。</span></span></div>
+      <div class="mx-empty"><div class="mx-empty-line"><span class="l-en">No candidates match this filter.</span><span class="l-zh">没有候选符合此筛选条件。</span></div></div>
+    </section>
+  </main>
+  <script>
+    const root = document.documentElement;
+    document.querySelector('[data-toggle="theme"]').addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+    });
+    document.querySelector('[data-toggle="lang"]').addEventListener('click', () => {
+      const next = root.dataset.lang === 'zh' ? 'en' : 'zh';
+      root.dataset.lang = next;
+      root.lang = next;
+    });
+  </script>
 </body>
 </html>
