@@ -4783,3 +4783,40 @@ def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> Non
             for _indent, ln, _body, bl in offenders
         )
     )
+
+
+def test_uk_policy_suite_reuses_brain_desks_code_gate() -> None:
+    """Keep all UK desk tests in PR CI without another broad engine job."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    owner = jobs["unrun-brain-desks"]
+    assert owner.gate == "code"
+    commands = [str(step.get("run", "")) for step in owner.definition["steps"]]
+    suite_command = next(cmd for cmd in commands if "tests/test_master_brain.py" in cmd)
+    assert "tests/test_uk_policy_brain.py" in suite_command
+    assert "--deselect" not in suite_command and " -k " not in suite_command
+    code_owners = [job.job_id for job in jobs.values() if job.gate == "code"
+                   and any("tests/test_uk_policy_brain.py" in str(step.get("run", ""))
+                           for step in job.definition["steps"])]
+    assert code_owners == ["unrun-brain-desks"]
+    assert "uk-policy-desk" not in jobs
+    deps = next(cmd for cmd in commands if "pip install" in cmd)
+    assert all(dep in deps.split() for dep in ("pytest", "pyyaml", "jinja2"))
+
+
+def test_uk_policy_global_import_guard_still_catches_planbook(tmp_path: Path) -> None:
+    """Execute the real guard on a planted scoring import; never narrow its scan."""
+    source = (ROOT / "tests" / "test_uk_policy_brain.py").read_text()
+    guard = next(node for node in ast.parse(source).body
+                 if isinstance(node, ast.FunctionDef)
+                 and node.name == "test_no_scoring_path_imports_this_desk")
+    namespace = {"Path": Path, "re": re,
+                 "__file__": str(tmp_path / "tests" / "test_uk_policy_brain.py")}
+    exec(compile(ast.Module(body=[guard], type_ignores=[]), "uk-policy-guard", "exec"), namespace)
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "engine" / "prophet").mkdir(parents=True)
+    (tmp_path / "scripts" / "build_whitehouse.py").write_text("from engine import uk_policy_brain\n")
+    run_guard = namespace[guard.name]
+    run_guard()
+    (tmp_path / "engine" / "prophet" / "plan_book.py").write_text("from engine import uk_policy_brain\n")
+    with pytest.raises(AssertionError, match="engine/prophet/plan_book.py"):
+        run_guard()
