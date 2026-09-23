@@ -195,7 +195,8 @@ def test_direction_token_repairs_survive_the_restore() -> None:
 def test_calendar_glyph_regression_does_not_return() -> None:
     assert "📅" not in TPL
     assert (
-        '{% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span>'
+        "{% if imminent and _event_clock.get('status') == 'dated' %}"
+        '<div class="cnx-row"><span class="ic" aria-hidden="true"></span>'
         in TPL
     )
 
@@ -884,3 +885,137 @@ def test_page_time_executed_nightly_patch_stays_dated(file):
           'display':{'verdict':'RISK_OFF','score':33,'label_en':'Risk-off','label_zh':'避险'}}
     result=_harness((ROOT/file).read_text(),feed,'cn')
     assert result['date'] == 'As of 2026-07-31' and result['pill_on'] is False
+
+
+@pytest.mark.parametrize('instant,day', [
+    ('2026-09-23T15:59:59+00:00', '2026-09-23'),
+    ('2026-09-23T16:00:00+00:00', '2026-09-24'),
+    ('2026-09-24T00:00:00+08:00', '2026-09-24'),
+    ('2026-09-26T10:00:00+00:00', '2026-09-26'),
+])
+def test_event_clock_uses_beijing_civil_date_not_saved_regime(monkeypatch, instant, day):
+    from datetime import datetime, date
+    from engine import china_event_calendar as calendar
+    from scripts import build_china
+    def forbidden():
+        raise AssertionError('event view must not read the stale regime date')
+    monkeypatch.setattr(calendar, '_regime_asof', forbidden)
+    view = build_china._china_event_context(now=datetime.fromisoformat(instant))
+    assert view['event_clock']['status'] == 'dated'
+    assert view['event_clock']['asof'] == day
+    assert view['event_clock']['timezone'] == 'Asia/Shanghai'
+    expected = calendar.china_macro_events(asof=date.fromisoformat(day), horizon_days=14)
+    assert view['calendar'] == expected
+    assert all(row['date'] >= day for row in view['calendar'])
+    assert all(row['type'] != 'LPR' for row in view['calendar'])
+    if view['imminent']:
+        assert view['imminent']['date'] in view['imminent']['en']
+        assert view['imminent']['date'] in view['imminent']['zh']
+        assert 'today' not in view['imminent']['en']
+        assert '今天' not in view['imminent']['zh']
+
+
+@pytest.mark.parametrize('bad', ['2026-09-24', True, float('nan')])
+def test_event_clock_invalid_instant_cannot_fall_back_to_old_assessment(bad):
+    from scripts import build_china
+    view = build_china._china_event_context(now=bad)
+    assert view['event_clock']['status'] == 'unavailable'
+    assert view['calendar'] == view['event_strip'] == []
+    assert view['imminent'] is None
+
+
+def test_event_clock_naive_datetime_is_not_assumed_utc():
+    from datetime import datetime
+    from scripts import build_china
+    view = build_china._china_event_context(now=datetime(2026, 9, 24))
+    assert view['event_clock']['status'] == 'unavailable'
+
+
+def test_event_clock_failure_is_not_a_quiet_calendar(monkeypatch):
+    from datetime import datetime, timezone
+    from engine import china_event_calendar as calendar
+    from scripts import build_china
+    def broken(**kwargs):
+        raise ValueError('calendar source unreadable')
+    monkeypatch.setattr(calendar, 'china_macro_events', broken)
+    view = build_china._china_event_context(now=datetime(2026, 9, 24, tzinfo=timezone.utc))
+    assert view['event_clock']['status'] == 'unavailable'
+    assert view['calendar'] == view['event_strip'] == [] and view['imminent'] is None
+
+
+def test_event_clock_all_three_views_share_one_explicit_date(monkeypatch):
+    from datetime import datetime, timezone
+    from engine import china_event_calendar as calendar
+    from scripts import build_china
+    calls = []
+    for name in ('china_macro_events', 'high_impact_strip', 'imminent_line'):
+        result = None if name == 'imminent_line' else []
+        def record(*, asof, horizon_days, _name=name, _result=result):
+            calls.append((_name, asof.isoformat(), horizon_days))
+            return _result
+        monkeypatch.setattr(calendar, name, record)
+    view = build_china._china_event_context(now=datetime(2026, 9, 23, 16, tzinfo=timezone.utc))
+    assert calls == [(n, '2026-09-24', 14) for n in
+        ('china_macro_events', 'high_impact_strip', 'imminent_line')]
+    assert view['event_clock']['status'] == 'dated'
+    assert view['calendar'] == view['event_strip'] == [] and view['imminent'] is None
+
+
+def test_event_clock_builder_binds_existing_consumer():
+    source = (ROOT / 'scripts/build_china.py').read_text()
+    assert 'vm.update(_china_event_context())' in source
+    assert 'cec.china_macro_events(horizon_days=14)' not in source
+    assert 'cec.high_impact_strip(horizon_days=14)' not in source
+    assert 'cec.imminent_line(horizon_days=14)' not in source
+
+
+def test_event_clock_rendered_card_and_dialog_explain_reference_date():
+    from datetime import datetime, timezone
+    from scripts import build_china
+    from bs4 import BeautifulSoup
+    view = build_china._china_event_context(now=datetime(2026, 9, 23, 16, tzinfo=timezone.utc))
+    doc = BeautifulSoup(_render_china_risk_case(None, **view), 'html.parser')
+    card = doc.find('div', onclick="cnxOpenDlg('cnx-dlg-events')")
+    dialog = doc.find(id='cnx-dlg-events')
+    for surface in (card, dialog):
+        text = surface.get_text(' ', strip=True)
+        assert '2026-09-24' in text and 'Calendar reference' in text and '日历基准' in text
+        assert 'Schedule estimates' in text and '排期估计' in text
+        assert '2026-09-21' not in text
+    assert 'Days from reference' in dialog.get_text() and '相对基准日' in dialog.get_text()
+    assert 'today' not in view['imminent']['en']
+
+
+@pytest.mark.parametrize('status,expected', [('dated','No scheduled events'), ('unavailable','Event timing unavailable')])
+def test_event_clock_empty_and_unavailable_are_distinct(status, expected):
+    from bs4 import BeautifulSoup
+    doc = BeautifulSoup(_render_china_risk_case(None, calendar=[], event_strip=[],
+        event_clock={'status':status, 'asof':'2026-09-24' if status=='dated' else None}), 'html.parser')
+    card = doc.find('div', onclick="cnxOpenDlg('cnx-dlg-events')")
+    assert expected in card.get_text()
+    assert 'calendar is quiet' not in card.get_text().lower()
+
+
+def test_event_clock_default_samples_wall_time_once(monkeypatch):
+    from datetime import datetime, timezone
+    from scripts import build_china
+    calls = []
+    class Frozen(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            calls.append(tz)
+            return cls(2026, 9, 23, 16, tzinfo=timezone.utc)
+    monkeypatch.setattr(build_china, 'datetime', Frozen)
+    view = build_china._china_event_context()
+    assert calls == [timezone.utc]
+    assert view['event_clock']['asof'] == '2026-09-24'
+
+
+def test_event_clock_same_day_event_never_claims_release_is_pending():
+    from datetime import datetime, timezone
+    from scripts import build_china
+    view = build_china._china_event_context(now=datetime(2026, 9, 21, 15, tzinfo=timezone.utc))
+    assert view['imminent']['days_until'] == 0
+    assert view['imminent']['date'] == '2026-09-21'
+    assert 'today' not in view['imminent']['en'] and 'tomorrow' not in view['imminent']['en']
+    assert 'Scheduled' in view['imminent']['en'] and '排期' in view['imminent']['zh']

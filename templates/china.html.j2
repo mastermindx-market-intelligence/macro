@@ -13,6 +13,13 @@
 {% set _zh = {'high': '高', 'med': '中', 'medium': '中', 'low': '低'} -%}
 <span class="cnx-imp {{ importance }}">{{ t(importance | upper, _zh.get(importance, importance | upper)) }}</span>
 {%- endmacro %}
+{% set _event_clock = event_clock if event_clock is defined and event_clock is mapping else {} %}
+{% macro event_reference(clock) -%}
+{% if clock.get('status') == 'dated' %}
+<div class="cnx-event-reference" style="font-size:11.5px;color:var(--muted);margin:6px 0">{{ t('Calendar reference','日历基准') }} · <time datetime="{{ clock.asof }}">{{ clock.asof }}</time> {{ t('Beijing','北京时间') }}</div>
+{% endif %}
+<div class="cnx-event-limits" style="font-size:11.5px;color:var(--muted);margin:6px 0">{{ t('Schedule estimates; dates may change. Release time and outcome unverified.','排期估计，日期可能变化；发布时间和结果尚未核实。') }}</div>
+{%- endmacro %}
 {% macro help(en, zh='', cls='') -%}
 <span class="help{% if cls %} {{ cls }}{% endif %}">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -2164,22 +2171,23 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
           {% if not face.empty %}<button type="button" class="cnx-lens lens-q" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}">?</button>{% endif %}</div>
         {% endfor %}
-        {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
+        {% if imminent and _event_clock.get('status') == 'dated' %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Schedule estimate · calendar reference','排期估计 · 日历基准') }} {{ _event_clock.get('asof') or '—' }} {{ t('Beijing','北京时间') }}</span></div></div>{% endif %}
       {% else %}
       <div class="cnx-row"><span class="ic" aria-hidden="true">—</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
       {% endif %}
     </div>
     {# Upcoming Events card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')">
-      <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('NEXT 14 DAYS','未来14天') }}</span></div>
+      <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('14-DAY WINDOW','14天窗口') }}</span></div>
+      {{ event_reference(_event_clock) }}
       {% set _high_ev = [] %}
       {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
-      {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
+      {% if _high_ev and _event_clock.get('status') == 'dated' %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact entries in this window','项高影响窗口排期') }}</div>{% endif %}
       {% set _ev_pool = [] %}
       {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
       {% for c in (event_strip or []) %}{% if c.importance != 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
       {% set _ev_shown = _ev_pool[:4] %}
-      {% if _ev_shown %}
+      {% if _ev_shown and _event_clock.get('status') == 'dated' %}
       <div class="cnx-estrip">
         {% for c in _ev_shown %}
         <div class="cnx-ev">
@@ -2192,7 +2200,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
       {% if _ev_pool | length > _ev_shown | length %}<div class="cnx-view-all">{{ _ev_shown | length }} {{ t('of','/') }} {{ _ev_pool | length }} {{ t('shown · full calendar →','项已显示 · 完整日历 →') }}</div>{% endif %}
       {% else %}
-      <div class="mx-empty">{{ t('No scheduled macro events surfaced for this window.','当前窗口暂无已排期宏观事件。') }}<span class="empty-why">{{ t('The calendar is quiet or has not refreshed yet.','日历当前安静，或尚未刷新。') }}</span></div>
+      <div class="mx-empty">{% if _event_clock.get('status') == 'dated' %}{{ t('No scheduled events in this dated window.','此日期窗口暂无已排期事件。') }}{% else %}{{ t('Event timing unavailable — no current calendar claim.','事件时间暂不可用，不作当前日历判断。') }}{% endif %}</div>
       {% endif %}
     </div>
   </div>
@@ -3124,11 +3132,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-events">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Calendar — Next 14 Days','日历 — 未来14天') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Calendar — Dated 14-Day Window','日历 — 有日期的14天窗口') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
-        {% if calendar %}
+        {{ event_reference(_event_clock) }}
+        {% if calendar and _event_clock.get('status') == 'dated' %}
         <table class="cnx-mt">
-          <tr><th>{{ t('Date','日期') }}</th><th></th><th>{{ t('Release','数据') }}</th><th class="r">{{ t('Importance','重要性') }}</th></tr>
+          <tr><th>{{ t('Date','日期') }}</th><th>{{ t('Days from reference','相对基准日') }}</th><th>{{ t('Release','数据') }}</th><th class="r">{{ t('Importance','重要性') }}</th></tr>
           {% for c in calendar %}
           <tr>
             <td>{{ c.date }}</td>
@@ -3139,9 +3148,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% endfor %}
         </table>
         {% else %}
-        <p style="font-size:12.5px;color:var(--muted)">{{ t('No events in the calendar.','日历暂无数据。') }}</p>
+        <p style="font-size:12.5px;color:var(--muted)">{% if _event_clock.get('status') == 'dated' %}{{ t('No scheduled events in this dated window.','此日期窗口暂无已排期事件。') }}{% else %}{{ t('Event timing unavailable — no current calendar claim.','事件时间暂不可用，不作当前日历判断。') }}{% endif %}</p>
         {% endif %}
-        <div class="cnx-receipt">{{ t('Pure schedule — no forecasts. "Imminent" banner surfaces on the glance card when a release is ≤1 day away.','纯日程 — 无预测。当数据发布时间≤1天时，速览卡上显示"临近"提示。') }}</div>
+        <div class="cnx-receipt">{{ t('Offsets are relative to the displayed Beijing reference date, not a live countdown. A scheduled date does not establish that a release is still pending.','天数相对于显示的北京基准日期，并非实时倒计时。排期日期不代表发布尚未发生。') }}</div>
       </div>
     </div>
   </div>

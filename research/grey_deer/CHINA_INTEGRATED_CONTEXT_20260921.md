@@ -517,3 +517,28 @@ Final visual receipt:24 resting/focus/hover states now captured on the same4f1e6
 The initial rest-only receipt failed the focus/hover guard; actual forced-state capture
 closes that gap without dropping CSS or weakening the guard.8 gesture journeys and32
 synthetic scenarios retain their exact original observer digest; capture-only axes changed.
+
+## Beijing event reference — source repair
+Protected procedure: Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2.
+Same PR7622/Studio carrier, pickup c58b5af22fee. Chairman continuation; review
+exception retained; CI/release deferred. Prior event-test append gate now accepted
+on this same source carrier; no alternate tool/provider or worker was introduced.
+
+Existing builder called all3 calendar functions without an asof, causing their
+saved-regime fallback to reinterpret an old session as today. The new local helper
+captures one aware instant, converts through existing cn_calendar.CST and supplies
+the same Beijing civil date to the existing list/strip/imminent functions.
+Original calendar cadence/defaults for other callers are unchanged. Absolute event
+copy and a visible reference date replace unqualified today/tomorrow narration.
+Offsets are explicitly relative to that reference, not a live countdown. Dates
+remain schedule estimates, not proof that a release is pending or completed.
+Missing/invalid time or failed calculation is unavailable, never a quiet calendar.
+
+Sixteen added contracts; initial9 missing-helper failures and3 rendered-card failures
+reproduced before repairs. Final seven-suite regression542 passed without warnings.
+One older icon source assertion was updated to retain its empty-icon requirement
+under the new dated-context guard; emoji suppression remains unchanged.
+Source/UI consumer work is complete locally; actual builder and browser proof are
+next. No fresh collection, model/risk/probability/sizing change, accepted production
+release or shared-PR/controller change is claimed. Known24 auxiliary outputs and4
+supplemental images remain excluded from selective staging.

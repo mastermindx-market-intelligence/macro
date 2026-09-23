@@ -376,6 +376,38 @@ def _health_rows() -> list[dict]:
     return rows
 
 
+def _china_event_context(*, now: datetime | None = None) -> dict:
+    """Project the existing schedule at one Beijing civil date, not market as-of.
+
+    Absolute-date copy remains truthful between bakes. Cadence estimates do not
+    confirm a release time, completion, result, or trading signal.
+    """
+    from engine import china_event_calendar as cec
+    from lib.cn_calendar import CST
+    clock = {"status": "unavailable", "asof": None, "checked_at": None,
+             "timezone": "Asia/Shanghai", "basis": "existing_release_cadence"}
+    empty = {"calendar": [], "event_strip": [], "imminent": None, "event_clock": clock}
+    try:
+        instant = datetime.now(timezone.utc) if now is None else now
+        if not isinstance(instant, datetime) or instant.utcoffset() is None:
+            raise ValueError("event clock requires an aware datetime")
+        day = instant.astimezone(CST).date()
+        clock.update(asof=day.isoformat(), checked_at=instant.isoformat())
+        events = cec.china_macro_events(asof=day, horizon_days=14)
+        strip = cec.high_impact_strip(asof=day, horizon_days=14)
+        imminent = cec.imminent_line(asof=day, horizon_days=14)
+        if imminent is not None:
+            first = strip[0]
+            imminent = {**imminent,
+                "en": f"Scheduled high-impact China event: {first['name_en']} · {first['date']}.",
+                "zh": f"高影响中国事件排期：{first['name_zh']} · {first['date']}。"}
+        clock["status"] = "dated"
+        return dict(calendar=events, event_strip=strip, imminent=imminent, event_clock=clock)
+    except Exception as exc:  # Display-only leaf: never turn failure into a quiet calendar.
+        log.warning("china event-date context unavailable (%s)", type(exc).__name__)
+        return empty
+
+
 def _china_action_board(sectors: list[dict]) -> dict:
     """Bucket the sector cards' cycle-entry calls into a 'what to act on' board —
     the China analog of build_site.action_board (no per-stock notable branch).
@@ -1721,16 +1753,9 @@ def main() -> int:
             log.error("china market_state failed (%s); skipping", e)
             vm["market_state"] = None
 
-        # China macro/policy release calendar — display-only scheduling context (no
-        # news API; pure date arithmetic over series already collected). None-safe.
-        try:
-            from engine import china_event_calendar as cec
-            vm["calendar"] = cec.china_macro_events(horizon_days=14)
-            vm["event_strip"] = cec.high_impact_strip(horizon_days=14)
-            vm["imminent"] = cec.imminent_line(horizon_days=14)
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.error("china calendar build failed (%s); skipping", e)
-            vm["calendar"], vm["event_strip"], vm["imminent"] = [], [], None
+        # One independent Beijing date for all event views, not the saved regime date.
+        # Existing release cadence stays the owner; no result or release-time inference.
+        vm.update(_china_event_context())
 
         # Macro news & official policy tone — CCTV 新闻联播 z-scored policy tone +
         # Eastmoney 全球财经快讯 filtered flashes (engine/china_news.py). Keyless,
