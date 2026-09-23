@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T18:25:07.703401+00:00",
-  "count": 2725,
+  "generated_at": "2026-09-23T19:10:15.122008+00:00",
+  "count": 2728,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,67 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-6kjignza40c-5e0949",
+      "title": "GS Feiler GS Consumer Top Stocks & Trading Themes in Focus 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:57:46Z",
+      "summary_points": [
+        "Fundamental Catalysts: FIVE's 3Q strength (P/E 20x vs >30x spring) and ONON's top-line high-teens growth/margin expansion signal near-term earnings momentum beyond positioning-driven sell-offs.",
+        "Valuation Contrasts: RCL's 11x P/E (vs 2027 Caribbean/Europe set-up) and Sandals deal $3BN outlay adjustment highlight undervaluation versus peers, with cross-sell opportunities.",
+        "Positioning Shift: \"Sell what has not been sold\" (positioning risk) driving recent moves; \"out of favor\" stocks (e.g., CPR) with single-digit multiples offer resilience amid market corrections."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kjugndp41gc-ed44e2",
+      "title": "GOAL Post The name is bond — rethinking duration in balanced portfolios",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:41:49Z",
+      "summary_points": [
+        "Bond Yield Regime Shift: US 10-year yields near pre-GFC highs driven by Middle East conflict, energy prices, fiscal concerns, and AI capital competition; real yields surged (US 2-year +120bp YTD), signaling higher neutral rates and capital competition.",
+        "60/40 Portfolio Drag: Bonds have dragged risk-adjusted returns for 60/40 portfolios (Exhibit 3), with Sharpe ratios lagging standalone equities due to 2022 drawdowns for both assets.",
+        "MPT-Driven Allocation Mechanics: Optimal bond weight reduced to near-zero since 2021 (steep efficient frontier), driven by higher equity/bond correlations, elevated equity risk premia, and reduced diversification benefits.",
+        "Geopolitical & Fiscal Drivers: Middle East war-driven energy prices, AI capex boom, and fiscal policies elevated equity valuations relative to bonds, with bond yields now near long-run averages (Exhibit 4).",
+        "Bond-Cash Underperformance: Long-dated US bonds materially underperformed cash over 5 years (Exhibit 18), contrasting with historical periods where bonds outperformed cash (e.g., 1910s, 1960s-80s)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rjf1mjsp3wm-701b17",
+      "title": "Commodity Analyst Copper, Silver, PGMs Tariff Uncertainty Likely to Persist",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:39Z",
+      "summary_points": [
+        "Copper Mine Development Time: Global copper mine development requires >15 years, creating structural supply constraints that outweigh tariff policy impacts.",
+        "US Silver Self-Sufficiency Gap: US silver production covers only ~5 years of current imports, with minimal expansion incentive despite tariff-driven price spikes.",
+        "Platinum/Palladium Supply Concentration: 82%/46% of platinum/palladium supply concentrated in Southern Africa, creating high geopolitical disruption risk.",
+        "US Inventory Concentration Tightens Global Liquidity: US warehouses hold growing global copper inventories, reducing ex-US liquidity and amplifying volatility risks.",
+        "Investor Demand Amplifies Copper Volatility: Broadened investor interest in copper (COMEX) within a less liquid market causes disproportionate price impacts from modest inflows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-yhemhztl4kw-4369e6",
       "title": "JPM US Market Intelligence | Morning Briefing",
