@@ -89,6 +89,11 @@ report = {'proof_kind': 'repository-input component; not production or historica
 missing = deepcopy(intel)
 for td in missing['themes']:
     td['observation']['aggregate_eligible'] = False
+partial = deepcopy(intel)
+partial_tid = next(row['id'] for row in after['display_lanes']['buy_now'] if row.get('kind') == 'THEME')
+for td in partial['themes']:
+    if td['id'] == partial_tid:
+        td['observation']['aggregate_eligible'] = False
 conflict = deepcopy(intel)
 conflict['act_now']['conflicted'] = deepcopy(conflict['act_now'].get('add_on_pullback') or [])
 demotion = deepcopy(intel)
@@ -98,6 +103,7 @@ for td, (verb, zh) in zip(positive, [('hold', '持有'), ('trim', '减持'), ('a
 cycles = [{'id': 'b-cn_semis', 'kind': 'basket', 'name': 'Semiconductors',
            'phase': 'Trough', 'osc_slope': 1.2, 'pos': 0.3, 'rs_63d': 0.05}]
 scenarios = [('current', intel, clock, []), ('missing-members', missing, clock, []),
+             ('partial-members', partial, clock, []),
              ('source-conflict', conflict, clock, []), ('final-demotions', demotion, clock, []),
              ('settling', intel, datetime.fromisoformat('2026-09-22T08:00:00+00:00'), []),
              ('duplicate-evidence', intel, clock, cycles)]
@@ -139,13 +145,21 @@ with sync_playwright() as pw:
                             buyRows: document.querySelectorAll('#anv2-buy .anv2-row').length,
                             continuationInWait: document.querySelectorAll('#anv2-pull .anv2-row[data-entry-route="continuation"]').length
                         })''')
+                        note = view.get('theme_data_note')
+                        note_el = page.locator('[data-theme-data-status]')
+                        assert note_el.count() == (1 if note else 0)
+                        note_text = note_el.inner_text() if note else None
+                        assert note_text == (note['zh' if lang == 'zh' else 'en'] if note else None)
+                        result['themeDataNote'] = note_text
                         name = f'candidate-{theme}-{lang}-{width}.png' if scenario == 'current' else f'candidate-{scenario}-{theme}-{lang}-{width}.png'
                         page.locator('#act-now').screenshot(path=str(OUT / name))
                         report['captures'].append({'scenario': scenario, 'file': name, 'theme': theme, 'language': lang,
                                                    'width': width, 'page_errors': errors, **result})
-                        if scenario in ('current', 'missing-members', 'settling'):
+                        if scenario in ('current', 'missing-members', 'partial-members', 'settling'):
                             lane = '#anv2-buy' if scenario == 'current' else '#anv2-pull'
-                            page.locator(lane + ' .anv2-row a').first.focus()
+                            selector = (lane + f' .anv2-row a[href="basket_china/{partial_tid}.html"]'
+                                        if scenario == 'partial-members' else lane + ' .anv2-row a')
+                            page.locator(selector).first.focus()
                             pop = page.locator('.row-pop[role=tooltip]')
                             pop.wait_for(state='visible')
                             text = pop.inner_text()

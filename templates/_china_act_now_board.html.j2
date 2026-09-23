@@ -59,7 +59,7 @@
       </div>
     </div>
     {% if _anv2.get('theme_data_note') %}
-    <div class="anv2-notes" data-theme-data-status>{{ t(_anv2.theme_data_note.en, _anv2.theme_data_note.zh) }}</div>
+    <div class="anv2-notes" data-theme-data-status><span class="muted" style="font-size:11px">{{ t(_anv2.theme_data_note.en, _anv2.theme_data_note.zh) }}</span></div>
     {% endif %}
     {% if _anv2.notes %}
     <div class="anv2-notes">{% for n in _anv2.notes %}<span class="muted" style="font-size:11px">⚠ {{ n }}</span>{% endfor %}</div>

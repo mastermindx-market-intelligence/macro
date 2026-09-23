@@ -601,14 +601,14 @@ def assemble_act_now(
     data_note = None
     if unavailable:
         if len(unavailable) < len(decisions):
-            en = "Some theme inputs are unavailable; use only cards with current data."
-            zh = "部分主题输入暂缺；仅参考数据有效的卡片。"
+            en = "Some theme inputs are unavailable; affected theme recommendations are not confirmed."
+            zh = "部分主题输入暂缺；相关主题的当前建议尚未确认。"
         elif all(d["source_status"] == "UNSETTLED" for d in unavailable):
-            en = "Theme session data is settling; lane labels are not current recommendations."
-            zh = "主题交易日数据待确认；分栏标签不代表当前建议。"
+            en = "Theme session data is settling; current theme recommendations are not confirmed."
+            zh = "主题交易日数据待确认；当前主题建议尚未确认。"
         else:
-            en = "Theme inputs are unavailable; lane labels are not current recommendations."
-            zh = "主题输入暂缺；分栏标签不代表当前建议。"
+            en = "Theme inputs are unavailable; current theme recommendations are not confirmed."
+            zh = "主题输入暂缺；当前主题建议尚未确认。"
         data_note = {"en": en, "zh": zh}
     return {
         "lanes": lanes,

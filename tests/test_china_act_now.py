@@ -1058,6 +1058,7 @@ def test_conflicting_action_sources_are_visible_and_not_promoted():
     row = result["display_lanes"]["reduce_avoid"][0]
     assert row["action_disagreement"] is True
     assert len(row["source_reads"]) == 2
+    assert "Conflicting actions" in render(result)
 
 
 def test_no_turn_only_buy_promotion():
@@ -1417,6 +1418,8 @@ def test_all_unavailable_theme_cards_have_one_visible_board_disclosure(clock):
     note = board['theme_data_note']
     assert note and note['en'] and note['zh']
     assert render(board).count(note['en']) == 1
+    assert 'theme recommendations' in note['en']
+    assert 'lane labels' not in note['en'] and 'cards' not in note['en']
 
 
 @pytest.mark.parametrize('degraded', [False, True])
@@ -1448,3 +1451,4 @@ def test_current_defensive_dual_read_is_preserved():
                'phase': 'Trough', 'osc_slope': 1.2, 'pos': .3, 'rs_63d': .05}]
     row, = _continuation_board(ti, cycles=cycles)['display_lanes']['reduce_avoid']
     assert row['dual_read'] is True and row['reco'] == 'avoid'
+    assert 'may be bottoming' in render(_continuation_board(ti, cycles=cycles)).lower()

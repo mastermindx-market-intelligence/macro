@@ -10,10 +10,10 @@
   "remaining_required_guard": null,
   "remaining_guard_write": "COMPLETE",
   "source_sha256": {
-    "engine/china_act_now.py": "59e5bcb0d52186adfa17eb0713628b0606ec8a33c75c650fe6ad3e2dbe99c7bd",
-    "templates/_china_act_now_board.html.j2": "d53f0e5e708facea904e2802cf1b4935120214f428e0758a1469718292fcce64",
-    "tests/test_china_act_now.py": "3072aed469ffb4ec5f8f764aae03e9acc624a7717c556ad9de41f51022707df6",
-    "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "9af642dc18042e71e366968132ec3cc9e5fe400405d5acba39dac8a108d57987"
+    "engine/china_act_now.py": "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7",
+    "templates/_china_act_now_board.html.j2": "5b675277a749806129a92968acd0de77dc51d39fcdfeef8a3cebcde5eb16ebcc",
+    "tests/test_china_act_now.py": "e7d26abbea0981fdff457721dc8d0dbe129db69a44e597adfaa5b34721e22086",
+    "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "acfc9a3f20deb48c4cb2a9c5340be102d27109dc9dd73d7d1224244c94ae6f8e"
   },
   "tests": {
     "current_passed": 331,
@@ -29,8 +29,8 @@
       "tests/test_cn_board_unified_grid.py",
       "tests/test_stock_board_v2.py"
     ],
-    "final_log": "derived-advice-qualified-tests.txt",
-    "log_sha256": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+    "final_log": "final-note-tests.txt",
+    "log_sha256": "44480d6d3bbdecaeba367462dbeae9be82caef97d1544cca68c5f4916c04e3c0",
     "qualified_red": {
       "failed": 7,
       "passed": 1,
@@ -56,14 +56,15 @@
   },
   "browser": {
     "directory": "mixed-browser",
-    "board_captures": 48,
-    "hover_captures": 24,
+    "board_captures": 56,
+    "hover_captures": 32,
     "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
     "sector_count": 16,
     "theme_count": 22,
     "cycle_rows": 53,
-    "proof_sha256": "5ec0b2d3dae96fb26ffb2b7fb35883711cfa2b4e88968b404b35c2300a638c5f",
-    "scope": "immutable mixed-input component plus labelled negative scenarios; not full-page/live/historical availability proof"
+    "proof_sha256": "d2d85d1415536850cc22ee08c9379f60096ff1849c1526fe5a3be33bb5f7f7bb",
+    "scope": "immutable mixed-input component plus labelled negative scenarios; not full-page/live/historical availability proof",
+    "note_assertions": "presence/absence/exact bilingual text in every capture; partial variant included"
   },
   "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
   "input_as_of": "2026-09-22",
@@ -111,12 +112,12 @@
     "authenticated full-path production proof"
   ],
   "review": {
-    "source_sha": "5ccbf0ca715bf4511054467680684bba2685e661",
+    "source_sha": "cf9bf71040f9e49cef8bef639b998d7b81abb09f",
+    "receipt": "cf9-review-receipt.json",
     "status": "PARTIAL",
-    "receipt": "5cc-review-receipt.json",
-    "source_findings": "derived dual-read advice / conflict flags / board disclosure repaired after this review",
+    "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
     "new_semantic_review": "REQUIRED",
-    "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED"
+    "parent_adjudication": "Core derived-advice fix closed. Accept theme-only copy, muted-note hierarchy, partial-note browser coverage, positive render controls. Reject a new material card as necessary for reused prose; reject per-theme settling as a requirement of the single-clock source. No release or production approval."
   },
   "recovery": {
     "host_read_ready": true,
@@ -305,7 +306,7 @@
       "harness_C": "incumbent names and translator used; source numeric fallback disclosed"
     }
   },
-  "semantic_parent": "5ccbf0ca715bf4511054467680684bba2685e661",
+  "semantic_parent": "cf9bf71040f9e49cef8bef639b998d7b81abb09f",
   "development_log_digests": {
     "derived-advice-red.txt": {
       "raw": "4da2c2ca39bfa03f75aeb4ef45a897771cd4d78b0fd1ed89b0844f6027d565f9",
