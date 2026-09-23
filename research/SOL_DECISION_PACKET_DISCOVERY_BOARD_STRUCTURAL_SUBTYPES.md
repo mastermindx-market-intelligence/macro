@@ -130,7 +130,7 @@ product-job grouping. This packet does not pre-empt that owner.
 For PR #7727:
 
 - remove unsupported `4H / 3D / 2W` semantic labels from the proposal;
-- restore explicit third-leg parity on mobile and ZH desktop;
+- restore variable-leg-depth parity: the reference must visibly tolerate the builder's three-leg cases on mobile and ZH desktop without minting a special third-leg semantic;
 - add representative paid/unlocked evidence without protected ticker values;
 - re-freeze all proposal captures after the bounded Paper repair;
 - run the normal independent RIG critiques against the ranked-screener contract.
