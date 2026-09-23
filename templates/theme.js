@@ -5818,6 +5818,9 @@
       return;
     }
     if (dedicated) {                            // desktop pin-toggle on purpose-built triggers only
+      // A dedicated explanation control owns its activation, not its clickable
+      // parent card. Match touch behavior without swallowing ordinary chip clicks.
+      e.preventDefault(); e.stopPropagation();
       if (cur === t && isOpen()) { if (!gestureOpenedTip(e)) hide(); } else show(t);
       return;
     }

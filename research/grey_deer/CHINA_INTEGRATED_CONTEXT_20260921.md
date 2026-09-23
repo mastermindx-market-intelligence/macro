@@ -277,3 +277,19 @@ A compound archival/generated-cleanup request was refused; no cleanup receipt
 exists and auxiliary data/site outputs remain uncommitted in this owned tree.
 They must not be included by blanket staging. Page/browser qualification continues
 independently; no cleanup success, deployment or risk calibration is implied.
+
+### Real first-click follow-through, not only first-frame success
+The new backend executes the unchanged first-click/touch acceptance test. Sixteen
+rest/focus captures succeed, but the open Lens disappears before the350ms check.
+The event probe first showed hover-timer dismissal with focus still on the trigger.
+A provisional focus-priority change was NOT accepted: following the full gesture
+revealed the upstream cause, the same desktop click also opened the parent
+Playbook dialog. That dialog's motion retargeted hover and dismissed the Lens.
+The minimal root repair is to consume dedicated desktop Lens activation, just as
+the existing touch branch already does; bare chips and unrelated nested controls
+retain their click behavior. The provisional hover-timer change is removed.
+The original6860 first-gesture guard, hover behavior and explicit dismissal remain.
+Two paired-source counterexamples plus two pass-through controls cover that
+boundary; actual no-parent-dialog and persistence assertions remain mandatory.
+No source or controller on another PR is edited; this is an integration repair
+of the already-composed shared explanation component in the China candidate.

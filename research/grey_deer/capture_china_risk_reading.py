@@ -164,6 +164,16 @@ try:
                                     lens.wait_for(state='visible')
                                     page.keyboard.press('Escape')
                                     lens.wait_for(state='hidden')
+                                    if width == 1440:
+                                        # Real keyboard focus departure; hover-only behavior
+                                        # must remain transient after consuming the click.
+                                        page.keyboard.press('Tab')
+                                        page.keyboard.press('Escape')
+                                        page.mouse.move(5, 5)
+                                        trigger.hover()
+                                        lens.wait_for(state='visible')
+                                        page.mouse.move(5, 5)
+                                        lens.wait_for(state='hidden')
                                 from tests.test_china_archetype_d_s1 import _render_china_risk_case, _risk_card
                                 # Explicitly synthetic missing-input component, rendered
                                 # by the real full-page template then inspected in Chrome.
@@ -181,6 +191,8 @@ try:
                                 'scoped_popover':True,'scoped_shared_dialog':True,
                                 'both_entrypoints_open':True,'escape_closes':True,'page_errors':errors,
                                 'integrated_participation_and_slowdown':INTEGRATED,
+                                'dedicated_lens_does_not_open_parent':CURRENT_SOURCE,
+                                'desktop_hover_closes_after_pointer_departure':CURRENT_SOURCE and width==1440,
                                 'synthetic_missing_guidance_and_slowdown':INTEGRATED,
                                 'current_source_missing_cohort_proof':CURRENT_SOURCE,
                                 'canonical_lens_visible_in_viewport':CURRENT_SOURCE,

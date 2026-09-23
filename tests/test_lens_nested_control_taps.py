@@ -351,3 +351,23 @@ def test_hub_reuses_the_single_existing_terminal_click_controller(name, src):
     assert "MDXTerminalOverlay" not in region
     assert "openTerminal(" not in region
     assert src.count("openTerminal(target.ticker, a, target.url)") == 1
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_dedicated_desktop_lens_activation_does_not_open_its_parent_card(name, src):
+    src = _require(name, src)
+    click = _handler_body(_lens_region(src), "click")
+    branch = click[click.index("if (dedicated)"):]
+    assert "e.preventDefault()" in branch
+    assert "e.stopPropagation()" in branch
+    assert branch.index("e.stopPropagation()") < branch.index("gestureOpenedTip(e)")
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_lens_consumes_dedicated_activation_but_preserves_other_controls(name, src):
+    src = _require(name, src)
+    click = _handler_body(_lens_region(src), "click")
+    assert click.index("nestedCtrl(e.target, t)") < click.index("if (dedicated)")
+    branch = click[click.index("if (dedicated)"):]
+    assert "hide()" in branch and "show(t)" in branch
+    assert "bare data-tip chips: desktop clicks pass through" in branch
