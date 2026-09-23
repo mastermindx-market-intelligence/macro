@@ -5381,6 +5381,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 jsonschema
       - name: options catalyst links
         run: python -m pytest tests/test_build_options_catalyst_links.py tests/test_options_catalyst_link.py tests/test_options_catalyst_links_nightly_shape.py -q
+  options-payoff-lab-consumer:
+    if: ${{ false }}
+    gate: code
+    # A-F03-W2-5b · index-ETF payoff lab CONSUMER (templates/options.html.j2 fold,
+    # scripts/build_options_command.py adapter, scripts/build_options_payoff_lab.py
+    # contract pin, .github/workflows/engine-render.yml text pins).  The test file
+    # is hermetic: every fixture payload is built in-memory from the producer's
+    # documented contract (engine/options_payoff_lab.py SCHEMA
+    # "mastermind.options_payoff_lab/v1"); no network, no store read.  Never a
+    # gate: data job (options-estate-guards, workflow-yaml, unrun-* never run in
+    # PR packs); never a waiver row.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: options-payoff-lab consumer tests
+        run: python -m pytest tests/test_options_payoff_lab_consumer.py -q
   uk-policy-desk:
     if: ${{ false }}
     gate: code

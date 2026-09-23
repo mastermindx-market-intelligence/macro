@@ -8,9 +8,9 @@
     "model": null,
     "probabilities": false
   },
-  "asof": "2026-09-22",
+  "asof": "2026-09-23",
   "data_last_day": "2026-09-21",
-  "tape_lag_sessions": 1,
+  "tape_lag_sessions": 2,
   "universe_n": 2618,
   "null_state": false,
   "macro_backdrop": {
@@ -708,7 +708,7 @@
             "ticker": "TH",
             "name": "Target Hospitality Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/TH.html",
             "spark": [
               20.14,
               20.52,
@@ -1716,7 +1716,7 @@
             "ticker": "KRT",
             "name": "Karat Packaging Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/KRT.html",
             "spark": [
               29.7,
               29.8,
@@ -1884,7 +1884,7 @@
             "ticker": "OSPN",
             "name": "OneSpan Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/OSPN.html",
             "spark": [
               13.32,
               13.56,
@@ -2388,7 +2388,7 @@
             "ticker": "MLAB",
             "name": "Mesa Laboratories Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/MLAB.html",
             "spark": [
               93.23,
               91.97,
@@ -2472,7 +2472,7 @@
             "ticker": "MSBI",
             "name": "Midland States Bancorp Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/MSBI.html",
             "spark": [
               30.2,
               30.19,
@@ -11791,7 +11791,7 @@
             "ticker": "PLSE",
             "name": "Pulse Biosciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/PLSE.html",
             "spark": [
               25.71,
               25.95,
@@ -12114,7 +12114,7 @@
             "ticker": "ACHV",
             "name": "Achieve Life Sciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACHV.html",
             "spark": [
               5.1,
               5.01,
@@ -12219,7 +12219,7 @@
             "ticker": "HBB",
             "name": "Hamilton Beach Brands Holding Co",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/HBB.html",
             "spark": [
               20.66,
               20.18,
@@ -12861,7 +12861,7 @@
             "ticker": "TNET",
             "name": "TriNet Group Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/TNET.html",
             "spark": [
               43.1,
               45.82,
@@ -13182,7 +13182,7 @@
             "ticker": "AMCX",
             "name": "AMC Global Media Inc",
             "name_zh": "AMC网络公司",
-            "href": null,
+            "href": "/stocks/AMCX.html",
             "spark": [
               9.82,
               9.75,
@@ -13289,7 +13289,7 @@
             "ticker": "DCTH",
             "name": "Delcath Systems Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/DCTH.html",
             "spark": [
               11.51,
               12.29,
@@ -13933,7 +13933,7 @@
             "ticker": "CLW",
             "name": "Clearwater Paper Corp",
             "name_zh": "克利尔沃特纸业",
-            "href": null,
+            "href": "/stocks/CLW.html",
             "spark": [
               15.66,
               15.62,
@@ -14577,7 +14577,7 @@
             "ticker": "SENS",
             "name": "Senseonics Holdings Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/SENS.html",
             "spark": [
               6.04,
               5.7,
@@ -15090,7 +15090,7 @@
             "ticker": "KFRC",
             "name": "Kforce Inc",
             "name_zh": "K力",
-            "href": null,
+            "href": "/stocks/KFRC.html",
             "spark": [
               45.57,
               46.93,
@@ -17122,7 +17122,7 @@
             "ticker": "WNC",
             "name": "Wabash National Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/WNC.html",
             "spark": [
               12.6,
               13.1,
@@ -17823,7 +17823,7 @@
             "ticker": "QUAD",
             "name": "Quad/Graphics Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/QUAD.html",
             "spark": [
               8.02,
               7.92,
@@ -18126,7 +18126,7 @@
             "ticker": "FENC",
             "name": "Fennec Pharmaceuticals Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/FENC.html",
             "spark": [
               9.53,
               10.3,
@@ -18738,7 +18738,7 @@
             "ticker": "RMNI",
             "name": "Rimini Street Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/RMNI.html",
             "spark": [
               4.07,
               4.17,
@@ -18839,7 +18839,7 @@
             "ticker": "NEXN",
             "name": "Nexxen International Ltd",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/NEXN.html",
             "spark": [
               8.64,
               8.56,
@@ -20661,7 +20661,7 @@
             "ticker": "CTRN",
             "name": "Citi Trends Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/CTRN.html",
             "spark": [
               63.59,
               61.89,
@@ -22521,7 +22521,7 @@
             "ticker": "HSHP",
             "name": "Himalaya Shipping Ltd",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/HSHP.html",
             "spark": [
               14.33,
               14.74,
@@ -22691,7 +22691,7 @@
             "ticker": "KRT",
             "name": "Karat Packaging Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/KRT.html",
             "spark": [
               29.7,
               29.8,
@@ -24232,7 +24232,7 @@
             "ticker": "ACU",
             "name": "Acme United Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACU.html",
             "spark": [
               45.07,
               46.12,
@@ -24810,7 +24810,7 @@
             "ticker": "BWIN",
             "name": "Baldwin Insurance Group Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/BWIN.html",
             "spark": [
               24.39,
               24.87,
@@ -27102,7 +27102,7 @@
             "ticker": "MLAB",
             "name": "Mesa Laboratories Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/MLAB.html",
             "spark": [
               93.23,
               91.97,
@@ -29156,7 +29156,7 @@
             "ticker": "ACHV",
             "name": "Achieve Life Sciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACHV.html",
             "spark": [
               5.1,
               5.01,
@@ -30022,7 +30022,7 @@
             "ticker": "DCTH",
             "name": "Delcath Systems Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/DCTH.html",
             "spark": [
               11.51,
               12.29,
@@ -30566,7 +30566,7 @@
             "ticker": "HBB",
             "name": "Hamilton Beach Brands Holding Co",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/HBB.html",
             "spark": [
               20.66,
               20.18,
@@ -31434,7 +31434,7 @@
             "ticker": "PLSE",
             "name": "Pulse Biosciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/PLSE.html",
             "spark": [
               25.71,
               25.95,
@@ -31974,7 +31974,7 @@
             "ticker": "SENS",
             "name": "Senseonics Holdings Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/SENS.html",
             "spark": [
               6.04,
               5.7,
@@ -32188,7 +32188,7 @@
             "ticker": "TNET",
             "name": "TriNet Group Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/TNET.html",
             "spark": [
               43.1,
               45.82,
@@ -32296,7 +32296,7 @@
             "ticker": "ZBIO",
             "name": "Zenas Biopharma Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ZBIO.html",
             "spark": [
               20.8,
               20.205,
@@ -34150,7 +34150,7 @@
             "ticker": "CTRN",
             "name": "Citi Trends Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/CTRN.html",
             "spark": [
               63.59,
               61.89,
@@ -35488,7 +35488,7 @@
             "ticker": "FENC",
             "name": "Fennec Pharmaceuticals Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/FENC.html",
             "spark": [
               9.53,
               10.3,
@@ -36202,7 +36202,7 @@
             "ticker": "KFRC",
             "name": "Kforce Inc",
             "name_zh": "K力",
-            "href": null,
+            "href": "/stocks/KFRC.html",
             "spark": [
               45.57,
               46.93,
@@ -38152,7 +38152,7 @@
             "ticker": "QUAD",
             "name": "Quad/Graphics Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/QUAD.html",
             "spark": [
               8.02,
               7.92,
@@ -38666,7 +38666,7 @@
             "ticker": "RMNI",
             "name": "Rimini Street Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/RMNI.html",
             "spark": [
               4.07,
               4.17,
@@ -40102,7 +40102,7 @@
             "ticker": "WNC",
             "name": "Wabash National Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/WNC.html",
             "spark": [
               12.6,
               13.1,
@@ -40399,7 +40399,7 @@
             "ticker": "ACNB",
             "name": "ACNB Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACNB.html",
             "spark": [
               58.29,
               58.37,
@@ -42278,7 +42278,7 @@
             "ticker": "FBIZ",
             "name": "First Business Financial Services Inc",
             "name_zh": "第一商业金融服务",
-            "href": null,
+            "href": "/stocks/FBIZ.html",
             "spark": [
               60.4,
               62.03,
@@ -42618,7 +42618,7 @@
             "ticker": "GIC",
             "name": "Global Industrial Co",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/GIC.html",
             "spark": [
               32.8,
               33.19,
@@ -42882,7 +42882,7 @@
             "ticker": "HSHP",
             "name": "Himalaya Shipping Ltd",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/HSHP.html",
             "spark": [
               14.33,
               14.74,
@@ -42967,7 +42967,7 @@
             "ticker": "IDT",
             "name": "IDT Corp",
             "name_zh": "万威",
-            "href": null,
+            "href": "/stocks/IDT.html",
             "spark": [
               52.28,
               54.07,
@@ -43307,7 +43307,7 @@
             "ticker": "MLAB",
             "name": "Mesa Laboratories Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/MLAB.html",
             "spark": [
               93.23,
               91.97,
@@ -43996,7 +43996,7 @@
             "ticker": "OSBC",
             "name": "Old Second Bancorporation Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/OSBC.html",
             "spark": [
               22.08,
               22.57,
@@ -44081,7 +44081,7 @@
             "ticker": "OSPN",
             "name": "OneSpan Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/OSPN.html",
             "spark": [
               13.32,
               13.56,
@@ -45034,7 +45034,7 @@
             "ticker": "SFL",
             "name": "SFL Corp Ltd",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/SFL.html",
             "spark": [
               11.25,
               11.49,
@@ -45374,7 +45374,7 @@
             "ticker": "TH",
             "name": "Target Hospitality Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/TH.html",
             "spark": [
               20.14,
               20.52,
@@ -46013,7 +46013,7 @@
             "ticker": "ACU",
             "name": "Acme United Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACU.html",
             "spark": [
               45.07,
               46.12,
@@ -47115,7 +47115,7 @@
             "ticker": "BWIN",
             "name": "Baldwin Insurance Group Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/BWIN.html",
             "spark": [
               24.39,
               24.87,
@@ -50043,7 +50043,7 @@
             "ticker": "KRT",
             "name": "Karat Packaging Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/KRT.html",
             "spark": [
               29.7,
               29.8,
@@ -50901,7 +50901,7 @@
             "ticker": "MSBI",
             "name": "Midland States Bancorp Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/MSBI.html",
             "spark": [
               30.2,
               30.19,
@@ -51765,7 +51765,7 @@
             "ticker": "PFIS",
             "name": "Peoples Financial Services Corp",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/PFIS.html",
             "spark": [
               64.24,
               65.0,
@@ -54721,7 +54721,7 @@
             "ticker": "ACHV",
             "name": "Achieve Life Sciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/ACHV.html",
             "spark": [
               5.1,
               5.01,
@@ -56017,7 +56017,7 @@
             "ticker": "DCTH",
             "name": "Delcath Systems Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/DCTH.html",
             "spark": [
               11.51,
               12.29,
@@ -56553,7 +56553,7 @@
             "ticker": "HBB",
             "name": "Hamilton Beach Brands Holding Co",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/HBB.html",
             "spark": [
               20.66,
               20.18,
@@ -58285,7 +58285,7 @@
             "ticker": "PLSE",
             "name": "Pulse Biosciences Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/PLSE.html",
             "spark": [
               25.71,
               25.95,
@@ -58503,7 +58503,7 @@
             "ticker": "RBCAA",
             "name": "Republic Bancorp Inc (KY)",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/RBCAA.html",
             "spark": [
               87.14,
               87.87,
@@ -58721,7 +58721,7 @@
             "ticker": "SENS",
             "name": "Senseonics Holdings Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/SENS.html",
             "spark": [
               6.04,
               5.7,
@@ -61633,7 +61633,7 @@
             "ticker": "CTRN",
             "name": "Citi Trends Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/CTRN.html",
             "spark": [
               63.59,
               61.89,
@@ -62661,7 +62661,7 @@
             "ticker": "FENC",
             "name": "Fennec Pharmaceuticals Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/FENC.html",
             "spark": [
               9.53,
               10.3,
@@ -63887,7 +63887,7 @@
             "ticker": "KFRC",
             "name": "Kforce Inc",
             "name_zh": "K力",
-            "href": null,
+            "href": "/stocks/KFRC.html",
             "spark": [
               45.57,
               46.93,
@@ -65835,7 +65835,7 @@
             "ticker": "QUAD",
             "name": "Quad/Graphics Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/QUAD.html",
             "spark": [
               8.02,
               7.92,
@@ -66453,7 +66453,7 @@
             "ticker": "RLJ",
             "name": "RLJ Lodging Trust",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/RLJ.html",
             "spark": [
               11.36,
               11.31,
@@ -66557,7 +66557,7 @@
             "ticker": "RMNI",
             "name": "Rimini Street Inc",
             "name_zh": null,
-            "href": null,
+            "href": "/stocks/RMNI.html",
             "spark": [
               4.07,
               4.17,
@@ -68501,7 +68501,7 @@
     }
   ],
   "_vintage": {
-    "generated_utc": "2026-09-22T18:34:42Z",
+    "generated_utc": "2026-09-23T08:19:19Z",
     "source": "scripts/build_top_maturation.py",
     "store_vintage": {
       "store": "massive_stock_day",
@@ -68553,7 +68553,7 @@
     "n_segments": 8162,
     "n_sessions": 1309,
     "trailing_sessions": 760,
-    "scan_seconds": 65.67,
+    "scan_seconds": 84.03,
     "readable": true,
     "n_extended": 220,
     "per_state": {
@@ -68697,7 +68697,7 @@
     "library_rows": 33598,
     "thresholds_present": true,
     "ext_variant_stamp": null,
-    "tier_seconds": 23.55,
+    "tier_seconds": 16.41,
     "n_themes": 13,
     "n_us_stock_metadata": 2830,
     "n_screened_post_intersection": 2618,
@@ -68847,7 +68847,7 @@
         "library_rows": 33598,
         "thresholds_present": true,
         "ext_variant_stamp": null,
-        "tier_seconds": 23.55,
+        "tier_seconds": 16.41,
         "n_themes": 13
       },
       "r63": {
@@ -68985,7 +68985,7 @@
         "library_rows": 29801,
         "thresholds_present": true,
         "ext_variant_stamp": "r63",
-        "tier_seconds": 19.95
+        "tier_seconds": 16.98
       },
       "atrz": {
         "readable": true,
@@ -69722,9 +69722,9 @@
         "library_rows": 123988,
         "thresholds_present": true,
         "ext_variant_stamp": "atrz",
-        "tier_seconds": 38.41
+        "tier_seconds": 28.22
       }
     },
-    "total_seconds": 170.73
+    "total_seconds": 168.58
   }
 }
