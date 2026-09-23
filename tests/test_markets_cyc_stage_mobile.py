@@ -118,7 +118,12 @@ def test_markets_css_is_the_last_cycle_family_stylesheet_on_the_page():
     """markets.css must win the cascade over cycle.css's fixed-sheet rule."""
     for path in (TEMPLATE, PAGE):
         text = path.read_text(encoding="utf-8")
-        assert text.index('href="cycle.css') < text.index('href="markets.css?v=5"'), path
+        stamped = re.search(r'href="markets\.css\?v=(\d+)"', text)
+        assert stamped, path
+        # v6: the first live request for ?v=5 reached the edge before the VPS pull and
+        # pinned the OLD body under the new key for a year (TencentEdgeOne, immutable).
+        assert int(stamped.group(1)) >= 6, path
+        assert text.index('href="cycle.css') < stamped.start(), path
 
 
 @pytest.mark.needs_full_checkout("site")
