@@ -27,7 +27,7 @@ log = logging.getLogger("build_crossmarket")
 
 
 def main() -> int:
-    site = config.ROOT / "site"
+    site = config.site_dir()
     try:
         from engine.narrative_crossmarket import compute_crossmarket
         cm = compute_crossmarket(site)

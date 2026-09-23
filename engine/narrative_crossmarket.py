@@ -123,7 +123,7 @@ def _quad(region: str) -> str | None:
 
 def compute_crossmarket(site=None) -> dict:
     """Build the per-(region, theme) 'same narrative elsewhere' map. Display-only, gated."""
-    site = site if site is not None else (config.ROOT / "site")
+    site = Path(site) if site is not None else config.site_dir()
     themes = {r: _load_themes(site, r) for r in REGION_META}
     quads = {r: _quad(r) for r in REGION_META}
 
@@ -338,7 +338,7 @@ def compute_china_us_context(site=None, *, observed_at: datetime | None = None,
     Buy Now admission, stock eligibility, orders, sizing, or the thesis ledger.
     Clock injection is for deterministic caller/tests, not an archive substitute.
     """
-    site = Path(site) if site is not None else config.ROOT / "site"
+    site = Path(site) if site is not None else config.site_dir()
     observed = _context_utc(observed_at if observed_at is not None else datetime.now(timezone.utc))
     cutoff = _context_utc(decision_at if decision_at is not None else observed)
     us, us_receipt = _context_market(site, "us", observed, cutoff)
@@ -504,6 +504,6 @@ def context_for_briefing(payload, *, site=None, observed_at: datetime | None = N
             "observed_at_utc": producer_time.isoformat(), "consumed_at_utc": now.isoformat(),
             "source_content_verified": True,
             "validated_lead_lag": False, "historical_availability_proven": False,
-            "summary": "US–CHINA THEME CONTEXT (observations, not a forecast): " + " ".join(lines) +
+            "summary": ("US–CHINA THEME CONTEXT (observations, not a forecast): " + " ".join(lines) +
                 " Absence of a fresh-entry texture does not establish thesis deterioration or a pullback requirement."
-                " Theme context does not grant individual-stock entry, ranking, sizing or trade permission."}
+                " Theme context does not grant individual-stock entry, ranking, sizing or trade permission.") if out else None}

@@ -126,7 +126,7 @@ def _load_us_theme_context(today: date, *, observed_at: datetime | None = None) 
             result["observed_at_utc"] = observed.astimezone(timezone.utc).isoformat()
             return result
         return narrative_crossmarket.compute_china_us_context(
-            _root() / "site", observed_at=observed,
+            config.site_dir(), observed_at=observed,
         )
     except Exception as exc:  # noqa: BLE001 — optional context cannot erase the China command
         log.warning("china_intel_hub: US theme context unavailable (%s)", type(exc).__name__)

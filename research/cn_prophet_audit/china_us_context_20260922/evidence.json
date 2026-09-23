@@ -3,15 +3,16 @@
   "mission_complete": false,
   "state": "BUILT_NOT_PROVEN",
   "source_base": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
-  "procedure_pin": "c18ea2ca779f042702a63a78bf1f10f5a1e0c0f6",
+  "procedure_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
   "source_sha256": {
-    "engine/narrative_crossmarket.py": "15a96675d6da49b76c2c974e1b175461862e57a2bcf1a56b413fcd1a76716b1e",
-    "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
+    "engine/narrative_crossmarket.py": "79b4791012811ec01ed85764c3247db91ddf789e480db2defec4e66e8f008316",
+    "engine/china_intel_hub.py": "f1e223dc2f6d464e49d5bf8084a1137efce90ecb3e549aa5f5f8d501cb8a95ec",
     "engine/china_intel_bus.py": "04a671443139fa6f69294d0912e3eb330bd3389bf6cbf10f07e97671e9798676",
     "engine/master_brain.py": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70",
-    "tests/test_narrative_crossmarket.py": "4618f6190df83e397fe5bcdd52984f3da271bc57a40370657fc0be72bd3f8519",
-    "tests/test_china_intel_hub_command.py": "0efb0631554a9097fe915ad000f82517ccd4911c066857741eb02159dcfda69e",
-    "tests/test_china_intel_hub.py": "9447e43f35a149f0abedc6873644b4d5ea1f0291936d3565566db298a914fd74"
+    "tests/test_narrative_crossmarket.py": "97846dd0ebcea867913bda5e2120ca135cd95963913a04e77f8536921e1f2982",
+    "tests/test_china_intel_hub_command.py": "8fd0d47e1cb4030ac850f593bac664d40647ffd20813f7a624bd7d91b4e4319f",
+    "tests/test_china_intel_hub.py": "9447e43f35a149f0abedc6873644b4d5ea1f0291936d3565566db298a914fd74",
+    "scripts/build_crossmarket.py": "4f4e7f7dcb3e238089e3df0c8a932f64bf0cbc08e3d13c546013e77ee8afba78"
   },
   "runtime": {
     "python": "3.14.7",
@@ -24,10 +25,10 @@
     "cause": "new compute_china_us_context API absent before implementation"
   },
   "final_regression": {
-    "passed": 237,
+    "passed": 242,
     "failed": 0,
-    "log": "content-final-tests.txt",
-    "log_sha256": "1f710a5beb8bf1be3ed18043a0a973e706180d54b4eaeec30bbb2896b08aa2b9",
+    "log": "recovery-current-tests.txt",
+    "log_sha256": "0b43aa02b6ff87a8b2c97d47b703733efaa96ec4671cc7e0b3a32a12bec723b6",
     "suites": [
       "tests/test_narrative_crossmarket.py",
       "tests/test_china_intel_hub_command.py",
@@ -51,15 +52,15 @@
   "proof": {
     "two_existing_builders_serialize_context": true,
     "nonempty_command_order_scores_and_snapshot_inputs_unchanged_by_us_evidence": true,
-    "hosted_ci": "NOT_YET_OBSERVED",
-    "independent_review": "NOT_YET_OBSERVED",
+    "hosted_ci": "CURRENT_CANDIDATE_REQUALIFICATION_OWED",
+    "independent_review": "PRIOR_REVIEW_PARTIAL_FINDING_REPAIRED_CURRENT_REVIEW_OWED",
     "deployed": "NOT_PROVEN",
     "live_exemplar": "HTTP_401_AUTHENTICATED_PROOF_OWED",
     "financial_performance": "NOT_PROVEN",
     "buy_now_policy_changed": false,
     "real_briefing_and_mastermind_consumer_test": true,
     "stale_cache_rechecked_at_consumption": true,
-    "ci_owner_registration": "PLATFORM_BLOCKED_NO_MANIFEST_EFFECT_ON_READBACK"
+    "ci_owner_registration": "REPAIRED_AND_HOSTED_GREEN_AT_77df9ed9"
   },
   "raw_development_log_sha256": {
     "helper-tests.txt": "beb32fa33f224e383a904824ceea4109bc73de07a65a923db0d210b4b752fd31",
@@ -142,5 +143,39 @@
     "waivers": 0,
     "current_test_subset_passed": 89,
     "hosted_requalification": "owed on new head"
+  },
+  "configured_site_repair": {
+    "prior_published_head": "77df9ed9160494ceec0d735dc61005b66aa7dc96",
+    "prior_regression": {
+      "passed": 237,
+      "failed": 0,
+      "log": "content-final-tests.txt",
+      "log_sha256": "1f710a5beb8bf1be3ed18043a0a973e706180d54b4eaeec30bbb2896b08aa2b9",
+      "suites": [
+        "tests/test_narrative_crossmarket.py",
+        "tests/test_china_intel_hub_command.py",
+        "tests/test_china_intel_interest.py",
+        "tests/test_china_intel_hub_visits.py",
+        "tests/test_china_intel_hub.py",
+        "tests/test_cn_calendar.py",
+        "tests/test_nyse_calendar.py",
+        "tests/test_master_brain.py",
+        "tests/test_master_brain_policy.py"
+      ]
+    },
+    "reviewed_finding": "producer and consumer used different source roots",
+    "source_fix": "consume config.site_dir in hub/default context/existing crossmarket publisher",
+    "empty_mapping_summary": null,
+    "preserves_rank_and_trade_authority": true,
+    "prior_review_receipt": "review-receipt.json",
+    "current_review": "REQUALIFICATION_OWED"
+  },
+  "recovery": {
+    "source_readback": "five saved changed code/test files fully inspected; original head 77df9ed9",
+    "local_full_focused_regression": 242,
+    "action_template_lane": "independent #7567 template edit refused before effect; not included here",
+    "direct_execution_reason": "CRITICAL_PATH_SHORTCUT: publish already-built and requalified bounded source correction",
+    "worker_active": false,
+    "effect_unknown": false
   }
 }

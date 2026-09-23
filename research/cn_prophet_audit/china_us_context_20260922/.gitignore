@@ -13,3 +13,10 @@ narrator-regression.txt
 live-inputs/
 content-red.txt
 content-qualified-tests.txt
+
+# Native telemetry stays local; supported review conclusions/closure are published.
+native-review*.json
+native-review*.stderr
+review-red.txt
+configured-root-red.txt
+review-tests.txt

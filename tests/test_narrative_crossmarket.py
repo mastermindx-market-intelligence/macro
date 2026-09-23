@@ -430,4 +430,28 @@ def test_briefing_content_cannot_silently_drop_mapped_evidence(tmp_path, monkeyp
 
 @pytest.fixture(autouse=True)
 def _isolated_crossmarket_source_root(tmp_path, monkeypatch):
+    config_payload = dict(xm.config.load())
     monkeypatch.setattr(xm.config, "ROOT", tmp_path)
+    config_payload["storage"] = {**config_payload["storage"], "site_dir": "site"}
+    monkeypatch.setattr(xm.config, "load", lambda: config_payload)
+
+
+def test_unmapped_context_has_no_empty_affirmative_summary(tmp_path):
+    site = _context_site(tmp_path, cn_rows=[])
+    payload = _context(site)
+    result = xm.context_for_briefing(payload, site=site, observed_at=_CONTEXT_NOW)
+    assert result['status'] == 'NO_MAPPED_CONTEXT'
+    assert result['summary'] is None
+
+
+def test_default_crossmarket_producer_uses_configured_site_owner(tmp_path, monkeypatch):
+    site = _context_site(tmp_path)
+    configured = tmp_path / 'configured-output'
+    site.rename(configured)
+    site = configured
+    monkeypatch.setattr(xm.config, 'ROOT', tmp_path)
+    monkeypatch.setattr(xm.config, 'load', lambda: {'storage': {
+        'site_dir': site.name, 'data_dir': 'data'}})
+    result = xm.compute_china_us_context(observed_at=_CONTEXT_NOW)
+    assert result['status'] == 'CURRENT'
+    assert 'cn_semis' in result['themes']

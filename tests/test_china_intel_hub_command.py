@@ -837,6 +837,7 @@ def _us_context_fixture(tmp_path, monkeypatch):
 
     observed = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
     monkeypatch.setattr(hub, "_root", lambda: tmp_path)
+    monkeypatch.setattr(hub.config, "site_dir", lambda: tmp_path / "site")
     monkeypatch.setattr(bus, "_site_dir", lambda: tmp_path / "site")
     monkeypatch.setattr(hub, "_read_json", lambda rel: {
         "triple": [_altdata_row("600519.SS")], "top": [], "bottom": [],
@@ -1002,3 +1003,51 @@ def test_bus_same_session_correction_withholds_only_foreign_context(tmp_path, mo
     row = refreshed["us_theme_context"]["themes"]["cn_semis"]
     assert row["observation_state"] == "US_STRENGTH_LOCAL_DEFENSIVE"
     assert refreshed["command"]["top10"] == before["command"]["top10"]
+
+
+@pytest.mark.parametrize('absolute', [False, True])
+def test_configured_site_directory_binds_producer_publisher_and_consumer(tmp_path, monkeypatch, absolute):
+    from datetime import datetime, timezone
+    from engine import narrative_crossmarket as xm, china_radar_ic, signal_governor
+    from scripts import build_china_intel_hub as builder
+    now = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
+    site = tmp_path / 'configured-output'
+    monkeypatch.setattr(hub.config, 'ROOT', tmp_path)
+    monkeypatch.setattr(hub.config, 'load', lambda: {'storage': {
+        'site_dir': str(site) if absolute else 'configured-output', 'data_dir': 'data'}})
+    for directory, session, bid in [('basketdata', '2026-09-18', 'ai_semiconductors'),
+                                    ('chinabasketdata', '2026-09-21', 'cn_semis')]:
+        path = site / directory / 'baskets.json'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({'theme_intel': {'as_of': session, 'themes': [
+            {'id': bid, 'name': bid, 'score': 70, 'label': 'emerging', 'reco': 'enter'}]}}))
+    context = hub._load_us_theme_context(now.astimezone().date(), observed_at=now)
+    assert context['status'] == 'CURRENT'
+    monkeypatch.setattr(hub, 'load_and_build', lambda: {'command': [], 'us_theme_context': context})
+    monkeypatch.setattr(hub, 'compute_track_record', lambda: {'n_snapshots': 0})
+    monkeypatch.setattr(china_radar_ic, 'compute_ic', lambda: {'n_events': 0, 'n_matured': 0})
+    monkeypatch.setattr(signal_governor, 'compute', lambda **kw: {'n_demoted': 0})
+    assert builder.build() is not None
+    consume = xm.context_for_briefing
+    monkeypatch.setattr(bus, 'context_for_briefing', lambda payload, **kw: consume(payload, observed_at=now, **kw))
+    assert bus._command_block()['us_theme_context']['status'] == 'CURRENT'
+    assert (site / 'china_intel/command.json').exists()
+    assert not (tmp_path / 'site/china_intel/command.json').exists()
+
+
+def test_unavailable_variants_never_fabricate_observed_source_receipts(tmp_path):
+    from datetime import datetime, timezone
+    from engine import narrative_crossmarket as xm
+    now = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
+    not_read = hub._unavailable_us_theme_context('DATED_BUILD_REQUIRES_ARCHIVED_CONTEXT')
+    attempted_read = xm.compute_china_us_context(tmp_path, observed_at=now)
+    assert not_read['sources'] == {}  # no read happened; never invent a receipt
+    assert set(attempted_read['sources']) == {'us', 'china'}
+    assert all(row['status'] == 'MISSING' for row in attempted_read['sources'].values())
+    for payload in (not_read, attempted_read):
+        assert payload['schema'] == xm.CHINA_US_CONTEXT_SCHEMA
+        consumed = xm.context_for_briefing(payload, site=tmp_path, observed_at=now)
+        assert consumed['status'] == 'UNAVAILABLE' and consumed['themes'] == {}
+        assert consumed.get('summary') is None
+        assert consumed['may_rank'] is consumed['may_gate'] is consumed['may_trade'] is False
+        json.dumps(consumed, allow_nan=False)
