@@ -99,6 +99,43 @@ No segment mapping dated after a decision cut may be used. `members_asof` select
 
 ## 6. RIGHTS PER BRANCH
 
+Five answers always mean acquisition / processing / storage / model use / user redistribution. “Recorded” means the cited in-repo record says it; otherwise it is UNKNOWN. A family-level label is not extended to an unrecorded dataset.
+
+| Branch | Acquisition | Processing | Storage | Model use | User redistribution | Proof |
+|---|---|---|---|---|---|---|
+| FRED/ALFRED initial-release store | RECORDED through the API endpoint | UNKNOWN beyond the local read contract | RECORDED as the named parquet | UNKNOWN | UNKNOWN | Endpoint, grain, value and publication clock at `config/dataset_registry.yml:206-244`; storage at `:210-213`; one blanket `licensing: public_domain` label at `:225`, which does not separately answer processing, model use, or redistribution. No per-series rights tag is present in the parquet or JSON. |
+| Census M3 | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | No Census row was found in `config/dataset_registry.yml`, `config/theme_sources.yml`, or `research/licenses/`. This explicitly answers cycle Q6-6 as UNKNOWN. |
+| Historical issuer/segment mapping | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | Explicit cycle Q6-7 answer; no entitlement record exists. |
+| Massive historical issuer universe | RECORDED for enterprise stock-market reference data | RECORDED for non-display calculation and Derived Materials | RECORDED archival retention | RECORDED for AI/ML and inference | RECORDED for raw/derived external redistribution | `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md:8-17` grants scope; rights at `:19-48`; dataset-specific overrides at `:50-55`. Explicit cycle Q6-8 caveat: no Massive historical-issuer/dead-name dataset or per-feed designation is present, so the scope record alone does not prove that this exact provider branch exists. |
+| Curated basket membership | RECORDED house curation | RECORDED house-owned | RECORDED local store | RECORDED house direct-display posture | RECORDED direct display / no external rights | `config/theme_sources.yml:21-28`; storage measured in §4. |
+| Finviz theme tree | RECORDED as keyless public route | UNKNOWN | UNKNOWN for model-facing rights | UNKNOWN | UNKNOWN / unresolved | `config/theme_sources.yml:29-34`. |
+| THS concepts | RECORDED as receipted scrape | UNKNOWN | UNKNOWN for model-facing rights | UNKNOWN | UNKNOWN / unresolved | `config/theme_sources.yml:36-41`; first measured date in §4. |
+| S&P Kensho | UNKNOWN (reserved, no ingestion) | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | `config/theme_sources.yml:43-48`; public methodology documents only and no bulk constituent route. |
+| Theia | UNKNOWN (commercial license required, not held in repo) | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | `config/theme_sources.yml:49-52`. |
+| SEC EDGAR | RECORDED public endpoint in issuer census | UNKNOWN rights grant | Mechanism recorded, rights UNKNOWN | UNKNOWN | UNKNOWN | Issuer census §Q5, quoted from its PR-head evidence. |
+| Nasdaq earnings calendar/surprise | RECORDED public endpoint in issuer census | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | Issuer census §Q5. |
+| Yahoo/yfinance expectations | RECORDED direct accessors | RECORDED processing contract | RECORDED local parquets | UNKNOWN (`rights_class: UNKNOWN`) | UNKNOWN | Issuer census §Q5. |
+| Transcripts | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | Issuer census §Q5; `rp_public_primary_v1` is not a grant. |
+| Press / narrative / search | Partly recorded endpoints; rights otherwise | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | Issuer census §Q5. |
+| ThetaData | RECORDED private subscription | UNKNOWN from filed terms | UNKNOWN from filed terms | UNKNOWN from filed terms | PARTIAL operator record only; full-universe intraday-derived scope open | `research/licenses/THETADATA_ENTITLEMENT_RECORD.md:7-19`. |
+
+## 7. PROVIDER EVALUATION
+
+The required repository search named S&P Kensho, Theia, FactSet, CRSP, Refinitiv, Compustat, and S&P Capital IQ-family candidates. In-repo records establish no licensed historical issuer-mapping provider:
+
+| Provider | Scope recorded in repo | Rights recorded in repo | Cost recorded in repo | Readiness |
+|---|---|---|---|---|
+| S&P Kensho | Reserved provider row; public methodology/index description only; no bulk constituent route. ETF research records current-only SSGA/SPDR Kensho fund files for forward collection. | `rights_class: unresolved`; no acquisition. | None. | Not a source. |
+| Theia | Reserved row for commercial license; no ingestion. The GMI research note records semantic taxonomy concepts only and explicitly authorizes nothing. | `rights_class: unresolved`; commercial license required. | None. | Not a source. |
+| FactSet / FactSet Revere | Research notes mention Western supplier/edge coverage and public earnings summaries; they are outside observations, not an entitlement. | No five-rights record. | None. | UNKNOWN. |
+| CRSP | Research notes say point-in-time survivorship work would need paid CRSP; no committed provider contract. | No five-rights record. | None. | UNKNOWN. |
+| Refinitiv | Research notes mention consensus snapshot or Bloomberg/Refinitiv integration alternatives. | No five-rights record. | None. | UNKNOWN. |
+| Compustat | No material row appeared in the capped required search beyond the provider-family term itself. | UNKNOWN. | None. | UNKNOWN. |
+| S&P Capital IQ / GICS history | Search returned S&P Capital Markets ETF labels, not a historical GICS entitlement. No GICS-history source appeared. | No five-rights record. | None. | UNKNOWN. |
+| Massive | Enterprise record covers stock-market reference data, corporate actions, historical archives, non-display/model use and redistribution, subject to per-feed designations. | Recorded in `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md`. | No cost figure is recorded in the allowlisted record. | Enterprise rights are recorded, but no historical issuer-mapping/dead-name feed is identified; scope remains unproved. |
+
+The exact capped command output is quoted in §9. No external provider page or private entitlement was opened, and no cost figure was inferred.
+
 ## 7. PROVIDER EVALUATION
 
 ## 8. THE MATRIX + VERDICTS
