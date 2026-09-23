@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T14:39:31.275186+00:00",
-  "count": 2714,
+  "generated_at": "2026-09-23T14:54:32.716835+00:00",
+  "count": 2715,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -99,6 +99,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vxqbq7fg0xc-a29f7b",
+      "title": "Brenntag SE (BNRGn.DE) 15th German Corporate Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:41Z",
+      "summary_points": [
+        "Guidance Upgrade: Revised FY revenue guidance to €1,450m (up from €1,350m), driven by new operating strategy execution and cost-out program (€150m savings in 2024, €200-250m by 2027), partially offsetting oil price volatility risks.",
+        "Geopolitical Pricing Impact: Middle East conflict directly boosting pricing power in sector, enhancing near-term margin visibility amid energy cost pressures.",
+        "China Competitive Dynamics: China emerging as medium-term chemical manufacturing competitor in essentials/semi-specialty segments (not high-end), with Brenntag positioned as global supply chain enabler to navigate competitive shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ks7yulaakge-837989",
       "title": "GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
