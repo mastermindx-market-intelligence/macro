@@ -1,4 +1,4 @@
-"""The Macro navigation card describes rank velocity, not a buy/flow ranking."""
+"""The Macro card separates descriptive desk leadership from entry suitability."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -70,6 +70,7 @@ def test_card_leader_is_selected_before_the_four_row_strip_cap(monkeypatch):
     assert [r["id"] for r in view["heating"]] == pulse["heating"][:4]
     assert view["desk"]["leader"]["id"] == "ai_semiconductors"
     assert view["desk"]["leader"]["rank_delta_5d"] == 14
+    assert view["desk"]["entry_leader"]["id"] == "ai_semiconductors"
     assert [r["id"] for r in view["rotation"]] == ["ai_semiconductors", "memory_storage"]
     assert pulse == before
 
@@ -79,6 +80,8 @@ def test_full_population_velocity_beats_absolute_rank_and_latest_day_alone():
     assert out["status"] == "ready"
     assert out["leader"]["id"] == "ai_semiconductors"
     assert out["leader"]["rank_delta_1d"] == -1
+    assert out["leader"]["entry_actionable"] is True
+    assert out["entry_leader"]["id"] == "ai_semiconductors"
     assert out["as_of"] == "2026-09-18"
     assert out["href"] == "basket/ai_semiconductors.html"
 
@@ -165,9 +168,14 @@ def test_macro_renders_exact_desk_with_source_date_and_real_destination():
     assert not card.has_attr("data-tip-en"), "Whole-link LENS hijacks the first mobile tap"
     assert "AI Semiconductors" in card.get_text()
     assert "AI 半导体" in card.get_text()
+    assert "Hottest desk" in card.get_text()
     assert "Up 14 places over 5 sessions" in card.get_text()
+    assert "Entry rating: Accumulate" in card.get_text()
+    assert card["data-entry-rating"] == "accumulate"
+    assert card["data-entry-actionable"] == "true"
     assert card.select_one("time")["datetime"] == "2026-09-18"
     assert "Running hot right now" not in card.get_text()
+    assert "Hottest desk" not in card.get_text()
     assert "wrong" not in card.get_text().lower()
 
 
@@ -184,11 +192,43 @@ def test_absent_history_renders_neutral_navigation_not_old_first_row(desk):
     assert "wrong" not in card.get_text().lower()
 
 
-@pytest.mark.parametrize("reco", ["hold", "trim", "avoid", "exit", None, "unknown", [], {}])
-def test_a_hold_or_defensive_rating_cannot_be_advertised_as_an_opportunity(reco):
-    out = _desk([_row("rebound", 1, 30, 20, reco=reco), _row("eligible", 6, 14, -1)])
-    assert out["leader"]["id"] == "eligible"
-    assert out["leader"]["reco"] == "accumulate"
+def test_hold_rating_does_not_hide_descriptive_leadership():
+    out = _desk([
+        _row("ai_semiconductors", 3, 26, -3, reco="hold"),
+        _row("memory_storage", 10, 23, 13, reco="accumulate"),
+    ])
+    assert out["leader"]["id"] == "ai_semiconductors"
+    assert out["leader"]["reco"] == "hold"
+    assert out["leader"]["entry_label_en"] == "Hold"
+    assert out["leader"]["entry_actionable"] is False
+    assert out["entry_leader"]["id"] == "memory_storage"
+    assert out["entry_leader"]["entry_actionable"] is True
+
+
+@pytest.mark.parametrize(
+    ("reco", "label_en", "actionable"),
+    [
+        ("enter", "Enter", True),
+        ("accumulate", "Accumulate", True),
+        ("hold", "Hold", False),
+        ("trim", "Trim", False),
+        ("avoid", "Avoid", False),
+        ("exit", "Exit", False),
+        (None, "Unavailable", False),
+        ("unknown", "Unavailable", False),
+    ],
+)
+def test_entry_state_is_secondary_metadata_not_leadership_filter(reco, label_en, actionable):
+    row = _row("leader", 4, 18, 2, reco="accumulate")
+    row["reco"] = reco
+    out = _desk([row])
+    assert out["leader"]["id"] == "leader"
+    assert out["leader"]["entry_label_en"] == label_en
+    assert out["leader"]["entry_actionable"] is actionable
+    if actionable:
+        assert out["entry_leader"]["id"] == "leader"
+    else:
+        assert out["entry_leader"] is None
 
 
 @pytest.mark.parametrize("history", [None, {}, {"basis": "archive_rows"},
