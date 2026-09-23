@@ -2,66 +2,40 @@
 
 Operation: `gmi-industrials-sector-research-20260923-sol-001`.
 Carrier: Macro Draft/HOLD PR #7789, `sol/industrials-sector-research-20260923`.
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
-Capability: SPEC_ONLY / principal research and proposed product requirements, not a built product.
+Capability: SPEC_ONLY / principal research and proposed requirements.
+This is an in-progress persistence boundary, not finalization or an Executive lifecycle receipt.
 
-## Mission, authority and current pin
+## Mission, authority and source
 
-The Chairman assigns this principal session extensive multi-turn Industrials research, analysis and planning before a final Fable CEO build-orchestration handoff. Difficult research stays here, not with research subagents. Demand, earnings, cash, reinvestment, expectations and valuation lead; physical BOM and constraints are conditional lenses. Full productive effort and proactive persistence are requested, not a minimum clock duration or an invented hidden limit.
+Current Chairman instruction continues extensive principal-owned Industrials research and planning before the final Fable CEO build handoff. Economics, earnings, cash, capital returns, expectations and valuation remain primary; supply chains are conditional lenses. No research subagents, product implementation or trading authority is commissioned.
 
-Protected Mastermind master and INDEX freshly confirmed at `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1. Same-pin COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT remain loaded. Original Macro interface/base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Turn-entry carrier: `3a110dd69bbfc6bf2d7487f42a4e8ea338c34ee5`. Direct rationale: PRINCIPAL_JUDGMENT and current Chairman assignment. Current GitHub read/create/update and repository push permission succeeded; no mode switch is needed while those capabilities remain available. Hidden platform limits and mode attestation remain unknown.
+Protected Mastermind master and INDEX freshly confirmed unchanged at `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1. Same-pin COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT remain loaded. Original Macro interface/base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Wave 5 entry carrier: `1479904b6249615daac7bb5e67a8af7c6b72e3d2`. Direct research rationale: PRINCIPAL_JUDGMENT and current assignment. GitHub read/create/update are available and repository push permission is confirmed; no mode switch needed.
 
-## Preserved work - DO_NOT_REDO
+## Preserved - DO_NOT_REDO
 
-Wave 1 foundation: `eace175816aae1606aef85ed66d494f0688ce81b`, blob `28772b8e2cd57bb4f205c656b2c7ab8f54b66f1b`.
-Canonical Wave 2: `cd1c6e93fab72466a21e4551124f73a821460da5`; W2X: `f5277405e2ebedbe2d9314bad9f88d6a0060f429`. Do not replay colliding portable source identifiers or overwrite the reconciled models.
-Wave 3: containing research commit `1e6fdb1423f6237ec70583eb5a9e556e82beb507`, checkpoint `3a110dd69bbfc6bf2d7487f42a4e8ea338c34ee5`; customer, fleet, distribution and network economics. The historical 39/16/62-check counts are authored research-integrity results, not independent factual, application or predictive proof.
+Wave 1: `eace175816aae1606aef85ed66d494f0688ce81b`.
+Canonical Wave 2: `cd1c6e93fab72466a21e4551124f73a821460da5`; W2X: `f5277405e2ebedbe2d9314bad9f88d6a0060f429`.
+Wave 3: `1e6fdb1423f6237ec70583eb5a9e556e82beb507`.
+Wave 4: `e5a4a613f300c64cf58314683cab41c767fa6bd4`, complete prior frontier at `1479904b6249615daac7bb5e67a8af7c6b72e3d2`.
+Their historical 39/16/62/77 check counts are research integrity, not independent factual/application/predictive proof. Do not replay source sweeps, overwrite colliding portable IDs or recreate the carrier.
 
-Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` is shared-template reference only. Preserve GMI evidence, Data OS identity, K1, relationship/forecast owners, private publication and existing Theme Tracker outputs. No second graph, identity master, store, score, publisher, lifecycle, queue or trading authority. No custody transfer or revival of a separate GMI program is implied.
+Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` is shared-template reference only. Preserve GMI evidence, Data OS identity, K1, relationship/forecast owners, private publication and Theme Tracker outputs. No duplicate graph, score, identity, store, queue, publisher or lifecycle.
 
-## Wave 4 material result and immutable artifacts
+## Wave 5 current effect and frontier
 
-Containing research commit before this checkpoint: `e5a4a613f300c64cf58314683cab41c767fa6bd4`.
-All following paths are under `research/industrials/`.
+`research/industrials/INDUSTRIALS_WAVE5_EVIDENCE_2026-09-23.md` published at `00b20827273abf73377f47929e8e63c053094fb4`, readback blob `2d2380fab0ebdca76f54140bccdc5f14be7ae2cc`. The 27-entry register covers 18 issuer documents across 13 corporate groups, one GAO summary and eight government contract/reference records. These are concise public-source editorial observations, not production admissions or raw corpora.
 
-| Artifact | Exact Git blob |
-|---|---|
-| `INDUSTRIALS_WAVE4_EVIDENCE_2026-09-23.md` | `7533cc3797ae9edfd769ac9130f1cf04c8b5f110` |
-| `INDUSTRIALS_WAVE4_ECONOMIC_MODEL_2026-09-23.md` | `4008fdfbc5cf645050a7031de18862d1df66b2a2` |
-| `calculate_wave4.py` | `686778a2b7e2d187fcffa4a17150fa7a719b079e` |
-| `verify_wave4_research.py` | `d7f09e3c427749bc57718a459b892a295281fd49` |
-| `WAVE4_SOURCE_INDEX.json` | `a4dce34daf762dd147a24b218e6a1e42f76982da` |
-| `INDUSTRIALS_WAVE4_VERIFICATION_2026-09-23.md` | `578ecd3dd93f33147e247fad32ec84871be3c0a5` |
+Key findings to model: non-comparable backlog definitions; GD firm/potential totals move differently; options/IDIQ/framework commitments differ; fixed-price and incentive/reimbursable risk differ; guidance can improve through capex/tax rather than program-profit changes; HII net contract assets rise while cash is absorbed; CACI receivables financing and Fincantieri equity/supplier finance need explicit treatment; concentration and source revisions cannot be hidden.
 
-Wave 4 contains 26 primary-source bibliography entries, a 5,685-word economic model, 24 proposed slices, 12 falsifiable rerating hypotheses and 32 proposed application requirements. It addresses engine/aircraft cohorts, contracts, repair work, parts, physical capacity, cash, licensing, ownership and leasing. This is research coverage, not complete sector/company coverage or an admitted live graph.
+Three source-reading clarifications must be incorporated before the final Wave 5 package: the March 13 dates on FAR base pages are reference effective dates, not independently established original publication dates; GD's exact fiscal endpoint is not established by the backlog table and must not be guessed; Fincantieri's narrative explicitly qualifies 2036 with a Princess Cruises contract extending to 2039, so the initial unqualified horizon-conflict description needs that qualification. Rheinmetall's Digital Systems 80% versus approximately 39.2% arithmetic discrepancy remains unresolved. The forthcoming economic model and corrected source index must preserve explicit supersession of these limited statements.
 
-Executed local verifier: 77 PASS, 0 FAIL, exit 0, both before publication and after immutable readback. There were 40 arithmetic/scenario checks, nine invalid-input checks, fourteen incompatible-comparison cases, four positive/availability controls and ten document/index checks. No failed assertion or tolerance change occurred. Four local source files exactly matched the immutable GitHub blobs at `f6b5ad53d5e7ec4b5fda62146a3b67e0e5e21e4a`; the source register and verification note were separately read back. Generated calculation/check JSONs are portable outputs reproducible from the committed scripts, not separate canonical datasets.
+Next action now: finish original contract-risk, service-productivity, cash-timing and financing sensitivities; write the economic model with counterarguments and proposed acceptance requirements; run real local checks and publish with immutable readback on this same branch. This checkpoint does not authorize a stop while those useful actions remain.
 
-No independent factual-review receipt, current price/consensus panel, empirical backtest, forecast calibration, application test, CI acceptance, deployment or browser proof is claimed.
+## Effects, limits and future scope
 
-## Material decisions and falsifiers
+Only Wave 5 evidence and this cumulative checkpoint were written so far. No product source, live curation, private current payload, basket/rank/entry/size, worker, Executive Attempt, watcher, merge, deployment or trade changed. EFFECT_UNKNOWN: none known.
 
-Aerospace requires obligation/risk ownership as well as physical supply mapping. Extra repair demand can help an event-paid provider while harming an hourly contract owner. Better durability can reverse those effects. Active usage, service incidence, work completion, recognized revenue, collections and credits are distinct. The authored maintenance model is a fixed-hours long-run proxy, not a fleet failure forecast; the WIP identity assumes one steady-state boundary. Cohort NPV has finite service cash and no terminal value. Those limits must remain visible.
+Carry prior gaps in customer/product profit, actual service/program terms, source clocks/rights, physical cohort and lifetime capital data, specialist/global coverage, point-in-time expectations and empirical validation. New gaps include contract-level funding/clauses/acceptance/collections, complete parent-company comparisons and source discrepancies. Current research is financial/industrial only, not weapon design, operational targeting or vulnerability analysis.
 
-Contract profit effects, revenue catch-ups and onerous provision releases cannot be merged or annualized blindly. Net estimate changes may contain favorable reversals that must not be counted twice. Licensing/intangible rights and unpaid obligations remain economic capital even when an adjusted measure excludes them. Pass-through removal can improve a margin denominator without the same change in absolute profit. OEM segment labels can include spares. Count unique JV physical output once and preserve issuer participation, corporate costs and noncontrolling interests separately. AAR's scheduled September 29 release remains unavailable at the September 23 research cutoff.
-
-A supported business improvement still does not establish stock mispricing. Actual terms, active-engine cohorts, workscopes, throughput, customer adoption, lifecycle capital, source rights and point-in-time expectations remain required before predictive or valuation conclusions.
-
-## Remaining obligations
-
-Carry Wave 3 gaps: Sunbelt fleet-cost denominator conflict; Fastenal indexed-only source; AGCO dealer geography; unexplained ODFL residual; revised Komtrax/lender populations; source vintages and rights; exact product/customer profit, lifecycle capital, expectations and empirical validation.
-
-Wave 4 gaps: deeper specialist/global and interiors coverage; actual program/service terms; cohort hours/cycles and attachment; shop-level turnaround and completed-work costs; credits and risk-sharing recoveries; realized alternative-part acceptance; rights/licensing investment; shareholder capital reconciliation; current/point-in-time estimates and validation. Publisher mirrors are not independent evidence. No raw paid corpus, secrets or private full-fidelity product snapshot was committed.
-
-## Effects and justified continuation boundary
-
-Verified effects this turn are the six Wave 4 research/index/check artifacts and this same cumulative checkpoint. No product source, live curation row, private current payload, basket/rank/entry/size, worker, Executive Attempt, watcher, merge, deployment or trade was initiated. EFFECT_UNKNOWN: none known. No source custody transfer or autonomous wake is implied.
-
-This boundary follows a complete aerospace evidence, adverse-case, lifetime-model, local-verification and immutable-publication chunk after substantial source/tool context. The next domain requires a new program-contract corpus; preserve the current verified frontier rather than accumulating another broad corpus or replaying this research. This is incomplete mission continuity, not acceptance of the parent product or a final Fable commission.
-
-## Exact next action
-
-Continue principal research into defense and long-cycle program economics: funded versus unfunded commitments, contract risk allocation, cost estimates, program charges, execution capacity, development investment and cash milestones. Keep the scope financial/industrial-business research, not weapon design or operational targeting. Then extend into construction, building systems and essential services before the cross-sector expectations/valuation validation wave. Existing aerospace and prior-wave data gaps remain explicit obligations for the final audit.
-
-Intended resume surface: principal Pro research workflow; a fresh conversation can recover from this cumulative checkpoint plus the current protected Skillpack and material invalidators only. Do not redo Waves 1-4 or create another carrier. Before a future product-interface write or final Fable handoff, refresh shared-template custody, accepted evidence/identity interfaces, private-publication rights and material collisions. Fable's final handoff remains withheld until the sector research and written integration specification are mature.
+After this Wave 5 model and verification, continue construction, building systems and essential services; then cross-sector expectations/valuation validation and integrated design. Fable's final handoff remains withheld. No automatic wake or custody transfer is implied.
