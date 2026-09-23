@@ -101,11 +101,11 @@ Do not force brand precision where the source only discloses a segment. A conglo
 
 ### R2-C10 — Utz: pruning lower-quality revenue changes the interpretation
 
-**Source-established scope.** Q2 2026 sales were $371.8. Organic growth of 1.4% combined price/mix of 3.6% with volume decline of 2.2%; the release separately explains a bonus-pack comparison effect. Branded products represented approximately 89% of sales. Adjusted EBITDA rose 14.4%. The release describes a pending take-private transaction and discontinued guidance. [S12]
+**Source-established scope.** Q2 2026 sales were $371.8. Organic growth of 1.4% combined favorable net price realization of 3.6% with volume/mix of -2.2%; the release separately explains a bonus-pack comparison effect. Branded Salty Snacks represented approximately 89% of sales. Adjusted EBITDA rose 14.4%. The release describes a pending take-private transaction and discontinued guidance. [S12]
 
-**Research interpretation.** Lower volume can coexist with improved mix or business quality when unprofitable items are removed, but the attribution must be evidenced. Do not relabel every contraction as a positive portfolio action. Pending corporate actions also change whether a current security belongs in a future study.
+**Research interpretation.** Lower volume/mix can coexist with improved business quality when unprofitable items are removed, but the attribution must be evidenced. The combined volume/mix measure is not pure physical volume. Do not relabel every contraction as a positive portfolio action. Pending corporate actions also change whether a current security belongs in a future study.
 
-**Indicators and falsifier.** Compare branded and non-branded sales, same-product units, promotional periods, contribution and working capital. Preserve the transaction as pending at the source date; current closing, delisting or tradability was not independently certified in R2. Product and corporate-action owners must resolve that before security use.
+**Indicators and falsifier.** Compare branded and non-branded sales, same-product units when independently available, promotional periods, contribution and working capital. Preserve the transaction as pending at the source date; current closing, delisting or tradability was not independently certified in R2. Product and corporate-action owners must resolve that before security use.
 
 ## 5. Pet exposure: five different business perimeters
 
@@ -235,7 +235,7 @@ Source IDs are local research references, not native evidence IDs. All were revi
 - **S01:** Coca-Cola 2025 Form 10-K, filed February 2026; business model and revenue disaggregation. https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm
 - **S02:** Celsius Q2 2026 results, August 6, 2026; brand revenue, distribution, retail-data basis and acquisition territories. https://ir.celsiusholdingsinc.com/news/news-details/2026/Celsius-Holdings-Reports-Second-Quarter-2026-Financial-Results/default.aspx
 - **S03:** Monster Q2 2026 results, August 6, 2026; segment and 192-ounce case tables and exclusion footnote. https://investors.monsterbevcorp.com/news-releases/news-release-details/monster-beverage-reports-2026-second-quarter-financial-results
-- **S04:** PepsiCo Q2 2026 release, July 9, 2026, SEC exhibit; fiscal twelve-week sales bridge. https://www.sec.gov/Archives/edgar/data/77476/000007747626000037/q2202688-kxexhibit991.htm
+- **S04:** PepsiCo Q2 2026 release, July 9, 2026, SEC exhibit; fiscal twelve-week sales bridge. https://www.sec.gov/Archives/edgar/data/77476/000007747626000037/q220268-kxexhibit991.htm
 - **S05:** PepsiCo poppi acquisition completion, May 19, 2025. https://www.pepsico.com/newsroom/press-releases/2025/pepsico-completes-acquisition-of-poppi-accelerating-strategic-portfolio-transformation
 - **S06:** Keurig Dr Pepper Q2 2026 results, August 6, 2026; consolidation, legacy growth, segment transfer and common-earnings reconciliation. https://investors.keurigdrpepper.com/2026-08-06-Keurig-Dr-Pepper-Reports-Q2-Results-and-Reaffirms-Guidance-for-2026
 - **S07:** Hershey Q2 2026 issuer release, July 30, 2026; segment tables and acquisition bridge. https://www.prnewswire.com/news-releases/hershey-reports-second-quarter-2026-financial-results-302838129.html
@@ -265,3 +265,7 @@ This tranche resolves a material design uncertainty: generic brand ownership and
 The next same-turn unit is the demand/distribution/expectations mechanism dictionary, including the pre-event guidance comparison and metric-level refusal cases. A later tranche still owes the remaining retail, private-label, ingredient, processing, alcohol/nicotine and international company coverage, empirical historical rerating episodes, and a final written product design and Fable implementation plan.
 
 No current prices, consensus histories, provider entitlements, brand-level profit allocations, predictive coefficients or security eligibility were manufactured. No product tests, independent research review, schema adoption, live basket changes, rank/entry/size/trade changes, Fable dispatch, runtime jobs, merge, deployment or browser proof are claimed. Preserve R1 and this same research carrier. HOLD FOR SOL; do not merge or treat this as the finished masterplan.
+
+### Research correction receipt
+
+A source-level self-review corrected two errors in the initial R2 commit `d52d58ec4c66f0f44dc84b21316ee08b362c16ed`: S04's mistyped SEC filename, and R2-C10's shorthand that had moved mix to the wrong side of Utz's bridge. The supported terms are net price realization +3.6% and volume/mix -2.2%, not pure volume. The current content replaces those specific statements; the 22-company scope and other research remain unchanged. This is a correction to research documentation, not a source restatement by either issuer.
