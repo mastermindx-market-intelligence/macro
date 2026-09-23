@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T04:54:16.739045+00:00",
-  "count": 2686,
+  "generated_at": "2026-09-23T05:53:26.129461+00:00",
+  "count": 2689,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -875,6 +875,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-egjhcforpoa-5c6596",
+      "title": "China Property Weekly Wrap Week 38 Wrap sequentially stronger volume growth echoing seasonality, yet moderating leading in",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:11Z",
+      "summary_points": [
+        "Sellers' CAI YoY Drop (-5.5pp): Critical red flag signaling structural pricing weakness, indicating deteriorating market health and potential for further correction in China's real estate sector.",
+        "Inventory Contraction (-7.6% from end-25): Supply-side weakness confirmed with inventory months at 26.4 (vs. 2 avg Aug-26), highlighting acute oversupply pressure relative to 2025 benchmarks.",
+        "SOE vs.",
+        "Non-SOE Valuation Disparity: SOEs trade at 0.4X P/B (41% discount to NAV) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gl6r64rsfiu-5014e0",
       "title": "Alibaba Group (BABA) Alibaba Cloud APSARA Key Takeaways",
       "institution": "Goldman Sachs",
@@ -977,6 +997,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-oh0ck3oc1nk-182c7c",
+      "title": "GS Duttenhoefer BEST of DAY 1 at our German Corp Conference in Munich 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:55Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rhdcclisqiz-5702e6",
       "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
       "institution": "S&T",
@@ -1023,6 +1058,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ix3dlv6adtk-f47aaf",
+      "title": "GS Johnstone GS TMT SPEC SALES Muse mania and readacross debate IFX Springer Sunrise 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:45Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },

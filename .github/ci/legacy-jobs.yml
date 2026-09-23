@@ -5365,6 +5365,25 @@ jobs:
       - name: flow-cohorts unit tests
         run: python -m pytest tests/test_flow_cohorts.py -q
 
+  uk-policy-desk:
+    if: ${{ false }}
+    gate: code
+    # A-F02-W2-4. tests/test_uk_policy_brain.py otherwise lives only on
+    # outcome-spine and unrun-register-honesty, both gate: data, so a PR pack
+    # never runs it. This is the gate: code home. Those two mentions stay.
+    # Deps measured in a clean 3.12 venv: `pip install pytest pyyaml jinja2`
+    # is sufficient. The suite imports nothing further.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2
+      - name: uk policy desk unit tests
+        run: python -m pytest tests/test_uk_policy_brain.py -q
+
   flow-signals-ledger:
     if: ${{ false }}
     gate: code
