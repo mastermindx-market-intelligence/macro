@@ -404,3 +404,35 @@ The DEC record test count was refreshed from 71 to 73 (commit `d8eb9219bc`)
 to match the pytest tail in the PR body. The install-runbook §3.3 paragraph
 above (commit `0954661a4f`) documents the round-6 sibling-state-dir log
 destination change at the seat-install level.
+
+### 3.6 One-time backfill (seat act)
+
+The install section above this heading is Uninstall. This section is the
+one-time backfill. It is not on the daily schedule. Run it inside the lane
+checkout, after the ledger has been copied down, and then publish that
+directory. Keep the one-line JSON receipt the command prints.
+
+Hydrate first:
+
+```sh
+cd /Users/chriswong/skew-ops-wt
+ops/launchd/run_with_env.sh .env \
+    /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.fetch_r2 --dirs options_skew
+```
+
+Recompute the covered legacy window from the store. A thetadata row replaces
+a polygon_gex row for the same date and name. Weekend dates are skipped.
+
+```sh
+/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh /Users/chriswong/skew-ops-wt/.env /usr/bin/env THETADATA_STORE=/Users/chriswong/theta-ops-wt/data/thetadata_eod python -m scripts.build_options_skew --backfill 2026-06-21 2026-08-13
+```
+
+Publish the ledger, then copy the printed JSON receipt into the state
+directory (for example
+`/Users/chriswong/skew-ops-state/receipts/skew-backfill-2026-06-21_2026-08-13.json`).
+
+```sh
+cd /Users/chriswong/skew-ops-wt
+ops/launchd/run_with_env.sh .env \
+    /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.publish_r2 --dirs options_skew
+```
