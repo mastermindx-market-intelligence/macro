@@ -17,15 +17,9 @@ carries 12,747 rows (polygon_gex 12,375 + thetadata 372); the store-host/R2
 ledger after the 2026-09-23 backfill + first scheduled accrual carries 13,971
 rows across 48 dates. The render path is cut over (`#7743`) — render hosts
 hydrate `options_skew` from R2 and `--emit`, no longer pinned to the legacy
-chain. Six things remain open: PR `#7783` (W2-4c source-window fields +
-plain-language Directional sentence; seat, head `84428a84` after a
-merge-of-main on 2026-09-23 15:33Z, with a seat correction of its note's
-window table pending before merge); PR `#7832` (A-F03-W2-6 complete-session
+chain. Five things remain open: PR `#7783` (W2-4c source-window fields + plain-language Directional sentence; seat; ratification WITHDRAWN 17:25Z at head `84428a84` — on the live ledger the per-date majority-run windows fragment into 15 alternating runs, so round 5 replaces them with per-source coverage spans and one `source_break_date`, lane in flight); PR `#7832` (A-F03-W2-6 complete-session
 resolver / thin-session emit guard; seat, RATIFIED at `ba2729b7`, armed
-`merge-on-green`, CI pending); the 2026-08-14 → 2026-09-18 ledger hole
-backfill (seat, IN PROGRESS on the store host — dry run 2026-09-23 16:21Z:
-25 sessions backfillable, 7,686 rows to add, 2026-09-07 not in store; real
-run started 16:21Z); the F00C ledger row 013 reconciliation (seat); the
+`merge-on-green`, CI pending); the F00C ledger row 013 reconciliation (seat); the
 `render-linux` self-hosted runner offline (operator); and a holiday no-op
 accrual ruling (seat: when the complete store session is already on the
 ledger, `--accrue` writes 0 rows and the runner verifier's `--pre-rows`
@@ -47,7 +41,7 @@ script which runs the same hydrate→emit pair.
 | W2-5b | #7763 | 2026-09-23 08:46:03Z | payoff lab consumer — "What a structure pays" fold on `options.html`; R2 → emit wiring on the render path | merge commit `668237947e016f679782e41e61c91c9133a5ea99` |
 | runner hardening | #7819 | 2026-09-23 13:34:10Z | `git reset --hard && git clean -fd` BEFORE the detach in both runners; runbook §3.8 "restore the shared checkout after ANY manual session" | merge commit `646eb0611710bfecc395601a29ddd94c52349c03` |
 | gate-stdout fix | #7827 | 2026-09-23 14:14:19Z | freshness gate verdict is read from stdout only; stderr `.err` sidecar; FRESH store no longer reads STALE | merge commit `2e476c04bb817022a352a8ae0c6a959390a58274` |
-| W2-4c | #7783 | OPEN | source-window fields on `site/options_skew/latest.json`; one plain-language Directional-read sentence (per `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`); head `84428a84` after a merge-of-main on 2026-09-23 15:33Z; seat correction of the note's window table pending before merge | head ref `84428a84`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7783` |
+| W2-4c | #7783 | OPEN | source-window fields on `site/options_skew/latest.json`; one plain-language Directional-read sentence (per `DEC-SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY`); head `84428a84` after a merge-of-main on 2026-09-23 15:33Z; ratification withdrawn 17:25Z (majority-run windows fragment: 15 runs measured on the live ledger); round 5 = per-source coverage spans + `source_break_date`, lane in flight | head ref `84428a84`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7783` |
 | W2-6 | #7832 | OPEN | complete-session resolver + bounded catch-up + thin-session emit guard; lane PASS, seat RATIFIED at `ba2729b7` 16:05Z, armed `merge-on-green`, merge pending its CI run | head ref `807365f4`; state `open` per `gh api repos/mastermindx-market-intelligence/macro/pulls/7832` |
 
 ## 2. Data receipts
@@ -80,6 +74,20 @@ composition is not restated here; `source_windows` on the emitted artifact
 
 **Store-host / R2 ledger after the seat stopgap** (12 partial rows dropped):
 **13,959** rows across **47 dates** (max 2026-09-21, sha256 d7b4aeeb…98fb35).
+
+**Hole backfill receipt (2026-09-23 15:22Z → 17:21Z, M1 store host).** Command
+`python -m scripts.build_options_skew --backfill 2026-08-14 2026-09-18` over the
+ThetaData store (dry run 15:22Z → 16:21Z, real run 16:21Z → 17:21Z, ~60 min each,
+single core): **36** dates requested, **10** weekend skipped, **1** not in store
+(2026-09-07), **25** sessions backfilled, **7,686** rows added, **0** replaced.
+Ledger **13,959 → 21,645** rows across **72 dates** (max 2026-09-21); verifier OK
+(`--pre-rows 13959`); `publish_r2 --dirs options_skew` 1 uploaded; hydrate-back
+sha256 `10d80182…98e66`. Receipt files
+`~/skew-ops-state/receipts/skew-backfill-2026-08-14_2026-09-18.{json,stdout,stderr}`;
+backup `~/skew-ops-state/receipts/snapshots.parquet.before-hole-backfill-2026-09-23.bak`.
+Per-source coverage on session dates after this run: thetadata 2026-06-22 → 2026-09-21
+(64 dates), polygon_gex 2026-06-22 → 2026-08-13 (33 dates; the 2026-06-21 Sunday
+as-of row is excluded); first ThetaData-only session 2026-08-14.
 
 **First scheduled accrual receipt (2026-09-23 14:15Z).** `kickstart 14:15:12Z`,
 log start `14:15:16Z` (`~/skew-ops-state/logs/skewaccrual.stdout.log`): gate
@@ -132,8 +140,9 @@ armed).
 
 ## 4. Still open
 
-- **W2-4c merge** (PR `#7783`). Owner: seat. Head ref `84428a84`; merge-candidate
-  `f2e9a685b4d276db5c13dfce25492f8e7c214208`. Proof that will close it:
+- **W2-4c merge** (PR `#7783`). Owner: seat. Head ref `84428a84`; ratification
+  withdrawn 2026-09-23 17:25Z (round 5 in flight: per-source coverage spans +
+  `source_break_date` replace the majority-run windows). Proof that will close it:
   `gh pr view 7783 --json state,mergedAt` reporting `state=merged`,
   `mergedAt` populated, and a post-merge render sentinel on `options.html` whose
   Directional read carries the plain-language source sentence per
@@ -145,14 +154,6 @@ armed).
   `state=merged`; the next scheduled accrual receipt in
   `~/skew-ops-state/logs/skewaccrual.stdout.log` will then show the thin newest
   session dropped before emit instead of via the seat's manual stopgap.
-
-- **Hole backfill 2026-08-14 → 2026-09-18** (operator: seat; in progress).
-  Receipt (when complete):
-  `~/skew-ops-state/receipts/skew-backfill-2026-08-14_2026-09-18.json` and the
-  backup `snapshots.parquet.before-hole-backfill-2026-09-23.bak`. Coverage from
-  the store: 2026-08-21 → 2026-09-18 at 372 roots, 2026-08-14 → 2026-08-20 at
-  48 roots. Final numbers from the run are not measured at the time of writing;
-  they will land in the receipt above.
 
 - **F00C ledger row 013 reconciliation**. Owner: separate seat packet (outside
   the F03 chain). Proof that closes it: a merged PR updating
