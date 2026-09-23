@@ -11,7 +11,11 @@ STATUS: COMPLETE
 
 ### Frozen publication-clock transformation
 
-For each calendar period `t`, select the initial-release row for each series as the row with the minimum `realtime_start` for that `(series, period)` in `data/fred_vintage/vintages.parquet`; `realtime_start` is the publication clock. Do not select a later revised row, infer an absent row, interpolate, normalize levels, or use a latest-revised fallback. A target month is available only when every required target and input initial-release row exists and each input's `realtime_start` is no later than the publication date assigned by the fixed series-availability rule; a missing or late required row blocks that month. The run must define that fixed rule from only the observed initial-release publication lags before evaluating any hypothesis, then report each series' minimum, median, and maximum lag.
+For each calendar period `t`, select the initial-release row for each series as the row with the minimum `realtime_start` for that `(series, period)` in `data/fred_vintage/vintages.parquet`; `realtime_start` is the publication clock. Do not select a later revised row, infer an absent row, interpolate, normalize levels, or use a latest-revised fallback.
+
+### Frozen publication-availability rule
+
+A row for target month `t` is available for a series only when its initial-release `realtime_start` is on or before the end of the third calendar month after `t`. That single deadline applies to every series and every target month, before endpoint evaluation. A target month is available only when every required target and input initial-release row exists and passes its own deadline. A missing or late required row blocks that month. The deadline was chosen before hypothesis evaluation from the observed initial-release lags over all vintage rows: the maximum lag is 86 days for `NEWORDER`, 116 days for `ISRATIO`, 93 days for `INDPRO`, and 80 days for `AWHMAN`, so the third month-end is the first common whole-month boundary after each maximum. The later run must report each series' minimum, median, and maximum lag but may not change this availability rule.
 
 - `ORDER(t) = NEWORDER_first(t) - NEWORDER_first(t-3)`. Positive means order flow strengthening; negative means order flow weakening.
 - `INVENTORY(t) = ISRATIO_first(t) - ISRATIO_first(t-3)`. Positive means inventory pressure building; negative means inventory pressure easing.
@@ -19,6 +23,10 @@ For each calendar period `t`, select the initial-release row for each series as 
 - `HOURS(t) = AWHMAN_first(t) - AWHMAN_first(t-3)`. Positive means labor input strengthening; negative means labor input weakening. `HOURS` is report-only and never defines an episode or endpoint.
 
 A trough is a calendar month with a nonpositive transformed value preceded by two positive values and followed by two negative values; a peak is the reverse. Distinct anchor episodes must be separated by at least six calendar months, are ordered by first qualifying month, and are allocated once to the earliest hypothesis that qualifies. Each hypothesis below names all three anchoring transformations; `HOURS` is never an anchor.
+
+### ISRATIO level trough
+
+An `ISRATIO` level trough is a distinct local minimum of the initial-release `ISRATIO_first` level: the month's level is no greater than the two preceding and two following levels, no preceding level within that five-month span is lower, and adjacent equal minima belong to one candidate whose anchor is the earliest minimum. The same publication-availability rule applies to all five level rows. A level trough is never an anchor episode.
 
 ### H1 — Order flow leads inventory turns while output contracts
 
@@ -86,6 +94,10 @@ SELECT series, COUNT(*) FROM initial_releases WHERE period >= DATE '2002-09-01' 
 
 The run must materialize each transformed value only from those initial-release rows, classify every target month available or blocked under the frozen publication rule, and write the endpoint result and complete episode table to `research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_RESULT_2026-09-23.md`. It must not open a return, price, outcome, ledger, scoreboard, or trial artifact before that result and its preregistration compliance review are complete.
 
+### Commit cadence
+
+The seven pre-review commits did not use one commit per numbered section: three commits each completed two sections. That cadence cannot be amended or replayed without rewriting history. This round adds one new commit for the reviewer fixes and preserves the existing commits as immutable evidence.
+
 ## EVIDENCE
 
 - Skeleton-first execution: created this file, committed its headings with `STATUS: IN_PROGRESS`, and pushed commit `d9a9a5b172` before substantive work.
@@ -98,6 +110,7 @@ The run must materialize each transformed value only from those initial-release 
 - 2026-09-23: `git show pr/7845:.../CYCLE_A_ERA_TREATMENT_RECORD_2026-09-23.md` — publication-clock breaks supplied the two excluded eras and the `INDPRO` 2002-12 / 2025-11-24 boundaries; `AWHMAN` remained UNKNOWN.
 - 2026-09-23: `git show origin/main:research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md` — FRED/ALFRED posture: internal-only, model use absent.
 - 2026-09-23: `git show origin/main:data/fred_vintage/vintages.parquet` into a temporary worktree file, then pandas `read_parquet` printed schema and counts only: series strings; `period` and `realtime_start` timestamps; `AWHMAN` 357 rows, first `1997-01-10`; `INDPRO` 357, first `1997-01-17`; `ISRATIO` 354, first `1997-04-15`; `NEWORDER` 354, first `1997-03-26`. A separate three-row-per-series preview confirmed initial rows are keyed by minimum `realtime_start` and selected the 3-month transformation.
+- 2026-09-23 reviewer-fix round: a date-only initial-release aggregation derived publication lags without reading values: across all rows, `NEWORDER` 50/56/86 days, `ISRATIO` 69/74/116, `INDPRO` 41/45/93, and `AWHMAN` 31/34/80 at minimum/median/maximum. The third month-end after each target month is the first common whole-month boundary after every maximum and is therefore the frozen availability deadline.
 - 2026-09-23: `git show origin/main:config/dataset_registry.yml` — grain `(series, period, realtime_start)` and `realtime_start` publication-clock semantics; `git show origin/main:research/prophet_v4/B4_ENTRY_POLICY_CALIBRATION_PREREG_2026-09-23.md` supplied the mirrored gate/endpoint format.
 
 ## GAPS + MUST-NOTS REFUSED
