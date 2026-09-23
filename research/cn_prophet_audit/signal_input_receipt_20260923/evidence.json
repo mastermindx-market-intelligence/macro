@@ -1,0 +1,25 @@
+{
+  "schema": "cn_signal_input_receipt.diagnostic.v1",
+  "mission_complete": false,
+  "implemented": false,
+  "branch": "claude/cn-signal-input-receipt-20260923",
+  "base": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+  "procedure_pin": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "source_blob": "54ba827daad700486cef72f21ad0ae9f432996be",
+  "source_sha256": "5471a018140f9ed4bda2c53196dbeacf4ad105f3cfb8a93fbbec6667fcc57af8",
+  "finding": "Both existing serializers drop explicitly supplied input_asof; analytical asof must not substitute for daily receipt.",
+  "red_tests": {
+    "failed": 12,
+    "passed": 7,
+    "log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+    "raw_log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+    "normalization": "trailing whitespace only"
+  },
+  "later_added_type_safety_tests": "NOT_YET_EXECUTED",
+  "source_write": "PLATFORM_REFUSED_BEFORE_EFFECT",
+  "source_unchanged_on_readback": true,
+  "regression_patch_sha256": "08d8919bebac8e43549ec0860bfb394910c666180e3c0a37bbbc6962a4d8086b",
+  "runtime_or_trading_policy_changed": false,
+  "new_pr": null,
+  "publication_scope": "Diagnostic and prospective test patch only; runtime engine unchanged; no PR or deployment."
+}
