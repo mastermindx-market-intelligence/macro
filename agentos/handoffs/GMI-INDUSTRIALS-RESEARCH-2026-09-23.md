@@ -10,7 +10,7 @@ Capability: SPEC_ONLY / principal research and proposed design. This is not an E
 
 The current Chairman assigns Sol extensive multi-turn Industrials research, analysis and planning before a final Fable CEO build handoff. Difficult research and synthesis remain here, not with research subagents. Economic drivers, earnings, cash, reinvestment, expectations and valuation govern the investigation; BOM/supply-chain constraints are supporting lenses. The latest instruction asks for materially fuller productive turns and proactive checkpoints, not a minimum wall-clock target or a fabricated hidden limit.
 
-Protected Mastermind master and INDEX were freshly confirmed unchanged at `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1. Same-pin COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT remain controlling. Original Macro interface/base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Turn-entry carrier head: `0174d541357156e2e489c561e21d83ebb66b1bf5`. Direct research rationale: PRINCIPAL_JUDGMENT and present Chairman assignment.
+Prior Wave 2 work used protected Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`. For the current Extra High checkpoint, protected `master` and `docs/sol_skills/INDEX.md` were freshly pinned at `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1; COLD_START, ACTIVE_EXECUTION and CLOSEOUT were loaded from that same commit. Original Macro interface/base remains `c4da107fe729e46b4d4036b3e0e290390315d0fd`. The prior carrier checkpoint was `0000d2cebc3d99e70896ff63d054c6f0a379274a`; it was reconciled as a real same-carrier research checkpoint, not an ambiguous effect. Direct research rationale remains PRINCIPAL_JUDGMENT and present Chairman assignment.
 
 ## Preserved work — DO NOT REDO
 
@@ -61,3 +61,36 @@ This boundary follows the complete Wave 2 source-acquisition, economic-synthesis
 Next action: principal-owned Wave 3, beginning with machinery replacement demand versus rental-fleet economics. Recover matched primary-source customer economics, dealer/used-equipment inventories, operating utilization, financing exposure, fleet capital and adverse-cycle cases. Then extend into distribution and transport. Use Wave 2's four-measurement and capital-return distinctions; do not re-run the 26-source sweep or recreate the carrier.
 
 Intended resume surface: this principal Pro research workflow, preferably a fresh conversation at this checkpoint when context requires. Fresh context does not change source custody or authority. Recover only the current pin, this frontier and material invalidators. Further approval is not required merely to continue the already assigned research scope.
+
+
+## Extra High reconciliation addendum — Wave 2 supplemental deltas
+
+The write-capable GitHub surface returned in the current tool generation. Repository permissions show push/admin access for the bound repository. The PR head first read as `0000d2cebc3d99e70896ff63d054c6f0a379274a`, which was newer than the previous portable checkpoint. Inspection showed that it was a completed same-carrier Wave 2 checkpoint with canonical economic-model/evidence/fixture/verification artifacts. No EFFECT_UNKNOWN existed.
+
+The portable Wave 2 packet was therefore **not** blindly published under its colliding `W2-Sxx` identifiers. Material non-duplicate findings were reconciled into a supplemental `W2X` bibliographic namespace:
+
+| Artifact | GitHub blob | Publication commit / receipt |
+|---|---|---|
+| `research/industrials/INDUSTRIALS_WAVE2_RECONCILIATION_SUPPLEMENT_2026-09-23.md` | `d16690d4a59f69ec69e4dd50761cb75d3e704d84` | create receipt `d39e4541980a1e8c6f28719b49231c119e1d6540` |
+| `research/industrials/INDUSTRIALS_WAVE2_SUPPLEMENT_CALCULATIONS_2026-09-23.json` | `f3f7ede2e2b240a6926fe1803931dc393fa0baae` | create receipt `944dc0925ca223eff4fe6bf98c741980e1b5ad83` |
+| `research/industrials/INDUSTRIALS_WAVE2_SUPPLEMENT_VERIFICATION_2026-09-23.md` | verify at containing commit `f5277405e2ebedbe2d9314bad9f88d6a0060f429` | create receipt `f5277405e2ebedbe2d9314bad9f88d6a0060f429` |
+
+The main supplement exactly matched its locally calculated Git blob on readback. The calculation file's remote bytes differed only in JSON formatting from the pretty-printed local object; parsed objects were semantically identical, and the reconstructed remote bytes calculated to the exact GitHub blob `f3f7ede2e2b240a6926fe1803931dc393fa0baae`. Local supplemental verification is 16 PASS / 0 FAIL. Those checks cover research arithmetic and artifact integrity only; they are not application tests, source-rights admission, independent factual review, empirical validation, CI, deployment or browser proof.
+
+Preserved supplemental deltas: Rockwell revenue/profit/incremental-profit contribution are distinct; FANUC management's lead-time/order-pull-forward and substitution explanation separates order timing from usable capacity and customer demand; Legrand cash labels can carry opposite year-over-year signs and its H1 datacenter exposure retains its denominator; Yaskawa's Motion Control and Robotics profit cycles diverge in the same March–May window with an explicit rounding residual; reverse valuation remains non-unique when reinvestment, returns and discount rates vary. These refine the canonical Wave 2; they do not create a competing model.
+
+Effects in this Extra High checkpoint are research documents and this same cumulative continuation only. No product source, live curation record, shared template, worker, Executive Attempt, watcher, merge, deployment, basket/rank/entry/size or trading authority changed. EFFECT_UNKNOWN: none known. Fable CEO build handoff remains withheld.
+
+## Current exact continuation after reconciliation
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+Capability: SPEC_ONLY / principal Industrials research and proposed design.
+
+The Wave 1 foundation, canonical Wave 2 26-source/28-slice package, its 39-check verifier, and the W2X supplemental deltas are **DO_NOT_REDO**. Do not replay the stale portable publication packet or create another carrier.
+
+Exact next substantive action: **switch back to Pro and execute Wave 3, machinery replacement demand versus rental-fleet economics**, then extend into industrial distribution and transport. Build matched primary-source customer-economics evidence around equipment age/replacement, dealer and used-equipment inventory, financing/credit, utilization, realized rental rates, fleet replacement capital, maintenance/disposal economics, network utilization and adverse-cycle cases. Reuse Wave 2's business-scope, four-realization-measurement, cash/reinvestment and valuation-identification disciplines.
+
+Before any later product-interface write or final Fable commission, refresh then-current shared-template/source custody, private-publication/source-rights gates, accepted identity/evidence interfaces and material collisions. The final handoff remains held until sector research, expectations/valuation evidence, data feasibility, counterexamples and written integration specification are mature.
+
+Intended resume surface: the principal Pro research workflow. A fresh chat may recover from this cumulative checkpoint plus the current protected Skillpack pin; no source-custody transfer or autonomous wake is implied.
