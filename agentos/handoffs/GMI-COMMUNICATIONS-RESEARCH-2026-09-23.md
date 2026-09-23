@@ -4,137 +4,147 @@ session: claude/communications-sector-research-20260923
 model: sol
 ended_because: context_budget
 mission: >
-  Complete Communications-sector research and planning under the Chairman's September 23 commission;
-  retain most intellectual work with Sol and prepare a final build handoff for Fable CEO only after
-  the research and implementation design are ready.
+  Complete Communications-sector research and planning under the Chairman's live commission.
+  Sol retains most intellectual work; Fable CEO is the intended final implementation integrator
+  after accepted research, written design and build planning. The end-to-end mission is incomplete.
 state_before: >
-  The Chairman approved the Communications commission. The neighboring shared template and Robotics
-  handoff required canonical reconciliation. No Communications research carrier had been identified
-  by bounded PR-title and branch searches; those searches were not an exhaustive custody census.
+  Phase 1 foundation and cumulative handoff existed on Draft/HOLD PR 7794 at
+  31a9b51b60a8bff9d445e95aa2320c63514b0574. Next work was advertising, search,
+  social and intermediary economics. No Fable receiver or worker had been started.
 changed:
-  - path: research/communications/COMMUNICATIONS_RESEARCH_FOUNDATION_2026-09-23.md
+  - path: research/communications/ADVERTISING_PROFIT_CAPTURE_RESEARCH_2026-09-23.md
     what: >
-      Added the Phase 1 economic-model foundation: eight families, forty candidate slices,
-      eight current issuer-report stress tests, twelve primary references, normalization safeguards,
-      evidence/exposure requirements and historical validation design. No product code changed.
+      Added business-level Meta, Alphabet and The Trade Desk models; contrasting peers;
+      accounting and guidance findings; AI discovery pathways; causal measurement research;
+      and an existing earnings-cache source assessment. Includes 23 primary references.
+  - path: research/communications/ADVERTISING_METRICS_AND_ACCEPTANCE_2026-09-23.md
+    what: >
+      Added thirty metric definitions, twenty-four checked research calculations, thirty-two
+      proposed adversarial acceptance cases, forecast/sensitivity study design and owner mapping.
   - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-    what: >
-      Established and updated the same-carrier cumulative continuation; this revision uses the
-      pinned Agent OS handoff fields and supersedes the initial unvalidated checkpoint shape.
+    what: Updated this same cumulative continuation after Phase 2; no new workstream or state plane.
 prs: [7794]
 verified:
-  - claim: The protected Skillpack and shared-template source frontier were read at immutable commits.
+  - claim: Current protected procedure and incumbent source carrier were reconciled.
     command: >
-      GitHub.fetch branches/master; GitHub.fetch_file INDEX, COLD_START, ACTIVE_EXECUTION,
-      WEB_CEO_DELEGATION and CLOSEOUT at bf764f494b9cd0ecede6234bb472c3344c8e77cc;
-      fetch_file shared architecture at Macro c4da107fe729e46b4d4036b3e0e290390315d0fd.
-    result: Compatible Skillpack 1.0.1/bootstrap 1; owner-preserving shared architecture retained.
-  - claim: The research foundation was written and its immutable object identity read back.
-    command: >
-      GitHub.create_file then GitHub.fetch_file at 05a41bb7fb21e92f349b69d3c0e45fdaf36aa807.
-    result: Foundation blob f2caaae17e5a2296be57d377e0041c645aad6c7f; header and status read back.
-  - claim: A single draft research PR exists on the incumbent branch.
-    command: GitHub.create_pull_request for claude/communications-sector-research-20260923 against main.
-    result: Macro PR 7794 created OPEN/DRAFT, two changed files, not merged; explicit Sol research hold.
-  - claim: The local checkpoint fields and five sourced arithmetic examples passed bounded integrity checks.
-    command: python3 /mnt/data/communications_research/validate_phase1.py
-    result: Six checks passed. This is a local schema-mirror/arithmetic check, not the repository validator or product tests.
+      GitHub.fetch Mastermind branches/master and INDEX; GitHub.get_pr_info 7794;
+      GitHub.fetch_file incumbent handoff; GitHub.fetch Macro refs/heads/main.
+    result: >
+      Protected master remained bf764f494b9cd0ecede6234bb472c3344c8e77cc, Skillpack 1.0.1/bootstrap 1.
+      PR head initially remained 31a9b51b60a8bff9d445e95aa2320c63514b0574; current-main read pin
+      147d245a6a7207daf59b994b54ab5adb545ef8be was not used to rebase or replace the research carrier.
+  - claim: Both Phase 2 documents were committed and immutable object identities read back.
+    command: GitHub.create_file followed by GitHub.fetch_file at each returned commit.
+    result: >
+      Research commit 29cb598a9e3828b7b5a2733776954b94cd370232, blob
+      78f58e0d5d33171cd2fd1773e2eb0f1a89720c58. Metric/acceptance commit
+      8fc0d97d250f6dc7880fe7e1bb7b23d43421e326, blob 167fffeed1feb74638985f49cd3031bff2853963.
+      Native readback covered research header and the metric/fixture section; no full repository validation implied.
+  - claim: Bounded local research checks passed after correcting one expected-value transcription.
+    command: python /mnt/data/communications_research/finalize_phase2_local.py
+    result: >
+      Twenty-four arithmetic examples and twelve illustrative boundary sanity checks passed;
+      twelve used source identifiers resolved. P2-16 expected value was corrected using independent
+      Decimal arithmetic; source inputs and tolerance stayed unchanged. Product tests run: zero.
 unverified:
+  - claim: Production implementation, current deployed data coverage and browser acceptance.
+    what_would_verify: Accepted design followed by existing-owner implementation and real source-to-user proof.
+  - claim: Historical estimate-vintage completeness and predictive stock rerating value.
+    what_would_verify: >
+      Reconcile native archive ownership, original estimate/result vintages and comparable bases;
+      then qualify point-in-time operating and return cohorts with out-of-sample evaluation.
   - claim: Full repository Agent OS validation and CI qualification.
-    what_would_verify: >
-      Run the existing scripts/agentos.py validate and relevant records-only checks in an admitted
-      workspace at the exact branch revision. Not executed in this research turn; do not report CI green.
-  - claim: Predictive usefulness, current trade suitability and full sector coverage.
-    what_would_verify: >
-      Complete company/region research, point-in-time expectation and return panels, out-of-sample
-      evaluation and the existing investment-authority gates. None is established by Phase 1.
-  - claim: Fable delivery or runtime execution.
-    what_would_verify: >
-      After approved final design, use the existing lawful transport/runtime path and obtain exact
-      delivery, ACK and START receipts. No Fable delivery, child, Attempt or watcher exists from this operation.
+    what_would_verify: Run existing scripts/agentos.py validate and applicable checks in an admitted workspace.
+  - claim: Fable delivery, pickup or runtime execution.
+    what_would_verify: A future authorized same-carrier handoff with distinct delivery, ACK and START receipts.
 unresolved:
-  - Full Communications company/region census, existing identity and basket crosswalks remain to be researched.
-  - Dataset access, history, rights and incremental usefulness require qualification; source discovery is not access proof.
-  - Current production/browser acceptance is not tested; historical architecture statements are not fresh runtime evidence.
-  - Economic coefficients, expectations gaps and historical stock-return causality are not established.
+  - Complete streaming, rights/music, games, networks, satellite and regional research before the final masterplan.
+  - Full company/security/classification crosswalks, financial sensitivities and data rights remain unqualified.
+  - Original-guidance comparisons are not verified consensus surprises or a complete revision census.
+  - The selected current earnings-cache writer does not itself establish an immutable estimate archive; no all-estate absence claim.
+  - The 2025 arithmetic comparison uses a 2026 comparative result table; original-vintage replay remains unqualified.
 next_actions:
   - >
-    Resume this same research branch and PR. Reconcile its remote head and refresh only procedure/source
-    state material to the next action. Do not repeat the completed broad bootstrap or rebuild the template.
+    Reconcile this same PR/head and recover the Phase 2 chapter plus this checkpoint; refresh only
+    procedure, custody or interfaces material to the next action. Preserve the research hold.
   - >
-    Deepen advertising/search/social/intermediation dossiers for Meta, Alphabet and The Trade Desk.
-    Define business scopes, retained economics, cost and cash bridges, metric vintages and falsifiable
-    AI/discovery hypotheses; extend primary-source peers only where economically justified.
+    Deepen streaming/video and music/content-rights economics using Netflix, Disney, Spotify and
+    Universal Music Group primary reports; distinguish subscriptions, advertising, licensing,
+    content cash versus amortization, retained cohorts and legacy-business offsets.
   - >
-    Qualify dated expectation inputs and existing Mastermind consumer contracts for a proposed first
-    vertical; then continue streaming, rights/music, games, networks, satellite, regions and historical
-    validation in separate research phases before drafting the final Fable build specification.
+    Map the resulting economic observations into the existing sector template and evidence owners;
+    then continue games, networks, satellite, regions and historical qualification before the Fable build handoff.
 do_not_redo:
-  - Do not recreate this carrier or repeat Phase 1 research absent a material invalidator; append/refine the existing foundation.
-  - Do not rebuild the shared sector architecture or reopen Robotics PR 7773's approved intellectual work.
-  - Do not create a second Theme Graph, ThemeState, evidence/identity/propagation/evaluation store or a universal trading score.
-  - Do not edit incumbent product/template paths or assume this research grants their source custody.
+  - Do not recreate PR 7794 or its branch, repeat the Phase 1 bootstrap, or redo Phase 2 absent a material invalidator.
+  - Do not rebuild the shared sector template, Robotics 7773, Theme Graph, ThemeState or existing evidence/identity/propagation owners.
+  - Do not create another earnings/consensus feed, estimate store, graph, publisher, evaluation plane or universal opportunity score.
+  - Do not convert research categories into live basket membership or research hypotheses into selection/sizing/trade authority.
 danger_areas:
-  - This public repository must not receive paid/private raw evidence, restricted corpora or secrets.
-  - Candidate research categories are not admitted canonical themes, sector constituents or basket memberships.
-  - Guidance, reported results, revised definitions, acquisitions and inferred causality require separate treatment.
-  - The PR is DRAFT/HOLD, not accepted, PARKED or shipped; no auto-merge or merge-on-green is authorized.
-  - An archived record is not a Fable assignment, receiver ACK, autonomous wake or runtime START.
+  - Public repository; never commit paid/private raw corpora, restricted evidence or credentials.
+  - Magnite headline operating cash flow is not GAAP cash from operating activities; formulas and periods must survive.
+  - TTD supplier-cost presentation and useful-life changes require explicit comparability; customer retention is not spend retention.
+  - Guidance floors/ranges, original/revised vintages and report/product clocks are distinct.
+  - Sweep freshness is not original estimate publication time; post-campaign model features cannot enter ex-ante tests.
+  - Draft/HOLD remains; no merge-on-green, native auto-merge, custody transfer or background wake is authorized here.
 ---
 
-# GMI Communications — cumulative Phase 1 continuation
+# GMI Communications — cumulative Phase 2 continuation
 
 **FINALIZATION_CLASSIFICATION:** CHECKPOINTED_CONTINUATION  
 **MISSION_COMPLETE:** false  
 **Operation:** `gmi-communications-research-20260923-sol-001`
 
-## 0. State — what is true now
+## 0. State
 
-Phase 1 is persisted as original research on Macro PR #7794 and the existing branch. It establishes
-an economic-model foundation and a concrete next research phase, not the final master plan.
-The boundary is justified by the completed foundation phase and substantial source/tool context.
-There is no autonomous work continuing after the conversation yields and no custody transfer.
+The advertising/search/social/intermediation research phase now has a committed analytical chapter
+and metric/acceptance companion on the existing research carrier. The continuation boundary follows
+a substantial primary-source and native-source phase; it protects the remaining research from
+accumulating the long tool history. It is not completion or a transfer of ownership.
 
-## 1. What is left — in order
+## 1. What is left
 
-Start the advertising/search/social/intermediation deep dive using the foundation's existing source
-register. Resolve segment economics, monetization, profit/cash conversion and expectations before
-choosing an implementation slice. Continue the remaining economic families, regions and historical
-validation afterward. Fable remains the intended final integrator; no request to start has been sent.
+Next: streaming/video and music/content-rights dossiers. Start with the actual prior source register,
+then deepen current primary filings and dated expectations. Reuse this phase's advertising/CTV and
+measurement work. Continue the other economic families, regions and historical tests before the final
+Communications specification and Fable implementation packet. No Fable handoff has been delivered.
 
 ## 2. What will bite the next session
 
-Metrics may change definition or consolidation perimeter. Unknown financial exposure is not zero.
-Eight current issuer examples are not a sector census or a point-in-time stock-return study.
-Reports repeat underlying issuer evidence; syndicated copies do not provide independent confirmation.
-Keep the explicit research hold until Sol releases it on this carrier. No blanket fleet merge action
-may convert this research into accepted product design.
+A useful economic explanation is the goal; accounting/provenance safeguards enable it but do not replace
+it. Do not let missing consensus erase useful operating intelligence, or let operating growth invent a
+consensus surprise. Source guidance, management explanations and analyst hypotheses need distinct labels.
+The local JSON is only a portable research export; canonical research tables remain in this PR.
 
-## 3. Findings and last effects
+## 3. Last effects and exact sources
 
-Research foundation commit: `05a41bb7fb21e92f349b69d3c0e45fdaf36aa807`; blob:
-`f2caaae17e5a2296be57d377e0041c645aad6c7f`. This checkpoint's exact final commit/blob is established
-by its GitHub update receipt and immutable readback, not by a self-referential SHA in these bytes.
-Only the research and handoff files were authored. No product/runtime state changed. No modifying
-EFFECT_UNKNOWN is outstanding. An optional public-raw download failed; native GitHub reads/writes
-succeeded, so that convenience-path failure does not block the mission.
+The two Phase 2 documents and this checkpoint are the only repository content effects this turn.
+PR metadata may be updated to project this research frontier; that is not design acceptance.
+No product code, runtime, template, evidence store, membership or trading policy changed.
+No modifying EFFECT_UNKNOWN is outstanding. No worker, Attempt, watcher or Fable receiver was started.
 
-## 4. Source frontier and exclusions
+Research chapter commit/blob: `29cb598a9e3828b7b5a2733776954b94cd370232` /
+`78f58e0d5d33171cd2fd1773e2eb0f1a89720c58`.
+Metric/acceptance commit/blob: `8fc0d97d250f6dc7880fe7e1bb7b23d43421e326` /
+`167fffeed1feb74638985f49cd3031bff2853963`.
+Phase 1 foundation remains at commit `05a41bb7fb21e92f349b69d3c0e45fdaf36aa807`, blob
+`f2caaae17e5a2296be57d377e0041c645aad6c7f`.
+This checkpoint's final commit/blob is established by its write receipt and immutable readback,
+not a self-referential identifier in these bytes.
 
-Protected procedure: `mastermindx-market-intelligence/Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`,
-Skillpack 1.0.1/bootstrap 1. Loaded INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT
-from that same commit. Direct research rationale: PRINCIPAL_JUDGMENT under the live Chairman commission.
+Native interface read pin: Macro `147d245a6a7207daf59b994b54ab5adb545ef8be`.
+Selected sources: `collectors/equity_earnings.py` blob `3cf263cdc561697cd003366937d0807c8b3f0025`;
+`research/EARNINGS_WIRE_PROGRAM.md` blob `537f87d57a009d43cfc59fe6cdf3d2655cc99b6f`;
+`engine/marketing/edgar_earnings_wire.py` blob `d3d5e1af8f597570e8ebd638f01aff0b32a7df37`.
 
-Macro research base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-Sole branch: `claude/communications-sector-research-20260923`. Sole PR: #7794.
-Shared architecture: `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`,
-blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971` at the Macro base.
-Existing owner context: `agentos/workstreams/WS-GMI-THEME-GRAPH.md` at that same base.
-Handoff schema mirror: `agentos/schema/handoff.schema.yml`, blob
-`16d3c2a80e1c7385dda612e3d2d2c62d0e204963` at the Macro base.
-Robotics precedent: draft #7773, observed head `f10211657c6c31df3c9af73cd4b9484e2dd7690a`;
-master handoff blob `696844cbb094fc237cbccd1d0fb093ba12182f40`.
+## 4. Authority and exclusions
 
-Existing `WS:GMI-THEME-GRAPH` supplies organizational context; no new workstream or ownership grant
-is created. Resume in this Sol research conversation or a fresh one from this checkpoint and the
-minimum current canonical state. Do not require replay of the long tool history.
+Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1.
+Previously loaded INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT remain on that
+same unchanged revision. Direct research rationale: PRINCIPAL_JUDGMENT under the live Chairman mandate.
+Source branch: `claude/communications-sector-research-20260923`; sole PR #7794; original base
+`c4da107fe729e46b4d4036b3e0e290390315d0fd`. No rebase occurred.
+
+Existing `WS:GMI-THEME-GRAPH` supplies organizational context. Shared sector design blob
+`d3bb8a03d4e571a058a499bd35a1a94c7c8e8971` and Robotics #7773 remain preserved dependencies,
+not new work for this session. Resume in this Sol research conversation or a fresh Sol research
+conversation from the exact checkpoint and minimum fresh canonical state. No autonomous wake is claimed.
