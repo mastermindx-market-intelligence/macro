@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T16:16:32.899927+00:00",
-  "count": 2719,
+  "generated_at": "2026-09-23T16:39:50.281681+00:00",
+  "count": 2721,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -100,6 +100,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-t5oi11yvmsb-6b195e",
+      "title": "SMIC (0981.HK) AI to drive 2H26 growth; strongest revenues QoQ in 2Q26 among global top 10 foundries; Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T16:33:53Z",
+      "summary_points": [
+        "SMIC Revenue Growth & China AI Demand: Q226 QoQ revenue growth at 20% (vs. top 10 foundries’ 11.5% avg), driven by China’s generative AI trend, localization, and +15% YoY China Semis Capex growth in 2026-28E.",
+        "AI Chip TAM & Capex Allocation: China’s AI chip TAM to reach US$4.123bn by 2030 (base case), with SMIC allocating 54-71% of capex to 7nm/advanced nodes, supported by strong analog/power IC demand.",
+        "US Geopolitical Risk: BIS Entity List restrictions threaten critical equipment/material supply, posing a direct operational and growth risk for SMIC.",
+        "2H26 Revenue Outlook: Q3/Q4 2026 revenues projected at +12% Hoh, +27% YoY; capacity tightness for AI chips supports stable ASPs despite rising depreciation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-d5h90yu382j-bc2367",
       "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
       "institution": "Goldman Sachs",
@@ -196,6 +216,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nohhot47ht3-f9b42c",
+      "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:32Z",
+      "summary_points": [
+        "BTM Power Forecast Surge: Goldman Sachs raises global behind-the-meter (BTM) power generation forecast to 67GW by 2030 (from 40GW), driven by AI/data center infrastructure constraints, with fuel cells supplying ~12GW of US data center capacity by 2030.",
+        "Fuel Cell Execution Dominance: Fuel cells (SOFC) lead data center power solutions with highest weighted score (76.6 vs. 67-68 for alternatives), excelling in deployment speed (6-12 months), reliability, and site efficiency, critical amid tight supply chains.",
+        "Cost Premium Risk: Fuel cells face 45%+ higher LCOE ($117/MWh vs.",
+        "$81/MWh for reciprocating engines) and 30% higher cost than gas turbines, creating significant capital cost risk despite execution advantages."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
       "language": "en",
       "needs_metadata": false
     },
