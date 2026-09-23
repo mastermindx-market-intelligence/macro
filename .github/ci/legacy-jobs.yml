@@ -16356,25 +16356,28 @@ jobs:
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
-    # 2026-09-23 A-F03-W2-4 appends the methodology-parity audit
-    # (tests/test_audit_options_skew_parity.py and
-    # scripts/audit_options_skew_parity.py) to the same gate:code job.
-    # The suite runs this job names are the W2-2 test surface
-    # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
-    # test_audit_options_skew_overlap) plus the W2-4 parity audit.
-    # These are end-to-end tests of the
-    # M1-host launchd lane that builds data/options_skew/snapshots.parquet
-    # and publishes it to R2; they have no signal-contract / render subject,
-    # so they were parked in config/unrun_test_waivers.yml in error. They
-    # are now wired into a real merge-gate job and the waiver rows are
-    # deleted (round 5/N, Meta-CEO A binding ruling). scope: exclusive
-    # replaces inference because every helper script has its own argparse
-    # surface and the runner is sh-only and not visible to AST inference.
+    # 2026-09-23 A-F03-W2-4 appended the methodology-parity audit
+    # (tests/test_audit_options_skew_parity.py + scripts/audit_options_skew_parity.py)
+    # and Meta-CEO A packet A-F03-W2-5a added the payoff-lab suites
+    # (tests/test_options_payoff_lab.py + tests/test_payoff_lab_launchd.py)
+    # to this same gate:code job. The eight suite runs this job names are the
+    # five W2-2 suites (test_skew_accrual_gate/launchd/precheck/verify_ledger +
+    # test_audit_options_skew_overlap), the W2-4 parity audit, and the two W2-5a
+    # suites. These are end-to-end tests of the M1-host launchd lanes that build
+    # data/options_skew/snapshots.parquet and data/options_payoff_lab/latest.json
+    # and publish them to R2; they have no signal-contract / render subject, so
+    # the W2-2 suites were parked in config/unrun_test_waivers.yml in error. They
+    # are now wired into a real merge-gate job and those waiver rows are deleted
+    # (round 5/N, Meta-CEO A binding ruling). The W2-4 and W2-5a suites were never
+    # waived. scope: exclusive replaces inference because every helper script has
+    # its own argparse surface and the runner is sh-only and not visible to AST
+    # inference.
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
     scope: exclusive
     # Paths are the page-equivalent family for the W2-2 store-host lane
-    # plus the measured import closure of the five suites
+    # and the W2-5a payoff lab, plus the measured import closure of the
+    # seven suites
     # (suite_dependency_closure reports them on the merged tree). Listed
     # literally so exclusivity covers every file the suites actually
     # read or run; an unlisted closure file is an uncovered path. No
@@ -16403,6 +16406,55 @@ jobs:
       - "tests/test_audit_options_skew_parity.py"
       - "tests/test_skew_accrual_precheck.py"
       - "tests/test_skew_accrual_verify_ledger.py"
+      # MO-A3 W2-5a (2026-09-23): payoff lab producer. The lab imports
+      # engine/options_payoff.py, and that module imports
+      # lib/evidence_foundation.py, whose static imports pull the
+      # company-intelligence, earnings, and theme-graph modules below.
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/greeks.py"
+      - "engine/intraday_greeks.py"
+      - "engine/options_payoff.py"
+      - "engine/options_payoff_lab.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
+      - "ops/launchd/com.macro.payofflab.plist"
+      - "ops/launchd/run_options_payoff_lab.sh"
+      - "scripts/build_options_payoff_lab.py"
+      - "tests/test_options_payoff_lab.py"
+      - "tests/test_payoff_lab_launchd.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16417,8 +16469,10 @@ jobs:
         # render deps; the launcher + argparse helpers are stdlib-only.
         # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
         # (12 publish_r2 registration tests red without it — run 35782263306).
-        run: pip install pytest pandas pyarrow pyyaml
-      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap and parity audits
+        # jsonschema: lib/evidence_foundation.py (imported by options_payoff).
+        # scipy: engine/intraday_greeks.py, which the payoff engine calls.
+        run: pip install pytest pandas pyarrow pyyaml jsonschema scipy
+      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap + parity audits, payoff lab
         run: |
           python -m pytest \
             tests/test_skew_accrual_gate.py \
@@ -16427,4 +16481,6 @@ jobs:
             tests/test_audit_options_skew_parity.py \
             tests/test_skew_accrual_precheck.py \
             tests/test_skew_accrual_verify_ledger.py \
+            tests/test_options_payoff_lab.py \
+            tests/test_payoff_lab_launchd.py \
             -q
