@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
   "as_of": "2026-09-23",
-  "generated_at": "2026-09-23T10:01:38Z",
+  "generated_at": "2026-09-23T21:24:43Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -431,10 +431,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-23",
       "thesis_id": "cybersecurity.v1",
-      "content_hash": "sha256:3142a7d7d19ef355a40ae0c8a522dcedecc8382e3d32a9f2bc51912003ed42ab",
-      "prev_content_hash": "sha256:218311c08dc9a1574684fa5a88d1aeb4b919d0290294a92678b8eab5cebf8ffb",
+      "content_hash": "sha256:d0f3c0f8b1d817f29dea3b4c56bcfc4fee54605ba90ad70e8916023d3cebe383",
+      "prev_content_hash": "sha256:3142a7d7d19ef355a40ae0c8a522dcedecc8382e3d32a9f2bc51912003ed42ab",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -488,7 +488,7 @@
           "rule_en": "If revision_breadth for cybersecurity falls below 0.1, software IT budget compression is overriding the platform cycle tailwind.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.475"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.542"
         },
         {
           "id": "cyber_f2",
@@ -510,8 +510,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-09-23",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:22f7c4cff9a623b08061f994e8a076d873ffcc80eb12554ac07bb196232cee48",
-      "prev_content_hash": "sha256:bac41e8f0a0e0d54ff0b3a4fd0097b55ee996b6e2b503569ea57d979aa51d17e",
+      "content_hash": "sha256:4ced63288c6c55f4d7f1206877921f68a67a79e1553f91bc7dbe82514b8e47e0",
+      "prev_content_hash": "sha256:22f7c4cff9a623b08061f994e8a076d873ffcc80eb12554ac07bb196232cee48",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -570,14 +570,14 @@
           "rule_en": "If revision_breadth for robotics_automation falls below 0.0, earnings upgrades are not broadening — adoption is slower than the ROI case implies.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.837"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.879"
         },
         {
           "id": "robo_f2",
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=49.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=56.0"
         },
         {
           "id": "robo_f3",
@@ -674,10 +674,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-14",
+      "as_of": "2026-09-23",
       "thesis_id": "nuclear_power.v1",
-      "content_hash": "sha256:62e2f9afa38ae23c06ff264132257c16046375755b53dac4c810b61e6806b225",
-      "prev_content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
+      "content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
+      "prev_content_hash": "sha256:62e2f9afa38ae23c06ff264132257c16046375755b53dac4c810b61e6806b225",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -736,7 +736,7 @@
           "rule_en": "If revision_breadth for nuclear_power turns negative, earnings estimate cuts are spreading — hyperscaler PPA momentum may be stalling.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.15"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.174"
         },
         {
           "id": "nuke_f2",
@@ -1117,8 +1117,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-09-23",
       "thesis_id": "medical_devices.v1",
-      "content_hash": "sha256:5dd9519be307c1e51684be769fa26c061d9702c76f98cdd5c698bd4e7e7f7ecc",
-      "prev_content_hash": "sha256:fbf96cbf100e3de00ff1182b974d5a715bc4ef745587248206a6ff600734c2d8",
+      "content_hash": "sha256:1a5f309e3f5643fcee1c6d8e0ab0bdd360767a183fe951d366d015f9aaf0ee1d",
+      "prev_content_hash": "sha256:5dd9519be307c1e51684be769fa26c061d9702c76f98cdd5c698bd4e7e7f7ecc",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1172,7 +1172,7 @@
           "rule_en": "If revision_breadth for medical_devices falls below 0.0, hospital capex cycles are overriding the installed-base recurring revenue thesis.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.003"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.05"
         },
         {
           "id": "meddev_f2",
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-23T10:01:38Z",
-  "inputs_hash": "sha256:8f7d0c0a6abe5b98f20ffd8cc98af965976b63508f3f142268f68c322012260d",
+  "produced_at": "2026-09-23T21:24:43Z",
+  "inputs_hash": "sha256:3e1c255372903331db6cf1b0a4a0121c1daad6f668869cda57dc1051f0c7ae4d",
   "tier": "display"
 }

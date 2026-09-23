@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-22",
-  "generated_at": "2026-09-23T07:51:25.862445+00:00",
+  "generated_at": "2026-09-23T18:32:15.842242+00:00",
   "is_context_only": true,
-  "n_snapshots": 878,
+  "n_snapshots": 891,
   "n_days": 30,
   "horizons": {
     "5": {
-      "n_matured": 783,
+      "n_matured": 818,
       "by_stage": {
         "running": {
-          "n": 709,
-          "mean_fwd_rel": -0.0065,
-          "hit_rate": 0.425
+          "n": 744,
+          "mean_fwd_rel": -0.0063,
+          "hit_rate": 0.423
         },
         "coiling": {
           "n": 36,
@@ -25,18 +25,18 @@
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0571,
-      "running_ic_t_hac": -0.752,
+      "running_ic": -0.0463,
+      "running_ic_t_hac": -0.623,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 712,
+      "n_matured": 714,
       "by_stage": {
         "running": {
-          "n": 638,
-          "mean_fwd_rel": -0.0098,
-          "hit_rate": 0.39
+          "n": 640,
+          "mean_fwd_rel": -0.0094,
+          "hit_rate": 0.392
         },
         "coiling": {
           "n": 36,
@@ -49,18 +49,18 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0703,
-      "running_ic_t_hac": -1.124,
+      "running_ic": -0.0673,
+      "running_ic_t_hac": -1.052,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 549,
+      "n_matured": 551,
       "by_stage": {
         "running": {
-          "n": 484,
-          "mean_fwd_rel": -0.0193,
-          "hit_rate": 0.362
+          "n": 486,
+          "mean_fwd_rel": -0.0187,
+          "hit_rate": 0.364
         },
         "coiling": {
           "n": 33,
@@ -73,8 +73,8 @@
           "hit_rate": 0.656
         }
       },
-      "running_ic": -0.0331,
-      "running_ic_t_hac": -0.734,
+      "running_ic": -0.0306,
+      "running_ic_t_hac": -0.663,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,7 +83,7 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0462,
+          "mean_fwd_rel": -0.0459,
           "hit_rate": 0.346
         },
         "coiling": {

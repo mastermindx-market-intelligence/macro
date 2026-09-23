@@ -1,15 +1,15 @@
 {
   "schema": "bottom_sensors_geometry_audit.v1",
-  "n_booked": 104416,
+  "n_booked": 107346,
   "booked_dates": [
     "2026-07-06",
-    "2026-09-21"
+    "2026-09-22"
   ],
-  "asof": "2026-09-21",
-  "n_matured": 11893,
+  "asof": "2026-09-22",
+  "n_matured": 11894,
   "by_horizon": {
     "h21": {
-      "n_obs": 11893,
+      "n_obs": 11894,
       "decline_geometry": {
         "buckets": {
           "flush": {
@@ -17,15 +17,15 @@
             "n": 1821
           },
           "grind": {
-            "mean_fwd_ret": 0.012053094852583967,
+            "mean_fwd_ret": 0.01204703657878595,
             "n": 1845
           },
           "mixed": {
-            "mean_fwd_ret": 0.005651461152635154,
+            "mean_fwd_ret": 0.005646509802842244,
             "n": 1836
           }
         },
-        "flush_minus_grind": -0.011253866511018196
+        "flush_minus_grind": -0.011247808237220179
       },
       "underwater_state": {
         "buckets": {
@@ -34,20 +34,20 @@
             "n": 1808
           },
           "mid": {
-            "mean_fwd_ret": 0.0060081377327769175,
+            "mean_fwd_ret": 0.006007241567571788,
             "n": 1822
           },
           "short": {
-            "mean_fwd_ret": -0.006157107057539262,
+            "mean_fwd_ret": -0.006167061854747263,
             "n": 1872
           }
         },
-        "long_minus_short": 0.025321219309663585
+        "long_minus_short": 0.02533117410687159
       }
     }
   },
   "interpretation": "Realized forward-return gaps of the FROZEN structural descriptors per horizon: decline_geometry flush\u2212grind (family E, DISPLAY-CANDIDATE) and underwater_state long\u2212short (family F, ADVERSE-CONTEXT). Descriptive only; empty/thin until horizons elapse.",
   "authority": "DISPLAY-ONLY \u2014 no ranking/gating/allocation surface is touched; a positive gap does NOT promote either descriptor. CHIP promotion is blocked until the true eq_band cache lands (RUL-28).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve currently-listed names only.",
-  "generated_utc": "2026-09-23T09:58:53+00:00"
+  "generated_utc": "2026-09-23T21:22:04+00:00"
 }
