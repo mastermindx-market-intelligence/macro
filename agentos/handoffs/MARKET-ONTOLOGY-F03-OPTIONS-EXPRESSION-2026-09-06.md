@@ -54,8 +54,8 @@ unverified:
     what_would_verify: gh pr checks 6923 after the push. This packet does not claim that.
 unresolved:
   - GitHub checks on the pushed head are not claimed green.
-  - W2-2 M1 launchd ThetaData accrual is not installed.
-  - W2-3 cutover (drop the legacy flag, switch render to --emit) is not done.
+  - W2-2 M1 launchd ThetaData accrual — RESOLVED 2026-09-23 (#7737 merged, lane live on m1; see agentos/handoffs/MARKET-OS-2026-09-23-skew-lane-live.md).
+  - W2-3 cutover (drop the legacy flag, switch render to --emit) — RESOLVED 2026-09-23 (#7743 merged as b2d43b3a; same handoff).
   - This record's workstream is WS:MARKET-OS (the F03 lane's owner per the F00C granular closure ledger, MO-PAID-013 `current_owner`); an earlier draft cited a non-existent WS:MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION, which agentos validate rejected as a dangling-ref (seat cure 2026-09-22).
 next_actions:
   - W2-2 installs the M1 launchd ThetaData accrual. The store host accrues and commits the parquet ledger. Do not do that on a render host.
