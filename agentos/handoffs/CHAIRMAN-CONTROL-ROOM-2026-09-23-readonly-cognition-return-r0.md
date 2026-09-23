@@ -21,20 +21,33 @@ state_before: >
 changed:
   - path: "Mastermind PR #933"
     what: >
-      Opened Draft/HOLD carrier [WEB-SOL][R0] at head
-      9487d4b3f39c4e9197d29540fcf33996b018d2af from protected source
-      c917a75b0168a524a51b2ba0603a99118e93ef1f. The two-commit RED/GREEN slice adds four new,
-      path-disjoint files only. It introduces a pure browser canonical-result reducer and a pure
-      native/control adapter that reuses the existing Executive orchestration-result validator and
-      RawRoleResultObservation. It adds no transcript store, result schema, lifecycle, queue, retry
-      plane, placement registry, browser authority, or Runtime mutation.
+      Opened Draft/HOLD carrier [WEB-SOL][R0], now at exact head
+      1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8 from protected source
+      c917a75b0168a524a51b2ba0603a99118e93ef1f. The four-path slice introduces a pure browser
+      canonical-result reducer and a pure native/control adapter that reuses the existing Executive
+      orchestration-result validator and RawRoleResultObservation. Same-carrier RED
+      bd080e988fa3549efae4d9642ca2977bf6147a6f and GREEN
+      11e6fa801b3c8c737afe63c4db9fd841fdd57605 close a discovered nested-content escape before
+      browser export; 1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8 adds positive coverage for every existing
+      orchestration role family. No transcript store, result schema, lifecycle, queue, retry plane,
+      placement registry, browser authority, or Runtime mutation is added.
   - path: "Mastermind PR #933 comment 5791710175"
     what: >
       Recorded the architecture correction that inbound result harvesting is necessary but insufficient:
       degraded Pro workers also need a separately versioned bounded assignment/bootstrap ingress. The
       incumbent #836 fixed continuation must remain fixed rather than becoming an arbitrary prompt API.
-      The future outbound capsule should consume #651's bounded Agent OS continuation projection plus
-      exact Executive Job/Attempt/Worker/role/root and source/result/effect requirements.
+      Subsequent source archaeology found that a future outbound browser assignment must not invent a
+      second task-capsule authority: #811 already owns immutable commission_ref consumption and #818
+      already maps attended Web publication into that strict-v2 source. A browser assignment layer
+      should project/compose accepted outputs from the existing commission owner plus #651's bounded
+      organizational continuation and exact Executive/result identities, once those incumbent contracts
+      are actually accepted/current.
+  - path: "Mastermind PR #933 comment 5791938085"
+    what: >
+      Records the material same-carrier privacy repair: the original outer-only browser fence allowed
+      unknown nested role_result content to cross the page boundary before native rejection. RED/GREEN
+      repair now closes every sanctioned existing orchestration-role shape before export while leaving
+      semantic/relational/redaction authority with the canonical native Executive validator.
 verified:
   - claim: >
       Current protected Mastermind procedure and implementation source were pinned before effects at
@@ -50,7 +63,7 @@ verified:
       R0 does not collide with the active Web-Sol/Runtime writers that own later integration surfaces.
     command: >
       GitHub open-PR metadata and changed-filename reads for Mastermind #836, #890, #651, #706 and #870,
-      followed by compare c917a75b0168a524a51b2ba0603a99118e93ef1f...9487d4b3f39c4e9197d29540fcf33996b018d2af.
+      followed by current changed-path census of PR #933 and its incumbent neighbors.
     result: >
       R0 changes exactly four new files. #836 retains content/background/native exact-turn transport
       custody; #890 retains action capability/serviceability; #651 retains bounded Agent OS Web-Sol
@@ -63,9 +76,11 @@ verified:
       Node v22.16.0 standalone reducer suite plus node --check on
       cognition_result_core.js and web_sol_cognition_result_core.test.cjs.
     result: >
-      9/9 reducer cases passed: valid exact envelope accepted; prose, Markdown fences, noncanonical
-      formatting/key order, duplicate JSON keys, outer identity drift, root drift, unknown outer
-      fields and over-budget output refused. JS syntax checks passed.
+      Original 9 reducer cases plus 3 privacy discriminators pass after repair: prose, Markdown fences,
+      noncanonical formatting/key order, duplicate JSON keys, outer/root drift, unknown outer or nested
+      fields, nested artifact field escape, non-string next-actions and over-budget output refuse before
+      export. Valid closed plan-v1, plan-v2, work, review, repair and aggregation shapes remain accepted.
+      JS syntax checks pass.
   - claim: >
       The Python R0 bridge is syntactically valid and delegates full role/result validation to the
       existing canonical Executive result owner.
@@ -78,14 +93,15 @@ verified:
       expectations and constructs the existing RawRoleResultObservation; it does not persist or complete
       an Attempt itself.
   - claim: >
-      Hosted CI for exact R0 head 9487d4b3f39c4e9197d29540fcf33996b018d2af is genuinely running and
-      independent review has been requested.
+      Hosted CI for exact repaired R0 head 1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8 is genuinely running
+      and independent review remains requested.
     command: >
-      GitHub workflow-run/job read for run 35838023660 and request_pull_request_reviewers on PR #933.
+      GitHub workflow-run/job read for run 35839774157 / job 107111886848 plus PR #933 reviewer state.
     result: >
-      CI job 107106072905 started 2026-09-23T08:35:54Z; setup/checkout/install/compile/shell validation
-      completed successfully and repository test gate was in_progress at the final observation. Reviewer
-      mastermindx-3 is requested. Neither is yet an acceptance result.
+      Exact-head CI job 107111886848 started on 1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8;
+      setup/checkout/install/compile/shell validation completed successfully and repository test gate was
+      in_progress at the observation. Reviewer mastermindx-3 remains requested with no review returned.
+      Old run 35838023660 on 9487d4b3 is historical after the privacy repair.
   - claim: >
       Incumbent #836's outbound Web-Sol continuation cannot carry a cognition assignment capsule.
     command: >
@@ -97,9 +113,9 @@ verified:
       Pro session that lacks the custom Executive/Studio Direct access needed to perform that recovery.
 unverified:
   - claim: "R0 exact-head repository CI is green."
-    what_would_verify: "GitHub Actions run 35838023660 reaches terminal success on head 9487d4b3f39c4e9197d29540fcf33996b018d2af."
+    what_would_verify: "GitHub Actions run 35839774157 reaches terminal success on head 1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8."
   - claim: "Independent review accepts R0."
-    what_would_verify: "A non-author review on PR #933 at exact head 9487d4b3f39c4e9197d29540fcf33996b018d2af with no unresolved blocking findings."
+    what_would_verify: "A non-author review on PR #933 at exact head 1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8 with no unresolved blocking findings."
   - claim: "A real ChatGPT Web Pro turn can be reduced and returned through the Web-Sol native transport."
     what_would_verify: >
       After #836 source custody releases and a separately versioned R1 result-observation action is
@@ -121,13 +137,13 @@ unresolved:
   - "R1 transport wiring is held behind #836 source custody/review/release; do not edit content.js, background.js, native host/client/protocol on a sibling carrier."
   - "R2 canonical Attempt ingestion must reconcile #870/current Runtime ownership. Do not forge SEALED_WORKER receipts for an externally hosted browser cognition session."
   - "Cognition-only placement must consume #890/current exact-action capability owner. A working READ action never promotes an unknown/missing WRITE or ADMIN action."
-  - "Outbound task delivery is a separate required capability. Fixed Wake continuation remains fixed; do not widen it to arbitrary prompt submission."
+  - "Outbound task delivery is a separate required capability. Fixed Wake continuation remains fixed; do not widen it to arbitrary prompt submission. Do not invent another task capsule: #811/#818 own immutable commission provenance/consumption, while #651 owns bounded organizational continuation; all remain release-gated."
   - "Toolful successor bootstrap should consume #651 plus existing RuntimeBinding/context-rotation owners. Automatic Pro/Extra-High UI mode selection remains UNKNOWN until disposable provider proof."
   - "Hidden model reasoning is unrecoverable. Later crash recovery may use only visible bounded cumulative checkpoints through the existing Attempt checkpoint owner."
 next_actions:
   - "Primary: consume PR #933 exact-head CI and independent review. Repair only on the same PR/branch if a finding or failure is material; do not start R1 from an unaccepted R0."
   - "After #836 releases its Web-Sol transport paths, implement R1 on the incumbent transport: one separately versioned exact-current-terminal-turn result-observation action feeding the accepted R0 reducer, with transcript/DOM/prior-turn export prohibited."
-  - "In parallel when #651's continuation contract is accepted/current, build a path-disjoint pure outbound assignment renderer/validator first, then integrate it into Web-Sol only through the incumbent transport owner after custody release."
+  - "After #811/#818 immutable commission source/consumer semantics and #651 bounded continuation are accepted/current, build only the browser-specific bounded projection/renderer that composes those existing owners; do not introduce a second handoff or task-authority schema."
   - "After #870/current Runtime owner settles, implement R2 by routing the browser raw observation through the existing Runtime validation/sealing/completion path and existing terminal-return consumer; preserve replay/effect reconciliation."
   - "Consume #890 for R3 cognition-only placement and pre-START toolful rebinding; then use #651/context-rotation/RuntimeBinding for R4 successor bootstrap."
   - "Only after those source releases: execute a disposable zero-Chairman canary before any explicitly authorized production responsibility."
@@ -145,7 +161,7 @@ danger_areas:
   - "The existing fixed Wake directive assumes the target can recover canonical state; degraded cognition workers may not have that access. Assignment delivery and Wake ACK must remain distinct facts."
   - "Current ExecutionMode has SEALED_WORKER and OPERATOR_HARNESS only. R2 must use the existing owner to prove one fits browser cognition or version that contract; never add a parallel Attempt table/service."
   - "Reasoning-mode selection is separate from worker capability. The first autonomous successor should route to any eligible toolful session rather than depend on silently toggling a Pro session to Extra High."
-prs: [651, 706, 836, 870, 890, 933]
+prs: [651, 706, 811, 818, 836, 870, 890, 933]
 decisions:
   - DEC:CCR-SOL-IDENTITY-IS-NOT-A-CHAT
 ---
@@ -153,7 +169,7 @@ decisions:
 # Handoff — read-only Web Pro cognition return R0
 
 The first implementation slice is now real source, not only a plan. Mastermind PR #933 has a RED-first
-canonical cognition-result boundary at head `9487d4b3f39c4e9197d29540fcf33996b018d2af`; it is deliberately
+canonical cognition-result boundary at head `1af0e5e7a48189bdeeff358ccf9d9c56457c5fa8`; it is deliberately
 not wired into the live extension while #836 owns those paths. The result boundary reuses Executive OS
 result validation and refuses transcript-like output instead of creating a new memory/result system.
 
@@ -164,7 +180,7 @@ a bounded canonical **assignment ingress** from existing Executive/Agent OS owne
 **result egress** back into existing Executive result owners. Neither browser boundary becomes a lifecycle,
 authority, memory or placement plane.
 
-At this checkpoint GitHub CI run `35838023660` is running on the exact R0 head and independent reviewer
+At this checkpoint exact-head GitHub CI run `35839774157` is running on the repaired R0 head and independent reviewer
 `mastermindx-3` is requested. The parent mission is not complete and no production/browser proof exists.
 The next Sol session should start by reading PR #933 and this handoff, consume the CI/review return, and
 repair the same carrier if required. Only after R0 is accepted should transport wiring begin, and only
