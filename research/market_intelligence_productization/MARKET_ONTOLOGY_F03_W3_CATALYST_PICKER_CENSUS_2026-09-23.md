@@ -3,359 +3,248 @@ title: "[MO-A3] A-F03-W3-0 — catalyst→exposure→structure (Catalyst Picker)
 packet: A-F03-W3-0 (evidence only; not for merge)
 seat: Meta-CEO A
 date: 2026-09-23
-authority: Chairman override 09-06 — Meta-CEO A owns this program; no Sol hold and no merge-barrier token appears in this packet
-ledger_basis: research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv rows MO-DELTA-033, MO-DELTA-035, MO-PAID-070, MO-PAID-076
+authority: Chairman override 09-06 — Meta-CEO A owns this program. This file does not write a Sol hold token.
+read_at: worktree HEAD parent d90de2d0c9; origin/main tip ae0bbaaf6e16 (four later catalog/data commits; cited code paths empty in that range). W2-5a ref refs/remotes/origin/pr-7759 = 0ea35f07b439390efbeec47184ce8dc86d7b55a8.
 ---
 
 ## §0 State of the chain today
 
-Two F03 substrates are on `origin/main` (`d90de2d0c9`): `engine/options_catalyst_link.py` (`engine/options_catalyst_link.py:1, 50` — `from engine.stock_identity.authority import authority_block`; schema declared `:52-53` `SCHEMA = "options.catalyst_link/v1"`, `SPEC_VERSION = "v1"`; landed #6936) and `engine/options_payoff.py` (`engine/options_payoff.py:1-3, 43` — `MODEL_VERSION = "options_payoff.v1"`; landed #6935; math only — zero consumers on origin/main; see the producer list in §6 below). The W2-5a payoff-lab producer (`engine/options_payoff_lab.py`, `scripts/build_options_payoff_lab.py`, `ops/launchd/com.macro.payofflab.plist`, `ops/launchd/run_options_payoff_lab.sh`, `scripts/publish_r2.py`) and W2-5b page consumer are NOT on `origin/main` — they live on the W2-5a branch fetched via `origin/pr-7759`. The DEC at `agentos/decisions/DEC-F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE.md` (`affects:` block names the five producer files; `decided_by: "META-CEO A seat, packet A-F03-W2-5a, 2026-09-23"`) governs that split. `engine/options_catalyst_link.py:3-8, 106, 698-700` declares `source_rights = "research_expression_only"` and carries the five-false `authority_block` on every emitted record; pin test at `tests/test_options_catalyst_link.py:38, 480-484`. The Options Intelligence C0 program-control freeze (`research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:1-9`, `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md`) is records/source law only — it authorizes architecture/program sequencing and forbids new signal origination, ranking, sizing, gating, or LLM escalation. The F03 packet names six modules (`research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv:69`): **Catalyst Picker → Exposure Map → Structure Explorer → Related Catalysts → Thesis Builder → Alert Setup**. None of them are drafted (the F00C ledger: `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv:24` MO-DELTA-033, `:26` MO-DELTA-035, `:32` MO-PAID-070, `:38` MO-PAID-076). Four F03 rows are still SPEC_ONLY / BUILT_NOT_PROVEN / NEW_BOUNDED_BUILD. W3 is the catalyst→exposure→structure trio — facts only, no design.
+On this worktree (parent `d90de2d0c9`, which is also the merge-base with `origin/main` `ae0bbaaf6e16`) two F03 substrates are present and one producer is not. `engine/options_catalyst_link.py:1-16` is a hermetic read-model (`SCHEMA` at `engine/options_catalyst_link.py:52`) that binds one live-flow event to a catalyst, a ticker identity, and an expiry, and says exposure-map and structure legs are deferred to A-F03-W2-5. `engine/options_payoff.py:1-5` and `engine/options_payoff.py:43` (`MODEL_VERSION = "options_payoff.v1"`) compute payoff, scenario, and Greeks-drift from a caller-supplied chain. On `origin/main` the only Python consumer of each module is its own test (`tests/test_options_catalyst_link.py:17`, `tests/test_options_payoff.py`). The payoff-lab producer is on PR #7759's head `0ea35f07`, not on `origin/main`: `git cat-file -e origin/main:engine/options_payoff_lab.py` fails. The F00C ledger still carries the four rows the seat named (`research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv:24` MO-DELTA-033, `:26` MO-DELTA-035, `:32` MO-PAID-070, `:38` MO-PAID-076). The six module names live on the F00B crosswalk, not in the C0 freeze. No template calls `bind_event`.
 
-## §1 Q1 — Catalyst-link read-model (`engine/options_catalyst_link.py`, 784 lines)
+## §1 Q1 — Catalyst-link read-model
 
-### Inputs to `bind_event(...)` — `engine/options_catalyst_link.py:489-498`
+`bind_events` (`engine/options_catalyst_link.py:714-723`) takes `events` plus the same keyword inputs as `bind_event` (`engine/options_catalyst_link.py:489-498`): `asof: date`, `catalysts: Mapping[str, Sequence[CatalystCandidate]]`, `calendar: CalendarContext`, `known_symbols: AbstractSet[str]`, `horizon_days` default `63` (`engine/options_catalyst_link.py:75`), `session_date`. It loops `bind_event` in input order (`engine/options_catalyst_link.py:725-735`).
+
+Event-plane shape is the dict built at `engine/live_flow.py:1068-1111`: `id`, `ts`, `observed_at`, `root`, `group`, `group_zh`, `right`, `exp`, `strike`, `dte`, `dte_bucket`, `mny_bucket`, `side`, `n_prints`, `size`, `avg_price`, `premium`, `premium_z`, `baseline_source`, `selection_rule`, `selection_floor_usd`, `selection_root_class`, `vol_gt_oi`, `vol_gt_oi_ratio`, `oi_vintage`, `repeated`, `zerodte`, `signing_source`, `swept`, `microstructure`. `session_date` is not on that dict. `engine/options_catalyst_link.py:217-221` says live_flow hashes the session into `id` and the caller must pass `session_date`.
+
+Catalyst table: `bind_event` does not read an earnings table. It imports only `STALE_AGE_TD` (`engine/options_catalyst_link.py:48`; value `10` at `engine/earnings_catalyst.py:54`). The caller injects `CatalystCandidate` rows (`engine/options_catalyst_link.py:118-127`: `kind`, `date`, `source`, `artifact`, `stale`, `known_as_of`, `as_of_age_td`, `label`, `locator`). Staleness text points at `fields_from_assessment` (`engine/options_catalyst_link.py:25-28`, `engine/earnings_catalyst.py:167-183`): `stale=False` is fresh only when an age accompanies it. Macro candidates ride `CalendarContext.macro_catalysts` (`engine/options_catalyst_link.py:131-136`). `third_friday` and `is_quad_witching` are imported from `engine/event_calendar.py:49` and defined at `engine/event_calendar.py:132` and `engine/event_calendar.py:136`.
+
+`known_symbols` is an injected set. Membership is exact `root in known_symbols` after `.upper()` (`engine/options_catalyst_link.py:18-23`, `engine/options_catalyst_link.py:507-513`). `symbols_on_plane` (`engine/stock_identity/plane.py:87-92`) is the cited authority for that set and is not called inside `bind_event`.
+
+Outputs: frozen keys at `engine/options_catalyst_link.py:88-109`, written at `engine/options_catalyst_link.py:663-701`. Drift raises at `engine/options_catalyst_link.py:703-709`. Record fields: `schema`, `spec_version`, `session_date`, `asof`, `asof_vs_session`, `horizon_days`, `event_id`, `contract` (`root`, `exp`, `strike`, `right`), `binding_state`, `identity` (`state`, `resolved_symbol`, `authority_source`, `match`), `catalyst`, `catalyst_state`, `catalyst_reason`, `candidates`, `expiry`, `evidence`, `source_rights` = `research_expression_only` (`engine/options_catalyst_link.py:698`), `authority` = `authority_block()` (`engine/options_catalyst_link.py:699`), `is_context_only` True (`engine/options_catalyst_link.py:700`).
+
+States, the only legal values (`engine/options_catalyst_link.py:56-73`):
+
 ```
-event:           Mapping[str, Any]             # one live_flow event (root, exp, strike, right, id, ts, observed_at, group, ...)
-asof:            date                          # producer session asof
-catalysts:       Mapping[str, Sequence[CatalystCandidate]]   # per-root single-name catalyst window
-calendar:        CalendarContext               # (is_third_friday, is_quad_witching, macro_catalysts)
-known_symbols:   AbstractSet[str]              # identity plane; CITED: stock_identity.plane.symbols_on_plane
-horizon_days:    int = 63                      # DEFAULT_HORIZON_DAYS (:75)
-session_date:    date | str | None              # live_flow does NOT emit on the event dict (:218-227); caller injects
-```
-
-### Catalyst table sources referenced
-- Single-name earnings: `engine/earnings_catalyst.STALE_AGE_TD` (:48)
-- Macro calendar: `engine.event_calendar.is_quad_witching`, `third_friday` (:49)
-- Identity set: `engine.stock_identity.plane.symbols_on_plane` (`engine/stock_identity/plane.py:87`) — `known_symbols` is cited authority, NOT a root-to-symbol join (:22-23)
-- No LLM/provider; no network; no clock reads; hermetic (:15-16)
-
-### Outputs (`bind_event` → `CatalystLink.record`) — schema `options.catalyst_link/v1` (:52) ; `:663-701`
-```
-KEYS (frozen, key-set drift raises ValueError :704-709):
-  schema, spec_version, session_date, asof, asof_vs_session, horizon_days,
-  event_id, contract={root, exp, strike, right}, binding_state,
-  identity={state, resolved_symbol, authority_source, match},
-  catalyst, catalyst_state, catalyst_reason, candidates,
-  expiry={state, reason, exp, dte_calendar_days, is_third_friday,
-          is_quad_witching, calendar_source},
-  evidence, source_rights, authority, is_context_only
+64:BINDING_STATES: tuple[str, ...] = (
+65:    BOUND,
+66:    UNBOUND_NO_CATALYST,
+67:    AMBIGUOUS_MULTIPLE,
+68:    STALE_CATALYST,
+69:    IDENTITY_UNRESOLVED,
+70:    EXPIRY_MISMATCH,
+71:    EXPIRY_BEFORE_ASOF,
+72:    SAME_DAY_UNORDERED,
+73:)
 ```
 
-### Binding states (typed, the ONLY legal values) — `:64-73`
+Reduce order is identity, then expiry, then catalyst (`engine/options_catalyst_link.py:457-486`). `tests/test_options_catalyst_link.py` is 914 lines and 40 `def test_` functions. There is no production-frequency histogram. Dedicated tests (one primary state each): BOUND `tests/test_options_catalyst_link.py:182`; AMBIGUOUS_MULTIPLE `:199`; STALE_CATALYST `:211`, `:221`, `:616`, `:633`, `:846`; IDENTITY_UNRESOLVED `:241`, `:757`, `:765`; EXPIRY_MISMATCH `:255`; EXPIRY_BEFORE_ASOF `:907`; SAME_DAY_UNORDERED `:866`; UNBOUND_NO_CATALYST `:273`, `:285`, `:300`, `:745`, `:814`. `tests/test_options_catalyst_link.py:405` lists all eight in one legal-set assertion. Five-false pin is `tests/test_options_catalyst_link.py:478-484`.
+
+Callers: a walk of `engine/`, `scripts/`, `templates/`, and `tests/` for the module name in Python, Jinja, JS, HTML, YAML, and Markdown found the import only in `tests/test_options_catalyst_link.py`. `agentos/handoffs/MARKET-OS-2026-09-19-hold-docket.md:40` names the path inside an `ls` command. `.github/ci/legacy-jobs.yml:2336` lists `engine/options_catalyst_link.py` as a `flow-surface` path, not a runtime call. No `scripts/` module calls `bind_event` or `bind_events`.
+
+Who produces live-flow events: no `.github/workflows/*.yml` step executes `scripts/live_flow_poller.py` (path hits are CI path filters only: `.github/workflows/ci.yml:526` and `.github/workflows/ci.yml:1984`). The producer file is `ops/launchd/com.mastermind.liveflow.plist` (weekday autostart 09:25 ET, self-exit after 16:05 ET; header comment). Local stage is `config.data_dir() / "live_flow_state" / "events" / "{session}.jsonl"` (`scripts/live_flow_poller.py:96-97`, `scripts/live_flow_poller.py:475-477`, `scripts/live_flow_poller.py:576-580`). The test locator matches that shape: `tests/test_options_catalyst_link.py:709-710` expects `data/live_flow_state/events/2026-09-04.jsonl#…`. Upload key is `live_flow/events/{date}.jsonl` (`scripts/live_flow_poller.py:92-93`, `scripts/live_flow_poller.py:2087-2089`). Nightly readers of that R2 stage, not producers of it: `.github/workflows/daily.yml:3302-3321` (`build_options_signal_episode` comment at `.github/workflows/daily.yml:3304`), surface stamps at `.github/workflows/daily.yml:3256-3260`, and `site/flow/index.json` mirrored to `live_flow/flow_idx.json` at `.github/workflows/daily.yml:3430-3432`. Sparse checkout omits `data/` and `site/` (`config/sparse_worktree.json` `exclude_dirs`; `git sparse-checkout` shows `!/data/` and `!/site/`). `write_links` refuses a repo `data/` path (`engine/options_catalyst_link.py:739-749`). A sparse worktree does not contain the event stage.
+
+## §2 Q2 — C0 control freeze
+
+Both C0 files landed in `31ac94918d` (`git show --stat 31ac94918d`: the masterplan, `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md`, the continuation handoff, `config/mastermind_programs.yml`, `docs/MASTERMIND_SYSTEM_MAP.md`).
+
 ```
-BINDING_STATES = (BOUND, UNBOUND_NO_CATALYST, AMBIGUOUS_MULTIPLE,
-                  STALE_CATALYST, IDENTITY_UNRESOLVED,
-                  EXPIRY_MISMATCH, EXPIRY_BEFORE_ASOF, SAME_DAY_UNORDERED)
-```
-Reduce order — `_reduce_binding_state` (:457-486): identity → expiry → AMBIGUOUS_MULTIPLE / SAME_DAY_UNORDERED / STALE_CATALYST → UNBOUND_NO_CATALYST → BOUND (only when identity RESOLVED + expiry OK + catalyst BOUND).
-
-### Inputs to `bind_event(...)` — `engine/options_catalyst_link.py:489-498`
-```
-event:           Mapping[str, Any]             # one live_flow event (root, exp, strike, right, id, ts, observed_at, group, ...)
-asof:            date                          # producer session asof
-catalysts:       Mapping[str, Sequence[CatalystCandidate]]   # per-root single-name catalyst window
-calendar:        CalendarContext               # (is_third_friday, is_quad_witching, macro_catalysts)
-known_symbols:   AbstractSet[str]              # identity plane; CITED: stock_identity.plane.symbols_on_plane
-horizon_days:    int = 63                      # DEFAULT_HORIZON_DAYS (engine/options_catalyst_link.py:75)
-session_date:    date | str | None              # live_flow does NOT emit on the event dict (engine/options_catalyst_link.py:218-227); caller injects
-```
-
-### Catalyst table sources referenced
-- Single-name earnings: `engine.earnings_catalyst.STALE_AGE_TD` (engine/options_catalyst_link.py:48)
-- Macro calendar: `engine.event_calendar.is_quad_witching`, `third_friday` (engine/options_catalyst_link.py:49; engine/event_calendar.py:132, 136)
-- Identity set: `engine.stock_identity.plane.symbols_on_plane` (engine/stock_identity/plane.py:87) — `known_symbols` is cited authority, NOT a root-to-symbol join (engine/options_catalyst_link.py:22-23)
-- No LLM/provider; no network; no clock reads; hermetic (engine/options_catalyst_link.py:15-16)
-
-### Outputs (`bind_event` → `CatalystLink.record`) — schema `options.catalyst_link/v1` (engine/options_catalyst_link.py:52) ; `engine/options_catalyst_link.py:663-701`
-```
-KEYS (frozen, key-set drift raises ValueError engine/options_catalyst_link.py:704-709):
-  schema, spec_version, session_date, asof, asof_vs_session, horizon_days,
-  event_id, contract={root, exp, strike, right}, binding_state,
-  identity={state, resolved_symbol, authority_source, match},
-  catalyst, catalyst_state, catalyst_reason, candidates,
-  expiry={state, reason, exp, dte_calendar_days, is_third_friday,
-          is_quad_witching, calendar_source},
-  evidence, source_rights, authority, is_context_only
-```
-
-### Binding states (typed, the ONLY legal values) — `engine/options_catalyst_link.py:64-73`
-```
-BINDING_STATES = (BOUND, UNBOUND_NO_CATALYST, AMBIGUOUS_MULTIPLE,
-                  STALE_CATALYST, IDENTITY_UNRESOLVED,
-                  EXPIRY_MISMATCH, EXPIRY_BEFORE_ASOF, SAME_DAY_UNORDERED)
-```
-Reduce order — `_reduce_binding_state` (engine/options_catalyst_link.py:457-486): identity → expiry → AMBIGUOUS_MULTIPLE / SAME_DAY_UNORDERED / STALE_CATALYST → UNBOUND_NO_CATALYST → BOUND (only when identity RESOLVED + expiry OK + catalyst BOUND).
-
-### Frequency in test fixtures — `tests/test_options_catalyst_link.py` (914 lines)
-The fixture catalogue is single-name synthetic; macro candidates are tested via an empty `macro_catalysts=tuple`. State exercise is one-`bind_event` per state, no aggregate frequency histogram is asserted; the test asserts the TYPED transition contract per state (e.g. `tests/test_options_catalyst_link.py:480-484` `is_zero_authority(rec) is True`, `rec["source_rights"] == "research_expression_only"`, `rec["authority"] == authority_block()`). Macro-state frequency on a real live_flow event is not measured in any current test.
-
-### Every caller today (grep)
-```bash
-$ grep -rln -E 'options_catalyst_link|from engine.options_catalyst_link|import options_catalyst_link' engine/ scripts/ templates/ tests/ 2>&1
-tests/test_options_catalyst_link.py
-tests/fixtures/help/merged_prs_2026-09-06_to_2026-09-19.json
-```
-ONLY `tests/test_options_catalyst_link.py` imports it. `.github/ci/legacy-jobs.yml:2336` names it under `flow-surface`'s paths-trigger list (NOT a runtime caller). **Zero `scripts/`, zero `engine/`, zero `templates/`, zero `app/` consumer.** The substrate exists; no live caller binds a flow event to a catalyst.
-
-### Live-flow event producer on a render host
-- `engine/live_flow.py` (substrate cited in `engine/options_catalyst_link.py:11-13` "flow-event → catalyst / ticker / expiry leg ONLY"; `MO-DELTA-035` substrate owner).
-- `scripts/live_flow_poller.py` (169812 bytes) is the launchd-managed poller on the M1; producer entrypoint docstring at `scripts/live_flow_poller.py:1-50` and module structure `scripts/live_flow_poller.py:67-470` (`def _reject_duplicate_object_pairs`, `def _strict_json_loads`, `def _max_concurrent`, `def _cfg`, `def _poll_floor_sec`, `def _r2_public_base`, `def _select_cycle_roots`, `def _select_ticker_publish_roots`, `def _out_dir`, etc.). Install at `ops/launchd/com.mastermind.liveflow.plist` (lines: "Autostart on weekdays at 09:25 ET ... RTH-only mode ... exits after 16:05 ET"). NOT a workflow invocation — there is NO `.github/workflows/*` line that calls `live_flow_poller.py`.
-- Nightly consumers of the resulting R2 stage: `.github/workflows/daily.yml:3304` references `live_flow/events/{DATE}.jsonl` as the raw stage for OIP `options_signal_episode`. `.github/workflows/daily.yml:3258` references `live_flow/surface/{ROOT}/{DATE}/` per-minute stamps. `.github/workflows/daily.yml:3431` mirrors `site/flow/index.json` to R2 key `live_flow/flow_idx.json`.
-- Sparse worktree: **`data/` is in `config/sparse_worktree.json`** — omitted on a fresh tree. `engine/options_catalyst_link.py:738-749` **refuses to `write_links` into repo `data/`** and asks the caller for an explicit path. `site/` is also sparse-omitted. A render-host sparse checkout does NOT carry the events; the catalyst-link read-model itself is in-memory over injected events.
-
-### Workflow line that drives the producer
-- `ops/launchd/com.mastermind.liveflow.plist` (NOT a workflow file).
-- `scripts/live_flow_poller.py` has no `.github/workflows/*` producer step; the launchd plist is the producer.
-
-## §2 Q2 — C0 control freeze citations
-
-### `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md`
-- `:7` — `**Authority:** records/source law only; no runtime, scoring, ranking, sizing, trade, execution or Prophet authority` (28 words, ≤ 40).
-- `:93` — `C0 authorizes only architecture/program sequencing. LLM prose/sentiment cannot invent event identity, score, rank, sizing, entry/exit or trade authority. Current DNR decisions — including no fused positioning super-score and no unapproved LLM origination — remain binding.` (38 words, ≤ 40). Captures: signal origination, ranking, sizing, gating, LLM escalation.
-
-The C0 masterplan (148 lines total, scanned) **does NOT name** `catalyst→exposure→structure`, `Catalyst Picker`, `Structure Builder`, `W2-5`, "six modules", or `exposure map` anywhere. The module names live in `research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv:69` (the F03 packet, not C0).
-
-### `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md`
-- Lines naming catalyst/exposure/structure: **NONE**. The DEC scopes the four option-owner workstreams and the records/source-law envelope; it does not enumerate child modules.
-- The DEC carries the lawful-adoption of `#6585` (OA-1T-MACRO) as `BUILT_NOT_PROVEN`, not complete; `FS-4` frozen with `scoring.enabled=false`.
-
-### The six undrafted module names (canonical source — F00B crosswalk)
-`research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv:69`:
-> `MO-DELTA-033,F03-OPTIONS-EXPRESSION,Options catalyst workflow modules (six-step),WS:MARKET-OS (F03 lane); commissioning owner = Options Intelligence C0 (#6604) + WS:ADVANCED-DATA-OPTIONS,SPEC_ONLY,F03 packet mission names Catalyst Picker→Exposure Map→Structure Explorer→Related Catalysts→Thesis Builder→Alert Setup; zero implementation hits,All six modules,catalyst/event feed + ThetaData chain/flow,research_expression_only,#6604 C0 masterplan would own commissioning,BUILD_NEW,`
-Confirmed by `:24` and `:32` of the F00C ledger (current granular ledger).
-
-### Freeze contents (what C0 forbids, in scope of W3)
-From C0 masterplan `:7` and `:93`: no runtime, no scoring, no ranking, no sizing, no trade, no execution, no Prophet authority, no event identity invention by LLM, no fused positioning super-score, no unapproved LLM origination. **NEW W3 shapes cannot claim any of these or change them** — C0 is the ceiling.
-
-### Bind DNR rows (`research/DO_NOT_REBUILD.md`)
-- `research/DO_NOT_REBUILD.md:39` `DNR:KILL-POSITIONING-FUSION` — Amendment 1 (CEO 2026-08-14) opens positioning keys ONLY in the Prophet US conditional-fusion arena under `research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md` §8.6. A W3 shape that fuses OI/GEX/positioning keys into any other score remains ILLEGAL.
-- `research/DO_NOT_REBUILD.md:40` `DNR:KILL-LLM-ORIGINATION` — LLMs may only de-escalate calibrated keys.
-- `research/DO_NOT_REBUILD.md:51` `DNR:KILL-FUSED-COMPOSITE` — display-tier composites are allowed under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` §3.1.2, but authority remains prohibited.
-- `research/DO_NOT_REBUILD.md:55` `DNR:KILL-PROPHET-POP-MERGE` — graded-board contamination.
-- `research/DO_NOT_REBUILD.md:62` `DNR:KILL-REGIME-SCORECARD` — regime verdict fusion restates ILLEGAL positioning fusion.
-- `research/DO_NOT_REBUILD.md:65` `DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION` — owner eviction by windowing is FORBIDDEN.
-- `research/DO_NOT_REBUILD.md:87` `DNR:KILL-DOI-FAMILY` (predictive delta-OI; display retained).
-- `research/DO_NOT_REBUILD.md:88` `DNR:KILL-SKEW-DECELERATION` (predictive skew; display retained).
-- `research/DO_NOT_REBUILD.md:162` `DNR:HOLD-WF-OPTIONS` — W-F options PARKED until preconditions (1)+(2) per Options→NW masterplan.
-- `research/DO_NOT_REBUILD.md:124` `DNR:KILL-FORCED-CALLS` — operator force-add of un-gauntleted directional calls to signal surfaces FORBIDDEN.
-- `research/DO_NOT_REBUILD.md:128` `DNR:KILL-COMPOSITE-REGIME-RELIABILITY-MONITOR` — restates `DNR:KILL-REGIME-SCORECARD` on a wider list of 16 inputs.
-
-## §3 Q3 — `WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY` + `WS:ADVANCED-DATA-OPTIONS` milestones
-
-### WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md`)
-- **OA-0** status `done`, PR 6573 — recovery archaeology + architecture freeze (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:17`).
-- **OA-1T-MACRO** status `in_progress`, PR 6585 — BUILT_NOT_PROVEN; natural-RTH production proof OWED (`dbd654edb0fb...`, `agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:26`). **Tied to**: FS-4 frozen `scoring.enabled=false`, FS-5 kill switch intact (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:landmines` block).
-- **OA-1T-TERMINAL** status `todo` CLOSED — render measured microstructure; depends_on `OA-1T-MACRO` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:56, 59`).
-- **OA-1C-MACRO** status `todo` CLOSED — `options.alpha_candidate_feed/v1` composer; depends_on `OA-1T-MACRO` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:63, 66`).
-- **OA-1C-TERMINAL** status `todo` CLOSED — live candidate stream; depends_on `OA-1C-MACRO, OA-1T-TERMINAL` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:71, 74`).
-- **OA-2** status `todo` CLOSED — FS-5 unsigned calibration gauntlet; depends_on `OA-1T-MACRO` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:78, 81`).
-- **OA-3** status `todo` CLOSED — exact-option NBBO lifecycle/outcome (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:88, 91`).
-- **OA-4** status `todo` CLOSED — right-conditioned directional family prereg; depends_on `OA-2, OA-3` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:95, 98`).
-- **OA-5** status `todo` CLOSED — Issue Desk integration; depends_on `OA-1C-TERMINAL, OA-4` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:104, 107`).
-- `do_not_redo` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:do_not_redo` block): "Another options collector, ThetaData Terminal instance, live-flow store, event identity, campaign ledger, outcome ledger, Issue Desk, rank/gate/sizing control plane, or generic Options super-score." Reopening AD-1T1; FS-4 promotion; backfilled later-settled OI/NBBO.
-- `landmines` (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:landmines` block): `KILL-LLM-ORIGINATION`, `KILL-FUSED-COMPOSITE`, `KILL-POSITIONING-FUSION`, `HOLD-THETA-TAPE`, `KILL-DOI-FAMILY`, `KILL-SKEW-DECELERATION`, `KILL-CHARM-NARRATIVES`, `KILL-OFFHORIZON-VERDICTS`.
-- **No OA milestone touches `catalyst→exposure→structure`.** The closest layer is OA-1C-MACRO (alpha_candidate_feed) which is "CLOSED until OA-1T-MACRO measured-evidence path" and depends on production-accepted AD-1T2 EOD consumer/availability (`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:63-67`).
-
-### WS:ADVANCED-DATA-OPTIONS (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md`)
-- **AD-0** done; **AD-1P0** done (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:21`); **AD-1** done, BUILT_NOT_PROVEN (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:35`); **AD-1C0** done (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:48`); **AD-1C0.1** done (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:59`); **AD-1T0** done (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:70`); **AD-1T1** done, PROVEN_LIVE (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:88`, PR 6267); **AD-1T2** status `todo` NOT STARTED (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:113`); **AD-2** CLOSED until AD-1 production acceptance (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:121`).
-- AD-1T2 next_action: `AD-1T2 is NOT STARTED. Opens only after AD-1T1 is Sol-accepted and the T1 cadence is production-proven` (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:114-116`).
-- `landmines` (`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:142`): AD authorizes no duplicate intraday collector; only `gex_confirm_verdict` in C1 fusion reaches live Prophet rank, lawful solely via `DNR:KILL-POSITIONING-FUSION` Amendment 1.
-- **No AD milestone touches `catalyst→exposure→structure`.** OA-1C-MACRO depends on production-accepted AD-1T2 EOD (cross-WS dependency).
-
-### Latest handoffs that touch expression / catalyst / payoff
-- `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-2026-09-06.md` — W2-1b / W2-1b-round-2 skew source migration to ThetaData (MO-PAID-013).
-- `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md` — sustained F03 Fable COO lane commission; mission enumerates `Strategy/P&L/Greeks depth + Structure Builder + catalyst-to-options workflow`. AS-OF 2026-08-26; no later re-broadcast in `agentos/handoffs/` indexing.
-- `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-2026-09-06.md:next_actions` block for W2-1b only — does NOT charter W3.
-
-### What each handoff says about "what's next"
-- W2-1b handoff `next_actions`: W2-2 installs M1 launchd ThetaData accrual; W2-3 removes the legacy export and switches to `--emit`. **Does NOT mention W3**.
-- F03 Fable-COO lane handoff `next_actions`: `Refresh owners and historical ledger; produce exact adoption map; pick first bounded vertical; RED-first prerequisite/identity/staleness/liquidity/multiplier/output-gate tests; implement over existing Options APIs`. **Does NOT name W3.**
-
-## §4 Q4 — Existing expression surfaces for options
-
-### `templates/options.html.j2` (canonical anonymous options surface)
-- `:1077-1080` — glance-tier AIB lede (`data-aib-receipt`, `data-aib-state`, `data-aib-asof`, `data-aib-fresh`). **This is the AD-1T1 PROVEN_LIVE glance lede (MO-PAID-010)**, NOT a catalyst-chip line on a flow event.
-- `:3369-3370` — `earnings_window: ['Earnings soon','临近财报', true, 'Within about two weeks of earnings — options flow around earnings is often an event bet, not a conviction position.'].` This is a **flow-tier trigger language** dict; the chip itself is wired into the rendering pipeline at `:3369+` (event_window family), but **it is not bound to a specific flow event's catalyst/ticker/expiry** — there is no `bind_event` call site.
-- `:2787` — "Not measured yet. The idea: how much of this name's open interest rolls off in the next few days, and whether that concentration tends to feed on itself into expiry" — descriptive copy only.
-- `:2942-3147` — Strike × expiry surface, volatility smile, IV term structure, expiry ladder, raw options structure (`The surface — strikes by expiry`). `rawItem(...)` messages. Display-only.
-- `grep` for `picker|builder|payoff|structure-builder` in `templates/options.html.j2` returns ONLY: structural template jargon (`.oew-raw-*` raw-structure shelf at `:843`, builder build pipeline ownership references at `:1628, 2166, 3427, 3444`) and one payoff row in the expiry ladder template (`straddle_pct` formatting `:3076`). **No `Catalyst Picker` / `Structure Builder` / `catalyst-link` UI exists or is stubbed.**
-
-### `templates/options_screener.html.j2` and `templates/gex.html.j2`
-```
-$ grep -nE 'catalyst|earnings|expiry.*event|event.*expiry|picker|structure.*picker' templates/options_screener.html.j2 templates/gex.html.j2 2>&1
+$ grep -nE 'Catalyst Picker|Structure Builder|exposure map|W2-5|catalyst→' \
+    research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md
+(no matches)
+$ grep -nE 'Catalyst Picker|Structure Builder|exposure map|W2-5|catalyst' \
+    agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md
 (no matches)
 ```
-Neither surface renders a catalyst line or an event-behind-flow chip today.
 
-### `templates/onboard.js, watchstore.js, leader_radar.html.j2, fundamental_forensics.html.j2, market_structure.html.j2`
-- `templates/onboard.js:1655, 1717` + `templates/onboard.css:782, 792` — "tier header = the picker" refers to the onboard flow tier selector (commodity / sell-side / radar), NOT a Catalyst Picker.
-- `templates/watchstore.js:412` — "list picker once W1b makes lists server-backed" — server-driven watchlist picker, NOT catalyst.
-- `templates/leader_radar.html.j2:682` — `Stock-picker's tape` is descriptive prose in a leader-radar copy line, NOT a UI picker.
-- `templates/fundamental_forensics.html.j2:72` — `ff-company-picker` is the company-selector dropdown on the FF page.
-- `templates/market_structure.html.j2:23, 433` — `cor1m_regime` selector + `Stock-picker window` heading (descriptive prose).
-- `templates/sector_cycles.js` — Series(n) picker is the chart-series selector; unrelated.
-**No `Catalyst Picker` / `Structure Builder` UI exists.**
+Sentences in those two files that name the chain, Catalyst Picker, Structure Builder, exposure map, W2-5, or the six modules: not found.
 
-### Builder / store consumer (`scripts/build_options_command.py`)
-- `load_stores(root)` at `:142` — `tests/test_render_options_workspace_scope.py:52` pins the literal: `CMD_SRC = (ROOT / "scripts" / "build_options_command.py").read_text()`, then `:25` requires `it reads "load_stores" out of the builder and forces a wiring decision for every store`. Any new builder must declare its catalog in `load_stores()`.
-- `load_intel_brief()` at `:171` is a DELIBERATELY SEPARATE loader (`tests/test_render_options_workspace_scope.py:25` test: `assert "build_options_command" not in band,` for serial post-band step), and `AIB` is fed by `load_intel_brief()` not `load_stores()`.
-- Templates `templates/options.html.j2` is wired by `.github/workflows/daily.yml:3245-3255` (`OEU M-CMD — the Options workspace (build_options_command)`); the same builder at `:1557-1570` reads stores via `load_stores()`.
+What the freeze forbids, quoted under 40 words:
 
-### Terminal cross-repo
-The cross-repo product surface lives in `charting-app`. There is no documented live reference from `docs/MASTERMIND_SYSTEM_MAP.md` (or any other repo doc this census found) to a charting-app options-page `data-aib-receipt` / catalyst-chip line. The Macro-side options.html is the canonical anonymous options surface.
+- `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:7` — "records/source law only; no runtime, scoring, ranking, sizing, trade, execution or Prophet authority" (13 words).
+- `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:93` — "C0 authorizes only architecture/program sequencing." (5 words). "LLM prose/sentiment cannot invent event identity, score, rank, sizing, entry/exit or trade authority." (13 words). "Current DNR decisions — including no fused positioning super-score and no unapproved LLM origination — remain binding." (15 words).
+- `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md:18-19` — "No second collector, store, event/lifecycle, score-control, queue, ranker or execution plane is authorized." (12 words).
+- `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md:32` — "FS-4 remains scoring.enabled=false; FS-5 and every rank/size/gate/trade/Prophet authority remain separately earned." (11 words).
+- `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md:102-104` — "This decision freezes organization, sequencing, source ownership and capability honesty." (9 words). "It changes no runtime and grants no rank, score, size, gate, trade, execution or Prophet authority." (16 words).
+
+The word "gating" does not appear. The freeze uses "gate". The masterplan does not use the phrase "signal origination"; the closest LLM sentence is the `:93` quote above. `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:8` names `DEC:OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL`.
+
+Six undrafted module names, not in the C0 files, at `research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv:69`: Catalyst Picker, Exposure Map, Structure Explorer, Related Catalysts, Thesis Builder, Alert Setup. The same chain is named at `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md:9-13` (Thesis and Alert are shortened there) and at `research/market_intelligence_productization/MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md:82`.
+
+`research/compiled_kill_registry.yml`: not found (`ls` fails). The compiled copy that exists is `config/compiled_kill_registry.yml`. Rows whose topic is options, positioning, catalyst, or structure, cited as `DNR:<KEY>` from `research/DO_NOT_REBUILD.md` (the key is the table's first cell) and the yml line where checked:
+
+- `DNR:KILL-POSITIONING-FUSION` — `research/DO_NOT_REBUILD.md:39`; `config/compiled_kill_registry.yml:24`. Amendment 1 opens positioning keys only inside the Prophet US conditional-fusion arena.
+- `DNR:KILL-LLM-ORIGINATION` — `research/DO_NOT_REBUILD.md:40`; `config/compiled_kill_registry.yml:31`.
+- `DNR:KILL-OFFHORIZON-VERDICTS` — `research/DO_NOT_REBUILD.md:46`.
+- `DNR:KILL-FUSED-COMPOSITE` — `research/DO_NOT_REBUILD.md:51`.
+- `DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION` — `research/DO_NOT_REBUILD.md:65`; `config/compiled_kill_registry.yml:206`.
+- `DNR:KILL-CHARM-NARRATIVES` — `research/DO_NOT_REBUILD.md:86`; `config/compiled_kill_registry.yml:318`.
+- `DNR:KILL-DOI-FAMILY` — `research/DO_NOT_REBUILD.md:87`; `config/compiled_kill_registry.yml:325`.
+- `DNR:KILL-SKEW-DECELERATION` — `research/DO_NOT_REBUILD.md:88`; `config/compiled_kill_registry.yml:332`.
+- `DNR:KILL-CPI-REVISION-MODEL` — `research/DO_NOT_REBUILD.md:119` (CPI revision-direction model, not the options chain).
+- `DNR:KILL-ONSET-FINGERPRINTS` — `research/DO_NOT_REBUILD.md:121`; topic at `config/compiled_kill_registry.yml:562` (F1 catalyst-rung counts).
+- `DNR:KILL-FORCED-CALLS` — `research/DO_NOT_REBUILD.md:124`.
+- `DNR:KILL-PHASE3-START-WEIGHT` — `research/DO_NOT_REBUILD.md:125`; topic at `config/compiled_kill_registry.yml:590` (a scored catalyst leg).
+- `DNR:KILL-COMPOSITE-REGIME-RELIABILITY-MONITOR` — `research/DO_NOT_REBUILD.md:128`.
+- `DNR:HOLD-WF-OPTIONS` — `research/DO_NOT_REBUILD.md:162`; `config/compiled_kill_registry.yml:759`. W-F options parked.
+- `DNR:HOLD-STRUCTURE-LEARNERS` — `research/DO_NOT_REBUILD.md:167`; `config/compiled_kill_registry.yml:794`. This row is full-graph causal structure learners. It is not the options Structure Builder.
+
+`DNR:KILL-PROPHET-POP-MERGE` is `research/DO_NOT_REBUILD.md:55` (graded-board population). It does not name catalyst or structure.
+
+## §3 Q3 — WS:OPTIONS-ALPHA and WS:ADVANCED-DATA-OPTIONS
+
+`agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md` waves (status field, not the prose "CLOSED" inside `next_action`):
+
+- OA-0 `done`, pr 6573, `agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:21-24`. Records/source law only (`:28-29`).
+- OA-1T-MACRO `in_progress`, pr 6585, `:31-35`. `next_action` at `:36-37` says BUILT_NOT_PROVEN, natural-RTH proof owed. `:49-50` says FS-4 stays `scoring.enabled=false` and this wave armed no scoring, ranking, or sizing authority.
+- OA-1T-TERMINAL `todo`, depends on OA-1T-MACRO, `:56-59`. `next_action` text at `:61` says CLOSED.
+- OA-1C-MACRO `todo`, `:63-66`. Title is `options.alpha_candidate_feed/v1` research-candidate composer (`:64`). `next_action` `:67-70` says CLOSED until measured evidence, a preregistered formation policy, and production-accepted AD-1T2.
+- OA-1C-TERMINAL `todo`, `:71-74`. `next_action` text at `:76` says CLOSED.
+- OA-2 `todo`, `:78-81`. Title is the FS-5 unsigned calibration gauntlet (`:79`). `next_action` `:82-84` says CLOSED and says not to add OI/GEX/positioning fusion.
+- OA-3 `todo`, `:88-91`. Exact-option NBBO lifecycle (`:89`). `next_action` text at `:93` says CLOSED.
+- OA-4 `todo`, `:95-98`. Right-conditioned directional family (`:96`). `next_action` `:99-103` says CLOSED and names `DNR:KILL-POSITIONING-FUSION` before any fusion test.
+- OA-5 `todo`, `:104-107`. Issue Desk (`:105`). `next_action` text at `:109` says CLOSED.
+
+None of those titles contain catalyst, exposure map, Catalyst Picker, or Structure Builder. The expression-adjacent rows are OA-1C-MACRO (candidate feed) and OA-4 (directional family). `do_not_redo` at `agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md:138-143` forbids another collector, live-flow store, event identity, campaign ledger, outcome ledger, Issue Desk, rank/gate/sizing plane, or Options super-score; forbids reopening AD-1T1; forbids promoting FS-4 because code exists; forbids backfilling later-settled OI/NBBO. Landmines at `:135-137` name `DNR:KILL-LLM-ORIGINATION`, `DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-POSITIONING-FUSION`, `DNR:HOLD-THETA-TAPE`, `DNR:KILL-DOI-FAMILY`, `DNR:KILL-SKEW-DECELERATION`, `DNR:KILL-CHARM-NARRATIVES`, `DNR:KILL-OFFHORIZON-VERDICTS`. Workstream `next_action` at `:152-157` says review/land the OA-1T-Macro plan carrier, then choose an execution mode, and says later OA waves remain closed. No handoff filename under `agentos/handoffs/` matches `OPTIONS-ALPHA` or `OA-1T`.
+
+`agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md`: AD-0 done `:17-19`; AD-1P0 done `:21-23`; AD-1 done `:26-28` with `next_action` at `:31`; AD-1C0 done `:37-39`; AD-1C0.1 done `:47-49`; AD-1T0 done `:58-60`; AD-1T1 done `:76-78`; AD-1T2 `todo` `:106-109`, `next_action` `:110-111` says NOT STARTED and opens only after AD-1T1 is Sol-accepted; AD-2 `todo` `:114-117`, `next_action` `:118` says CLOSED until AD-1 production acceptance. No AD id names catalyst, expression, or structure. Workstream `next_action` at `agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md:187-190` says the next product dependency is AD-1T2 and AD-2 stays closed.
+
+Latest handoff per owner, and what it says is next:
+
+- Options Alpha has no same-named handoff. The C0 continuation `agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-08-28-options-intelligence-c0-program-control.md:85-87` says do not auto-start children after C0; commission AD-1T2 only under a fresh operation. `agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-16-integration-amendment-packet-delivery.md:65-67` says packet B is OA-1T installed-source adoption after the close. Neither names W3.
+- Advanced Data's latest filename is that 2026-09-16 handoff. Same `next_actions` block. It does not name catalyst→exposure→structure.
+- F03 latest file is `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-2026-09-06.md`. `next_actions` at `:60-62` still list W2-2 (M1 launchd accrual) and W2-3 (render cutover). `unresolved` at `:57-58` marks both RESOLVED on 2026-09-23 (#7737, #7743). The block does not name W3. The 2026-08-26 Fable COO handoff `next_actions` at `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md:28-30` says claim F03, refresh the crosswalk, and separate one ExpressionCandidate/Structure workflow carrier. It does not name W3.
+
+## §4 Q4 — Existing expression surfaces
+
+`templates/options.html.j2` (3821 lines), lines that show a catalyst, an earnings date, or a "what to do" line for an option flow event:
+
+- `templates/options.html.j2:1077-1080` — `data-aib-state`, `data-aib-asof`, `data-aib-receipt`, `data-aib-fresh`. This is the intel-brief lede on the page, not a `bind_event` result on a flow row.
+- `templates/options.html.j2:3369-3370` — `earnings_window: ['Earnings soon','临近财报', true, 'Within about two weeks of earnings — options flow around earnings is often an event bet, not a conviction position.'`. Generic flow-tier copy. No `bind_event` call in the template.
+- `templates/options.html.j2:3302` — "To watch this name's structure update live, open it in the Terminal." That is a pointer, not a catalyst line.
+- Chain-structure copy, not a builder: `templates/options.html.j2:799` and `:843` (raw-structure shelf), `:1697` (loading sentence, EN and ZH), `:3028-3031` (IV term structure), `:3076` (`straddle_pct` cell), `:3111` and `:3147` ("no options structure" empty states), `:3280` (raw options structure summary).
+
+```
+$ grep -nE 'earnings|catalyst|picker|structure|payoff|straddle|spread' \
+    templates/options_screener.html.j2 templates/gex.html.j2
+(no matches)
+```
+
+Both `.j2` files exist. There is no `templates/options_screener.html` or `templates/gex.html`.
+
+`engine/options_structure.py:1-15` is a different object: display or shadow schemas for dealer-gamma state, chain heat, and a strike×expiry matrix. It is not a Structure Builder page. It has many consumers (including `scripts/build_gex_board.py` and `scripts/build_options_structure_intraday.py`). Those consumers are outside the catalyst-link import set in §1.
+
+Builder pin: `scripts/build_options_command.py:142` defines `load_stores`. `tests/test_render_options_workspace_scope.py:25` says the test reads `load_stores` out of the builder. `tests/test_render_options_workspace_scope.py:52` loads that source. `tests/test_render_options_workspace_scope.py:241` reconstructs paths from the `load_stores` body. `load_intel_brief` is a separate function at `scripts/build_options_command.py:178`. Nightly step: `.github/workflows/daily.yml:3245-3255`.
+
+Terminal / charting-app: a search of `docs/`, `agentos/decisions/`, and `agentos/workstreams/` for a line containing `charting-app` and either `catalyst` or `option` returned no line. `.github/workflows/daily.yml:3434-3436` mentions the Terminal Dark Pool mini-panel and a Structure strip (lane T-E) as R2 mirror targets. That line does not name a catalyst or a picker.
 
 ## §5 Q5 — ExpressionCandidate law
 
-### Definitions and contract
-- Engine docstring (`engine/options_payoff.py:1-3`, `:1620`): `RESEARCH EXPRESSION ONLY (MO-DELTA-034, MO-PAID-077: source_rights=research_expression_only).`
-- Engine docstring (`engine/options_catalyst_link.py:3-8`): `Tier: research_expression_only under ExpressionCandidate law (MO-PAID-070 source_rights; MO-DELTA-035). Zero entry authority and zero scoring authority — does not rank, size, gate, originate a signal, or escalate. Every emitted record carries engine.stock_identity.authority.authority_block() (five false booleans). No LLM originates, ranks, or escalates a binding (Neural Web A7).`
-- `MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md:185-188`: `### ExpressionCandidate — Treat as a proposal/read model over the canonical Options plane. Do not create a second option chain, surface, Greeks, flow, or strategy-pricing system.`
-- `MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md:82`: ...Structure Builder and catalyst-to-options workflow. Converge on the accepted ExpressionCandidate direction and fail closed when prerequisites are absent.
+No Python class named `ExpressionCandidate` was found. The prose definitions:
 
-### What a `research_expression_only` record may do
-- Display-tier surface line (chip / lede / receipt badge / appendix).
-- Carry `source_rights = "research_expression_only"` and `is_context_only = True`.
-- Inherit the five-false `authority` block.
+- `research/market_intelligence_productization/MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md:185-189` — "Treat as a proposal/read model over the canonical Options plane. Do not create a second option chain, surface, Greeks, flow, or strategy-pricing system."
+- `research/market_intelligence_productization/MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md:82` — Structure Builder and catalyst-to-options workflow; converge on ExpressionCandidate and fail closed when prerequisites are absent.
+- `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md:20` — proposal/read model over the existing Options plane, not a second pricing system.
+- `engine/options_catalyst_link.py:3-13` — tier `research_expression_only`; zero entry and zero scoring authority; does not rank, size, gate, originate a signal, or escalate; five false booleans; no LLM originates, ranks, or escalates a binding; exposure-map and structure legs deferred.
+- `engine/options_payoff.py:3-5` — `source_rights=research_expression_only`; zero entry authority; does not rank, score, size, admit a contract, or select an expiry.
 
-### What it may NOT do (binding contract)
-- Rank, size, gate, originate a signal, escalate (`engine/stock_identity/authority.py:24-32` AUTHORITY_KEYS — `can_rank`, `can_size`, `can_gate`, `can_originate_signal`, `can_escalate` — all `False`; `:40-54` `authority_block()` returns `{k: False ...}`).
-- Carry LLM-originated binding or escalation (`engine/options_catalyst_link.py:7-8`, `DNR:KILL-LLM-ORIGINATION`).
-- Fuse positioning keys outside the Prophet US conditional-fusion arena (`DNR:KILL-POSITIONING-FUSION` Amendment 1).
-- Create a second option chain / surface / Greeks / flow / strategy-pricing system (`MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md:185-188`).
+What a `research_expression_only` record may do on a page, as those lines state it: be a read model / display of context. The catalyst record sets `is_context_only` True and stamps authority. `docs/DESIGN_DOCTRINE.md:19-27` puts user-facing copy on glance, hover, or study. `docs/DESIGN_DOCTRINE.md:155-157` requires bilingual plain ZH, not raw EN state names inside ZH text.
 
-### Pinned tests
-- `tests/test_options_catalyst_link.py:38, 480-484`:
-```
-assert rec["authority"] == authority_block()
-assert all(v is False for v in rec["authority"].values())
-assert rec["source_rights"] == "research_expression_only"
-assert is_zero_authority(rec) is True
-```
-- `tests/test_options_payoff.py` pins the same five-false contract on payoff records (parity, by import of `engine/stock_identity/authority`).
-- `tests/test_options_catalyst_link.py:38` imports `authority_block, is_zero_authority` from `engine.stock_identity.authority` — any new W3 substrate that emits a record MUST use the same stamp.
-- `tests/test_options_catalyst_link.py:703-709` — `if keys != _EXPECTED_RECORD_KEYS: raise ValueError("catalyst-link record key set drifted: ...")` (record-key drift guard).
-- `engine/options_catalyst_link.py:738-749` — `write_links` REJECTS any path inside `data/` ("write_links refuses repo data/ paths (no data/ I/O)").
+What it may not do:
 
-## §6 Q6 — Data joinability and the payoff engine
+- Catalyst stamp is five booleans, all false: `can_rank`, `can_size`, `can_gate`, `can_originate_signal`, `can_escalate` (`engine/stock_identity/authority.py:17-31`). `is_zero_authority` checks that set (`engine/stock_identity/authority.py:40-49`).
+- Payoff stamp is a different object. `engine/options_payoff.py:1619-1625` puts `source_rights`, `entry_authority`, `ranking_authority`, `sizing_authority`, and `llm_origination` inside `authority`, and the last four are the string `none`. It does not call `authority_block()`.
+- Second chain / surface / Greeks / flow / strategy-pricing system: adjudication `:187-189` and `engine/options_catalyst_link.py:10-11`.
+- C0 rank, score, size, gate, trade, execution, Prophet: `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md:103-104`.
+- LLM origination: `DNR:KILL-LLM-ORIGINATION` at `research/DO_NOT_REBUILD.md:40`.
 
-### `engine/options_payoff.py` (on `origin/main`, 56959 bytes)
-- API surface (`grep -nE '^def '` excerpt): `leg_from_chain_row` `:418`, `structure_from_chain` `:553`, `structure_from_legs` `:753`, `expiry_payoff` `:868`, `scenario_grid` `:1030`, `greeks_drift` `:1272`, `structure_summary` `:1384`, `evidence_recipe` `:1537`. Sources cited: `engine/thetadata_store.chain` (`:1593`).
-- Inputs: `chain` row frame (`engine/thetadata_store.py:544 chain(date: str, root: str, ...)`) — columns `:548-553`. Chain store is the **store-host m1** `thetadata_store`; render hosts do NOT hold the T1 store and use the legacy `polygon_gex` chain per `DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA`.
-- Frame requirements: `leg_from_chain_row(row, qty, multiplier)` takes ONE chain row (root, expiry, strike, right, bid, ask, greeks). `structure_from_chain(chain, ...)` walks a chain frame. The chain shape is THETADATA-shaped, not the LIVE-FLOW-event shape emitted by `engine/live_flow.py`.
+Pins: `tests/test_options_catalyst_link.py:478-484` (five falses, `source_rights`, `is_context_only`, `is_zero_authority`). `tests/test_options_payoff.py:384-439` requires the four payoff disclosure keys to equal `none`. `tests/test_options_payoff.py` does not import `authority_block`. Record-key drift for the catalyst record is in the engine at `engine/options_catalyst_link.py:703-709`, not in the test file at those line numbers. `tests/test_options_catalyst_link.py:703-710` is a session-date test and the evidence locator quoted in §1.
 
-### Can a `CatalystLink` (root, expiry, catalyst) be joined to a payoff-lab structure?
-- Index ETFs only — payoff-lab catalog (per W2-5a charter) is SPY/QQQ/IWM/DIA × atm_straddle / rr25 (25-delta risk-reversal) / put_spread_95_90 / call_spread_105_110. **No single-name roots** in W2-5a.
-- A `CatalystLink.event.contract.root` can be a single name (e.g. AAPL); payoff-lab cannot price it today.
-- For an index ETF root the join is: `event.contract.root` ∈ {SPY, QQQ, IWM, DIA} AND `thetadata_store.chain(asof, root=...)` resolves on the store host m1 AND `nearest_tenor(exp)` exists in the catalog. There is NO code on `origin/main` that performs this join; `engine/options_catalyst_link.py` does not import `engine/options_payoff.py`.
+## §6 Q6 — Joinability
 
-### Single-name structure feasibility today
-- A single-name structure would need: `thetadata_store.chain(asof, root=single_name)` resolves on m1 (the producer host) → call from a render host fails because render hosts do NOT carry the T1 store. The W2-5a charter documents this ("Render hosts do not hold the ThetaData store, so the same split already used for the skew ledger applies here").
-- The substrate `engine/options_payoff.structure_from_chain` would also need a chain frame; `leg_from_chain_row` requires finite bid/ask. A REAL chain on m1 — `decorators` — but rendering / hybrid "render-host-thin, store-host-thick" requires a rebuild (DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST precedent).
-- Single-name structure is therefore **NOT viable as a single-PR follow-on to W3-0** without a fresh store-host split decision.
+A `CatalystLink` carries `contract.root` and `contract.exp` at `engine/options_catalyst_link.py:671-676`, plus `catalyst` at `:684`. Nothing on `origin/main` joins that record to a payoff structure. `engine/options_catalyst_link.py` does not import `engine/options_payoff.py`.
 
-### Payoff-engine consumers (`engine/options_payoff.py`)
-```bash
-$ grep -rln 'from engine.options_payoff\|from engine import options_payoff\|options_payoff\.' engine/ scripts/ templates/ tests/
-engine/options_payoff.py
-tests/test_options_payoff.py
-tests/fixtures/help/merged_prs_2026-09-06_to_2026-09-19.json
-```
-ONLY `tests/test_options_payoff.py` consumes it. **Zero `scripts/`, zero `templates/`, zero `app/` consumer.** Same dead-consumer pattern as `engine/options_catalyst_link.py`. `W2-5a` is the producer; `W2-5b` is the consumer — neither is on `origin/main` yet.
+On PR #7759 only (`0ea35f07`), `engine/options_payoff_lab.py:19-30` imports `structure_from_chain`, `structure_summary`, `evidence_recipe`, `expiry_payoff`, `scenario_grid`, and `greeks_drift`. Catalog: `ROOTS = ("SPY", "QQQ", "IWM", "DIA")` and `CATALOG` of `atm_straddle`, `rr25`, `put_spread_95_90`, `call_spread_105_110` (`engine/options_payoff_lab.py:34-40` on that ref). Expiry is `options_skew._nearest_expiry` (`engine/options_payoff_lab.py:6` and `:403` on that ref), not the event's `contract.exp`. Store read is `thetadata_store` (`engine/options_payoff_lab.py:18` on that ref). Emit path is `site/options_payoff_lab/latest.json` (`scripts/build_options_payoff_lab.py:6-7` and `:148` on that ref). The charter's last paragraph (`agentos/decisions/DEC-F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE.md` on that ref) says W2-5b, the page that reads that JSON, is a later packet. `git diff --stat d90de2d0c9...0ea35f07 -- templates/options.html.j2` is empty.
 
-## §7 Q7 — Tests / CI homes
+So a join of one CatalystLink to one lab structure is not implemented. Key overlap exists only when `contract.root` is one of those four ETFs. The lab tenor is the skew ledger's nearest expiry, not the flow event's expiry. A single-name root is outside `ROOTS`.
 
-| Test file | Job | `gate:` line | In PR pack? | Evidence line |
-|---|---|---|---|---|
-| `tests/test_options_catalyst_link.py` | `flow-surface` | **`gate: data`** at `.github/ci/legacy-jobs.yml:2202` | NO (`if: ${{ false }}` trigger; `gate: data`) | `:2200` job name; `:2657` paths trigger; `:2746` `run:` step |
-| `tests/test_options_payoff.py` | `flow-surface` | **`gate: data`** at `.github/ci/legacy-jobs.yml:2202` | NO | `:2663` paths trigger; `:2756` `run:` step |
-| `tests/test_render_options_workspace_scope.py` | `workflow-yaml` | **`gate: data`** at `.github/ci/legacy-jobs.yml:4702` (next gate:data label after `if: ${{ false }}`) | NO | `:4702` job name (job header `:4702-4760`); `:4893` `run:` step |
+What a single-name structure needs, from the functions that exist: `leg_from_chain_row` (`engine/options_payoff.py:418`) takes one chain row; `structure_from_chain` (`engine/options_payoff.py:553`) walks a chain frame. `engine/thetadata_store.py:544-546` defines `chain(date, root, store=None)`. `engine/options_payoff.py:18-21` says that frame supplies no mid, no multiplier, and no intraday timestamp. The W2-5a charter rationale says render hosts do not hold the ThetaData store and cites `DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST`. On `origin/main`, the only consumer of `engine/options_payoff.py` found under `engine/`, `scripts/`, `templates/`, and `tests/` is `tests/test_options_payoff.py`.
 
-### What runs in a PR pack
-- `ci.yml` runs ONLY `gate: code` jobs. The two options tests above are `gate: data`, so a PR open against `origin/main` does NOT prove them locally — `ci.yml:7 pull_request:` triggers ci-plan → ci-pack-N (gate: code only). Fixing this is not part of W3-0's spec, but a seat-design follow-on would move the suite into a `gate: code` job (e.g. `options-skew-engine` already exists at `.github/ci/legacy-jobs.yml:16264` with `gate: code` and is the precedent).
+## §7 Q7 — Tests and CI
 
-## §8 Q8 — Candidate W3 shapes (FACTS ONLY, no design)
+PR packs call `scripts/run_ci_pack.py --gate code` at `.github/workflows/ci.yml:4616-4618` (plan), `.github/workflows/ci.yml:4934-4936` (execute), and `.github/workflows/ci.yml:4957-4959` (fail-safe full suite). `.github/ci/legacy-jobs.yml:16267-16268` states that a `gate: data` job does not run in a PR pack and that `gate: code` is the pack home (written there about `flow-surface` versus `options-skew-engine`).
 
-### Macro-event calendar in the repo
-- `engine/event_calendar.py` (DISPLAY/CONTEXT/LEAF, `is_context_only=True`) — title says "scheduled CPI / PPI / jobs / GDP / Personal-Income-&-Outlays(PCE) release dates from the FRED release/dates API + TreasuryDirect + weekly jobless claims (Thu) / ISM Mfg/Services (1st/3rd business day) / monthly options expiry / quad-witching (3rd Friday)".
-- Cited module ports: `engine.macro_news` (FOMC + first-Friday jobs) and `engine.commodity_news` (FOMC + OPEC + EIA WPSR) BOTH delegate here.
-- `engine/marketing/fomc_statements.py` is a separate FOMC-statement BODY collector: `:48-58` "READ FROM event_calendar, DO NOT RESTATE".
-- `engine/macro_surprise.py` — `FRED`-backed release surprise (line `:66-67` `cpi` release stub with display_name `CPI (Consumer Price Index)`); `def build_release_cards(...)` `:740`.
-- No `fomc_calendar.py` / `cpi_calendar.py` / standalone macro-calendar artifact exists outside `engine/event_calendar.py`.
+| Test | Job | `gate:` line | In a `--gate code` pack? |
+|---|---|---|---|
+| `tests/test_options_catalyst_link.py` | `flow-surface` (`.github/ci/legacy-jobs.yml:2200`) | `gate: data` at `.github/ci/legacy-jobs.yml:2202`; `if: ${{ false }}` at `:2201` | No. Path `:2657`. Run `:2746`. |
+| `tests/test_options_payoff.py` (only `test_options_payoff*.py` file) | same `flow-surface` | same `gate: data` at `.github/ci/legacy-jobs.yml:2202` | No. Path `:2663`. Run `:2756`. |
+| `tests/test_render_options_workspace_scope.py` | `workflow-yaml` (`.github/ci/legacy-jobs.yml:4702`) | `gate: data` at `.github/ci/legacy-jobs.yml:4704`; `if: ${{ false }}` at `:4703` | No. Run `:4893`. |
+| `tests/test_build_options_command.py` (options.html builder) | `options-estate-guards` (`.github/ci/legacy-jobs.yml:9860`) | `gate: data` at `.github/ci/legacy-jobs.yml:9862`. Comment at `:9861` says the legacy runner is off because ci-pack executes the job. The pack command still passes `--gate code`. | No. Run `:10002`. Paths include `templates/options.html.j2` at `:9951` and `site/options.html` at `:9946`. |
 
-### (a) Tier-2 "catalyst behind this flow" line on existing `options.html.j2` flow/ticker rows
-- **Producers touched (only those needed to emit the chip line)**: `engine/options_catalyst_link.bind_event` (already emits `record`); a NEW adapter would compose `bind_event(...)` outputs into a glance-tier string per `templates/options.html.j2` flow-row.
-- **Stores touched**: `engine.stock_identity.plane.symbols_on_plane` (set); `engine.earnings_catalyst` window; `engine.event_calendar` macro candidates. NO `data/` store.
-- **Builders / templates / tests touched**:
-  - `templates/options.html.j2` (chip line in the flow/ticker rows; the row builder is around the `.oew-fl-*` and `.oew-raw-*` families at `:799`+).
-  - `scripts/build_options_command.py` `load_stores()` (if any new JSON sidecar is introduced) — `tests/test_render_options_workspace_scope.py:25,52` PINS this.
-  - New T2 chip requires a new `tests/` suite proving: `bind_event` `BOUND` → T2 chip string with catalyst kind + date + DTE; `UNBOUND_NO_CATALYST` / `AMBIGUOUS_MULTIPLE` / `STALE_CATALYST` → "no chip" or "context-only chip" per the glance-tier doctrine.
-- **Fleet laws that bind**: design doctrine §Glance tier (state + plain-word stance under hard word budgets; falsifier/refutation language never front-facing); `DNR:KILL-LLM-ORIGINATION`; `DNR:KILL-POSITIONING-FUSION`; C0's "no signal origination / ranking / sizing / gating" ceiling; `engine/options_catalyst_link.py:703-709` record-key drift guard; `engine/options_catalyst_link.py:738-749` write-links refuses `data/`. Plain-language law (EN+ZH).
+`options-skew-engine` is `gate: code` at `.github/ci/legacy-jobs.yml:16266` and runs `tests/test_options_skew.py`. It does not run the catalyst-link, payoff, or options.html render tests.
 
-### (b) Catalyst chip on the payoff-lab card fold (W2-5b page that reads `site/options_payoff_lab/latest.json`)
-- **Index ETFs have no single-name catalysts.** SPY/QQQ/IWM/DIA roots in the W2-5a catalog — a chip reading "Earnings SOON" is structurally None for index ETFs.
-- **Macro-event chip path is OPEN**: `engine/event_calendar.py` + `engine/macro_surprise.py` already expose scheduled CPI/PPI/NFP/GDP/PCE/FOMC dates AND FOMC-statement bodies (`engine/marketing/fomc_statements.py`). A chip could read e.g. `Next FOMC: 2026-09-17 (statement-day body in site/fomc_statements/)`. Whether this is the seat's chosen behavior is the seat's choice.
-- **Producers / stores / builders / templates / tests touched**:
-  - W2-5b page is NOT on `origin/main`. Once it lands, the fold is the W2-5a R2 ingest (`site/options_payoff_lab/latest.json`) + a new T2 chip drawing from `engine/event_calendar` + `engine/marketing/fomc_statements`.
-  - `engine/event_calendar.py` says `:23-30` "deliberately no event-risk score / conviction dampener ... the impact field is a DISPLAY tier (visual emphasis / strip filter) ONLY — never a multiplier on anything."
-  - `engine/marketing/fomc_statements.py` body collector supplies a `body` (verbatim FOMC statement text); a fold chip would be a 1-line label, NOT a body excerpt.
-  - Tests: the W2-5b test (when it lands) will own the chip-render contract; the catalog catalyst-only test would need to assert "index ETF ⇒ no earnings chip".
-- **Fleet laws that bind**: C0 ceiling, plain-language law (EN+ZH), `engine/event_calendar.py:23-30` (DISPLAY tier only), `engine/options_payoff.py:1-3` (`research_expression_only`, five-false authority), `engine.stock_identity.authority.authority_block()` stamp on any record, `DNR:KILL-LLM-ORIGINATION`. **NOT bound by `DNR:KILL-POSITIONING-FUSION` or `DNR:KILL-OFFHORIZON-VERDICTS`** at this layer — pure display catalog.
+## §8 Q8 — Candidate shapes (facts only; not ranked)
 
-### (c) Single-name "structure for this catalyst" page
-- **Producers needed**: `engine/options_catalyst_link.bind_event` (already emits `BOUND`/etc.); `engine/options_payoff.structure_from_chain` (`engine/options_payoff.py:553`); `engine/options_payoff.structure_summary` (`engine/options_payoff.py:1384`); `engine/options_payoff.evidence_recipe` (`engine/options_payoff.py:1537`).
-- **Stores needed**: `thetadata_store.chain` on m1 (single-name chain on the store host); identity set `engine/stock_identity.plane.symbols_on_plane`.
-- **Builders / templates / tests**:
-  - NEW builder `scripts/build_options_payoff_structure.py` (modeled on `scripts/build_options_payoff_lab.py`).
-  - NEW launchd `ops/launchd/com.macro.payoffstructure.plist` (modeled on W2-5a's plist).
-  - NEW template `templates/options_structure_single.html.j2` (consumer page).
-  - NEW R2 ingest at `site/options_structure_single/latest.json` (or root-keyed).
-  - NEW tests (model the W2-5a test on `tests/test_options_payoff.py`).
-  - `tests/test_render_options_workspace_scope.py:25,52` PINS `load_stores()` to literal coverage — any new store MUST be declared inside `load_stores(root)` at `scripts/build_options_command.py:142`.
-- **Fleet laws that bind**: **store-host-vs-render-host split** (DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST — render hosts do NOT hold the T1 store); C0 ceiling; `DNR:KILL-LLM-ORIGINATION`; `DNR:KILL-POSITIONING-FUSION`; `DNR:KILL-OFFHORIZON-VERDICTS` (verdicts only at registered `horizon_role`); `DNR:KILL-FUSED-COMPOSITE` (no fused risk/health); `DNR:KILL-DOI-FAMILY` + `DNR:KILL-SKEW-DECELERATION` (predictive ΔOI and skew-decel are dead); display-tier doctrine; plain-language law (EN+ZH); ExpressionCandidate stamp; `engine/options_catalyst_link.py:703-709` record-key drift; `write_links` rejects `data/`.
+Macro-event calendar: `engine/event_calendar.py:1-33` is the scheduled US calendar (CPI, PPI, jobs, GDP, PCE, FOMC, claims, ISM, opex, quad-witching). It sets `is_context_only=True` (`engine/event_calendar.py:23`) and says `impact` is a display tier only, never a multiplier (`engine/event_calendar.py:27-28`). A filename `macro_calendar` was not in the `engine/*.py` grep. Many other `engine/` modules contain the letters `cpi` or `fomc` as series or release models (`engine/release_cpi_bridge.py`, `engine/regime_one.py`); those are not this calendar. `CatalystCandidate.kind` already lists `earnings`, `cpi`, `ppi`, `nfp`, `gdp`, `pce`, `fomc` (`engine/options_catalyst_link.py:119`).
+
+(a) A tier-2 line on existing `templates/options.html.j2` flow or ticker rows. Already present: the generic `earnings_window` copy at `templates/options.html.j2:3369-3370`, the page builder `scripts/build_options_command.py:142`, the nightly step `.github/workflows/daily.yml:3245`, the pin test `tests/test_render_options_workspace_scope.py`, and the read-model `engine/options_catalyst_link.py` with `tests/test_options_catalyst_link.py`. Not present: any template or script call to `bind_event`. Event bytes live under `data/live_flow_state/events/` (`scripts/live_flow_poller.py:576-580`), which a sparse tree omits. Laws that already bind that surface: `docs/DESIGN_DOCTRINE.md:19-27` and `:155-157`; ExpressionCandidate at `research/market_intelligence_productization/MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md:185-189`; the five-false stamp `engine/options_catalyst_link.py:698-700`; C0 at `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md:7` and `:93`; `DNR:KILL-LLM-ORIGINATION`; `DNR:KILL-POSITIONING-FUSION`; `DNR:HOLD-WF-OPTIONS`. The link test's CI home is `gate: data` (`.github/ci/legacy-jobs.yml:2202`).
+
+(b) A catalyst chip on the payoff-lab card fold. The fold page is not on `origin/main` and not in the #7759 diff for `templates/options.html.j2`. The charter on `0ea35f07` says W2-5b reads `site/options_payoff_lab/latest.json` and is a later packet. The lab catalog roots are SPY, QQQ, IWM, DIA only (`engine/options_payoff_lab.py:34` on that ref). Those roots have no single-name earnings row inside the lab. The macro calendar that does exist is `engine/event_calendar.py` as cited above. Laws on the lab file's own header (`engine/options_payoff_lab.py:1-8` on that ref): display only; it does not rank a structure. Also C0 `:103-104`, the payoff authority strings at `engine/options_payoff.py:1619-1625`, `docs/DESIGN_DOCTRINE.md:155-157`, and `engine/event_calendar.py:23-28` if the chip reads that calendar. `DNR:KILL-POSITIONING-FUSION` binds if the chip fuses positioning keys into a score; the lab header does not do that.
+
+(c) A single-name "structure for this catalyst" page. Not present: no template, builder, or test of that page on `origin/main`. Present pieces: `engine/options_catalyst_link.py` (bind), `engine/options_payoff.py:418` and `:553` (chain to structure), `engine/thetadata_store.py:544` (`chain`), and on #7759 only the index-ETF lab. A chain frame is required. The charter says the store host computes and render hosts do not hold the ThetaData store. Laws: that store-host split (`DEC:SKEW-ACCRUAL-ON-THE-STORE-HOST` as named in the W2-5a charter), C0 `:7` and `:103-104`, ExpressionCandidate `:185-189`, both authority stamps in §5, `docs/DESIGN_DOCTRINE.md:19-27` and `:163-164` (light is a design target on macro pages), `DNR:KILL-LLM-ORIGINATION`, `DNR:KILL-POSITIONING-FUSION`, `DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-DOI-FAMILY`, `DNR:KILL-SKEW-DECELERATION`, `DNR:HOLD-WF-OPTIONS`. `DNR:HOLD-STRUCTURE-LEARNERS` does not name this page.
 
 ## §9 Facts the seat should not trust yet
 
-- The frequency of binding states on a real RTH session is **NOT measured in any current test** (`tests/test_options_catalyst_link.py` is per-state unit-only). The seat should not cite "X% UNBOUND_NO_CATALYST" without a production receipt run on the M1.
-- `engine/options_catalyst_link.py` does NOT have a `scripts/` consumer; the only known invocation is via direct Python import in tests. A claim that "bind_event already runs in nightly/intraday" is **NOT verifiable from the current repo** — the closest nightly/intraday consumer is `options_signal_episode` on `engine/live_flow.py`, not on `engine/options_catalyst_link.py`.
-- The W2-5a branch fetched from `refs/pull/7759/head` shows `engine/options_payoff_lab.py`, `scripts/build_options_payoff_lab.py`, `ops/launchd/com.macro.payofflab.plist`, `ops/launchd/run_options_payoff_lab.sh`, `scripts/publish_r2.py` (per `DEC-F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE.md:affects`). **NOT yet verified on this checkout** whether they survived `git fetch` without conflict — `git ls-tree origin/pr-7759 -- engine/options_payoff_lab.py scripts/build_options_payoff_lab.py ops/launchd/com.macro.payofflab.plist 2>&1` returned 1 line in a partial search; full list requires running on the W2-5a branch (out of scope; this packet is a CENSUS only).
-- The macro-event calendar's freshness contract: `engine/event_calendar.py` says "every public function returns plain data and NEVER raises into the build; all network/parse failures degrade to the static schedule or an empty list." A seam review on whether the schedule degrades silently under a real FRED outage is NOT in scope here.
-- `engine/live_flow.py` event-emission paths inside `scripts/live_flow_poller.py` are 200+ lines and were not line-by-line reviewed; only the launchd entry-point (`ops/launchd/com.mastermind.liveflow.plist`) and the docstring summary (`scripts/live_flow_poller.py:1-50`) were cited.
-- `tests/test_render_options_workspace_scope.py` was not read line-by-line beyond the `load_stores()` pin claim; only the assertions on `:25, 52, 217-241` were confirmed by `grep -n`.
+- Binding-state rates on a real RTH session were not counted. `data/` is sparse-omitted, so `data/live_flow_state/events/*.jsonl` is not in this worktree. Command not run: a read of that jsonl.
+- Whether `com.mastermind.liveflow` is loaded in launchd on the store host was not checked. The plist in-repo is the file `ops/launchd/com.mastermind.liveflow.plist`. The W2-5a charter says the same thing about its own plist: until install, it is only a file.
+- `engine/marketing/fomc_statements.py` and `engine/macro_surprise.py` were not read line by line. The calendar fact in §8 is only `engine/event_calendar.py:1-40`.
+- The charting-app repository was not opened. The in-repo filename search in §4 is the whole of that check.
+- `git diff --stat d90de2d0c9..origin/main` on the cited engine, template, and CI paths was empty. The four later commits (`03fdc9840d`, `8918fbf43b`, `426d321387`, `ae0bbaaf6e`) were not read line by line.
+- Pytest for `tests/test_options_catalyst_link.py` and `tests/test_options_payoff.py` was not run. Their CI homes are `gate: data` (`.github/ci/legacy-jobs.yml:2202`), so a PR pack does not run them either.
+- `config/compiled_kill_registry.yml` key lines for `DNR:KILL-ONSET-FINGERPRINTS` and `DNR:KILL-PHASE3-START-WEIGHT` were not printed past the topic lines `:562` and `:590`. The `DNR:<KEY>` cite is the `research/DO_NOT_REBUILD.md` row.
 
-## §10 Files read for this census
+## §10 Files read
 
-| Path | Lines / scope | What was used |
-|---|---|---|
-| `engine/options_catalyst_link.py` | full (784) | Inputs/outputs/states; callers; hermeticity; data/ write-link refusal |
-| `engine/options_payoff.py` | 1-50 (docstring) + grep of `^def ` | API surface, source citation to `thetadata_store.chain`, consumers |
-| `engine/event_calendar.py` | 1-40 (header) + grep | DISPLAY-only macro-event calendar |
-| `engine/marketing/fomc_statements.py` | 1-60, 220-240 | FOMC statement body collection; cited role as substrate for statement-diff desk |
-| `engine/macro_surprise.py` | 66-67 + grep `^def ` | FRED release-stub / build_release_cards |
-| `engine/stock_identity/authority.py` | full (≤60 lines) | AUTHORITY_KEYS, authority_block(), is_zero_authority() |
-| `engine/stock_identity/plane.py` | 87 (`symbols_on_plane`) | Identity set authority citation |
-| `engine/live_flow.py` | path-listing only | Substrate citation in MO-DELTA-035 |
-| `scripts/live_flow_poller.py` | 1-50 (docstring) | Producer entrypoint; launchd relationship; no workflow caller |
-| `scripts/build_options_command.py` | grep of `load_stores`, `load_intel_brief` (142, 171, 1570, 1625, 1705) | load_stores pin + AIB separate-loader note |
-| `templates/options.html.j2` | grep `:1077-1080, 1628, 2166, 2787, 2942-3147, 3369-3370, 3427, 3444` + `picker`/`payoff`/`straddle` | AIB glance lede, earnings_window chip, NO catalyst-link UI |
-| `templates/options_screener.html.j2`, `templates/gex.html.j2` | grep full | No catalyst/picker chip rendered |
-| `templates/onboard.js`, `watchstore.js`, `leader_radar.html.j2`, `fundamental_forensics.html.j2`, `market_structure.html.j2`, `sector_cycles.js` | grep `picker` | All "picker" hits are unrelated to catalysts |
-| `tests/test_options_catalyst_link.py` | 1-485 (header + relevant assertions) | Fixture shape; pin test for authority_block + source_rights |
-| `tests/test_options_payoff.py` | grep | Payoff engine suite exists; no template consumer asserted |
-| `tests/test_render_options_workspace_scope.py` | 1-60, 217-260 | load_stores() pin and store-path reconstruction |
-| `agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md` | full | OA-0..OA-5 status; do_not_redo; landmines |
-| `agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md` | full | AD-0..AD-2 status; AD-1T2 NOT STARTED |
-| `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md` | full | C0 records/source law; OA-1T-MACRO lawful-adoption history |
-| `agentos/decisions/DEC-F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE.md` | via `git show origin/pr-7759:...` | W2-5a producer scope; index-ETF catalog |
-| `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-2026-09-06.md` | full | W2-1b skew source migration; W2-2/W2-3 next_actions |
-| `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md` | full | sustained F03 Fable COO lane commission |
-| `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md` | full (148 lines) | C0 ceiling; NO module names |
-| `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` | lines 24-38 (F03 rows) | MO-DELTA-033/034/035, MO-PAID-070..077 |
-| `research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv` | lines 67-71 (F03 rows) | Six module names + ExpressionCandidate citations |
-| `research/market_intelligence_productization/MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md` | lines 180-260 | ExpressionCandidate definition |
-| `research/market_intelligence_productization/MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md` | line 82 | ExpressionCandidate converging direction |
-| `research/DO_NOT_REBUILD.md` | full (curated registry) | DNR rows cited in §2 + §8 |
-| `.github/ci/legacy-jobs.yml` | lines 2200-2781 (flow-surface), 4702-4910 (workflow-yaml); gate labels throughout | Job names + gate: code/data |
-| `.github/workflows/daily.yml` | lines 3245-3255, 3304, 3431 | options builder wiring + live_flow raw stage |
-
-**DRAFT, evidence only — not for merge; the seat reads it and closes or adopts.**
+| Path | Lines read |
+|---|---|
+| `engine/options_catalyst_link.py` | 1-140, 200-249, 450-529, 640-784 |
+| `engine/live_flow.py` | 1040-1210 (event dict and unusual row) |
+| `engine/earnings_catalyst.py` | 45-184 |
+| `engine/stock_identity/authority.py` | 1-50 |
+| `engine/stock_identity/plane.py` | 80-119 |
+| `engine/options_payoff.py` | 1-50, 1560-1628; `^def` grep for 418, 553, 753, 868, 1030, 1272, 1384, 1537 |
+| `engine/thetadata_store.py` | 544-563 |
+| `engine/event_calendar.py` | 1-40; defs at 132 and 136 |
+| `engine/options_structure.py` | 1-25 |
+| `scripts/live_flow_poller.py` | 90-130, 470-520, 540-580, 1960-2005, 2060-2095 |
+| `ops/launchd/com.mastermind.liveflow.plist` | header through the program key; line 161 |
+| `scripts/build_options_command.py` | defs at 142 and 178 only |
+| `templates/options.html.j2` | 1077-1080, 3369-3370, plus the structure/earnings grep |
+| `templates/options_screener.html.j2`, `templates/gex.html.j2` | grep only; no matching lines |
+| `tests/test_options_catalyst_link.py` | 1-40, 470-495, 690-720; `def test_` scan of all 914 lines |
+| `tests/test_options_payoff.py` | 380-444 |
+| `tests/test_render_options_workspace_scope.py` | 1-60 and grep of `load_stores` lines through 377 |
+| `research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md` | 1-120; name grep of the whole file |
+| `agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md` | 1-105 |
+| `agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md` | 17-164 |
+| `agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md` | id/status grep 1-230 |
+| `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-2026-09-06.md` | 55-82 |
+| `agentos/handoffs/MARKET-ONTOLOGY-F03-OPTIONS-EXPRESSION-FABLE-COO-2026-08-26.md` | 1-40 |
+| `agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-08-28-options-intelligence-c0-program-control.md` | next_actions 79-98 |
+| `agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-16-integration-amendment-packet-delivery.md` | next_actions 60-67 |
+| `agentos/handoffs/MARKET-OS-2026-09-19-hold-docket.md` | line 40 only |
+| `research/DO_NOT_REBUILD.md` | key-row grep of all 188 lines |
+| `config/compiled_kill_registry.yml` | key lines 23-31, 205-208, 318-335, 550, 562, 590, 758-759, 793-794 |
+| `research/compiled_kill_registry.yml` | path absent |
+| `research/market_intelligence_productization/MARKET_ONTOLOGY_F00B_CURRENT_CAPABILITY_CROSSWALK_2026-08-28.csv` | rows 56-71 |
+| `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` | rows 24-26 and 32 and 38-39 |
+| `research/market_intelligence_productization/MARKET_ONTOLOGY_AUTHENTICATED_P1_FINAL_SOL_ADJUDICATION_2026-08-23.md` | 175-214 |
+| `research/market_intelligence_productization/MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md` | 80-84 |
+| `docs/DESIGN_DOCTRINE.md` | 1-35 and 149-164 |
+| `.github/ci/legacy-jobs.yml` | 2200-2216, 2336, 2657, 2663, 2746, 2756, 4702-4712, 4893, 9860-9862, 9946-9951, 10002, 16264-16272 |
+| `.github/workflows/ci.yml` | 4595-4629 and 4910-4962 |
+| `.github/workflows/daily.yml` | 3235-3464 |
+| `config/sparse_worktree.json` | exclude_dirs slice |
+| PR #7759 at `0ea35f07`: `agentos/decisions/DEC-F03-W2-5-PAYOFF-LAB-CHARTERED-AFTER-C0-FREEZE.md` | full (64 lines) |
+| PR #7759: `engine/options_payoff_lab.py` | 1-45; grep of ROOTS, CATALOG, nearest expiry, imports |
+| PR #7759: `scripts/build_options_payoff_lab.py` | grep of latest.json and emit paths (file is 176 lines on that ref) |
