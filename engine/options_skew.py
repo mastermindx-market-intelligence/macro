@@ -66,6 +66,23 @@ _MONEYNESS_MAX = 5.0
 # A chain older than this many calendar days is published but flagged stale.
 _STALE_DAYS = 5
 
+# A store date is a complete panel when its distinct greeks root count is at
+# least this fraction of the widest date's count. The store writes the FULL
+# S panel (372-378 roots) for S = the session BEFORE the last completed one,
+# then a 12-root priority set hours earlier for the newest D — so a partial
+# D shows up with ~3% of the widest panel and falls below the threshold.
+_COMPLETE_SESSION_MIN_FRACTION = 0.5
+
+# A ledger session is thin when its row count is below this fraction of the
+# widest count among the up-to-10 immediately older sessions. Emit must skip
+# thin newest sessions so the live surface does not collapse from 372 → 12.
+_THIN_SESSION_MIN_FRACTION = 0.5
+
+# How far back `catch_up_sessions` walks from the complete store session to
+# the most recent complete ledger session. Five is enough to cover a long
+# weekend plus a holiday; anything older needs an explicit `--backfill`.
+_CATCH_UP_MAX_SESSIONS = 5
+
 
 def _nearest_expiry(rows, target_days: float = _TARGET_DAYS, min_days: float = _MIN_DAYS):
     """The single expiry whose tenor is closest to `target_days` (≥ min_days). Returns
@@ -196,24 +213,121 @@ def _legacy_chain():
     return pd.read_parquet(files[-1]) if files else None
 
 
-def _latest_store_date(td) -> str | None:
-    """Max `date` across every {td}/greeks/*/*.parquet — same enumeration
-    scripts/validate_options_skew.py uses to walk the store."""
+def _greeks_roots_by_date(td) -> dict[str, int]:
+    """Distinct greeks-root counts per YYYY-MM-DD — same walk as
+    `_latest_store_date`, but returns the FULL histogram so the complete-session
+    resolver can compare breadth across dates instead of trusting the
+    single newest stamp (which is the 12-root priority set on the store host)."""
     import pandas as pd
+    counts: dict[str, set[str]] = {}
     base = td / "greeks"
     if not base.exists():
-        return None
-    dates: list[str] = []
+        return {}
     for root_dir in sorted(base.iterdir()):
         if not root_dir.is_dir():
             continue
+        root = root_dir.name
         for f in sorted(root_dir.glob("*.parquet")):
             try:
                 df = pd.read_parquet(f, columns=["date"])
-                dates.extend(pd.to_datetime(df["date"]).dt.date.astype(str).unique().tolist())
             except Exception as e:  # noqa: BLE001
-                log.debug("_latest_store_date read failed for %s (%s)", f, e)
-    return max(dates) if dates else None
+                log.debug("_greeks_roots_by_date read failed for %s (%s)", f, e)
+                continue
+            for stamp in pd.to_datetime(df["date"]).dt.date.astype(str).unique().tolist():
+                counts.setdefault(stamp, set()).add(root)
+    return {stamp: len(roots) for stamp, roots in counts.items()}
+
+
+def _latest_store_date(td) -> str | None:
+    """Max `date` across every {td}/greeks/*/*.parquet — same enumeration
+    scripts/validate_options_skew.py uses to walk the store. Behaviour
+    unchanged; backed by the same `_greeks_roots_by_date` walk."""
+    counts = _greeks_roots_by_date(td)
+    return max(counts) if counts else None
+
+
+def complete_store_session(td) -> dict:
+    """Pick the COMPLETE panel the lane should accrue, never a partial newest.
+
+    The store writes the FULL S panel (372-378 roots) for S = the session
+    BEFORE the last completed one, then a 12-root priority set hours earlier
+    for the newest D. `_latest_store_date` returns D (12 roots), so an
+    accrual keyed off it would collapse the live surface from 372 → 12.
+
+    Two sources are consulted and the newer wins; ISO date strings compare
+    lexicographically:
+      - `breadth`: the newest date in `_greeks_roots_by_date(td)` whose
+        distinct root count is at least `_COMPLETE_SESSION_MIN_FRACTION`
+        of the widest panel.
+      - `manifest`: `<td>/_manifest.json`'s `daily_refresh.S` when it is a
+        10-char ISO date string AND `daily_refresh.greeks_S_roots` is at
+        least `_COMPLETE_SESSION_MIN_FRACTION * widest` (falling back to
+        `>= 1` when the store is empty — so a brand-new manifest still
+        picks itself on day one).
+
+    Returns exactly `{session, newest_raw, method, partial_skipped,
+    roots_on_session, widest_roots}`. `method` is "manifest" when the
+    manifest value tied or won, "breadth" when breadth won, "none" when
+    neither resolved. Never raises; missing/unparseable manifest keys
+    are ignored."""
+    import json
+    counts = _greeks_roots_by_date(td)
+    widest = max(counts.values()) if counts else 0
+    threshold = _COMPLETE_SESSION_MIN_FRACTION * widest
+    if widest == 0:
+        threshold = 1.0  # brand-new manifest on an empty store still wins
+
+    breadth_session: str | None = None
+    for stamp in sorted(counts.keys()):
+        if counts[stamp] >= threshold:
+            breadth_session = stamp  # last assignment = newest
+
+    manifest_session: str | None = None
+    try:
+        manifest_path = td / "_manifest.json"
+        if manifest_path.exists():
+            payload = json.loads(manifest_path.read_text())
+            daily = (payload or {}).get("daily_refresh") or {}
+            candidate = daily.get("S")
+            greeks_roots = daily.get("greeks_S_roots")
+            if (
+                isinstance(candidate, str)
+                and len(candidate) == 10
+                and candidate[4] == "-"
+                and candidate[7] == "-"
+                and isinstance(greeks_roots, (int, float))
+                and not isinstance(greeks_roots, bool)
+                and float(greeks_roots) >= threshold
+            ):
+                manifest_session = candidate
+    except Exception as e:  # noqa: BLE001
+        log.debug("complete_store_session manifest read failed (%s)", e)
+
+    candidates = [s for s in (breadth_session, manifest_session) if s]
+    if not candidates:
+        session: str | None = None
+        method = "none"
+    elif manifest_session is not None and (
+        breadth_session is None or manifest_session >= breadth_session
+    ):
+        session = manifest_session
+        method = "manifest"
+    else:
+        session = breadth_session
+        method = "breadth"
+
+    newest_raw = max(counts) if counts else None
+    partial_skipped: list[str] = sorted(
+        stamp for stamp in counts if session and stamp > session
+    )
+    return {
+        "session": session,
+        "newest_raw": newest_raw,
+        "method": method,
+        "partial_skipped": partial_skipped,
+        "roots_on_session": counts.get(session) if session else None,
+        "widest_roots": widest,
+    }
 
 
 def load_chain(asof: str | None = None, store=None, roots: list[str] | None = None):
@@ -234,7 +348,20 @@ def load_chain(asof: str | None = None, store=None, roots: list[str] | None = No
               "skew emits null (set THETADATA_STORE)", flush=True)
         return None, "thetadata_store_unresolved"
 
-    resolved_asof = asof or _latest_store_date(td)
+    if asof is None:
+        info = complete_store_session(td)
+        resolved_asof = info["session"]
+        if info["partial_skipped"]:
+            skipped = ", ".join(info["partial_skipped"])
+            roots_on_session = info["roots_on_session"]
+            print(
+                f"::notice title=options-skew-session::accruing complete store "
+                f"session {resolved_asof} ({roots_on_session} roots, "
+                f"{info['method']}); newer partial session(s) skipped: {skipped}",
+                flush=True,
+            )
+    else:
+        resolved_asof = asof
     if not resolved_asof:
         return None, "no_iv_tier"
 
@@ -505,6 +632,80 @@ def _backfill_row_counts(chain, requested: str) -> dict[str, int]:
     return {"rows_replaced": replaced, "rows_added": added, "rows_unchanged": unchanged}
 
 
+def catch_up_sessions(target: str, hist, max_sessions: int = _CATCH_UP_MAX_SESSIONS) -> list[str]:
+    """Dates the daily lane should backfill to catch up to the COMPLETE store session.
+
+    Pure helper. `target` is the complete-session resolver's choice — the
+    NEWEST date that has a full root panel. `hist` is the ledger frame (or
+    None) — the lane's own accrued history. The ledger's newest COMPLETE
+    session (`have`) is the newest thetadata date whose row count is at
+    least `_THIN_SESSION_MIN_FRACTION × widest(counts among the up-to-10
+    dates immediately older than it)`; a lone thetadata date is complete.
+
+    Returns dates in ASCENDING order. `target` itself is always included;
+    the rest are NYSE sessions walked BACKWARD from the latest session at
+    or before `target`, stopping at `have` exclusive or after `max_sessions`
+    total dates — whichever first. When `have is None` (no thetadata
+    history) or no NYSE session exists at-or-before `target`, returns
+    `[target]` only — the store decides whether that date has a panel.
+    """
+    from lib import nyse_calendar
+
+    target_iso = str(target)[:10]
+    try:
+        target_date = date.fromisoformat(target_iso)
+    except ValueError:
+        return [target_iso]
+
+    if hist is None or getattr(hist, "empty", True):
+        return [target_iso]
+    norm = _normalize_ledger(hist)
+    weekday_theta = norm[
+        (norm["source"] == _SOURCE_THETA) & (~norm["date"].map(_is_weekend_iso))
+    ]
+    if weekday_theta.empty:
+        return [target_iso]
+
+    counts: dict[str, int] = {}
+    for stamp in weekday_theta["date"].tolist():
+        if stamp:
+            counts[stamp] = counts.get(stamp, 0) + 1
+    sorted_dates = sorted(counts.keys())
+
+    have: str | None = None
+    for index in range(len(sorted_dates) - 1, -1, -1):
+        stamp = sorted_dates[index]
+        older_window = sorted_dates[:index][-10:]
+        widest_older = max((counts[w] for w in older_window), default=0)
+        threshold = _THIN_SESSION_MIN_FRACTION * widest_older
+        if widest_older == 0 or counts[stamp] >= threshold:
+            have = stamp
+            break
+
+    if nyse_calendar.is_session(target_date):
+        cursor = target_date
+        n_start = 1  # skip n=0; target already in walked
+    else:
+        cursor = nyse_calendar.last_session_on_or_before(target_date)
+        if cursor is None:
+            return [target_iso]
+        n_start = 0  # cursor is one session BEFORE target, so n=0 is fair game
+
+    walked: list[str] = [target_iso]
+    n = n_start
+    while len(walked) < max_sessions:
+        sess = nyse_calendar.session_n_back(cursor, n)
+        if sess is None:
+            break
+        sess_iso = sess.isoformat()
+        if have is not None and sess_iso <= have:
+            break
+        walked.append(sess_iso)
+        n += 1
+    walked.reverse()
+    return walked
+
+
 def backfill_from_store(
     dates: Sequence[str],
     *,
@@ -580,8 +781,14 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     """Display payload read from the committed ledger. Never opens a chain store.
 
     `accrual_state` is `accrued_today` when this process just wrote the ledger,
-    otherwise `ledger_only`. Names are the rows on the ledger's newest date.
-    Weekend-dated rows are dropped before that pick when a weekday row remains.
+    otherwise `ledger_only`. Names are the rows on the ledger's newest COMPLETE
+    session: weekend-dated rows are dropped first, then the thin-session
+    guard skips any newer date whose row count is below
+    `_THIN_SESSION_MIN_FRACTION × widest(count of the up-to-10 dates
+    immediately older than it)` so the live surface does not collapse from
+    372 → 12 on a partial newest session. Skipped dates are reported in
+    `source_detail["partial_sessions_skipped"]` / `partial_rows_skipped`
+    (always present, possibly empty/zero).
     """
     if accrual_state not in ("accrued_today", "ledger_only"):
         raise ValueError(f"accrual_state must be accrued_today or ledger_only, got {accrual_state!r}")
@@ -593,6 +800,8 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     stale_days = None
     n_weekend_rows_excluded = 0
     history_sources: list[str] = []
+    partial_sessions_skipped: list[str] = []
+    partial_rows_skipped = 0
     if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
         norm = _normalize_ledger(hist)
         history_sources = sorted({
@@ -606,7 +815,33 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
             norm = norm.loc[~weekend]
         dates = [d for d in norm["date"].tolist() if d]
         if dates:
-            ledger_asof = max(dates)
+            sorted_dates = sorted(set(dates))
+            per_date_counts: dict[str, int] = {}
+            for stamp in sorted_dates:
+                per_date_counts[stamp] = int((norm["date"] == stamp).sum())
+
+            # Newest date whose count meets the thin-session guard.
+            chosen: str | None = None
+            for index in range(len(sorted_dates) - 1, -1, -1):
+                stamp = sorted_dates[index]
+                older_window = sorted_dates[:index][-10:]
+                widest_older = max(
+                    (per_date_counts[w] for w in older_window), default=0
+                )
+                threshold = _THIN_SESSION_MIN_FRACTION * widest_older
+                if widest_older == 0 or per_date_counts[stamp] >= threshold:
+                    chosen = stamp
+                    break
+            # Cannot happen by construction (the oldest date is always
+            # complete when there is at least one row on it), but defend
+            # against an empty `norm` masking the loop's exit.
+            if chosen is None:
+                chosen = sorted_dates[-1]
+
+            partial_dates = [s for s in sorted_dates if s > chosen]
+            partial_sessions_skipped = partial_dates
+            partial_rows_skipped = int(sum(per_date_counts[s] for s in partial_dates))
+            ledger_asof = chosen
             latest = norm[norm["date"] == ledger_asof].sort_values("underlying")
             sources = []
             for rec in latest.to_dict(orient="records"):
@@ -655,6 +890,8 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
             "names_dropped_no_25d_put": [],
             "names_dropped_no_atm_call": [],
             "stale_days": stale_days,
+            "partial_sessions_skipped": partial_sessions_skipped,
+            "partial_rows_skipped": partial_rows_skipped,
         },
         "ledger_asof": ledger_asof,
         "accrual_state": accrual_state,
