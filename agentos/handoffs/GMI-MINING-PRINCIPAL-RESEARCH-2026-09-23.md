@@ -4,94 +4,138 @@ session: sol/mining-principal-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Principal-led Mining research, analysis and planning over multiple turns before a mature
-  Fable CEO implementation handoff; extend incumbent Themes/GMI/F04 owners.
+  Extensive principal-led Mining research, analysis and product planning across multiple turns
+  before a mature Fable CEO implementation handoff, extending incumbent Themes/GMI/F04 owners.
 state_before: >
-  Pass 01 and its research checks were preserved at 58b7e58e66e549791eaf3607682834e7869854b4.
-  The next dependency was asset-level copper/precious-metal and economic-rights reconciliation.
+  Pass 01 at 58b7e58e66e549791eaf3607682834e7869854b4 established the broad economic framework.
+  Asset-level ownership, ore-domain, stream and project reconciliation and a real expectation
+  comparison remained the next research dependency.
 changed:
+  - path: research/mining/MINING_COPPER_PRECIOUS_ASSET_DOSSIERS_2026-09-23.md
+    what: "Pass 02: 6,065 words; 21 primary-source references; seven focused dossiers; 20 additional prospective requirements and six future persona tasks."
+  - path: research/mining/check_asset_research.py
+    what: "Research-only reproducible arithmetic, incompatible-input examples and document checks; no product imports or network I/O."
+  - path: research/mining/MINING_ASSET_RESEARCH_CHECKS_2026-09-23.json
+    what: "Actual 44/44 passing research checks, document digests, prepublication corrections and unresolved accounting/rights limitations."
   - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
-    what: "In-turn cumulative checkpoint: source-specific reporting bases, Antamina ore domains and distinct silver-stream payabilities identified. Further research continues."
+    what: "Same cumulative owner record updated from in-turn checkpoint to the verified asset/expectations research boundary."
 verified:
-  - claim: "The research carrier did not move unexpectedly before this continuation."
-    command: "GitHub get_pr_info #7795 and exact-head continuation read."
-    result: "Head 58b7e58e66e549791eaf3607682834e7869854b4; open/draft/unmerged. Merge compatibility is not qualified and remains irrelevant to held research publication."
-  - claim: "Current protected procedure pin matches the previously loaded source."
-    command: "Fresh protected master and exact INDEX read."
-    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; INDEX blob 1a20acafe1fe7df686489cadef15a1ae7833ec12; Skillpack 1.0.1/bootstrap 1. Previously loaded companions are from this unchanged commit, not a moving ref."
-  - claim: "GitHub write permission was preflighted without a dummy mutation."
-    command: "get_repo_collaborator_permission for the established principal mastermindx-2."
-    result: "admin on mastermindx-market-intelligence/macro. Technical permission does not authorize product/source-owner changes."
-  - claim: "Selected Teck operating table and footnotes were visually inspected."
-    command: "Official Q2 2026 PDF parsed and web screenshots of zero-based pages 10,12,26,37."
-    result: "The Antamina table applies zinc grade/recovery only to copper-zinc ore, not total mill feed. Guidance mixes fully consolidated QB/Carmen data and Teck's 22.5% Antamina share."
+  - claim: "Current compatible protected procedure and existing carrier recovered without unexpected head movement."
+    command: "Fresh protected master/INDEX and exact #7795 head/continuation reads."
+    result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; INDEX blob 1a20acafe1fe7df686489cadef15a1ae7833ec12; v1.0.1/bootstrap 1. Required companions already loaded from that unchanged SHA."
+  - claim: "The new report's remote blob matches the locally verified bytes."
+    command: "GitHub create_file followed by exact-commit fetch_file; compare with local Git-blob calculation."
+    result: "Commit 926e222335f1010c19933b88651f4acd1aa6cdcc; blob 52ac589b7ab6e220c44deeb143ae33edcd550fde; 46,247 bytes; SHA-256 ce414e3668b56ad079603c6d4d817e9caca6554f8940fe5ee915d4f7843dd08d."
+  - claim: "Research utility and executed receipt persisted and matched local blobs."
+    command: "python /mnt/data/mining_research/check_asset_research.py; rerun; exact GitHub file readbacks."
+    result: "44 passed, zero failed. Script a424c73c66e676f1f8705d46c5618e2a7bf9dea9 / blob 7a9f9c47fbfc5b43174c03f6ad03cfb00651ee20. Receipt b63120a868f964fbf562d3c31d9ccad4119985dd / blob 186b2b902d9ebd6271b8739c61740c2f8c91d47c."
+  - claim: "An initially imperfect draft was corrected before report publication without changing issuer inputs or weakening checks."
+    command: "Initial 41/44 result, Decimal diagnosis, three draft-rounding corrections, full rerun."
+    result: "Rounded report results corrected to 52.094, 160.190 and 23.538 in their stated units. History retained in receipt; no incorrect draft was committed."
+  - claim: "Only the allowed research and cumulative-continuation paths changed in #7795."
+    command: "GitHub list_pr_changed_filenames."
+    result: "Seven paths total: six research documents/utilities/receipts under research/mining/ and this exact Agent OS record. Pass 01 files unchanged this turn."
 unverified:
-  - claim: "New findings or the Mining implementation design are independently accepted."
-    what_would_verify: "Further principal adjudication, source/definition reconciliation and eventual current-owner design/implementation acceptance."
-  - claim: "Silver-stream cumulative delivery thresholds and exact within-quarter ownership allocation are fully reconciled."
-    what_would_verify: "Contract-specific cumulative delivery evidence and period-specific entitlement statements; do not infer either."
+  - claim: "Mining product implementation, native evidence retention or an investment strategy is accepted or delivered."
+    what_would_verify: "Current-owner written design/plan acceptance, proper source admission/rights, bounded implementation and required independent real-path/validation proof."
+  - claim: "The Antamina zinc accounting residual is explained or actual stream thresholds are known."
+    what_would_verify: "Supporting accounting bridge and contract-specific cumulative delivered-ounce evidence, not assumptions or forced reconciliation."
+  - claim: "A historical market expectation was natively captured before its earnings event."
+    what_would_verify: "An accepted contemporaneous immutable receipt; present access to the Aurubis July 14-labeled page does not establish one."
 unresolved:
-  - "Finish Freeport asset/process and dated forecast comparison, Antamina rights case, Southern Copper development comparator, Detour Lake operating/resource case, and smelter economics counterexample."
-  - "No global cost curves, complete asset/contract census, point-in-time consensus, data-rights acceptance or native source ingestion."
-  - "No product tests, independent review, Agent OS validator, current-base CI/merge proof or browser acceptance run."
+  - "Battery-material and rare-earth product/process/qualification economics are the next major research tranche."
+  - "Antamina zinc reconstruction remains NOT_RECONCILED; a stated diagnostic rounding model does not explain it."
+  - "Actual Antamina stream delivered-ounce balances, comprehensive encumbrances and full reserve/resource inclusion conventions remain unverified."
+  - "Global cost curves, complete project/asset census, broad historical consensus, source reuse/admission and native retention remain incomplete."
+  - "Southern Copper Q2 full HTML exceeded fetch size; selected Q2 project facts are supported by its official Spanish results, not a claimed full filing review."
+  - "No current-base integration qualification, CI, independent review, canonical Agent OS validator, application/browser proof or production acceptance was run."
 next_actions:
-  - "Continue primary-source Mining research now; persist the asset dossier and reproducible arithmetic on this same carrier."
-  - "Separate reporting ownership from economic ownership; separate ore domains from headline grades; do not use a nominal combined stream percentage as a uniform payable entitlement."
-  - "Complete valuation/expectations and counter-thesis synthesis before the later Fable handoff gate."
+  - "Continue principal battery-material and rare-earth process economics using actual then-current primary disclosures, starting with Albemarle's product/contract/asset bridge and MP Materials versus Lynas process/qualification distinctions."
+  - "For each representative case, establish material specification, physical process, nominal versus qualified capacity, recovery/yield, product realization, contract denominators, capital/funding and what changed versus an identified prior expectation. Add a non-integrated producer/processor comparison only when primary evidence supports it."
+  - "Return new asset findings to the existing theme/subtheme and economic-rights framework; do not create constituents or production schema while researching."
+  - "Carry forward copper/precious-metal unresolveds without repeating completed dossiers; reserve the final Fable handoff for a mature corpus and accepted written design/plan."
 do_not_redo:
-  - "Pass 01 foundation and historical 20-check receipt remain unchanged and recoverable; do not recreate them."
-  - "Healthcare #7787 correction at da87d480adf6666583a61bb0912d6daeaeec984c remains complete; do not reopen that scope or delete its evidence."
-  - "Do not duplicate Robotics #7773, GMI, identity/evidence/ThemeState, K3-D, F04, publication or runtime owners."
-  - "No live basket, rank, entry, sizing or trading changes; no implementation, dispatch, merge or release."
-  - "No model switch is justified by a reported mode alone; the actual tool surface controls capability claims."
+  - "Do not replay broad repository/template archaeology or the whole preceding tool history; use this record and the two exact reports."
+  - "Do not redo the seven Pass 02 dossiers unless a material new question, source change or contradiction requires it."
+  - "Pass 01 and its historical 20-check receipt remain unchanged. Do not describe those as newly rerun tests."
+  - "Healthcare #7787 scope correction at da87d480adf6666583a61bb0912d6daeaeec984c remains settled; preserve its evidence and do not reopen that scope."
+  - "Do not duplicate Robotics #7773, GMI identity/evidence/ThemeState, K3-D, F04, publication, runtime, queue or watcher owners."
+  - "Do not upgrade a conditional stream example or reconstructed consensus comparison into actual entitlement, backtest or trading authority."
+  - "Do not ask for Extra High based on a mode label; required GitHub writes worked in this turn."
 ---
 
-# Mining principal research — live cumulative checkpoint
+# Mining principal research — cumulative continuation after Pass 02
 
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
-IN_TURN_CHECKPOINT: true
 CAPABILITY_STATE: SPEC_ONLY
+
 Operation: `gmi-mining-principal-research-20260923-sol-001`.
 Carrier: Macro Draft/HOLD #7795 / `sol/mining-principal-research-20260923`.
-Principal-research scope: editorial research and research-only arithmetic under `research/mining/`,
-plus this exact Agent OS continuation. No shared implementation writer or runtime owner is claimed.
+Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack 1.0.1/bootstrap 1.
+Original interface baseline: Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
 Direct-work rationale: PRINCIPAL_JUDGMENT; the Chairman requests foundational research here before Fable.
+Permitted effects: editorial research and local research-check utilities under `research/mining/`,
+plus this exact Agent OS continuation and corresponding draft PR metadata. No shared implementation
+writer, new research data service, runtime grant or source-custody transfer is created.
 
-## Preserved baseline
+## Material intellectual delta
 
-Pass 01: `research/mining/MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md`, commit
-1991c91bc6ca7678a455cabaf38bdfe14e800028, blob d107e5527a898c834c26b4869d6de7e51b254af1,
-SHA-256 7271cbf940685a0b14cd201a5de49a59c7460144a99ed969c930e4c604f66991.
-Its 19-source/10-case/30-requirement coverage and 20-check receipt at
-5a0b59c793b42e3bb757991c16c70116569257b0 are historical verified research evidence, not newly rerun.
-Macro implementation/interface baseline remains c4da107fe729e46b4d4036b3e0e290390315d0fd;
-no implementation compatibility refresh is claimed or needed for these disjoint research documents.
+The asset/rights/expectations model is now tested against seven focused case groups rather than only
+broad taxonomy. Morenci demonstrates observation-specific ownership basis; Cerro Verde demonstrates
+dated ownership and field-specific source precedence. Antamina shows why ore-domain footnotes matter
+and why correct-domain reconstruction can still leave an honest unresolved residual. Its two streams
+require distinct payability and delivered-ounce thresholds, not one headline fraction. Tia Maria
+separates project progress, company financing and future output. Detour resolves a component-scope
+aggregation ambiguity and exposes timing/displacement rather than automatic additional ounces.
+Kamoa-Kakula tests shared upstream constraints and opposite coproduct/input economics. Aurubis supplies
+a concrete growth-versus-matched-expectations comparison with cash-conversion and retrieval limits.
 
-## New discriminating findings, still being synthesized
+Prior 'no expectation benchmark acquired' is narrowed only for the presently reconstructed Aurubis
+case. It is not a solved sector-wide consensus pipeline or native point-in-time history. Passing
+arithmetic does not reconcile issuer accounting, prove causation or validate a return forecast.
 
-Freeport's Q2 filing identifies Morenci's proportionate reporting and a Cerro Verde ownership
-change from 55.08% to 55.66% in May 2026. Do not multiply already-attributable data again or apply
-quarter-end ownership retroactively. Primary: https://www.sec.gov/Archives/edgar/data/831259/000083125926000036/fcx-20260630.htm
+## Preserved prior work
 
-Teck's Antamina operating table separates copper-only and copper-zinc ore; the zinc grade/recovery
-footnote uses only the latter. This enables a falsifiable denominator test rather than a superficial
-company taxonomy. Primary: https://www.teck.com/media/Teck-Q2-2026-Unaudited-Results.pdf
+Pass 01: `research/mining/MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md` at
+`1991c91bc6ca7678a455cabaf38bdfe14e800028`, blob `d107e5527a898c834c26b4869d6de7e51b254af1`,
+SHA-256 `7271cbf940685a0b14cd201a5de49a59c7460144a99ed969c930e4c604f66991`.
+Its 19-source/10-case foundation, 30 prospective requirements and historical 20-check receipt remain
+recoverable. Pass 02's 21 source references overlap some earlier sources; do not sum them into an
+unverified unique-source total. The 20 MA requirements add focused proposals, not deployed guards.
 
-Wheaton's current Antamina page distinguishes the Glencore stream's 100% payability and 140 Moz
-step-down threshold. The BHP closing source specifies 90% payability and a separate 100 Moz threshold.
-Any illustrative aggregate must be conditional on each contract's threshold state; no actual combined
-received-volume estimate is asserted. Primary sources:
-https://www.wheatonpm.com/portfolio/operating-mines/antamina/default.aspx
-https://www.wheatonpm.com/news/news-details/2026/Wheaton-Precious-Metals-Announces-Closing-of-Silver-Stream-with-BHP-on-Antamina/default.aspx
+## Effects and held work
 
-## Effect and continuation boundary
+Known current-turn effects: in-turn checkpoint `7b1df7f8fc49a21cb73e06079038ed6d6e3c19b2`;
+report, script and executed receipt at the three immutable commits above; this cumulative checkpoint
+once its write receipt/readback returns; corresponding #7795 metadata update. All remain on the same
+research carrier. The final record's own exact revision is established by its receipt, not a
+self-referential embedded hash. EFFECT_UNKNOWN: none observed.
 
-Only this documentation checkpoint has been modified in the current continuation so far. Its exact
-commit/blob follow from the write receipt/readback. No EFFECT_UNKNOWN response observed. No worker,
-Fable, Executive Attempt, watcher, implementation, production data, basket/trading, merge or deployment
-has been started. External runtime/custody remains unknown; it is not inferred from GitHub.
+Active children, worker/Fable commissions, Executive Jobs/Attempts and watchers created here: none.
+No production code/config/schema/data, basket, ranking, entry, sizing, trade, merge, deployment or
+real-product publication was performed. External runtime/custody is unknown and is not inferred
+from GitHub. Required GitHub documentation writes succeeded; technical permission is not product
+admission. No autonomous background execution or automatic wake is claimed.
 
-This is not a final response gate or a Fable handoff. Continue useful research in this turn, including
-the contrasting producer/developer and smelter cases. If interrupted, resume from this record and the
-precise cited sources, not broad history. Finalization later must preserve all additional effects and
-an exact next action. No automatic wake, custody transfer or background execution is claimed.
+HOLD remains: mature principal research, shared-template/owner reconciliation, accepted written
+design and plan, and all applicable source rights/custody/admission/proof before implementation or
+final Fable delivery. A draft document or green CI does not constitute acceptance.
+
+## Justified boundary and exact continuation
+
+This boundary follows extensive primary-source and PDF-table work plus several consecutive research
+units: asset ownership, ore accounting, contractual thresholds, development financing, resource
+aggregation, process economics and a real expectations comparison. Their report and executable
+research checks are now persisted and read back. The next tranche changes domain to battery-material
+conversion and rare-earth qualification; carrying the full accumulated source/tool history into it
+would add continuity risk rather than research value. No arbitrary elapsed-time ceiling is asserted.
+
+Resume with this compact record, the Pass 02 report and only the fresh procedure/source invalidators
+needed next. Start with Albemarle's current product/contract/asset disclosures, then compare the
+process and qualification economics of MP Materials and Lynas using their own current sources.
+Do not infer their current operating states from company labels or prior summaries. Intended resume
+surface: the principal research-capable conversation, in the user-selected mode when available.
+A fresh conversation changes presentation only; same-carrier and custody laws still apply.
+No Thinking failed event was observed and no hard seal is asserted. The broader Mining mission and
+Fable handoff remain incomplete.
