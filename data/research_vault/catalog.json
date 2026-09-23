@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T22:10:40.854679+00:00",
-  "count": 2737,
+  "generated_at": "2026-09-23T22:27:38.860166+00:00",
+  "count": 2738,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -257,6 +257,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6okz9r0x9rx-6ef9ab",
+      "title": "Banks Regional Updating estimates in Regional Banks and Consumer Finance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:30Z",
+      "summary_points": [
+        "Regional Bank EPS Revisions: Goldman Sachs raised 2026/2027 core EPS estimates for 7 Buy-rated regional banks (TFC, FITB, HBAN, RF, SYF, KEY, ZION), with key increases driven by updated forward curve forecasts and industry commentary (e.g., TFC +$5.20, HBAN +$1.54, ZION +$6.80).",
+        "Critical Risk Drivers: Deposit outflows, credit deterioration, and expense pressure dominate fundamental risks for Buy-rated banks; NIM headwinds specifically impact HBAN and MTB.",
+        "Target-Closing Gap Divergence: Widening target-closing discrepancies (e.g., ZION: $64.00 vs $52.70; FHN: $29.00 vs $25.85) signal heightened analyst confidence or risk assessment, contrasting with declining targets for TFC.",
+        "Consensus Bullish Sentiment: 5 banks (KEY, FHN, RF, SYF, FITB) show consistent target prices above closing prices (e.g., SYF: $87.00 vs $72.81), reflecting strong near-term upside expectations and portfolio allocation potential."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
