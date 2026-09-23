@@ -102,7 +102,18 @@
 
 ## Q6 GAPS + MUST-NOTS
 
-TODO
+- UNKNOWN → historical universe/delisting coverage counts. Need `data/reference/security_master.parquet`, `data/reference/vendor_aliases.parquet`, `data/reference/*_receipt.json`, `config/delisted_symbols.yml` cross-checks and the original universe snapshots. Verify per historical cut: master/dead rows, aliases covering the cut, and delisted names present. Sparse-worktree guard: do not write into omitted `data/`; use the sparse tool to opt in if a later session opens these artifacts.
+- UNKNOWN → historical issuer CIK lineage and identifier changes. Need an as-of corporate-actions/identifier history keyed by issuer/security with CUSIP/FIGI old/new, effective and announced clocks, change reason and successor. SOURCE_SHA records current-registrant CIK only (`config/dataset_registry.yml:363-365@a1a0a05e6adc`) and no identifier event schema.
+- UNKNOWN → general merger/spin-off/bankruptcy event history. Need an event registry with event type, announced/effective/known clocks, issuer and security lineage, successor/predecessor, source receipt and correction graph. Six manual delisted acquisitions do not establish coverage.
+- UNKNOWN → Nasdaq historical earnings expectations/surprise completeness and revision chain. Need a licensed historical endpoint or a daily append process begun before any historical claim, storing announced/reported/observed clocks and revisions. Current sweep/drip cache cannot recreate missing snapshots.
+- UNKNOWN → licensed issuer consensus. Need an entitlement that specifically permits acquisition, processing, storage, model use and user redistribution, plus per-estimate timestamps, revisions and basis. Untyped parquet values or a price/account label do not satisfy D03.
+- UNKNOWN → release/transcript corpus coverage and first-use latency. Need committed stores or manifest/receipt sets: release body hashes, report/acceptance dates, transcript index revisions, body hashes and first observed timestamps. The parser contracts alone cannot prove coverage.
+- UNKNOWN → rights determinations for EDGAR, Nasdaq, transcripts, press/search and narrative families. Need each source owner’s explicit answers for acquisition, processing, storage, model use and redistribution—five answers, not one license label.
+- UNKNOWN → actual costs and subscription/account entitlement boundaries. D03 names source costs as required evidence, but no cost field was observed in the inspected source contracts and credentials/accounts were intentionally not read.
+- UNKNOWN → actual store rows/snapshots because `data/` is absent. Every finding above is a code/config capability and contract, not proof that a production artifact is populated, fresh or complete.
+- MUST-NOT REFUSED: did not backdate current membership, event sets, GICS assignments or issuer identity; did not infer a statutory or publication lag; did not relabel broad sector rows as granular peer history; did not assume a license from source availability or a rights-profile string.
+- MUST-NOT REFUSED: did not run engine producers, mutate stores, read `data/`, credentials, `.env` or key files; did not open, compute or cite any strategy return, trade outcome or protected outcome artifact.
+- MUST-NOT REFUSED: did not dispatch nightly work, accelerate B1, promote a signal, mark a PR ready, apply DDL, or treat the C-01/D05 rulings as authority grants beyond their written scope.
 
 ## EVIDENCE INDEX
 
