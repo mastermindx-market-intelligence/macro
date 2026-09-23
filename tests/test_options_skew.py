@@ -915,6 +915,22 @@ def test_emit_payload_carries_source_windows_and_history_dates(tmp_path, monkeyp
     assert quiet_payload["source_windows"][0]["source"] == "thetadata"
 
 
+def test_emit_payload_without_a_ledger_carries_null_source_break_keys(tmp_path, monkeypatch):
+    """A ledger-less host (no data/options_skew/snapshots.parquet — the state
+    of every sparse session worktree) emits the round-5 keys at their
+    defaults instead of raising.  Seat round 6 pins the reviewer's blocker:
+    `source_break_date` was evaluated in the return dict on a frame that is
+    only bound inside the has-rows branch (UnboundLocalError on `norm`)."""
+    _patch_dirs(monkeypatch, tmp_path)
+    assert S.load_history() is None
+    payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert payload["source_windows"] == []
+    assert payload["source_break"] is False
+    assert payload["source_break_date"] is None
+    assert payload["history_dates"] == 0
+    assert payload["names"] == {}
+
+
 def test_emit_payload_history_dates_agrees_with_source_windows_for_all_weekend(tmp_path, monkeypatch):
     """A degenerate all-weekend ledger has history_dates == 0 AND zero
     source_windows — the two additive keys always agree, even at the

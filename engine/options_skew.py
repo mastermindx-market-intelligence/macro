@@ -753,6 +753,7 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     windows: list[dict] = []
     history_dates = 0
     source_break = False
+    break_date: str | None = None
     if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
         norm = _normalize_ledger(hist)
         history_sources = sorted({
@@ -801,6 +802,10 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         # `history_dates` is computed against the session frame so an
         # all-weekend ledger reports 0, not 2.
         windows = source_windows(norm)
+        # Seat round 6: the break date is a property of the same session frame,
+        # so it is computed HERE — a ledger-less host (no snapshots.parquet, the
+        # state of every sparse worktree) never binds `norm` and must emit None.
+        break_date = source_break_date(norm)
         # Session-only dates: history_dates counts weekday dates so it
         # agrees with windows (an all-weekend ledger has zero of both,
         # not two of the first).  The names pick above keeps weekend rows
@@ -851,7 +856,7 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         # source_break (None is not the truthy check) and stay silent.
         "source_windows": windows,
         "source_break": source_break,
-        "source_break_date": source_break_date(norm),
+        "source_break_date": break_date,
         "history_dates": history_dates,
     }
 

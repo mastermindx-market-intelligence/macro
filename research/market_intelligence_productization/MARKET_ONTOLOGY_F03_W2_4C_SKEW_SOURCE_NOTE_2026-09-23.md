@@ -182,17 +182,20 @@ This packet's deliverable is COMPLETE per the Meta-CEO A ruling DELIVERY
 contract ("commit → push → PR stays DRAFT; return LANE_DONE with the final
 head. The seat re-reads the PR's own ci run before ratifying"):
 
-- HEAD `36ced8fe22335bd57682fbaffa0c43b9b0b8eefc` on lane branch
-  `claude/mo-a-3-a-f03-w2-4c-skew-source-note` (carry: `origin`).
-  The head sits on top of three round-5 commits (`e3ef6b8655`
-  coverage-span model + `e368506743` ratification handoff record +
-  `36ced8fe22` LATEST-REVIEW fixes).  The SEAT DISARM comment was filed
-  against the merge-base `84428a8429f5` (before any round-5 commit landed).
+- HEAD: the branch tip of `claude/mo-a-3-a-f03-w2-4c-skew-source-note`
+  (carry: `origin`) as recorded on PR #7783.  This file is committed inside
+  that head and cannot name its own commit; the seat's `RATIFIED at <head>`
+  comment on the PR names the ratified sha.  On top of the merge-base
+  `84428a8429f5` the branch carries `e3ef6b8655` (coverage-span model),
+  `e368506743` (ratification handoff record), `36ced8fe22` + `0a15fb6abe`
+  (LATEST-REVIEW fixes) and the seat round-6 no-ledger emit guard.  The SEAT
+  DISARM comment was filed against the merge-base `84428a8429f5` (before any
+  round-5 commit landed).
 - PR #7783 isDraft=true; the PR body carries the round-5 measured-truth
-  table, the new exact EN/ZH sentences, the 41-test proof line, the
+  table, the new exact EN/ZH sentences, the 42-test proof line, the
   acceptance-grep table (re-baselined against `84428a84`), the LATEST
   REVIEW narrative, and the seat round-5 ruling narrative.
-- 41/41 tests pass on the three test files the ruling names
+- 42/42 tests pass on the three test files the ruling names
   (`test_options_skew.py`, `test_options_skew_source_note.py`,
   `test_options_skew_backfill.py`); the workspace-scope pin holds
   (31/31 on `test_render_options_workspace_scope.py`).
@@ -214,8 +217,9 @@ head. The seat re-reads the PR's own ci run before ratifying"):
 - LATEST REVIEW MINORs closed at this head:
   · MINOR 1 — dead `_date_iter` helper deleted (no caller; the two test
     docstring references it leaves now point to the row-walk path).
-  · MINOR 2 — this handoff section's head sha and test count are the
-    current branch head and the actual passing-test count.
+  · MINOR 2 — this handoff section no longer names its own head sha (a
+    committed file cannot carry its own commit id; the PR's RATIFIED comment
+    does) and carries the actual passing-test count.
   · MINOR 3 — body §Evidence provenance corrected (the replaced evidence
     manifest's `target.resolved_sha_or_none` was the round-1 head —
     PNGs were captured pre-round-3, not under the round-4 sentence as
@@ -231,6 +235,20 @@ head. The seat re-reads the PR's own ci run before ratifying"):
   probe) is PR-neutral and unchanged at this head; the seat owns the
   ratification that runs against the PR's own ci after the LATEST
   REVIEW lands.
+- Seat round 6 (2026-09-23, Meta-CEO A): the round-3 lane review of the
+  LATEST-REVIEW head found one BLOCKER — `emit_from_ledger` evaluated
+  `source_break_date(norm)` in its return dict, but `norm` is bound only
+  inside the has-rows branch, so a ledger-less host (no
+  `data/options_skew/snapshots.parquet`; every sparse session worktree)
+  raised `UnboundLocalError`.  Fixed by computing the break date inside
+  that branch with a `None` default; pinned by
+  `test_emit_payload_without_a_ledger_carries_null_source_break_keys`.
+  The two MAJORs (a stale manifest-sha claim in the PR body and this
+  section's self-referential head sha) are corrected as written above.
+  The evidence manifest's `target.resolved_sha_or_none` stays at the
+  round-5 capture head `e3685067435d`; no later commit touched the
+  sentence text or the template, so the PNGs render the delivered
+  sentence.
 
 The seat owns the ci → ratify → ready → arm → squash-merge → render →
 live chain from here.
