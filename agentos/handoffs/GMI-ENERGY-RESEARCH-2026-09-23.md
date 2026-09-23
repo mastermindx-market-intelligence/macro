@@ -9,72 +9,57 @@ mission_complete: false
 implementation_handoff_state: NOT_ISSUED
 ---
 
-# GMI Energy — reconciled R2 continuation
+# GMI Energy — R3 in-turn research checkpoint
 
 ## Mandate and authority
 
-Chairman continues principal-led, multi-tranche Energy research and planning before any Fable CEO build handoff. Center business economics, attributable cash flow per share, capital/financing, changing expectations and valuation/re-rating. Supply-chain and bottleneck work supports those questions; it is not the governing Robotics-style BOM objective. Research carrier authority remains authored public-source research and organizational continuation only. No product logic, live data, canonical identity, basket membership/weights, rank, entry, sizing, auth, publication pipeline, trading effect or Fable Energy commission is authorized here.
+The current Chairman continues principal-led, multi-tranche Energy research/planning before any Fable CEO build handoff and has returned the conversation to Pro. Research remains here for PRINCIPAL_JUDGMENT. Center business economics, attributable cash per share, financing, expectations and valuation; supply constraints are supporting analysis, not a Robotics BOM template imposed on Energy. This carrier authorizes authored public-source research and organizational continuity only. No product code, native schema/data, canonical identity, baskets/weights, ranking, entry, sizing, auth, publisher or trading effects. Fable remains later build/orchestration principal, not a dispatched researcher.
 
-## Exact canonical frontier
+## Canonical frontier and actual tools
 
-- Carrier: Macro PR #7791, branch `sol/energy-sector-research-20260923`; DRAFT/HOLD, unmerged.
-- Branch head reconciled before this checkpoint write: `3a3249943287faad49374d9d9e6e68dda67e251e`.
-- Protected procedure: Mastermind `bf764f494b9cd0ecede6234bb472c3344c8e77cc`, Skillpack v1.0.1/bootstrap 1. INDEX, ACTIVE_EXECUTION, RECONCILE_STATE and CLOSEOUT were refreshed from that same revision for this modifying boundary.
-- Existing parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; no new workstream or parallel state owner was created.
-- Shared Themes/STSI architecture and Robotics #7773 remain references only; no Robotics custody is taken.
+- Sole carrier: Macro PR #7791, branch `sol/energy-sector-research-20260923`, open/draft/unmerged and HOLD.
+- Recovered R2 head: `fb1d9d3019660cfc48b1e82bacd8f4da9580dbd4`; checkpoint blob before this write `432185d151c6e1e2afd37144751ebb0a1f22a6d6`. Changed-file census contains only the nine existing research/continuity/verifier files and no R3 dossier.
+- Fresh protected Mastermind pin: `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, protected master; Skillpack 1.0.1/bootstrap 1 compatible. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT loaded from this same revision. INDEX/active/cold/delegation/closeout blob identities match the preceding procedure; do not replay unrelated executive implementation history.
+- GitHub read and file-write actions are now exposed in this tool generation; current repository metadata returns push permission. Mode is user-reported, not a capability guarantee. Research-only organizational authority remains narrower than technical permission.
+- Existing parent `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; retain shared STSI/Theme Tracker/GMI/ThemeState/F04 ownership. Robotics #7773 is a reference only; no custody or implementation claim is inherited.
 
-## R1 preserved — DO NOT REDO
+## Preserved R1/R2 — DO NOT REDO
 
-Immutable R1 research commit: `d2e8ddc820c94248ce225c87f8f9002b2d5111ca`.
-R1 established 19 proposed economic profiles, 12 issuer seeds, 24 primary-source locators, 19 dated observations, seven evidence gaps, 18 proposed acceptance cases, and the shareholder-cash/expectations/re-rating framework. R1 is research, not an accepted product schema or global census.
+R1 content commit `d2e8ddc820c94248ce225c87f8f9002b2d5111ca`: 19 proposed economic profiles, 12 issuer seeds, 24 source locators, 19 dated observations, seven gaps and 18 proposed acceptance cases. It is not a global census or admitted production schema.
 
-## R2 canonical research now on the carrier
+R2 core at `3a3249943287faad49374d9d9e6e68dda67e251e` covers EOG, Valero, KMI, Cheniere, SLB, Halliburton and EQT. Paths: `research/energy/ENERGY_R2_HYDROCARBON_ECONOMICS_2026-09-23.md`, `ENERGY_R2_RESEARCH_MODEL_2026-09-23.json`, `ENERGY_R2_RECONCILIATION_AND_POWER_BRIDGE_2026-09-23.md`, the verification summary and `verify_energy_r2.py`. The notebook has 24 sources, 30 business roles, six contracts, 15 grouped observations, 24 drivers, 36 proposed acceptance cases and 13 gaps. Its earlier receipt reports 57 scoped research/arithmetic checks; not rerun this turn, and not product tests.
 
-The branch advanced after the preceding checkpoint with five additive commits that were reconciled rather than overwritten:
+The power bridge resolves EOG's table observation date to July 24, but not current September hedge coverage. It establishes commercial operation as the EQT/CPV start condition without an exact calendar start; preserves Shay's source-local capacity inconsistency; rejects the EQT Infrastructure VII/NYSE:EQT name-only join; and separates conditional future value from current deliveries. Do not repeat those resolved investigations.
 
-- `878323493c47bfdb28e32647b9fbc4badd0ae402` — structured R2 research model;
-- `f1f195f420d7c968e1e2bd5315db2f6888a8f734` — seven hydrocarbon/company dossiers and re-rating framework;
-- `49d6376ac9073b466e485ba029d1f17bc53ca5d7` — source-clock reconciliation and first power-linked gas bridge;
-- `366527a737e001efd7f832500e82f4e93277264e` — reproducible verifier artifact;
-- `3a3249943287faad49374d9d9e6e68dda67e251e` — verification summary/readback receipt.
+The additive Targa/Baker Hughes supplement is preserved at blob `0919a756dc84fc12d94c80a0324e14e8d57488b4`. It preserves contract duration versus capital burden, asset-specific take-or-pay, and July announcement versus Q2 booking. The older overlapping portable eight-company package was not promoted and must not become a rival R2 core. Earlier supplement claim: 14 research checks, zero product tests; not rerun here.
 
-The core covers EOG, Valero, Kinder Morgan, Cheniere, SLB, Halliburton and EQT. Its structured notebook records 24 sources, 30 business-role descriptions, six commercial-contract examples, 15 grouped numerical observations, 24 driver definitions, 36 proposed acceptance cases and 13 explicit gaps. Its committed verification summary reports 57 scoped checks and zero application tests. This session did not rerun that verifier; it consumed the immutable GitHub receipt and exact files.
+## R3 material discoveries already read from primary sources
 
-The power bridge additionally resolves the EOG hedge-table observation date to July 24, narrows the EQT/CPV commencement condition to commercial operation while keeping the exact calendar date unknown, rejects a name-only EQT Infrastructure VII -> NYSE:EQT join, and demonstrates why power-price economics cannot be double-counted between gas supplier and generator.
+1. Vistra's August 7 release differentiates its 2026 guidance from a 2027 midpoint opportunity based on October 31, 2025 market curves. Footnotes say the latter is not guidance. Both exclude specified Cogentrix/Meta effects. Expected-generation hedge percentages have their own August 3 date and are not complete corporate risk coverage.
+2. PJM's January 2026 forecast reduces several near-term peak forecasts versus the previous vintage while retaining substantial long-run growth. Forecast revision direction, growth level and observed load are different facts.
+3. Quanta's Q2 release distinguishes $33.554155bn RPO from $53.440496bn backlog; the latter includes estimated MSA orders/renewals and certain non-fixed-price contracts. Do not label all backlog firm RPO.
+4. GE Vernova's June 2026 filing reports a $13.695bn H1 cash-flow change from contract liabilities/current deferred income, versus $10.680bn H1 operating cash. This is a flow/period-specific financing-quality question, not proof deposits are profit or a license to subtract liabilities twice. The quarter-only $5.5bn cash figure is a different period.
+5. Clearway's August release reduces 2026 CAFD guidance to $430–470m using updated renewable production assumptions despite higher quarter-on-quarter-year reported EBITDA and a larger sponsor pipeline. Actual availability, resource, acquired scope, sponsor ownership and distributable-cash claims require separate treatment.
+6. Eaton's Q2 Electrical Americas order growth is a rolling-12-month measure. Reported total growth, organic growth, acquired Boyd Thermal contribution and sequential margin improvement must not be collapsed into one contemporaneous signal.
 
-## Collision reconciliation and additive research
+Primary locators:
+- https://investor.vistracorp.com/2026-08-07-Vistra-Reports-Second-Quarter-2026-Results
+- https://insidelines.pjm.com/pjms-updated-20-year-forecast-continues-to-see-significant-long-term-load-growth/
+- https://investors.quantaservices.com/sec-filings/all-sec-filings/content/0001193125-26-324855/d56853dex991.htm
+- https://www.sec.gov/Archives/edgar/data/1996810/000199681026000148/gev-20260630.htm
+- https://www.sec.gov/Archives/edgar/data/1567683/000162828026053357/exhibit991-clearwayenergyi.htm
+- https://www.eaton.com/us/en-us/company/news-insights/news-releases/2026/eaton-reports-record-second-quarter-2026-results.html
 
-A separate portable eight-company R2 bundle was prepared before the newer branch state became visible. Publishing it wholesale would create an overlapping R2 research package, so it was **not** promoted to canonical GitHub state. The newer branch core is retained.
+These are source-backed research anchors awaiting full R3 synthesis/validation, not admitted graph facts or recommendations. Some pages were read only at relevant sections. Public access does not establish full-text retention or commercial ingestion rights.
 
-Two genuinely additive cases from that work are preserved in `research/energy/ENERGY_R2_ADDITIVE_CONTRACT_CASES_2026-09-23.md`:
+## Effects, unresolveds and hold
 
-- **Targa Resources:** August 6 ~$4.5bn 2026 growth-capital guidance versus August 17 ~$5.0bn update; 20-year ExxonMobil arrangements; Bull Run II take-or-pay support and expected H1-2028 operations. Research lesson: contract duration and future utilization confidence can improve while near-term capital/funding burden rises; contract protection must remain asset-specific.
-- **Baker Hughes:** Q2 IET orders $7.088bn, revenue $3.291bn, EBITDA $678m; corporate CFO $1.345bn and issuer FCF $1.109bn; July 27 CP2 award explicitly booked in Q2. Research lesson: award, booking, backlog/RPO, delivery, revenue, cash collection and installed-base service are separate clocks; later announcement must not double-count the order.
+This write updates only the cumulative checkpoint; no R3 research package is yet committed. EFFECT_UNKNOWN before this operation: none. Reconcile any ambiguous write on this same path/carrier. No Executive Job/Attempt, worker, watcher, Fable commission, merge, deployment or trading effect. Do not claim autonomous background work.
 
-Generating-session supplement checks: 14 passed, zero failed; application tests zero. These checks cover research structure/chronology/arithmetic only. Primary sources were re-opened directly on 2026-09-23. Full-text redistribution and production-ingestion rights remain unadmitted.
+Preserve missing PIT analyst estimates, matched valuation/return history, global/asset census, exposure weights, undisclosed contract terms, asset sustaining capital and project returns. R1 Cameco source-label issue and Fluence guidance supersession remain open/preserved. No current cheap/expensive, priced-in, price target or predictive-validation verdict is established. Existing native identity/evidence/rights/clocks/correction/private-publication owners remain canonical; no second graph or publisher.
 
-## Preserved constraints and unresolveds
-
-- No point-in-time analyst-estimate panel or matched valuation/return history yet; no cheap/expensive, surprise, price-target or predictive-performance claim.
-- No complete global/asset census or validated exposure weights.
-- Contract floors, fee escalators, hedge/election weights, sustaining capital and project-level returns remain unknown unless explicitly disclosed.
-- Future commissioning dates are not current operations; backlog/order announcements are not cash.
-- Consolidated, proportionate and common-shareholder cash claims remain separate.
-- Existing Theme Graph, ThemeState, identity, evidence, rights, clocks, correction and private-publication owners remain canonical. No second graph, publisher, lifecycle or evidence warehouse.
-- R1 Cameco label inconsistency and Fluence guidance supersession remain preserved.
-
-## Effects and hold
-
-Effects are research documents and this cumulative checkpoint on the existing carrier only. No merge, deployment, product/data mutation, worker, Executive Job/Attempt, watcher, ranking/sizing/trade action or Fable Energy handoff was issued.
-
-**HOLD FOR SOL — DO NOT MERGE, MARK READY, ARM AUTO-MERGE OR DEPLOY.** Release requires completion of the principal research/design package, explicit research acceptance, and a subsequent lawful integration decision. Fable remains the later implementation/orchestration principal, not the research principal.
+**HOLD FOR SOL — DO NOT MERGE, MARK READY, ARM AUTO-MERGE OR DEPLOY.** Release requires mature principal research/design, explicit research acceptance and a subsequent lawful integration decision.
 
 ## Exact next action
 
-Switch the research principal back to Pro and execute R3: trace the same power-demand scenario through **Vistra, Duke, GE Vernova, and at least one genuinely differentiated contracted generation/infrastructure and EPC/construction case**. Separate actual load from forecasts and contracted commitments; regional power/gas prices; hedge/contract vintages; utility recovery and financing; equipment order/production/service conversion; commissioning; ownership; and common-shareholder cash. For every company, preserve what could drive earnings revisions, what could change cash-flow duration/quality, what could alter required capital, and what evidence would falsify the apparent beneficiary thesis.
-
-R4 nuclear/renewables/storage/transition, R5 global coverage/PIT expectations and valuation history, and R6 final owner-compatible product/implementation specification remain owed. Do not issue the Fable handoff before those research/design obligations are mature.
-
-## WHAT MUST NOT BE REDONE
-
-Do not replay R1 taxonomy, recopy Robotics, rebuild the seven-company R2 core, repeat the EOG July-24 or EQT/CPV commencement investigations, publish the superseded overlapping portable R2 package, infer causality from basket membership, or promote management guidance into consensus. Continue from this checkpoint plus the immutable R2 artifacts.
+Continue this R3 turn. Deepen Vistra, Duke, GE Vernova, Clearway and Quanta, adding differentiated tariff/contract/equipment cases only when they resolve material questions. Build a common demand-scenario comparison, regional market/payment/contract taxonomy, company driver and counterevidence dossiers, fixed-horizon re-rating hypotheses, source/model notebook and reproducible arithmetic/negative specification checks. Preserve any source inconsistencies rather than repairing by assumption. Persist on #7791 and read back before a justified continuation boundary. R4 nuclear/renewables/storage/transition, R5 global/PIT expectations and R6 final owner-compatible product design remain owed; no premature Fable handoff.
