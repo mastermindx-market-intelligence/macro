@@ -681,6 +681,27 @@ def test_build_site_helper_is_not_named_intl_ms_view():
     assert "def _persisted_ms_view" in src
 
 
+# Bake-coupled fields: a snapshot() field that landed on main AFTER the committed
+# HK/CN latest.json was persisted is legitimately absent until the Asia-close
+# lane re-persists (the "engine: asia dashboards <date>" commit, ~06:00Z). Main
+# went red on ci-pack-3 for the whole day of 2026-09-23 this way: #7505 (04:00Z)
+# added `participation_scope`, the committed artifacts were asof 2026-09-22, and
+# this test is only ever run against the committed bytes. Each entry names the
+# field and the UTC date it landed; the exemption holds ONLY while the artifact's
+# own `asof` is strictly earlier than that date, so the next re-persist makes the
+# field mandatory again and the row becomes dead weight to delete. A re-typed
+# subset still fails: it lacks the blender fields and the older canonical keys.
+_FIELDS_AWAITING_NIGHTLY_REPERSIST = {
+    "participation_scope": "2026-09-23",  # #7505 fix(macro): selective vs broad risk-on
+}
+
+
+def _field_awaits_nightly_repersist(field: str, snap: dict) -> bool:
+    landed = _FIELDS_AWAITING_NIGHTLY_REPERSIST.get(field)
+    asof = str(snap.get("asof") or "")
+    return bool(landed) and bool(asof) and asof < landed
+
+
 def test_committed_hk_cn_latest_json_is_persist_output():
     """R-W2-11 / R-W2-12: committed HK/CN latest.json must be
     persist(snapshot(profile)) output — the engine's own field set and
@@ -730,6 +751,8 @@ def test_committed_hk_cn_latest_json_is_persist_output():
             f"missing blender fields {missing}. keys={keys}"
         )
         for k in canonical_keys:
+            if k not in snap and _field_awaits_nightly_repersist(k, snap):
+                continue
             assert k in snap, (
                 f"{rel} missing snapshot() field {k!r}; keys={keys}"
             )

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-23T13:04:37.374992+00:00",
+  "generated_at": "2026-09-23T15:23:03.374740+00:00",
   "as_of": "2026-09-23",
   "n_open": 107131,
-  "n_graded_today": 1221,
-  "n_blocked_by_coverage": 44536,
+  "n_graded_today": 1134,
+  "n_blocked_by_coverage": 44623,
   "n_ungradeable": 14,
   "n_already_graded": 137586,
   "clock_unresolvable_claims": {
