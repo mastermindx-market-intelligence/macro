@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMZN-BULL-20260731",
-  "asof": "2026-09-19",
-  "phase": "pre_trigger",
-  "detection_phase": "pre_trigger",
-  "management_confidence": 46.9,
-  "raw_confidence": 47.2,
-  "delta_vs_base": -13.1,
-  "recommended_action": "wait",
-  "human_state": "Approaching Trigger",
+  "asof": "2026-09-22",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 41.0,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -19.0,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 67.1,
+    "validity": 72.0,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 61.0
+    "pace": 28.7,
+    "retention": 0.0,
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.744,
+    "dist_to_stop_r": 0.784,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 95.6,
-    "p1": -0.1708,
-    "p2": -0.0854,
+    "horizon_pct_used": 102.2,
+    "p1": -0.1439,
+    "p2": -0.0719,
     "p3": null,
-    "move_r": -0.256,
+    "move_r": -0.216,
     "mfe_r": 0.044,
     "mae_r": -0.352
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 43,
-  "tau": 0.9556
+  "days_elapsed": 46,
+  "tau": 1.0222
 }

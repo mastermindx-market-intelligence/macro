@@ -4,6 +4,17 @@ import json
 
 import pytest
 
+from engine.prophet_entry_policy import (
+    EntryPolicyContractError,
+    RISK_ATR_CEILING,
+    RISK_POLICY_ERA,
+    RISK_POLICY_VERSION,
+    SESSION_POLICY_ERA,
+    SESSION_POLICY_VERSION,
+    evaluate_risk_ceiling,
+    evaluate_session_eligibility,
+)
+
 from engine.prophet_strategy_definition import (
     ENTRY_POLICY_VERSION,
     SCHEMA,
@@ -256,6 +267,21 @@ def test_b4_stale_quote_ambiguous_basis_or_unknown_required_fact_fail_closed():
     assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
 
 
+def test_b4_optional_structural_overlay_unknown_does_not_deadlock_owner_stop():
+    optional_overlay = _b4_facts()
+    optional_overlay["deterministic_gates"]["structural_invalidation"] = "UNKNOWN"
+    out = _b4_evaluate(f=optional_overlay)
+    assert out["state"] == "ENTRY_OPEN"
+    assert "STRUCTURAL_INVALIDATION_UNKNOWN" not in out["blockers"]
+
+    numeric_stop = _b4_facts()
+    numeric_stop["deterministic_gates"]["structural_invalidation"] = "UNKNOWN"
+    numeric_stop["quote"]["price"] = numeric_stop["geometry"]["invalidation_price"]
+    out = _b4_evaluate(f=numeric_stop)
+    assert out["state"] == "INVALIDATED"
+    assert "STRUCTURAL_INVALIDATION_BREACHED" in out["blockers"]
+
+
 def test_b4_distinct_incumbent_price_families_require_owner_basis_resolution():
     # Production law keeps live vendor prints raw while entry geometry is computed
     # on the adjusted store.  A resolved incumbent basis audit makes those two
@@ -392,3 +418,171 @@ def test_b4_validator_rejects_rehashed_strategy_identity_mutation(field, value):
         match=f"availability {field} diverges from accepted strategy definition",
     ):
         validate_entry_availability(tampered)
+
+
+def _session_policy(decision_at: str, market_session: str):
+    return evaluate_session_eligibility(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        decision_at=decision_at,
+        market_session=market_session,
+    )
+
+
+def test_b4_session_policy_passes_only_inside_actual_rth_window():
+    out = _session_policy("2026-09-22T14:00:00Z", "2026-09-22")  # 10:00 ET
+    assert out["verdict"] == "PASS"
+    assert out["session_phase"] == "RTH"
+    assert out["reason"] == "INSIDE_ACTUAL_RTH_WINDOW"
+    assert out["session_open"].endswith("09:30:00-04:00")
+    assert out["session_close"].endswith("16:00:00-04:00")
+    assert out["extended_hours_eligible"] is False
+    assert out["session_policy_version"] == SESSION_POLICY_VERSION
+    assert out["session_policy_era"] == SESSION_POLICY_ERA
+    assert out["calendar_owner"] == "lib.nyse_calendar.is_session"
+    assert out["execution_window_owner"] == "engine.prophet_entry_policy._execution_session_window_et"
+    assert out["execution_schedule_source"] == "NYSE_HOLIDAYS_AND_TRADING_HOURS_2026"
+    assert out["execution_schedule_verified_on"] == "2026-09-22"
+    assert out["supported_session_years"] == [2026]
+    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24"]
+    assert out["policy_receipt"].startswith("pep:")
+    assert out["session_receipt"].startswith("pes:")
+    assert out["fact_receipt"].startswith("pepf:")
+    assert out == _session_policy("2026-09-22T14:00:00Z", "2026-09-22")
+
+
+def test_b4_session_policy_fails_closed_before_and_at_after_rth():
+    pre = _session_policy("2026-09-22T13:29:59Z", "2026-09-22")
+    assert (pre["verdict"], pre["session_phase"], pre["reason"]) == (
+        "FAIL", "PREMARKET", "PREMARKET_NOT_ELIGIBLE_V1"
+    )
+
+    close = _session_policy("2026-09-22T20:00:00Z", "2026-09-22")
+    assert (close["verdict"], close["session_phase"], close["reason"]) == (
+        "FAIL", "AFTER_HOURS", "POST_RTH_NOT_ELIGIBLE_V1"
+    )
+
+
+def test_b4_session_policy_uses_actual_early_close_not_a_hardcoded_1600():
+    # 2026-11-27 is the Friday after Thanksgiving: actual close is 13:00 ET.
+    before = _session_policy("2026-11-27T17:59:59Z", "2026-11-27")
+    assert before["verdict"] == "PASS"
+    assert before["session_close"].endswith("13:00:00-05:00")
+
+    at_close = _session_policy("2026-11-27T18:00:00Z", "2026-11-27")
+    assert at_close["verdict"] == "FAIL"
+    assert at_close["session_phase"] == "AFTER_HOURS"
+
+    christmas_eve = _session_policy("2026-12-24T18:00:00Z", "2026-12-24")  # 13:00 ET
+    assert christmas_eve["verdict"] == "FAIL"
+    assert christmas_eve["session_close"].endswith("13:00:00-05:00")
+
+
+def test_b4_session_policy_rejects_non_session_and_wrong_session_clocks():
+    holiday = _session_policy("2026-11-26T15:00:00Z", "2026-11-26")
+    assert (holiday["verdict"], holiday["session_phase"], holiday["reason"]) == (
+        "FAIL", "NON_SESSION", "NON_SESSION_DATE"
+    )
+    assert holiday["session_open"] is None
+    assert holiday["session_close"] is None
+
+    july_observed = _session_policy("2026-07-03T15:00:00Z", "2026-07-03")
+    assert (july_observed["verdict"], july_observed["session_phase"]) == ("FAIL", "NON_SESSION")
+    assert july_observed["session_close"] is None
+
+    wrong = _session_policy("2026-09-22T14:00:00Z", "2026-09-23")
+    assert (wrong["verdict"], wrong["session_phase"], wrong["reason"]) == (
+        "FAIL", "WRONG_SESSION", "DECISION_NOT_IN_MARKET_SESSION_DATE"
+    )
+
+
+def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition():
+    with pytest.raises(EntryPolicyContractError, match="offset-aware"):
+        _session_policy("2026-09-22T10:00:00", "2026-09-22")
+
+    mutated = build_early_leadership_sector_rotation_definition()
+    mutated["strategy_definition_id"] = "psd:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_session_eligibility(
+            strategy_definition=mutated,
+            decision_at="2026-09-22T14:00:00Z",
+            market_session="2026-09-22",
+        )
+
+    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026"):
+        _session_policy("2027-01-04T15:00:00Z", "2027-01-04")
+
+
+def _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0):
+    return evaluate_risk_ceiling(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        current_price=current_price,
+        invalidation_price=invalidation_price,
+        atr=atr,
+    )
+
+
+def test_b4_risk_policy_uses_structural_atr_risk_not_universal_percent():
+    out = _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0)
+    assert out["gate"] == "risk_ceiling"
+    assert out["verdict"] == "PASS"
+    assert out["reason"] == "STRUCTURAL_RISK_WITHIN_ATR_CEILING"
+    assert out["risk_to_invalidation_atr"] == 1.5
+    assert out["risk_to_invalidation_pct"] == 3.0
+    assert out["risk_atr_ceiling"] == 2.0 == RISK_ATR_CEILING
+    assert out["horizon"] == "2_15_SESSIONS"
+    assert out["horizon_role"] == "new_entry"
+    assert out["scientific_status"] == "CONTROL_ONLY"
+    assert out["authority_tier"] == "SHADOW_ONLY"
+    assert out["risk_policy_version"] == RISK_POLICY_VERSION
+    assert out["risk_policy_era"] == RISK_POLICY_ERA
+    assert out["threshold_status"] == "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED"
+    assert out["calibration_requirement"] == "PROSPECTIVE_OR_OOS_SAME_TAPE_WITH_COSTS"
+    assert all(value is False for value in out["authority"].values())
+    assert out["policy_receipt"].startswith("pep:")
+    assert out["fact_receipt"].startswith("pepf:")
+    assert out == _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0)
+
+
+def test_b4_risk_policy_boundary_is_two_atr_and_above_it_fails():
+    boundary = _risk_policy(current_price=100.0, invalidation_price=96.0, atr=2.0)
+    assert boundary["risk_to_invalidation_atr"] == 2.0
+    assert boundary["verdict"] == "PASS"
+
+    above = _risk_policy(current_price=100.0, invalidation_price=95.9, atr=2.0)
+    assert above["risk_to_invalidation_atr"] == 2.05
+    assert above["verdict"] == "FAIL"
+    assert above["reason"] == "STRUCTURAL_RISK_ABOVE_ATR_CEILING"
+
+
+def test_b4_risk_policy_fails_when_structural_invalidation_is_not_below_price():
+    at_stop = _risk_policy(current_price=100.0, invalidation_price=100.0, atr=2.0)
+    assert at_stop["verdict"] == "FAIL"
+    assert at_stop["reason"] == "STRUCTURAL_INVALIDATION_NOT_BELOW_PRICE"
+    assert at_stop["risk_to_invalidation_atr"] == 0.0
+
+    above_price = _risk_policy(current_price=100.0, invalidation_price=101.0, atr=2.0)
+    assert above_price["verdict"] == "FAIL"
+    assert above_price["reason"] == "STRUCTURAL_INVALIDATION_NOT_BELOW_PRICE"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("current_price", 0.0), ("invalidation_price", -1.0), ("atr", 0.0), ("atr", float("nan"))),
+)
+def test_b4_risk_policy_refuses_unprovable_numeric_inputs(field, value):
+    kwargs = {"current_price": 100.0, "invalidation_price": 97.0, "atr": 2.0}
+    kwargs[field] = value
+    with pytest.raises(EntryPolicyContractError, match=field):
+        _risk_policy(**kwargs)
+
+
+def test_b4_risk_policy_requires_the_accepted_strategy_identity():
+    mutated = build_early_leadership_sector_rotation_definition()
+    mutated["strategy_definition_id"] = "psd:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_risk_ceiling(
+            strategy_definition=mutated,
+            current_price=100.0,
+            invalidation_price=97.0,
+            atr=2.0,
+        )
