@@ -1,0 +1,29 @@
+{
+  "schema": "china_continuation.blocked_candidate.v1",
+  "mission_complete": false,
+  "engine_implemented": false,
+  "source_head": "d0561c3c3bbad86c3d8c2e89a77ca85135fefafb",
+  "carrier": "sol/cn-act-now-coherence-20260921",
+  "engine_diff_empty": true,
+  "local_test_candidate_already_applied": true,
+  "test_file_sha256": "b78a940a600e33a89d001c06abbf9bf5669fd9e790d6e589c339849a66868068",
+  "patch_sha256": "2f7e3dc90a1046756534503ae618dc7fa8854f97820dc2dd7ece7da120fb0561",
+  "red_log_sha256": "df6a685baf2a179dc79024c88228dc61a4713078e69635ab69285090b5f34d48",
+  "test_result": {
+    "failed": 8,
+    "deselected": 95,
+    "stage": "missing_observed_at_API",
+    "independent_semantic_mutation_kills": false
+  },
+  "incumbent_direct_probe": {
+    "final_label": "dominant",
+    "final_reco": "accumulate",
+    "clean_entry": false,
+    "observed_buy_now_count": 0,
+    "observed_wait_pullback_count": 1
+  },
+  "write_effect": "PLATFORM_BLOCKED_BEFORE_ENGINE_EFFECT",
+  "do_not_redo": "Do not reapply patch in this worktree: the tests are already present. No engine write or tested implementation exists.",
+  "red_log_raw_sha256": "62c0c44d05063d3eeb06465288cd36be93228109cab8d91ac739d715ba1e4042",
+  "log_normalization": "Trailing whitespace removed only to satisfy repository diff guard; results and failure details unchanged."
+}
