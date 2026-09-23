@@ -5,12 +5,12 @@
   "source_base": "088a8b5b99438bf57c182ac28106a7de8ddf8751",
   "procedure_pin": "b4493b52810a43a413e381a07e1194ca905b4851",
   "source_sha256": {
-    "engine/narrative_crossmarket.py": "8ceb01e03e0946d92fc04c38600b281b46aa6dbea41cddf91cf2ba6f673c8f12",
+    "engine/narrative_crossmarket.py": "15a96675d6da49b76c2c974e1b175461862e57a2bcf1a56b413fcd1a76716b1e",
     "engine/china_intel_hub.py": "928baff5da905f5d26615b6e1e279fc319e06947323a842f3e9930c261a0219a",
-    "engine/china_intel_bus.py": "563fafa50cefcba00e6122ddfb901a0b7ba60056b4857c791c5de2e93ab1fa41",
+    "engine/china_intel_bus.py": "04a671443139fa6f69294d0912e3eb330bd3389bf6cbf10f07e97671e9798676",
     "engine/master_brain.py": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70",
-    "tests/test_narrative_crossmarket.py": "e8d653bb54be18dbbb76db449956eeb14b60f5850a83153b9bea3555dc707fb0",
-    "tests/test_china_intel_hub_command.py": "22d6529bf8cbac59c136dcc68262e1613adbe33e539faf3df9505bd5144e4eb7",
+    "tests/test_narrative_crossmarket.py": "4618f6190df83e397fe5bcdd52984f3da271bc57a40370657fc0be72bd3f8519",
+    "tests/test_china_intel_hub_command.py": "0efb0631554a9097fe915ad000f82517ccd4911c066857741eb02159dcfda69e",
     "tests/test_china_intel_hub.py": "9447e43f35a149f0abedc6873644b4d5ea1f0291936d3565566db298a914fd74"
   },
   "runtime": {
@@ -24,10 +24,10 @@
     "cause": "new compute_china_us_context API absent before implementation"
   },
   "final_regression": {
-    "passed": 229,
+    "passed": 237,
     "failed": 0,
-    "log": "narrator-final-tests.txt",
-    "log_sha256": "07cd8ca36c6f266e2f0eb71eeae946ca92f0e25ae6a99214c50efece11b57f0e",
+    "log": "content-final-tests.txt",
+    "log_sha256": "1f710a5beb8bf1be3ed18043a0a973e706180d54b4eaeec30bbb2896b08aa2b9",
     "suites": [
       "tests/test_narrative_crossmarket.py",
       "tests/test_china_intel_hub_command.py",
@@ -110,5 +110,21 @@
   "live_probe": {
     "path": "live-probe.json",
     "sha256": "290f68319df33425ae0d3670f2aed979bb42d8b888af19c257e9b91ea2c3e92c"
+  },
+  "content_correction_repair": {
+    "parent_head": "324bc213f8ed537a68572dbe4456d262871ecec4",
+    "new_cases": 8,
+    "red_attempt": "PLATFORM_BLOCKED_BEFORE_EXECUTION_NO_TEST_RESULT",
+    "first_allowed_run": {
+      "passed": 235,
+      "failed": 1,
+      "cause": "legacy performance fixture mutated cached values after content receipt; repaired to set actual producer input before receipt"
+    },
+    "waived_tests": 0,
+    "source_content_and_coverage_verified": true,
+    "same_session_invalidated_and_refreshed_through_real_briefing": true,
+    "local_stock_command_unchanged": true,
+    "production_proven": false,
+    "buy_now_implemented": false
   }
 }

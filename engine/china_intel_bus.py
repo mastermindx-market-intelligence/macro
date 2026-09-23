@@ -583,7 +583,7 @@ def _command_block() -> dict | None:
                 }
                 for d in command[:10]
             ],
-            "us_theme_context": context_for_briefing(data.get("us_theme_context")),
+            "us_theme_context": context_for_briefing(data.get("us_theme_context"), site=_site_dir()),
             "discovery_n": len(data.get("discovery") or []),
             "is_context_only": True,
         }

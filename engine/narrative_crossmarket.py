@@ -410,7 +410,7 @@ def _context_projection_row(raw: dict) -> dict:
         "textures": {"clean_entry": {"flag": raw.get("clean_entry")}}})
 
 
-def context_for_briefing(payload, *, observed_at: datetime | None = None) -> dict | None:
+def context_for_briefing(payload, *, site=None, observed_at: datetime | None = None) -> dict | None:
     """Consume the published observation without trusting its cached health or prose.
 
     This is the existing producer's projection adapter, not another score or state store.
@@ -461,6 +461,15 @@ def context_for_briefing(payload, *, observed_at: datetime | None = None) -> dic
                    if spec["regions"].get("us") for bid in spec["regions"].get("china", [])}
         if not set(themes).issubset(allowed):
             return unavailable("UNMAPPED_THEME_IDENTITY")
+        # A same-session source correction must invalidate cached context too.
+        # Reuse the owner producer: one reader/normalizer, no second truth store.
+        latest = compute_china_us_context(site, observed_at=now)
+        if latest["status"] not in {"CURRENT", "NO_MAPPED_CONTEXT"}:
+            return unavailable("SOURCE_CONTENT_UNAVAILABLE")
+        if any(latest["sources"][r]["sha256"] != sources[r]["sha256"] for r in sources):
+            return unavailable("SOURCE_CONTENT_CHANGED")
+        if set(themes) != set(latest["themes"]):
+            return unavailable("SOURCE_COVERAGE_MISMATCH")
         out, lines = {}, []
         for bid, row in themes.items():
             canon, spec = allowed[bid]
@@ -474,6 +483,12 @@ def context_for_briefing(payload, *, observed_at: datetime | None = None) -> dic
             if len(ids) != len(set(ids)) or not set(ids).issubset(spec["regions"]["us"]):
                 return unavailable("UNMAPPED_ANALOG_IDENTITY")
             analogs = [_context_projection_row(a) for a in raw_analogs]
+            bound = latest["themes"][bid]
+            expected_analogs = {a["id"]: a for a in bound["us_analogs"]}
+            if set(ids) != set(expected_analogs):
+                return unavailable("SOURCE_COVERAGE_MISMATCH")
+            if local != bound["local"] or any(a != expected_analogs[a["id"]] for a in analogs):
+                return unavailable("SOURCE_ROW_MISMATCH")
             state = _context_state(local, analogs)
             out[bid] = {**CONTEXT_AUTHORITY, "local": local, "us_analogs": analogs,
                         "observation_state": state, "requires_local_confirmation": True,
@@ -487,6 +502,7 @@ def context_for_briefing(payload, *, observed_at: datetime | None = None) -> dic
     return {"schema": CHINA_US_CONTEXT_SCHEMA, **CONTEXT_AUTHORITY,
             "status": "CURRENT" if out else "NO_MAPPED_CONTEXT", "themes": out, "sources": sources,
             "observed_at_utc": producer_time.isoformat(), "consumed_at_utc": now.isoformat(),
+            "source_content_verified": True,
             "validated_lead_lag": False, "historical_availability_proven": False,
             "summary": "US–CHINA THEME CONTEXT (observations, not a forecast): " + " ".join(lines) +
                 " Absence of a fresh-entry texture does not establish thesis deterioration or a pullback requirement."

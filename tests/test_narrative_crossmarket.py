@@ -92,7 +92,7 @@ _CONTEXT_NOW = datetime(2026, 9, 21, 10, tzinfo=timezone.utc)
 
 
 def _context_site(tmp_path, *, us_date="2026-09-18", cn_date="2026-09-21", us_rows=None, cn_rows=None):
-    site = tmp_path / "context_site"
+    site = tmp_path / "site"
     if us_rows is None:
         us_rows = [{**_theme("ai_semiconductors", "US Semis", 82, "dominant"), "reco": "accumulate"}]
     if cn_rows is None:
@@ -338,9 +338,15 @@ def test_briefing_consumer_absent_or_malformed_context_is_not_a_signal():
 
 
 def test_briefing_projection_preserves_relative_performance_evidence(tmp_path):
-    payload = _context(_context_site(tmp_path))
-    payload["themes"]["cn_semis"]["local"].update(rel5=0.084, rel20=0.022)
-    payload["themes"]["cn_semis"]["us_analogs"][0].update(rel5=0.04, rel20=0.09)
+    site = _context_site(tmp_path)
+    # Set the producer input before minting its content receipt; a cached-row
+    # edit under an old digest is now correctly rejected by the consumer.
+    for directory, r5, r20 in (("chinabasketdata", 0.084, 0.022), ("basketdata", 0.04, 0.09)):
+        path = site / directory / "baskets.json"
+        source = json.loads(path.read_text())
+        source["theme_intel"]["themes"][0]["perf"] = {"5d": {"rel": r5}, "20d": {"rel": r20}}
+        path.write_text(json.dumps(source))
+    payload = _context(site)
     result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
     row = result["themes"]["cn_semis"]
     assert row["local"]["rel5"] == 0.084 and row["local"]["rel20"] == 0.022
@@ -363,3 +369,65 @@ def test_briefing_rejects_a_different_source_identity(tmp_path):
     payload["sources"]["us"]["path"] = "site/other/unknown.json"
     result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
     assert result["reason"] == "INVALID_OBSERVATION_RECEIPT"
+
+
+def _content_bound_context(tmp_path, monkeypatch):
+    site = _context_site(tmp_path)
+    payload = _context(site)
+    canonical = tmp_path / "site"
+    site.rename(canonical)
+    monkeypatch.setattr(xm.config, "ROOT", tmp_path)
+    return canonical, payload
+
+
+@pytest.mark.parametrize("directory", ["basketdata", "chinabasketdata"])
+def test_briefing_content_same_session_correction_invalidates_cached_context(tmp_path, monkeypatch, directory):
+    site, payload = _content_bound_context(tmp_path, monkeypatch)
+    path = site / directory / "baskets.json"
+    source = json.loads(path.read_text())
+    source["theme_intel"]["themes"][0].update(reco="avoid", label="deteriorating")
+    path.write_text(json.dumps(source))
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_CONTENT_CHANGED"
+    assert result["themes"] == {} and "summary" not in result
+
+
+def test_briefing_content_verified_current_receipt(tmp_path, monkeypatch):
+    _, payload = _content_bound_context(tmp_path, monkeypatch)
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "CURRENT"
+    assert result["source_content_verified"] is True
+
+
+def test_briefing_content_missing_source_cannot_remain_current(tmp_path, monkeypatch):
+    site, payload = _content_bound_context(tmp_path, monkeypatch)
+    (site / "basketdata" / "baskets.json").unlink()
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_CONTENT_UNAVAILABLE"
+
+
+def test_briefing_content_rejects_changed_row_with_old_valid_digest(tmp_path, monkeypatch):
+    _, payload = _content_bound_context(tmp_path, monkeypatch)
+    payload["themes"]["cn_semis"]["local"]["reco"] = "avoid"
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_ROW_MISMATCH"
+
+
+@pytest.mark.parametrize("omit", ["theme", "analog"])
+def test_briefing_content_cannot_silently_drop_mapped_evidence(tmp_path, monkeypatch, omit):
+    _, payload = _content_bound_context(tmp_path, monkeypatch)
+    if omit == "theme":
+        payload["themes"] = {}
+    else:
+        payload["themes"]["cn_semis"]["us_analogs"] = []
+    result = xm.context_for_briefing(payload, observed_at=_CONTEXT_NOW)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_COVERAGE_MISMATCH"
+
+
+@pytest.fixture(autouse=True)
+def _isolated_crossmarket_source_root(tmp_path, monkeypatch):
+    monkeypatch.setattr(xm.config, "ROOT", tmp_path)
