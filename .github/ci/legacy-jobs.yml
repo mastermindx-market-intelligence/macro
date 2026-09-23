@@ -16196,9 +16196,13 @@ jobs:
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
-    # The five suite runs this job names are the entire W2-2 test surface
+    # 2026-09-23 A-F03-W2-4 appends the methodology-parity audit
+    # (tests/test_audit_options_skew_parity.py and
+    # scripts/audit_options_skew_parity.py) to the same gate:code job.
+    # The suite runs this job names are the W2-2 test surface
     # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
-    # test_audit_options_skew_overlap). These are end-to-end tests of the
+    # test_audit_options_skew_overlap) plus the W2-4 parity audit.
+    # These are end-to-end tests of the
     # M1-host launchd lane that builds data/options_skew/snapshots.parquet
     # and publishes it to R2; they have no signal-contract / render subject,
     # so they were parked in config/unrun_test_waivers.yml in error. They
@@ -16223,6 +16227,7 @@ jobs:
       - "scripts/skew_accrual_precheck.py"
       - "scripts/skew_accrual_verify_ledger.py"
       - "scripts/audit_options_skew_overlap.py"
+      - "scripts/audit_options_skew_parity.py"
       - "scripts/publish_r2.py"
       - "scripts/fetch_r2.py"
       - "scripts/build_options_skew.py"
@@ -16235,6 +16240,7 @@ jobs:
       - "tests/test_skew_accrual_gate.py"
       - "tests/test_skew_accrual_launchd.py"
       - "tests/test_audit_options_skew_overlap.py"
+      - "tests/test_audit_options_skew_parity.py"
       - "tests/test_skew_accrual_precheck.py"
       - "tests/test_skew_accrual_verify_ledger.py"
     timeout-minutes: 10
@@ -16252,12 +16258,13 @@ jobs:
         # pyyaml: scripts/publish_r2.py imports lib.config, which imports yaml
         # (12 publish_r2 registration tests red without it — run 35782263306).
         run: pip install pytest pandas pyarrow pyyaml
-      - name: skew-accrual lane — gate, precheck, verify, launchd, real-overlap audit
+      - name: skew-accrual lane — gate, precheck, verify, launchd, overlap and parity audits
         run: |
           python -m pytest \
             tests/test_skew_accrual_gate.py \
             tests/test_skew_accrual_launchd.py \
             tests/test_audit_options_skew_overlap.py \
+            tests/test_audit_options_skew_parity.py \
             tests/test_skew_accrual_precheck.py \
             tests/test_skew_accrual_verify_ledger.py \
             -q
