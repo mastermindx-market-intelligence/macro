@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T11:08:56.757623+00:00",
-  "count": 2704,
+  "generated_at": "2026-09-23T11:24:00.999042+00:00",
+  "count": 2705,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1626,6 +1626,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wq5nh13jemi-90cfd2",
+      "title": "Global GS Economic Indicators Update Current Activity in DMs Above Potential",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T03:23:20Z",
+      "summary_points": [
+        "DM CAI Above Potential: Goldman Sachs' DM Current Activity Indicator (CAI) exceeds potential threshold (1.6%) as of Sep-26, signaling stronger-than-expected developed market economic momentum.",
+        "Global ex Russia FCI Tightening: 3.8bps weekly FCI tightening driven by exchange rates (1.6bps), amplifying FX volatility amid geopolitical tensions and signaling heightened market stress.",
+        "Asia Growth Revisions vs Europe: Positive GDP revisions across Asia (esp.",
+        "Asia Pacific) contrast with negative Western Europe revisions, highlighting regional growth divergence critical for allocation.",
+        "EM CAI Outperformance: EM CAI at 4.2% vs DM CAI at 1.6%, fueling EM capital flows but indicating sustainability risks for portfolio managers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
       "language": "en",
       "needs_metadata": false
     },
