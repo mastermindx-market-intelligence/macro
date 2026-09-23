@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CARR-BULL-20260904",
-  "asof": "2026-09-19",
+  "asof": "2026-09-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.6,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.47,
+    "dist_to_stop_r": -2.401,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 33.3,
-    "p1": -2.9801,
-    "p2": -1.4901,
+    "horizon_pct_used": 40.0,
+    "p1": -2.2675,
+    "p2": -1.1337,
     "p3": null,
-    "move_r": -4.47,
+    "move_r": -3.401,
     "mfe_r": 0.456,
     "mae_r": -4.47
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.3333
+  "days_elapsed": 18,
+  "tau": 0.4
 }

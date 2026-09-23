@@ -1,0 +1,101 @@
+{
+  "public_url": "https://www.mastermind-x.com/reports.html",
+  "status": 200,
+  "html_sha256": "83b9a1dabd0f6061bd8562b5678d10638dcbb320cc0d50f790a6c12c5eb66d52",
+  "keyboard_language_before": {
+    "lang": "en",
+    "placeholder": "Search reports…",
+    "options": [
+      "Newest first",
+      "Oldest first"
+    ],
+    "count": "0 reports",
+    "query": "__uiux_no_report__",
+    "sort": "new"
+  },
+  "keyboard_language_after": {
+    "lang": "zh",
+    "placeholder": "Search reports…",
+    "options": [
+      "Newest first",
+      "Oldest first"
+    ],
+    "count": "0 reports",
+    "query": "__uiux_no_report__",
+    "sort": "new"
+  },
+  "empty_reset": {
+    "active": "repClear2",
+    "count": "7 篇报告",
+    "query": ""
+  },
+  "buttons": [
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    },
+    {
+      "tag": "SPAN",
+      "role": "button",
+      "pressed": null,
+      "height": 23.5
+    }
+  ],
+  "page_errors": []
+}

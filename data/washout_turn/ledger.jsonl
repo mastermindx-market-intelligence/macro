@@ -325,3 +325,7 @@
 {"session": "2026-09-18", "symbol": "UHS", "state": "NONE", "prior_state": "WASHOUT_TURN", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-18", "reason": "graduated"}
 {"session": "2026-09-18", "symbol": "UPST", "state": "NONE", "prior_state": "WASHOUT_TURN", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-18", "reason": "failed"}
 {"session": "2026-09-18", "symbol": "WEC", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-18", "reason": "failed"}
+{"session": "2026-09-22", "symbol": "ASTS", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-22", "reason": "graduated"}
+{"session": "2026-09-22", "symbol": "HMY", "state": "NONE", "prior_state": "WASHOUT_TURN", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-09-22", "reason": "graduated"}
+{"session": "2026-09-22", "symbol": "MPWR", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 10.2, "line": -6.738, "hist": -1.506, "data_through": "2026-09-22", "reason": null}
+{"session": "2026-09-22", "symbol": "VRT", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 14.7, "line": -7.987, "hist": -1.198, "data_through": "2026-09-22", "reason": null}

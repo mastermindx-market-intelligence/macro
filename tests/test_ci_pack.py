@@ -3506,6 +3506,37 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
+    # home for tests/test_markets_regime_strip.py — its thematic neighbours
+    # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
+    # PR packs never plan. Curated for COVERAGE: its `paths:` are the measured
+    # 54-path import closure of the suite (scripts/build_markets.py pulls the
+    # collectors/ and engine.market_state chains), so exclusivity loses no
+    # owner and contract-delta stays at 0 introduced.
+    "markets-regime-strip",
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
+    # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
+    # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
+    # + test_audit_options_skew_overlap). The lane has no signal-contract /
+    # render subject — its subjects are the launchd plist, the sh runner,
+    # argparse helpers, and the publish_r2._DATA_DIRS options_skew
+    # registration — and it was previously parked in
+    # config/unrun_test_waivers.yml, which the waiver file's own header
+    # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
+    # name exactly the five suites plus the load-bearing scripts they
+    # actually invoke and the engine/lib chains those scripts import.
+    "skew-accrual-lane",
+    # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
+    # gate:code home for tests/test_options_skew.py. The suite previously
+    # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
+    # the migration test was dark on every pull request. Curated for
+    # COVERAGE: paths are the measured import closure (options_skew,
+    # thetadata_store, the builder, and the validate_options_skew import
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
+    "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
@@ -3649,6 +3680,24 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-22 main-red repair. Six jobs entered the broad
+    # templates/index.html probe after the 64f8c248 calibration even though
+    # none owns that page; market-ontology-f09-usgs-mcs separately entered the
+    # build_free_content probe through a bounded subprocess/git-grep edge; and
+    # unrun-government-revenue-candidate-projection entered the Prophet probe
+    # through an opaque engine/** edge despite no plan-book file in its named
+    # closure. Their declarations retain the measured full import closure plus
+    # dynamic files read by the tests/builders. This restores 131/129/125
+    # selections without raising the existing ratchet or allowing unrelated
+    # fallback smear.
+    "am-edition-producer",
+    "covenant-headroom",
+    "cycle-consistency",
+    "ftr-tape-surfaces",
+    "market-ontology-f09-usgs-mcs",
+    "research-screener",
+    "sanctions-map-page",
+    "unrun-government-revenue-candidate-projection",
     # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
     # hermetic PR owner for one recovered package and its root lineage test,
     # and declared both exact path surfaces — but omitted `scope: exclusive`.
@@ -3657,6 +3706,15 @@ CURATED_EXCLUSIVE = {
     # for templates/index.html (133 > 132). Curate the stated owner boundary;
     # do not fund that unrelated match by raising the packing ceiling.
     "research-vault-source-lineage",
+    # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
+    # is the gate:code home for the five suites that only gate:data lanes
+    # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
+    # tests/test_dashboard_template_render.py and the HK/CN spine-binding
+    # contract in tests/test_unified_dashboard_b2w2.py never gated a PR.
+    # Curated for COVERAGE: its `paths:` are the measured import closure of the
+    # suites (scripts/build_site.py pulls most of engine/ and lib/), so
+    # exclusivity loses no owner and contract-delta stays at 0 introduced.
+    "dashboard-render-contract",
 }
 
 
