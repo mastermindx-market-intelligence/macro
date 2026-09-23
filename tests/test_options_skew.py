@@ -518,6 +518,265 @@ def test_legacy_builder_publishes_a_two_strike_name(tmp_path, monkeypatch):
     assert thin["source"] == "polygon_gex"
 
 
+# --------------------------------------------------------------------------- #
+# A-F03-W2-6 — complete-session resolver + thin-session emit guard            #
+# --------------------------------------------------------------------------- #
+
+
+def _write_theta_store_multi(tmp_path, dates_by_root: dict[str, list[str]],
+                              expiry_offset_days: int = 30):
+    """Synthetic ThetaData store: eod + oi + greeks tiers per root, each
+    root carrying ALL its dates. The store layout
+    `<store>/{eod,oi,greeks}/<ROOT>/<YEAR>.parquet` partitions by year, so
+    dates are grouped before they are written. Expiry sits
+    `expiry_offset_days` past each date so `_nearest_expiry` resolves."""
+    from datetime import date as _date, timedelta as _td
+    pytest.importorskip("pyarrow")  # noqa: F841
+    strikes = [90.0, 95.0, 100.0, 105.0]
+    rights = ["P", "P", "C", "C"]
+    deltas = [-0.10, -0.25, 0.50, 0.25]
+    ivs = [0.45, 0.40, 0.30, 0.28]
+    for root, dates in dates_by_root.items():
+        if not dates:
+            continue
+        rows_by_year: dict[str, list[tuple[str, str]]] = {}
+        for stamp in dates:
+            year = stamp[:4]
+            expiry = (_date.fromisoformat(stamp) + _td(days=expiry_offset_days)).isoformat()
+            rows_by_year.setdefault(year, []).append((stamp, expiry))
+        for year, pairs in rows_by_year.items():
+            eod_rows, oi_rows, greeks_rows = [], [], []
+            for stamp, expiry in pairs:
+                spot = 100.0
+                for k, r, dl, iv in zip(strikes, rights, deltas, ivs):
+                    eod_rows.append(dict(root=root, expiration=expiry, strike=k, right=r,
+                                          date=stamp, open=1.0, high=1.0, low=1.0, close=1.0,
+                                          volume=10, count=1, bid=0.9, ask=1.1))
+                    oi_rows.append(dict(root=root, expiration=expiry, strike=k, right=r,
+                                         date=stamp, open_interest=50))
+                    greeks_rows.append(dict(root=root, expiration=expiry, strike=k, right=r,
+                                             date=stamp, bid=0.9, ask=1.1, underlying_price=spot,
+                                             delta=dl, theta=0.0, vega=0.0, rho=0.0, epsilon=0.0,
+                                             lambda_=0.0, implied_vol=iv, iv_error=0.0))
+            for tier, rows in (("eod", eod_rows), ("oi", oi_rows), ("greeks", greeks_rows)):
+                d = tmp_path / tier / root
+                d.mkdir(parents=True, exist_ok=True)
+                pd.DataFrame(rows).to_parquet(d / f"{year}.parquet")
+    return tmp_path
+
+
+_D1 = "2026-06-18"
+_D2 = "2026-06-19"
+_D3 = "2026-06-22"
+_COMPLETE_STORE_ROOTS = ["AAPL", "AMZN", "AVGO", "DIA", "GOOGL", "IWM"]
+
+
+def test_complete_store_session_skips_a_partial_newest_date(tmp_path):
+    """Six roots carry D1+D2; a seventh root carries D3 only.
+
+    The complete-session resolver must pick D2 (the newest date whose
+    distinct root count is at least half the widest panel) and surface
+    D3 as a skipped partial session."""
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "breadth"
+    assert info["roots_on_session"] == 6
+    assert info["widest_roots"] == 6
+    assert info["newest_raw"] == _D3
+    assert info["partial_skipped"] == [_D3]
+
+
+def test_complete_store_session_prefers_the_newer_of_manifest_and_breadth(tmp_path):
+    """Manifest S + breadth comparison: the newer wins; a too-small
+    `greeks_S_roots` is ignored."""
+    # Breadth says D2; manifest says D2 → tie → manifest wins on tie.
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    (store / "_manifest.json").write_text(json.dumps({
+        "daily_refresh": {"D": _D3, "S": _D2, "greeks_S_roots": 6},
+    }))
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "manifest"
+
+    # Manifest says D1 (older); breadth says D2 (newer) → breadth wins.
+    (store / "_manifest.json").write_text(json.dumps({
+        "daily_refresh": {"D": _D3, "S": _D1, "greeks_S_roots": 6},
+    }))
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "breadth"
+
+    # greeks_S_roots below the fraction is ignored — manifest dropped.
+    (store / "_manifest.json").write_text(json.dumps({
+        "daily_refresh": {"D": _D3, "S": _D2, "greeks_S_roots": 1},
+    }))
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "breadth"
+
+    # Missing/unparseable manifest → ignored.
+    (store / "_manifest.json").write_text("not json")
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "breadth"
+
+    (store / "_manifest.json").unlink()
+    info = S.complete_store_session(store)
+    assert info["session"] == _D2
+    assert info["method"] == "breadth"
+
+
+def test_load_chain_default_asof_is_the_complete_session(tmp_path, capsys):
+    """Default `load_chain()` must resolve through `complete_store_session`
+    and emit ONE `::notice title=options-skew-session::` line naming the
+    skipped partial newest date."""
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    frame, state = S.load_chain(store=store)
+    out = capsys.readouterr().out
+    assert state == "ok"
+    assert frame is not None
+    assert set(frame["asof"].astype(str).str[:10]) == {_D2}
+    assert set(frame["underlying"].astype(str)) == set(_COMPLETE_STORE_ROOTS)
+    notice_lines = [
+        line for line in out.splitlines()
+        if line.startswith("::notice title=options-skew-session::")
+    ]
+    assert len(notice_lines) == 1, notice_lines
+    assert _D2 in notice_lines[0]
+    assert _D3 in notice_lines[0]
+
+
+def test_load_chain_explicit_asof_is_unchanged(tmp_path, capsys):
+    """An explicit `asof` must short-circuit the resolver and load that
+    exact date — `backfill_from_store` relies on this."""
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    frame, state = S.load_chain(asof=_D3, store=store)
+    assert state == "ok"
+    assert frame is not None
+    assert set(frame["underlying"].astype(str)) == {"META"}
+    assert set(frame["asof"].astype(str).str[:10]) == {_D3}
+    # No notice: explicit asof bypasses the resolver.
+    out = capsys.readouterr().out
+    assert not any(line.startswith("::notice title=options-skew-session::")
+                  for line in out.splitlines())
+
+
+def test_catch_up_sessions_walks_back_to_the_last_complete_ledger_session(tmp_path,
+                                                                            monkeypatch):
+    """The helper walks NYSE sessions BACKWARD from `target`, stops at the
+    ledger's newest complete thetadata session (exclusive), and caps the
+    total date count by `max_sessions`. Juneteenth is a non-session day,
+    so the spec's 2026-06-19 target exercises the non-session branch."""
+    _patch_dirs(monkeypatch, tmp_path)
+    # 2026-06-15 (Mon, session): 6 thetadata rows
+    # 2026-06-16 (Tue, session): 1 thetadata row (thin)
+    rows = []
+    for i in range(6):
+        rows.append(_ledger_row(f"U{i}", "2026-06-15", 0.10, source="thetadata"))
+    rows.append(_ledger_row("THIN", "2026-06-16", 0.10, source="thetadata"))
+    hist = pd.DataFrame(rows)
+
+    assert S.catch_up_sessions("2026-06-19", hist) == [
+        "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-19",
+    ]
+    assert S.catch_up_sessions("2026-06-19", hist, max_sessions=2) == [
+        "2026-06-18", "2026-06-19",
+    ]
+    assert S.catch_up_sessions("2026-06-19", None) == ["2026-06-19"]
+    assert S.catch_up_sessions("2026-06-19", pd.DataFrame()) == ["2026-06-19"]
+    # No thetadata history → also [target]
+    poly_only = pd.DataFrame([
+        _ledger_row("POLY", "2026-06-15", 0.05, source="polygon_gex"),
+    ])
+    assert S.catch_up_sessions("2026-06-19", poly_only) == ["2026-06-19"]
+
+
+def test_accrue_catches_up_missed_complete_sessions_and_skips_the_partial_one(
+        tmp_path, monkeypatch):
+    """The daily `accrue()` resolves the complete store session, walks back
+    to the ledger's newest complete thetadata session, and backfills every
+    date in between. The partial newest session is left out of the result.
+    A second call on a caught-up ledger is a no-op."""
+    _patch_dirs(monkeypatch, tmp_path)
+    store = _write_theta_store_multi(tmp_path, {
+        **{root: [_D1, _D2] for root in _COMPLETE_STORE_ROOTS},
+        "META": [_D3],
+    })
+    monkeypatch.setattr(
+        "engine.thetadata_store.resolve_thetadata_store", lambda **kw: store
+    )
+    # Seed ledger with the D1 session the lane already accrued yesterday.
+    ledger = tmp_path / "data" / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for i, root in enumerate(_COMPLETE_STORE_ROOTS):
+        seeded.append(_ledger_row(root, _D1, 0.10 + i * 0.001, source="thetadata"))
+    pd.DataFrame(seeded).to_parquet(ledger)
+
+    from scripts.build_options_skew import accrue
+    added, state = accrue()
+    assert (added, state) == (6, "accrued_today")
+
+    after = pd.read_parquet(ledger)
+    assert set(after["date"].astype(str)) == {_D1, _D2}
+    assert set(after[after["date"].astype(str) == _D3]["underlying"].astype(str)) == set()
+
+    pinned = _sha256(ledger)
+    added2, state2 = accrue()
+    assert (added2, state2) == (0, "accrued_today")
+    assert _sha256(ledger) == pinned
+
+
+def test_emit_skips_a_thin_newest_session(tmp_path, monkeypatch):
+    """`emit_from_ledger` walks per-date counts newest-first, drops any
+    date whose row count is below the thin-session guard, and reports the
+    skipped dates under `source_detail.partial_*` (always present)."""
+    data, site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    seeded = []
+    for i in range(8):
+        seeded.append(_ledger_row(f"FULL{i}", "2026-06-18", 0.10 + i * 0.001,
+                                  source="thetadata"))
+        seeded.append(_ledger_row(f"FULL{i}", "2026-06-19", 0.10 + i * 0.001,
+                                  source="thetadata"))
+    seeded.append(_ledger_row("THIN", "2026-06-22", 0.20, source="thetadata"))
+    pd.DataFrame(seeded).to_parquet(ledger)
+
+    from scripts.build_options_skew import main
+    assert main(["--emit"]) == 0
+    payload = json.loads((site / "options_skew" / "latest.json").read_text())
+    assert payload["ledger_asof"] == "2026-06-19"
+    assert payload["n"] == 8
+    assert payload["source_detail"]["partial_sessions_skipped"] == ["2026-06-22"]
+    assert payload["source_detail"]["partial_rows_skipped"] == 1
+
+    # A lone-date ledger still emits that date with empty skip counters.
+    lone = data / "options_skew" / "snapshots.parquet"
+    pd.DataFrame([
+        _ledger_row("SOLO", "2026-06-19", 0.10, source="thetadata"),
+    ]).to_parquet(lone)
+    assert main(["--emit"]) == 0
+    payload = json.loads((site / "options_skew" / "latest.json").read_text())
+    assert payload["ledger_asof"] == "2026-06-19"
+    assert payload["n"] == 1
+    assert payload["source_detail"]["partial_sessions_skipped"] == []
+    assert payload["source_detail"]["partial_rows_skipped"] == 0
+
+
 def _live_skew_invocations(text: str) -> list[int]:
     """Shell lines that actually launch scripts.build_options_skew."""
     hits = []
