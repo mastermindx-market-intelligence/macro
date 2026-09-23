@@ -8,70 +8,96 @@ mission: >
   evidence and product planning to an implementation-ready masterplan; final build
   goes to Fable CEO under existing placement/custody law. Parent delivery remains incomplete.
 state_before: >
-  Chairman approved the Technology ex-Semiconductors commission in the live conversation.
-  The Robotics precedent and shared sector architecture required current-source recovery.
+  Chairman accepted the full commission. The original branch and Macro draft PR #7793
+  held the recovered current-source frontier but not the cross-sector research foundation.
 changed:
+  - path: research/technology_ex_semis/TECHNOLOGY_EX_SEMIS_RESEARCH_FOUNDATION_2026-09-23.md
+    what: "R1 coverage map, native economic archetypes, primary-source findings, exposure/evidence rules, product proposal and future acceptance cases."
   - path: agentos/handoffs/GMI-TECHNOLOGY-EX-SEMIS-RESEARCH-2026-09-23.md
-    what: "Records-only research frontier under the existing GMI workstream; no new program or product source."
+    what: "Updates this same cumulative research frontier; no replacement workstream, writer, graph or product owner."
 verified:
   - claim: "Compatible protected procedure was loaded atomically."
-    command: "GitHub protected master read and exact-commit fetch_file"
+    command: "Protected-master read and exact-commit fetch_file"
     result: "Mastermind bf764f494b9cd0ecede6234bb472c3344c8e77cc; Skillpack 1.0.1/bootstrap 1; INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT."
-  - claim: "Existing GMI ownership and shared architecture were recovered."
-    command: "Exact-main workstream read and current PR metadata"
-    result: "Macro c4da107fe729e46b4d4036b3e0e290390315d0fd; WS-GMI-THEME-GRAPH; #7577 merged at d38e10f01686e9227e4c774fa1a4e28239993960."
-  - claim: "Robotics reference carrier exists and remains separate."
-    command: "get_pr_info #7773 and exact-head specification/handoff reads"
-    result: "Draft/open, head f10211657c6c31df3c9af73cd4b9484e2dd7690a; native evidence proposal and Fable handoff recorded, no production proof inferred."
+  - claim: "R1 exists on the incumbent research carrier."
+    command: "GitHub create_file followed by exact-commit fetch_file"
+    result: "Commit ca28a48ce58c2eeaeb22d8f16494831c2dd5ff9a; full-file Git blob 3bc3b5f1253b8d6e55c0dbc25e7f78d0fc675303; opening content and research-only boundary read back."
+  - claim: "Current shared ownership was recovered before research persistence."
+    command: "Exact-main GMI workstream read and current PR metadata/specification reads"
+    result: "Macro c4da107fe729e46b4d4036b3e0e290390315d0fd; WS-GMI-THEME-GRAPH; #7577 merged; #7211 merged; #7773 retained on its separate carrier."
 unverified:
-  - claim: "The complete Technology ex-Semiconductors research and masterplan are finished."
-    what_would_verify: "Archetype dossiers, taxonomy/exposure coverage, evidence dictionary, validation and owner-compatible executable masterplan across all included domains."
-  - claim: "A concrete Fable receiver is bound or executing this commission."
-    what_would_verify: "Later lawful delivery, pickup and separate START on the exact admitted carrier."
+  - claim: "The full Technology ex-Semiconductors masterplan is complete or accepted."
+    what_would_verify: "Detailed cross-domain company/workload dossiers, KPI/source coverage, causal/valuation studies and owner-compatible executable implementation specification."
+  - claim: "Automated research integrity checks or product tests passed."
+    what_would_verify: "Actual local artifact retrieval and executed integrity checks; separate product implementation, tests and real-path proof. Neither occurred."
+  - claim: "A Fable receiver has accepted or started this commission."
+    what_would_verify: "Later lawful exact-receiver delivery, ACK/pickup and separate START; none was attempted."
 unresolved:
-  - "Exact identity and current contract of the dedicated Semiconductor research session remain unverified; respect the Chairman's exclusion without guessing a receiver."
-  - "Adjacent reusable-template session is not identity-resolved; #7577 is verified shared architecture, not proof that its author is that current session."
-  - "Robotics native curation subtype is a precedent/proposal, not an automatically accepted live contract for Technology."
+  - "Dedicated Semiconductor receiver and current cross-boundary contract remain identity-unverified; preserve Chairman's exclusion."
+  - "Adjacent reusable-template session remains identity-unverified; #7577 proves shared architecture, not its current provider-session identity."
+  - "Robotics optional native curation payload is design precedent, not an automatically enrolled Technology schema."
+  - "Native retention/rights, point-in-time consensus coverage and quantitative theme materiality remain unverified."
 next_actions:
-  - "Complete the first bounded research unit: classification/exposure boundaries and Technology economic archetypes grounded in primary sources."
-  - "Preserve the research foundation and source register on this same carrier, then update this one cumulative checkpoint."
+  - "Resume from R1 and this checkpoint, not the earlier tool history."
+  - "Develop D01-D07 software/data/security/cloud/engineering-software dossiers: product/workload and charging-model maps, KPI definition vintages, paid adoption, price/retention/cost mechanisms, substitution and falsifiers."
+  - "Use enterprise AI paid-adoption evidence as the first candidate vertical for later spec selection; do not implement or dispatch Fable yet."
+  - "Retain D08-D15 services and physical/channel/measurement coverage for the following research units; finish the full sector masterplan before final Fable handoff."
 do_not_redo:
-  - "No Semiconductor, semiconductor-equipment or semiconductor-materials program rebuild."
+  - "No broad Robotics/template/GMI archaeology without a material invalidator; current references below are sufficient."
+  - "Do not recreate #7793, its branch, this checkpoint or the R1 foundation."
+  - "No Semiconductor, dedicated semiconductor-equipment/materials or chip-specific EDA/IP program rebuild."
   - "No shared template, STSI-1 publisher, GMI state/identity/evidence/queue or F04/K3-D replacement."
-  - "No product source, current basket membership, Prophet rank/entry/size/trade, runtime or deployment modifications from research."
-  - "No private/current production curation payload in public Git; original public-source research proposals only."
+  - "No product source, current baskets, Prophet rank/entry/size/trade, runtime or deployment changes from research."
+  - "No private/current production curation payload in public Git; original public-source editorial proposals only."
 danger_areas:
-  - "Separate classification, product/workload, business model, theme exposure and investable security identity."
-  - "Do not equate bookings/RPO/shipments/installed workloads/revenue or count one spending event repeatedly through its supply chain."
-  - "Missing theme-revenue disclosure is unknown, not zero or an invented exposure percentage."
+  - "Keep structural classification, business/product, workload, economic archetype, theme, materiality and security identity separate."
+  - "Do not conflate ARR/ACV/RPO/bookings/billings/revenue, gross/net cash measures, or operating changes with accounting/definition revisions."
+  - "Do not add overlapping theme revenue, nested adoption cohorts or successive spending-chain transfers."
+  - "Unknown exposure is not zero, a guessed midpoint or a basket weight; explanatory evidence does not grant trade authority."
 ---
 
-# Technology ex-Semiconductors — cumulative research frontier
+# Technology ex-Semiconductors — cumulative continuation
 
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 CAPABILITY_STATE: SPEC_ONLY
+
 Operation: `gmi-technology-ex-semis-research-20260923-sol-001`.
-Carrier: `mastermindx-market-intelligence/macro`, branch `sol/technology-ex-semis-research-20260923`, created from `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
+Carrier: `mastermindx-market-intelligence/macro`, draft/HOLD PR #7793, branch `sol/technology-ex-semis-research-20260923`.
+Original base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
+Last material research commit: `ca28a48ce58c2eeaeb22d8f16494831c2dd5ff9a`.
+R1 path: `research/technology_ex_semis/TECHNOLOGY_EX_SEMIS_RESEARCH_FOUNDATION_2026-09-23.md`.
+R1 immutable Git blob: `3bc3b5f1253b8d6e55c0dbc25e7f78d0fc675303`.
+The exact commit/blob of this cumulative update is supplied by its tool receipt/readback, not a self-referential value.
 
-Present authority is the live Chairman directive accepting the full Technology ex-Semiconductors commission, retaining most research and synthesis with this principal and the final build with Fable. Direct work reason: PRINCIPAL_JUDGMENT. Requested Pro mode is user-reported; no platform-mode attestation, provider selection or runtime admission is invented.
+## Authority and outcome
 
-## Scope and user outcome
+The live Chairman instruction grants this principal leadership of the full Technology ex-Semiconductors research/planning mission, retains most difficult reasoning here and selects Fable for the final build. Direct work reason: PRINCIPAL_JUDGMENT. User-reported Pro mode is not a platform/provider or admission attestation. No worker dispatch or product implementation authority is inferred from a mode switch.
 
-The investor should be able to follow a technology spending/adoption change through a specific product/workload and business, understand which companies can capture revenue and profit, compare expectations and valuation, then reach existing governed opportunity/entry workflows. The machine must preserve time, source scope, denominators, uncertainty and multi-theme overlap. This is not a generic tech dashboard, static stock list or one universal score.
+The investor should trace spending/adoption through source-scoped products/businesses to economically evidenced beneficiaries, expectations and valuation, then existing governed company/opportunity/entry workflows. The machine must preserve clocks, denominators, dependence, uncertainty and corrections. The moat is reusable causal and company knowledge, not a larger set of static baskets.
 
-The working exclusion includes semiconductors, semiconductor manufacturing, materials and dedicated equipment. Cross-boundary dependencies remain references; mixed-company non-semiconductor products can be researched without importing the excluded business. Chip-design-specific EDA/IP, semiconductor test and sensor die versus finished modules require explicit boundary reconciliation before final ownership claims.
+## Material result to preserve
 
-## Current verified references
+R1 defines 15 research coverage families and 144 candidate prompts, 16 economic archetypes, 14 dated company examples grounded in 15 primary-source records including the classification reference, and 24 future acceptance cases. These are editorial research counts, not automated QA, validated total coverage, product tests or live capabilities.
 
-- Protected procedure: `Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`.
-- Research/interface pin: `macro@c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-- Existing parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md` at that pin. Its historical substrate counts are not a new production census.
-- Shared accepted architecture: #7577, merge `d38e10f01686e9227e4c774fa1a4e28239993960`; `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`; page-specific federation, not fused owner state.
-- Sector freshness carrier #7211 is merged at `c538c78eef57b810ab36ddc8c7d93ef15a5dec7f`; no independent production/browser proof obtained in this research turn and no repair/rebuild authorized here.
-- Robotics reference #7773, head `f10211657c6c31df3c9af73cd4b9484e2dd7690a`; `docs/superpowers/specs/2026-09-23-robotics-theme-evidence-vertical-design.md`, `agentos/handoffs/GMI-ROBOTICS-RESEARCH-2026-09-23.md`, and its separate Fable master handoff. Its own acceptance/placement frontier remains with that owner.
+Core proposed decisions: independent classification/exposure/business-model axes; mixed-company product-level Semiconductor boundary; separate paid adoption, usage, contracts, revenue, gross profit and cash; definition-versioned AI/KPI series; lease/accounting changes separate from physical investment; typed materiality with legal unknowns; no double-counted spending/market size; native archetype-specific rerating hypotheses; explanatory/shadow consumption with existing owners.
 
-## Effects and persistence
+Discriminating evidence includes Snowflake consumption versus contracted demand; Salesforce product/KPI redefinitions; Microsoft capex lease-classification effects; Arista historical customer concentration; Dell cash-flow reconciliations; Accenture AI bookings/revenue scope; Autodesk duration/discounting effects; Arrow gross billings; Amphenol organic/acquired growth; Celestica reporting-view overlap; Keysight mixed end markets; Apple installed-base/nonrecurring-margin distinction; CrowdStrike nested module cohorts; and ServiceNow ACV versus recognized revenue. Exact URLs, periods and limitations are in R1 section 14. Do not repeatedly retrieve them merely to reconstruct this first unit.
 
-Before this checkpoint: one research branch created; no product/source/runtime effects. This document is the first cumulative Agent OS continuation record for this scoped commission, not a new workstream, lifecycle plane or source-custody transfer. Its exact commit and blob are established by the tool receipt/readback rather than a self-referential value.
+## Verified canonical references
 
-EFFECT_UNKNOWN: none observed. Active children, pending worker returns and watchers: none created by this operation. Fable has not been dispatched. No background execution is claimed. Continue the primary-source research in the current turn; this initial checkpoint is not a finalization claim.
+- Protected procedure: `Mastermind@bf764f494b9cd0ecede6234bb472c3344c8e77cc`, compatible 1.0.1/bootstrap 1.
+- Existing parent: `agentos/workstreams/WS-GMI-THEME-GRAPH.md` at Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
+- Shared architecture #7577: merge `d38e10f01686e9227e4c774fa1a4e28239993960`; specification `docs/superpowers/specs/2026-09-20-sector-theme-subtheme-intelligence-system-design.md`; STSI-1 plan `docs/superpowers/plans/2026-09-21-stsi1-sector-federation-technology-dossier.md`.
+- Focused publisher #7211: merge `c538c78eef57b810ab36ddc8c7d93ef15a5dec7f`; no deployed-proof claim made by this operation.
+- Robotics #7773: exact read head `f10211657c6c31df3c9af73cd4b9484e2dd7690a`; its specification/handoff/implementation acceptance and Fable custody remain separate.
+
+## Verification and tooling boundary
+
+GitHub creation and exact-commit readback establish the R1 file and Git blob. No local full-byte digest comparison or automated research-integrity PASS is claimed: the optional raw-file attachment route was unavailable, and direct container retrieval then failed at DNS before any integrity assertions ran. Do not retry that stable local network path merely for an attachment. The canonical GitHub artifact is available and is the recovery source; no optional download problem blocks research continuity. No product tests, CI qualification, independent design review, merge, deployment or browser proof were performed.
+
+## Continuation boundary and effects
+
+This is a phase/context boundary after completing the first bounded cross-sector coverage/economic-measurement research unit and substantial current-source/tool context. It is not the final masterplan, a completed product, a scope reduction, a release, or custody transfer. The next material action is the D01-D07 detailed software research unit described above, on this same research carrier after minimum fresh procedure/carrier reconciliation.
+
+Effects: original research branch/PR created, R1 and cumulative Agent OS documentation persisted. No product/runtime/schema/basket/trade/publisher/merge/deployment effects. EFFECT_UNKNOWN: none observed. Active children, pending worker returns and watchers: none created by this operation. Fable has not been dispatched or reported STARTED. No automatic wake/background execution is claimed. No hard chat seal is declared because no qualifying instability was observed.
