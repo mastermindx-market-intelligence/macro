@@ -4073,3 +4073,16 @@
 {"date":"2026-09-23","ticker":"CAT","departed":true,"left_desk":"2026-09-23","last_rank":null,"last_score":34}
 {"date":"2026-09-23","ticker":"SMCI","departed":true,"left_desk":"2026-09-23","last_rank":5,"last_score":51}
 {"date":"2026-09-23","ticker":"TSN","departed":true,"left_desk":"2026-09-23","last_rank":null,"last_score":19}
+{"date":"2026-09-23","ticker":"COIN","rank":9,"score":43,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-09-23","ticker":"LITE","rank":10,"score":37,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"SPCX","rank":11,"score":33,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"CRM","rank":14,"score":33,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"EXLS","rank":15,"score":32,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"DDOG","rank":23,"score":29,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"GOOG","rank":null,"score":21,"lean":1,"broken":true}
+{"date":"2026-09-23","ticker":"VRT","rank":null,"score":16,"lean":1,"broken":true}
+{"date":"2026-09-23","ticker":"MLM","rank":null,"score":13,"lean":1,"broken":true}
+{"date":"2026-09-23","ticker":"SMCI","rank":5,"score":53,"lean":1,"broken":false}
+{"date":"2026-09-23","ticker":"MU","rank":30,"score":27,"lean":1,"entry_tier":"T1","broken":false}
+{"date":"2026-09-23","ticker":"CAT","rank":null,"score":34,"lean":1,"broken":true}
+{"date":"2026-09-23","ticker":"TDG","rank":null,"score":17,"lean":1,"broken":true}

@@ -10009,3 +10009,13 @@
 {"date":"2026-09-23","ticker":"VRSN","rank":149,"score":41.8,"lean":1,"covered":true,"unconfirmed":false}
 {"date":"2026-09-23","ticker":"MSI","rank":150,"score":41.7,"lean":1,"covered":true,"unconfirmed":false}
 {"date":"2026-09-23","ticker":"AMGN","departed":true,"left_desk":"2026-09-23","last_rank":147,"last_score":42.2}
+{"date":"2026-09-23","ticker":"EMR","rank":23,"score":43.6,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"PH","rank":26,"score":38.9,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"IHG","rank":45,"score":33.9,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"APH","rank":46,"score":33.7,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"FAST","rank":47,"score":33.6,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"MMM","rank":50,"score":32.6,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"IBKR","rank":55,"score":32.1,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"IBM","rank":60,"score":30.9,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"LIN","rank":90,"score":22.4,"lean":1,"covered":true,"unconfirmed":false}
+{"date":"2026-09-23","ticker":"STLD","rank":92,"score":22.2,"lean":1,"covered":true,"unconfirmed":false}

@@ -675,16 +675,16 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Chairman 2026-09-18 assigns Sol Meta-CEO accountability for the existing rotation
-  participation outcome; DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE records
-  the scope without transferring incumbent source writers or runtime assignments.
-  Resume from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-18-meta-ceo-rotation.md.
-  First close the current availability recovery's actual review/CI/publication gates
-  through its existing carriers and integration owner, not another recovery branch.
-  Then advance the already-frozen B3/B4/B5, GMI and Fusion dependency graph to a real
-  leadership-to-entry-to-thesis-management journey. Current-price publication alone
-  is not completion. Retain historical D5 evidence and independent owner boundaries;
-  do not replay its old next action without reconciling newer implementation/evidence.
+  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
+  #6805, PICKUP_ACK 5793983971): wave 1 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave1-close.md). Wave 2: merge B20 v2 (#7839),
+  the D03 censuses (#7836/#7837) and the D05 watchlist fix (#7840) on concluded green;
+  commission B16-a (read-only allowlisted closure matrix per
+  research/prophet_v4/r6_program/rulings/R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md
+  §3) and the rights register under research/licenses/; B18 stays blocked until B16-b
+  admits a domain; D09 closes on B16 captures. The 2026-09-18 rotation mandate and the
+  masterplan §21 wave graph remain in force beneath this program; never replay an old
+  next action without reconciling the R6 records.
 ---
 
 ## Context

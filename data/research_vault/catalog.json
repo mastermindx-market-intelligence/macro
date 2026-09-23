@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T19:25:47.444273+00:00",
-  "count": 2729,
+  "generated_at": "2026-09-23T21:25:36.224933+00:00",
+  "count": 2734,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,7 @@
     "Talos",
     "The Market Ear",
     "The Punchline",
+    "Trump Xi Preview",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -99,6 +100,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-nwnr2g0qu3c-a92c42",
+      "title": "JPM Trump Xi summit Low bar, high stakes",
+      "institution": "Trump Xi Preview",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T20:02:39Z",
+      "summary_points": [
+        "Trade Surplus & Tech Decoupling: China's $1.19tn 2025 trade surplus (vs.",
+        "US $202.7bn deficit) strengthens bargaining power; US restricts advanced chips via case-by-case licensing while China dominates rare earth processing (91% global magnet supply), with US costs 69% higher.",
+        "Energy Flow Volatility: Strait of Hormuz oil flows collapsed to 4.9mn bpd (Q2 2026) from 21.2mn bpd (2025), diverting to Bab el-Mandeb (8.1mn bpd); Brent crude at $130.80/bbl drives immediate energy equity/commodity volatility.",
+        "Managed Tariff Restraint: US maintains 25% tariffs on Lists 1-3, 7.5% on List 4A; incremental deals (aircraft, soybeans, LNG) avoid grand bargain but risk escalation amid $494.6bn US goods trade and $334.4bn services surplus.",
+        "Geopolitical Escalation Risks: Trump-Xi summit prioritizes damage control over partnership; Iran sanctions (Operation Economic Outcast) and tech/supply chain disputes threaten portfolio stability amid zero-sum AI governance contest."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ml59ivo8nvo-811324",
+      "title": "TD Cowen The China Report Trump Xi Summit Expect Optics, Not Outcomes",
+      "institution": "Trump Xi Preview",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T20:02:32Z",
+      "summary_points": [
+        "Strategic Stability Over Breakthroughs: No major policy advances; bilateral disputes (PRC purchase commitments, weapon sales to TPE) and global crises (Mideast, RUS-UKR) limit tangible outcomes, suppressing deal expectations.",
+        "US-China Summit Realities: Phase One-style agreements overhyped; focus shifts to tariff extensions beyond Nov 10, agriculture/Boeing/critical minerals \"easiest wins,\" with structural AI/chips/supply chain disagreements persisting.",
+        "Biotech Innovation Dependency: PRC’s $1T+ biotech funding (vs.",
+        "NIH’s $481B) and 2026-2030 plan targeting 25% global first-in-class drugs threaten US leadership; US firms increasingly rely on PRC for new drug candidates despite domestic manufacturing commitments.",
+        "Financial Decoupling Escalation: SEC’s FPI rule tightening and 1260H list expansion risk post-election de-listing of Chinese issuers, amplifying financial system decoupling as a key portfolio risk factor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qugizra4u2p-58f2a2",
       "title": "GS Duttenhoefer BEST of DAY 3 at our German Corp Conference in Munich 23 Sep 2026",
@@ -155,6 +198,67 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uc6giunqscq-05fcee",
+      "title": "KB Home (KBH) F3Q26 Recap Benefits of Shift to BTO Offset by Rising Operating Headwinds Led by Higher Rates & Macro Uncerta...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:23Z",
+      "summary_points": [
+        "Revised EPS Forecast Down 16%: Full-year EPS revised to $3.40 (from $3.55) due to BTO transition, geographic mix, price adjustments, and higher energy costs, signaling deteriorating near-term fundamentals despite operational metrics.",
+        "Undervaluation Signal: P/E of 9.3x (11/25) below sector norms, with price trading below S&P 500, indicating potential mispricing amid housing sector interest rate sensitivity.",
+        "Price Target vs.",
+        "Current Price Gap: 12-mo target $61 exceeds closing price $56.32 (10-Jul-26), while historical targets frequently lagged closing prices, highlighting volatile analyst sentiment and short-term mispricing risk.",
+        "Key Downside Risks: Volatile rates, permitting delays, and inflation threaten margin recovery, with F4Q gross margin guide down 50bps amid pricing pressure and input cost headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m04zrgkxyce-22a813",
+      "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:18Z",
+      "summary_points": [
+        "F1Q2027 Beat & Guidance Raise: Revenue beat (10.9% y/y), organic growth accelerated to 8.9% y/y, margins expanded 90 bps to 23.6% (value-based pricing); F2027 revenue guidance raised to 8.4% (from 8.1%) and EPS to $5.50 (from $5.43).",
+        "UNF Acquisition Impact: Expected closing before CY2026 end to drive margin expansion and growth; $144m transaction expenses noted, excluding acquisition impact from revised guidance.",
+        "Valuation Upside & Consensus: $231 price target (19.8% premium to $192.37) based on 25x NTM EBITDA; consensus revenue/EPS estimates revised upward ($12.22B/$5.51 vs. raised $12.21B/$5.49).",
+        "Key Risk Factors: Cyclical exposure, pricing deceleration, and acquisition integration risks highlighted as critical for portfolio management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ankofapgobe-844d3b",
+      "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:06Z",
+      "summary_points": [
+        "Fuel Cell Cost Premium: Fuel cells have 45% higher LCOE ($117/MWh vs.",
+        "$81/MWh for reciprocating engines), driven by $4,750/kW capital costs, posing significant adoption risk despite technical advantages.",
+        "Execution Over Economics: Time-to-power (20% weighting) and availability now outweigh LCOE in data center power selection, with fuel cells deploying in 6–12 months vs. gas turbines’ 5–7 years (historically 2–3 years).",
+        "Supply Chain Bottlenecks: Gas turbine OEMs face severe backlogs (Siemens: 69GW, GE: 2030 capacity), extending lead times to 3–4 years and tightening supply, directly impacting data center project timelines."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
       "language": "en",
       "needs_metadata": false
     },

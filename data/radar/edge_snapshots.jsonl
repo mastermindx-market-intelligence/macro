@@ -15651,3 +15651,9 @@
 {"date":"2026-09-21","kind":"ticker","subject":"C","ticker":"C","edge_score":0,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
 {"date":"2026-09-21","kind":"ticker","subject":"WFC","ticker":"WFC","edge_score":0,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
 {"date":"2026-09-21","kind":"ticker","subject":"PFG","ticker":"PFG","edge_score":0,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
+{"date":"2026-09-21","kind":"ticker","subject":"EXLS","ticker":"EXLS","edge_score":79,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-21","kind":"ticker","subject":"LITE","ticker":"LITE","edge_score":25,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-21","kind":"ticker","subject":"META","ticker":"META","edge_score":19,"state":"CONFIRMED_UP","era":2,"source":"signal"}
+{"date":"2026-09-21","kind":"ticker","subject":"RTX","ticker":"RTX","edge_score":3,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
+{"date":"2026-09-21","kind":"ticker","subject":"MU","ticker":"MU","edge_score":3,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
+{"date":"2026-09-21","kind":"ticker","subject":"VRTX","ticker":"VRTX","edge_score":2,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}

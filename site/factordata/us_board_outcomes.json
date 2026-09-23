@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-21",
+ "as_of": "2026-09-22",
  "rows": [
   {
    "ticker": "DOCN",
@@ -80,19 +80,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "LBRT",
-   "sector": "Energy",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 21.2,
-   "last_price": 19.27,
-   "pct_since": -9.1,
-   "days_on_board": 4,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "UEC",
    "sector": "Energy",
    "first_surfaced": "2026-08-26",
@@ -103,19 +90,6 @@
    "exit_date": "2026-08-28",
    "mark_date": "2026-08-28",
    "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "CELH",
-   "sector": "Consumer Staples",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 29.9,
-   "last_price": 32.54,
-   "pct_since": 8.8,
-   "days_on_board": 3,
-   "exit_date": "2026-08-20",
-   "mark_date": "2026-08-20",
-   "status": "running",
    "lane": "buy"
   },
   {
@@ -155,19 +129,6 @@
    "exit_date": "2026-09-09",
    "mark_date": "2026-09-09",
    "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "CAVA",
-   "sector": "Consumer Discretionary",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 68.24,
-   "last_price": 73.63,
-   "pct_since": 7.9,
-   "days_on_board": 4,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "running",
    "lane": "buy"
   },
   {
@@ -457,6 +418,19 @@
    "lane": "buy"
   },
   {
+   "ticker": "LBRT",
+   "sector": "Energy",
+   "first_surfaced": "2026-08-18",
+   "surfaced_price": 20.05,
+   "last_price": 19.27,
+   "pct_since": -3.9,
+   "days_on_board": 3,
+   "exit_date": "2026-08-21",
+   "mark_date": "2026-08-21",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
    "ticker": "VALE",
    "sector": "Materials",
    "first_surfaced": "2026-08-20",
@@ -535,19 +509,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "KMI",
-   "sector": "Energy",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 32.87,
-   "last_price": 31.61,
-   "pct_since": -3.8,
-   "days_on_board": 8,
-   "exit_date": "2026-08-20",
-   "mark_date": "2026-08-20",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "ALGM",
    "sector": "Information Technology",
    "first_surfaced": "2026-09-03",
@@ -597,6 +558,19 @@
    "exit_date": "2026-08-31",
    "mark_date": "2026-08-31",
    "status": "running",
+   "lane": "buy"
+  },
+  {
+   "ticker": "BIIB",
+   "sector": "Health Care",
+   "first_surfaced": "2026-08-18",
+   "surfaced_price": 221.56,
+   "last_price": 214.35,
+   "pct_since": -3.3,
+   "days_on_board": 2,
+   "exit_date": "2026-08-20",
+   "mark_date": "2026-08-20",
+   "status": "stopped",
    "lane": "buy"
   },
   {
@@ -665,19 +639,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "PL",
-   "sector": "Industrials",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 23.36,
-   "last_price": 22.62,
-   "pct_since": -3.2,
-   "days_on_board": 2,
-   "exit_date": "2026-08-19",
-   "mark_date": "2026-08-19",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "KDP",
    "sector": "Consumer Staples",
    "first_surfaced": "2026-08-18",
@@ -719,14 +680,27 @@
   {
    "ticker": "SWX",
    "sector": "Utilities",
-   "first_surfaced": "2026-08-17",
-   "surfaced_price": 91.71,
+   "first_surfaced": "2026-08-18",
+   "surfaced_price": 91.75,
    "last_price": 88.87,
    "pct_since": -3.1,
-   "days_on_board": 4,
+   "days_on_board": 3,
    "exit_date": "2026-08-21",
    "mark_date": "2026-08-21",
    "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "WB",
+   "sector": "Communication Services",
+   "first_surfaced": "2026-09-17",
+   "surfaced_price": 6.54,
+   "last_price": 6.74,
+   "pct_since": 3.1,
+   "days_on_board": 2,
+   "exit_date": "2026-09-22",
+   "mark_date": "2026-09-21",
+   "status": "running",
    "lane": "buy"
   },
   {
@@ -740,6 +714,19 @@
    "exit_date": "2026-09-10",
    "mark_date": "2026-09-10",
    "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "CAVA",
+   "sector": "Consumer Discretionary",
+   "first_surfaced": "2026-08-18",
+   "surfaced_price": 71.57,
+   "last_price": 73.63,
+   "pct_since": 2.9,
+   "days_on_board": 3,
+   "exit_date": "2026-08-21",
+   "mark_date": "2026-08-21",
+   "status": "running",
    "lane": "buy"
   },
   {
@@ -780,19 +767,32 @@
    "mark_date": "2026-09-03",
    "status": "running",
    "lane": "buy"
+  },
+  {
+   "ticker": "BRK-B",
+   "sector": "Financials",
+   "first_surfaced": "2026-09-14",
+   "surfaced_price": 516.76,
+   "last_price": 502.01,
+   "pct_since": -2.9,
+   "days_on_board": 3,
+   "exit_date": "2026-09-21",
+   "mark_date": "2026-09-21",
+   "status": "stopped",
+   "lane": "buy"
   }
  ],
  "summary": {
-  "n_running": 34,
+  "n_running": 35,
   "n_stopped": 56,
-  "n_flat": 302,
-  "n_total": 392,
+  "n_flat": 266,
+  "n_total": 357,
   "n_shown": 60,
   "median_pct": 0.0,
   "n_skipped_no_price": 0,
   "skipped_no_price": [],
-  "win_rate": 0.087,
-  "avg_pct": -0.3,
+  "win_rate": 0.098,
+  "avg_pct": -0.4,
   "conventions": {
    "entry": "next session's close after first_surfaced (the surfaced bar is the bar the board is computed from \u2014 unbuyable)",
    "mark": "close on the date the name left the buy board, not today's",
