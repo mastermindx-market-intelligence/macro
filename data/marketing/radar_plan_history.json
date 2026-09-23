@@ -2,6 +2,89 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-22",
+      "tickers": [
+        "ACM",
+        "ASTH",
+        "ATR",
+        "BBD",
+        "CMCSA",
+        "COHU",
+        "CYBN",
+        "EBAY",
+        "FIX",
+        "GRAB",
+        "GSAT",
+        "HOOD",
+        "JAAA",
+        "MIR",
+        "MUSA",
+        "PRVA",
+        "QCOM",
+        "REXR",
+        "ROIV",
+        "SIG",
+        "TTMI",
+        "WULF"
+      ]
+    },
+    {
+      "as_of": "2026-09-21",
+      "tickers": [
+        "ACHC",
+        "AMKR",
+        "ATR",
+        "CLH",
+        "CMS",
+        "COHU",
+        "EBAY",
+        "FIX",
+        "HAFC",
+        "IPGP",
+        "MPT",
+        "MUSA",
+        "NABL",
+        "PPL",
+        "REX",
+        "REXR",
+        "SOUN",
+        "STRL",
+        "UPWK",
+        "WHR",
+        "XRAY"
+      ]
+    },
+    {
+      "as_of": "2026-09-20",
+      "tickers": [
+        "AIZ",
+        "ANIP",
+        "C",
+        "CARR",
+        "CHRW",
+        "CNM",
+        "DG",
+        "EBAY",
+        "FIBK",
+        "FIX",
+        "GATX",
+        "HAFC",
+        "HPE",
+        "ITW",
+        "LMB",
+        "LUMN",
+        "MO",
+        "PLMR",
+        "REXR",
+        "SHO",
+        "SPCX",
+        "TJX",
+        "TTD",
+        "VTRS",
+        "XBP"
+      ]
+    },
+    {
       "as_of": "2026-09-19",
       "tickers": [
         "CRWD",
@@ -67,48 +150,6 @@
         "PMTS",
         "UTL",
         "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-15",
-      "tickers": [
-        "ALGT",
-        "DLTR",
-        "ECL",
-        "GMED",
-        "IPGP",
-        "LUMN",
-        "PWR",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-14",
-      "tickers": [
-        "BOC",
-        "CHRW",
-        "ETN",
-        "FWONK",
-        "GMED",
-        "GPI",
-        "HUBG",
-        "IPGP",
-        "NABL",
-        "NOVT",
-        "OKE",
-        "RBLX",
-        "VTR"
-      ]
-    },
-    {
-      "as_of": "2026-09-12",
-      "tickers": [
-        "CAVA",
-        "CWST",
-        "EZPW",
-        "GMED",
-        "RHP",
-        "SEDG"
       ]
     }
   ]

@@ -150,6 +150,38 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
+  /* ── Macro Command tints (templates/macro_command.css) ────────────────────
+     color-mix on an added surface line is enforce-added-illegal; the mixes
+     live here so the surface only names tokens. --text/--info/--ok track
+     the theme (and the zh swap) at paint. Halo fill is currentColor at
+     calc(var(--mc-halo) * 100%): rest 12% on dark, lit 22% when the
+     signature :has() raises --mc-halo, cancelled (0) on light. Stance
+     wash is 0 dark / 6% light. --mc-accent-line keeps the dest-hover
+     second stop on --mq-line (macro_suite.css), not a 12% --text stand-in. */
+  --mc-ink-02: color-mix(in srgb, var(--text) 2%, transparent);
+  --mc-ink-05: color-mix(in srgb, var(--text) 5%, transparent);
+  --mc-ink-07: color-mix(in srgb, var(--text) 7%, transparent);
+  --mc-ink-08: color-mix(in srgb, var(--text) 8%, transparent);
+  --mc-ink-09: color-mix(in srgb, var(--text) 9%, transparent);
+  --mc-ink-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-ink-12: color-mix(in srgb, var(--text) 12%, transparent);
+  --mc-ink-14: color-mix(in srgb, var(--text) 14%, transparent);
+  --mc-ink-18: color-mix(in srgb, var(--text) 18%, transparent);
+  --mc-text-06: color-mix(in srgb, var(--text) 6%, transparent);
+  --mc-text-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-text-22: color-mix(in srgb, var(--text) 22%, transparent);
+  --mc-accent-10: color-mix(in srgb, var(--info) 10%, transparent);
+  --mc-accent-12: color-mix(in srgb, var(--info) 12%, transparent);
+  --mc-accent-22: color-mix(in srgb, var(--info) 22%, transparent);
+  --mc-accent-34: color-mix(in srgb, var(--info) 34%, transparent);
+  --mc-accent-line: color-mix(in srgb, var(--info) 38%, var(--mq-line));
+  --mc-halo: 0;
+  --mc-halo-fill: color-mix(in srgb, currentColor calc(var(--mc-halo) * 100%), transparent);
+  --mc-stance-ok: transparent;
+  --mc-stance-warn: transparent;
+  --mc-stance-bad: transparent;
+  --mc-stance-neutral: transparent;
+  --mc-stance-fill: var(--mc-stance-neutral);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -165,6 +197,10 @@ html[data-theme="light"] {
   --gbtn-brd:       color-mix(in srgb, #1c2430 50%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, #1c2430 66%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.7);
+  --mc-stance-ok: color-mix(in srgb, var(--ok) 6%, transparent);
+  --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
+  --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
+  --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
@@ -3035,12 +3071,16 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   /* Driver counter chip — `1 / 3` badge that floats over the strip's right
      edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
   body.page-macro .ud-driver-count{ display:inline-flex; }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */
 
-  /* Watching → single disclosure row (the <summary>) carries title + count +
-     chevron + one-line preview of the first condition. The full list lives
-     inside the <details> wrapper and is hidden by default at 390; tapping the
-     summary opens <details> and reveals the list via .ud-watch-details[open].
-     R-J round 7 — desktop forces the list open via specificity. */
+/* ── Mobile ≤640px watching disclosure (R-L BLOCKER-1 fix) ─────────────
+   At ≤640px the inline state JS in templates/dashboard.html.j2 removes the
+   `open` attribute on .ud-watch-details so the <summary> disclosure row takes
+   over. The summary chrome shows by default; the list is hidden until the
+   user taps the disclosure row (the UA `:not([open])` rule handles that —
+   CSS cannot override it, which is why the DOM state is the lawful fix). */
+@media (max-width:640px){
   body.page-macro .ud-watch-item{ display:none; }
   body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
   body.page-macro .ud-watch-summary{
@@ -3067,4 +3107,286 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
     color:var(--ink-2,var(--muted));
   }
 }
-/* end .ud-hero — UD-B1 §1/§3/§6 */
+
+/* ══════════════════════════════════════════════════════════
+   UD-B2-W1 — Vol-weather sub-row inside the mx5 scorecard
+   (.mx5-sc-left). The fold-in: chips previously lived in
+   #dlg-sentiment as a sibling section; they now live inside
+   the scorecard left column, below its dial + scar chips.
+   Scoped to body.page-macro .mx5-sc-vw so the strip stays a
+   one-off — no global rules. #sx-risk-v2 is not a host.
+
+   Dark treatment: calm/breeze/gust/storm glyphs in their own
+   severity color (--up/info/warn/down), each row on a tinted
+   --panel2 cell with a hairline --line border, eyebrow in
+   --isle-color (the risk token). Reads like an instrument
+   strip on a calm command-center surface.
+
+   Light treatment: same geometry, but every tinted --panel2
+   cell becomes a soft hairline-bordered white card; the
+   glyphs keep their severity colors (they are the same
+   semantic meaning in both themes); the eyebrow ink-3 tone
+   softens so the header doesn't shout against the white
+   panel. The visual identity stays "risk instrument" — not
+   "risk callout" — so a calm day reads as one calm row, not
+   as a louder headline. -#}
+
+/* ── Strip container ── */
+body.page-macro .mx5-sc-vw .sx-vw-strip{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:10px;
+  padding:10px 12px 12px;
+  border-top:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background:color-mix(in srgb, var(--panel2) 56%, transparent);
+  border-radius:inherit;
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-strip{
+  background:color-mix(in srgb, var(--panel2) 30%, var(--panel) 70%);
+  border-top-color:color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+/* ── Eyebrow ── */
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--isle-color, var(--ink-3));
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:2px;
+}
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow::after{
+  content:'';flex:1;height:1px;
+  background:color-mix(in srgb, var(--isle-color, var(--line)) 28%, transparent);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  color:color-mix(in srgb, var(--isle-color, var(--ink-3)) 92%, transparent);
+}
+
+/* ── Row: glyph · mid · tier ── */
+body.page-macro .mx5-sc-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 70px;
+  align-items:center;
+  gap:10px;
+  padding:6px 8px;
+  border-radius:var(--r-ctl,8px);
+  border:1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-row{
+  background:color-mix(in srgb, var(--panel) 100%, transparent);
+  border-color:color-mix(in srgb, var(--line) 75%, transparent);
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+
+/* ── Glyph colour is class-driven (one-integer law: tier-word only, no values) ── */
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sg-wx{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sg-wx{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sg-wx{color:var(--muted);opacity:.6;}
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:18px;height:18px;display:block;}
+
+/* ── Mid column ── */
+body.page-macro .mx5-sc-vw .sx-vw-mid{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+}
+body.page-macro .mx5-sc-vw .sx-vw-name{
+  font-size:12px;font-weight:700;color:var(--ink-1);
+  line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.page-macro .mx5-sc-vw .sx-vw-read{
+  font-size:11px;line-height:1.45;color:var(--ink-2);
+  /* Wrap, never truncate: the read sentence is the user-facing message; clipping
+     mid-sentence at 390 is unreadable. Names alone get ellipsis if needed. */
+  overflow-wrap:anywhere;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-name{color:var(--text);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-read{color:color-mix(in srgb, var(--text) 78%, transparent);}
+
+/* ── Tier word (right column): calm / breeze / gust / storm. Bilingual side-by-side. ── */
+body.page-macro .mx5-sc-vw .sx-vw-tier{
+  font-size:11px;font-weight:700;text-align:right;letter-spacing:.02em;
+  color:var(--ink-2);
+  display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  white-space:nowrap;
+}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-en{font-size:11px;line-height:1.1;}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:10px;line-height:1.1;color:var(--ink-3);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sx-vw-tier{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sx-vw-tier{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sx-vw-tier{color:var(--ink-3);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier{color:color-mix(in srgb, var(--text) 78%, transparent);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:color-mix(in srgb, var(--text) 55%, transparent);}
+
+/* ── Mobile (≤560px): tighten padding, allow mid column to wrap freely ── */
+@media(max-width:560px){
+  body.page-macro .mx5-sc-vw .sx-vw-strip{padding:8px 10px 10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 64px;
+    gap:8px;padding:6px 8px;
+  }
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{width:22px;height:22px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:16px;height:16px;}
+  body.page-macro .mx5-sc-vw .sx-vw-name{font-size:11px;white-space:normal;}
+  body.page-macro .mx5-sc-vw .sx-vw-read{font-size:10.5px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier{font-size:10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:9px;}
+}
+
+/* Percentile-bar mark moved from dashboard.html.j2 (governed CSS).
+   --r-pill on a 12x12 box is a circle (was 50%). Border is --panel. */
+.sg-pos-mark{
+  position:absolute;top:-3px;width:12px;height:12px;
+  border-radius:var(--r-pill,999px);transform:translateX(-50%);
+  background:var(--muted);border:2px solid var(--panel);
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+
+/* ── markets.html risk-regime strip (.mrs) ──────────────────────────────────
+   Compact three-row read between the cycle overlay and today's positions.
+   Reuses .mx-stance--{ok,warn,down,muted}. No new token family.
+   Dark: a lifted panel and a 1px inset edge (luminance, no outer glow).
+   Light: the white card, a hairline, and the card shadow (shadow, not glow). */
+.mrs{
+  margin:var(--sp-4,16px) 0;
+  padding:var(--sp-4,16px);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  background:var(--panel);
+  color:var(--text);
+}
+html[data-theme="dark"] .mrs{
+  background:color-mix(in srgb, var(--panel) 86%, var(--text));
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+}
+html[data-theme="light"] .mrs{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+/* zh swaps --down to green (red = up). Risk-off is a danger stance, not a
+   price candle, so this pill stays on --ink-act, which does not swap.
+   Otherwise 风险规避 paints the same green family as 风险偏好. */
+html[data-lang="zh"] .mrs .mx-stance--down{ --c: var(--ink-act); }
+.mrs-hd{ margin:0 0 var(--sp-3,12px); }
+.mrs-title{
+  margin:0;
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  letter-spacing:0;
+  color:var(--text);
+}
+.mrs-sub{
+  margin:var(--sp-1,4px) 0 0;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.45;
+  color:var(--muted);
+}
+.mrs-rows{ display:flex; flex-direction:column; }
+.mrs-row{
+  display:grid;
+  grid-template-columns:minmax(8rem,12rem) auto minmax(0,1fr) auto;
+  gap:var(--sp-3,12px);
+  align-items:center;
+  padding:var(--sp-3,12px) 0;
+  border-top:1px solid var(--line);
+}
+.mrs-row:first-child{ border-top:0; padding-top:0; }
+.mrs-name{
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  color:var(--text);
+}
+.mrs-state,.mrs-do{ margin:0; }
+.mrs-caveat{ position:relative; justify-self:end; }
+.mrs-caveat-btn{
+  font:inherit;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.3;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:var(--r-pill,999px);
+  padding:4px 10px;
+  cursor:pointer;
+}
+html[data-theme="dark"] .mrs-caveat-btn{
+  background:color-mix(in srgb, var(--panel2) 70%, transparent);
+  color:var(--ink-2,var(--muted));
+}
+html[data-theme="light"] .mrs-caveat-btn{
+  background:var(--panel);
+  color:var(--muted);
+  box-shadow:none;
+}
+/* Tier-2 caveat: clipped out of the glance until hover or keyboard focus.
+   Kept in the tree so aria-describedby can point at it. Not a title= tooltip. */
+.mrs-pop{
+  position:absolute;
+  z-index:3;
+  right:0;
+  top:calc(100% + 6px);
+  box-sizing:border-box;
+  padding:var(--sp-3,12px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+  font-size:var(--fs-sm,12.5px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:left;
+  white-space:normal;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  height:1px;
+  width:1px;
+  overflow:hidden;
+}
+html[data-theme="dark"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:none;
+}
+html[data-theme="light"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:var(--popover-shadow);
+}
+.mrs-caveat:hover .mrs-pop,
+.mrs-caveat:focus-within .mrs-pop{
+  clip:auto;
+  clip-path:none;
+  height:auto;
+  width:min(36rem,80vw);
+  overflow:visible;
+}
+@media (max-width:640px){
+  .mrs{ padding:var(--sp-3,12px); }
+  .mrs-row{
+    grid-template-columns:1fr;
+    gap:var(--sp-2,8px);
+    align-items:start;
+  }
+  .mrs-caveat{ justify-self:start; }
+  .mrs-pop{ left:0; right:auto; }
+}

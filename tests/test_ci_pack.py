@@ -3506,6 +3506,37 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
+    # home for tests/test_markets_regime_strip.py — its thematic neighbours
+    # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
+    # PR packs never plan. Curated for COVERAGE: its `paths:` are the measured
+    # 54-path import closure of the suite (scripts/build_markets.py pulls the
+    # collectors/ and engine.market_state chains), so exclusivity loses no
+    # owner and contract-delta stays at 0 introduced.
+    "markets-regime-strip",
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
+    # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
+    # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
+    # + test_audit_options_skew_overlap). The lane has no signal-contract /
+    # render subject — its subjects are the launchd plist, the sh runner,
+    # argparse helpers, and the publish_r2._DATA_DIRS options_skew
+    # registration — and it was previously parked in
+    # config/unrun_test_waivers.yml, which the waiver file's own header
+    # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
+    # name exactly the five suites plus the load-bearing scripts they
+    # actually invoke and the engine/lib chains those scripts import.
+    "skew-accrual-lane",
+    # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
+    # gate:code home for tests/test_options_skew.py. The suite previously
+    # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
+    # the migration test was dark on every pull request. Curated for
+    # COVERAGE: paths are the measured import closure (options_skew,
+    # thetadata_store, the builder, and the validate_options_skew import
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
+    "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
@@ -3649,6 +3680,24 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-22 main-red repair. Six jobs entered the broad
+    # templates/index.html probe after the 64f8c248 calibration even though
+    # none owns that page; market-ontology-f09-usgs-mcs separately entered the
+    # build_free_content probe through a bounded subprocess/git-grep edge; and
+    # unrun-government-revenue-candidate-projection entered the Prophet probe
+    # through an opaque engine/** edge despite no plan-book file in its named
+    # closure. Their declarations retain the measured full import closure plus
+    # dynamic files read by the tests/builders. This restores 131/129/125
+    # selections without raising the existing ratchet or allowing unrelated
+    # fallback smear.
+    "am-edition-producer",
+    "covenant-headroom",
+    "cycle-consistency",
+    "ftr-tape-surfaces",
+    "market-ontology-f09-usgs-mcs",
+    "research-screener",
+    "sanctions-map-page",
+    "unrun-government-revenue-candidate-projection",
     # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
     # hermetic PR owner for one recovered package and its root lineage test,
     # and declared both exact path surfaces — but omitted `scope: exclusive`.
@@ -4616,4 +4665,109 @@ def test_no_empty_pack_in_the_code_gate_partition() -> None:
         f"pack index(es) {empty} are empty under --gate code with --pack-count "
         "12 — an empty pack's name would vanish from main's ci.yml baseline "
         "and any PR whose plan lands work there could never refresh a red"
+    )
+
+
+# ── W7A_7070_HEAL H4: regression lock for # inside folded `run: >` scalars ──
+#
+# The W11 round-1 heal moved a 4-line `#` comment INTO a folded `run: >` pytest
+# scalar at .github/ci/legacy-jobs.yml:2498-2501. YAML folds the scalar onto ONE
+# shell line where `#` starts a shell comment, so the entire w11 suite was
+# effectively dropped from the argv (effective 113 of 173 listed) without any of
+# check_contract_delta / audit_unrun_tests / run_ci_pack validate catching it
+# (those text-parse YAML rather than the folded shell). The exact fleet-hazard
+# this round closed must not recur undetected.
+
+
+_FOLDED_RUN_RE = re.compile(r"^( +)run: >-?\s*$", re.MULTILINE)
+
+
+def _iter_folded_run_scalars(text: str) -> list[tuple[int, int, str]]:
+    """Yield (indent, line_number, scalar_text) for every folded `run: >` scalar.
+
+    A folded scalar ends at the first line whose indent is `<=` the indicator
+    line's indent (or EOF). YAML folded scalars collapse newlines into spaces
+    when consumed by a shell — so a `#` token anywhere inside is a shell
+    comment, NOT a YAML comment.
+    """
+    out: list[tuple[int, int, str]] = []
+    for m in _FOLDED_RUN_RE.finditer(text):
+        indent = len(m.group(1))
+        # line_number of the `run: >` indicator (YAML is 1-indexed for grep parity)
+        line_no = text.count("\n", 0, m.start()) + 1
+        # Walk subsequent lines collecting the scalar body
+        body_lines: list[str] = []
+        cursor = m.end()
+        body_indent = indent + 1
+        while cursor < len(text):
+            nl = text.find("\n", cursor)
+            if nl == -1:
+                chunk = text[cursor:]
+                nl = len(text)
+            else:
+                chunk = text[cursor:nl]
+            stripped = chunk.lstrip(" ")
+            if chunk == "" or chunk.startswith(" " * body_indent):
+                body_lines.append(chunk)
+                cursor = nl + 1
+                continue
+            # First non-empty line at <= indicator indent ends the scalar
+            if stripped == "" or len(chunk) - len(chunk.lstrip(" ")) <= indent:
+                if stripped == "":
+                    # Blank line at <= indicator indent also ends it
+                    break
+                break
+            break
+        out.append((indent, line_no, "\n".join(body_lines)))
+    return out
+
+
+def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> None:
+    """Every folded `run: >` pytest scalar must be free of `#` shell-comment tokens.
+
+    A `#` inside a folded scalar (e.g. ``run: >\\n  # W11 coverage-true\\n  python -m
+    pytest ...``) becomes a shell comment when GitHub folds it back into one argv
+    line, silently dropping every pytest token that follows. That is how
+    a95d2856e077 / de288cf6706f dropped 60 of main's own suites while every
+    contract-delta / audit_unrun_tests / run_ci_pack validate check stayed green.
+
+    RED-first: inserting a `# ...` line inside the folded scalar at
+    .github/ci/legacy-jobs.yml (e.g. at the engine-render-guards step) FAILS this
+    test; reverting that insertion restores the green.
+    """
+    text = MANIFEST.read_text(encoding="utf-8")
+    scalars = _iter_folded_run_scalars(text)
+    assert scalars, "expected at least one folded run: > scalar in legacy-jobs.yml"
+
+    # Vacuity guard: confirm at least one folded scalar is a pytest invocation,
+    # otherwise a future PR could clear this test by deleting every folded pytest
+    # step (and the harness would no longer catch the # hazard class at all).
+    pytest_folded = [
+        (indent, line_no, body)
+        for indent, line_no, body in scalars
+        if "pytest" in body
+    ]
+    assert pytest_folded, (
+        "no folded `run: >` pytest scalar found — the vacuity guard below would "
+        "be untestable; check that the manifest still carries folded pytest steps"
+    )
+
+    offenders: list[tuple[int, int, str, list[str]]] = []
+    for indent, line_no, body in scalars:
+        # A `#` token anywhere in the scalar body is the hazard; flag the lines.
+        bad_lines = [
+            ln for ln in body.splitlines() if "#" in ln
+        ]
+        if bad_lines:
+            offenders.append((indent, line_no, body, bad_lines))
+
+    assert not offenders, (
+        "folded `run: >` scalars in .github/ci/legacy-jobs.yml must not contain "
+        "# shell-comment tokens — YAML folds them onto one argv line where '#' "
+        "starts a shell comment, silently dropping every pytest token that "
+        "follows. Offenders (indicator line, offending body lines):\n"
+        + "\n".join(
+            f"  line {ln}: {bl[:120]}"
+            for _indent, ln, _body, bl in offenders
+        )
     )
