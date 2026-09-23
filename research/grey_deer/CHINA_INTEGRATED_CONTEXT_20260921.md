@@ -402,3 +402,22 @@ bytes SHA25647c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06.
 Eight new static captures passed on that exact fingerprint; old failed interaction
 evidence keeps its old page binding and remains unaccepted. No caption assertion
 was weakened or retried after its refused diagnostic.
+
+## September23 presentation qualification
+Same PR7622; procedure4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2.
+Three prior presentation failures are resolved. Current/mixed fixtures now use
+the real timing reader; absent measurements disclose unavailable participation
+without restoring implicit freshness. Focused RED3/controls2; final441 passed.
+The timing caption uses .cnx-lbl text-transform:uppercase; innerText therefore
+cannot match the mixed-case source literal. The corrected original browser
+acceptance checks exact localized DOM copy, exact visible uppercase text and
+correct locale visibility. All8 timing-disclosure journeys now pass on the
+unchanged47c502b8... page. Prior static captures are reused, not regenerated.
+Evidence:CHINA_PARTICIPATION_CLOCK_20260923.json presentation_qualification and
+mockups/evidence/china-participation-clock-20260923/interaction-repair/.
+This does not close the separate touch-Lens failure or publish any market data.
+The initial compound preflight and a caption-specific diagnostic were refused;
+neither was repeated/relocated. Safe file reads, tests and the corrected actual
+acceptance invocation succeeded on the original carrier.24 auxiliary outputs
+remain dirty/unaccepted and excluded. Next unit: touch behavior on this newly
+clock-qualified page; original desktop repair and all numerical work stay intact.

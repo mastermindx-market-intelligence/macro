@@ -931,17 +931,14 @@ def _render_participation_context(context):
                            '{{ cbx.participation_panel(ctx) }}').render(ctx=context)
 
 
-def test_context_panel_distinguishes_recent_improvement_from_twenty_day_weakness():
-    from engine import china_participation as pc
-    prices, bench, names = _price_context_fixture()
-    prices.iloc[-21:-5] = 110.0
-    prices.iloc[-5:] = 105.0
-    # Synthetic scenario: force named window values; producer arithmetic is tested above.
-    sample = _price_context(prices, bench, names)
+def test_context_panel_distinguishes_recent_improvement_from_twenty_day_weakness(monkeypatch):
+    context = _timed_context(monkeypatch)
+    assert context['timing']['status'] == 'current'
+    # Synthetic returns exercise narrative only; real reader qualifies this clock.
+    sample = context['sample']
     sample['windows']['5'].update(status='ok', median_return_pct=1.0, positive_pct=60)
     sample['windows']['20'].update(status='ok', median_return_pct=-1.0, positive_pct=40)
-    html = _render_participation_context({'sample':sample,
-                         'daily_board':pc.board_breadth_context(_board_fixture(),asof='2026-09-18')})
+    html = _render_participation_context(context)
     assert 'Recent rebound, uneven recovery' in html
     assert '20-session sample' in html and 'Latest board session' in html
     assert 'Not an equal-weight index' in html
@@ -955,12 +952,15 @@ def test_context_panel_missing_data_is_not_a_calm_or_bearish_verdict():
     assert 'Risk-off' not in html and 'Risk-on' not in html
 
 
-def test_context_panel_stale_sample_never_gets_a_current_rebound_headline():
-    prices, bench, names = _price_context_fixture()
-    sample = _price_context(prices.iloc[:-5],bench,names)
-    html = _render_participation_context({'sample':sample})
-    assert 'Sample behind assessment' in html
-    assert sample['asof'] in html
+def test_context_panel_stale_sample_never_gets_a_current_rebound_headline(monkeypatch):
+    def older_sample(inputs):
+        inputs[('china_search', 'closes')] = inputs[('china_search', 'closes')].iloc[:-5]
+    context = _timed_context(monkeypatch, change=older_sample)
+    assert context['timing']['status'] == 'mixed'
+    assert context['sample']['status'] == 'delayed'
+    html = _render_participation_context(context)
+    assert 'Different source dates' in html
+    assert context['sample']['asof'] in html
     assert 'Recent rebound, uneven recovery' not in html
 
 

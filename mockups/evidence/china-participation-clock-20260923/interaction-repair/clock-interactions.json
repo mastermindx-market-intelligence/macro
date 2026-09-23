@@ -1,0 +1,97 @@
+{
+  "source_commit": "6d5b0694fecf68a6137fcdab523d148269780fa3",
+  "page_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "Check source timing",
+      "caption_visible": "CHECK SOURCE TIMING",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "Check source timing",
+      "caption_visible": "CHECK SOURCE TIMING",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "Check source timing",
+      "caption_visible": "CHECK SOURCE TIMING",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "Check source timing",
+      "caption_visible": "CHECK SOURCE TIMING",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "dated_state_visible": true,
+      "expected_date_visible": true,
+      "disclosure_opens_and_closes": true,
+      "caption_dom": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "caption_visible": "\u6838\u5bf9\u6765\u6e90\u65f6\u95f4",
+      "overflow": false
+    }
+  ],
+  "lens_tested": false,
+  "production": false,
+  "fresh_collection": false
+}

@@ -216,5 +216,26 @@
   "fresh_collection": false,
   "risk_calibration_changed": false,
   "production": false,
-  "last_edge_red": "2 failed: short sector history and runtime calendar failure"
+  "last_edge_red": "2 failed: short sector history and runtime calendar failure",
+  "presentation_qualification": {
+    "base": "6d5b0694fecf68a6137fcdab523d148269780fa3",
+    "procedure": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+    "focused_red": "3 failed, 2 passed",
+    "full_regression": "441 passed, no warnings",
+    "source_sha256": {
+      "tests/test_china_participation.py": "442a1931c341a491e3504c4af70d9cd97706b48ba5fb777803704eeea469e292",
+      "templates/_china_participation_context.html.j2": "708e43c3fa826d9df97e66c25fed23a975a708963f0e98a682ad28cf9e0da4dd",
+      "research/grey_deer/capture_china_clock.py": "b6899bb5a993308718317d167704e7fabdef19a5142a5fb5d38ae76b0af57959"
+    },
+    "clock_interactions": 8,
+    "clock_interaction_receipt": "mockups/evidence/china-participation-clock-20260923/interaction-repair/clock-interactions.json",
+    "page_sha256": "47c502b8fc3c3953b2a3f3686f3a9f1bea01bc60115fb727064fb06de860bf06",
+    "static_captures_reused": true,
+    "lens_acceptance": false,
+    "production": false,
+    "caption_cause": "CSS text-transform uppercase applies to innerText; exact localized DOM copy and transformed visible text are now checked separately",
+    "caption_standard": "https://html.spec.whatwg.org/multipage/dom.html#the-innertext-idl-attribute",
+    "null_fix": "No sample measurements now disclose participation unavailable alongside missing timing; fixtures use the actual clock reader instead of implicitly claiming freshness",
+    "held_compound_preflight_and_caption_diagnostic": "safety-status refused; not retried; separate file reads, pytest and corrected original acceptance command were accepted"
+  }
 }

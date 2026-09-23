@@ -1,11 +1,12 @@
 """Stored-input clock-panel proof only; not Lens, production or forecast acceptance."""
 from pathlib import Path
 import functools, hashlib, http.server, json, subprocess, sys, threading
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as capture
-OUT = ROOT / 'mockups/evidence/china-participation-clock-20260923'
+OUT = ROOT / 'mockups/evidence/china-participation-clock-20260923/interaction-repair'
+INTERACTIONS_ONLY = '--interactions-only' in sys.argv
 OUT.mkdir(parents=True, exist_ok=True)
 PROOF = json.loads(Path(sys.argv[1]).read_text())
 PAGE = ROOT / 'site/china.html'
@@ -21,16 +22,17 @@ def driver_factory(**kwargs):
         dict(kwargs.get('observer_config') or capture.DEFAULT_OBSERVER_CONFIG),
         kwargs.get('settle_ms', 1400))
 
-code = capture.main(['--site-dir', str(ROOT/'site'), '--routes', '/china.html',
-    '--output-dir', str(OUT), '--manifest', str(OUT/'manifest.json'),
-    '--smells', str(OUT/'smells.json'), '--viewports', 'desktop,mobile',
-    '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
-    '--settle-ms', '1400'], driver_factory=driver_factory)
-assert code == 0
-meta = json.loads((OUT/'manifest.json').read_text())['pages'][0]
-assert len(meta['states']) == 8 and all(state['captured'] for state in meta['states'])
-assert not meta['console_errors'] and not meta['failed_responses']
-assert all(not row['horizontal_overflow'] for row in meta['metrics']['by_viewport'].values())
+if not INTERACTIONS_ONLY:
+    code = capture.main(['--site-dir', str(ROOT/'site'), '--routes', '/china.html',
+        '--output-dir', str(OUT), '--manifest', str(OUT/'manifest.json'),
+        '--smells', str(OUT/'smells.json'), '--viewports', 'desktop,mobile',
+        '--themes', 'dark,light', '--locales', 'en,zh', '--max-pages', '1',
+        '--settle-ms', '1400'], driver_factory=driver_factory)
+    assert code == 0
+    meta = json.loads((OUT/'manifest.json').read_text())['pages'][0]
+    assert len(meta['states']) == 8 and all(state['captured'] for state in meta['states'])
+    assert not meta['console_errors'] and not meta['failed_responses']
+    assert all(not row['horizontal_overflow'] for row in meta['metrics']['by_viewport'].values())
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args):
         pass
@@ -63,7 +65,16 @@ try:
                             summary.tap() if width==390 else summary.click()
                             assert panel.locator('details').get_attribute('open') is not None
                             text = panel.inner_text()
-                            assert ('Check source timing' if language=='en' else '核对来源时间') in text
+                            caption = panel.locator('details > .cnx-lbl').first
+                            active_caption = caption.locator('.l-' + language)
+                            expected_caption = 'Check source timing' if language == 'en' else '核对来源时间'
+                            # .cnx-lbl intentionally uppercases visible EN text. Check
+                            # exact DOM copy AND rendered text/visibility, not a case-
+                            # sensitive title-case substring in CSS-transformed innerText.
+                            expect(active_caption).to_be_visible()
+                            expect(active_caption).to_have_text(expected_caption)
+                            expect(active_caption).to_have_text(expected_caption.upper(), use_inner_text=True)
+                            expect(caption.locator('.l-' + ('zh' if language == 'en' else 'en'))).not_to_be_visible()
                             assert ('2 sessions behind expected' if language=='en' else '2 个交易日落后于预期') in text
                             assert not page.evaluate('document.documentElement.scrollWidth > document.documentElement.clientWidth')
                             assert not panel.evaluate('(el)=>el.scrollWidth>el.clientWidth')
@@ -74,7 +85,8 @@ try:
                             assert not errors, errors
                             cases.append({'width':width,'theme':theme,'language':language,
                                 'dated_state_visible':True,'expected_date_visible':True,
-                                'disclosure_opens_and_closes':True,'overflow':False})
+                                'disclosure_opens_and_closes':True,'caption_dom':expected_caption,
+                                'caption_visible':expected_caption.upper(),'overflow':False})
                         finally:
                             context.close()
         finally:
@@ -85,4 +97,4 @@ assert hashlib.sha256(PAGE.read_bytes()).hexdigest() == BEFORE
 receipt = {'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
     'page_sha256':BEFORE,'cases':cases,'lens_tested':False,'production':False,'fresh_collection':False}
 (OUT/'clock-interactions.json').write_text(json.dumps(receipt,indent=2)+'\n')
-print(json.dumps({'captures':8,'clock_interactions':len(cases),'page_sha256':BEFORE,'lens_acceptance':False}))
+print(json.dumps({'captures':0 if INTERACTIONS_ONLY else 8,'clock_interactions':len(cases),'page_sha256':BEFORE,'lens_acceptance':False}))

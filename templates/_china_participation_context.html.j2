@@ -35,6 +35,7 @@
   {% elif month.get('comparison') == 'index_up_sample_down' %}{{ bl('Index up, typical sampled stock down — check participation before extrapolating.','指数上涨，典型样本股下跌——请先核对参与度，勿外推普涨。') }}
   {% else %}{{ bl('Read the index alongside the typical stock, not in isolation.','将指数与典型个股对照，而非单看指数。') }}{% endif %}
   </div>
+  {% if not sample %}<div class="cnx-part-note">{{ bl('Participation unavailable — no sample measurements are supplied.','参与度暂不可用——未提供样本观测。') }}</div>{% endif %}
   <div class="cnx-part-sub cnx-timing-summary">{{ bl('Expected completed session','预期已完成交易日') }}: {{ timing.get('expected_session') or '—' }} · {{ bl('Assessment date','评估日期') }}: {{ ctx.get('assessment_asof') or '—' }}</div>
   <div class="cnx-part-grid">
     <div class="cnx-part-col">
