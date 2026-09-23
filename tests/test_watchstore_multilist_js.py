@@ -49,6 +49,13 @@ global.localStorage = {
   removeItem: function (k) { delete __store[k]; }
 };
 global.CustomEvent = function (t, o) { this.type = t; this.detail = o && o.detail; };
+// D05 W1-honesty tests need (a) a spyable `document.dispatchEvent` so the chip dispatch
+// can be observed, and (b) a real `window.addEventListener` so the `online` event
+// path can be exercised end to end. Both are pure additions — they record into a
+// registry instead of dropping on the floor — and existing tests that don't listen
+// are unaffected.
+var __docListeners = {};
+var __winListeners = {};
 global.document = {
   readyState: 'loading',
   documentElement: {
@@ -58,13 +65,33 @@ global.document = {
   getElementById: function () { return null; },
   querySelector: function () { return null; },
   querySelectorAll: function () { return []; },
-  addEventListener: function () {},
-  removeEventListener: function () {},
-  dispatchEvent: function () { return true; },
+  addEventListener: function (type, handler) {
+    __docListeners[type] = (__docListeners[type] || []).concat([handler]);
+  },
+  removeEventListener: function (type, handler) {
+    if (!__docListeners[type]) return;
+    __docListeners[type] = __docListeners[type].filter(function (h) { return h !== handler; });
+  },
+  dispatchEvent: function (e) {
+    var list = __docListeners[e && e.type] || [];
+    list.forEach(function (h) { h(e); });
+    return true;
+  },
   createElement: function () { return { style: {}, classList: { add: function () {} } }; }
 };
 global.window = global;
-global.window.addEventListener = function () {};
+global.window.addEventListener = function (type, handler) {
+  __winListeners[type] = (__winListeners[type] || []).concat([handler]);
+};
+global.window.removeEventListener = function (type, handler) {
+  if (!__winListeners[type]) return;
+  __winListeners[type] = __winListeners[type].filter(function (h) { return h !== handler; });
+};
+global.window.dispatchEvent = function (e) {
+  var list = __winListeners[e && e.type] || [];
+  list.forEach(function (h) { h(e); });
+  return true;
+};
 global.location = { hash: '', pathname: '/watchlist.html', search: '', origin: 'https://x' };
 function OUT(o) { process.stdout.write(JSON.stringify(o)); }
 function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -1262,3 +1289,360 @@ def test_a_scoped_share_link_is_not_consumed_by_a_different_list():
     assert out["wrongList"] == []                 # left alone, not merged into 'AI'
     assert out["rightList"] == ["RKLB"]           # consumed by its own list
     assert out["legacyBare"] == ["RKLB"]          # unscoped legacy link still works
+
+
+# ===========================================================================
+# 6. D05 W1-honesty — three defects the R6 census flagged as the forbidden
+#    case. The page's chip is the only sync disclosure (the Account Sync panel
+#    is gone); whatever the store dispatches is what the user sees. These pin
+#    the four states:
+#      saved   — a WRITE just landed in the account
+#      clean   — a READ succeeded; nothing written this session (no "Saved" copy)
+#      saving  — a write is in flight
+#      offline — a write is pending and the network is unreachable
+# ===========================================================================
+
+# Helper: install a chip-dispatch spy. WS has already loaded; init() returned
+# early (no chip/box in the shim), so the only ws-save events arrive from
+# setPill calls inside pull()/pushList()/symbolAdd(). We capture them all.
+CHIP_SPY = """
+var __chipSpy = {events: [], orig: null};
+function installChipSpy() {
+  __chipSpy.orig = global.document.dispatchEvent;
+  global.document.dispatchEvent = function (e) {
+    __chipSpy.events.push({type: e && e.type, detail: e && e.detail});
+    return true;
+  };
+}
+function restoreChipSpy() {
+  global.document.dispatchEvent = __chipSpy.orig;
+}
+function wsSaves() {
+  return __chipSpy.events.filter(function (e) { return e.type === 'ws-save'; })
+    .map(function (e) { return e && e.detail && e.detail.state; });
+}
+"""
+
+# Helper: read the marker blob as plain JSON. The store extends the per-list
+# cache (`mdash.wl.<listId>.v1`) with `pendingPushes` / `pendingInserts` /
+# `tombstones`; tests read it back to verify the persistence law. The
+# watchstore helper accepts a listId so the test can target the same key.
+SYNC_BLOB = """
+function readSyncBlob(listId) {
+  try {
+    var key = listId ? ('mdash.wl.' + listId + '.v1') : 'mdash.watchlist.v1';
+    var raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+"""
+
+
+@needs_node
+def test_T1_signed_in_pull_with_no_pending_writes_dispatches_clean_not_saved():
+    """D05 Q2 #3: pull() success must dispatch chip `clean`, NOT `saved`. The
+    chip copy for `saved` says 'Saved to your Mastermind account' — false on a
+    plain read with no write. The page's own vocabulary (templates/watchlist.js
+    ~line 854) names `clean` for 'a READ succeeded from the account; nothing has
+    been written this session' and `saved` for 'a WRITE just landed in the
+    account'. Pre-fix, pull() called `setPill('synced')` which mapped to `saved`.
+    """
+    out = _ws(
+        CHIP_SPY + SYNC_BLOB + """
+        installChipSpy();
+        var db = makeDb({watchlists: [{id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0}],
+                         watchlist_symbols: [
+                           {id: 'w1', watchlist_id: 'L-W', symbol: 'NVDA', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          restoreChipSpy();
+          var saves = wsSaves();
+          OUT({saves: saves,
+               hasSaved: saves.indexOf('saved') >= 0,
+               hasClean: saves.indexOf('clean') >= 0,
+               lastSave: saves.length ? saves[saves.length - 1] : null});
+        });
+        """,
+        {"USER": USER},
+    )
+    # The defect: a plain read dispatched 'saved' — the chip claimed a write landed.
+    assert out["hasSaved"] is False, \
+        f"a plain pull() must never dispatch chip 'saved'; got saves={out['saves']}"
+    # The fix: a plain pull() dispatches 'clean'.
+    assert out["hasClean"] is True, \
+        f"a plain pull() must dispatch chip 'clean'; got saves={out['saves']}"
+    assert out["lastSave"] == "clean"
+
+
+@needs_node
+def test_T2_failed_push_is_persisted_retried_on_online_and_clears_on_success():
+    """D05 Q2 #1: a failed push was swallowed with `setPill('offline')` and
+    `return null` — no retry queue. After my fix, a failed push persists a
+    per-list pending marker in `mdash.watchlist.v1`, keeps the chip honest
+    (offline), and the `online` event retries the push. On success the marker
+    is cleared and the chip says 'saved' (a WRITE just landed).
+
+    This is the end-to-end shape the user actually sees: a symbol added on a
+    flaky connection, network recovers, the change lands. The test injects a
+    failing insert at the db-client layer (the same seam
+    `test_fold_is_not_marked_when_the_insert_fails_so_it_retries` uses), runs
+    the push, then restores the working client and fires `online`."""
+    out = _ws(
+        CHIP_SPY + SYNC_BLOB + """
+        installChipSpy();
+        var db = makeDb({watchlists: [{id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0}],
+                         watchlist_symbols: [
+                           {id: 'w1', watchlist_id: 'L-W', symbol: 'NVDA', position: 0}]});
+        // the user's intent: their list should be {NVDA, AAPL} in the cloud.
+        WS._setTestSession(USER, db.client);
+        WS.symbols.list('L-W').then(function () {
+          // Inject failure: insert rejects with an RLS-shaped error. The push's
+          // delete half (no-op here) would still succeed, but the insert fails.
+          var realFrom = db.client.from;
+          db.client.from = function (table) {
+            var api = realFrom(table);
+            if (table === 'watchlist_symbols') {
+              // Replace `insert` / `delete` with no-ops so the FAKE_DB does NOT
+              // mutate db.tables before the terminal rejects (its `insert()`
+              // pushes rows eagerly, before `__run`). The chain
+              // (`.insert()/delete()` + `.eq().in().then(...)`) stays intact
+              // and only the final result rejects with an RLS-shaped error.
+              api.insert = function () { return api; };
+              api.delete = function () { return api; };
+              api.__run = function () {
+                return Promise.resolve({data: null, error: {code: '42501', message: 'rls denied'}});
+              };
+            }
+            return api;
+          };
+          return WS.symbols.push('L-W', ['NVDA', 'AAPL']).then(function (result) {
+            var sync = readSyncBlob('L-W');
+            var failedSaves = wsSaves();
+            // restore the working client so the retry actually writes
+            db.client.from = realFrom;
+            // dispatch the `online` event — watchstore.js's listener flushes
+            // the pending push for this list (per spec (2) trigger (a)).
+            window.dispatchEvent(new CustomEvent('online'));
+            return wait(200).then(function () {
+              restoreChipSpy();
+              var synced = symbolsOf(db, 'L-W');
+              var afterSync = readSyncBlob('L-W');
+              var finalSaves = wsSaves();
+              OUT({firstResult: result,
+                   failedSaves: failedSaves,
+                   finalSaves: finalSaves,
+                   pendingBefore: (sync && sync.pendingPushes) || {},
+                   pendingAfter: (afterSync && afterSync.pendingPushes) || {},
+                   synced: synced});
+            });
+          });
+        });
+        """,
+        {"USER": USER},
+    )
+    # push returned null (the existing swallow) because the failure path still
+    # resolves with null — the marker is the new behaviour on top of that.
+    assert out["firstResult"] is None
+    # A pending marker exists after the failure (per-list, capturing the
+    # user's intent: the local ticker set at enqueue time).
+    assert out["pendingBefore"] is not None, "a failed push must persist a marker"
+    assert "L-W" in out["pendingBefore"], "marker must be keyed by list id"
+    assert sorted(out["pendingBefore"]["L-W"]["tickers"]) == ["AAPL", "NVDA"], \
+        "marker must carry the user's intent (the ticker set being pushed)"
+    # chip was 'offline' on failure (honest copy, no false saved claim).
+    assert "offline" in out["failedSaves"]
+    assert "saved" not in out["failedSaves"], \
+        f"a failed push must never dispatch 'saved'; got {out['failedSaves']}"
+    # After the online event the marker is gone (push retried and succeeded).
+    assert (out["pendingAfter"] or {}) == {}, \
+        f"successful retry must clear the marker; got {out['pendingAfter']}"
+    # The insert actually landed in the cloud.
+    assert sorted(out["synced"]) == ["AAPL", "NVDA"]
+    # And the chip dispatched 'saved' on the successful retry.
+    assert "saved" in out["finalSaves"], \
+        f"a successful retry must dispatch 'saved'; got {out['finalSaves']}"
+
+
+@needs_node
+def test_T3_failed_unwatch_is_tombstoned_and_pull_does_not_resurrect_it():
+    """D05 Q2 #2: a failed unwatch left the cloud row intact while the local
+    blob had dropped the symbol; the next pull() union-merged the cloud row
+    back and then painted `saved`. The fix records a tombstone for the
+    symbol in `mdash.watchlist.v1` and the cloud→local merge EXCLUDES
+    tombstoned symbols; the DELETE is retried with the same triggers as (2);
+    the tombstone is cleared only on DELETE success.
+
+    The cloud row is the one a future reader would have resurrected. This
+    pins the three properties together: the tombstone is list-scoped, the
+    merge respects it, and the retry clears it on success."""
+    out = _ws(
+        CHIP_SPY + SYNC_BLOB + """
+        installChipSpy();
+        var db = makeDb({watchlists: [{id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0}],
+                         watchlist_symbols: [
+                           {id: 'w1', watchlist_id: 'L-W', symbol: 'NVDA', position: 0},
+                           {id: 'w2', watchlist_id: 'L-W', symbol: 'AAPL', position: 1}]});
+        WS._setTestSession(USER, db.client);
+        WS.symbols.list('L-W').then(function () {
+          // Inject DELETE failure: the cloud keeps AAPL even though the local
+          // push says it should not. NVDA survives (no delete needed).
+          var realFrom = db.client.from;
+          db.client.from = function (table) {
+            var api = realFrom(table);
+            if (table === 'watchlist_symbols') {
+              // Replace `insert` / `delete` with no-ops so the FAKE_DB does NOT
+              // mutate db.tables before the terminal rejects (its `insert()`
+              // pushes rows eagerly, before `__run`). The chain
+              // (`.insert()/delete()` + `.eq().in().then(...)`) stays intact
+              // and only the final result rejects with an RLS-shaped error.
+              api.insert = function () { return api; };
+              api.delete = function () { return api; };
+              api.__run = function () {
+                return Promise.resolve({data: null, error: {code: '42501', message: 'rls denied'}});
+              };
+            }
+            return api;
+          };
+          // user removes AAPL from their list — local intent is now [NVDA]
+          return WS.symbols.push('L-W', ['NVDA']).then(function () {
+            var sync = readSyncBlob('L-W');
+            // Snapshot the cloud BEFORE the pull/retry — the retry below will
+            // DELETE AAPL on success, so reading `symbolsOf` after pull would
+            // show the post-retry state, not the post-fail state.
+            var syncedAtFail = symbolsOf(db, 'L-W');
+            // Keep the override ACTIVE for the pull — the spec says the
+            // pull-start retry runs AND the merge must exclude tombstoned
+            // symbols. If the retry succeeds here, both the filter AND the
+            // tombstone are exercised trivially (the cloud is clean by the
+            // time the merge runs); keeping the override active makes the
+            // retry fail too, so the merge has to actually exclude via the
+            // tombstone filter — the property this test pins.
+            return WS.pull().then(function () {
+              var afterPull = readSyncBlob('L-W');
+              var blobItems = (window.WL && window.WL.getBlob
+                               ? window.WL.getBlob().items.map(function (i) { return i.t; })
+                               : []);
+              // Now restore the working client and dispatch `online` so the
+              // retry actually lands (spec (2) trigger (a)).
+              db.client.from = realFrom;
+              window.dispatchEvent(new CustomEvent('online'));
+              return wait(300).then(function () {
+                var finalSaves = wsSaves();
+                var afterRetry = readSyncBlob('L-W');
+                var synced = symbolsOf(db, 'L-W');
+                restoreChipSpy();
+                OUT({tombstoneAfterFail: (sync && sync.tombstones) || {},
+                     syncedAfterFail: syncedAtFail,
+                     tombstoneAfterPull: (afterPull && afterPull.tombstones) || {},
+                     blobAfterPull: blobItems,
+                     syncedAfterRetry: synced,
+                     tombstoneAfterRetry: (afterRetry && afterRetry.tombstones) || {},
+                     finalSaves: finalSaves});
+              });
+            });
+          });
+        });
+        """,
+        {"USER": USER},
+    )
+    # The tombstone is recorded per-list-per-symbol, scoped to L-W.
+    assert out["tombstoneAfterFail"] is not None
+    assert "L-W" in out["tombstoneAfterFail"], "tombstone must be list-scoped"
+    assert "AAPL" in out["tombstoneAfterFail"]["L-W"], \
+        "tombstone must name the removed symbol"
+    # NVDA is not tombstoned (it was not part of the failed delete).
+    assert "NVDA" not in out["tombstoneAfterFail"].get("L-W", {})
+    # Cloud row still present (the DELETE failed) — tombstone is what protects us.
+    assert out["syncedAfterFail"] == ["AAPL", "NVDA"], \
+        "failed DELETE leaves the cloud row intact"
+    # After pull(), the tombstone is still present and the cloud→local merge
+    # did NOT resurrect AAPL.
+    assert out["tombstoneAfterPull"] == out["tombstoneAfterFail"], \
+        "tombstone survives the merge (the merge must not erase it)"
+    assert "AAPL" not in out["blobAfterPull"], \
+        f"the merge must EXCLUDE tombstoned symbols; blob has {out['blobAfterPull']}"
+    # The `online` retry ran the DELETE and the tombstone is now cleared.
+    assert (out["tombstoneAfterRetry"] or {}) == {}, \
+        f"successful DELETE must clear the tombstone; got {out['tombstoneAfterRetry']}"
+    assert out["syncedAfterRetry"] == ["NVDA"], \
+        f"DELETE success must remove the cloud row; got {out['syncedAfterRetry']}"
+
+
+@needs_node
+def test_T4_markers_and_tombstones_are_list_scoped_and_dropped_on_signout():
+    """Spec (2) per-list + spec (3) list-scoped tombstone + the auth-transition
+    law that the rest of watchstore.js's account-scoped state obeys. A signed-in
+    failure on list A must not leak into list B, and a sign-out must clear
+    every marker + tombstone together with the existing cloud-side reset."""
+    out = _ws(
+        CHIP_SPY + SYNC_BLOB + """
+        installChipSpy();
+        var db = makeDb({watchlists: [
+                           {id: 'L-AI', user_id: 'u1', name: 'AI', position: 0},
+                           {id: 'L-GOLD', user_id: 'u1', name: 'Gold Miners', position: 1}],
+                         watchlist_symbols: [
+                           {id: 's1', watchlist_id: 'L-AI', symbol: 'NVDA', position: 0},
+                           {id: 's2', watchlist_id: 'L-GOLD', symbol: 'NEM', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        Promise.all([WS.symbols.list('L-AI'), WS.symbols.list('L-GOLD')]).then(function () {
+          var realFrom = db.client.from;
+          // fail BOTH the push insert AND the push delete so each list gets a
+          // pendingPushes marker AND a tombstone. Replace `insert` / `delete`
+          // with no-ops so the FAKE_DB does NOT mutate db.tables before the
+          // terminal rejects (its `insert()` pushes rows eagerly, before
+          // `__run`). The chain (`.insert()/delete()` + `.eq().in().then(...)`)
+          // stays intact and only the final result rejects.
+          db.client.from = function (table) {
+            var api = realFrom(table);
+            if (table === 'watchlist_symbols') {
+              api.insert = function () { return api; };
+              api.delete = function () { return api; };
+              api.__run = function () {
+                return Promise.resolve({data: null, error: {code: '42501', message: 'rls denied'}});
+              };
+            }
+            return api;
+          };
+          return WS.symbols.push('L-AI', ['NVDA', 'GOOGL']).then(function () {
+            return WS.symbols.push('L-GOLD', []).then(function () {
+              // Each list has its own per-list cache; read both and merge
+              // their outbox state so the assertions see both lists' markers.
+              var aiSync = readSyncBlob('L-AI');
+              var goldSync = readSyncBlob('L-GOLD');
+              var before = {
+                pendingPushes: Object.assign({}, (aiSync && aiSync.pendingPushes) || {},
+                                              (goldSync && goldSync.pendingPushes) || {}),
+                tombstones: Object.assign({}, (aiSync && aiSync.tombstones) || {},
+                                          (goldSync && goldSync.tombstones) || {})
+              };
+              db.client.from = realFrom;
+              // sign out via the canonical onAuthUser — the same seam the
+              // auth-transition tests use — so we exercise the real reset path.
+              WS.onAuthUser(null);
+              var aiAfter = readSyncBlob('L-AI');
+              var goldAfter = readSyncBlob('L-GOLD');
+              var after = {
+                pendingPushes: Object.assign({}, (aiAfter && aiAfter.pendingPushes) || {},
+                                              (goldAfter && goldAfter.pendingPushes) || {}),
+                tombstones: Object.assign({}, (aiAfter && aiAfter.tombstones) || {},
+                                          (goldAfter && goldAfter.tombstones) || {})
+              };
+              restoreChipSpy();
+              OUT({before: before, after: after});
+            });
+          });
+        });
+        """,
+        {"USER": USER},
+    )
+    # Both lists have markers / tombstones pre-signout, each list-scoped.
+    assert out["before"].get("pendingPushes", {}).get("L-AI") is not None
+    assert out["before"].get("pendingPushes", {}).get("L-GOLD") is not None
+    assert out["before"].get("tombstones", {}).get("L-AI", {}) == {}
+    assert "NEM" in out["before"].get("tombstones", {}).get("L-GOLD", {}), \
+        "NEM was already absent from the local set; the empty-push tombstoned it"
+    # Sign-out cleared every marker and every tombstone — these are
+    # account-scoped state, like the rest of the auth-transition law.
+    assert out["after"].get("pendingPushes", {}) == {}
+    assert out["after"].get("tombstones", {}) == {}
+    assert out["after"].get("pendingInserts", {}) == {}
