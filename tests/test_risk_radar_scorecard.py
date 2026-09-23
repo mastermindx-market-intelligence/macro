@@ -729,3 +729,160 @@ def test_caution_persistence_event_view_marks_left_censored_window(monkeypatch):
     assert out["persistent_left_censored_n"] == 1
     assert out["persistent_exact_lead_n"] == 0
     assert out["persistent_median_lead_uncensored_sessions"] is None
+
+
+
+def _attach_prospective_issue(row, *, engine_tag="a", calibration_tag="b",
+                              epoch="2026-09-23-prospective-v1"):
+    import hashlib
+    source_files = {
+        "engine/risk_radar.py": engine_tag * 64,
+        "engine/indicators.py": "1" * 64,
+        "lib/nyse_calendar.py": "2" * 64,
+        "lib/store.py": "3" * 64,
+        "lib/config.py": "4" * 64,
+    }
+    bundle = hashlib.sha256(
+        json.dumps(source_files, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    identity = {
+        "model_contract": "risk_radar_forward_model.v1",
+        "risk_schema": "risk_radar.v2",
+        "engine_source_sha256": engine_tag * 64,
+        "source_bundle_sha256": bundle,
+        "source_files_sha256": source_files,
+        "calibration_sha256": calibration_tag * 64,
+    }
+    fingerprint = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    row["forecast_issue"] = {
+        "contract": "risk_radar_forward_issue.v1",
+        "epoch": epoch,
+        "issued_at": row["logged_at"],
+        "ledger_lane": "nightly",
+        "first_writer_wins": True,
+        **identity,
+        "model_fingerprint": fingerprint,
+    }
+    return fingerprint
+
+
+def test_prospective_probability_never_backfills_legacy_rows():
+    rows = _prob_rows()
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "not_started"
+    assert p["ledger_issue_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["same_model_issued_n"] == 0
+    assert p["issue_excluded"] == {"missing_issue_receipt": len(rows)}
+
+
+def test_prospective_probability_tracks_latest_exact_model_only():
+    rows = _prob_rows(10)
+    first_fp = None
+    latest_fp = None
+    for i, row in enumerate(rows):
+        fp = _attach_prospective_issue(
+            row,
+            engine_tag="a" if i < 5 else "c",
+            calibration_tag="b" if i < 5 else "d",
+        )
+        if i == 0:
+            first_fp = fp
+        if i == len(rows) - 1:
+            latest_fp = fp
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["public_publication_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["model_fingerprints_seen"] == 2
+    assert p["prior_model_issued_n"] == 5
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 5
+    assert p["awaiting_maturity"] == 0
+    assert p["latest_model_fingerprint"] == latest_fp
+    assert latest_fp != first_fp
+    assert p["horizons"]["h21"]["n"] == 5
+    assert p["horizons"]["h21"]["mean_forecast"] == .2
+    assert p["horizons"]["h21"]["brier"] == .04
+
+
+def test_prospective_probability_rejects_tampered_and_tardy_receipts():
+    rows = _prob_rows(7)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["model_fingerprint"] = "0" * 64
+    rows[1]["forecast_issue"]["issued_at"] = "2026-06-10T21:00:00+00:00"
+    rows[1]["logged_at"] = rows[1]["forecast_issue"]["issued_at"]
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 5
+    assert p["issue_excluded"]["model_fingerprint_mismatch"] == 1
+    assert p["issue_excluded"]["issue_not_session_timely"] == 1
+    assert p["horizons"]["h21"]["n"] == 5
+
+
+def test_prospective_ungraded_rows_accrue_without_validation():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+        row["graded"] = None
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 5
+    assert p["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert p["horizons"][h]["n"] == 0
+        assert p["horizons"][h]["brier"] is None
+
+
+def test_prospective_issue_clock_must_match_first_write_clock():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["issued_at"] = "2026-06-01T22:00:00+00:00"
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 4
+    assert p["issue_excluded"]["issue_clock_mismatch"] == 1
+    assert p["current_model_validated"] is False
+
+
+
+def test_prospective_real_issue_receipt_roundtrips_into_scorecard(tmp_path):
+    from engine import risk_radar_audit as rra
+
+    issued_at = "2026-09-23T21:00:00+00:00"
+    snap = {
+        "asof": "2026-09-23",
+        "state": "caution",
+        "alert": False,
+        "dominant_scare": "credit",
+        "top_score": 72.0,
+        "scares": [],
+        "drawdown_prob": {
+            "measure": sc._PROBABILITY_TARGET,
+            "h5": .03, "h10": .08, "h21": .16,
+            "base_h5": .036, "base_h10": .086, "base_h21": .178,
+            "conjunction_n": 1,
+        },
+    }
+    receipt = rra._forward_issue_receipt(root=tmp_path, issued_at=issued_at)
+    assert receipt and receipt["source_bundle_sha256"]
+    row = rra._entry_from_snapshot(
+        snap, issue_receipt=receipt, logged_at=issued_at
+    )
+    assert row is not None
+    p = sc.probability_audit(
+        [row], today=date(2026, 9, 23)
+    )["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 1
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 1
+    assert p["latest_source_bundle_sha256"] == receipt["source_bundle_sha256"]
+    assert p["current_model_validated"] is False
