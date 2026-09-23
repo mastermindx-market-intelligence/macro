@@ -21,19 +21,20 @@
     "regional_banks",
     "reshoring",
     "robotics_automation",
+    "semicap_equipment",
     "silver_miners",
+    "space_economy",
     "us_sector_energy",
     "us_sector_financials",
     "us_sector_health",
     "us_sector_materials",
-    "us_sector_staples",
     "us_sector_tech"
   ],
   "held": [
     "cybersecurity",
-    "us_sector_energy",
-    "energy_complex",
-    "ai_infra"
+    "memory_storage",
+    "ai_infra",
+    "silver_miners"
   ],
   "leader": "cybersecurity",
   "names": {

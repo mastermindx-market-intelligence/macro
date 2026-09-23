@@ -539,10 +539,32 @@ def test_2026_us_sector_changes_preserve_effective_membership_boundaries(members
         ("us_sector_comm", "EA"): ("2023-05-09", "2026-08-05"),
         ("us_sector_comm", "RDDT"): ("2026-08-18", None),
         ("us_sector_realestate", "AVB"): ("2023-05-09", "2026-08-18"),
+        ("us_sector_tech", "P"): ("2026-09-21", None),
+        ("us_sector_comm", "TTD"): ("2023-05-09", "2026-09-21"),
+        ("us_sector_health", "ILMN"): ("2026-09-21", None),
+        ("us_sector_industrials", "BE"): ("2026-09-21", None),
+        ("us_sector_industrials", "BLDR"): ("2023-05-09", "2026-09-21"),
+        ("us_sector_staples", "TAP"): ("2023-05-09", "2026-09-21"),
     }
     for (basket_id, ticker), (added, removed) in expected.items():
         row = _member_row(membership, basket_id, ticker)
         assert row["added"] == added, (basket_id, ticker, row)
         assert row.get("removed") == removed, (basket_id, ticker, row)
 
-    # These rows were curated only when the drift was repaired on Sep 17.\n    # Historical added preserves effective membership; curation knowledge stays separate.\n    for basket_id, ticker in (\n        ("us_sector_industrials", "HONA"),\n        ("us_sector_comm", "APP"),\n        ("us_sector_industrials", "DD"),\n        ("us_sector_industrials", "FERG"),\n        ("us_sector_comm", "RDDT"),\n    ):\n        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-17"\n
+    # These rows were curated only when their drift repair was recorded.
+    # Historical added preserves effective membership; curation knowledge stays separate.
+    for basket_id, ticker in (
+        ("us_sector_industrials", "HONA"),
+        ("us_sector_comm", "APP"),
+        ("us_sector_industrials", "DD"),
+        ("us_sector_industrials", "FERG"),
+        ("us_sector_comm", "RDDT"),
+    ):
+        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-17"
+
+    for basket_id, ticker in (
+        ("us_sector_tech", "P"),
+        ("us_sector_health", "ILMN"),
+        ("us_sector_industrials", "BE"),
+    ):
+        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-23"

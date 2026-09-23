@@ -5812,6 +5812,13 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Technology constituent"
+        },
+        {
+          "ticker": "P",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Technology constituent from 2026-09-21; Everpure added in the September 2026 quarterly rebalance."
         }
       ],
       "changelog": [
@@ -5819,6 +5826,11 @@
           "date": "2026-09-17",
           "action": "remove",
           "note": "APP: GICS reclassified from Information Technology/Application Software to Communication Services/Advertising as of the 2026-07-31 close; old-sector mask closes 2026-08-03."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "P: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -6792,6 +6804,20 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Health Care constituent"
+        },
+        {
+          "ticker": "ILMN",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Health Care constituent from 2026-09-21; Illumina added in the September 2026 quarterly rebalance."
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "ILMN: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -7287,8 +7313,8 @@
           "ticker": "TTD",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Communication Services constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Communication Services constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "TTWO",
@@ -7341,6 +7367,11 @@
           "date": "2026-09-17",
           "action": "add",
           "note": "RDDT: S&P 500 addition effective 2026-08-18, replacing AVB; historical mask starts on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "TTD: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
         }
       ]
     },
@@ -7402,8 +7433,8 @@
           "ticker": "BLDR",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Industrials constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Industrials constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "BR",
@@ -7936,6 +7967,13 @@
           "curated_added": "2026-09-17",
           "removed": null,
           "rationale": "S&P 500 Industrials constituent from 2026-08-05; Ferguson Enterprises replaced Electronic Arts."
+        },
+        {
+          "ticker": "BE",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Industrials constituent from 2026-09-21; Bloom Energy added in the September 2026 quarterly rebalance."
         }
       ],
       "changelog": [
@@ -7953,6 +7991,16 @@
           "date": "2026-09-17",
           "action": "add",
           "note": "FERG: S&P 500 addition effective 2026-08-05, replacing EA; historical mask starts on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "BLDR: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "BE: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -8189,8 +8237,8 @@
           "ticker": "TAP",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Consumer Staples constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Consumer Staples constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "TGT",
@@ -8219,6 +8267,11 @@
           "date": "2026-09-17",
           "action": "remove",
           "note": "CAG: S&P 500 deletion effective 2026-06-30; historical mask closes on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "TAP: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
         }
       ]
     },
