@@ -39,7 +39,7 @@ The July announcement must not create a duplicate Q3 booking. Orders, backlog/RP
 
 1. Preserve Targa's August 6 and August 17 capital-guidance vintages with explicit supersession.
 2. Contract duration is not current revenue or guaranteed profit.
-3. Keep `fee_based`, `dedication`, `fee_floor`, `take_or_pay` protections distinct.
+3. Keep `fee_based`, `dedication`, `fee_floor`, and `take_or_pay` protections distinct.
 4. Do not inherit Bull Run II take-or-pay protection across unrelated assets.
 5. Do not label expected H1-2028 operations as current operations.
 6. Do not double-count one physical molecule moving through multiple integrated assets as multiple units of end demand.
