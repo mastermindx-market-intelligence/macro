@@ -256,6 +256,41 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-aib-detail summary:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-aib-detailbody{margin-top:6px;display:flex;flex-direction:column;gap:7px}
 .oew-aib-dline{display:flex;flex-direction:column;gap:2px;font-size:11px}
+/* ── A-F03-W2-5b · PAYOFF LAB fold (dark + light are two art directions, TP-0
+   2026-08-27). Dark = command center (luminance depth: the accent dots are
+   the brightest thing in the fold, no glow). Light = research workspace
+   (ink weight instead of luminance; hairline discipline). Geometry is shared;
+   only the treatment of the wall/spot/flip marks changes — see html[data-
+   theme="light"] override below.  Inline `left:%` values are data-driven
+   geometry (allowed); nothing else inline. */
+.oew-lab-track{position:relative;height:4px;background:var(--hair);
+  border:1px solid var(--tile);margin-top:6px}
+.oew-lab-track i{position:absolute;display:block}
+.oew-lab-wall{top:-3px;width:1px;height:10px;background:var(--ink-2)}
+.oew-lab-flip{top:-3px;width:1px;height:4px;background:var(--muted)}
+.oew-lab-spot{top:-1px;width:6px;height:6px;background:var(--ink-2);margin-left:-3px}
+.oew-lab-be{top:-2px;width:7px;height:7px;background:var(--oew-accent);margin-left:-3.5px;
+  outline:1px solid var(--tile)}
+.oew-lab-legend{display:flex;justify-content:space-between;gap:var(--s2);
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+  margin-top:4px}
+html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
+.oew-lab-verdict{font-size:12px;font-weight:650;margin:0}
+.oew-lab-row{display:grid;grid-template-columns:auto 1fr;gap:6px var(--s2);
+  font-size:11.5px;align-items:baseline;padding:2px 0}
+.oew-lab-row .k{font-weight:650;color:var(--text)}
+.oew-lab-row .v{color:var(--ink-2);line-height:1.35}
+.oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
+.oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
+/* Light override: ink-weight ticks (2px walls) instead of luminance dots;
+   accent stays the page's light-mode token (set on html[data-theme="light"]
+   .oew above) — no redefinition, no ring, no shadow. */
+html[data-theme="light"] .oew-lab-wall{width:2px}
+html[data-theme="light"] .oew-lab-be{outline:none}
+@media (max-width:640px){
+  .oew-lab-row{grid-template-columns:1fr;gap:2px}
+  .oew-lab-track{width:100%}
+}
 .oew-aib-dline .k{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .oew-aib-dline .v{color:var(--ink-2);line-height:1.4}
 .oew-aib-empty,.oew-aib-degraded{font-size:12.5px;color:var(--ink-2);line-height:1.5}

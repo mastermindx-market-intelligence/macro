@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast.v2",
-  "asof": "2026-09-23T09:55:56Z",
+  "asof": "2026-09-23T21:19:24Z",
   "display_only": true,
   "authority": {
     "can_score": false,
@@ -536,7 +536,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -566,10 +566,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -645,7 +645,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -688,10 +688,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -764,7 +764,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -807,10 +807,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -862,7 +862,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -892,10 +892,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -978,7 +978,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1052,10 +1052,10 @@
       },
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -1125,7 +1125,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1155,10 +1155,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -1180,12 +1180,12 @@
       "days_to": 21,
       "target": "mom_sa_pct",
       "projection": {
-        "point": 0.2741,
-        "p10": 0.0519,
-        "p25": 0.1626,
-        "p50": 0.2725,
-        "p75": 0.4018,
-        "p90": 0.509
+        "point": 0.3368,
+        "p10": 0.1146,
+        "p25": 0.2253,
+        "p50": 0.3351,
+        "p75": 0.4645,
+        "p90": 0.5717
       },
       "confidence": 0.3199,
       "input_completeness": 1.0,
@@ -1197,9 +1197,9 @@
         "market_implied": null
       },
       "surprise_skew": {
-        "sigma": -0.5894,
+        "sigma": -0.2865,
         "sigma_scale_pp": 0.2069,
-        "tag": "cooler",
+        "tag": "inline",
         "inline_band": 0.35
       },
       "pit": {
@@ -1235,7 +1235,7 @@
         "n_train": 355,
         "n_features_used": 9
       },
-      "inputs_hash": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
+      "inputs_hash": "0493d414b182a5eaa8422a8a49288b216fe60325df585a2843357e28e5a04616",
       "input_manifest": {
         "cpi_hl_mom_lag1": 0.3960181843858157,
         "cpi_hl_mom_lag2": 0.07366914435544825,
@@ -1244,13 +1244,13 @@
         "median_mom_lag1": 0.17367381427169093,
         "flex_mom_lag1": 0.810515262,
         "ppi_mom_lag1": 0.5416349967744649,
-        "gasoline_mom": 4.435682602267121,
+        "gasoline_mom": 6.407097092163627,
         "shelter_nowcast": 0.11787371544095981
       },
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1258,7 +1258,7 @@
       "components": [
         {
           "name": "energy",
-          "contrib_pp": 0.130242,
+          "contrib_pp": 0.19293,
           "confidence": 1.0
         },
         {
@@ -1277,12 +1277,12 @@
           "confidence": 0.6
         }
       ],
-      "confidence_v2": 0.593,
+      "confidence_v2": 0.6825,
       "confidence_components_v2": {
-        "w_known": 0.5853,
-        "w_proxy": 0.0129,
-        "w_residual": 0.4018,
-        "c_raw": 0.593,
+        "w_known": 0.6764,
+        "w_proxy": 0.0101,
+        "w_residual": 0.3135,
+        "c_raw": 0.6825,
         "input_completeness": 1.0
       },
       "revision_risk": null,
@@ -1290,15 +1290,15 @@
       "target_epoch": "legacy_cross_vintage_initial_levels_v0",
       "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
       "surprise_distribution": {
-        "p_hot": 0.49,
-        "p_cold": 0.21,
-        "p_inline": 0.3
+        "p_hot": 0.63,
+        "p_cold": 0.13,
+        "p_inline": 0.24
       },
       "market_implied": null,
       "expectation_read": {
         "tag": "below_expectations",
-        "delta_pp": -0.1609,
-        "standardized": -0.78,
+        "delta_pp": -0.0982,
+        "standardized": -0.47,
         "expectation_median": 0.435,
         "sources": [
           "cleveland_nowcast"
@@ -1328,10 +1328,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -1346,32 +1346,32 @@
       "shadows": {
         "v3_factor": {
           "display_only": true,
-          "inputs_hash": "1da8842276f4435ca4995cd932735c841e470fb7354452adceb6e8ca48a983a1",
+          "inputs_hash": "454cefef45b7eb65c70a006b18dbf7091ff73f87191c3727cf9abd4d4bed0b55",
           "model_epoch": "v3_factor_legacy_target_v1",
           "target_epoch": "legacy_cross_vintage_initial_levels_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "point": 0.3844,
-          "p10": 0.1329,
-          "p25": 0.2746,
-          "p50": 0.4089,
-          "p75": 0.5472,
-          "p90": 0.6421,
+          "point": 0.4233,
+          "p10": 0.1718,
+          "p25": 0.3136,
+          "p50": 0.4479,
+          "p75": 0.5861,
+          "p90": 0.6811,
           "confidence": null,
           "input_completeness": 0.9091
         },
         "cpi_bridge": {
           "display_only": true,
-          "inputs_hash": "8282f851156ef1e9a1bb037d7720106fcfd784c924741687ff16cb50f7b4dfc7",
+          "inputs_hash": "80dcc9d79e2d9dbb16908ded42219d8f743ffce64d2557e55779fea41a5a72d3",
           "model_epoch": "cpi_bridge_legacy_target_v1",
           "target_epoch": "legacy_cross_vintage_initial_levels_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "point": 0.3129,
+          "point": 0.37,
           "components": [
             {
               "block": "energy_gasoline",
-              "mom_est": 4.4357,
+              "mom_est": 6.4071,
               "weight": 2.895,
-              "contribution_pp": 0.128413,
+              "contribution_pp": 0.185485,
               "confidence": 1.0,
               "prior_only": false,
               "legs_used": 1,
@@ -1455,7 +1455,7 @@
           "prior_driven_share": 0.06486,
           "coverage_residual_pp": 0.0,
           "weight_coverage": 0.9351,
-          "confidence": 0.6817,
+          "confidence": 0.72,
           "degraded_blocks": [],
           "known_scope_mismatches": [
             {
@@ -1470,25 +1470,25 @@
         },
         "mf_energy": {
           "display_only": true,
-          "inputs_hash": "be47fc377007fa2d484cfaa8186e872fe2e5b46a44402a13bf641cdb753b4e4a",
+          "inputs_hash": "db8d478d1414bf2acdeb8f172253850856ac37cde542c36cc1fc9d6906ff7653",
           "model_epoch": "mf_energy_legacy_target_v1",
           "target_epoch": "legacy_cross_vintage_initial_levels_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "point": 0.48,
-          "p10": 0.3228,
-          "p25": 0.4188,
-          "p50": 0.4927,
-          "p75": 0.5973,
-          "p90": 0.6874,
+          "point": 0.5677,
+          "p10": 0.4105,
+          "p25": 0.5065,
+          "p50": 0.5804,
+          "p75": 0.685,
+          "p90": 0.7751,
           "confidence": 0.437,
           "input_completeness": 1.0,
           "mf_energy_components": {
-            "gasoline_mom": 4.435682602267121,
-            "energy_contrib": 0.17456989898371666,
+            "gasoline_mom": 6.407097092163627,
+            "energy_contrib": 0.2521565207542577,
             "exenergy_ar": 0.2934365402984294,
             "gasoline_ri_weight": 2.895,
             "gamma": 0.039355813893106835,
-            "n_gasoline_weeks_published": 2,
+            "n_gasoline_weeks_published": 3,
             "n_gasoline_weeks_projected": 0,
             "gasoline_wti_beta_slope": 0.00410449832757749,
             "gasoline_wti_beta_intercept": 0.0014029875849475477,
@@ -1497,12 +1497,12 @@
         }
       },
       "combined": {
-        "combined_point": 0.377276,
-        "p10": 0.094882,
-        "p25": 0.228653,
-        "p50": 0.377276,
-        "p75": 0.525899,
-        "p90": 0.659671,
+        "combined_point": 0.426556,
+        "p10": 0.142691,
+        "p25": 0.277159,
+        "p50": 0.426556,
+        "p75": 0.575953,
+        "p90": 0.710422,
         "combined_components": {
           "inputs_used": [
             "champion",
@@ -1512,10 +1512,10 @@
             "cleveland"
           ],
           "points": {
-            "champion": 0.2741,
-            "v3_factor": 0.3844,
-            "cpi_bridge": 0.3129,
-            "mf_energy": 0.48,
+            "champion": 0.3368,
+            "v3_factor": 0.4233,
+            "cpi_bridge": 0.37,
+            "mf_energy": 0.5677,
             "cleveland": 0.434981
           },
           "weights": {
@@ -1541,20 +1541,20 @@
           },
           "MAE_pool": null,
           "sigma_champion": 0.2069,
-          "Var_w": 0.00574447,
-          "sigma_combined": 0.220345,
+          "Var_w": 0.00625159,
+          "sigma_combined": 0.221493,
           "cold_start": true,
           "k": 3.0,
           "input_hashes": {
-            "champion": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309",
-            "v3_factor": "1da8842276f4435ca4995cd932735c841e470fb7354452adceb6e8ca48a983a1",
-            "cpi_bridge": "8282f851156ef1e9a1bb037d7720106fcfd784c924741687ff16cb50f7b4dfc7",
-            "mf_energy": "be47fc377007fa2d484cfaa8186e872fe2e5b46a44402a13bf641cdb753b4e4a",
+            "champion": "0493d414b182a5eaa8422a8a49288b216fe60325df585a2843357e28e5a04616",
+            "v3_factor": "454cefef45b7eb65c70a006b18dbf7091ff73f87191c3727cf9abd4d4bed0b55",
+            "cpi_bridge": "80dcc9d79e2d9dbb16908ded42219d8f743ffce64d2557e55779fea41a5a72d3",
+            "mf_energy": "db8d478d1414bf2acdeb8f172253850856ac37cde542c36cc1fc9d6906ff7653",
             "cleveland": "f1b9c133e95f96873d52ca8c19985e2dc68c00e33777706aed32c78cf8566008"
           }
         },
         "n_scored_basis": 0,
-        "inputs_hash": "449c494c12556558e9fd55c610f6bb2a7fc2bafae629f492ed33ff169402f62d",
+        "inputs_hash": "9b6ba9e3977cae992989987fad7a70eaf44d3cd2fdb9db065b43f8455f7f1cc7",
         "model_epoch": "combined_v1_legacy_target_v1",
         "target_epoch": "mixed_legacy_cross_vintage_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -1648,7 +1648,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1728,10 +1728,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -1826,12 +1826,12 @@
       "days_to": 22,
       "target": "mom_sa_pct",
       "projection": {
-        "point": 0.2387,
-        "p10": -0.4799,
-        "p25": 0.0075,
-        "p50": 0.3563,
-        "p75": 0.6707,
-        "p90": 0.9339
+        "point": 0.3218,
+        "p10": -0.3967,
+        "p25": 0.0906,
+        "p50": 0.4395,
+        "p75": 0.7538,
+        "p90": 1.017
       },
       "confidence": 0.1642,
       "input_completeness": 1.0,
@@ -1843,7 +1843,7 @@
         "market_implied": null
       },
       "surprise_skew": {
-        "sigma": -0.7299,
+        "sigma": -0.5296,
         "sigma_scale_pp": 0.4151,
         "tag": "cooler",
         "inline_band": 0.35
@@ -1861,18 +1861,18 @@
         "n_train": 150,
         "n_features_used": 5
       },
-      "inputs_hash": "259daaae210869dc70abd0a5e6f2a8c1c7cce570a2d3c5b1a7323fc8f099bf85",
+      "inputs_hash": "096d54d0e10f5879a92fe9c99e87f98a3e62c104dc9fc20b09eaffb56aa06899",
       "input_manifest": {
         "ppi_hl_mom_lag1": 0.5416349967744649,
         "ppi_hl_mom_lag2": -0.0019161248291599264,
         "ppi_hl_mom_lag3": -0.6932683830291886,
-        "gasoline_mom": 4.435682602267121,
+        "gasoline_mom": 6.407097092163627,
         "ppifes_mom_lag1": 0.25380382000648183
       },
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1885,9 +1885,9 @@
       "target_epoch": "legacy_cross_vintage_initial_levels_v0",
       "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
       "surprise_distribution": {
-        "p_hot": 0.47,
-        "p_cold": 0.32,
-        "p_inline": 0.21
+        "p_hot": 0.54,
+        "p_cold": 0.26,
+        "p_inline": 0.2
       },
       "market_implied": null,
       "expectation_read": null,
@@ -1906,10 +1906,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -1961,7 +1961,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -1991,10 +1991,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2046,7 +2046,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -2076,10 +2076,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2101,14 +2101,14 @@
       "days_to": 36,
       "target": "mom_sa_pct",
       "projection": {
-        "point": 0.3042,
-        "p10": 0.1774,
-        "p25": 0.2471,
-        "p50": 0.3017,
-        "p75": 0.3636,
-        "p90": 0.4269
+        "point": 0.309,
+        "p10": 0.1821,
+        "p25": 0.2518,
+        "p50": 0.3065,
+        "p75": 0.3684,
+        "p90": 0.4317
       },
-      "confidence": 0.9062,
+      "confidence": 0.9107,
       "input_completeness": 1.0,
       "benchmark_set": {
         "naive_prior": 0.2032,
@@ -2118,7 +2118,7 @@
         "market_implied": null
       },
       "surprise_skew": {
-        "sigma": 0.5708,
+        "sigma": 0.5978,
         "sigma_scale_pp": 0.177,
         "tag": "hotter",
         "inline_band": 0.35
@@ -2141,7 +2141,7 @@
         "n_train": 307,
         "n_features_used": 8
       },
-      "inputs_hash": "eb7b11f581d79cac1678dd8b9998e74e54eb447e604a4790c0706c72415b1f01",
+      "inputs_hash": "266679593134b21cacb859aca3c8bb963fa8ae9d60d0ae66c1a711b56fc95c7c",
       "input_manifest": {
         "pce_hl_mom_lag1": 0.20320871894787818,
         "pce_hl_mom_lag2": -0.10264052247827005,
@@ -2150,12 +2150,12 @@
         "median_mom_lag1": 0.17367381427169093,
         "flex_mom_lag1": 0.810515262,
         "ppifis_mom_lag1": 0.5416349967744649,
-        "gasoline_mom": 4.435682602267121
+        "gasoline_mom": 6.407097092163627
       },
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -2168,15 +2168,15 @@
       "target_epoch": "legacy_cross_vintage_initial_levels_v0",
       "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
       "surprise_distribution": {
-        "p_hot": 0.67,
-        "p_cold": 0.02,
-        "p_inline": 0.31
+        "p_hot": 0.69,
+        "p_cold": 0.01,
+        "p_inline": 0.3
       },
       "market_implied": null,
       "expectation_read": {
         "tag": "below_expectations",
-        "delta_pp": -0.099,
-        "standardized": -0.56,
+        "delta_pp": -0.0942,
+        "standardized": -0.53,
         "expectation_median": 0.4032,
         "sources": [
           "cleveland_nowcast"
@@ -2198,10 +2198,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2274,7 +2274,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -2317,10 +2317,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2372,7 +2372,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -2402,10 +2402,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2463,7 +2463,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -1,
+        "gap_bp": 0,
         "implied_cuts_12m": -3.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "tightening"
@@ -2493,10 +2493,10 @@
       "print_integrity_regime": "normal",
       "event_window_ctx": {
         "schema": "event_window.release_ctx.v1",
-        "phase": "post_fomc_3d",
+        "phase": "quiet",
         "active_collisions": [],
-        "phase_read_en": "post fomc 3d: no statistically robust calendar edge measured (display context).",
-        "phase_read_zh": "post_fomc_3d\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
+        "phase_read_en": "quiet: no statistically robust calendar edge measured (display context).",
+        "phase_read_zh": "quiet\u9636\u6bb5\uff1a\u672a\u6d4b\u5f97\u7edf\u8ba1\u663e\u8457\u7684\u65e5\u5386\u6548\u5e94\uff08\u4ec5\u4f9b\u53c2\u8003\uff09\u3002",
         "td_to_release": null,
         "ex_ante": null,
         "is_context_only": true
@@ -2569,8 +2569,8 @@
     "nightly_gap_days": 0,
     "past_due_unscored": [],
     "enricher_staleness": {
-      "kalshi_releases_asof": "2026-09-22",
-      "cleveland_nowcast_asof": "2026-09-22",
+      "kalshi_releases_asof": "2026-09-23",
+      "cleveland_nowcast_asof": "2026-09-23",
       "work_stoppages_asof": "2024-10-01",
       "print_integrity_asof": "2024-01-01"
     },
