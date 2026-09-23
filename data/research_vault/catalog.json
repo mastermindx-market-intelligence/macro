@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T04:23:06.107457+00:00",
-  "count": 2685,
+  "generated_at": "2026-09-23T05:53:26.129461+00:00",
+  "count": 2689,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -655,6 +655,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-u3hcvzobcog-444b7b",
+      "title": "Atlas Copco (ATCOa.ST) Barometer and thoughts into 3Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T18:38:07Z",
+      "summary_points": [
+        "Atlas Copco EBIT/Sales Upgrade: Goldman Sachs raises FY26/27 adj.",
+        "EBIT by 1%/4% and sales by 1%/4% driven by semiconductor capex upgrades, with Vacuum Technique 2026E sales growth upgraded to 21.3% and EBIT margin to 19.2%.",
+        "EBIT & Margin Outperformance: 2026E EBIT (10,027 SEK mm) and adj.",
+        "EBIT margin (21.5%) exceed Visible Alpha consensus by 1.7% and 0.5%, reflecting stronger near-term profitability.",
+        "Semiconductor Capex Surge: GS Semis capex tracker upgraded (+5.8pp to 29% FY25-29E CAGR) directly supports Vacuum Technique revenue growth and margin expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-c2moug1j7fy-a11139",
       "title": "GS MidDay Color US Equities Mid Day Color 22 Sep 2026",
       "institution": "S&T",
@@ -854,6 +875,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-egjhcforpoa-5c6596",
+      "title": "China Property Weekly Wrap Week 38 Wrap sequentially stronger volume growth echoing seasonality, yet moderating leading in",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T13:39:11Z",
+      "summary_points": [
+        "Sellers' CAI YoY Drop (-5.5pp): Critical red flag signaling structural pricing weakness, indicating deteriorating market health and potential for further correction in China's real estate sector.",
+        "Inventory Contraction (-7.6% from end-25): Supply-side weakness confirmed with inventory months at 26.4 (vs. 2 avg Aug-26), highlighting acute oversupply pressure relative to 2025 benchmarks.",
+        "SOE vs.",
+        "Non-SOE Valuation Disparity: SOEs trade at 0.4X P/B (41% discount to NAV) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gl6r64rsfiu-5014e0",
       "title": "Alibaba Group (BABA) Alibaba Cloud APSARA Key Takeaways",
       "institution": "Goldman Sachs",
@@ -956,6 +997,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-oh0ck3oc1nk-182c7c",
+      "title": "GS Duttenhoefer BEST of DAY 1 at our German Corp Conference in Munich 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:55Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rhdcclisqiz-5702e6",
       "title": "GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
       "institution": "S&T",
@@ -1002,6 +1058,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ix3dlv6adtk-f47aaf",
+      "title": "GS Johnstone GS TMT SPEC SALES Muse mania and readacross debate IFX Springer Sunrise 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-22T11:45:45Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
