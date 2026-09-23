@@ -1,0 +1,323 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "date": "2026-09-23",
+  "command": "python /mnt/data/mining_research/check_asset_research.py",
+  "classification": "RESEARCH_ARITHMETIC_AND_DOCUMENT_INTEGRITY_ONLY",
+  "document": "MINING_COPPER_PRECIOUS_ASSET_DOSSIERS_2026-09-23.md",
+  "document_words": 6065,
+  "document_bytes": 46247,
+  "document_sha256": "ce414e3668b56ad079603c6d4d817e9caca6554f8940fe5ee915d4f7843dd08d",
+  "document_git_blob_sha1": "52ac589b7ab6e220c44deeb143ae33edcd550fde",
+  "total": 44,
+  "passed": 44,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "source_index_21_unique",
+      "passed": true,
+      "evidence": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18",
+        "A19",
+        "A20",
+        "A21"
+      ]
+    },
+    {
+      "name": "source_references_resolve",
+      "passed": true,
+      "evidence": "All A references resolve"
+    },
+    {
+      "name": "twenty_prospective_requirements",
+      "passed": true,
+      "evidence": [
+        "MA-01",
+        "MA-02",
+        "MA-03",
+        "MA-04",
+        "MA-05",
+        "MA-06",
+        "MA-07",
+        "MA-08",
+        "MA-09",
+        "MA-10",
+        "MA-11",
+        "MA-12",
+        "MA-13",
+        "MA-14",
+        "MA-15",
+        "MA-16",
+        "MA-17",
+        "MA-18",
+        "MA-19",
+        "MA-20"
+      ]
+    },
+    {
+      "name": "21_unique_primary_source_urls",
+      "passed": true,
+      "evidence": 21
+    },
+    {
+      "name": "seven_dossiers",
+      "passed": true,
+      "evidence": "Seven case groups"
+    },
+    {
+      "name": "research_only_and_handoff_held",
+      "passed": true,
+      "evidence": "No implementation acceptance"
+    },
+    {
+      "name": "procedure_pin_and_same_carrier",
+      "passed": true,
+      "evidence": "Pinned existing carrier"
+    },
+    {
+      "name": "ore_domains_sum",
+      "passed": true,
+      "evidence": "A05, thousand tonnes"
+    },
+    {
+      "name": "copper_reconstruction",
+      "passed": true,
+      "evidence": "109.137024"
+    },
+    {
+      "name": "zinc_correct_domain",
+      "passed": true,
+      "evidence": "52.0936908"
+    },
+    {
+      "name": "wrong_domain_counterexample",
+      "passed": true,
+      "evidence": "3.075027995520716685330347144"
+    },
+    {
+      "name": "zinc_reported_residual_preserved",
+      "passed": true,
+      "evidence": "-3.530202222222222222222222220"
+    },
+    {
+      "name": "hypothetical_rounding_intervals_do_not_reconcile",
+      "passed": true,
+      "evidence": {
+        "model": "independent nearest rounding, NOT issuer-confirmed",
+        "reconstruction_kt": [
+          "51.9050559375",
+          "52.2825550625"
+        ],
+        "reported_rounding_interval_kt": [
+          "53.95",
+          "54.05"
+        ]
+      }
+    },
+    {
+      "name": "Teck_illustrative_share",
+      "passed": true,
+      "evidence": "A05: gross production times interest, not a cash entitlement"
+    },
+    {
+      "name": "Morenci_double_attribution_counterexample",
+      "passed": true,
+      "evidence": "Wrong second multiplication; not the reported value"
+    },
+    {
+      "name": "reject_second_attribution",
+      "passed": true,
+      "evidence": "Do not apply ownership again; reporting basis is not gross"
+    },
+    {
+      "name": "gross_attribution_example",
+      "passed": true,
+      "evidence": "Synthetic quantity"
+    },
+    {
+      "name": "portfolio_attribution_reconciliation",
+      "passed": true,
+      "evidence": "A02: million recoverable pounds"
+    },
+    {
+      "name": "four_conditional_stream_states",
+      "passed": true,
+      "evidence": [
+        "0.64125",
+        "0.5400",
+        "0.52875",
+        "0.4275"
+      ]
+    },
+    {
+      "name": "within_period_threshold_split",
+      "passed": true,
+      "evidence": "235833.3333333333333333333333"
+    },
+    {
+      "name": "zero_threshold_uses_post_rate",
+      "passed": true,
+      "evidence": "Synthetic delivered ounces"
+    },
+    {
+      "name": "all_high_rate_when_balance_suffices",
+      "passed": true,
+      "evidence": "Conditional only"
+    },
+    {
+      "name": "unknown_threshold_is_not_pre_threshold",
+      "passed": true,
+      "evidence": "Unknown threshold state"
+    },
+    {
+      "name": "invalid_payability_rejected",
+      "passed": true,
+      "evidence": "Invalid contractual fraction"
+    },
+    {
+      "name": "Tia_progress_percentage_points",
+      "passed": true,
+      "evidence": "A11/A12; not a schedule extrapolation"
+    },
+    {
+      "name": "Tia_unspent_budget_not_funding_gap",
+      "passed": true,
+      "evidence": "A12/A13; USD millions, selected observations"
+    },
+    {
+      "name": "company_bond_simple_coupon",
+      "passed": true,
+      "evidence": "A14; USD millions/year, not Tia-specific"
+    },
+    {
+      "name": "Detour_MI_boundaries",
+      "passed": true,
+      "evidence": "A16; million ounces, excluding/including Zone58N"
+    },
+    {
+      "name": "Detour_inferred_boundaries",
+      "passed": true,
+      "evidence": "A16; no reserve addition"
+    },
+    {
+      "name": "Detour_headline_rounding",
+      "passed": true,
+      "evidence": "Same source date, different component boundary"
+    },
+    {
+      "name": "hypothetical_displaced_feed",
+      "passed": true,
+      "evidence": "Synthetic USD/day, no actual mine forecast"
+    },
+    {
+      "name": "hypothetical_cash_timing",
+      "passed": true,
+      "evidence": "23.53780336296234270834420690"
+    },
+    {
+      "name": "matched_expectation_difference",
+      "passed": true,
+      "evidence": "A20/A21; presently reconstructed, not native PIT"
+    },
+    {
+      "name": "year_on_year_growth",
+      "passed": true,
+      "evidence": "A20; a different denominator"
+    },
+    {
+      "name": "result_below_sample_high",
+      "passed": true,
+      "evidence": "A21; not a probability statement"
+    },
+    {
+      "name": "mismatched_metric_rejected",
+      "passed": true,
+      "evidence": "Incompatible expectation comparison"
+    },
+    {
+      "name": "mismatched_period_rejected",
+      "passed": true,
+      "evidence": "Incompatible expectation comparison"
+    },
+    {
+      "name": "mismatched_currency_rejected",
+      "passed": true,
+      "evidence": "Incompatible expectation comparison"
+    },
+    {
+      "name": "nonpositive_comparator_rejected",
+      "passed": true,
+      "evidence": "Finite observations and a positive baseline are required"
+    },
+    {
+      "name": "historical_retrieval_limit_preserved",
+      "passed": true,
+      "evidence": "Publisher as-of != native archived knowledge"
+    },
+    {
+      "name": "report_copper_rounding",
+      "passed": true,
+      "evidence": "109.137"
+    },
+    {
+      "name": "report_zinc_rounding",
+      "passed": true,
+      "evidence": "52.094"
+    },
+    {
+      "name": "report_wrong_domain_rounding",
+      "passed": true,
+      "evidence": "160.190"
+    },
+    {
+      "name": "report_DCF_rounding",
+      "passed": true,
+      "evidence": "23.538"
+    }
+  ],
+  "prepublication_corrections": {
+    "initial_result": "41/44; three draft-rounding text checks failed",
+    "cause": "Manually transcribed approximate results did not match Decimal round-half-up calculations",
+    "corrected_report_values": [
+      "52.094 thousand zinc tonnes",
+      "160.190 thousand wrong-domain zinc tonnes",
+      "23.538 million hypothetical timing value"
+    ],
+    "issuer_inputs_changed": false,
+    "checks_weakened": false
+  },
+  "known_unresolved": [
+    "Antamina reported zinc production residual",
+    "actual stream threshold balances",
+    "full reserve/resource overlap convention",
+    "native historical consensus retention"
+  ],
+  "not_claimed": [
+    "product tests",
+    "CI",
+    "independent review",
+    "issuer accounting reconciliation",
+    "investment validation",
+    "source-rights acceptance",
+    "Agent OS validation",
+    "browser proof",
+    "implementation",
+    "Fable dispatch"
+  ]
+}
