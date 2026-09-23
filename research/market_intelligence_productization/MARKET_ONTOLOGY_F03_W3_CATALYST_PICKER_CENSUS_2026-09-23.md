@@ -1,5 +1,5 @@
 ---
-title: "[MO-A3] A-F03-W3-0 — catalyst→exposure→structure (Catalyst Picker) census"
+title: "[MO-A3] A-F03-W3-0: catalyst→exposure→structure (Catalyst Picker) census (DRAFT, evidence only - not for merge)"
 packet: A-F03-W3-0 (evidence only; not for merge)
 seat: Meta-CEO A
 date: 2026-09-23
@@ -17,9 +17,9 @@ On this worktree (parent `d90de2d0c9`, which is also the merge-base with `origin
 
 Event-plane shape is the dict built at `engine/live_flow.py:1068-1111`: `id`, `ts`, `observed_at`, `root`, `group`, `group_zh`, `right`, `exp`, `strike`, `dte`, `dte_bucket`, `mny_bucket`, `side`, `n_prints`, `size`, `avg_price`, `premium`, `premium_z`, `baseline_source`, `selection_rule`, `selection_floor_usd`, `selection_root_class`, `vol_gt_oi`, `vol_gt_oi_ratio`, `oi_vintage`, `repeated`, `zerodte`, `signing_source`, `swept`, `microstructure`. `session_date` is not on that dict. `engine/options_catalyst_link.py:217-221` says live_flow hashes the session into `id` and the caller must pass `session_date`.
 
-Catalyst table: `bind_event` does not read an earnings table. It imports only `STALE_AGE_TD` (`engine/options_catalyst_link.py:48`; value `10` at `engine/earnings_catalyst.py:54`). The caller injects `CatalystCandidate` rows (`engine/options_catalyst_link.py:118-127`: `kind`, `date`, `source`, `artifact`, `stale`, `known_as_of`, `as_of_age_td`, `label`, `locator`). Staleness text points at `fields_from_assessment` (`engine/options_catalyst_link.py:25-28`, `engine/earnings_catalyst.py:167-183`): `stale=False` is fresh only when an age accompanies it. Macro candidates ride `CalendarContext.macro_catalysts` (`engine/options_catalyst_link.py:131-136`). `third_friday` and `is_quad_witching` are imported from `engine/event_calendar.py:49` and defined at `engine/event_calendar.py:132` and `engine/event_calendar.py:136`.
+Catalyst table: `bind_event` does not read an earnings table. It imports only `STALE_AGE_TD` (`engine/options_catalyst_link.py:48`; value `10` at `engine/earnings_catalyst.py:54`). The caller injects `CatalystCandidate` rows (`engine/options_catalyst_link.py:118-127`: `kind`, `date`, `source`, `artifact`, `stale`, `known_as_of`, `as_of_age_td`, `label`, `locator`). Staleness text points at `fields_from_assessment` (`engine/options_catalyst_link.py:25-28`, `engine/earnings_catalyst.py:167-183`): `stale=False` is fresh only when an age accompanies it. Macro candidates ride `CalendarContext.macro_catalysts` (`engine/options_catalyst_link.py:131-136`). `third_friday` and `is_quad_witching` are imported at `engine/options_catalyst_link.py:49` (`from engine.event_calendar import is_quad_witching, third_friday`). `engine/event_calendar.py:49` is the comment `# Fed-published 2026 FOMC decision dates. SEP/dot-plot meetings are Mar/Jun/Sep/Dec.` It is not the import. The definitions are `third_friday` at `engine/event_calendar.py:132` and `is_quad_witching` at `engine/event_calendar.py:136`.
 
-`known_symbols` is an injected set. Membership is exact `root in known_symbols` after `.upper()` (`engine/options_catalyst_link.py:18-23`, `engine/options_catalyst_link.py:507-513`). `symbols_on_plane` (`engine/stock_identity/plane.py:87-92`) is the cited authority for that set and is not called inside `bind_event`.
+`known_symbols` is an injected set. The docstring at `engine/options_catalyst_link.py:18-23` says membership is exact after `.upper()`. The `.upper()` is `root = str(root_raw).upper()` at `engine/options_catalyst_link.py:167`, inside `contract_key`. `bind_event` calls `contract_key` at `engine/options_catalyst_link.py:500`. The membership test at `engine/options_catalyst_link.py:507-513` is `root_norm = root` then `if root_norm in known_symbols`. Those lines do not call `.upper()`. `symbols_on_plane` (`engine/stock_identity/plane.py:87-92`) is the cited authority for that set and is not called inside `bind_event`.
 
 Outputs: frozen keys at `engine/options_catalyst_link.py:88-109`, written at `engine/options_catalyst_link.py:663-701`. Drift raises at `engine/options_catalyst_link.py:703-709`. Record fields: `schema`, `spec_version`, `session_date`, `asof`, `asof_vs_session`, `horizon_days`, `event_id`, `contract` (`root`, `exp`, `strike`, `right`), `binding_state`, `identity` (`state`, `resolved_symbol`, `authority_source`, `match`), `catalyst`, `catalyst_state`, `catalyst_reason`, `candidates`, `expiry`, `evidence`, `source_rights` = `research_expression_only` (`engine/options_catalyst_link.py:698`), `authority` = `authority_block()` (`engine/options_catalyst_link.py:699`), `is_context_only` True (`engine/options_catalyst_link.py:700`).
 
@@ -42,7 +42,7 @@ Reduce order is identity, then expiry, then catalyst (`engine/options_catalyst_l
 
 Callers: a walk of `engine/`, `scripts/`, `templates/`, and `tests/` for the module name in Python, Jinja, JS, HTML, YAML, and Markdown found the import only in `tests/test_options_catalyst_link.py`. `agentos/handoffs/MARKET-OS-2026-09-19-hold-docket.md:40` names the path inside an `ls` command. `.github/ci/legacy-jobs.yml:2336` lists `engine/options_catalyst_link.py` as a `flow-surface` path, not a runtime call. No `scripts/` module calls `bind_event` or `bind_events`.
 
-Who produces live-flow events: no `.github/workflows/*.yml` step executes `scripts/live_flow_poller.py` (path hits are CI path filters only: `.github/workflows/ci.yml:526` and `.github/workflows/ci.yml:1984`). The producer file is `ops/launchd/com.mastermind.liveflow.plist` (weekday autostart 09:25 ET, self-exit after 16:05 ET; header comment). Local stage is `config.data_dir() / "live_flow_state" / "events" / "{session}.jsonl"` (`scripts/live_flow_poller.py:96-97`, `scripts/live_flow_poller.py:475-477`, `scripts/live_flow_poller.py:576-580`). The test locator matches that shape: `tests/test_options_catalyst_link.py:709-710` expects `data/live_flow_state/events/2026-09-04.jsonl#…`. Upload key is `live_flow/events/{date}.jsonl` (`scripts/live_flow_poller.py:92-93`, `scripts/live_flow_poller.py:2087-2089`). Nightly readers of that R2 stage, not producers of it: `.github/workflows/daily.yml:3302-3321` (`build_options_signal_episode` comment at `.github/workflows/daily.yml:3304`), surface stamps at `.github/workflows/daily.yml:3256-3260`, and `site/flow/index.json` mirrored to `live_flow/flow_idx.json` at `.github/workflows/daily.yml:3430-3432`. Sparse checkout omits `data/` and `site/` (`config/sparse_worktree.json` `exclude_dirs`; `git sparse-checkout` shows `!/data/` and `!/site/`). `write_links` refuses a repo `data/` path (`engine/options_catalyst_link.py:739-749`). A sparse worktree does not contain the event stage.
+Who produces live-flow events: no `.github/workflows/*.yml` step executes `scripts/live_flow_poller.py` (path hits are CI path filters only: `.github/workflows/ci.yml:526` and `.github/workflows/ci.yml:1984`). The producer file is `ops/launchd/com.mastermind.liveflow.plist` (weekday autostart 09:25 ET, self-exit after 16:05 ET; header comment). Local stage is `config.data_dir() / "live_flow_state" / "events" / "{session}.jsonl"`. `scripts/live_flow_poller.py:96` is `OUT_DIR = "live_flow_out"`. It is not the event path. `scripts/live_flow_poller.py:97` is `STATE_DIR = "live_flow_state"`. `_state_dir` returns `config.data_dir() / STATE_DIR` at `scripts/live_flow_poller.py:475-477`. `_event_stage_path` appends `"events" / f"{session_date}.jsonl"` at `scripts/live_flow_poller.py:576-580`. The test locator matches that shape: `tests/test_options_catalyst_link.py:709-710` expects `data/live_flow_state/events/2026-09-04.jsonl#…`. Upload key is `live_flow/events/{date}.jsonl`. `scripts/live_flow_poller.py:92` is the comment `# R2 live_flow prefix`. `scripts/live_flow_poller.py:93` is `R2_PREFIX = "live_flow/"`. The upload joins that prefix with `events/{candidate}.jsonl` at `scripts/live_flow_poller.py:2087-2089`. The nightly comment that names that events object is `.github/workflows/daily.yml:3304` (`live_flow/events/{DATE}.jsonl`) on the `build_options_signal_episode` step, run at `.github/workflows/daily.yml:3321`. `.github/workflows/daily.yml:3257-3258` names `live_flow/surface/{ROOT}/{DATE}/` stamps for session digest. It does not name the events jsonl. `.github/workflows/daily.yml:3430-3432` mirrors `site/flow/index.json` to `live_flow/flow_idx.json`. That mirror is not a read of the events stage. Sparse checkout omits `data/` and `site/` (`config/sparse_worktree.json` `exclude_dirs`; `git sparse-checkout` shows `!/data/` and `!/site/`). `write_links` refuses a repo `data/` path (`engine/options_catalyst_link.py:739-749`). A sparse worktree does not contain the event stage.
 
 ## §2 Q2 — C0 control freeze
 
@@ -130,7 +130,16 @@ $ grep -nE 'earnings|catalyst|picker|structure|payoff|straddle|spread' \
 (no matches)
 ```
 
-Both `.j2` files exist. There is no `templates/options_screener.html` or `templates/gex.html`.
+Both `.j2` files exist. There is no `templates/options_screener.html` or `templates/gex.html`. That command does not search the rest of `templates/`. A `templates/` grep for `structure|picker|payoff|straddle|spread` also hits `templates/calculators/options_profit.html.j2`.
+
+```
+$ grep -nE 'structure|picker|payoff|straddle|spread' templates/calculators/options_profit.html.j2
+4:  position_size.html.j2 structure: PURE compute() + WORKED_EXAMPLES self-check
+71:<p>{{ t('At expiration a single option is worth only its <strong>intrinsic value</strong> — how far it is in the money — and your profit is that value minus the premium that changed hands, times 100 shares per contract. A call is in the money when the price sits above the strike; a put, when it sits below. Time value is gone, so the whole payoff reduces to simple arithmetic.',
+116:<li>{{ t('<strong>One leg only.</strong> Spreads, straddles and multi-leg positions net several of these payoffs together; run each leg and add the results, or the risk picture will be wrong.',
+```
+
+`templates/calculators/options_profit.html.j2:1-3` is a one-leg expiration payoff calculator. `:71` uses the word payoff for that single leg. `:116` names spreads and straddles as a limit of the one-leg math. The file has no `bind_event` and no catalyst line. It is not a flow-event structure builder. The same token grep also hits pages that are not option structures (credit spreads, market structure, capital structure, series pickers). Those hits are not a Catalyst Picker and not a Structure Builder.
 
 `engine/options_structure.py:1-15` is a different object: display or shadow schemas for dealer-gamma state, chain heat, and a strike×expiry matrix. It is not a Structure Builder page. It has many consumers (including `scripts/build_gex_board.py` and `scripts/build_options_structure_intraday.py`). Those consumers are outside the catalyst-link import set in §1.
 
@@ -214,13 +223,14 @@ Macro-event calendar: `engine/event_calendar.py:1-33` is the scheduled US calend
 | `engine/stock_identity/plane.py` | 80-119 |
 | `engine/options_payoff.py` | 1-50, 1560-1628; `^def` grep for 418, 553, 753, 868, 1030, 1272, 1384, 1537 |
 | `engine/thetadata_store.py` | 544-563 |
-| `engine/event_calendar.py` | 1-40; defs at 132 and 136 |
+| `engine/event_calendar.py` | 1-54 (line 49 is the FOMC-date comment); defs at 132 and 136 |
 | `engine/options_structure.py` | 1-25 |
 | `scripts/live_flow_poller.py` | 90-130, 470-520, 540-580, 1960-2005, 2060-2095 |
 | `ops/launchd/com.mastermind.liveflow.plist` | header through the program key; line 161 |
 | `scripts/build_options_command.py` | defs at 142 and 178 only |
 | `templates/options.html.j2` | 1077-1080, 3369-3370, plus the structure/earnings grep |
 | `templates/options_screener.html.j2`, `templates/gex.html.j2` | grep only; no matching lines |
+| `templates/calculators/options_profit.html.j2` | 1-10, 71, 116 |
 | `tests/test_options_catalyst_link.py` | 1-40, 470-495, 690-720; `def test_` scan of all 914 lines |
 | `tests/test_options_payoff.py` | 380-444 |
 | `tests/test_render_options_workspace_scope.py` | 1-60 and grep of `load_stores` lines through 377 |
