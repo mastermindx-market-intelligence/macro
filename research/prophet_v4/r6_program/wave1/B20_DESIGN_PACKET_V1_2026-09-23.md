@@ -400,3 +400,4 @@ DEVIATIONS:
 
 - `apply_patch` was not installed as a shell command. The first skeleton attempt failed before creating/committing any file, then the exact skeleton was immediately created with the shell, committed, and pushed as the first successful result. All later commits are new commits; no history rewrite or amend occurred.
 - No other departure from the frozen specification.
+## 12. CHANGELOG (critique ID → repair)
