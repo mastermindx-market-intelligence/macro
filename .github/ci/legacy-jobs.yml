@@ -2995,6 +2995,7 @@ jobs:
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
+          tests/test_global_regime_intl_route.py tests/test_intl_mobile_layout.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_macro_w9_r1.py
           tests/test_hub_plain_language.py
@@ -4420,6 +4421,9 @@ jobs:
       - "lib/filing_value_units.py"
       - "lib/finra_knowable.py"
       - "lib/forex_link.py"
+      - "lib/global_regime_fragment.py"
+      # #7635: internationalized hero styles are derived from the governed Macro CSS.
+      - "templates/theme.css"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
@@ -8393,6 +8397,8 @@ jobs:
       - "site/prophet/**"
       - "site/qledger/**"
       - "site/vol/**"
+      # #7635: global_regime_fragment derives the International bridge from governed hero CSS.
+      - "templates/theme.css"
       # F13-X1: build_site imports the source-bound help directory, whose
       # fail-closed contract reads these exact existing owner templates.
       - "templates/_navlinks.html.j2"
