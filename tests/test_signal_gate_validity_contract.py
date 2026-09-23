@@ -52,6 +52,20 @@ def test_fresh_source_is_valid_for_the_next_session():
 
 
 def test_stale_source_is_still_emitted_with_positive_lag():
+    # Packet T2 as mandated: emitted intraday on Tuesday 2026-09-22 (16:44Z is before
+    # the 20:00Z close), so the last COMPLETED session is Monday 2026-09-21 and a
+    # Friday 2026-09-18 source is exactly one session stale. (The packet's own "lag 2"
+    # arithmetic counted the still-open Tuesday session; seat ruling 2026-09-23.)
+    block = _block("2026-09-18", "2026-09-22T16:44:00Z")
+
+    assert block["source_session"] == "2026-09-18"
+    assert block["expected_last_session"] == "2026-09-21"
+    assert block["lag_sessions"] == 1
+    assert block["settled"] is True
+
+
+def test_stale_source_after_close_counts_the_completed_session():
+    # Same source, emitted after Tuesday's close: Tuesday is now completed, lag 2.
     block = _block("2026-09-18", "2026-09-22T21:00:00Z")
 
     assert block["source_session"] == "2026-09-18"
