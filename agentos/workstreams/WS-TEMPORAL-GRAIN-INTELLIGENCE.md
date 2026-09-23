@@ -39,15 +39,17 @@ waves:
       then the adversarial review amendment.
   - id: W1A
     title: Exact WMT/silver recipe capture, TradingView parity and mechanical G/A/K/D artifact attack
-    status: in_progress
+    status: done
+    result: UNRESOLVED_DATA
     pr: 6803
     depends_on: [W0]
     next_action: >
-      Keep PR #6803 DRAFT / HOLD-FOR-SOL while the incomplete-packet repair receives
-      exact-head hosted CI and immutable review. WMT 720-minute extended-hours and the
-      motivating silver 480-minute chart now have committed typed UNRESOLVED_DATA recipes;
-      neither has exact TradingView identity, export or lower-grain evidence. Do not mark
-      Ready, merge, recast either abstention as parity, or begin W1B.
+      W1A is scientifically closed at the current evidence bar as UNRESOLVED_DATA: the repaired
+      harness and typed abstention packets are exact-head hosted-CI green, but neither WMT nor
+      the motivating silver chart has the exact rights-safe TradingView identity, parent export
+      and lower-grain packet needed for parity or a mechanical-survival result. Preserve PR #6803
+      DRAFT / HOLD until this records-only closure receives exact-record-head review and release.
+      A future exact packet may reopen W1A on this incumbent carrier; do not begin W1B from abstention.
   - id: W1B
     title: Separately preregistered localization and risk-utility mechanism diagnosis
     status: todo
@@ -115,10 +117,11 @@ artifacts:
   - research/signal_engine/temporal_scale/external_evidence/verification.json
   - agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-2026-09-16-EXTERNAL-EVIDENCE-GATE.md
 next_action: >
-  Commit and normally push the bounded incomplete-packet repair on the existing PR #6803
-  carrier, obtain exact-head hosted CI and immutable review, and preserve Draft/HOLD. Then
-  replace each typed abstention only with a separately complete right-safe TradingView parent
-  recipe, export and lower-grain manifest. W1B remains held unless both exact packets survive.
+  Complete exact-record-head review and release adjudication of PR #6803 after the records-only
+  closure. Preserve the merged W0 and the W1A UNRESOLVED_DATA result. If separately authorized
+  exact right-safe TradingView parent recipes, exports and lower-grain manifests later arrive,
+  reopen W1A on the incumbent carrier and run the existing validate/parity/attack path independently
+  for WMT and silver. W1B remains held unless both exact packets pass parity and mechanically survive.
 ---
 
 ## Scientific prior
