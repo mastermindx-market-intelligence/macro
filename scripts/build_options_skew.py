@@ -125,14 +125,18 @@ def accrue(today=None) -> tuple[int, str]:
     the write entirely.
 
     A-F03-W2-8 (2026-09-23): the caught-up signal is the backfill
-    receipt's `rows_added + rows_replaced == 0`, NOT `catch_up_sessions`
-    returning `[]` (the helper always returns at least the target
-    session). A caught-up ledger IS the case the verify step's BLOCKER-2
-    rule was written to refuse, but refusing the publish under "nothing
-    to accrue" is the wrong outcome — the daily maintainer's session has
-    already landed, the lane did its job, and the operator wants a clean
-    rc-0 exit. The launchd runner treats rc 3 as a one-line receipt +
-    rc-0 exit, skipping verify AND publish.
+    receipt's `dates_backfilled == len(dates) AND rows_added + rows_replaced == 0`
+    — BOTH conjuncts are required. `catch_up_sessions` returning `[]` is
+    NOT the signal (the helper always returns at least the target session).
+    The strict discriminator excludes store-miss: a backfill with
+    `dates_not_in_store > 0` reports `dates_backfilled < len(dates)` and
+    falls through to the rc-0 path so the runner's BLOCKER-2 verify step
+    still aborts loud on a real failure. A caught-up ledger IS the case
+    the verify step's BLOCKER-2 rule was written to refuse, but refusing
+    the publish under "nothing to accrue" is the wrong outcome — the
+    daily maintainer's session has already landed, the lane did its job,
+    and the operator wants a clean rc-0 exit. The launchd runner treats
+    rc 3 as a one-line receipt + rc-0 exit, skipping verify AND publish.
     """
     if S._legacy_enabled():
         chain = S._legacy_chain()

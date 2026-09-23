@@ -312,7 +312,7 @@ publish call, the marker is therefore absent.
 import os, sys
 marker = os.path.join(os.environ["SKEW_STATE_DIR"], ".publish_called")
 with open(marker, "w", encoding="utf-8") as f:
-    f.write("called\n")
+    f.write("called\\n")
 sys.exit(0)
 '''
 FAKE_VERIFY_MARKER = '''"""Fake verify — exit 0 AND writes a marker file the test can read.
@@ -322,7 +322,7 @@ the rc-3 path skips the verify call, the marker is therefore absent."""
 import os, sys
 marker = os.path.join(os.environ["SKEW_STATE_DIR"], ".verify_called")
 with open(marker, "w", encoding="utf-8") as f:
-    f.write("called\n")
+    f.write("called\\n")
 print("OK")
 sys.exit(0)
 '''
@@ -1048,8 +1048,16 @@ def test_runner_caught_up_noop_exits_zero_and_skips_verify_and_publish(tmp_path)
                                        verify=FAKE_VERIFY_MARKER,
                                        publish=FAKE_PUBLISH_MARKER)
     state_dir = tmp_path / "skew_state"
+    # MINOR-10 (round-3 reviewer): the default `dry_run=True` short-circuits
+    # step_publish inside the runner (`ops/launchd/run_skew_accrual.sh:498`)
+    # before it ever invokes `python -m scripts.publish_r2`, so the publish-
+    # marker absence under rc 3 only proves the dry-run skip — not the
+    # rc-3 branch. Force `dry_run=False` so the live launchd path is the
+    # one the marker file proves against. Re-proven by the reviewer with
+    # `dry_run=False` on the mutant runner (`accrue_rc=0`): the marker files
+    # ARE written when rc 3 is bypassed, so the assertion is falsifiable.
     rc = _run_runner_with_state(
-        tmp_path, repo, stub_bin, state_dir=state_dir,
+        tmp_path, repo, stub_bin, state_dir=state_dir, dry_run=False,
     )
     assert rc.returncode == 0, (rc.stdout, rc.stderr)
     # The seat-ruled one-line receipt is at line start.
