@@ -707,6 +707,7 @@
           "final_reco": "accumulate",
           "final_label": "dominant",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -723,7 +724,7 @@
         "score": 58,
         "reco": "enter",
         "reco_en": "ENTER",
-        "reco_zh": "入场",
+        "reco_zh": "建仓",
         "rel20": 0.0358,
         "rel5": 0.0688,
         "tag": null,
@@ -801,6 +802,7 @@
           "final_reco": "enter",
           "final_label": "emerging",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -814,7 +816,7 @@
         "score": 55,
         "reco": "enter",
         "reco_en": "ENTER",
-        "reco_zh": "入场",
+        "reco_zh": "建仓",
         "rel20": 0.0286,
         "rel5": 0.0661,
         "tag": null,
@@ -892,6 +894,7 @@
           "final_reco": "enter",
           "final_label": "emerging",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -905,7 +908,7 @@
         "score": 54,
         "reco": "enter",
         "reco_en": "ENTER",
-        "reco_zh": "入场",
+        "reco_zh": "建仓",
         "rel20": 0.0318,
         "rel5": 0.0393,
         "tag": null,
@@ -983,6 +986,7 @@
           "final_reco": "enter",
           "final_label": "emerging",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1077,6 +1081,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1168,6 +1173,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1259,6 +1265,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1350,6 +1357,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1441,6 +1449,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1532,6 +1541,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1623,6 +1633,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1714,6 +1725,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1805,6 +1817,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1896,6 +1909,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -1987,6 +2001,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -2078,6 +2093,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false
@@ -2169,6 +2185,7 @@
           "final_reco": "avoid",
           "final_label": "deteriorating",
           "status": "CURRENT",
+          "source_status": "CURRENT",
           "source_conflict": false,
           "scope": "theme_presentation_only",
           "stock_entry_permission": false

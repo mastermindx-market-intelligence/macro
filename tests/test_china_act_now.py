@@ -1282,3 +1282,54 @@ def test_current_eligible_member_evidence_restores_continuation():
     assert not _continuation_board(ti)["display_lanes"]["buy_now"]
     ti["themes"][0]["observation"]["aggregate_eligible"] = True
     assert _continuation_board(ti)["display_lanes"]["buy_now"][0]["entry_route"] == "continuation"
+
+
+def test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads():
+    ti = _continuation_fixture(clean=True)
+    td = ti['themes'][0]
+    td.update(perf={'5d': {'rel': 0.137}, '20d': {'rel': 0.215}},
+              breadth={'pct50': 0.9}, leadership={'breadth': 'broad', 'top': []})
+    ti['act_now']['buy'][0]['reasons'] = ['accelerating']
+    td['observation']['aggregate_eligible'] = False
+    board = _continuation_board(ti)
+    row, = board['display_lanes']['wait_pullback']
+    for key in ('score', 'rel5', 'rel20', 'breadth_pct50', 'leadership', 'n_members'):
+        assert row[key] is None
+    assert row['reasons'] == []
+    assert row['source_reads'][0]['row']['score'] == 75
+    assert row['source_reads'][0]['row']['rel5'] == 0.137
+    html = render(board)
+    assert 'Data status' in html
+    assert 'accelerating' not in html and '+13.7' not in html and '+21.5' not in html
+    assert 'anv2-score-hi' not in html and 'anv2-chip-reco-hold' not in html
+
+
+def test_unsettled_current_session_is_disclosed_without_inventing_finality():
+    ti = _continuation_fixture()
+    early = _continuation_board(ti, '2026-09-21T08:00:00+00:00')
+    assert not early['display_lanes']['buy_now']
+    row, = early['display_lanes']['wait_pullback']
+    assert row['theme_decision']['source_status'] == 'UNSETTLED'
+    assert 'SESSION SETTLING' in render(early) and 'Session not yet settled' in render(early)
+    assert _continuation_board(ti)['display_lanes']['buy_now']
+
+
+def test_final_producer_owns_translated_recommendation_words():
+    ti = _continuation_fixture(final='hold')
+    ti['themes'][0].update(reco_en='WAIT FOR ENTRY', reco_zh='等待入场条件')
+    row, = _continuation_board(ti)['display_lanes']['wait_pullback']
+    assert row['reco_en'] == 'WAIT FOR ENTRY'
+    assert row['reco_zh'] == '等待入场条件'
+
+
+def test_continuations_join_existing_theme_score_order_not_end_of_lane():
+    ti = _continuation_fixture()
+    second = deepcopy(ti['themes'][0])
+    second.update(id='cn_lower', score=60, label='emerging', reco='enter')
+    second['textures']['clean_entry']['flag'] = True
+    ti['themes'].append(second)
+    ti['act_now']['buy'] = [{'id': 'cn_lower', 'name': 'Lower score', 'score': 60,
+                              'action': 'enter', 'action_en': 'ENTER'}]
+    rows = _continuation_board(ti)['display_lanes']['buy_now']
+    assert [row['id'] for row in rows] == ['cn_example', 'cn_lower']
+    assert [row['score'] for row in rows] == [75, 60]

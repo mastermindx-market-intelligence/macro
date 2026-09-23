@@ -1,28 +1,27 @@
 {
   "schema": "china_continuation.implementation_evidence.v1",
   "mission_complete": false,
-  "state": "BUILT_NOT_PROVEN",
+  "state": "PARTIAL",
   "carrier": "sol/cn-act-now-coherence-20260921",
-  "source_base": "afd1f3c382674b0c012510ccf569f3635c2cd53a",
-  "procedure_pin": "a5aa42d15c3e5cbfe785b415511de188cff66bd0",
+  "source_base": "f3ba3ea60950e579f4645ee9cb4acf7d2f597a61",
+  "procedure_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
   "engine_implemented": true,
   "release_allowed": false,
-  "remaining_required_guard": null,
-  "remaining_guard_write": "APPLIED_AND_VERIFIED_ON_ORIGINAL_CARRIER",
+  "remaining_required_guard": "degraded template data-status/type and distinct settling explanation",
+  "remaining_guard_write": "PLATFORM_BLOCKED_BEFORE_EFFECT; template hash unchanged on readback",
   "source_sha256": {
-    "engine/china_act_now.py": "83aebd687b68046fbe0a9edc1b5d238fc916288252683d499f65e3d4b0d0e4fa",
+    "engine/china_act_now.py": "de95ca8791e60be7d05c857df215bb0540d3821aa97a3a67b8c72cf45a78bc67",
     "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
-    "tests/test_china_act_now.py": "029914720ca2663bad627e7306961049db7525a16b2f51515e7493d9e6fb90d9"
+    "tests/test_china_act_now.py": "e636ffd7e1705ce24f867b7ee8c1e5c1f8191ee274f094cee7eeb080dc9d6b37"
   },
   "tests": {
     "initial_continuation_contracts_passed": 8,
     "then_full_coherence_suite_passed": 103,
-    "current_passed": 128,
-    "current_failed": 0,
-    "failure": null,
+    "current_passed": 130,
+    "current_failed": 2,
     "waived": 0,
-    "final_log_sha256": "835733d8ddf305c41660e6aee04a01ea04417d788e579cf3001644da370ade40",
-    "raw_log_sha256": "835733d8ddf305c41660e6aee04a01ea04417d788e579cf3001644da370ade40",
+    "final_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
+    "raw_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
     "normalization": "trailing whitespace only",
     "member_observation_red_failed": 20,
     "owner_regression_passed": 290,
@@ -32,15 +31,21 @@
     "owner_log": "owner-tests.txt",
     "owner_log_sha256": "b8f37e772013e4e7e1b5c8cac91d14e24b27b69b6721b452b259032637f9b719",
     "observation_red_sha256": "ca56475872fe6277e0517257688d562e71d2856bfaace7867f0b04ba3c2929ff",
-    "previous_final_log": "final-tests.txt (historical 108/1, superseded)"
+    "previous_final_log": "final-tests.txt (historical 108/1, superseded)",
+    "failures": [
+      "test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads",
+      "test_unsettled_current_session_is_disclosed_without_inventing_finality"
+    ],
+    "final_log": "recovered-owner-tests.txt"
   },
   "browser": {
-    "captures": 8,
+    "captures": 48,
     "overflow_count": 0,
     "page_error_count": 0,
-    "proof_sha256": "cbeeb0fe85a0fa1f9bbaa9d67e96e0f4e64e78efa0d1a4f735088f1c68d3f235",
-    "scope": "real repository theme inputs and actual host-page CSS; sector/cycle inputs omitted; not full-page or live deployment",
-    "clock_basis": "injected qualification clock; not historical availability proof"
+    "proof_sha256": "9db1f40df057166e4bf050b7151b5895b898ab646d8f7cb7329a0ab239eea932",
+    "scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.",
+    "clock_basis": "injected qualification clock; not historical availability proof",
+    "source_hashes_match": true
   },
   "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
   "input_as_of": "2026-09-22",
@@ -86,5 +91,19 @@
     "independent review",
     "integrated current-base proof",
     "authenticated full-path production proof"
-  ]
+  ],
+  "review": {
+    "status": "PARTIAL",
+    "source_sha": "f3ba3ea60950e579f4645ee9cb4acf7d2f597a61",
+    "findings": "independent-review.md",
+    "closed_session": "e7be3921-6443-4228-b0f9-fece5413a761",
+    "source_acceptance": false
+  },
+  "recovery": {
+    "host_read_ready": true,
+    "earlier_document_effect": "RESOLVED_ABSENT_THEN_WRITTEN",
+    "document": "review-adjudication.md",
+    "template_write": "REFUSED_BEFORE_EFFECT",
+    "no_new_template_test_execution_claim": true
+  }
 }

@@ -1,0 +1,44 @@
+........................................................................ [ 54%]
+........................................................FF..             [100%]
+=================================== FAILURES ===================================
+_ test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads _
+
+    def test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads():
+        ti = _continuation_fixture(clean=True)
+        td = ti['themes'][0]
+        td.update(perf={'5d': {'rel': 0.137}, '20d': {'rel': 0.215}},
+                  breadth={'pct50': 0.9}, leadership={'breadth': 'broad', 'top': []})
+        ti['act_now']['buy'][0]['reasons'] = ['accelerating']
+        td['observation']['aggregate_eligible'] = False
+        board = _continuation_board(ti)
+        row, = board['display_lanes']['wait_pullback']
+        for key in ('score', 'rel5', 'rel20', 'breadth_pct50', 'leadership', 'n_members'):
+            assert row[key] is None
+        assert row['reasons'] == []
+        assert row['source_reads'][0]['row']['score'] == 75
+        assert row['source_reads'][0]['row']['rel5'] == 0.137
+        html = render(board)
+>       assert 'Data status' in html
+E       assert 'Data status' in '\n\n\n  <!-- ===================== ACT-NOW v2 — FOUR-LANE BOARD (W8-R3) ===================== -->\n  \n  \n  \n  \n  ...collapse lst-cap4 is-collapsed">\n        \n      </div>\n      \n      </div>\n    </div>\n\n    </div>\n  </div>\n  '
+
+tests/test_china_act_now.py:1302: AssertionError
+____ test_unsettled_current_session_is_disclosed_without_inventing_finality ____
+
+    def test_unsettled_current_session_is_disclosed_without_inventing_finality():
+        ti = _continuation_fixture()
+        early = _continuation_board(ti, '2026-09-21T08:00:00+00:00')
+        assert not early['display_lanes']['buy_now']
+        row, = early['display_lanes']['wait_pullback']
+        assert row['theme_decision']['source_status'] == 'UNSETTLED'
+>       assert 'SESSION SETTLING' in render(early) and 'Session not yet settled' in render(early)
+E       assert ('SESSION SETTLING' in '\n\n\n  <!-- ===================== ACT-NOW v2 — FOUR-LANE BOARD (W8-R3) ===================== -->\n  \n  \n  \n  \n  ...collapse lst-cap4 is-collapsed">\n        \n      </div>\n      \n      </div>\n    </div>\n\n    </div>\n  </div>\n  ' and 'Session not yet settled' in '\n\n\n  <!-- ===================== ACT-NOW v2 — FOUR-LANE BOARD (W8-R3) ===================== -->\n  \n  \n  \n  \n  ...collapse lst-cap4 is-collapsed">\n        \n      </div>\n      \n      </div>\n    </div>\n\n    </div>\n  </div>\n  ')
+E        +  where '\n\n\n  <!-- ===================== ACT-NOW v2 — FOUR-LANE BOARD (W8-R3) ===================== -->\n  \n  \n  \n  \n  ...collapse lst-cap4 is-collapsed">\n        \n      </div>\n      \n      </div>\n    </div>\n\n    </div>\n  </div>\n  ' = render({'lanes': {'buy_now': [], 'wait_pullback': [{'kind': 'THEME', 'id': 'cn_example', 'name': 'Example leader', 'name_zh':...ttoming_watch': [], 'reduce_avoid': []}, 'as_of': '2026-09-21', 'notes': ['forward_log absent — bottoming lane empty']})
+E        +  and   '\n\n\n  <!-- ===================== ACT-NOW v2 — FOUR-LANE BOARD (W8-R3) ===================== -->\n  \n  \n  \n  \n  ...collapse lst-cap4 is-collapsed">\n        \n      </div>\n      \n      </div>\n    </div>\n\n    </div>\n  </div>\n  ' = render({'lanes': {'buy_now': [], 'wait_pullback': [{'kind': 'THEME', 'id': 'cn_example', 'name': 'Example leader', 'name_zh':...ttoming_watch': [], 'reduce_avoid': []}, 'as_of': '2026-09-21', 'notes': ['forward_log absent — bottoming lane empty']})
+
+tests/test_china_act_now.py:1313: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads
+FAILED tests/test_china_act_now.py::test_unsettled_current_session_is_disclosed_without_inventing_finality
+2 failed, 130 passed in 2.15s

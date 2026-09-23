@@ -55,38 +55,58 @@ report = {'proof_kind': 'repository-input component; not production or historica
           'captures': [], 'source_sha256': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
               for p in ('engine/china_act_now.py', 'templates/_china_act_now_board.html.j2', 'tests/test_china_act_now.py')}}
 (OUT / 'board.json').write_text(json.dumps(after, ensure_ascii=False, indent=2))
+# Negative states are controlled perturbations, NOT claims about the real market.
+missing = deepcopy(intel)
+for td in missing['themes']:
+    td['observation']['aggregate_eligible'] = False
+conflict = deepcopy(intel)
+conflict['act_now']['conflicted'] = deepcopy(conflict['act_now'].get('add_on_pullback') or [])
+demotion = deepcopy(intel)
+positive = [t for t in demotion['themes'] if t.get('reco') in ('enter', 'accumulate')]
+for td, (verb, zh) in zip(positive, [('hold', '持有'), ('trim', '减持'), ('avoid', '回避')]):
+    td.update(reco=verb, reco_en=verb.upper(), reco_zh=zh)
+cycles = [{'id': 'b-cn_semis', 'kind': 'basket', 'name': 'Semiconductors',
+           'phase': 'Trough', 'osc_slope': 1.2, 'pos': 0.3, 'rs_63d': 0.05}]
+scenarios = [('current', intel, clock, []), ('missing-members', missing, clock, []),
+             ('source-conflict', conflict, clock, []), ('final-demotions', demotion, clock, []),
+             ('settling', intel, datetime.fromisoformat('2026-09-22T08:00:00+00:00'), []),
+             ('duplicate-evidence', intel, clock, cycles)]
+report['negative_state_scope'] = 'Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.'
+
 with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
     try:
-        for theme in ('dark', 'light'):
-            for lang in ('en', 'zh'):
-                env.globals.update(t=lambda en, zh, lng=lang: zh if lng == 'zh' else en,
-                                   tr=lambda text: text, help=lambda *a, **kw: '')
-                component = env.get_template('_china_act_now_board.html.j2').render(act_now_v2=after)
-                for width in (1440, 390):
-                    page = browser.new_page(viewport={'width': width, 'height': 960})
-                    errors = []
-                    page.on('pageerror', lambda error: errors.append(str(error)))
-                    page.route('**/*', lambda route: route.abort())
-                    html = (f'<!doctype html><html lang="{lang}" data-lang="{lang}" data-theme="{theme}">'
-                            f'<head><meta charset="utf-8"><style>{css}</style></head><body class="{body_class}">'
-                            f'<main>{component}</main><script>{js}</script></body></html>')
-                    page.set_content(html, wait_until='domcontentloaded')
-                    page.evaluate('(v) => { document.documentElement.dataset.theme=v[0]; document.documentElement.dataset.lang=v[1]; }', [theme,lang])
-                    page.locator('#act-now').wait_for(state='visible')
-                    result = page.evaluate('''() => ({
-                        actualTheme: document.documentElement.dataset.theme,
-                        actualLanguage: document.documentElement.dataset.lang,
-                        overflow: document.documentElement.scrollWidth > innerWidth,
-                        continuationRows: [...document.querySelectorAll('#anv2-buy .anv2-row[data-entry-route="continuation"]')].map(e => e.innerText),
-                        buyRows: document.querySelectorAll('#anv2-buy .anv2-row').length,
-                        continuationInWait: document.querySelectorAll('#anv2-pull .anv2-row[data-entry-route="continuation"]').length
-                    })''')
-                    name = f'candidate-{theme}-{lang}-{width}.png'
-                    page.locator('#act-now').screenshot(path=str(OUT / name))
-                    report['captures'].append({'file': name, 'theme': theme, 'language': lang,
-                                               'width': width, 'page_errors': errors, **result})
-                    page.close()
+        for scenario, source, at, cycle in scenarios:
+            view = assemble_act_now([], source, cycle, observed_at=at)
+            for theme in ('dark', 'light'):
+                for lang in ('en', 'zh'):
+                    env.globals.update(t=lambda en, zh, lng=lang: zh if lng == 'zh' else en,
+                                       tr=lambda text: text, help=lambda *a, **kw: '')
+                    component = env.get_template('_china_act_now_board.html.j2').render(act_now_v2=view)
+                    for width in (1440, 390):
+                        page = browser.new_page(viewport={'width': width, 'height': 960})
+                        errors = []
+                        page.on('pageerror', lambda error: errors.append(str(error)))
+                        page.route('**/*', lambda route: route.abort())
+                        html = (f'<!doctype html><html lang="{lang}" data-lang="{lang}" data-theme="{theme}">'
+                                f'<head><meta charset="utf-8"><style>{css}</style></head><body class="{body_class}">'
+                                f'<main>{component}</main><script>{js}</script></body></html>')
+                        page.set_content(html, wait_until='domcontentloaded')
+                        page.evaluate('(v) => { document.documentElement.dataset.theme=v[0]; document.documentElement.dataset.lang=v[1]; }', [theme,lang])
+                        page.locator('#act-now').wait_for(state='visible')
+                        result = page.evaluate('''() => ({
+                            actualTheme: document.documentElement.dataset.theme,
+                            actualLanguage: document.documentElement.dataset.lang,
+                            overflow: document.documentElement.scrollWidth > innerWidth,
+                            continuationRows: [...document.querySelectorAll('#anv2-buy .anv2-row[data-entry-route="continuation"]')].map(e => e.innerText),
+                            buyRows: document.querySelectorAll('#anv2-buy .anv2-row').length,
+                            continuationInWait: document.querySelectorAll('#anv2-pull .anv2-row[data-entry-route="continuation"]').length
+                        })''')
+                        name = f'candidate-{theme}-{lang}-{width}.png' if scenario == 'current' else f'candidate-{scenario}-{theme}-{lang}-{width}.png'
+                        page.locator('#act-now').screenshot(path=str(OUT / name))
+                        report['captures'].append({'scenario': scenario, 'file': name, 'theme': theme, 'language': lang,
+                                                   'width': width, 'page_errors': errors, **result})
+                        page.close()
     finally:
         browser.close()
 (OUT / 'proof.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')

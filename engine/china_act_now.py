@@ -699,10 +699,16 @@ def _theme_display_context(theme_intel, observed_at):
         day = date.fromisoformat(session)
         if day.isoformat() != session or not cn_calendar.is_session(day):
             raise ValueError("settled session identity required")
-        if day == cn_calendar.expected_last_session(now) and ti.get("stale") is not True:
-            status = "CURRENT"
-    except (ValueError, TypeError, AttributeError):
-        pass
+        expected = cn_calendar.expected_last_session(now)
+        if ti.get("stale") is not True:
+            if day == expected:
+                status = "CURRENT"
+            elif day > expected and day == now.astimezone(cn_calendar.CST).date():
+                status = "UNSETTLED"  # preserve the existing calendar's finality rule
+    except (ValueError, TypeError, AttributeError) as exc:
+        log.debug("China theme session validation unavailable (%s)", type(exc).__name__)
+    if status != "CURRENT":
+        log.info("China theme action availability: %s", status)
     by_id, duplicates = {}, set()
     for td in ti.get("themes") or []:
         if not isinstance(td, dict) or not isinstance(td.get("id"), str):
@@ -755,20 +761,31 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                 "source_as_of": session, "final_reco": final,
                 "final_label": td.get("label") if td else None,
                 "status": "CURRENT" if coherent else "UNAVAILABLE",
+                "source_status": status,
                 "source_conflict": tid in conflicts,
                 "scope": "theme_presentation_only", "stock_entry_permission": False,
             }
             if not coherent or final not in {"enter", "accumulate", "hold", "trim", "avoid"}:
                 if lane == "buy_now":
                     lane = "wait_pullback"
+                # Keep original evidence only in source_reads. Unqualified metrics
+                # must not survive as an apparently current score/leadership read.
+                for field in ("score", "rel20", "rel5", "breadth_pct50", "leadership",
+                              "leaders_en", "leaders_zh", "n_members", "phase", "osc_slope",
+                              "pos", "rs_63d", "rs_rank", "organ_state", "organ_chip_en", "organ_chip_zh"):
+                    row[field] = None
+                row["reasons"] = []
+                row.pop("entry_route", None)
                 if lane == "wait_pullback":
-                    row.update(reco=None, reco_en="DATA UNAVAILABLE", reco_zh="数据暂缺")
+                    settling = status == "UNSETTLED"
+                    row.update(reco=None, reco_en="SESSION SETTLING" if settling else "DATA UNAVAILABLE",
+                               reco_zh="交易日数据待确认" if settling else "数据暂缺")
             elif lane == "reduce_avoid":
                 pass  # a defensive source conflict can never be promoted to a buy
             elif final in {"hold", "trim", "avoid"}:
                 lane = "wait_pullback" if final == "hold" else "reduce_avoid"
-                row.update(reco=final, reco_en={"hold": "HOLD", "trim": "TRIM", "avoid": "AVOID"}[final],
-                           reco_zh={"hold": "持有", "trim": "减持", "avoid": "回避"}[final])
+                row.update(reco=final, reco_en=td.get("reco_en") or final.upper(),
+                           reco_zh=td.get("reco_zh"))
             elif tid in conflicts or row.get("action_disagreement"):
                 lane = "wait_pullback"
                 row.update(reco="hold", reco_en="CONFLICT — WAIT", reco_zh="信号冲突 — 等待")
@@ -779,8 +796,8 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                 complete = (td.get("regime_demoted") is False and td.get("chase_demoted") is False
                             and isinstance(clean, bool))
                 source_action = row.get("reco")
-                row.update(reco=final, reco_en={"enter": "ENTER", "accumulate": "ACCUMULATE"}[final],
-                           reco_zh={"enter": "入场", "accumulate": "增持"}[final])
+                row.update(reco=final, reco_en=td.get("reco_en") or final.upper(),
+                           reco_zh=td.get("reco_zh"))
                 continuation = (
                     final == "accumulate" and td.get("label") == "dominant"
                     and source_action == "accumulate" and complete
@@ -796,4 +813,12 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                 elif lane == "buy_now":
                     row["entry_route"] = "clean_entry"
             result[lane].append(row)
+    # Preserve the existing score order among themes after cross-lane promotion;
+    # sectors retain their original order and are never scored against themes.
+    def theme_score(row):
+        value = row.get("score")
+        return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) else float("-inf")
+    buy = result["buy_now"]
+    result["buy_now"] = sorted((r for r in buy if r.get("kind") == "THEME"),
+                               key=theme_score, reverse=True) + [r for r in buy if r.get("kind") != "THEME"]
     return result
