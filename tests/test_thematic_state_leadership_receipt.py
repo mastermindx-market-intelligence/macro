@@ -69,7 +69,9 @@ def _count_equal(value: object, target: dict) -> int:
     return count
 
 
-def test_subsector_reader_exposes_private_payload_and_public_reference(tmp_path):
+def test_subsector_reader_exposes_private_payload_and_public_reference(tmp_path, monkeypatch):
+    # Payload/reference shape is independent of freshness; stale behavior has its own test below.
+    monkeypatch.setattr(ts, "_is_stale", lambda _asof: False)
     observation = _observation()
     _write_rotation(tmp_path, observation)
 
