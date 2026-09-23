@@ -16190,21 +16190,25 @@ jobs:
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
-    # The five suite runs this job names are the entire W2-2 test surface
-    # (test_skew_accrual_gate/launchd/precheck/verify_ledger +
-    # test_audit_options_skew_overlap). These are end-to-end tests of the
-    # M1-host launchd lane that builds data/options_skew/snapshots.parquet
-    # and publishes it to R2; they have no signal-contract / render subject,
-    # so they were parked in config/unrun_test_waivers.yml in error. They
-    # are now wired into a real merge-gate job and the waiver rows are
-    # deleted (round 5/N, Meta-CEO A binding ruling). scope: exclusive
-    # replaces inference because every helper script has its own argparse
-    # surface and the runner is sh-only and not visible to AST inference.
+    # 2026-09-23 Meta-CEO A packet A-F03-W2-5a added the payoff-lab suites
+    # to this same job. The seven suite runs this job names are the five
+    # W2-2 suites (test_skew_accrual_gate/launchd/precheck/verify_ledger +
+    # test_audit_options_skew_overlap) plus the two W2-5a suites
+    # (test_options_payoff_lab + test_payoff_lab_launchd). These are
+    # end-to-end tests of the M1-host launchd lanes; they have no
+    # signal-contract / render subject, so the W2-2 suites were parked in
+    # config/unrun_test_waivers.yml in error. They are now wired into a
+    # real merge-gate job and those waiver rows are deleted (round 5/N,
+    # Meta-CEO A binding ruling). The W2-5a suites were never waived.
+    # scope: exclusive replaces inference because every helper script has
+    # its own argparse surface and the runner is sh-only and not visible
+    # to AST inference.
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
     scope: exclusive
     # Paths are the page-equivalent family for the W2-2 store-host lane
-    # plus the measured import closure of the five suites
+    # and the W2-5a payoff lab, plus the measured import closure of the
+    # seven suites
     # (suite_dependency_closure reports them on the merged tree). Listed
     # literally so exclusivity covers every file the suites actually
     # read or run; an unlisted closure file is an uncovered path. No
