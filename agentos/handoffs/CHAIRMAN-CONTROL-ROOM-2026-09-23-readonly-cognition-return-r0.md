@@ -831,3 +831,40 @@ Agent OS acquisition is not established. Do not guess it.
    source preemptively.
 
 Parent mission remains incomplete; no browser/provider/production canary has run.
+
+
+## Closeout pin — protected Mastermind 4fe4d25e
+
+Closeout re-pin: protected Mastermind advanced from `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`
+to `4fe4d25e3ee268e24162f33c35d176ebf9ab02e6` via PR #948.
+
+Fresh same-SHA INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/REVIEW_RETURN/
+RECONCILE_STATE/CLOSEOUT/WORKER_AVENUE_ROUTING plus dialogue/routing companions were reloaded.
+Skillpack remains `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap 1.
+
+#948 changes exactly:
+- `app/mastermind_os/src/App.test.tsx`
+- `app/mastermind_os/src/App.tsx`
+- `app/mastermind_os/src/styles.css`
+
+Fresh changed-path comparison shows zero overlap with #890/#836/#651/#933/#936 and no material
+Web-Sol/Wake/capability/RuntimeBinding dependency change. This protected movement is non-invalidating;
+do not create ancestry-only source commits.
+
+#890 current exact head remains `dc15d22a6cbc07058d4f3555c680e2c54057f1cf`.
+Hosted CI `35965287774` is RUNNING at closeout. The prior GitHub merge ref
+`af492e7935b663ec234fdd880f0b810e10320c35` composes that head through `0497e288...`; #948 is a
+bounded disjoint UI-only protected move, so current compatibility can use REVIEW_REUSE_ALLOWED pending
+the same exact-head CI return.
+
+Claude6 #836 review carrier remains `D0BT2125KHQ/1790231581.990109`; latest observed state before
+closeout remains DELIVERY_SENT / no PICKUP_ACK / no START / no RESULT.
+
+Exact continuation:
+1. consume #890 CI `35965287774`;
+2. consume Claude6 carrier and only call it execution after PICKUP_ACK + START;
+3. repair #890 only on concrete CI/review failure;
+4. adjudicate #836 RESULT on the same Claude6 carrier, then explicit CONTINUE/STOP;
+5. PASS on #836 unlocks incumbent-custody release and the frozen R1 typed transport vertical.
+
+Mission remains incomplete; no browser/provider/production canary exists.
