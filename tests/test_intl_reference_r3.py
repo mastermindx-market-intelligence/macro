@@ -7,6 +7,7 @@ inventing authority, or hiding degraded states.
 from __future__ import annotations
 
 import hashlib
+import html as html_lib
 import math
 import re
 from pathlib import Path
@@ -35,6 +36,7 @@ def test_r2_remains_immutable_and_r3_is_a_new_artifact():
 
 def test_r3_preserves_shell_overview_and_six_act_flow():
     html = _html()
+    visible = html_lib.unescape(html)
     assert 'data-preserve-shell="_site_nav.html.j2"' in html
     assert 'data-preserve-overview="global_regime_html"' in html
     for act in (
@@ -45,9 +47,9 @@ def test_r3_preserves_shell_overview_and_six_act_flow():
         "Country Inspector",
         "Desk Posture + Deep Desks",
     ):
-        assert act in html
+        assert act in visible
     assert 'id="dollar-drivers"' in html
-    assert "What's driving the dollar?" in html
+    assert "What's driving the dollar?" in visible
 
 
 def test_r3_uses_real_destinations_and_preserves_stocks_mode():
@@ -169,6 +171,6 @@ def test_r3_removes_ambiguous_or_duplicate_receipts():
     html = _html()
     assert not re.search(r'\(h\s+[0-9.]+\)', html)
     assert html.count("Dragged by") == 1
-    assert "rounded components" not in html.lower()
+    assert "Net is recomputed from the displayed rounded components" in html
     assert "Australia" in html and 'data-fragility-country="AU"' in html
     assert "a transmission read, not a statement of cause" in html

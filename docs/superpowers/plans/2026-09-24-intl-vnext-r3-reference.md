@@ -1,6 +1,6 @@
 # International Markets vNext R3 Reference Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Produce an independently reviewable R3 reference for `intl.html` that closes every R2 blocker without weakening accepted engine authority or changing production code.
 
@@ -42,16 +42,16 @@
 - Consumes: the immutable R2 freeze and exact R2 blocker IDs.
 - Produces: static contract tests for the new `reference-r3.html` artifact.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create tests that require: six acts; shell/global-overview preservation markers; Dollar Drivers; real deep links; ten turn-state identities; seven comparable macro rows; horizon controls; complete pressure coverage; no at-rest equal-to-base dip odds; no misleading partial rotation derivation; organ-local state hooks; canonical ink tokens; stable state colors in ZH; no sub-10px user copy; no self-links; and explicit stocks-mode preservation.
 
-- [ ] **Step 2: Run the tests to verify RED**
+- [x] **Step 2: Run the tests to verify RED**
 
 Run: `/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_intl_reference_r3.py -q`
 Expected: FAIL because `mockups/refs/institutionalize/intl/reference-r3.html` does not exist.
 
-- [ ] **Step 3: Commit the RED contract**
+- [x] **Step 3: Commit the RED contract**
 
 Run: `git add tests/test_intl_reference_r3.py docs/superpowers/plans/2026-09-24-intl-vnext-r3-reference.md && git commit -m "test(design): pin international R3 reference contract"`
 
@@ -65,24 +65,24 @@ Run: `git add tests/test_intl_reference_r3.py docs/superpowers/plans/2026-09-24-
 - Consumes: R2 visual grammar, production fixture values, and Task 1's static contract.
 - Produces: one standalone, network-free R3 reference with theme, locale, inspector, horizon, and organ-state controls.
 
-- [ ] **Step 1: Copy R2 to the new immutable candidate path**
+- [x] **Step 1: Copy R2 to the new immutable candidate path**
 
 Run: `cp mockups/refs/institutionalize/intl/reference-r2.html mockups/refs/institutionalize/intl/reference-r3.html`
 
-- [ ] **Step 2: Implement the R3 semantic repairs**
+- [x] **Step 2: Implement the R3 semantic repairs**
 
 Implement the exact R3 obligations from the checkpoint. Keep the six acts, but restore the shell/overview, Dollar Drivers, full market/economy coverage, real links, horizon controls, change-shape evidence, stocks-mode preservation, and organ-local degraded states. Remove tautological odds, unsourced bars, duplicate drag lists, ambiguous `h`, and misleading partial rotation formula evidence.
 
-- [ ] **Step 3: Implement the R3 visual-system repairs**
+- [x] **Step 3: Implement the R3 visual-system repairs**
 
 Use `--ink-up`, `--ink-down`, `--ink-warn`, and separate health/status tokens. Reset CJK tracking for every label family, keep user copy at least 10px, remove the fake 390-preview control, and make status colors locale invariant.
 
-- [ ] **Step 4: Run the static contract**
+- [x] **Step 4: Run the static contract**
 
 Run: `/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_intl_reference_r3.py -q`
 Expected: PASS.
 
-- [ ] **Step 5: Commit the R3 source**
+- [x] **Step 5: Commit the R3 source**
 
 Run: `git add mockups/refs/institutionalize/intl/reference-r3.html && git commit -m "docs(design): build international vNext R3 reference"`
 ### Task 3: Capture discriminating browser evidence
