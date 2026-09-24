@@ -394,7 +394,14 @@ def _build_thesis(t: dict, i: int, asof, region: str, ranks: list, cfg: dict,
     counterevidence, counter_omitted = _bounded_texts(t.get("counterevidence"))
     refs, refs_rejected, refs_omitted = _normalize_evidence_refs(t.get("evidence_refs"), meta)
     event_ref_attempted = bool(t.get("evidence_refs"))
-    event_bound = bool(refs) or event_ref_attempted
+    has_event_context = bool(
+        meta.get("knowledge_cutoff") or meta.get("source_snapshot_ref") or meta.get("coverage")
+        or meta.get("_known_item_ids") or meta.get("_known_event_keys")
+    )
+    # A hallucinated ref on a legacy detector-only run must not silently change the incumbent
+    # grading contract.  Once caller-owned event context exists, however, any attempted source
+    # binding is fail-closed until it validates against that exact snapshot.
+    event_bound = has_event_context and (bool(refs) or event_ref_attempted)
     if event_bound:
         check = {
             "kind": "soft",
