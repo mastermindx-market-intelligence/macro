@@ -1529,5 +1529,32 @@ A compact launch module placed near the existing back-link on `basket/us_sector_
 ```
 
 The "Domains mapped" wording replaces the prior "Top research domains" (R-J). The two facets "Money Movement" and "Securities Infrastructure" are the static sub-buckets of `coverage.first_vertical` named in §A.0; they are NOT a baked taxonomy — they are the canonical first-vertical split for the dossier, present in the spec by reference to `coverage.first_vertical.name = "Financial Rails & Market Infrastructure"`.
+
+---
+
+## G. Degraded states — public shell behaviour
+
+The dossier must never expose a private payload. Every degraded state shows a typed refusal on the public shell and disables evidence triggers. (Per R-K: §G was tightened — the previous "Outer dossier not accepted — research context only" copy was mis-bound to a 503 path; the wording belongs to `outer_dossier_ref.state` per D.14. The previous "refresh in a moment" copy is removed.)
+
+| Condition | Trigger source | EN foot / banner | ZH foot / banner | Hidden | Still rendered |
+|---|---|---|---|---|---|
+| `503 PRIVATE_STORE_UNAVAILABLE` | composer fetch fails with `error="PRIVATE_STORE_UNAVAILABLE"` | `Private evidence store unavailable` | `私有证据库暂不可用` | all eight sections render as shells; no evidence refs resolve; no company rows | theme; TOC; chips show N/A |
+| `503 NO_GENERATION` | composer has no committed generation this cycle | `No evidence generation published yet — re-drawn after the next nightly` | `尚未发布证据版本，夜间更新后重绘` | all quantitative fields; rerating nodes show "Not applicable here" chips | slice grid renders with `slice_state` chips |
+| `503 GENERATION_TORN` | composer aborted mid-write; partial cache | `Generation interrupted — partial context only` | `生成中断 — 仅展示部分背景` | partial numeric data within torn sections | header + TOC + per-section `data-state-partial="true"` indicator |
+| `503 CONTRACT_INVALID` | response fails `finance_intelligence_read_model.v1.schema.json` validation | `Contract mismatch — showing public shell only` | `契约不一致 — 仅展示公开外壳` | all eight sections | title + deck + TOC only |
+| `outer_dossier_ref.state = OUTER_CONTRACT_NOT_ACCEPTED` | composer surface contract not yet wired | `Outer dossier not accepted — research context only` | `外部报告尚未接入 — 仅作研究背景` | (foot banner only) | dossier body still renders against the local contract |
+| `outer_dossier_ref.state = UNAVAILABLE` | outer source down | `Outer dossier unavailable` | `外部报告暂不可用` | (foot banner only) | dossier body still renders against the local contract |
+| `401` (signed out) | signed-out request | `Sign in to read current research` | `请登录以查阅当前研究` | all sections | theme toggle, language toggle; Sign-in CTA links to `?return=<path>` |
+| `402 / 403` (not entitled) | authenticated but tier does not include Finance Intelligence | `This dossier is part of the research tier` | `此报告为研究层内容` | all sections (per R-D: no public projection; the prior "slice grid chips + cohort posture chips" claim is removed) | theme toggle, language toggle; Upgrade CTA |
+| `degraded_sections[].state = UNAVAILABLE` | per-section composer surface empty | `data-fi-mount` block becomes `.mx-empty` + `.mx-empty-why` notice: `Unavailable — <reason if present>` | `不可用 — <reason 字段如有>` | section body | section header + foot |
+| `degraded_sections[].state = PARTIAL` | per-section composer partial | `Partial — <reason if present>` | `部分可用 — <reason 字段如有>` | partial numeric data within torn sections | header + TOC + per-section indicator |
+| Network failure | fetch rejected / timeout | `Couldn't load — try again` | `未能加载 — 请重试` | all sections | retry button |
+| Unknown response | other 5xx | `Read failed` | `读取失败` | all sections | retry button |
+
+The evidence drawer never opens in any degraded state — the trigger buttons get `aria-disabled="true"` and a visible chip `Evidence unavailable` / `证据暂不可用`. No private payload leaks via static, localStorage, IndexedDB, source maps, service workers, or alternate routes (per the carrier packet §15.1 / §15.4 and the §E FORBIDDEN list).
+
+**Conflict pip + card rule (R-H):** the `.fi-conflict-pip` chip and the `.fi-conflict-card` both carry a visible line + an `Open evidence` button; no hover-only meaning anywhere.
+
+**Materiality colour rule (R-J):** MATERIAL → `--ink-warn`; PARTIAL → `--muted` with the word "Partial" / "部分"; IMMATERIAL / UNMEASURED → `--muted` with the word. NEVER `--up`/`--down`/`--ink-up`/`--ink-down` anywhere on the exposure surface (or anywhere else in the dossier).
 ```
 ```
