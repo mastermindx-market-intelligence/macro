@@ -234,6 +234,10 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
             break
 
     finished = clock()
+    if failure_code is None and not (
+        isinstance(source_generation, str) and source_generation
+    ):
+        failure_code = "NO_SOURCE_GENERATION"
     complete = failure_code is None and reported_total is not None and unique_count == reported_total
     capture = {
         "started_at": _iso_utc(started),
