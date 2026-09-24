@@ -42,7 +42,15 @@ set `can_force`, originate a trade, veto a name, or overwrite the existing forwa
 
 The reconstructed daily row count is not the independent sample size. The loud-state ceiling of
 18 episodes is the binding constraint for the exact 50% estimate, the probability ladder, band
-separation, context-gate promotion, and any downstream capital claim.
+separation, context-gate promotion, and any downstream capital claim. The headline rows above
+substantially reuse those same loud/risk-off dates; they are different measurements of one small
+historical episode set, not independent corroborating studies.
+
+The point estimate is also era-dependent: emitted `>=10% / 42 sessions` lift is 2.10× before
+2016 and 4.41× from 2016 onward, with chronological-half estimates of 2.29× and 3.32×. Use the
+aggregate as directional evidence, not a timeless structural coefficient. Historical transforms
+are causal on the latest repository snapshots, but source-vintage identifiers are unavailable;
+this is reconstructed current-snapshot evidence rather than fully vintage point-in-time proof.
 
 ## Product and machine-use policy
 
@@ -147,7 +155,7 @@ the specific capital-policy evidence lane; its negative result blocks P0 from sh
 unless the Chairman accepts materially different evidence. P0 should retain the exact
 factor only as clearly non-advisory research/debug disclosure, or omit it from the user-facing surface.
 
-P2 correctly separates independent episodes from raw rows. P1 additionally shows that exact state
+P2 proposes an episode-aware separation of independent episodes from raw rows. P1 additionally shows that exact state
 probabilities and cutoffs remain underpowered. P2 authority maturity must not be interpreted as
 probability-calibration maturity; they are separate gates.
 
@@ -159,7 +167,7 @@ be prospective and first-writer-bound, with no backfill.
 
 | Expansion | Minimum gate |
 |---|---|
-| report exact 50% as calibrated | at least 20 effective risk-off episodes, >=5 hit and >=5 non-hit episodes, forecast inside block and episode intervals, nonnegative Brier skill, no supported inversion |
+| report exact 50% as calibrated | at least 20 effective risk-off episodes, >=5 hit and >=5 non-hit episodes, absolute calibration error <=10 percentage points, forecast inside block and episode intervals, nonnegative Brier skill, no supported inversion |
 | promote the full H5/H10/H21 ladder | all loud-state cells meet independent-episode floors; no supported inversion; held-out/prospective comparison passes |
 | claim exact band optimality | separately preregistered fixed neighborhood/sensitivity test; no post-hoc threshold selection |
 | open a recalibration candidate | at least 25 matured same-model issued rows plus identifiable model cohort and independent episodes |
