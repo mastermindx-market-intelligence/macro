@@ -18,19 +18,19 @@ The construction retains meaningful hazard discrimination, especially for the hi
 | extreme China external-driver hazard | **KEEP_BUT_RELABEL** | emitted risk-off lift is 1.63x for 5%/21d and 2.64x for 10%/42d; effective episodes 18/18. Call this an elevated external-driver hazard, not an exact crisis probability. |
 | 98th-percentile intensity semantics | **KEEP_BUT_RELABEL** | current score is 98.02; valid only as a causal trailing-504-session composite percentile, not 98% drawdown odds or all-history extremity. |
 | >=5%/21d risk-off probability = 50% | **INSUFFICIENT_EVIDENCE** | observed 0.473 versus displayed 0.500; effective episodes 18; block CI [0.34781895937277263, 0.5800988796034574]; episode CI [0.27406976744186046, 0.6372410220167222]. |
-| >=10%/42d historical lift ~2.07x | **KEEP_BUT_RELABEL** | current ungated risk-off reconstruction lift 2.03x with 18 effective episodes; the original 2.07x harness and exact trigger were not committed, so this is a reconstruction, not byte-for-byte replication. |
+| >=10%/42d historical lift ~2.07x | **KEEP_BUT_RELABEL** | exact emitted production risk-off lift 2.64x with 18 effective episodes; the historical record is 2.07x, and its original executable harness was not committed. |
 | elevated vs risk-off separation | **KEEP_BUT_RELABEL** | risk-off minus elevated observed 5%/21d rate 0.062; block CI [-0.06270803504915402, 0.18377055734658934]; effective episodes 18/18. |
 | 5d / 10d / 21d ladder | **INSUFFICIENT_EVIDENCE** | The surface is mechanically monotone, but its current calibrator explicitly seeds flat-at-base and the loud-state episode floor is not met across all horizons; supported material inversion=False. |
-| context gate value-add | **KEEP_BUT_RELABEL** | gate-minus-ungated Brier difference -0.0021; risk-off lift difference 0.22x; effective gated risk-off episodes 18. |
+| context gate value-add | **KEEP_BUT_RELABEL** | gate-minus-ungated Brier difference -0.0021; elevated-plus lift difference 0.22x; effective gated elevated-plus episodes 18; continuous ranking score unchanged. |
 
 ## Confirmatory targets — Shanghai Composite
 
 | Target | Eligible | Base rate | Risk-off rate | Risk-off lift | Block 95% CI | Effective episodes | Permutation p | AP / base | AUC |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| >=5% / 21 sessions | 5701 | 28.9% | 47.3% | 1.63× | [1.243, 2.053] | 18 | 0.0094 | 1.24× | 0.582 |
-| >=10% / 42 sessions | 5680 | 16.9% | 44.4% | 2.64× | [1.817, 3.585] | 18 | 0.0066 | 1.74× | 0.655 |
+| >=5% / 21 sessions | 5701 | 28.9% | 47.3% | 1.63× | [1.243, 2.053] | 18 | 0.0094 | 1.23× | 0.582 |
+| >=10% / 42 sessions | 5680 | 16.9% | 44.4% | 2.64× | [1.817, 3.585] | 18 | 0.0066 | 1.70× | 0.655 |
 
-The primary UI target uses the **emitted** state after the context gate. The historical claim is also shown below using the **ungated >=91st-percentile composite extreme**, because that reconstruction reproduces the recorded split-half pattern while the original executable trigger is unavailable.
+Both confirmatory targets use the exact **emitted production state after the context gate**. The ungated composite remains a preregistered counterfactual baseline only; it is not used to rescue or reproduce the historical claim.
 
 ## Historical 10%/42-session stability
 
@@ -38,30 +38,30 @@ The primary UI target uses the **emitted** state after the context gate. The his
 
 | Slice | Eligible rows | Risk-off rows | Base rate | Conditional rate | Lift |
 |---|---:|---:|---:|---:|---:|
-| First half | 2840 | 293 | 23.1% | 52.2% | 2.26× |
-| Second half | 2840 | 413 | 10.6% | 21.5% | 2.03× |
-| Pre-2016 | 3117 | 340 | 24.8% | 51.8% | 2.08× |
-| 2016+ | 2563 | 366 | 7.2% | 18.0% | 2.51× |
+| First half | 2840 | 244 | 23.1% | 52.9% | 2.29× |
+| Second half | 2840 | 224 | 10.6% | 35.3% | 3.32× |
+| Pre-2016 | 3117 | 291 | 24.8% | 52.2% | 2.10× |
+| 2016+ | 2563 | 177 | 7.2% | 31.6% | 4.41× |
 
 ### Leave-one-crisis-out
 
 | Omitted episode | Applicable | Excluded rows | Remaining lift |
 |---|---:|---:|---:|
 | asian_russia_ltcm | no | 0 | not testable; pre-sample |
-| global_financial_crisis | yes | 466 | 1.63× |
-| china_equity_devaluation | yes | 247 | 2.16× |
-| us_china_trade_war | yes | 307 | 2.10× |
-| covid_shock | yes | 159 | 2.04× |
-| china_property_regulatory_zero_covid | yes | 485 | 2.30× |
+| global_financial_crisis | yes | 466 | 2.28× |
+| china_equity_devaluation | yes | 247 | 2.86× |
+| us_china_trade_war | yes | 307 | 2.85× |
+| covid_shock | yes | 159 | 2.65× |
+| china_property_regulatory_zero_covid | yes | 485 | 2.65× |
 
-## A-share replication — 510300.SS ETF proxy
+## CSI300 replication
 
-The repository does not contain exact CSI300 cash-index history. These are outcome-only replications on the 510300.SS ETF proxy using the unchanged Shanghai-built signal.
+**INSUFFICIENT_EVIDENCE** — No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.
 
-| Target | Eligible | Base rate | Emitted risk-off lift | Ungated risk-off lift | Effective episodes |
-|---|---:|---:|---:|---:|---:|
-| 5pct_21d | 3463 | 24.3% | 1.99× | 1.59× | 12 |
-| 10pct_42d | 3442 | 12.3% | 2.62× | 2.01× | 12 |
+- Exact cash-index history available: **false**.
+- 510300.SS ETF proxy available: **true**.
+- Quantitative proxy replication performed: **false**.
+- The ETF proxy is disclosed in provenance but withheld from confirmatory evidence; no FXI or offshore substitute is used.
 
 ## Calibration of the displayed 5d / 10d / 21d surface
 
@@ -91,34 +91,46 @@ The repository does not contain exact CSI300 cash-index history. These are outco
 | h21 | elevated | 40.0% | 41.0% | [27.8%, 53.5%] | [22.8%, 56.8%] | 18 | 12 / 6 |
 | h21 | risk-off | 50.0% | 47.3% | [34.8%, 58.0%] | [27.4%, 63.7%] | 18 | 10 / 8 |
 
+## Band cutoffs and monotonic ordering
+
+- Exact production cuts tested unchanged: **{'watch': 58.0, 'caution': 72.0, 'elevated': 83.0, 'risk_off': 91.0}**.
+- Observed monotonic ordering: **KEEP_BUT_RELABEL**.
+- Exact cutoff optimality: **INSUFFICIENT_EVIDENCE** — The fixed production cuts were tested as-is. No preregistered neighborhood sensitivity or threshold search was permitted, so optimality is not established.
+- Supported material probability-bin inversion: **false**.
+- Post-hoc threshold search performed: **false**.
+
 ## Economic baseline comparison
 
 ### 5pct_21d
 
 | Construction | AP | AUC | Risk-off lift | Elevated-plus lift |
 |---|---:|---:|---:|---:|
-| Current emitted radar | 0.358 | 0.582 | 1.63× | 1.56× |
-| breadth_only | 0.365 | 0.564 | 1.57× | 1.42× |
-| rates_only | 0.324 | 0.522 | 1.24× | 1.11× |
-| trend_context | 0.345 | 0.529 | 1.09× | 1.09× |
-| ungated_composite | 0.358 | 0.582 | 1.41× | 1.34× |
+| Current emitted radar | 0.357 | 0.582 | 1.63× | 1.56× |
+| breadth_only | 0.363 | 0.564 | 1.57× | 1.42× |
+| rates_only | 0.322 | 0.522 | 1.24× | 1.11× |
+| trend_context | 0.302 | 0.529 | 1.09× | 1.09× |
+| ungated_composite | 0.357 | 0.582 | 1.41× | 1.34× |
 
 ### 10pct_42d
 
 | Construction | AP | AUC | Risk-off lift | Elevated-plus lift |
 |---|---:|---:|---:|---:|
-| Current emitted radar | 0.294 | 0.655 | 2.64× | 2.46× |
-| breadth_only | 0.272 | 0.588 | 2.12× | 1.82× |
-| rates_only | 0.238 | 0.575 | 1.58× | 1.33× |
-| trend_context | 0.223 | 0.535 | 1.12× | 1.12× |
-| ungated_composite | 0.294 | 0.655 | 2.03× | 1.87× |
+| Current emitted radar | 0.287 | 0.655 | 2.64× | 2.46× |
+| breadth_only | 0.268 | 0.588 | 2.12× | 1.82× |
+| rates_only | 0.233 | 0.575 | 1.58× | 1.33× |
+| trend_context | 0.180 | 0.535 | 1.12× | 1.12× |
+| ungated_composite | 0.287 | 0.655 | 2.03× | 1.87× |
 
 ## Context-gate value-add
 
-- 5%/21d gated risk-off lift: **1.63×**; ungated: **1.41×**.
-- Lift difference: **0.22×**, block CI [-0.019, 0.493].
+- 5%/21d gated elevated-plus lift: **1.56×**; ungated: **1.34×**.
+- Elevated-plus lift difference: **0.22×**, block CI [0.011, 0.460].
+- Elevated-plus effective episode ceiling: **18**.
 - Brier difference, gated minus ungated: **-0.0021**, block CI [-0.005, 0.000]. Negative favors the gate.
-- 10%/42d gated/ungated lifts: **2.64× / 2.03×**.
+- Continuous ranking score unchanged by the state cap: **true**; AP difference 0.0000.
+- Secondary risk-off lift difference: **0.22×**, block CI [-0.019, 0.493].
+- 10%/42d gated/ungated risk-off lifts: **2.64× / 2.03×**.
+- Preregistered promotion uses supported Brier improvement **or** supported elevated-plus lift improvement, plus the effective-episode floor.
 
 ## Genuinely issued forward ledger — kept separate
 
@@ -126,13 +138,15 @@ The repository does not contain exact CSI300 cash-index history. These are outco
 |---:|---:|---:|---:|---:|---:|---:|---:|
 | 34 | 16 | 18 | 5 | 2 | 4 | 1 | false |
 
-Pending issuance spans **['2026-08-26', '2026-09-23']**; the September episode remains unresolved. `not eligible: fewer than 30 matured rows or 8 matured loud alerts`
+Pending issuance spans **['2026-08-26', '2026-09-23']**; the September episode remains unresolved. `not eligible: fewer than 25 matured issued rows`
+Research count floor (25 matured) met: **false**; research recalibration floor including cohort/episode qualification met: **false**.
+Exact model cohort identifiers present: **false**; independent episode identifiers present: **false**.
 
 ## Provenance and reproducibility
 
 - Exact construction hash: `a09fce6e68960eaa89dd05c387fc6f547ede35e89a9a097d42559acb6fe16f74`
 - Historical PIT qualification: **causal_transform_on_snapshot_not_vintage_pit**.
-- CSI replication: **510300.SS ETF proxy**, not the exact CSI300 cash index.
+- CSI replication: **INSUFFICIENT_EVIDENCE** for the exact cash index; 510300.SS is disclosed as an ETF proxy and withheld from confirmatory results.
 - Historical reconstruction and issued forward evidence are distinct evidence classes and are never pooled.
 
 ### Data files
@@ -140,7 +154,7 @@ Pending issuance spans **['2026-08-26', '2026-09-23']**; the September episode r
 | Source | Role | Rows | Date range | SHA-256 |
 |---|---|---:|---|---|
 | shanghai_composite | canonical_benchmark_and_context_gate | 7083 | 1997-07-02 → 2026-09-23 | `fde7953ffe4db529…` |
-| csi300_etf_proxy | outcome_only_replication_proxy | 3485 | 2012-05-04 → 2026-09-23 | `5fd8228d7a1bc548…` |
+| csi300_etf_proxy | available_proxy_not_used_for_confirmatory_replication | 3485 | 2012-05-04 → 2026-09-23 | `5fd8228d7a1bc548…` |
 | china_breadth | breadth_subleg | 8901 | 1991-03-12 → 2026-09-23 | `270504c850f35868…` |
 | us_2y | rate_subleg | 12573 | 1976-06-01 → 2026-09-21 | `bfaeca464df49b4a…` |
 | us_10y_real | rate_subleg | 5934 | 2003-01-02 → 2026-09-21 | `82194cc322bd53a4…` |
@@ -154,15 +168,15 @@ Pending issuance spans **['2026-08-26', '2026-09-23']**; the September episode r
 
 - The current production calibrator explicitly treats raw state rates as descriptive and emits a flat-at-base probability surface; it is not the provenance of the baked CN ladder.
 - Merged PR #711 and the engine docstring preserve the 2.07x claim, but no executable research harness, immutable result artifact, or exact original extreme trigger accompanied the claim.
-- The available CSI300 replication series is 510300.SS, an ETF proxy. No exact CSI300 cash-index series was found in the repository.
+- No exact CSI300 cash-index series was found. The available 510300.SS ETF proxy is disclosed but withheld from confirmatory replication under the preregistration.
 - Historical transforms are causal on repository snapshots, but vintage identifiers are unavailable; this is not fully vintage point-in-time evidence.
-- Issued forward rows remain a separate evidence class and are not pooled with reconstructed history.
+- Issued forward rows remain a separate evidence class and are not pooled with reconstructed history; the ledger lacks exact model-cohort and independent-episode identifiers.
 
 ## Proposed follow-up
 
 - Do not retune production in this PR. Open a separately preregistered calibration candidate only after the forward authority floors and independent loud-state episode floors mature.
 - Recover or rebuild the original PR #711 validation harness under a new provenance-only commission; do not retroactively call the present reconstruction byte-identical replication.
-- Acquire a lawful exact CSI300 cash-index history if the cash-index replication claim must remain exact; otherwise relabel the current evidence as a 510300.SS ETF-proxy replication.
+- Acquire a lawful exact CSI300 cash-index history for the canonical replication; any 510300.SS ETF-proxy study requires its own separately preregistered, explicitly proxy-labeled analysis.
 
 ## What must not be redone
 

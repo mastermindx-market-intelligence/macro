@@ -85,11 +85,19 @@
     "hash_algorithm": "sha256"
   },
   "csi300_replication_qualification": {
+    "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
     "cash_index_series_available": false,
-    "instrument": "510300.SS",
-    "label": "CSI300 ETF proxy",
-    "method": "outcome-only alignment to the exact Shanghai-built production signal",
-    "signal_rebuilt_on_replication_benchmark": false
+    "exact_candidates_checked": [
+      "data/china/000300.SS.parquet",
+      "data/china/000300.SH.parquet",
+      "data/china/CSI300.parquet"
+    ],
+    "exact_candidates_present": [],
+    "proxy_available": true,
+    "proxy_path": "data/china/510300.SS.parquet",
+    "proxy_symbol": "510300.SS",
+    "quantitative_replication_performed": false,
+    "verdict": "INSUFFICIENT_EVIDENCE"
   },
   "evidence_class": "reconstructed_history_plus_separate_issued_forward_ledger",
   "frozen_source_files": {
@@ -195,7 +203,7 @@
       "path": "data/china/510300.SS.parquet",
       "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
       "provider": "repo_store_yahoo_adjusted",
-      "role": "outcome_only_replication_proxy",
+      "role": "available_proxy_not_used_for_confirmatory_replication",
       "rows": 3485,
       "sha256": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
       "vintage_identifier_available": false

@@ -1,4 +1,22 @@
 {
+  "band_cutoff_assessment": {
+    "cutoff_optimality_basis": "The fixed production cuts were tested as-is. No preregistered neighborhood sensitivity or threshold search was permitted, so optimality is not established.",
+    "cutoff_optimality_verdict": "INSUFFICIENT_EVIDENCE",
+    "exact_cutoffs": {
+      "caution": 72.0,
+      "elevated": 83.0,
+      "risk_off": 91.0,
+      "watch": 58.0
+    },
+    "minimum_state_effective_n_by_horizon": {
+      "h10": 12,
+      "h21": 12,
+      "h5": 12
+    },
+    "monotonic_ordering_verdict": "KEEP_BUT_RELABEL",
+    "post_hoc_threshold_search_performed": false,
+    "supported_material_inversion": false
+  },
   "base_sha": "8db6896dab2199a4b7fc61a005c225380cac7cd6",
   "calibration": {
     "h10": {
@@ -627,7 +645,9 @@
       "verdict": "KEEP_BUT_RELABEL"
     },
     ">=10%/42d historical lift ~2.07x": {
-      "basis": "current ungated risk-off reconstruction lift 2.03x with 18 effective episodes; the original 2.07x harness and exact trigger were not committed, so this is a reconstruction, not byte-for-byte replication.",
+      "basis": "exact emitted production risk-off lift 2.64x with 18 effective episodes; the historical record is 2.07x, and its original executable harness was not committed.",
+      "metric_source": "emitted_production_risk_off",
+      "observed_lift": 2.6351194618418,
       "reasons": [
         "directional lift survives a majority of stability slices but misses robust promotion"
       ],
@@ -641,7 +661,7 @@
       "verdict": "INSUFFICIENT_EVIDENCE"
     },
     "context gate value-add": {
-      "basis": "gate-minus-ungated Brier difference -0.0021; risk-off lift difference 0.22x; effective gated risk-off episodes 18.",
+      "basis": "gate-minus-ungated Brier difference -0.0021; elevated-plus lift difference 0.22x; effective gated elevated-plus episodes 18; continuous ranking score unchanged.",
       "verdict": "KEEP_BUT_RELABEL"
     },
     "elevated vs risk-off separation": {
@@ -663,10 +683,26 @@
       0.00025176504122087067
     ],
     "brier_difference_gated_minus_ungated": -0.00211278723031047,
+    "continuous_ap_difference": 0.0,
+    "elevated_plus_lift_difference_block_ci": [
+      0.010822490966292732,
+      0.4595085644643761
+    ],
+    "elevated_plus_lift_difference_gated_minus_ungated": 0.22069088818804827,
     "gated_brier": 0.20194800912120678,
+    "gated_elevated_plus_effective_n": {
+      "effective_n_ceiling": 18,
+      "episodes": 18,
+      "hit_episodes": 12,
+      "nonhit_episodes": 6,
+      "nonoverlap_ceiling": 271,
+      "rows": 710
+    },
+    "gated_elevated_plus_lift": 1.5630651098830706,
     "gated_risk_off_lift": 1.6342028017999195,
     "historical_10pct_42d_gated_lift": 2.6351194618418,
     "historical_10pct_42d_ungated_lift": 2.032326553785921,
+    "ranking_score_unchanged": true,
     "risk_off_lift_difference_block_ci": [
       -0.01924217483316758,
       0.49281695728490804
@@ -674,277 +710,23 @@
     "risk_off_lift_difference_gated_minus_ungated": 0.22031474809450757,
     "rows": 5701,
     "ungated_brier": 0.20406079635151725,
+    "ungated_elevated_plus_lift": 1.3423742216950223,
     "ungated_risk_off_lift": 1.413888053705412
   },
   "csi300_replication": {
-    "10pct_42d": {
-      "base_rate": 0.1231841952353283,
-      "benchmark": "CSI300 ETF proxy (510300.SS), outcome-only replication",
-      "continuous_discrimination": {
-        "ap_over_base": 1.5987389217443613,
-        "average_precision": 0.19693936746647564,
-        "roc_auc": 0.6226536222914087
-      },
-      "elevated_plus": {
-        "base_rate": 0.1231841952353283,
-        "block_ci": [
-          1.2224878567857438,
-          3.9110535216850995
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.30319148936170215,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 5,
-          "nonhit_episodes": 7,
-          "nonoverlap_ceiling": 81,
-          "rows": 376
-        },
-        "episode_rate_ci": [
-          0.11235804842876886,
-          0.4463148602160325
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 114,
-        "lift": 2.4612856282617424,
-        "rows": 376
-      },
-      "eligible_rows": 3442,
-      "first_eligible_date": "2012-05-04",
-      "horizon": 42,
-      "instrument_qualification": "ETF proxy; not exact cash-index history",
-      "last_eligible_date": "2026-07-27",
-      "permutation": {
-        "risk_off": {
-          "invalid_reps": 0,
-          "observed": 2.6207472886643886,
-          "p_value": 0.005598880223955209,
-          "valid_reps": 5000
-        },
-        "ungated_risk_off": {
-          "invalid_reps": 0,
-          "observed": 2.01119751827299,
-          "p_value": 0.02539492101579684,
-          "valid_reps": 5000
-        }
-      },
-      "risk_off": {
-        "base_rate": 0.1231841952353283,
-        "block_ci": [
-          1.403455736311712,
-          4.224325802168552
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.3228346456692913,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 4,
-          "nonhit_episodes": 8,
-          "nonoverlap_ceiling": 81,
-          "rows": 254
-        },
-        "episode_rate_ci": [
-          0.14457831325301204,
-          0.4490472848969016
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 82,
-        "lift": 2.6207472886643886,
-        "rows": 254
-      },
-      "target": "10pct_42d",
-      "threshold": 0.1,
-      "ungated_elevated_plus": {
-        "base_rate": 0.1231841952353283,
-        "block_ci": [
-          1.032132687174695,
-          2.640572890489572
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.21852387843704776,
-        "effective_n": {
-          "effective_n_ceiling": 14,
-          "episodes": 14,
-          "hit_episodes": 5,
-          "nonhit_episodes": 9,
-          "nonoverlap_ceiling": 81,
-          "rows": 691
-        },
-        "episode_rate_ci": [
-          0.07142304290137107,
-          0.3532427845377652
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 151,
-        "lift": 1.77396035278377,
-        "rows": 691
-      },
-      "ungated_risk_off": {
-        "base_rate": 0.1231841952353283,
-        "block_ci": [
-          1.1000403544906006,
-          3.145321563275589
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.24774774774774774,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 5,
-          "nonhit_episodes": 7,
-          "nonoverlap_ceiling": 81,
-          "rows": 444
-        },
-        "episode_rate_ci": [
-          0.10970175134385296,
-          0.35510727367870215
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 110,
-        "lift": 2.01119751827299,
-        "rows": 444
-      }
-    },
-    "5pct_21d": {
-      "base_rate": 0.24314178457984406,
-      "benchmark": "CSI300 ETF proxy (510300.SS), outcome-only replication",
-      "continuous_discrimination": {
-        "ap_over_base": 1.310765900589375,
-        "average_precision": 0.3187019602357071,
-        "roc_auc": 0.5697556552638519
-      },
-      "elevated_plus": {
-        "base_rate": 0.24314178457984406,
-        "block_ci": [
-          1.1901035688526982,
-          2.4195035829182343
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.4362244897959184,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 8,
-          "nonhit_episodes": 4,
-          "nonoverlap_ceiling": 164,
-          "rows": 392
-        },
-        "episode_rate_ci": [
-          0.24072222222222223,
-          0.6112702756825311
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 171,
-        "lift": 1.7941156866547094,
-        "rows": 392
-      },
-      "eligible_rows": 3463,
-      "first_eligible_date": "2012-05-04",
-      "horizon": 21,
-      "instrument_qualification": "ETF proxy; not exact cash-index history",
-      "last_eligible_date": "2026-08-25",
-      "permutation": {
-        "risk_off": {
-          "invalid_reps": 0,
-          "observed": 1.9936220558104114,
-          "p_value": 0.0005998800239952009,
-          "valid_reps": 5000
-        },
-        "ungated_risk_off": {
-          "invalid_reps": 0,
-          "observed": 1.5923554327034242,
-          "p_value": 0.016596680663867228,
-          "valid_reps": 5000
-        }
-      },
-      "risk_off": {
-        "base_rate": 0.24314178457984406,
-        "block_ci": [
-          1.2941624438156067,
-          2.740504200975218
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.4847328244274809,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 7,
-          "nonhit_episodes": 5,
-          "nonoverlap_ceiling": 164,
-          "rows": 262
-        },
-        "episode_rate_ci": [
-          0.2693559597752145,
-          0.6754975693955192
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 127,
-        "lift": 1.9936220558104114,
-        "rows": 262
-      },
-      "target": "5pct_21d",
-      "threshold": 0.05,
-      "ungated_elevated_plus": {
-        "base_rate": 0.24314178457984406,
-        "block_ci": [
-          1.0512460016790688,
-          1.8413362278285639
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.347949080622348,
-        "effective_n": {
-          "effective_n_ceiling": 14,
-          "episodes": 14,
-          "hit_episodes": 10,
-          "nonhit_episodes": 4,
-          "nonoverlap_ceiling": 164,
-          "rows": 707
-        },
-        "episode_rate_ci": [
-          0.22320914981036663,
-          0.4910185006331423
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 246,
-        "lift": 1.4310542353862126,
-        "rows": 707
-      },
-      "ungated_risk_off": {
-        "base_rate": 0.24314178457984406,
-        "block_ci": [
-          1.0964920044570687,
-          2.1729472321163135
-        ],
-        "block_invalid_reps": 0,
-        "block_valid_reps": 5000,
-        "conditional_rate": 0.38716814159292035,
-        "effective_n": {
-          "effective_n_ceiling": 12,
-          "episodes": 12,
-          "hit_episodes": 9,
-          "nonhit_episodes": 3,
-          "nonoverlap_ceiling": 164,
-          "rows": 452
-        },
-        "episode_rate_ci": [
-          0.23724470644113502,
-          0.5589784946236559
-        ],
-        "episode_valid_reps": 5000,
-        "hits": 175,
-        "lift": 1.5923554327034242,
-        "rows": 452
-      }
-    }
+    "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
+    "cash_index_series_available": false,
+    "exact_candidates_checked": [
+      "data/china/000300.SS.parquet",
+      "data/china/000300.SH.parquet",
+      "data/china/CSI300.parquet"
+    ],
+    "exact_candidates_present": [],
+    "proxy_available": true,
+    "proxy_path": "data/china/510300.SS.parquet",
+    "proxy_symbol": "510300.SS",
+    "quantitative_replication_performed": false,
+    "verdict": "INSUFFICIENT_EVIDENCE"
   },
   "current_snapshot": {
     "asof": "2026-09-23",
@@ -1042,11 +824,19 @@
       "hash_algorithm": "sha256"
     },
     "csi300_replication_qualification": {
+      "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
       "cash_index_series_available": false,
-      "instrument": "510300.SS",
-      "label": "CSI300 ETF proxy",
-      "method": "outcome-only alignment to the exact Shanghai-built production signal",
-      "signal_rebuilt_on_replication_benchmark": false
+      "exact_candidates_checked": [
+        "data/china/000300.SS.parquet",
+        "data/china/000300.SH.parquet",
+        "data/china/CSI300.parquet"
+      ],
+      "exact_candidates_present": [],
+      "proxy_available": true,
+      "proxy_path": "data/china/510300.SS.parquet",
+      "proxy_symbol": "510300.SS",
+      "quantitative_replication_performed": false,
+      "verdict": "INSUFFICIENT_EVIDENCE"
     },
     "evidence_class": "reconstructed_history_plus_separate_issued_forward_ledger",
     "frozen_source_files": {
@@ -1152,7 +942,7 @@
         "path": "data/china/510300.SS.parquet",
         "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
         "provider": "repo_store_yahoo_adjusted",
-        "role": "outcome_only_replication_proxy",
+        "role": "available_proxy_not_used_for_confirmatory_replication",
         "rows": 3485,
         "sha256": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
         "vintage_identifier_available": false
@@ -1257,16 +1047,27 @@
   "discoveries": [
     "The current production calibrator explicitly treats raw state rates as descriptive and emits a flat-at-base probability surface; it is not the provenance of the baked CN ladder.",
     "Merged PR #711 and the engine docstring preserve the 2.07x claim, but no executable research harness, immutable result artifact, or exact original extreme trigger accompanied the claim.",
-    "The available CSI300 replication series is 510300.SS, an ETF proxy. No exact CSI300 cash-index series was found in the repository.",
+    "No exact CSI300 cash-index series was found. The available 510300.SS ETF proxy is disclosed but withheld from confirmatory replication under the preregistration.",
     "Historical transforms are causal on repository snapshots, but vintage identifiers are unavailable; this is not fully vintage point-in-time evidence.",
-    "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history."
+    "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history; the ledger lacks exact model-cohort and independent-episode identifiers."
   ],
   "forward_ledger": {
     "authority_floors_met": false,
-    "authority_interpretation": "not eligible: fewer than 30 matured rows or 8 matured loud alerts",
+    "authority_interpretation": "not eligible: fewer than 25 matured issued rows",
     "can_force": false,
+    "cohort_identifiers": {
+      "construction_hash": [],
+      "model": [],
+      "model_version": [],
+      "profile": [],
+      "source_sha": []
+    },
+    "cohort_identifiers_present": false,
+    "cohort_qualification": "unverifiable_from_ledger_schema",
+    "episode_identifiers_present": false,
     "evidence_class": "genuinely_issued_forward",
     "invalid_lines": 0,
+    "loud_count_floor_met": false,
     "matured_all_hits": 9,
     "matured_asof_range": [
       "2026-06-26",
@@ -1289,6 +1090,9 @@
     ],
     "pending_rows": 18,
     "pool_with_reconstructed_history": false,
+    "production_force_count_floor_met": false,
+    "research_count_floor_met": false,
+    "research_recalibration_floor_met": false,
     "september_pending_rows": 14,
     "source_sha256": "11577f99d426d3b8295acf5870d27e8ce3758c0c7003e2d0dd4f08b434602b7e",
     "total_rows": 34,
@@ -1300,13 +1104,13 @@
     }
   },
   "harness_path": "scripts/research/cn_risk_radar_revalidation.py",
-  "harness_sha256": "c4304e2e5410ad16c450252b1789f0750ad8a0deb6c393fc7f8c955884fa07aa",
+  "harness_sha256": "19e3fe00f8979108c4ac397d05ec38c82c8faa6afc11c903ce7990aa8a05a82f",
   "operation_key": "cn-risk-p1-radar-revalidation-20260923-solpro-001",
   "prereg_sha": "db5590accaa03f78396ca91b6874f04b9bcf4cf3",
   "proposed_followup": [
     "Do not retune production in this PR. Open a separately preregistered calibration candidate only after the forward authority floors and independent loud-state episode floors mature.",
     "Recover or rebuild the original PR #711 validation harness under a new provenance-only commission; do not retroactively call the present reconstruction byte-identical replication.",
-    "Acquire a lawful exact CSI300 cash-index history if the cash-index replication claim must remain exact; otherwise relabel the current evidence as a 510300.SS ETF-proxy replication."
+    "Acquire a lawful exact CSI300 cash-index history for the canonical replication; any 510300.SS ETF-proxy study requires its own separately preregistered, explicitly proxy-labeled analysis."
   ],
   "run_parameters": {
     "bootstrap_reps": 5000,
@@ -1321,7 +1125,7 @@
       "base_rate": 0.1686619718309859,
       "baseline_comparison": {
         "breadth_only": {
-          "average_precision": 0.2724015323498578,
+          "average_precision": 0.26771888295372015,
           "elevated_plus_lift": 1.8158601234183456,
           "elevated_plus_rows": 1133,
           "elevated_threshold": 0.83,
@@ -1332,7 +1136,7 @@
           "rows": 5680
         },
         "rates_only": {
-          "average_precision": 0.23805618558670102,
+          "average_precision": 0.23317263095298563,
           "elevated_plus_lift": 1.3258502810186599,
           "elevated_plus_rows": 1033,
           "elevated_threshold": 0.83,
@@ -1343,7 +1147,7 @@
           "rows": 5680
         },
         "trend_context": {
-          "average_precision": 0.2233722915800451,
+          "average_precision": 0.17976091818505197,
           "elevated_plus_lift": 1.1233698929375637,
           "elevated_plus_rows": 2697,
           "elevated_threshold": 0.5,
@@ -1354,7 +1158,7 @@
           "rows": 5680
         },
         "ungated_composite": {
-          "average_precision": 0.29365212878266816,
+          "average_precision": 0.2873220453850743,
           "elevated_plus_lift": 1.8679715330109972,
           "elevated_plus_rows": 1076,
           "elevated_threshold": 0.83,
@@ -1368,8 +1172,8 @@
       "benchmark": "Shanghai Composite (000001.SS)",
       "confirmatory": true,
       "continuous_discrimination": {
-        "ap_over_base": 1.7410689890245878,
-        "average_precision": 0.29365212878266816,
+        "ap_over_base": 1.703537805623405,
+        "average_precision": 0.2873220453850743,
         "roc_auc": 0.6553633593564172
       },
       "elevated_plus": {
@@ -1779,7 +1583,7 @@
       "base_rate": 0.15143557422969187,
       "baseline_comparison": {
         "breadth_only": {
-          "average_precision": 0.2178125825734488,
+          "average_precision": 0.2167662251132794,
           "elevated_plus_lift": 1.6153186658899794,
           "elevated_plus_rows": 1161,
           "elevated_threshold": 0.83,
@@ -1790,7 +1594,7 @@
           "rows": 5712
         },
         "rates_only": {
-          "average_precision": 0.18093222424443803,
+          "average_precision": 0.17783229419916866,
           "elevated_plus_lift": 1.215089044070968,
           "elevated_plus_rows": 1038,
           "elevated_threshold": 0.83,
@@ -1801,7 +1605,7 @@
           "rows": 5712
         },
         "trend_context": {
-          "average_precision": 0.18577320987849447,
+          "average_precision": 0.15505505569825367,
           "elevated_plus_lift": 1.0477470626984413,
           "elevated_plus_rows": 2729,
           "elevated_threshold": 0.5,
@@ -1812,7 +1616,7 @@
           "rows": 5712
         },
         "ungated_composite": {
-          "average_precision": 0.20548257846954363,
+          "average_precision": 0.20518930775138042,
           "elevated_plus_lift": 1.4661021317329996,
           "elevated_plus_rows": 1099,
           "elevated_threshold": 0.83,
@@ -1826,8 +1630,8 @@
       "benchmark": "Shanghai Composite (000001.SS)",
       "confirmatory": false,
       "continuous_discrimination": {
-        "ap_over_base": 1.3568976742405008,
-        "average_precision": 0.20548257846954363,
+        "ap_over_base": 1.3549610703767456,
+        "average_precision": 0.20518930775138042,
         "roc_auc": 0.6008652035524029
       },
       "elevated_plus": {
@@ -2237,7 +2041,7 @@
       "base_rate": 0.28924750043851954,
       "baseline_comparison": {
         "breadth_only": {
-          "average_precision": 0.36510185216242447,
+          "average_precision": 0.3629544768929609,
           "elevated_plus_lift": 1.4225130129371337,
           "elevated_plus_rows": 1152,
           "elevated_threshold": 0.83,
@@ -2248,7 +2052,7 @@
           "rows": 5701
         },
         "rates_only": {
-          "average_precision": 0.32387808904916426,
+          "average_precision": 0.3219444357796982,
           "elevated_plus_lift": 1.1057860722502457,
           "elevated_plus_rows": 1038,
           "elevated_threshold": 0.83,
@@ -2259,7 +2063,7 @@
           "rows": 5701
         },
         "trend_context": {
-          "average_precision": 0.34470864177890287,
+          "average_precision": 0.3023768762829403,
           "elevated_plus_lift": 1.0875445282912783,
           "elevated_plus_rows": 2718,
           "elevated_threshold": 0.5,
@@ -2270,7 +2074,7 @@
           "rows": 5701
         },
         "ungated_composite": {
-          "average_precision": 0.358171419530385,
+          "average_precision": 0.35693388636147183,
           "elevated_plus_lift": 1.3423742216950223,
           "elevated_plus_rows": 1092,
           "elevated_threshold": 0.83,
@@ -2284,8 +2088,8 @@
       "benchmark": "Shanghai Composite (000001.SS)",
       "confirmatory": true,
       "continuous_discrimination": {
-        "ap_over_base": 1.2382869998439812,
-        "average_precision": 0.358171419530385,
+        "ap_over_base": 1.2340085422357496,
+        "average_precision": 0.35693388636147183,
         "roc_auc": 0.5821836591263244
       },
       "elevated_plus": {
@@ -2695,7 +2499,7 @@
       "base_rate": 0.0710162672730453,
       "baseline_comparison": {
         "breadth_only": {
-          "average_precision": 0.12135791082780495,
+          "average_precision": 0.11954362871475814,
           "elevated_plus_lift": 1.8839449425005703,
           "elevated_plus_rows": 1166,
           "elevated_threshold": 0.83,
@@ -2706,7 +2510,7 @@
           "rows": 5717
         },
         "rates_only": {
-          "average_precision": 0.07719282795668045,
+          "average_precision": 0.07659879940879766,
           "elevated_plus_lift": 1.1475636308677601,
           "elevated_plus_rows": 1043,
           "elevated_threshold": 0.83,
@@ -2717,7 +2521,7 @@
           "rows": 5717
         },
         "trend_context": {
-          "average_precision": 0.08711703415381959,
+          "average_precision": 0.07244327844205894,
           "elevated_plus_lift": 1.0403872418477773,
           "elevated_plus_rows": 2734,
           "elevated_threshold": 0.5,
@@ -2728,7 +2532,7 @@
           "rows": 5717
         },
         "ungated_composite": {
-          "average_precision": 0.1004990139601575,
+          "average_precision": 0.09970987959231449,
           "elevated_plus_lift": 1.5943479153280504,
           "elevated_plus_rows": 1104,
           "elevated_threshold": 0.83,
@@ -2742,8 +2546,8 @@
       "benchmark": "Shanghai Composite (000001.SS)",
       "confirmatory": false,
       "continuous_discrimination": {
-        "ap_over_base": 1.4151548345079321,
-        "average_precision": 0.1004990139601575,
+        "ap_over_base": 1.404042811894734,
+        "average_precision": 0.09970987959231449,
         "roc_auc": 0.5968289626604509
       },
       "elevated_plus": {
