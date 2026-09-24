@@ -228,3 +228,39 @@ custody. No new collector/queue/signal registry; no parent completion, live fore
 autonomous worker or wake. This checkpoint covers all current effects; no unresolved
 mutation remains. The source-contract recipe is research-only and no production
 consumer or existing frozen experiment was changed.
+
+
+## Continuation: source-anchored proxy pilot, pre-outcome boundary
+
+Procedure pinned to protected Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+compatible1.0.1/bootstrap1; required procedure blobs freshly matched the full
+previously loaded instructions. Original source carrier recovered clean at
+f147b2da6c9fdf69f0ef722ef5b486f271bb5e2f; no competing pilot owner found.
+
+SWING_PROXY_PILOT_V1.md narrowly permits a separately named feasibility diagnostic
+while preserving native Pine/TVC parity as exact-replication and publication gates.
+The new research consumer imports the already recorded uploaded_formula_probe;
+it does not modify production canon, old HS1, RD1, or the held RD2 source work.
+No authenticated TradingView numerical parity or historical receipt is claimed.
+
+Source-only qualification: original capture digest unchanged. Provider session
+metadata supports448 closed hourly rows ->256 completed session-anchored bars:
+192 full120-minute bars plus64 scheduled40-minute closing stubs. One irregular
+snapshot and the current incomplete session are excluded. No missing/invalid
+OHLC in admitted rows. Overnight paths stay unobserved, never reconstructed.
+
+New synthetic suite plus existing TrialLedger/validation suites:56 passed,
+16 warnings, original Studio process30804. One technical connection failure
+was reconciled with same-backend history and no live matching pytest process;
+one bounded test retry wrote synthetic-tests-01.log. No market outcomes or
+empirical trials were evaluated in these tests. Direct-file --help, compile,
+and diff check pass. Existing rates CI step is extended, no new job/runner.
+
+Next: freeze exact code/reference/spec/test hashes, publish the pre-outcome
+revision, append all9 configs to incumbent TrialLedger, and execute once on the
+preserved capture. Primary MPR versus trend/vol; seven oscillator ablations;
+12-bar observed-session target after1-bar delay. All2026 history remains seen.
+Return every result including no-signal/censored/ambiguous cases and require50
+nonoverlapping active episodes per candidate before ranking. Raw capture stays
+private. Independent review, native parity, longer coverage, live consumers and
+separate equity value remain owed. No workers, watchers or effect uncertainty.
