@@ -120,6 +120,11 @@ DISCOVERY_TICKERS: tuple[str, ...] = tuple(HOMEBUILDER_TICKERS) + ("TSM", "ON")
 # calendar-quarter-end anchor (e.g. onsemi Q1 2026: stated 2026-04-03 vs
 # computed 2026-03-31).  A 10-day drift is still rejected — outside the
 # tolerance.  Zero for every calendar-quarter issuer (DHI/PHM/KBH/TOL/TSM).
+# A stated end adopted under this tolerance can fall in the month AFTER the derived
+# quarter end (e.g. April 3 for a March quarter). engine/cycle_pattern/imce_prospective
+# .calendar_quarter_key re-derives a quarter from calendar_end by majority month, so a
+# 52/53-week issuer whose quarters end in Jan/Apr/Jul/Oct would move its pooling key if
+# it were ever added to that roster; every roster issuer today has tolerance 0.
 FIFTY_TWO_FIFTY_THREE_WEEK_TOLERANCE_DAYS = 6
 
 # T05b — the results-6-K manifest discriminator's two narrow patterns.
@@ -1316,6 +1321,13 @@ def discover_new_homebuilder_revisions(
             # calendar end the filing does not name. The event id is
             # unaffected (its token is year+quarter); a calendar-quarter
             # issuer's drift is always 0 here, so its path is byte-identical.
+            print(
+                "::notice title=event-workspaces-discovery-period::"
+                f"{ticker}: accession {row_accession} carries the issuer's stated period end "
+                f"{stated_end} in place of the derived calendar quarter end "
+                f"{fiscal_period.calendar_end} (drift={stated_drift}d, tolerance={tolerance_days}d)",
+                flush=True,
+            )
             fiscal_period = FiscalPeriod(
                 year=fiscal_period.year, quarter=fiscal_period.quarter, calendar_end=stated_end,
             )

@@ -31,6 +31,7 @@ What this pins that neither unit suite can:
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 
 import pytest
@@ -105,6 +106,13 @@ ON_Q2_BARE_EX99_MANIFEST = [("8-K", "ef20079200_8k.htm", "8-K"), ("EX-99", "ef20
 
 CONFOUNDER_BODY = "<html><body><p>Synthetic non-results document; every figure here is invented.</p></body></html>"
 
+_MANIFEST_URL_RE = re.compile(r"/(\d{10}-\d{2}-\d{6})-index-headers\.html$")
+
+
+def _resolved_accessions(fetched: list[str]) -> set[str]:
+    """Exactly the accessions whose filing manifest was fetched (reached the discriminator)."""
+    return {m.group(1) for url in fetched for m in [_MANIFEST_URL_RE.search(url)] if m}
+
 
 def _index_headers(docs) -> str:
     body = "".join(
@@ -172,8 +180,10 @@ def test_tsm_production_identity_admits_only_the_real_results_six_k(monkeypatch,
     assert "6-K manifest refused by the results discriminator" in out
     for acc in (TSM_JUNE_REVENUE_ACCESSION, TSM_MONTHEND_ACCESSION, TSM_FS_ACCESSION):
         assert acc not in json.dumps(payload)
-    # rows dated off the quarter end were never resolved (no per-accession fetch)
-    assert not any("000545" in url or "000471" in url or "000539" in url for url in fetched)
+    # exactly the four quarter-end-dated rows reached the manifest stage; the five others were never resolved
+    assert _resolved_accessions(fetched) == {
+        TSM_RESULTS_ACCESSION, TSM_JUNE_REVENUE_ACCESSION, TSM_MONTHEND_ACCESSION, TSM_FS_ACCESSION,
+    }
 
 
 def test_tsm_admitted_payload_carries_the_closed_grammar_facts_and_guidance(monkeypatch) -> None:
@@ -206,8 +216,8 @@ def test_on_production_identity_admits_only_the_item_202_eight_k(monkeypatch) ->
     assert "2026q1" in event_id
     assert payload["sources"][0]["form"] == "8-K"
     assert payload["sources"][0]["url"].endswith("/ef20072220_ex99-1.htm")
-    # the Item 8.01 8-Ks carry real EX-99.1 exhibits but are never candidates
-    assert not any("019416" in url or "019207" in url or "021907" in url or "020642" in url for url in fetched)
+    # the Item 8.01 / 5.02 / 1.01 8-Ks carry real EX-99.1 exhibits but are never candidates: only the 2.02 row was resolved
+    assert _resolved_accessions(fetched) == {ON_RESULTS_ACCESSION}
 
 
 def test_on_admitted_payload_carries_the_label_bound_revenue_and_gaap_outlook(monkeypatch) -> None:
