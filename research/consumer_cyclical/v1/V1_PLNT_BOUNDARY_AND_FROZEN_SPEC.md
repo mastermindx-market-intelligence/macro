@@ -71,6 +71,32 @@ shell, evidence, rights or transport vocabulary.
 `registration_status=PENDING_SHARED_OWNER_ACCEPTANCE`) stays exactly where R15 left it — awaiting the #7780
 ruling. V1-CORE is a data shape plus a pure projection, not a mount.
 
+## 2a. Refutation of the leg-6 block (principal ran this against his own ruling)
+
+The leg-6 block was first argued only from `app/theme_research.py` being absent from `main`. That is a weak
+reason on its own: a *different* merged private transport could have made leg 6 reachable. Tested directly.
+
+**A merged, entitled, private publication route does exist on `main`:** `app/earnings.py` —
+`require_site_full_user` -> `app.paywall.enforce_site_full`, `Cache-Control: private, no-store`, serving
+`/api/earnings/v1/records/{slug}` out of private R2 through `engine.earnings_narrative.private_publication`.
+
+It still does not open leg 6, for three independent reasons:
+
+1. **R15 H1 already chose a different family and superseded this one.** "For the new Consumer
+   economic-change dossier, R12 supersedes R6's direct Earnings delivery and R7 Task4's proposed changes to
+   the Earnings private-publication files. The selected integration family is the same shared POST:
+   `/api/themes/v1/research/query` / `/api/themes/v1/research/evidence`." Using `app/earnings.py` would
+   overturn an accepted decision locally, which R15 forbids ("do not locally rewrite authority").
+2. **R15 H1 pre-labels that exact move as forbidden.** "R7 Task4 becomes compatibility, catalog-preservation
+   and next-run non-loss proof against the actual shared owner; **it is not a second publisher**."
+3. **Custody.** R6 §3 records that the Earnings member record "is a closed HTML-oriented payload; it does
+   not already accept an arbitrary economic JSON view. A versioned owner extension is required." And
+   `engine/earnings_narrative/**` is owned by sibling program CDV-1 (#7792) — no custody here.
+
+Leg 6 is therefore blocked on the **accepted-family** ground, which is stronger than the missing-file ground
+and does not depend on #7870 file layout. Recorded so a later session does not "discover" `app/earnings.py`
+and mistake it for an opening.
+
 ## 3. Collision census (R15 step 3)
 
 - **CDV-1 Consumer *Defensive* (#7792, `WS-CONSUMER-DEFENSIVE-CDV1`)** owns `engine/company_intelligence/*`,
