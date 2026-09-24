@@ -1570,45 +1570,54 @@ def test_minimax_shadow_canary_refuses_without_arm_and_if_source_is_enabled(tmp_
 
 
 def test_production_api_keys_use_existing_macro_api_secret_owner_only():
-    workflow = (ROOT / ".github" / "workflows" / "deploy-api-secrets.yml").read_text(encoding="utf-8")
-    dev_marker = "push OAuth pool to VPS macro-api env + restart"
-    prod_marker = "push production API keys to VPS macro-api env + optional MiniMax canary"
-    admin_marker = "push OAuth pool + ADMIN_GH_TOKEN + private owner scope to VPS admin env + restart"
-    before_dev, tail = workflow.split(dev_marker, 1)
-    developer, tail = tail.split(prod_marker, 1)
-    production, admin = tail.split(admin_marker, 1)
+    import yaml
 
-    assert "scope:" in before_dev
-    assert "- developer" in before_dev
-    assert "- production" in before_dev
-    assert "- all" in before_dev
-    assert "run_minimax_canary:" in before_dev
+    workflow_text = (
+        ROOT / ".github" / "workflows" / "deploy-api-secrets.yml"
+    ).read_text(encoding="utf-8")
+    workflow = yaml.safe_load(workflow_text)
+    steps = workflow["jobs"]["deploy"]["steps"]
 
-    # Production credentials are independently deployable: the ordinary
-    # developer/OAuth step never reads, strips, or rewrites them.
-    assert "MINIMAX_API_KEY" not in developer
-    assert "ZAI_API_KEY" not in developer
-    assert "inputs.scope != 'production'" in developer
+    # Preserve the incumbent two-step credential owner: macro-api then admin.
+    assert len(steps) == 2
+    api_step, admin_step = steps
+    api_env = api_step["env"]
+    api_run = api_step["run"]
 
-    # The production-only step owns exactly the metered API credential names
-    # and never reads or rewrites developer-subscription capacity.
-    assert "MINIMAX_KEY: ${{ secrets.MINIMAX_API_KEY }}" in production
-    assert "ZAI_KEY: ${{ secrets.ZAI_API_KEY }}" in production
-    assert '_add MINIMAX_API_KEY "$MINIMAX_KEY"' in production
-    assert '_add ZAI_API_KEY "$ZAI_KEY"' in production
-    assert 'grep -vE "^(MINIMAX_API_KEY|ZAI_API_KEY)="' in production
-    assert "CLAUDE_CODE_OAUTH_TOKEN" not in production
-    assert "METAB_KEYS_ENABLED" not in production
-    assert "production scope requires VPS_DEPLOY_KEY" in production
+    dispatch = workflow[True]["workflow_dispatch"]["inputs"]
+    assert dispatch["scope"]["default"] == "developer"
+    assert dispatch["scope"]["options"] == ["developer", "production", "all"]
+    assert dispatch["run_minimax_canary"]["default"] is False
 
-    # A canary is optional, never implicit, runs from the deployed Macro
-    # checkout, and keeps mutable telemetry outside that checkout.
-    assert 'RUN_MINIMAX_CANARY: ${{ inputs.run_minimax_canary }}' in production
-    assert "MM_PROVIDER_CANARY_MODE=minimax_payg_api" in production
-    assert "AI_COSTS_STATE_ROOT=/var/lib/macro-api" in production
-    assert "/opt/macro/.venv/bin/python -m engine.provider_production_modes --canary --execute" in production
+    # Production-only runs do not expose developer OAuth values to the first
+    # process and never execute the admin/OAuth step.
+    assert "inputs.scope != 'production'" in str(api_env["T1"])
+    assert "inputs.scope != 'production'" in str(api_env["METAB_KEYS_ENABLED"])
+    assert "inputs.scope != 'developer'" in str(api_env["MINIMAX_KEY"])
+    assert "inputs.scope != 'developer'" in str(api_env["ZAI_KEY"])
+    assert "inputs.scope != 'production'" in str(admin_step["if"])
 
-    # Production-only ceremonies do not touch the admin/OAuth estate.
-    assert "inputs.scope != 'production'" in admin
-    assert "MINIMAX_API_KEY" not in admin
-    assert "ZAI_API_KEY" not in admin
+    # The one macro-api step selects what it strips/appends. Production scope
+    # therefore preserves every developer line while reconciling only PAYG keys.
+    assert 'if [ "$DEPLOY_SCOPE" != "production" ]; then' in api_run
+    assert '_add CLAUDE_CODE_OAUTH_TOKEN_1 "$T1"' in api_run
+    assert 'if [ "$DEPLOY_SCOPE" != "developer" ]; then' in api_run
+    assert '_add MINIMAX_API_KEY "$MINIMAX_KEY"' in api_run
+    assert '_add ZAI_API_KEY "$ZAI_KEY"' in api_run
+    assert 'grep -vE "^(MINIMAX_API_KEY|ZAI_API_KEY)="' in api_run
+
+    # Canary remains explicit and uses the deployed code path while mutable
+    # telemetry stays outside /opt/macro.
+    assert "RUN_MINIMAX_CANARY" in api_env
+    assert "MM_PROVIDER_CANARY_MODE=minimax_payg_api" in api_run
+    assert "AI_COSTS_STATE_ROOT=/var/lib/macro-api" in api_run
+    assert (
+        "/opt/macro/.venv/bin/python -m engine.provider_production_modes "
+        "--canary --execute"
+    ) in api_run
+
+    # Production keys never reach macro-admin.
+    assert "MINIMAX_API_KEY" not in str(admin_step.get("env", {}))
+    assert "ZAI_API_KEY" not in str(admin_step.get("env", {}))
+    assert "MINIMAX_API_KEY" not in admin_step["run"]
+    assert "ZAI_API_KEY" not in admin_step["run"]
