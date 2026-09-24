@@ -1009,3 +1009,14 @@ Parent mission remains incomplete; no browser/provider/production canary exists.
 - Review carriers remain unconsumed: #836 Claude6 `D0BT2125KHQ/1790231581.990109`; #651 ChatGPT2 `D0BRLGE0BBN/1790155189.800099`; #933 ChatGPT1 `D0BSB763FRN/1790226451.766309`. None has PICKUP_ACK/START/RESULT.
 - DO NOT REDO: no whole-worktree-clean rule; no second Agent OS compiler/store; no conversation fingerprint inside the R1-P0 inner payload; outer #836 transport owns exact conversation targeting.
 - Next: consume #651/#953 exact-head CI. If #651 green + independently accepted, re-integrate #936. If #953 green, independently review the inert contract. Live R1 wiring remains gated on #836 independent acceptance.
+
+
+## 2026-09-24 continuation — reviewer rebinds and running heads
+
+- #836 old Claude6 carrier `D0BT2125KHQ/1790231581.990109` was explicitly PRESTART_CLOSED with zero pickup/effect. The same independent review responsibility is rebound to Claude3 at `D0BSVKDJT6X/1790236004.342409`, operation `web-sol-r7-independent-review-r6-20260924-claude3-001`, exact subject head `e8d54e6423b3d8a8f450740a9db0c7eff92828ae`. Await PICKUP_ACK -> START -> RESULT; do not revive Claude6.
+- #933 old ChatGPT1 carrier `D0BSB763FRN/1790226451.766309` was explicitly PRESTART_CLOSED with zero pickup/effect. Review is rebound to Claude4 at `D0BT1T3E1DY/1790235979.977499`, operation `web-sol-cognition-result-r0-review-20260924-claude4-001`, exact subject head `073646dbd4ae6f7d00fa6e543cdd9cd029f01d05`.
+- #953 has a new independent Claude5 PRE_START HOLD at `D0BT3UP2XB3/1790235941.733659`, operation `web-sol-cognition-r1-p0-review-20260924-claude5-001`, exact subject head `7d49877488976a88eff85c194b12e472e4d5b81a`. Release only after exact-head CI `35970360768` succeeds.
+- #651 current head `8c7b639b155e1f5dde11ab820af2c1e87158bbcb`; CI `35970960611` is in the repository test gate with setup/compile/shell phases green. `mastermindx-2` re-review remains required after CI.
+- #953 current head `7d49877488976a88eff85c194b12e472e4d5b81a`; CI `35970360768` is in the repository test gate with setup/compile/shell phases green.
+- No current reviewer delivery may be called RUNNING until its own PICKUP_ACK and separate START are observed.
+- Exact next machine returns: #651 CI, #953 CI, Claude3 #836 review pickup/result, Claude4 #933 review pickup/result. Repair failures only on incumbent carriers.
