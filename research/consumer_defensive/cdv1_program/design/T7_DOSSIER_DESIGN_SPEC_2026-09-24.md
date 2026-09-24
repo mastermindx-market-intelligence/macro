@@ -435,6 +435,68 @@ The first `<section data-economic-root>` must also receive `class="panel econ-do
 
 At **390 px**, the dossier displays without horizontal page scroll. The inner table container may scroll horizontally; mobile does **not** squeeze the table into unreadable columns. Before that inner scroll becomes necessary, the visible content budget is exactly: heading + stance row; Demand header; three Demand rows; Earnings header; one Earnings row; one finding; one missing-context line; clock; then inner rows scroll. Segment detail is collapsed. The desktop two-column section grid reduces to one column at ≤899 px, and dialog/meta reduce at ≤640 px per the declarations above. This is a deliberate demotion-with-landing reduction, not a squeezed desktop table (`research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md:652–664`).
 
+### 4.7 Token receipts and current-main dependency
+
+Receipt command for tokens that exist directly in `templates/theme.css`:
+
+```text
+$ rg -n -- '--(fs-(h2|h3|md|sm|label|micro)|bg|panel2?|line|text|muted|ink-(ok|warn|act|link|info)|font-(ui|mono)|num|card-shadow|popover-shadow|glass-(bg|brd|blur|shadow)|gbtn-(bg|bg-hover|brd|brd-hover|sheen)):' templates/theme.css
+30:  --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+33:  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+39:  --num: var(--font-ui);
+56:  --fs-h2:17px;        /* panel section titles        */
+57:  --fs-md:15px;        /* lead body / strong figures  */
+59:  --fs-h3:14px;        /* subsection titles           */
+60:  --fs-sm:12.5px;      /* secondary copy / table body */
+61:  --fs-label:11px;     /* MONO eyebrows · caps        */
+62:  --fs-micro:10px;     /* dense ticks · table heads   */
+63:  --bg: #0f1115; --panel: #181b21; --panel2: #1e222a; --text: #d7dce3;
+64:  --muted: #8b93a1;
+69:  --line: #3a4150;
+120:  --card-shadow: 0 1px 0 rgba(255,255,255,.02);
+121:  --popover-shadow: 0 6px 18px rgba(0,0,0,.5);
+139:  --glass-bg: color-mix(in srgb, var(--panel) 86%, transparent);
+140:  --glass-brd: color-mix(in srgb, var(--text) 14%, transparent);
+141:  --glass-blur: saturate(180%) blur(22px);
+142:  --glass-shadow: 0 24px 64px -22px rgba(3,7,18,.74), 0 10px 26px -12px rgba(3,7,18,.55),
+148:  --gbtn-bg:        color-mix(in srgb, var(--panel2) 52%, transparent);
+149:  --gbtn-bg-hover:  color-mix(in srgb, var(--panel2) 76%, transparent);
+150:  --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
+151:  --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
+152:  --gbtn-sheen:     rgba(255,255,255,.09);
+190:  --gbtn-bg:        color-mix(in srgb, var(--panel2) 78%, var(--panel));
+191:  --gbtn-bg-hover:  color-mix(in srgb, var(--panel2) 96%, var(--panel));
+197:  --gbtn-brd:       color-mix(in srgb, #1c2430 50%, transparent);
+198:  --gbtn-brd-hover: color-mix(in srgb, #1c2430 66%, transparent);
+199:  --gbtn-sheen:     rgba(255,255,255,.7);
+210:  --bg: #f7f8fa; --panel: #ffffff; --panel2: #eef1f6; --text: #1c2430;
+211:  --muted: #5d6b7e;
+218:  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+236:  --card-shadow: 0 1px 3px rgba(20,30,50,.07);
+239:  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
+243:  --glass-bg: color-mix(in srgb, var(--panel) 90%, transparent);
+244:  --glass-brd: color-mix(in srgb, #1c2430 9%, transparent);
+245:  --glass-shadow: 0 20px 54px -24px rgba(20,32,64,.34), 0 10px 24px -14px rgba(20,32,64,.20),
+372:  --ink-warn:   color-mix(in srgb, var(--warn)   var(--ink-mix-warn),   var(--text));
+373:  --ink-ok:     color-mix(in srgb, var(--ok)     var(--ink-mix-ok),     var(--text));
+374:  --ink-act:    color-mix(in srgb, var(--act)    var(--ink-mix-act),    var(--text));
+376:  --ink-link:   color-mix(in srgb, var(--link)   var(--ink-mix-link),   var(--text));
+377:  --ink-info:   color-mix(in srgb, var(--info)   var(--ink-mix-info),   var(--text));
+```
+
+The spacing/radius/motion names used with fallbacks are **not yet definitions in current `theme.css`**. The receipt proving their canonical proposed values is therefore necessarily the executable specimen, not `theme.css`:
+
+```text
+$ git show origin/main:mockups/design_system/specimen.html | rg -n -- '--sp-[1-8]:|--r-(ctl|btn|card|panel|pill):|--t-(fast|med|slow):|--ease-(std|lift):|--gap-grid:'
+22:  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px; --sp-8:44px;
+23:  --gap-grid:18px;
+24:  --r-ctl:8px; --r-btn:10px; --r-card:12px; --r-panel:14px; --r-pill:999px;
+25:  --t-fast:.16s; --t-med:.2s; --t-slow:.55s;
+26:  --ease-std:ease; --ease-lift:cubic-bezier(.2,.7,.3,1);
+```
+
+This is a **build precondition, not permission to mint a local token root**: either DS-PR-0 must land those names in `theme.css`, or the seat must explicitly ratify the existing inert-fallback idiom in writing. The build lane must stop `PARTIAL/BLOCKED` if neither is true.
+
 ## 5. Copy
 
 All source-derived labels are server-owned bilingual strings. Fixed UI strings are paired EN/ZH below and must not be paraphrased. ZH is native-shaped, not word-for-word; fiscal dates, units, “EPS”, “FX”, and established company segment names remain intact. No translated text is emitted in `title=` attributes.
