@@ -402,3 +402,59 @@ def test_an_exact_duplicate_measurement_on_one_facility_is_counted_once():
     assert len(view['rows']) == len(before['rows'])
     assert 'facility_counted_once_multi_owner' in view['limitations']
     assert 'multiple_measures_same_facility' not in view['limitations']
+
+
+def _with_primary_object(member: dict, **fields) -> dict:
+    """Re-mint `member` with fields set on its primary local object (WHAT is measured)."""
+    body = copy.deepcopy(member)
+    body['industrial_context']['local_objects'][0].update(fields)
+    body['curation_revision'] = None
+    return json.loads(encode_assertion(body))
+
+
+def _same_facility(view: dict, row: dict) -> list[dict]:
+    return [r for r in view['rows'] if r['selector'] == row['selector'] and r['stage'] == row['stage']]
+
+
+def test_two_configurations_with_one_observation_are_two_rows_never_a_multi_owner_collapse():
+    """12H and 16H on the same facility+stage carrying the SAME observation and
+    measure_scope are two constructions: both rows stay, neither is chosen by
+    revision hash, and the multi-owner label is never claimed."""
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    _, bundle = load_bundle_case('mixed_wafer_units')
+    query, member, row = _capacity_member(bundle)
+    twelve = _with_primary_object(member, configuration='12H')
+    sixteen = _with_primary_object(member, configuration='16H')
+    assert twelve['observation'] == sixteen['observation']
+    others = [a for a in bundle.assertions if a['curation_revision'] != member['curation_revision']]
+    for order in ([twelve, sixteen], [sixteen, twelve]):
+        view = select_industrial_sections(query, replace(bundle, assertions=others + order))['industrial_views']['capacity']
+        assert {r['configuration'] for r in _same_facility(view, row)} >= {'12H', '16H'}
+        assert 'multiple_measures_same_facility' in view['limitations']
+        assert 'facility_counted_once_multi_owner' not in view['limitations']
+        assert view['total'] == {'value': None, 'reason': 'mixed_construction_scope'}
+
+
+def test_a_model_only_difference_on_one_facility_keeps_both_rows():
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    _, bundle = load_bundle_case('mixed_wafer_units')
+    query, member, row = _capacity_member(bundle)
+    line_b = _with_primary_object(member, model='LINE-B')
+    view = select_industrial_sections(query, replace(bundle, assertions=list(bundle.assertions) + [line_b]))['industrial_views']['capacity']
+    assert {r['model'] for r in _same_facility(view, row)} >= {row['model'], 'LINE-B'}
+    assert 'multiple_measures_same_facility' in view['limitations']
+    assert 'facility_counted_once_multi_owner' not in view['limitations']
+
+
+def test_a_lone_scoped_row_among_unscoped_rows_still_raises_mixed_construction_scope():
+    """A deleted distinct row must never silence the mixed-scope hazard: one
+    configured construction next to unscoped rows keeps the total refused."""
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    _, bundle = load_bundle_case('mixed_wafer_units')
+    query, member, row = _capacity_member(bundle)
+    scoped = _with_primary_object(member, configuration='CFG-Z')
+    view = select_industrial_sections(query, replace(bundle, assertions=list(bundle.assertions) + [scoped]))['industrial_views']['capacity']
+    assert any(r['configuration'] == 'CFG-Z' for r in _same_facility(view, row))
+    assert view['total'] == {'value': None, 'reason': 'mixed_construction_scope'}
+    assert 'mixed_construction_scope' in view['limitations']
+    assert view['status'] == 'degraded'

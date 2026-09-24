@@ -478,6 +478,25 @@ def _row_sort_key(row: dict[str, Any]) -> tuple:
     return tuple((row.get(key) or "") if isinstance(row.get(key), str) else "" for key in _ROW_ORDER)
 
 
+# Row fields that say WHO asserted a capacity measurement (and how that owner
+# phrased it) rather than WHAT was measured. Two rows equal in every other
+# field are one physical measurement restated by two owners (the JV shape);
+# a difference anywhere else — configuration, model, kind, product label,
+# predicate, statement mode, observation, measure scope, relation, the
+# normalized stage, a refusal — is a second measurement and is never
+# collapsed. `stage_source_language` is the owner's verbatim phrasing of the
+# stage; the normalized `stage` stays in the fingerprint.
+_CAPACITY_OWNER_FIELDS = frozenset({
+    "assertion_ref", "curation_revision", "source_business_label", "company_node_id",
+    "retrospective", "stage_source_language",
+})
+
+
+def _physical_fingerprint(row: Mapping[str, Any]) -> str:
+    return json.dumps({k: v for k, v in row.items() if k not in _CAPACITY_OWNER_FIELDS},
+                      sort_keys=True, default=str)
+
+
 def _view_graph(assertions: list[Mapping[str, Any]]) -> tuple[dict[str, Any], bool]:
     nodes: dict[str, dict[str, Any]] = {}
     edges: dict[tuple[str, str, str], dict[str, Any]] = {}
@@ -522,14 +541,14 @@ def _build_views(selection: _Selection, identity: dict[str, Any]) -> dict[str, A
         members_refs = sorted(a["curation_revision"] for a in members)
 
         if key == "capacity" and rows:
-            # One facility counted once PHYSICALLY: an exact duplicate
-            # measurement of the same facility+stage (identical observation
-            # and measure_scope — the JV / multi-owner shape, where two
-            # assertions restate one physical line) is counted once. A
-            # DIFFERENT measurement on the same facility+stage (another
-            # unit, another basis, a conflicting figure) is NEVER deleted:
-            # two measures are two rows, nothing is merged or chosen, and the
-            # view says so with `multiple_measures_same_facility`.
+            # One facility counted once PHYSICALLY: a second assertion that
+            # restates the SAME physical measurement of the same facility+stage
+            # — equal in every row field except who asserts it (the JV /
+            # multi-owner shape) — is counted once. A row that differs in WHAT
+            # is measured or how (12H vs 16H, another model, unit, basis or a
+            # conflicting figure) is NEVER deleted or chosen by hash: two
+            # measures are two rows, and the view says so with
+            # `multiple_measures_same_facility`.
             seen: dict[tuple, set[str]] = {}
             deduped: list[dict[str, Any]] = []
             for row in rows:  # revision-sorted, so the order is deterministic
@@ -538,8 +557,7 @@ def _build_views(selection: _Selection, identity: dict[str, Any]) -> dict[str, A
                     deduped.append(row)
                     continue
                 dedupe_key = (selector, row.get("stage"))
-                fingerprint = json.dumps(
-                    [row.get("observation"), row.get("measure_scope")], sort_keys=True, default=str)
+                fingerprint = _physical_fingerprint(row)
                 fingerprints = seen.setdefault(dedupe_key, set())
                 if not fingerprints:
                     fingerprints.add(fingerprint)
@@ -552,7 +570,6 @@ def _build_views(selection: _Selection, identity: dict[str, Any]) -> dict[str, A
                 view_limitations.append("multiple_measures_same_facility")
                 deduped.append(row)
             rows = deduped
-            view_limitations = sorted(set(view_limitations))
 
         if not selected_revisions:
             status, reason = "unavailable", "no_selected_assertions"
@@ -780,7 +797,7 @@ def _build_economics(selection: _Selection) -> dict[str, Any]:
         by_company.setdefault(_company_key(workspace), []).append(workspace)
 
     best: tuple[tuple[int, int], str, dict[str, Any], dict[str, Any], dict[str, Any],
-                list[str], Mapping[str, Any] | None] | None = None
+                list[str], Mapping[str, Any] | None, bool] | None = None
     for company in sorted(by_company):
         ordered = sorted(by_company[company], key=lambda w: _fiscal_key(
             f"{(w.get('fiscal_period') or {}).get('year')}Q{(w.get('fiscal_period') or {}).get('quarter')}"))
@@ -818,7 +835,11 @@ def _build_economics(selection: _Selection) -> dict[str, Any]:
                 # among the event ids this triple consumed — a stale,
                 # unavailable or foreign-period packet is not evidence about
                 # this triple, and its figure must never be displayed as one.
-                derivations: Mapping[str, Any] | None = None
+                # Two DIFFERENT bound packets are a conflict: neither is
+                # attached (no figure is ever chosen by list order) and the
+                # response says `competing_financial_packets`; byte-identical
+                # restatements of one packet are one packet.
+                bound: dict[str, Mapping[str, Any]] = {}
                 for packet in packets:
                     entity = packet.get("entity") or {}
                     if entity.get("cik") != workspace.get("cik"):
@@ -830,8 +851,11 @@ def _build_economics(selection: _Selection) -> dict[str, Any]:
                         continue
                     if not _receipts_bound_to(candidate_derivations, set(consumed)):
                         continue
-                    derivations = candidate_derivations
-                candidate = (actual_key, company, prior, actual, new_outlook, consumed, derivations)
+                    bound.setdefault(json.dumps(candidate_derivations, sort_keys=True, default=str),
+                                     candidate_derivations)
+                derivations = next(iter(bound.values())) if len(bound) == 1 else None
+                candidate = (actual_key, company, prior, actual, new_outlook, consumed, derivations,
+                             len(bound) > 1)
                 if best is None or candidate[0] > best[0]:
                     best = candidate
 
@@ -845,7 +869,9 @@ def _build_economics(selection: _Selection) -> dict[str, Any]:
             "witness_gate": "missing",
         }
 
-    _, _, prior, actual, new_outlook, consumed, derivations = best
+    _, _, prior, actual, new_outlook, consumed, derivations, competing = best
+    if competing:
+        selection.limitations.add("competing_financial_packets")
     try:
         management = assess_management_sequence(
             prior, actual, new_outlook,

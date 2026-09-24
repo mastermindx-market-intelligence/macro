@@ -480,3 +480,30 @@ def test_authorized_coverage_is_unavailable_when_nothing_is_selected():
     assert result['authorized_coverage']['selected'] == 0
     full = compose_semiconductor_research(query, bundle)
     assert full['authorized_coverage']['status'] == 'ready'
+
+
+def test_competing_bound_packets_attach_neither_and_are_order_invariant():
+    """Two DIFFERENT ready, same-company, receipt-bound packets are a conflict:
+    no figure is chosen by list order, the derived midpoint is unavailable,
+    the literal triple is still shown, and the response says so."""
+    query, bundle = load_bundle_case('witness_hbm_packaging')
+    first = copy.deepcopy(bundle.financial_packets[0])
+    second = copy.deepcopy(first)
+    second['derivations']['prior_midpoint']['value'] = 77.7
+    forward = compose_semiconductor_research(query, replace(bundle, financial_packets=[first, second]))
+    backward = compose_semiconductor_research(query, replace(bundle, financial_packets=[second, first]))
+    assert forward == backward
+    assert forward['economics']['status'] == 'ready'
+    assert _derived(forward['economics'])['prior_midpoint']['status'] == 'unavailable'
+    assert '77.7' not in json.dumps(forward) and '16.0' not in json.dumps(forward['economics'])
+    assert 'competing_financial_packets' in forward['limitations']
+
+
+def test_byte_identical_restated_packets_are_one_packet():
+    query, bundle = load_bundle_case('witness_hbm_packaging')
+    first = copy.deepcopy(bundle.financial_packets[0])
+    twice = compose_semiconductor_research(query, replace(bundle, financial_packets=[first, copy.deepcopy(first)]))
+    once = compose_semiconductor_research(query, bundle)
+    assert _derived(twice['economics'])['prior_midpoint'] == _derived(once['economics'])['prior_midpoint']
+    assert _derived(twice['economics'])['prior_midpoint']['status'] == 'ready'
+    assert 'competing_financial_packets' not in twice['limitations']
