@@ -283,7 +283,8 @@ class TableCell:
     column_index: int
     text: str
     source_span: SourceSpan
-    # Span attributes as the markup declared them (``colspan`` / ``rowspan``, 1 when absent or invalid) and the
+    # Span attributes as the markup declared them (``colspan`` / ``rowspan``: 1 when absent or invalid, ``rowspan``
+    # 0 meaning "to the end of the row group", a declared span above 64 read as 1 and flagged) and the
     # ordinal of the HTML row the cell sits in, counting rows that emit no cell (an empty ``tr`` covered by a
     # rowspan still occupies a row).  They are layout facts consumers need to align columns; none of them enters
     # ``to_dict`` or any id.  ``row_ordinal`` equals ``row_index`` when every row emitted a cell.
@@ -312,6 +313,9 @@ class NormalizedTable:
     # Every HTML row in source order, including rows that emitted no cell: (row ordinal, row-group ordinal,
     # row-group kind "thead" / "tbody" / "tfoot").  A layout fact; not part of ``text()`` or ``to_dict``.
     row_layout: tuple[tuple[int, int, str], ...] = ()
+    # Every row group the markup OPENED, in source order, including one that holds no row: (row-group ordinal,
+    # kind).  An empty first ``<thead>`` is still the header group (CSS 2.1 §17.2).  A layout fact.
+    group_layout: tuple[tuple[int, str], ...] = ()
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -635,6 +639,7 @@ class _RawTable:
     group_kind: str = "tbody"
     # Every HTML row in source order, including rows that emit no cell: (ordinal, group ordinal, group kind).
     row_layout: list[tuple[int, int, str]] = field(default_factory=list)
+    group_layout: list[tuple[int, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -647,6 +652,7 @@ class _RawBlock:
     table_caption: str = ""
     heading_level: int = 0
     table_layout: tuple[tuple[int, int, str], ...] = ()
+    table_groups: tuple[tuple[int, str], ...] = ()
 
 
 @dataclass
@@ -764,6 +770,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 table.row_group += 1
                 table.open_group = tag
                 table.group_kind = tag
+                table.group_layout.append((table.row_group, tag))
             elif tag == "caption":
                 table.in_caption = True
             elif tag in {"td", "th"}:
@@ -845,7 +852,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout)))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout)))
                 return
             return
         matching_index = next(
@@ -874,7 +881,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout)))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout)))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
@@ -1161,7 +1168,8 @@ def normalize_filing(
                 if cells:
                     rows.append(tuple(cells))
             table = NormalizedTable(
-                table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout
+                table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout,
+                group_layout=raw_block.table_groups,
             )
             text = table.text()
         block_id = stable_id(
