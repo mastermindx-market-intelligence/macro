@@ -49,13 +49,19 @@ _CTX_SPARSE = {
 _SCARES_SPARSE = [{"label_en": "Breadth breakdown"}, {"label_en": "US rate shock", "score": 51}]
 
 
-def _render(mkt="cn", rd=_RD, scares=None, ctx=None) -> str:
+def _render(mkt="cn", rd=_RD, scares=None, ctx=None, measured_state=None) -> str:
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
     tpl = env.from_string(
         '{% import "_risk_radar_dlg.html.j2" as rrd %}'
-        "{{ rrd.risk_radar_dlg(mkt, rd, scares, ctx) }}"
+        "{{ rrd.risk_radar_dlg(mkt, rd, scares, ctx, measured_state) }}"
     )
-    return tpl.render(mkt=mkt, rd=rd, scares=scares, ctx=ctx)
+    return tpl.render(
+        mkt=mkt,
+        rd=rd,
+        scares=scares,
+        ctx=ctx,
+        measured_state=measured_state,
+    )
 
 
 class TestAbsentSafe:
@@ -120,7 +126,7 @@ class TestCopyLaw:
         # CI-guarded overclaim
         "validated",
         # internal vocabulary banned at glance tier (DESIGN_DOCTRINE Law 2)
-        "display-tier", "gauntlet", "prereg", "z-score", "percentile", "K-of-N",
+        "display-tier", "gauntlet", "prereg", "z-score", "K-of-N",
     ])
     def test_banned_vocabulary_absent(self, banned):
         html = _render(scares=_SCARES_SPARSE, ctx=_CTX_SPARSE)
@@ -143,3 +149,148 @@ class TestCopyLaw:
         """CI-guarded house law: receipts ride data-tip-en/zh, never title=."""
         html = _render(scares=_SCARES_SPARSE, ctx=_CTX_SPARSE)
         assert "title=" not in html
+
+
+
+class TestChinaP0Semantics:
+    """China must separate tape state, forward hazard, and capital authority."""
+
+    _RD_CN = {
+        "state": "risk-off",
+        "top_score": 98,
+        "label_en": "US rate shock",
+        "label_zh": "美债利率冲击",
+        "state_zh": "避险",
+        "do_en": "Defend capital first.",
+        "do_zh": "优先防守。",
+        "gross": 0.62,
+        "dd5": 0.15,
+        "dd10": 0.32,
+        "dd21": 0.50,
+        "dd_lift": 1.64,
+        "dd_base": {"h5": 0.036, "h10": 0.086, "h21": 0.305},
+        "is_loud": True,
+        "is_warning": True,
+        "can_force": False,
+        "binding": False,
+        "authority": {
+            "tier": "advisory",
+            "can_force": False,
+            "note_en": "Advisory — sizes risk; does not override the measured tape.",
+            "note_zh": "提示性信号——仅调整仓位，不覆盖实测盘面。",
+        },
+        "scares": [
+            {"label_en": "US rate shock", "label_zh": "美债利率冲击", "score": 97.1, "band": "risk-off"},
+            {"label_en": "Breadth breakdown", "label_zh": "广度破位", "score": 96.2, "band": "risk-off"},
+            {"label_en": "Capital outflow / FX", "label_zh": "资本外流／汇率", "score": 62.2, "band": "caution"},
+        ],
+        # Mirrors the real producer split: forward_log owns matured rows while
+        # track owns monitoring, loud-alert outcomes, and awaiting-maturity rows.
+        "forward_log": {"n_graded": 16, "can_force": False},
+        "track": {
+            "monitoring": {"awaiting_maturity": 18, "graded_n": 16, "log_fresh": True},
+            "windows": {
+                "full": {"alerts": {"n": 5, "tp": 2, "fp": 3, "hit_rate": 0.4}},
+                "y1": {"alerts": {"n": 5, "tp": 2, "fp": 3, "hit_rate": 0.4},
+                       "watch_caution": {"n": 11, "tp": 7}, "by_scare": {}},
+            },
+        },
+        "cycle": None,
+        "counterread": None,
+        "amp": 0,
+        "amp_flags_en": [],
+        "amp_flags_zh": [],
+        "recovery": None,
+    }
+    _MS_CN = {
+        "score": 39,
+        "raw_score": 39,
+        "score_source": "blend",
+        "capped": False,
+        "verdict": "RISK_OFF",
+        "label_en": "Risk-off",
+        "label_zh": "避险",
+        "components": [
+            {"key": "trend", "score": 38},
+            {"key": "risk_appetite", "score": 51},
+            {"key": "vol_froth", "score": 54},
+            {"key": "breadth", "score": 15},
+            {"key": "liquidity", "score": 16},
+            {"key": "stress", "score": 63},
+        ],
+    }
+
+    def _html(self) -> str:
+        return _render(
+            mkt="cn",
+            rd=self._RD_CN,
+            scares=self._RD_CN["scares"],
+            ctx={"title_en": "China Risk Context", "title_zh": "中国风险背景"},
+            measured_state=self._MS_CN,
+        )
+
+    def test_first_dialog_view_separates_the_three_objects(self):
+        html = self._html()
+        for phrase in (
+            "MEASURED STATE",
+            "TRANSITION HAZARD",
+            "FORWARD ODDS",
+            "EVIDENCE / AUTHORITY",
+            "实测状态",
+            "转变风险",
+            "前瞻概率",
+            "证据／权限",
+        ):
+            assert phrase in html
+
+    def test_measured_state_discloses_boundary_and_actual_weak_legs(self):
+        html = self._html()
+        assert "near Mixed boundary" in html
+        assert "3 points below" in html
+        assert "Participation and liquidity are weak; trend remains soft." in html
+        assert "参与度与流动性偏弱；趋势仍然疲软。" in html
+        assert "stress is elevated" not in html.lower()
+
+    def test_hazard_score_is_a_percentile_not_a_probability(self):
+        html = self._html()
+        assert "EXTREME" in html and "98th percentile" in html
+        assert "极端" in html and "第98百分位" in html
+        assert "98/100" not in html and "98</b>/100" not in html
+
+    def test_forward_odds_are_historical_and_reference_bounded(self):
+        html = self._html()
+        assert "Historical model estimate" in html
+        assert "历史模型估计" in html
+        assert "50%" in html
+        assert "normal historical rate 30.5%" in html
+        assert "常态历史率 30.5%" in html
+        assert "1.64× reference odds" in html
+        assert "1.64× 参考概率" in html
+
+    def test_evidence_and_authority_are_explicit(self):
+        html = self._html()
+        for phrase in ("16 matured", "5 loud", "2 hits", "18 awaiting maturity"):
+            assert phrase in html
+        for phrase in ("16 条已成熟", "5 条强警报", "2 次命中", "18 条待成熟"):
+            assert phrase in html
+        assert "ADVISORY — does not override measured tape" in html
+        assert "提示性 — 不覆盖实测盘面" in html
+
+    def test_advisory_sizing_uses_exact_reference_not_round_wording(self):
+        html = self._html()
+        assert "×0.62" in html
+        assert "advisory risk-budget reference" in html
+        assert "提示性风险预算参考" in html
+        assert "half of normal" not in html
+        assert "suggested size" not in html
+        assert "约常规一半" not in html
+        assert "建议仓位" not in html
+        assert "never selects stocks" in html
+        assert "不用于选股" in html
+
+    def test_china_template_does_not_reintroduce_banned_copy(self):
+        template = (ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
+        for phrase in ("Transition hazard", "Historical model estimate", "Live forward evidence still accruing"):
+            assert phrase in template
+        for banned in ("stress is elevated; defend capital first", "half of normal", "suggested size", "98/100"):
+            assert banned.lower() not in template.lower()
