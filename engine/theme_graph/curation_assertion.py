@@ -337,3 +337,262 @@ def source_ref_for(payload: Mapping[str, Any]) -> str:
     data = validate_assertion(payload, allow_unstamped=True)
     revision = data.get("curation_revision") or _revision_of(data)
     return f"gmi-curation://{data['scope']['canonical_theme_id']}/{revision}"
+
+
+# ---------------------------------------------------------------------------
+# K1 Evidence Foundation binding (semiconductor T04): the assertion is ONE
+# owner subtype of the shared Evidence Foundation, with native clocks under
+# their native dotted field names and the theme-evidence identity preserved.
+# ---------------------------------------------------------------------------
+
+#: The K1 owner store these assertions bind as (must stay in lockstep with
+#: ``contracts/evidence_foundation/vocabulary.v1.json``).
+K1_OWNER_STORE = "theme_graph.curation_assertion"
+
+#: statement_mode → the ONE K1 object_class the mode projects onto. Total over
+#: the schema's statement_mode enum and one-way: a FORWARD_TARGET is never a
+#: world observation, an ATTRIBUTED_INTERPRETATION is never a fact.
+_OBJECT_CLASS_BY_STATEMENT_MODE: Mapping[str, str] = {
+    "REPORTED_FACT": "world_observation",
+    "CATALOG_DESCRIPTION": "world_observation",
+    "ANNOUNCED_ARRANGEMENT": "world_observation",
+    "FORWARD_TARGET": "forward_claim",
+    "ATTRIBUTED_INTERPRETATION": "derived_view",
+}
+
+#: object_class → K1 authority_class. A curation assertion is a statement a
+#: human curator read out of a source — never model output — so forward_claim
+#: and derived_view project onto ``human`` (both admitted by K1's own
+#: object_class → authority_class map).
+_AUTHORITY_CLASS_BY_OBJECT_CLASS: Mapping[str, str] = {
+    "world_observation": "fact",
+    "forward_claim": "human",
+    "derived_view": "human",
+}
+
+#: Clock fields that live inside the assertion body; every other bound clock
+#: (``computed_at``) is an evidence-row column.
+_ASSERTION_CLOCK_PREFIXES = ("source.", "review.", "temporal.")
+
+#: Evidence-row columns that attest the row's licensing state.
+_LICENSING_FLAGS = (
+    "licensing_internal_ok",
+    "licensing_display_ok",
+    "licensing_redistribution_ok",
+)
+
+
+def _clock_cell(cells: Mapping[str, Any], field: str) -> Any:
+    """Dotted-path lookup into an assertion body (``source.published_at``)."""
+    node: Any = cells
+    for part in field.split("."):
+        if not isinstance(node, Mapping):
+            return None
+        node = node.get(part)
+    return node
+
+
+def _native_clock(
+    field: str, binding: Mapping[str, Any], cells: Mapping[str, Any]
+) -> dict[str, Any]:
+    """One K1 clock for one bound native field — present exactly once, with a
+    typed unknown for a cell the assertion does not know (never a value
+    borrowed from a clock that does exist, never a synthesized midnight)."""
+    clock_class = binding["class"]
+    grains = list(binding["grains"])
+    cell = _clock_cell(cells, field)
+    if cell is None or cell == "" or cell == "unknown":
+        return {
+            "class": clock_class,
+            "field": field,
+            "value_state": "unknown",
+            "value": None,
+            "grain": grains[0],
+        }
+    if field == "source.published_at":
+        # The assertion's own grain discriminator separates a date-only
+        # publication from an instant; a date stays a date.
+        source = cells.get("source")
+        grain_discriminator = (
+            source.get("published_at_grain")
+            if isinstance(source, Mapping) else None)
+        grain = "date" if grain_discriminator == "date" else "datetime"
+    elif len(grains) == 1:
+        grain = grains[0]
+    else:
+        raise CurationAssertionError(
+            f"clock_grain_unresolved: {field} binds {grains!r} with no "
+            f"native grain discriminator")
+    return {
+        "class": clock_class,
+        "field": field,
+        "value_state": "known",
+        "value": cell,
+        "grain": grain,
+    }
+
+
+def _rights_and_missingness(
+    row: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Rights + missingness read off the row's licensing attestation: any
+    denied right is a rights-blocked object, all rights attested is permitted,
+    and a right that is neither attested nor denied is UNKNOWN — never
+    silently permitted, never a fabricated absence."""
+    flags = [row.get(name) for name in _LICENSING_FLAGS]
+    if all(flag is True for flag in flags):
+        return (
+            {"state": "permitted", "policy_id": None},
+            {"state": "present", "reason": None, "zero_substituted": False},
+        )
+    if any(flag is False for flag in flags):
+        return (
+            {"state": "rights_blocked", "policy_id": None},
+            {"state": "absent", "reason": "rights_blocked", "zero_substituted": False},
+        )
+    return (
+        {"state": "unknown", "policy_id": None},
+        {"state": "present", "reason": None, "zero_substituted": False},
+    )
+
+
+def reference_for_assertion(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Project ONE stamped curation-assertion evidence row onto an
+    ``evidence_foundation.reference.v1`` that
+    ``lib.evidence_foundation.validate_reference`` accepts unchanged —
+    pointer-only, zero-authority, no K1 validator change, no physical mesh.
+
+    The binding law (semiconductor T04):
+
+    * Identity stays owner-native and in its OWN namespace —
+      ``{evidence_id, curation_revision}`` with the shared theme-graph
+      evidence id grammar and the module's revision grammar. The reference's
+      only subject is the theme-evidence identity: a venue:symbol never
+      becomes a cik/security subject, and a resolved
+      ``subject.company_node_id`` inside the assertion never mints one.
+    * Every clock the owner binds appears EXACTLY once under its native
+      dotted field name. A cell the assertion does not know is a typed
+      unknown — an unknown publication is never borrowed from
+      ``observed_at``/``retained_at``/``reviewed_at``, and a date-only
+      publication keeps grain ``date`` instead of becoming a midnight
+      instant. The publication clock is the assertion's OWN publication
+      time, never the row's flat projection column.
+    * The reference is a pointer: the owner body (limitations, observation,
+      source_uri) never rides along — the vocabulary's owner reader
+      (``decode_assertion``) stays the only path back to the statement.
+    * Correction lineage stays owner-native. A
+      ``correction.predecessor_revision`` names a curation revision, not a
+      computable K1 reference id, so none is fabricated here: the reference
+      carries ``kind: "none"`` and no relations, and the assertion body
+      remains the lineage of record.
+
+    Raises :class:`CurationAssertionError` for a row with no stamped
+    assertion, a row without its evidence id, a statement_mode with no K1
+    object_class, or any drift between this module and the K1 vocabulary.
+    """
+    from lib.evidence_foundation import (
+        ALL_FALSE_AUTHORITY,
+        compute_reference_id,
+        load_vocabulary,
+        render_owner_pointer,
+    )
+
+    assertion = decode_assertion(
+        row.get("curation_assertion") if isinstance(row, Mapping) else row)
+    if assertion is None:
+        raise CurationAssertionError(
+            "no_assertion_to_reference: an evidence row without a stamped "
+            "curation assertion has no object to reference")
+    evidence_id = row.get("evidence_id")
+    if not isinstance(evidence_id, str) or not evidence_id:
+        raise CurationAssertionError(
+            "row_identity_missing: an evidence row must carry its "
+            "theme-graph evidence_id to be referenced")
+
+    vocabulary = load_vocabulary()
+    owner = vocabulary["owner_stores"].get(K1_OWNER_STORE)
+    if not isinstance(owner, Mapping):
+        raise CurationAssertionError(
+            f"k1_owner_store_missing: {K1_OWNER_STORE} is not a K1 owner store")
+    if owner.get("native_schemas") != [SCHEMA_ID]:
+        raise CurationAssertionError(
+            f"k1_owner_schema_drift: {K1_OWNER_STORE} binds "
+            f"{owner.get('native_schemas')!r} but this module owns {SCHEMA_ID!r}")
+
+    statement_mode = assertion.get("statement_mode")
+    object_class = _OBJECT_CLASS_BY_STATEMENT_MODE.get(statement_mode)
+    if object_class is None:
+        raise CurationAssertionError(
+            f"statement_mode_unmapped: {statement_mode!r} has no K1 object_class")
+
+    identity = {
+        "evidence_id": evidence_id,
+        "curation_revision": assertion["curation_revision"],
+    }
+    clocks: list[dict[str, Any]] = []
+    for field, binding in owner["clock_bindings"].items():
+        if field.startswith(_ASSERTION_CLOCK_PREFIXES):
+            clocks.append(_native_clock(field, binding, assertion))
+        else:
+            # An evidence-row column (computed_at): absent stays a typed
+            # unknown clock, never a fabricated time.
+            cells = {field: row.get(field)}
+            clocks.append(_native_clock(field, binding, cells))
+    fields = [clock["field"] for clock in clocks]
+    if len(fields) != len(set(fields)) or set(fields) != set(owner["clock_bindings"]):
+        raise CurationAssertionError(
+            "clock_binding_drift: bound clocks and emitted clocks disagree")
+
+    rights, missingness = _rights_and_missingness(row)
+    payload: dict[str, Any] = {
+        "schema": "evidence_foundation.reference.v1",
+        "version": "1.0.0",
+        "reference_id": "",
+        "object_class": object_class,
+        "owner_store": K1_OWNER_STORE,
+        "native_identity": identity,
+        "native_schema": SCHEMA_ID,
+        "native_digest": {
+            "state": "known",
+            "sha256": hashlib.sha256(_canonical_bytes(assertion)).hexdigest(),
+        },
+        "coverage_class": owner["coverage_classes"][0],
+        "freshness": {"state": "unknown", "clock_field": None, "policy_id": None},
+        "rights": rights,
+        "authority_class": _AUTHORITY_CLASS_BY_OBJECT_CLASS[object_class],
+        "subject": {"key_type": owner["subject_key_types"][0], "key": evidence_id},
+        "secondary_subjects": [],
+        "clocks": clocks,
+        "provenance": {
+            "pointer_only": True,
+            "body_embedded": False,
+            "owner_reader": owner["reader"],
+            "owner_reader_kind": owner["reader_kind"],
+            # render_owner_pointer is the single source of truth and refuses
+            # an identity outside the owner's own grammars.
+            "pointer": render_owner_pointer(owner, identity),
+        },
+        "relations": [],
+        "missingness": missingness,
+        "correction": {
+            "kind": "none",
+            "predecessor_reference_ids": [],
+            "clock_field": None,
+            "chronology_state": "not_applicable",
+            "append_only": True,
+            "mutates_predecessor": False,
+        },
+        "replay": {
+            "mode": "live",
+            "cutoffs": {
+                clock_class: {"state": "unknown", "value": None, "grain": "date"}
+                for clock_class in vocabulary["clock_classes"]
+            },
+            "code_revision": None,
+            "input_digest": None,
+            "vintage_state": owner["replay_capabilities"]["live"][0],
+        },
+        "authority": dict(ALL_FALSE_AUTHORITY),
+    }
+    payload["reference_id"] = compute_reference_id(payload)
+    return payload

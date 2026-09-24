@@ -52,6 +52,23 @@ EXPECTED_OWNER_BINDINGS = {
         },
         "reader": ("engine.theme_graph.store.read_edges", "collection"),
     },
+    "theme_graph.curation_assertion": {
+        "identity": ("evidence_id", "curation_revision"),
+        "clocks": {
+            "source.published_at": ("source_published", ("date", "datetime")),
+            "source.observed_at": ("observed", ("datetime",)),
+            "source.retained_at": ("system_recorded", ("datetime",)),
+            "source.available_at": ("knowable", ("datetime",)),
+            "review.reviewed_at": ("belief_or_build", ("datetime",)),
+            "temporal.business_valid_from": ("world_valid", ("date",)),
+            "temporal.business_valid_to": ("world_valid", ("date",)),
+            "computed_at": ("belief_or_build", ("datetime",)),
+        },
+        "reader": (
+            "engine.theme_graph.curation_assertion.decode_assertion",
+            "parser",
+        ),
+    },
     "fif.raw_occurrence": {
         "identity": ("occurrence_id",),
         "clocks": {
@@ -183,6 +200,10 @@ EXPECTED_COVERAGE_REPLAY = {
         ["append_only_bitemporal"],
         {"live": ["owner_native"], "historical_replay": ["owner_native"]},
     ),
+    "theme_graph.curation_assertion": (
+        ["append_only_bitemporal"],
+        {"live": ["owner_native"], "historical_replay": ["owner_native"]},
+    ),
     "fif.raw_occurrence": (
         ["record_history_complete"],
         {
@@ -241,6 +262,13 @@ EXPECTED_COVERAGE_REPLAY = {
 EXPECTED_NATIVE_IDENTITY_GRAMMARS = {
     "theme_graph.evidence": {
         "evidence_id": {"kind": "regex", "pattern": "^ev:[a-f0-9]{16}$"},
+    },
+    "theme_graph.curation_assertion": {
+        "evidence_id": {"kind": "regex", "pattern": "^ev:[a-f0-9]{16}$"},
+        "curation_revision": {
+            "kind": "regex",
+            "pattern": "^gmirca_[0-9a-f]{32}$",
+        },
     },
     "theme_graph.edge_belief": {
         "edge_id": {
@@ -330,6 +358,9 @@ EXPECTED_SUBJECT_NATIVE_PARITY = {
     "theme_graph.evidence": {
         "theme_evidence_id": {"kind": "native_field_equal", "field": "evidence_id"}
     },
+    "theme_graph.curation_assertion": {
+        "theme_evidence_id": {"kind": "native_field_equal", "field": "evidence_id"}
+    },
     "theme_graph.edge_belief": {
         "theme_node": {"kind": "theme_edge_endpoint", "field": "edge_id"}
     },
@@ -378,6 +409,10 @@ EXPECTED_SUBJECT_NATIVE_PARITY = {
 
 VALID_NATIVE_IDENTITIES = {
     "theme_graph.evidence": {"evidence_id": "ev:" + "a" * 16},
+    "theme_graph.curation_assertion": {
+        "evidence_id": "ev:" + "a" * 16,
+        "curation_revision": "gmirca_" + "a" * 32,
+    },
     "theme_graph.edge_belief": {
         "edge_id": "member_of:co:us:AAPL->basket:baskets:demo@2026-08-23",
         "belief_time": "2026-08-23",
@@ -421,6 +456,7 @@ VALID_NATIVE_IDENTITIES = {
 
 ALTERNATE_FIRST_IDENTITY_VALUE = {
     "theme_graph.evidence": "ev:" + "b" * 16,
+    "theme_graph.curation_assertion": "ev:" + "b" * 16,
     "theme_graph.edge_belief": "member_of:co:us:MSFT->basket:baskets:demo@2026-08-23",
     "fif.raw_occurrence": "rawfact_" + "b" * 64,
     "fif.packet": "fip_" + "b" * 24,
@@ -581,7 +617,7 @@ def test_contract_and_vocabulary_are_frozen_v1(schema: dict, vocabulary: dict) -
     assert schema["properties"]["version"]["const"] == "1.0.0"
     assert vocabulary["schema"] == "evidence_foundation.vocabulary.v1"
     assert vocabulary["version"] == "1.0.0"
-    assert len(vocabulary["owner_stores"]) == 13
+    assert len(vocabulary["owner_stores"]) == 14
     assert set(vocabulary["owner_stores"]) == set(EXPECTED_OWNER_BINDINGS)
     assert "reference.security_master" not in vocabulary["owner_stores"]
     assert "earnings.company_event" not in vocabulary["owner_stores"]
@@ -700,6 +736,10 @@ def test_owner_vocabulary_is_bound_to_current_source_contracts(vocabulary: dict)
     from engine.transmission_chains import STATE_LABELS
     from engine.qledger import _claim_id
     from engine.theme_graph.materialize import edge_id_for, evidence_id_for
+    from engine.theme_graph.curation_assertion import (
+        REVISION_RE as CURATION_REVISION_RE,
+        SCHEMA_ID as CURATION_ASSERTION_SCHEMA_ID,
+    )
     from engine.theme_graph.store import EDGE_COLUMNS, EDGE_KEY, EVIDENCE_COLUMNS, EVIDENCE_KEY
 
     owners = vocabulary["owner_stores"]
@@ -776,6 +816,30 @@ def test_owner_vocabulary_is_bound_to_current_source_contracts(vocabulary: dict)
     assert owners["txi.episode_transition"]["native_identity_grammars"]["transition"][
         "values"
     ] == [state for state in STATE_LABELS if state != "dormant"]
+    # T04: the shared curation assertion binds as ONE owner subtype whose
+    # schema id and revision grammar are the module's own frozen constants,
+    # whose evidence id stays in the shared theme-graph evidence namespace,
+    # and whose only subject is the theme-evidence identity.
+    curation_owner = owners["theme_graph.curation_assertion"]
+    assert curation_owner["native_schemas"] == [CURATION_ASSERTION_SCHEMA_ID]
+    assert curation_owner["native_identity_grammars"]["curation_revision"][
+        "pattern"
+    ] == CURATION_REVISION_RE.pattern
+    assert curation_owner["native_identity_grammars"]["evidence_id"] == owners[
+        "theme_graph.evidence"
+    ]["native_identity_grammars"]["evidence_id"]
+    assert curation_owner["subject_key_types"] == ["theme_evidence_id"]
+    assert set(curation_owner["clock_bindings"]) == {
+        "source.published_at",
+        "source.observed_at",
+        "source.retained_at",
+        "source.available_at",
+        "review.reviewed_at",
+        "temporal.business_valid_from",
+        "temporal.business_valid_to",
+        "computed_at",
+    }
+    assert curation_owner["synapse_asof_field"] == "computed_at"
 
 
 def test_biocatalyst_current_and_history_bind_real_wire_fields(vocabulary: dict) -> None:
@@ -967,6 +1031,8 @@ def test_native_identity_types_and_pointer_are_fail_closed(vocabulary: dict) -> 
     ("owner_name", "field", "hostile_value"),
     [
         ("theme_graph.evidence", "evidence_id", "evidence-A"),
+        ("theme_graph.curation_assertion", "evidence_id", "evidence-A"),
+        ("theme_graph.curation_assertion", "curation_revision", "gmirca_short"),
         ("theme_graph.edge_belief", "edge_id", "bad-edge"),
         ("theme_graph.edge_belief", "belief_time", "2026-02-30"),
         ("fif.raw_occurrence", "occurrence_id", "rawfact_short"),
@@ -1071,6 +1137,11 @@ def test_earnings_subject_cik_must_equal_the_native_event_cik_after_rehash() -> 
     ("owner_name", "subject_type", "hostile_key"),
     [
         ("theme_graph.evidence", "theme_evidence_id", "ev:" + "b" * 16),
+        (
+            "theme_graph.curation_assertion",
+            "theme_evidence_id",
+            "ev:" + "b" * 16,
+        ),
         ("theme_graph.edge_belief", "theme_node", "co:us:MSFT"),
         ("fif.raw_occurrence", "fif_occurrence_id", "rawfact_" + "b" * 64),
         ("fif.packet", "fif_packet_id", "fip_" + "b" * 24),

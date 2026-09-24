@@ -47,6 +47,16 @@
       "synapse_asof_field": "computed_at", "reader": "engine.theme_graph.store.read_edges", "reader_kind": "collection",
       "pointer_template": "data/theme_graph/edges.parquet#edge_id={edge_id}&belief_time={belief_time}"
     },
+    "theme_graph.curation_assertion": {
+      "native_identity_fields": ["evidence_id", "curation_revision"], "native_identity_types": {"evidence_id": "string", "curation_revision": "string"}, "native_schemas": ["theme_graph.curation_assertion.v1"],
+      "native_identity_grammars": {"evidence_id": {"kind": "regex", "pattern": "^ev:[a-f0-9]{16}$"}, "curation_revision": {"kind": "regex", "pattern": "^gmirca_[0-9a-f]{32}$"}},
+      "object_classes": ["world_observation", "forward_claim", "derived_view"], "subject_key_types": ["theme_evidence_id"],
+      "subject_native_parity": {"theme_evidence_id": {"kind": "native_field_equal", "field": "evidence_id"}},
+      "coverage_classes": ["append_only_bitemporal"], "replay_capabilities": {"live": ["owner_native"], "historical_replay": ["owner_native"]},
+      "clock_bindings": {"source.published_at": {"class": "source_published", "grains": ["date", "datetime"]}, "source.observed_at": {"class": "observed", "grains": ["datetime"]}, "source.retained_at": {"class": "system_recorded", "grains": ["datetime"]}, "source.available_at": {"class": "knowable", "grains": ["datetime"]}, "review.reviewed_at": {"class": "belief_or_build", "grains": ["datetime"]}, "temporal.business_valid_from": {"class": "world_valid", "grains": ["date"]}, "temporal.business_valid_to": {"class": "world_valid", "grains": ["date"]}, "computed_at": {"class": "belief_or_build", "grains": ["datetime"]}},
+      "synapse_asof_field": "computed_at", "reader": "engine.theme_graph.curation_assertion.decode_assertion", "reader_kind": "parser",
+      "pointer_template": "data/theme_graph/evidence.parquet#evidence_id={evidence_id}&curation_revision={curation_revision}"
+    },
     "fif.raw_occurrence": {
       "native_identity_fields": ["occurrence_id"], "native_identity_types": {"occurrence_id": "string"}, "native_schemas": ["fundamental_forensics.raw_ledger/v1#RawFactOccurrence"],
       "native_identity_grammars": {"occurrence_id": {"kind": "regex", "pattern": "^rawfact_[a-f0-9]{64}$"}},
