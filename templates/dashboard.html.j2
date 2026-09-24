@@ -7750,6 +7750,7 @@ html[data-theme="light"] :is(
        Needle: -90deg (leftmost at score=0) + score/100 * 180 = final rotation from vertical. #}
     {% set _mx5_arc_len = 175.93 %}
     {% set _mx5_score = MS.score | int %}
+    {% set _mx5_scope = MS.get('participation_scope') if MS else none %}
     {% set _mx5_filled = (_mx5_score / 100 * _mx5_arc_len) | round(1) %}
     {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
     {% set _mx5_needle_deg = (_mx5_score / 100 * 180 - 90) | round(1) %}
@@ -7907,8 +7908,8 @@ html[data-theme="light"] :is(
             <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ {'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—') }} &mdash; {{ {'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'') }}</span>
-            <span class="l-zh">{{ {'green':'偏多 — 顺势而为受支撑','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
+            <span class="l-en">{{ _mx5_scope.get('subline_en') if (_mx5_scope and _mx5_scope.get('subline_en')) else ({'green':'GREEN — Risk-on backdrop','yellow':'YELLOW — Trade with caution','red':'RED — Defend capital first'}.get(MS.color,'—')) }}</span>
+            <span class="l-zh">{{ _mx5_scope.get('subline_zh') if (_mx5_scope and _mx5_scope.get('subline_zh')) else ({'green':'偏多 — 风险偏好环境','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'')) }}</span>
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
                     '刻度盘上限为 ' ~ _mx5_score ~ '；六项信号合成为 ' ~ _mx5_raw ~ '。上限只能压低刻度盘，不会抬高。') }}
@@ -8735,6 +8736,7 @@ html[data-theme="light"] :is(
       <div class="mx5-action-list">
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
+        {% set _wtd_scope = market_state.get('participation_scope') if market_state else none %}
         {% set _wtd_icon_col = 'mx5-ai-green' if market_state.color == 'green' else ('mx5-ai-yellow' if market_state.color == 'yellow' else 'mx5-ai-gray') %}
         {% set _wtd_stroke = '#22d97a' if market_state.color == 'green' else ('#f59e0b' if market_state.color == 'yellow' else 'rgba(255,255,255,.38)') %}
         <div class="mx5-action-item mx5-action-primary" data-wtd-primary>
@@ -8755,8 +8757,8 @@ html[data-theme="light"] :is(
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">{{ {'green':'Follow the trend. Add on strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
-              <span class="l-zh">{{ {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
+              <span class="l-en">{{ _wtd_scope.get('action_en') if (_wtd_scope and _wtd_scope.get('action_en')) else ({'green':'Stay selective. Add where setups confirm.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.')) }}</span>
+              <span class="l-zh">{{ _wtd_scope.get('action_zh') if (_wtd_scope and _wtd_scope.get('action_zh')) else ({'green':'保持精选，仅在入场条件确认时加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。')) }}</span>
             </div>
             <div class="mx5-action-sub">
               <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>
@@ -16443,6 +16445,7 @@ html[data-theme="light"] :is(
         {% endif %}
       </section>
       {% endif %}
+      {% include "_us_candidate_pool.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -20220,7 +20223,10 @@ if (document.readyState === 'loading') {
   }
   function dropNotes(scope){
     var notes = (scope || document).querySelectorAll('.pg-more');
-    for (var i = 0; i < notes.length; i++) notes[i].remove();
+    for (var i = 0; i < notes.length; i++) {
+      // Candidate counts are honest even when the protected row render failed.
+      if (!notes[i].classList.contains('ucp-more')) notes[i].remove();
+    }
   }
 
   function hydrateLeaderObservations(html){
@@ -20239,7 +20245,37 @@ if (document.readyState === 'loading') {
     if (window.initShowMore) window.initShowMore();
   }
 
+  function hydrateCandidatePool(html, source){
+    if (!html || !source) return;
+    var root = document.getElementById('us-candidate-pool');
+    if (!root || root.dataset.poolHydrated === 'true') return;
+    if (!root.dataset.sourceDigest || source.digest !== root.dataset.sourceDigest ||
+        source.as_of !== root.dataset.asOf || source.total !== Number(root.dataset.total)) return;
+    var list = root.querySelector('.ucp-list');
+    if (!list) return;
+    // Validate the whole remainder before mutating the visible list.
+    var fragment = document.createElement('template');
+    fragment.innerHTML = html;
+    var current = list.querySelectorAll('.ucp-row'), incoming = fragment.content.querySelectorAll('.ucp-row');
+    if (current.length + incoming.length !== source.total) return;
+    var identities = new Set();
+    for (var i = 0; i < current.length; i++) identities.add(current[i].dataset.ticker);
+    for (var j = 0; j < incoming.length; j++) {
+      var ticker = incoming[j].dataset.ticker;
+      if (!ticker || identities.has(ticker)) return;
+      identities.add(ticker);
+    }
+    list.appendChild(fragment.content);
+    root.dataset.poolHydrated = 'true';
+    if (list.querySelectorAll('.ucp-row').length === Number(root.dataset.total)) {
+      var note = root.querySelector('.ucp-more');
+      if (note) note.remove();
+    }
+    root.dispatchEvent(new Event('candidate-pool-hydrated'));
+  }
+
   function hydratePanels(payload){
+    hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);

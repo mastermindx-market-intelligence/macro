@@ -177,5 +177,24 @@
     "direct_execution_reason": "CRITICAL_PATH_SHORTCUT: publish already-built and requalified bounded source correction",
     "worker_active": false,
     "effect_unknown": false
+  },
+  "integration_recovery_20260924": {
+    "procedure_pin": "294b4c00ed668b497edb834be8108f14bc1bee8a",
+    "semantic_head": "0eb607c476623291ccaab2b71ab41be4a3e6d88c",
+    "incoming_main": "42a8d0a5680786c5ce989a7557982e0b858807bb",
+    "original_merge_reconciled": true,
+    "reviewed_source_hashes_unchanged": true,
+    "incoming_test_references_preserved": 2572,
+    "added_test_references": [
+      "tests/test_china_intel_hub_command.py",
+      "tests/test_narrative_crossmarket.py"
+    ],
+    "incoming_risk_walkforward_test_retained": true,
+    "tests_passed": 248,
+    "tests_failed": 0,
+    "test_log": "integration-42a8-tests.txt",
+    "test_log_sha256": "a435fedbc231c653f32d6023127ee515acca4785fd5c942d36a4f76626a099fe",
+    "hosted_checks": "OWED_ON_RESULTING_HEAD",
+    "production_proven": false
   }
 }

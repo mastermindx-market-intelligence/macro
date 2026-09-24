@@ -5480,7 +5480,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names", "leader_observations")}
+                                      "plv_names", "leader_observations", "candidate_pool")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5605,6 +5605,16 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     locked: dict = {}
     overrides: dict = {}
 
+    # The complete eligible pool uses the SAME protected row split and payload.
+    # No withheld ticker is copied into the anonymous shell, search index or JS.
+    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
+        vm.get("us_candidate_visibility"), preview, gated=True
+    )
+    if pool_gate:
+        overrides["us_candidate_visibility"] = pool_shell
+        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
+        locked["candidate_pool"] = pool_locked
+
     # ── Leader observations — a separate display population, never Candidates/Plans.
     leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
         vm.get("us_leader_observations"), preview, gated=True
@@ -5722,6 +5732,15 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
             log.error("us_stocks: locked %s render failed (%s)", key, e)
             out[key] = ""
 
+    if locked.get("candidate_pool"):
+        _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
+                rows=locked["candidate_pool"])
+        candidate_view = vm.get("us_candidate_visibility") or {}
+        out["candidate_pool_source"] = {
+            "as_of": candidate_view.get("as_of"),
+            "digest": candidate_view.get("source_digest"),
+            "total": (candidate_view.get("counts") or {}).get("eligible"),
+        }
     if locked.get("leader_observations"):
         _render(
             "leader_observations_html",
@@ -6012,6 +6031,10 @@ def main() -> int:
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
+    # Read the existing lossless pool; never rescore or re-admit a candidate here.
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -6908,6 +6931,7 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
@@ -7003,6 +7027,24 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import (
+        internationalize_hero_styles,
+        write_global_regime_fragment,
+    )
+    _intl_hero_css = internationalize_hero_styles(
+        (Path(__file__).resolve().parent.parent / "templates" / "theme.css").read_text()
+    )
+    _intl_hero_html = env.get_template("_unified_dashboard_hero.html.j2").render(
+        **vm, ud_international=True
+    )
+    write_global_regime_fragment(
+        site,
+        f"<style>\n{_intl_hero_css}\n</style>\n{_intl_hero_html}",
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
@@ -7365,40 +7407,14 @@ def main() -> int:
     # Additive — never fatal to the daily run.
     try:
         from scripts.build_market_heatmap import build_all as build_market_heatmaps
-        from engine.market_heatmap import PAGE_META as _HM_MK
-        from engine.market_heatmap import page_summary as _hm_summary
-        from engine.market_heatmap import sibling_markets as _hm_siblings
-        from lib.seo import is_public_path as _is_public
+        from scripts.build_market_heatmap import render_pages as render_market_heatmap_pages
+
         _hm_payloads = build_market_heatmaps(site, generated_utc=generated)
         _tmark("intl_heatmaps")
-        _hm_tmpl = env.get_template("market_heatmap.html.j2")
-        for _m, _mk in _HM_MK.items():
-            out_mh = site / f"{_m}_heatmap.html"
-            # Read the tile map back off disk rather than trusting the in-memory
-            # return: build_all() swallows a single market's failure so one dead
-            # feed cannot take the site down, and on that path the committed JSON
-            # from the last good run is what the browser will actually fetch — so
-            # it is what the server-rendered summary must describe.
-            _pay = _hm_payloads.get(_m)
-            if not _pay:
-                try:
-                    _pay = json.loads((site / "marketdata" / f"{_m}_heatmap.json")
-                                      .read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001 — no map, no summary; the shell still ships
-                    _pay = None
-            # The wall shows exactly when the page is anonymous-public. One source
-            # of truth (config/site_access.yml) means a sibling market adopts the
-            # tier preview by moving one line of policy — no template edit, no
-            # second flag that can disagree with the boundary.
-            _gated = _is_public(f"/{_m}_heatmap.html")
-            _sum = _hm_summary(_pay)
-            write_page(out_mh, _hm_tmpl.render(
-                mk=_mk, summary=_sum, gated=_gated,
-                n_tiles=(_sum or {}).get("n_tiles") or (_pay or {}).get("n_tiles") or 0,
-                siblings=_hm_siblings(_m),
-            ))
-            log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out_mh,
-                     out_mh.stat().st_size / 1024, bool(_sum), _gated)
+        # The shared publisher owns JSON→SSR fallback and boundary projection.
+        # Asia close calls the same owner for China alone, so no second page
+        # renderer can drift from the full-site path.
+        render_market_heatmap_pages(_hm_payloads, site=site, env=env)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market heatmaps (cn/hk/ca) failed: %s", e)
 
@@ -7592,10 +7608,17 @@ def main() -> int:
                 site, json.loads(_us_path.read_text())) if _us_path.exists() else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
-                    or (_fresh_su.get("staleness") or {}) != _prior_stale):
+                    or (_fresh_su.get("staleness") or {}) != _prior_stale
+                    # A same-session correction can change names, exclusion reasons,
+                    # or availability without advancing the date/freshness clock.
+                    # Compare the existing allowlisted view, not unrelated raw fields.
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
                 vm["us_standouts"] = _fresh_su
+                vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
                 # it moves with it for the same reason the Theme Tape below does — the
                 # whole point of deriving it from us_standouts (rather than from the

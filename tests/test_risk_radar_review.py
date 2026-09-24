@@ -250,3 +250,226 @@ def test_displayed_probability_audit_hot_count_only_counts_tier_a_at_caution():
     }
     out = dp.hot_tier_a_count(subs, calib)
     assert out.tolist() == [2, 1]
+
+
+
+def _prob_guard_setup(monkeypatch, *, proposed_brier=0.09, base_brier=0.10,
+                      proposed_partition=None, base_partition=None):
+    import copy
+    from engine import risk_radar_backtest as bt
+
+    base = _calib()
+    proposed = copy.deepcopy(base)
+    proposed["prob_cal"]["h21"]["elevated"] = min(
+        0.6, float(proposed["prob_cal"]["h21"]["elevated"]) + 0.01
+    )
+
+    monkeypatch.setattr(bt, "detect_events", lambda: [])
+    monkeypatch.setattr(
+        bt,
+        "state_accuracy",
+        lambda calib, **kwargs: {
+            "f1": 0.42 if calib is proposed else 0.40,
+            "evaluation": {"outcomes_sha256": "state-pop"},
+        },
+    )
+    monkeypatch.setattr(
+        bt,
+        "gate_report",
+        lambda **kwargs: {
+            leg: {"lift_2020": 1.5} for leg in proposed.get("legs", {})
+        },
+    )
+
+    bp = base_partition or {
+        "calm": False, "watch": False, "caution": False,
+        "elevated": True, "risk-off": True,
+    }
+    pp = proposed_partition or dict(bp)
+
+    def probability_report(calib, **kwargs):
+        is_proposed = calib is proposed
+        brier = proposed_brier if is_proposed else base_brier
+        partition = pp if is_proposed else bp
+        rows = {}
+        for horizon in ("h5", "h10", "h21"):
+            rows[horizon] = {
+                "full": {
+                    "brier_score": brier,
+                    "n_days": 1000,
+                    "evaluation": {"outcomes_sha256": f"{horizon}-full"},
+                },
+                "y2020": {
+                    "brier_score": brier,
+                    "n_days": 500,
+                    "evaluation": {"outcomes_sha256": f"{horizon}-y2020"},
+                },
+            }
+        return {
+            "horizons": rows,
+            "authority_partition_h21": partition,
+        }
+
+    monkeypatch.setattr(bt, "probability_quality_report", probability_report)
+    return bt, base, proposed
+
+
+def test_probability_guard_rejects_brier_harm_even_when_alert_f1_improves(monkeypatch):
+    bt, base, proposed = _prob_guard_setup(
+        monkeypatch, proposed_brier=0.11, base_brier=0.10
+    )
+    verdict = bt.compare_calib(proposed, base)
+    assert verdict["probability_gate"]["required"] is True
+    assert verdict["probability_gate"]["brier_nonworse"] is False
+    assert verdict["probability_gate"]["passes"] is False
+    assert verdict["improves"] is False
+
+
+def test_probability_guard_allows_nonworse_surface_with_strict_brier_gain(monkeypatch):
+    bt, base, proposed = _prob_guard_setup(
+        monkeypatch, proposed_brier=0.09, base_brier=0.10
+    )
+    verdict = bt.compare_calib(proposed, base)
+    assert verdict["probability_gate"]["required"] is True
+    assert verdict["probability_gate"]["brier_nonworse"] is True
+    assert verdict["probability_gate"]["strict_brier_improvement"] is True
+    assert verdict["probability_gate"]["authority_partition_ok"] is True
+    assert verdict["probability_gate"]["passes"] is True
+    assert verdict["improves"] is True
+
+
+def test_probability_guard_rejects_authority_partition_change(monkeypatch):
+    changed = {
+        "calm": False, "watch": False, "caution": True,
+        "elevated": True, "risk-off": True,
+    }
+    bt, base, proposed = _prob_guard_setup(
+        monkeypatch, proposed_brier=0.09, base_brier=0.10,
+        proposed_partition=changed,
+    )
+    verdict = bt.compare_calib(proposed, base)
+    assert verdict["probability_gate"]["brier_nonworse"] is True
+    assert verdict["probability_gate"]["authority_partition_ok"] is False
+    assert verdict["probability_gate"]["passes"] is False
+    assert verdict["improves"] is False
+
+
+def test_probability_guard_is_not_required_for_non_probability_proposal(monkeypatch):
+    import copy
+    from engine import risk_radar_backtest as bt
+
+    base = _calib()
+    proposed = copy.deepcopy(base)
+    proposed["bands"]["elevated"] -= 1.0
+
+    monkeypatch.setattr(bt, "detect_events", lambda: [])
+    monkeypatch.setattr(
+        bt,
+        "state_accuracy",
+        lambda calib, **kwargs: {
+            "f1": 0.42 if calib is proposed else 0.40,
+            "evaluation": {"outcomes_sha256": "state-pop"},
+        },
+    )
+    monkeypatch.setattr(
+        bt,
+        "gate_report",
+        lambda **kwargs: {
+            leg: {"lift_2020": 1.5} for leg in proposed.get("legs", {})
+        },
+    )
+    monkeypatch.setattr(
+        bt, "probability_quality_report",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("probability report must not run without prob_cal delta")
+        ),
+        raising=False,
+    )
+
+    verdict = bt.compare_calib(proposed, base)
+    assert verdict["probability_gate"] == {
+        "required": False,
+        "passes": True,
+        "reason": "prob_cal_unchanged",
+    }
+    assert verdict["improves"] is True
+
+
+
+def test_probability_quality_report_scores_actual_displayed_surface(monkeypatch):
+    from engine import risk_radar as rr
+    from engine import risk_radar_backtest as bt
+
+    calib = _calib()
+    idx = pd.bdate_range("2026-01-02", periods=30)
+    spy_idx = pd.bdate_range("2026-01-02", periods=60)
+    spy = pd.Series(100.0, index=spy_idx)
+    spy.iloc[12:15] = [98.0, 94.0, 96.0]
+
+    sigs = pd.DataFrame({"dummy": np.linspace(0.0, 1.0, len(idx))}, index=idx)
+    tier_a = [
+        scare for scare, spec in calib["scares"].items()
+        if spec.get("tier") == "A"
+    ]
+    subs = pd.DataFrame({scare: 60.0 for scare in tier_a}, index=idx)
+    states = pd.Series("caution", index=idx)
+
+    monkeypatch.setattr(rr, "leading_signals", lambda: sigs)
+    monkeypatch.setattr(rr, "subscore_series", lambda _sigs, _calib: subs)
+    monkeypatch.setattr(bt, "state_series", lambda _subs, _calib, sigs=None: states)
+    monkeypatch.setattr(bt, "_spy", lambda drop_missing=False: spy)
+    monkeypatch.setattr(
+        rr,
+        "_drawdown_prob",
+        lambda state, nhot, calib=None: {"h5": 0.03, "h10": 0.08, "h21": 0.16},
+    )
+
+    report = bt.probability_quality_report(calib)
+    assert report["ready"] is True
+    for hkey in ("h5", "h10", "h21"):
+        assert report["horizons"][hkey]["full"]["n_days"] == 30
+        assert report["horizons"][hkey]["y2020"]["n_days"] == 30
+        assert 0 <= report["horizons"][hkey]["full"]["brier_score"] <= 1
+        assert report["horizons"][hkey]["full"]["evaluation"]["outcomes_sha256"]
+    assert report["authority_partition_h21"] == {
+        "calm": False,
+        "watch": False,
+        "caution": False,
+        "elevated": True,
+        "risk-off": True,
+    }
+
+
+def test_review_result_preserves_probability_gate_evidence(tmp_path, monkeypatch):
+    gate = {
+        "required": True,
+        "passes": False,
+        "reason": "probability_brier_worse",
+        "brier_nonworse": False,
+        "authority_partition_ok": True,
+    }
+    monkeypatch.setattr(rev, "_gov_proposal", lambda *a, **k: None)
+    monkeypatch.setattr(rev, "_gov_reject", lambda *a, **k: None)
+    sc = {"n_graded": 100, "alert_precision": 0.3, "recall_dd5_h21": 0.4,
+          "recent_mistakes": []}
+    out = rev.run(
+        force=True,
+        persist=False,
+        root=tmp_path,
+        scorecard=sc,
+        call=lambda s, u: _proposal(prob_cal={"h21": {"elevated": 0.26}}),
+        compare=lambda p: {
+            "improves": False,
+            "legs_ok": True,
+            "comparison_ready": True,
+            "alert_gate": True,
+            "probability_gate": gate,
+            "base": {},
+            "proposed": {},
+        },
+    )
+    assert out["applied"] is False
+    assert out["degraded_reason"] == "rejected_by_do_no_harm"
+    assert out["backtest"]["probability_gate"] == gate
+    assert "Brier" in rev._A6_GATE_SPEC
+    assert "authority partition" in rev._A6_GATE_SPEC
