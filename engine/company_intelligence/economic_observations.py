@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from datetime import date
 import hashlib
-import html
 import math
 from numbers import Real
 from typing import Any, Mapping
@@ -20,11 +19,13 @@ from .pg_profile import (
     _normal,
     combined_volume_mix_presentation,
     document_period_verdict,
+    expected_receipt_span,
     locate_pg_observation,
     neutral_zero_convention,
     parse_pg_literal,
     parse_release_blocks,
     pg_reconciliation_paragraph,
+    pg_volume_cross_check,
     replay_table_layout,
 )
 
@@ -102,7 +103,7 @@ def _verify_pg_replay(
     """
     fiscal_year, quarter = _fiscal_identity(current_start, current_end)
     identity = (fiscal_year, quarter, current_end)
-    if document_period_verdict(parse_release_blocks(source), identity, source=source) in _OUT_OF_SCOPE:
+    if document_period_verdict(parse_release_blocks(source), identity) in _OUT_OF_SCOPE:
         raise EconomicObservationError("replay_mismatch: the document's period signals do not name the admitted fiscal quarter")
     if not isinstance(start, int) or not isinstance(end, int):
         raise EconomicObservationError("replay_mismatch: replay location is invalid")
@@ -117,6 +118,8 @@ def _verify_pg_replay(
             raise EconomicObservationError("replay_mismatch: the replayed text is not the uniquely addressable reconciliation paragraph")
         if row.get("value") != paragraph.text.strip():
             raise EconomicObservationError("replay_mismatch: replayed text differs from the reconciliation paragraph")
+        if expected_receipt_span(source, span.char_start, span.char_end, paragraph.text.strip()) != (start, end):
+            raise EconomicObservationError("replay_mismatch: replayed bytes are not the paragraph's receipt")
         return
     located = locate_pg_observation(source, definition, current_start=current_start, current_end=current_end, prior_end=prior_end)
     if located is None:
@@ -124,8 +127,8 @@ def _verify_pg_replay(
     cell, header, column, period = located
     if not (cell.char_start <= char_start and char_end <= cell.char_end):
         raise EconomicObservationError("replay_mismatch: replay location is not the addressed cell")
-    if _normal(html.unescape(source[char_start:char_end])) != _normal(cell.text):
-        raise EconomicObservationError("replay_mismatch: replayed bytes are not the cell's visible text")
+    if expected_receipt_span(source, cell.char_start, cell.char_end, cell.text.strip()) != (start, end):
+        raise EconomicObservationError("replay_mismatch: replayed bytes are not the cell's receipt")
     try:
         row_label, replayed_header, replayed_column = replay_table_layout(
             source,
@@ -144,6 +147,10 @@ def _verify_pg_replay(
         raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
     if row.get("period") != period:
         raise EconomicObservationError("replay_mismatch: replayed period differs from the stored observation")
+    if definition.metric == "pg_total_volume_growth_pct" and not pg_volume_cross_check(
+        source, value=float(row.get("value")), current_start=current_start, current_end=current_end, prior_end=prior_end
+    ):
+        raise EconomicObservationError("replay_mismatch: the document carries conflicting statements of total volume growth")
 
 
 def validate_selected_facts(
