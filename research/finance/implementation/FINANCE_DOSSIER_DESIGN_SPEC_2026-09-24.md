@@ -1356,5 +1356,102 @@ Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`d
 | Conflict card footer | `Unresolved by design — both statements stand.` | `设计上不予调和 — 两种陈述同时成立。` |
 | Falsifier list heading | `What we're watching` | `我们正在观察` |
 | Atlas footer chip | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
+
+---
+
+## E. Hydration contract + data-free shell
+
+The §B markup is a data-free shell with one mount point per section. This section is the binding hydration contract the build lane implements verbatim.
+
+### E.0 Single read URL
+
+```
+const FI_READ_URL = "__FI_READ_URL__";   // placeholder; bound at integration into
+                                         // the shared foundation route. The spec
+                                         // names no path.
+```
+
+### E.1 Hydration fetch
+
+```js
+fetch(FI_READ_URL, {
+  credentials: "include",
+  cache: "no-store",
+  headers: { Accept: "application/json" },
+})
+```
+
+The document lives in one in-memory closure variable only. Deep-link hashes `#evidence=<record_id>` and `#slice=<slice_id>` resolve against the in-memory document.
+
+### E.2 FORBIDDEN storage (binding)
+
+The hydration layer MUST NOT use any of the following:
+
+- `localStorage`
+- `sessionStorage`
+- `IndexedDB`
+- the Cache API (`caches.*`)
+- service workers (`navigator.serviceWorker.*`)
+- inline `<script type="application/json">` embedding
+- any inline copy of payload into the DOM before the fetch resolves
+
+The only place payload lands before hydration is the in-memory closure variable. (check #10 — these strings appear ONLY inside this list in §E.)
+
+### E.3 Response status mapping
+
+| Status | JSON `error` (if any) | Page state | UI treatment |
+|---|---|---|---|
+| 200 | — | `AVAILABLE` | full §B shell hydrated from the document |
+| 401 | — | `SIGNED_OUT` | title + deck + TOC only; one `.mx-empty` + `.mx-empty-why` notice: `"Sign in to read current research" / "请登录以查阅当前研究"`. Sign-in CTA links to the existing `?return=<path>` pattern. All section bodies hidden. |
+| 402 | — | `NOT_ENTITLED` | title + deck + TOC only; plain-word notice: `"This dossier is part of the research tier" / "此报告为研究层内容"`. Upgrade CTA. No sections render. **The previous spec's "slice grid chips + cohort posture chips" claim is removed — there is no public projection; only the static hero + TOC render.** |
+| 403 | — | `NOT_ENTITLED` | same as 402 |
+| 503 | `PRIVATE_STORE_UNAVAILABLE` | `PRIVATE_STORE_UNAVAILABLE` | title + deck + TOC + section shells; one `.mx-empty` + `.mx-empty-why` notice: `"Private evidence store unavailable" / "私有证据库暂不可用"`. (Per R-K: the prior copy "Outer dossier not accepted — research context only" was mis-bound; that wording belongs to `outer_dossier_ref.state` per D.14 and is NOT used here.) |
+| 503 | `NO_GENERATION` | `NO_GENERATION` | plain-word notice: `"No evidence generation published yet — re-drawn after the next nightly" / "尚未发布证据版本，夜间更新后重绘"`. (Per R-K: the prior "refresh in a moment" wording is removed.) |
+| 503 | `GENERATION_TORN` | `GENERATION_TORN` | plain-word notice: `"Generation interrupted — partial context only" / "生成中断 — 仅展示部分背景"`. Affected sections carry `data-state-partial="true"`. |
+| 503 | `CONTRACT_INVALID` | `CONTRACT_INVALID` | plain-word notice: `"Contract mismatch — showing public shell only" / "契约不一致 — 仅展示公开外壳"`. No sections render; title + deck + TOC only. |
+| Network failure | — | `NETWORK_ERROR` | plain-word notice: `"Couldn't load — try again" / "未能加载 — 请重试"`. Retry button. |
+| Other | — | `UNKNOWN` | generic `mx-empty` + `mx-empty-why`: `"Read failed" / "读取失败"`. |
+
+Every state uses the `.mx-empty` (the block) + `.mx-empty-why` (the one-line reason) classes; theme/lock are honoured throughout.
+
+### E.4 Keyboard / ARIA behaviour contract
+
+| Element | Event | State change | ARIA change | Focus rule |
+|---|---|---|---|---|
+| `.fi-view-tab` (3 tabs, generated from `system_views[]` payload order) | `click` / `ArrowLeft` / `ArrowRight` / `Home` / `End` | roving `tabindex` (selected=0, others=-1) | `aria-selected=true` on clicked, `false` on siblings | Focus moves to clicked tab; show the matching `role=tabpanel`, hide others |
+| `.fi-system-expand` | `click` | `aria-expanded` flips | `aria-controls` panel toggles `hidden` | Focus stays on the expand button; the now-revealed list is announced via `aria-live=polite` |
+| `.fi-evidence-trigger`, `.fi-step-evidence`, `.fi-constraint-evidence`, `.fi-slice-open`, `.fi-toc-evidence` | `click` | drawer `aria-hidden` flips to `false`; `<main>` receives `inert` | drawer `hidden`/`inert` removed; scrim shown | Focus moves to the drawer's first focusable; previous-active element saved for restore |
+| `.fi-drawer-close`, `.fi-scrim`, `Escape` keydown | `click` / `keydown` | drawer `aria-hidden=true`; `<main>` loses `inert` | drawer `hidden inert` reapplied | Focus restored to the opener (deep-link open → returns to the section heading that triggered it) |
+| Drawer focus trap | `keydown Tab` / `Shift+Tab` at edges | none | none | Cycle within drawer's focusable elements; do not escape to inert background |
+| `.fi-slice-select` (native) | `change` | re-render `.fi-rerating-steps`, `.fi-falsifiers`, `.fi-conflicts` for the new slice | URL hash updates to `#slice=<slice_id>` | Focus stays on the select |
+| `hashchange` / `popstate` | listener | re-render slice selector + drawer open if `#evidence=<id>` | drawer `aria-hidden=false` for `#evidence` | Focus moves to drawer's first focusable for `#evidence`; no focus shift for `#slice` (select retains focus) |
+| Theme toggle (`.theme-toggle` global) | `click` | `html[data-theme]` flips between `dark` and `light` | none | Persist via existing `theme.js` |
+| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps; `data-en` / `data-zh` swap; aria-label read from `data-aria-zh` when `[data-lang=zh]` | `aria-label` swapped | Persist via existing `theme.js` |
+| `prefers-reduced-motion: reduce` | media-query change | drawer's CSS transition collapses to `none` | none | none |
+| Conflict card | `mouseenter` / `focus` | none | visible line + button (no hover-only meaning) | none |
+
+The drawer is the only modal surface. Tab order follows DOM order. No keyboard shortcut invents new gestures.
+
+### E.5 Field bindings → DOM mount points (cross-reference)
+
+| `data-fi-mount` | Section | Hydration populates |
+|---|---|---|
+| `shell` | B.0 | `data-state-outer-dossier`, `data-state-coverage`, hero kicker/meta (one-time) |
+| `provenance` | B.0 | one `.fi-receipt-line` per `input_receipts[]` entry whose `state ≠ READ` |
+| `what-changed-list` | B.1 | one `<li class="fi-change-row" data-state-freshness data-change-id>` per `material_changes[]` entry, sorted by `event_clock.published_at` desc |
+| `slice-select` | B.2 | one `<option value="<slice_id>">{name_en} / {name_zh}</option>` per `coverage.first_vertical.slice_ids` joined with `slices[]` |
+| `rerating-steps` | B.2 | exactly four `<li class="fi-rerating-step fi-node-{name}">` in the order operating, expectations, valuation, price |
+| `rerating-bridge` | B.2 | text node = `slices[].rerating.bridge` (fallback static copy from §B.2) |
+| `falsifiers` | B.2 | one `<li class="fi-falsifier" data-state-falsifier>` per `slices[].falsifiers[]` |
+| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card" data-conflict-id>` per `conflicts[]` |
+| `domain-grid` | B.4 | one `<section class="fi-domain">` per `domains[]` in payload order; inside, one `<li class="fi-slice">` per `slices[]` entry whose `domain_id` matches |
+| `coverage eyebrow` | B.4 | text node from `coverage.{domains_populated, domains_total, slices_populated, slices_total}` |
+| `atlas-gap` | B.4 | text node from `coverage.slices_total − sum(rendered)` |
+| `exposure-rows` | B.5 | one `<tr>` per `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive); `<td>` per `cells[]` cell (absent slice column → "No role recorded / 未记录角色") |
+| `exposure-cards` | B.5 | one `<li class="fi-exposure-card">` per `company_exposures[]` entry (phone only; hidden ≥768) |
+| `macro-rows` | B.6 | one `<tr data-slice-id>` per unique `slice_id` in `macro_matrix[]` in payload order; cell for each (slice, driver) pair; absent → "Not mapped / 未映射" |
+| `constraint-list` | B.7 | one `<li class="fi-constraint-row">` per `constraints[]` |
+| `view-tabs` / `view-panels` | B.3 | one `<button role="tab">` and one `<div role="tabpanel">` per `system_views[]` in payload order |
+| `evidence-body` | B.0 aside | `dl.fi-evidence-fields` populated from `source_records[]`; suppression rule applied (D.23) |
 ```
 ```
