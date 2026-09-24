@@ -278,3 +278,33 @@ FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false.
 Boundary:resolved source/consumer/merge uncertainties plus two explicit action gates after
 substantial context use. Next:consume original P0's exact-head recovery and preserve the
 qualified parent template; publish only through recovered original gates. No wake/lease transfer.
+
+## Current frontier — flow diagnosis and execution gates
+Operation china-participation-context-20260921-sol-001; same PR7622/locked Studio carrier.
+Pickup d47697f9b825013319640e5c266e2f99ada65612; no product change in this unit.
+Fresh law Mastermind@f1c070d733c4683b20bbbd9af8fae6c30dc38d84; compatible1.0.1/bootstrap1.
+Current Chairman scope and review exception retained; CI/release remain deferred.
+New source-bound diagnosis: southbound_flow dropna-before-tail can turn a synthetic20-row
+net outflow -100 into apparent inflow +105 by pulling in an older +200 observation.
+A missing tail reuses an undated older net; one-row history emits NaN net_z and a20-day total.
+Four synthetic cases, not market readings or passing acceptance tests; no currency-unit claim.
+Receipt/report: research/grey_deer/CHINA_FLOW_WINDOW_DIAGNOSIS_20260924.{json,md}.
+Reproducer: research/grey_deer/probe_china_flow_window.py. No engine/test/page edits.
+Source-owner/current-main qualification was safety-refused before dispatch, EFFECT_NONE;
+no split retry or alternate carrier. Pure probe does not replace that missing qualification.
+RDC configuration read succeeds and permits the worktree root; no backend configuration change
+or evidence that sudo/offline-host is the problem. Platform recovery remains unproven.
+P0 still cd0bcb0; latest recovery request5814095625 has no returned pickup/new exact head.
+Preserve its dirty original candidate; no inactivity/lease-expiry inference or duplicate worker.
+NBS29,weight16,render-write54,episode-feed18 and original China browser/publication actions
+remain held under their exact prior denials. Current-main/CI/live acceptance remain owed.
+DO_NOT_REDO: accepted participation/window/cohort/timing/recovery/P2/SignalLab and18-path
+selection repairs. Preserve prior page and24auxiliary/4image exclusions; no clean-tree claim.
+No new worker/watcher/runtime job, pending source effect, lease transfer or automatic wake.
+FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED. MISSION_COMPLETE:false.
+Current ready repair/release lanes need their actual permission recovery or P0's original-owner
+return; no permission reset is inferred from another continue prompt or a new chat.
+Next: consume P0's reconciled exact-head return; resume held edits only after genuine action-gate
+recovery. The flow source needs its denied ownership qualification before repair. Use this
+frontier plus exact receipts, not replay of prior tool history; do not add peripheral work to
+mask the blocked critical path.

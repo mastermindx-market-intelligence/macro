@@ -1,0 +1,43 @@
+{
+  "kind": "synthetic read-only flow-window diagnostic",
+  "source_sha256": "44bd35e2a4d0ae53cc93f04bf739df8dc13c7e4a0dfe6e730aa03c83a59c5640",
+  "cases": {
+    "complete21": {
+      "net": -5.0,
+      "net_z": -0.22,
+      "cum_20d": -100.0,
+      "pos_days_20": 0,
+      "asof": null
+    },
+    "internal_null": {
+      "net": -5.0,
+      "net_z": -0.22,
+      "cum_20d": 105.0,
+      "pos_days_20": 1,
+      "asof": null
+    },
+    "missing_latest": {
+      "net": -5.0,
+      "net_z": -0.22,
+      "cum_20d": 105.0,
+      "pos_days_20": 1,
+      "asof": null
+    },
+    "one_observation": {
+      "net": -5.0,
+      "net_z": null,
+      "cum_20d": -5.0,
+      "pos_days_20": 0,
+      "asof": null
+    }
+  },
+  "nonfinite_values_encoded_as_null": [
+    "one_observation.net_z"
+  ],
+  "source_and_fixture_inputs_unchanged": true,
+  "product_repair": false,
+  "production": false,
+  "fresh_collection": false,
+  "currency_units_qualified": false,
+  "scope": "stored-row integrity, not exchange-session completeness"
+}
