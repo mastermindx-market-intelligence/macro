@@ -1,0 +1,9 @@
+{
+  "case_key": "recorded_later",
+  "expected_regression": "Archival source-history allowed only with retrospective label; system replay refuses",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T08"
+  ]
+}

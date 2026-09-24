@@ -1,0 +1,11 @@
+{
+  "case_key": "corrected_interpretation",
+  "expected_regression": "New facts cannot retain stale causal text as one ready generation",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08",
+    "T11"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "case_key": "guidance_next_period",
+  "expected_regression": "Next-quarter outlook is not same-period surprise or revision",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T06"
+  ]
+}

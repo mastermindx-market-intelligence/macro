@@ -1,0 +1,9 @@
+{
+  "case_key": "hbm_12h_16h",
+  "expected_regression": "12H reported-shipment and 16H sample remain different configurations",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ]
+}

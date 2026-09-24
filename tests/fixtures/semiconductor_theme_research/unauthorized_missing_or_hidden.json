@@ -1,0 +1,9 @@
+{
+  "case_key": "unauthorized_missing_or_hidden",
+  "expected_regression": "Identical permitted error shape; no private reader call/existence disclosure",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T09"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "case_key": "cowos_variants",
+  "expected_regression": "S/R/L construction stays scoped; no single interchangeable capacity total",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "case_key": "guidance_basis_change",
+  "expected_regression": "GAAP/non-GAAP, definition, currency and fiscal mismatches stay explicit",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T06"
+  ]
+}

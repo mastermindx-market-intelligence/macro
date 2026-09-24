@@ -1,0 +1,11 @@
+{
+  "case_key": "empty_financial_success",
+  "expected_regression": "Industrial-only ready pane does not satisfy either full B witness",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T08",
+    "T11",
+    "T12"
+  ]
+}

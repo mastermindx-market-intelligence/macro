@@ -1,0 +1,10 @@
+{
+  "case_key": "umc_output_utilization",
+  "expected_regression": "Native output-based utilization is not overwritten by shipment/capacity quotient",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08"
+  ]
+}

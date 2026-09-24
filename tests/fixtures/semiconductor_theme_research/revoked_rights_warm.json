@@ -1,0 +1,10 @@
+{
+  "case_key": "revoked_rights_warm",
+  "expected_regression": "Existing process denies after registry changes without new watcher/restart",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T03",
+    "T09"
+  ]
+}

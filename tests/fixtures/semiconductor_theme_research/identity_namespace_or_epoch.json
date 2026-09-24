@@ -1,0 +1,11 @@
+{
+  "case_key": "identity_namespace_or_epoch",
+  "expected_regression": "venue:symbol does not become SEC ID; default 1970 window not historical evidence",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T04",
+    "T05",
+    "T08"
+  ]
+}

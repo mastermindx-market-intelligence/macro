@@ -1,0 +1,9 @@
+{
+  "case_key": "guidance_perimeter_change",
+  "expected_regression": "Display all values; refuse unbridged organic/acquisition-adjusted delta",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T06"
+  ]
+}
