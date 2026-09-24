@@ -4,53 +4,58 @@ session: sol/technology-ex-semis-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Complete principal-owned Technology ex-Semiconductors research and the owner-compatible
-  product/implementation masterplan; Fable remains intended final build integrator.
+  Complete Technology ex-Semiconductors research, reviewed owner-compatible design and
+  implementation-ready masterplan; Fable remains intended final build integrator.
 state_before: >
-  R1-R4 established domain economics, regional materiality and valuation scenarios;
-  actual source/owner feasibility and evaluation design remained the next dependency.
+  R1-R4 covered domain economics, geography and valuation. Native-owner feasibility,
+  replay eligibility and evaluation requirements were the next unresolved dependency.
 changed:
   - path: research/technology_ex_semis/TECHNOLOGY_SOURCE_PRODUCT_FEASIBILITY_R5A_2026-09-23.md
-    what: "Native source/owner map, precise capability limits, proposed slices and Semiconductor boundary."
+    what: "Native ownership/capability map, four useful slices and reconciled Semiconductor boundary."
+  - path: research/technology_ex_semis/TECHNOLOGY_EVALUATION_AND_TEMPORAL_PROOF_R5B_2026-09-23.md
+    what: "Eight study questions, temporal/evaluation requirements, adversarial laboratory and24 future acceptance cases."
 verified:
-  - claim: "R5A is persisted on the same research carrier and matches the authored bytes."
-    command: "GitHub create_file, exact-commit fetch_file, comparison with locally calculated Git blob"
-    result: "Commit 98cfd30144d4051108ea94fc17ea36afccdcb6fc; blob f2ff2e09654542b2b7c0a048455de51019681b24; 37,755 bytes; 8 editorial checks, zero product tests."
-  - claim: "The initial disconnected R5A write was reconciled before resubmission."
-    command: "Same-branch fetch_file returned404; original branch ref remained34d28e62f198b331f5efd3856bc20026d7158193; then same-payload same-carrier resubmission/readback"
-    result: "First write not found on canonical branch; subsequent write returned explicit commit and matching blob. No failover, duplicate branch or unresolved effect remains."
-  - claim: "The Semiconductor research carrier and newer checkpoint are identified."
-    command: "get_pr_info #7780 then exact-head cumulative checkpoint read"
-    result: "Head d40ebbb0d18a62a680029743d11e05502c51edb1; checkpoint blob da32aa78b175c36a0a3bef181aae21972e19f0cb; newer than stale PR-body gate."
+  - claim: "Both R5 chapters are persisted and match the authored files."
+    command: "GitHub create_file and exact-commit fetch_file; local Git-blob comparison"
+    result: "R5A98cfd30144d4051108ea94fc17ea36afccdcb6fc/blobf2ff2e09654542b2b7c0a048455de51019681b24; R5B1c224989b050be4322075af633fc83bd1a77e9dc/blob95242280f199544801f60f2f68f959c206831124."
+  - claim: "The original research laboratory runs reproducibly."
+    command: "python /mnt/data/technology_ex_semis_r5/verify_r5_research_lab.py; final suite run twice"
+    result: "41 research checks PASS;16 temporal cases;8 omitted local guards detected;0 native/product tests. JSON33,297bytes/SHA2569176c6ec1be19c79af8cff6d2e30b97d384a09b50b490ca0a2ec7779cc8bfa51."
+  - claim: "A disconnected R5A write was canonically reconciled before retry."
+    command: "Same-path404 and unchanged original branch ref; same-payload resubmission followed by matching exact-commit readback"
+    result: "First write not found; successful98cfd write resolved the effect. No carrier failover or blind retry."
 unverified:
-  - claim: "Detailed Technology evidence or dossiers are production-ready."
-    what_would_verify: "Native admission, compatible schemas/storage/readers/rights, delivered shared shell and actual source-to-authenticated-browser proof."
-  - claim: "Historical consensus or original-system replay is available across this universe."
-    what_would_verify: "Accepted native expectation entitlements/vintages and historical event/identity/observation/computation population."
+  - claim: "The Technology design or final build masterplan is accepted and ready for implementation."
+    what_would_verify: "Integrated written specification, bounded remaining breadth work, actual shared-owner interface decisions and required review/implementation plan acceptance."
+  - claim: "The new intelligence is predictive or production-proven."
+    what_would_verify: "Accepted native source/identity/metric/rights path, real browser proof and separately predeclared prospective/holdout evidence; none claimed."
 next_actions:
-  - "Continue R5B evaluation/eligibility design and an original adversarial research laboratory in this active turn."
-  - "Then integrate all domain research with native interfaces into a written owner-compatible delivery specification; no premature Fable commission."
+  - "From this checkpoint plus R5A/R5B, write the integrated Economic Change Dossier design proposal with exact source/definition/transform/projection/consumer responsibilities."
+  - "Use software prior-outlook/actual/new-outlook as first vertical; retain physical unit/revenue/containment and geographic-bounds witnesses for subsequent slices."
+  - "Complete bounded smaller-company/regional/non-AI coverage gaps without repeating the domain foundations, then freeze the executable shared-owner plan for Fable."
 do_not_redo:
-  - "Preserve #7793, the existing branch, R1-R4 and R5A. Do not rebase or recreate this research carrier."
-  - "No chip-specific EDA/IP, fabrication/equipment/materials or separate Semiconductor research rebuild."
-  - "No duplicate GMI/K1/financial/company/identity/expectation/ThemeState/QLedger/publisher/queue owner."
-  - "Do not mistake source-level defaults or dated censuses for current production/account proofs."
-  - "No production source, current baskets, Prophet policy, native admission, merge or deployment from this research."
+  - "Do not recreate or rebase #7793, its branch, R1-R5 or this cumulative checkpoint."
+  - "Do not re-run broad GMI/Robotics/template/consensus archaeology absent a material invalidator."
+  - "No Semiconductor chip-specific EDA/IP/fabrication/equipment/materials research duplication."
+  - "No duplicate identity, evidence, financial, expectation, ThemeState, QLedger, publisher, queue or control plane."
+  - "No current basket/rank/entry/size/trade, native admission, merge or deployment effects from research."
 ---
 
-# Technology ex-Semiconductors — cumulative working frontier
+# Technology ex-Semiconductors — cumulative continuation
 
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 CAPABILITY_STATE: SPEC_ONLY
-TURN_STATE: MORE_WORK_EXISTS — current turn continues into evaluation/eligibility design.
 
-Operation `gmi-technology-ex-semis-research-20260923-sol-001`; Macro draft/HOLD PR #7793; branch `sol/technology-ex-semis-research-20260923`. Original base `c4da107fe729e46b4d4036b3e0e290390315d0fd`; new interface-read pin `56c8ef2fce6f740dd853f4ffb29574ae5b729c17` is not a rebase. Protected compatible procedure `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack1.0.1/bootstrap1. INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT were consumed at this pin; RECONCILE_STATE was also loaded for the disconnected write. Direct reason: PRINCIPAL_JUDGMENT. Live Chairman continuation keeps difficult research here and selects Fable for final build; no model/mode/runtime attestation or duration guarantee is inferred.
+Operation `gmi-technology-ex-semis-research-20260923-sol-001`; Macro draft/HOLD PR #7793; branch `sol/technology-ex-semis-research-20260923`. Original base `c4da107fe729e46b4d4036b3e0e290390315d0fd`; current interface-read pin `56c8ef2fce6f740dd853f4ffb29574ae5b729c17` is not a rebase. Compatible protected procedure `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack1.0.1/bootstrap1; INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT and RECONCILE_STATE consumed at that pin. Direct reason: PRINCIPAL_JUDGMENT. Current Chairman intent retains difficult research here and final build with Fable; mode labels do not establish provider/runtime admission or a duration guarantee.
 
-## Mission
+## Mission and justified boundary
 
-Investor: follow technology adoption/spending through actual products/businesses to paid exposure, retained profit/cash, expectations and valuation, then existing governed company/entry workflows. Machine: preserve identity, source, time, denominator, definition, dependence, corrections and uncertainty. Full ex-Semiconductor scope remains; software, services and AI infrastructure are not substitutes for the whole sector. Broader regional/smaller-company/non-AI coverage is still owed.
+Investor: follow technology adoption/spending through actual products/businesses to paid exposure, retained profit/cash, expectations and valuation, then existing governed company/entry workflows. Machine: preserve identities, source/time/denominator/definition/dependence/corrections/uncertainty. All fifteen ex-semiconductor research families remain in scope, including non-AI and non-US businesses.
 
-## Immutable research — do not recreate
+This boundary follows a completed substantive source-to-native-interface and evaluation-design unit, two immutable chapters and a reproducible adversarial research laboratory after many large source/tool results. The next unit is integrated written product design and bounded breadth closure, not another owner census. This is a phase/context continuation, not completion, arbitrary elapsed-time stop, a source-custody transfer or an automatic wake. Prefer a fresh Pro research/design conversation recovered from this exact checkpoint and the two R5 chapters; do not replay the prior tool transcript. No mandatory hard seal is claimed because no Thinking-failed/session-collapse event was observed.
+
+## Immutable research index — retain
 
 All paths are under `research/technology_ex_semis/`.
 
@@ -64,23 +69,36 @@ All paths are under `research/technology_ex_semis/`.
 | TECHNOLOGY_REGIONAL_MATERIALITY_R4A_2026-09-23.md | af0053273e9aaaac15d8d423ecf31163eca40cf4 | 844002426e2ccd342164171e95f9657e6c3fefaa |
 | TECHNOLOGY_VALUATION_EXPECTATIONS_R4B_2026-09-23.md | 22f87a49f7a0aaef9bc7e129ee850ee0d1e98727 | 1ff65ac8db7fe363419e679b2a41a228125ed6a2 |
 | TECHNOLOGY_SOURCE_PRODUCT_FEASIBILITY_R5A_2026-09-23.md | 98cfd30144d4051108ea94fc17ea36afccdcb6fc | f2ff2e09654542b2b7c0a048455de51019681b24 |
+| TECHNOLOGY_EVALUATION_AND_TEMPORAL_PROOF_R5B_2026-09-23.md | 1c224989b050be4322075af633fc83bd1a77e9dc | 95242280f199544801f60f2f68f959c206831124 |
 
-R1-R4 contents remain recoverable from those documents; do not replay earlier source/tool history. Prior calculation counts32/48/54 are historical, not rerun in R5. Optional R4 attachment SHA256 `b1bc8530fcea5bac2d77b3d3b8dd7fc467d6ccef16fb2ccb8900e2789bbe513e`; attachments are not canonical storage. R5A local/remote bytes match: SHA256 `6b81e37d6f89951d910c5ea263157be4a5a210c5a907923351d09c73da82e257`, Git blob above. Initial editorial check exposed a missing explicit state marker; the marker was added, and all8 checks rerun. These are document-structure checks, not financial/source truth or product behavior.
+R1-R4 examples and arithmetic are development research, not a complete census or confirmation sample. Their previous32/48/54 checks were not rerun in R5. Preserve the economic model, fiscal/metric/stock-flow/perimeter/FX and materiality distinctions without reopening resolved examples.
 
-## Material results that change implementation
+## What became known in R5
 
-R5A maps sixteen native source/record references and three official external references. GMI's closed evidence schema and fixed stored columns lack the proposed detailed assertion body; any shared extension must include persistence, serialization, identity/revision, rights and reader semantics together. Company v1 is a closed context projection, not a generic KPI intake. Existing company_event guidance_update and source revisions must be extended through their owners, not duplicated. Source table/slide address-only receipts are not replayed text/numeric cells. Date normalization to midnight does not establish original intraday precision.
+R5A has16 native source/record references and3 official data-source references. Main GMI schema/columns lack the proposed detailed assertion payload; shared schema/storage/serialization/revision/rights/readers must change coherently under their owner. Company v1 is closed context, not universal KPI storage. Existing event/source/guidance types should be extended in place. A source table/slide address is not a replayed numeric cell. Date-to-midnight normalization is not original intraday precision.
 
-Financial packet structures support real issuer/source binding, but the inspected revision provider defaults unavailable pending issuer packages; this is not a current production-wide financial outage claim. Separate authenticated attested-history source exists. K1 is reference-only and generic v1 lacks a bridge-object slot; that does not negate D5's narrower native issuer-binding adapter. D5's current census covers only three earnings lanes and current-generation event discovery, so no inferred historical population or arbitrary Technology feature family is permitted. VEND-0 is a dated rights/sample record, not a new account audit; consensus is not assumed and no procurement was initiated.
+Financial issuer binding/query machinery and separate attested-history paths exist. An unavailable default revision provider is a specific source-level finding, not a platform-wide outage. K1 generic cross-type composition is limited, while native D5 has a narrower valid issuer bridge; do not claim all identity joins absent. Existing B04/D5 covers three earnings lanes and current-generation event discovery; historical event population and arbitrary Technology metric families are not thereby supplied. VEND-0 is a dated sample/rights study, not a fresh all-account subscription audit. No new consensus procurement is necessary for the first management-only comparison.
 
-Recommended first direction: owner-composed economic-change dossiers, not editorial-only final delivery or a premature universal graph. First software witness: prior/current native releases -> comparable annual guide bridge -> authenticated existing-page result -> evidence/negative case. Next physical witness: HP revenue/units and Celestica reporting containment. Then geographic bounds and conditional scenarios. Those selections are research design recommendations, not approved product schemas or live basket membership. Every slice requires actual source admission and visible proof.
+Recommended design direction is owner-composed economic-change dossiers. First useful software slice compares prior/current releases and separates realized quarter upside from the remaining-year outlook. Physical successors preserve HP revenue/units and Celestica HPS-within-CCS containment; then geographic intersections/bounds and conditional scenarios. Research examples require native source admission before becoming current product data. No universal score or global product graph is a prerequisite.
 
-## Recovered sibling / existing owners
+R5B distinguishes current evidence, public-information reconstruction and original-system replay. Source publication alone cannot prove original capture/computation/model-era eligibility or historical cohort membership. Current LLM analysis of old sources has separate model-era/hindsight risk. Eight study cards include remaining outlook, paid usage, retained value, service conversion, qualified constraints, materiality, early leadership and conditional valuation. H1 must add information beyond NEW guidance, not just beat an obsolete baseline. Development examples cannot become holdout evidence. Labels that are immature/unavailable stay separate; copies/shared mechanisms/repeated outcomes do not become independent confirmations. Twenty-four proposed product/evaluation cases retain source-to-reader and no-trade-authority boundaries.
 
-Semiconductor: #7780, operation `gmi-semiconductors-research-20260923-sol-001`, branch `sol/semiconductors-research-20260923`, exact read head `d40ebbb0d18a62a680029743d11e05502c51edb1`, current handoff blob `da32aa78b175c36a0a3bef181aae21972e19f0cb`. Its checkpoint records B-first/C-later accepted approach and formal spec work next; older PR-body approach gate is stale. No authority/custody is transferred by reading it. Chip-specific EDA/IP stays there. Robotics #7773 is prior evidence/template precedent, not accepted main schema proof. Shared #7577 federation architecture, focused #7211 publisher, F04/K3-D, financial/earnings/company/K1/GMI, DataOS, Prophet B1/D5 and EvaluationOS/QLedger are retained. #7850 is the existing B04 evidence-dossier census, not a task to clone.
+## Executed research verification
 
-## Effects, capability and exact next action
+R5A:37,755bytes/SHA2566b81e37d6f89951d910c5ea263157be4a5a210c5a907923351d09c73da82e257;8 editorial checks. A missing explicit state marker caused the initial check failure; adding the marker resolved it and all checks reran.
+R5B:30,347bytes/SHA256071126981b2d9ead124fc9cb81d82967f00d27e0f4fa65b5a09a4304920af101; document case/index checks passed. Both local calculated Git blobs matched exact-commit readbacks.
+The final offline local oracle runs41 checks,16 temporal cases and8 omitted-guard variants, with zero native/product tests. Earlier6 static proposed policy rows were deliberately excluded from the count; verdict corruption checks were strengthened to actual local guard-omission variants before the final suite. JSON33,297bytes/SHA2569176c6ec1be19c79af8cff6d2e30b97d384a09b50b490ca0a2ec7779cc8bfa51. Script SHA256d69ce77211e63fd522af86fd108caaf4b114e8123686285a980c95cc4acd22d1.
+Fictional results: source12:00/capture12:40 cannot support original-system decision12:30; copying one +10% event ten times changes a four-event balanced1% mean into a thirteen-rendering7.230769% mean; three mature labels give2/3 rather than zero-filled2/4; twenty independent5% null tests imply64.1514% chance of at least one false positive; four fictional probabilities score0.29 versus0.25 for0.5 under Brier loss. These are requirement/math demonstrations, not forecasts or observed investment performance.
+Portable six-file ZIP `/mnt/data/technology_ex_semis_r5/TECHNOLOGY_R5_RESEARCH_PACKAGE.zip`,37,046bytes/SHA256e4bcb5b59961d18d93827d71add7ae4b45daf3d366b2ffec48ee585ba4c0c6dc, passed archive/member checks. All material assumptions/cases/results are in the canonical documents. The attachment is not a second truth owner and is not required for recovery.
 
-R5A write initially returned RemoteProtocolError with no receipt. Same-carrier path404 plus unchanged original branch head established canonical not-found; protected RECONCILE_STATE then allowed the same-payload resubmission. The successful98cfd commit and exact blob readback resolve uncertainty. EFFECT_UNKNOWN: none remaining. No source carrier change, no dummy mutation or blind retry. Actual research write capability is demonstrated; no ExtraHigh switch is needed for these docs.
+## Existing/sibling owners and holds
 
-This is an intermediate material-effect checkpoint, not finalization. Continue R5B historical/current/system-replay modes, source dependence, cohort/falsifier/label design, original adversarial examples and acceptance specifications. Then update this same cumulative record before the next substantial phase. The final integrated design/build masterplan and native production proof remain owed. No Fable, other worker, Executive Attempt, watcher, pending return or durable external execution was created. No background execution or custody transfer is claimed.
+Semiconductor #7780: `gmi-semiconductors-research-20260923-sol-001`, head read `d40ebbb0d18a62a680029743d11e05502c51edb1`, checkpoint blob `da32aa78b175c36a0a3bef181aae21972e19f0cb`; newer checkpoint records B-first/C-later decision and formal design next, superseding the older PR-body approach gate. Reading it grants no source custody. Chip-specific EDA/IP remains there. Robotics #7773 is the prior shared evidence precedent, not proof its payload merged. Preserve #7577 federation, #7211 focused publisher, F04/K3-D, DataOS, native financial/earnings/company/GMI/K1, Prophet B1/D5, B04#7850 and EvaluationOS/QLedger.
+
+Still unverified: first selected issuer's admitted numerical profile/source retention; detailed assertion persistence and private publication; shared delivered template exact interface; complete regional/smaller-company/non-AI coverage; historical expectation/event/identity/model population; independent source review; statistical predictive value; written implementation-spec/plan acceptance; deployment/browser acceptance. These are scoped dependencies, not permission to invent values or duplicate owners.
+
+## Effects and next action
+
+Effects this turn: R5A and R5B research files, intermediate same-owner checkpointd5d9c3f1658c72b556ce1460597a96aebe9ae938, local research calculations/package and this cumulative update. The first R5A write disconnected; canonical same-path404 and unchanged original branch confirmed not-found before same-payload retry; final commit/blob reconciled. EFFECT_UNKNOWN:none remaining. Actual write access works; ExtraHigh is not needed for these records. No Fable/worker/Executive Attempt/watcher/pending return/background execution or source-custody transfer.
+
+Exact next action: in a focused Pro research/design continuation, consume this checkpoint and R5A/R5B, refresh only materially changed required native interfaces, and author the integrated first Economic Change Dossier written specification for review. It must give field-level native responsibilities, accepted-versus-proposed identity/clock/rights semantics, positive/negative real witnesses, shared-template consumer, and useful vertical sequencing. Close bounded breadth gaps before declaring the masterplan complete. Do not delegate this integration uncertainty to Fable or manufacture a new worker just to extend elapsed time. The full mission remains incomplete; this checkpoint's own commit/blob is established by its tool receipt/readback.
