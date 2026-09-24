@@ -1411,12 +1411,14 @@ def stability_lifts(
             horizon=horizon,
         )
         record = subset_record(keep.to_numpy(dtype=bool))
+        excluded_rows = int((~keep).sum())
         record.update(
             {
                 "crisis": name,
                 "crisis_start": start,
                 "crisis_end": end,
-                "excluded_rows": int((~keep).sum()),
+                "excluded_rows": excluded_rows,
+                "applicable": excluded_rows > 0,
             }
         )
         loco.append(record)
@@ -1474,3 +1476,1149 @@ def json_ready(value):
     if isinstance(value, float):
         return value if np.isfinite(value) else None
     return value
+
+
+PREREGISTERED_CRISES = (
+    ("asian_russia_ltcm", "1997-07-01", "1999-02-28"),
+    ("global_financial_crisis", "2007-10-01", "2009-06-30"),
+    ("china_equity_devaluation", "2015-06-01", "2016-03-31"),
+    ("us_china_trade_war", "2018-01-01", "2019-01-31"),
+    ("covid_shock", "2020-01-01", "2020-06-30"),
+    ("china_property_regulatory_zero_covid", "2021-02-01", "2022-11-30"),
+)
+
+TARGET_SPECS = {
+    "5pct_5d": {"horizon": 5, "threshold": 0.05, "confirmatory": False},
+    "5pct_10d": {"horizon": 10, "threshold": 0.05, "confirmatory": False},
+    "5pct_21d": {"horizon": 21, "threshold": 0.05, "confirmatory": True},
+    "10pct_42d": {"horizon": 42, "threshold": 0.10, "confirmatory": True},
+}
+
+DATA_SOURCE_SPECS = {
+    "shanghai_composite": (
+        "data/china/000001.SS.parquet",
+        "canonical_benchmark_and_context_gate",
+        "repo_store",
+    ),
+    "csi300_etf_proxy": (
+        "data/china/510300.SS.parquet",
+        "outcome_only_replication_proxy",
+        "repo_store_yahoo_adjusted",
+    ),
+    "china_breadth": (
+        "data/china_breadth/breadth.parquet",
+        "breadth_subleg",
+        "repo_store",
+    ),
+    "us_2y": ("data/fred/DGS2.parquet", "rate_subleg", "FRED_snapshot"),
+    "us_10y_real": ("data/fred/DFII10.parquet", "rate_subleg", "FRED_snapshot"),
+    "us_10y": ("data/fred/DGS10.parquet", "rate_and_differential_subleg", "FRED_snapshot"),
+    "usd_cnh": ("data/yahoo/CNH_F.parquet", "fx_subleg", "repo_store_yahoo"),
+    "dxy": ("data/yahoo/DX-Y.NYB.parquet", "pre_cnh_fx_backfill", "repo_store_yahoo"),
+    "china_10y": ("data/china_property/cgb.parquet", "differential_subleg", "repo_store"),
+}
+
+
+def _generic_file_manifest(path, *, role: str, provider: str) -> dict[str, object]:
+    from pathlib import Path
+
+    source = Path(path)
+    return {
+        "path": str(source),
+        "role": role,
+        "provider": provider,
+        "sha256": sha256_file(source),
+        "bytes": int(source.stat().st_size),
+    }
+
+
+def _construction_contract(profile, *, source_sha256: str) -> dict[str, object]:
+    import hashlib
+    import json
+
+    contract = {
+        "profile_key": profile.key,
+        "benchmark": list(profile.bench),
+        "breadth_group": profile.breadth_group,
+        "breadth_code": profile.breadth_code,
+        "component_legs": json_ready(profile.comp_legs),
+        "bands": dict(profile.bands),
+        "probability_surface": json_ready(profile.prob_cal),
+        "base_probabilities": dict(profile.prob_base),
+        "percentile_window_sessions": 504,
+        "rate_and_fx_change_sessions": 21,
+        "dxy_backfill_change_sessions": 63,
+        "context_gate": "benchmark_below_causal_200_session_mean",
+        "loud_state_cap_when_gate_closed": "caution",
+        "engine_source_sha256": source_sha256,
+    }
+    encoded = json.dumps(contract, sort_keys=True, separators=(",", ":")).encode()
+    return {
+        "hash_algorithm": "sha256",
+        "construction_hash": hashlib.sha256(encoded).hexdigest(),
+        "contract": contract,
+    }
+
+
+def build_data_provenance(repo_root, profile) -> dict[str, object]:
+    from pathlib import Path
+
+    root = Path(repo_root)
+    sources: dict[str, object] = {}
+    for key, (relative, role, provider) in DATA_SOURCE_SPECS.items():
+        path = root / relative
+        manifest = dataframe_file_manifest(path, role=role, provider=provider)
+        manifest["path"] = relative
+        manifest["point_in_time_status"] = "causal_transform_on_latest_repository_snapshot"
+        manifest["vintage_identifier_available"] = False
+        sources[key] = manifest
+    ledger_relative = "data/risk_radar_intl/cn_forward_log.jsonl"
+    ledger_manifest = _generic_file_manifest(
+        root / ledger_relative,
+        role="genuinely_issued_forward_evidence",
+        provider="committed_forward_ledger",
+    )
+    ledger_manifest["path"] = ledger_relative
+    ledger_manifest["rows"] = sum(
+        1 for line in (root / ledger_relative).read_text().splitlines() if line.strip()
+    )
+    sources["cn_forward_ledger"] = ledger_manifest
+    frozen_sources = verify_frozen_sources(root, FROZEN_SOURCE_SHA256)
+    for relative, record in frozen_sources.items():
+        record["path"] = relative
+    construction = _construction_contract(
+        profile,
+        source_sha256=FROZEN_SOURCE_SHA256["engine/risk_radar_intl.py"],
+    )
+    return {
+        "evidence_class": "reconstructed_history_plus_separate_issued_forward_ledger",
+        "historical_snapshot_pit_status": "causal_transform_on_snapshot_not_vintage_pit",
+        "source_files": sources,
+        "frozen_source_files": frozen_sources,
+        "construction": construction,
+        "csi300_replication_qualification": {
+            "instrument": "510300.SS",
+            "label": "CSI300 ETF proxy",
+            "cash_index_series_available": False,
+            "signal_rebuilt_on_replication_benchmark": False,
+            "method": "outcome-only alignment to the exact Shanghai-built production signal",
+        },
+        "historical_claim_provenance": {
+            "record": "merged PR #711 prose and production docstring",
+            "claimed_composite_lift": 2.07,
+            "claimed_split_half": [2.28, 2.00],
+            "claimed_permutation_p": 0.01,
+            "claimed_csi300_lift": 2.22,
+            "research_harness_committed_with_claim": False,
+            "immutable_result_artifact_committed_with_claim": False,
+            "exact_original_extreme_trigger_recoverable": False,
+        },
+        "probability_surface_provenance": {
+            "baked_surface_location": "engine/risk_radar_intl.py::CN_PROFILE",
+            "current_calibrator_policy": "flat_at_base_for_prob_cal; raw state rates descriptive_only",
+            "current_calibrator_generated_baked_surface": False,
+            "overlay_present": False,
+        },
+    }
+
+
+def load_exact_production_signal(repo_root):
+    from pathlib import Path
+    from engine import risk_radar_intl as production
+
+    root = Path(repo_root).resolve()
+    verify_frozen_sources(root, FROZEN_SOURCE_SHA256)
+    verify_no_cn_overlay(root)
+    benchmark, sublegs, composite, gate = production.composite_series(production.CN_PROFILE)
+    if benchmark is None or sublegs is None or composite is None or gate is None:
+        raise RuntimeError("exact CN production construction returned no data")
+    states = reconstruct_states(composite, gate, production.CN_PROFILE.bands)
+    signal = pd.concat(
+        [
+            pd.to_numeric(benchmark, errors="coerce").rename("close"),
+            pd.to_numeric(composite, errors="coerce").rename("composite"),
+            gate.fillna(False).astype(bool).rename("gate"),
+            states[["score", "state_ungated", "state"]],
+        ],
+        axis=1,
+        join="outer",
+    ).sort_index()
+    baselines = build_baseline_scores(
+        sublegs=sublegs,
+        composite=composite,
+        gate=gate,
+        percentile_window=504,
+    )
+    return production.CN_PROFILE, benchmark, sublegs, signal, baselines
+
+
+def _read_close_from_parquet(path) -> pd.Series:
+    frame = pd.read_parquet(path)
+    column = "close" if "close" in frame.columns else frame.columns[0]
+    close = pd.to_numeric(frame[column], errors="coerce").dropna()
+    close.index = pd.to_datetime(close.index)
+    return close.sort_index()
+
+
+def _sample_brier_difference(sample: pd.DataFrame) -> float:
+    gated = pd.to_numeric(sample["gated_probability"], errors="coerce").to_numpy(dtype=float)
+    ungated = pd.to_numeric(sample["ungated_probability"], errors="coerce").to_numpy(dtype=float)
+    outcome = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    valid = np.isfinite(gated) & np.isfinite(ungated) & np.isfinite(outcome)
+    if not valid.any():
+        return float("nan")
+    gated_brier = float(np.mean(np.square(gated[valid] - outcome[valid])))
+    ungated_brier = float(np.mean(np.square(ungated[valid] - outcome[valid])))
+    return gated_brier - ungated_brier
+
+
+def _sample_lift_difference(sample: pd.DataFrame) -> float:
+    outcome = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    gated = sample["gated_condition"].fillna(False).to_numpy(dtype=bool)
+    ungated = sample["ungated_condition"].fillna(False).to_numpy(dtype=bool)
+    valid = np.isfinite(outcome)
+    base = float(outcome[valid].mean()) if valid.any() else float("nan")
+    if not np.isfinite(base) or base <= 0.0:
+        return float("nan")
+    gated_selected = valid & gated
+    ungated_selected = valid & ungated
+    if not gated_selected.any() or not ungated_selected.any():
+        return float("nan")
+    gated_lift = float(outcome[gated_selected].mean() / base)
+    ungated_lift = float(outcome[ungated_selected].mean() / base)
+    return gated_lift - ungated_lift
+
+
+def context_gate_analysis(
+    *,
+    states: pd.Series,
+    ungated_states: pd.Series,
+    outcomes: pd.Series,
+    probability_surface: Mapping[str, float],
+    bootstrap_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    frame = pd.concat(
+        [
+            states.rename("state"),
+            ungated_states.rename("state_ungated"),
+            pd.to_numeric(outcomes, errors="coerce").rename("outcome"),
+        ],
+        axis=1,
+        join="inner",
+    ).dropna()
+    frame["gated_probability"] = state_probability_series(
+        frame["state"], probability_surface
+    )
+    frame["ungated_probability"] = state_probability_series(
+        frame["state_ungated"], probability_surface
+    )
+    frame["gated_condition"] = frame["state"].eq("risk-off")
+    frame["ungated_condition"] = frame["state_ungated"].eq("risk-off")
+    brier_difference = _sample_brier_difference(frame)
+    lift_difference = _sample_lift_difference(frame)
+    brier_bootstrap = moving_block_bootstrap(
+        frame,
+        statistic=_sample_brier_difference,
+        block_length=42,
+        reps=bootstrap_reps,
+        seed=seed,
+    )
+    lift_bootstrap = moving_block_bootstrap(
+        frame,
+        statistic=_sample_lift_difference,
+        block_length=42,
+        reps=bootstrap_reps,
+        seed=seed + 1,
+    )
+    gated_lift = lift_summary(frame["gated_condition"], frame["outcome"])
+    ungated_lift = lift_summary(frame["ungated_condition"], frame["outcome"])
+    return {
+        "rows": int(len(frame)),
+        "gated_brier": brier_score(frame["gated_probability"], frame["outcome"]),
+        "ungated_brier": brier_score(frame["ungated_probability"], frame["outcome"]),
+        "brier_difference_gated_minus_ungated": brier_difference,
+        "brier_difference_block_ci": [
+            float(brier_bootstrap["ci_low"]),
+            float(brier_bootstrap["ci_high"]),
+        ],
+        "gated_risk_off_lift": float(gated_lift["lift"]),
+        "ungated_risk_off_lift": float(ungated_lift["lift"]),
+        "risk_off_lift_difference_gated_minus_ungated": lift_difference,
+        "risk_off_lift_difference_block_ci": [
+            float(lift_bootstrap["ci_low"]),
+            float(lift_bootstrap["ci_high"]),
+        ],
+    }
+
+
+def _sample_adjacent_state_difference(
+    sample: pd.DataFrame,
+    *,
+    lower_state: str,
+    higher_state: str,
+) -> float:
+    outcomes = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    states = sample["state"].astype(str).to_numpy()
+    valid = np.isfinite(outcomes)
+    lower = valid & (states == lower_state)
+    higher = valid & (states == higher_state)
+    if not lower.any() or not higher.any():
+        return float("nan")
+    return float(outcomes[higher].mean() - outcomes[lower].mean())
+
+
+def dependence_aware_inversions(
+    *,
+    states: pd.Series,
+    outcomes: pd.Series,
+    bootstrap_reps: int,
+    seed: int,
+) -> list[dict[str, object]]:
+    frame = pd.concat(
+        [states.rename("state"), pd.to_numeric(outcomes, errors="coerce").rename("outcome")],
+        axis=1,
+        join="inner",
+    ).dropna()
+    rows: list[dict[str, object]] = []
+    for position, (lower, higher) in enumerate(zip(STATE_ORDER, STATE_ORDER[1:])):
+        statistic = lambda sample, lo=lower, hi=higher: _sample_adjacent_state_difference(
+            sample, lower_state=lo, higher_state=hi
+        )
+        estimate = statistic(frame)
+        bootstrap = moving_block_bootstrap(
+            frame,
+            statistic=statistic,
+            block_length=42,
+            reps=bootstrap_reps,
+            seed=seed + position * 43,
+        )
+        rows.append(
+            {
+                "lower_state": lower,
+                "higher_state": higher,
+                "difference": estimate,
+                "block_ci": [float(bootstrap["ci_low"]), float(bootstrap["ci_high"])],
+                "material_point_inversion": bool(np.isfinite(estimate) and estimate <= -0.05),
+                "supported_material_inversion": bool(
+                    np.isfinite(estimate)
+                    and estimate <= -0.05
+                    and np.isfinite(float(bootstrap["ci_high"]))
+                    and float(bootstrap["ci_high"]) < 0.0
+                ),
+            }
+        )
+    return rows
+
+
+def add_delayed_base_comparison(
+    calibration: dict[str, object],
+    *,
+    probabilities: pd.Series,
+    outcomes: pd.Series,
+    horizon: int,
+) -> None:
+    delayed = delayed_expanding_base(outcomes, horizon=horizon, min_history=252)
+    frame = pd.concat(
+        [
+            pd.to_numeric(probabilities, errors="coerce").rename("production"),
+            pd.to_numeric(delayed, errors="coerce").rename("delayed"),
+            pd.to_numeric(outcomes, errors="coerce").rename("outcome"),
+        ],
+        axis=1,
+        join="inner",
+    ).dropna()
+    production_brier = brier_score(frame["production"], frame["outcome"])
+    delayed_brier = brier_score(frame["delayed"], frame["outcome"])
+    calibration["delayed_expanding_base"] = {
+        "rows": int(len(frame)),
+        "production_brier_on_overlap": production_brier,
+        "delayed_base_brier": delayed_brier,
+        "production_skill_vs_delayed_base": (
+            float(1.0 - production_brier / delayed_brier)
+            if np.isfinite(production_brier) and np.isfinite(delayed_brier) and delayed_brier > 0.0
+            else float("nan")
+        ),
+    }
+
+
+def _target_frame(signal: pd.DataFrame, outcome: pd.Series) -> pd.DataFrame:
+    return signal.join(outcome.rename("outcome"), how="left")
+
+
+def _finite_lifts(records: list[dict[str, object]]) -> tuple[float, ...]:
+    values: list[float] = []
+    for record in records:
+        if int(record.get("excluded_rows", 0)) <= 0:
+            continue
+        value = record.get("lift")
+        if value is not None and np.isfinite(float(value)):
+            values.append(float(value))
+    return tuple(values)
+
+
+def _find_state_row(calibration: Mapping[str, object], state: str) -> dict[str, object] | None:
+    rows = calibration.get("states")
+    if not isinstance(rows, list):
+        return None
+    for row in rows:
+        if isinstance(row, dict) and row.get("state") == state:
+            return row
+    return None
+
+
+def _qualify_calibration_slope(calibration: dict[str, object]) -> None:
+    rows = calibration.get("states")
+    raw = calibration.pop("intercept_slope_row_level", {"qualified": False})
+    if not isinstance(rows, list):
+        calibration["intercept_slope"] = {
+            "qualified": False,
+            "reason": "missing_state_table",
+        }
+        return
+    powered = [
+        row for row in rows
+        if isinstance(row, Mapping) and int(row.get("effective_n_ceiling", 0)) >= 8
+    ]
+    hit_episodes = sum(int(row.get("hit_episodes", 0)) for row in powered)
+    nonhit_episodes = sum(int(row.get("nonhit_episodes", 0)) for row in powered)
+    if len(powered) < 3 or hit_episodes < 20 or nonhit_episodes < 20:
+        calibration["intercept_slope"] = {
+            "qualified": False,
+            "reason": "preregistered_episode_power_floor_not_met",
+            "powered_bins": len(powered),
+            "hit_episodes": hit_episodes,
+            "nonhit_episodes": nonhit_episodes,
+            "row_level_diagnostic": raw,
+        }
+        return
+    calibration["intercept_slope"] = {
+        **raw,
+        "episode_qualification_met": True,
+        "powered_bins": len(powered),
+        "hit_episodes": hit_episodes,
+        "nonhit_episodes": nonhit_episodes,
+    }
+
+
+def _claim_extreme_hazard(
+    primary: Mapping[str, object],
+    historical: Mapping[str, object],
+) -> dict[str, object]:
+    p = primary["risk_off"]
+    h = historical["risk_off"]
+    p_effective = int(p["effective_n"]["effective_n_ceiling"])
+    h_effective = int(h["effective_n"]["effective_n_ceiling"])
+    if min(p_effective, h_effective) < 8:
+        return {
+            "verdict": "INSUFFICIENT_EVIDENCE",
+            "basis": f"effective episodes are {p_effective} for 5%/21d and {h_effective} for 10%/42d",
+        }
+    p_lift = float(p["lift"])
+    h_lift = float(h["lift"])
+    if p_lift <= 1.0 and h_lift <= 1.0:
+        return {
+            "verdict": "FAIL / REMOVE",
+            "basis": f"neither confirmatory target discriminates: lifts {p_lift:.2f} and {h_lift:.2f}",
+        }
+    robust = (
+        p_effective >= 20
+        and h_effective >= 20
+        and float(p["block_ci"][0]) > 1.0
+        and float(h["block_ci"][0]) > 1.0
+    )
+    return {
+        "verdict": "KEEP" if robust else "KEEP_BUT_RELABEL",
+        "basis": (
+            f"emitted risk-off lift is {p_lift:.2f}x for 5%/21d and {h_lift:.2f}x for 10%/42d; "
+            f"effective episodes {p_effective}/{h_effective}. Call this an elevated external-driver hazard, "
+            "not an exact crisis probability."
+        ),
+    }
+
+
+def _claim_context_gate(
+    context: Mapping[str, object],
+    *,
+    effective_n: int,
+) -> dict[str, object]:
+    brier_delta = float(context["brier_difference_gated_minus_ungated"])
+    lift_delta = float(context["risk_off_lift_difference_gated_minus_ungated"])
+    brier_ci = context["brier_difference_block_ci"]
+    lift_ci = context["risk_off_lift_difference_block_ci"]
+    favorable = brier_delta <= 0.0 and lift_delta >= 0.0
+    supported = float(brier_ci[1]) < 0.0 and float(lift_ci[0]) > 0.0 and effective_n >= 20
+    harmful = brier_delta > 0.0 and lift_delta < 0.0
+    harmful_supported = float(brier_ci[0]) > 0.0 and float(lift_ci[1]) < 0.0
+    if favorable and supported:
+        verdict = "KEEP"
+    elif harmful and harmful_supported:
+        verdict = "FAIL / REMOVE"
+    elif effective_n < 8:
+        verdict = "INSUFFICIENT_EVIDENCE"
+    else:
+        verdict = "KEEP_BUT_RELABEL"
+    return {
+        "verdict": verdict,
+        "basis": (
+            f"gate-minus-ungated Brier difference {brier_delta:.4f}; risk-off lift difference {lift_delta:.2f}x; "
+            f"effective gated risk-off episodes {effective_n}."
+        ),
+    }
+
+
+def run_revalidation(
+    *,
+    repo_root,
+    bootstrap_reps: int,
+    permutation_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    from pathlib import Path
+
+    if bootstrap_reps <= 0 or permutation_reps <= 0:
+        raise ValueError("replication counts must be positive")
+    root = Path(repo_root).resolve()
+    profile, benchmark, sublegs, signal, baselines = load_exact_production_signal(root)
+    eligible_signal = signal.dropna(subset=["composite"]).copy()
+    data_provenance = build_data_provenance(root, profile)
+
+    outcomes: dict[str, pd.Series] = {}
+    targets: dict[str, dict[str, object]] = {}
+    for position, (target_name, spec) in enumerate(TARGET_SPECS.items()):
+        horizon = int(spec["horizon"])
+        threshold = float(spec["threshold"])
+        outcome = binary_outcome(
+            forward_max_drawdown(benchmark, horizon=horizon),
+            threshold=threshold,
+        )
+        outcomes[target_name] = outcome
+        frame = _target_frame(signal, outcome)
+        analysis = analyze_target(
+            frame,
+            target_name=target_name,
+            benchmark_label="Shanghai Composite (000001.SS)",
+            horizon=horizon,
+            bootstrap_reps=bootstrap_reps,
+            permutation_reps=permutation_reps,
+            seed=seed + position * 10000,
+        )
+        analysis["threshold"] = threshold
+        analysis["confirmatory"] = bool(spec["confirmatory"])
+        mature = frame.dropna(subset=["outcome", "composite"])
+        analysis["stability"] = {
+            "emitted_risk_off": stability_lifts(
+                condition=mature["state"].eq("risk-off"),
+                outcome=mature["outcome"],
+                horizon=horizon,
+                crises=PREREGISTERED_CRISES,
+            ),
+            "ungated_risk_off": stability_lifts(
+                condition=mature["state_ungated"].eq("risk-off"),
+                outcome=mature["outcome"],
+                horizon=horizon,
+                crises=PREREGISTERED_CRISES,
+            ),
+        }
+        analysis["baseline_comparison"] = compare_baselines(
+            baselines.reindex(mature.index),
+            mature["outcome"],
+        )
+        targets[target_name] = analysis
+
+    calibration: dict[str, dict[str, object]] = {}
+    calibration_targets = {
+        "h5": ("5pct_5d", 5),
+        "h10": ("5pct_10d", 10),
+        "h21": ("5pct_21d", 21),
+    }
+    for position, (horizon_key, (target_name, horizon)) in enumerate(calibration_targets.items()):
+        outcome = outcomes[target_name]
+        probabilities = state_probability_series(
+            eligible_signal["state"], profile.prob_cal[horizon_key]
+        )
+        eligible_outcome = outcome.reindex(eligible_signal.index)
+        cal = analyze_calibration(
+            states=eligible_signal["state"],
+            probabilities=probabilities,
+            outcomes=eligible_outcome,
+            base_probability=float(profile.prob_base[horizon_key]),
+            horizon=horizon,
+            bootstrap_reps=bootstrap_reps,
+            seed=seed + 50000 + position * 5000,
+        )
+        add_delayed_base_comparison(
+            cal,
+            probabilities=probabilities,
+            outcomes=eligible_outcome,
+            horizon=horizon,
+        )
+        cal["dependence_aware_inversions"] = dependence_aware_inversions(
+            states=eligible_signal["state"],
+            outcomes=eligible_outcome,
+            bootstrap_reps=bootstrap_reps,
+            seed=seed + 70000 + position * 5000,
+        )
+        cal["state_separation"] = state_separation_analysis(
+            states=eligible_signal["state"],
+            outcomes=eligible_outcome,
+            horizon=horizon,
+            bootstrap_reps=bootstrap_reps,
+            seed=seed + 90000 + position * 5000,
+        )
+        _qualify_calibration_slope(cal)
+        calibration[horizon_key] = cal
+
+    context_gate = context_gate_analysis(
+        states=eligible_signal["state"],
+        ungated_states=eligible_signal["state_ungated"],
+        outcomes=outcomes["5pct_21d"].reindex(eligible_signal.index),
+        probability_surface=profile.prob_cal["h21"],
+        bootstrap_reps=bootstrap_reps,
+        seed=seed + 120000,
+    )
+    context_gate["historical_10pct_42d_gated_lift"] = targets["10pct_42d"]["risk_off"]["lift"]
+    context_gate["historical_10pct_42d_ungated_lift"] = targets["10pct_42d"]["ungated_risk_off"]["lift"]
+
+    csi_close = _read_close_from_parquet(root / "data/china/510300.SS.parquet")
+    csi_replication: dict[str, dict[str, object]] = {}
+    canonical_signal = signal[["score", "composite", "state", "state_ungated", "gate"]]
+    for position, target_name in enumerate(("5pct_21d", "10pct_42d")):
+        spec = TARGET_SPECS[target_name]
+        replication = align_replication_outcome(
+            canonical_signal,
+            csi_close,
+            horizon=int(spec["horizon"]),
+            threshold=float(spec["threshold"]),
+            outcome_name="outcome",
+        )
+        analysis = analyze_target(
+            replication,
+            target_name=target_name,
+            benchmark_label="CSI300 ETF proxy (510300.SS), outcome-only replication",
+            horizon=int(spec["horizon"]),
+            bootstrap_reps=bootstrap_reps,
+            permutation_reps=permutation_reps,
+            seed=seed + 140000 + position * 10000,
+        )
+        analysis["threshold"] = float(spec["threshold"])
+        analysis["instrument_qualification"] = "ETF proxy; not exact cash-index history"
+        csi_replication[target_name] = analysis
+
+    forward_ledger = summarize_forward_ledger(
+        root / "data/risk_radar_intl/cn_forward_log.jsonl"
+    )
+    valid_signal = eligible_signal
+    latest = valid_signal.iloc[-1]
+    current_snapshot = {
+        "asof": str(valid_signal.index[-1].date()),
+        "composite_percentile": float(latest["composite"]),
+        "intensity_score_0_100": float(latest["score"]),
+        "state_ungated": str(latest["state_ungated"]),
+        "state": str(latest["state"]),
+        "context_gate_open": bool(latest["gate"]),
+        "semantics": "causal rank within the trailing 504 available sessions of the composite; not a drawdown probability or confidence level",
+    }
+
+    primary = targets["5pct_21d"]
+    historical = targets["10pct_42d"]
+    risk_off_h21 = _find_state_row(calibration["h21"], "risk-off")
+    if risk_off_h21 is None:
+        probability_claim = {
+            "verdict": "INSUFFICIENT_EVIDENCE",
+            "basis": "no mature risk-off calibration row",
+        }
+    else:
+        material_inversion = any(
+            bool(row.get("supported_material_inversion"))
+            for row in calibration["h21"]["dependence_aware_inversions"]
+            if row.get("higher_state") == "risk-off"
+        )
+        adjudication = adjudicate_probability(
+            forecast=0.50,
+            observed=float(risk_off_h21["observed"]),
+            block_ci=tuple(float(value) for value in risk_off_h21["block_ci"]),
+            episode_ci=tuple(float(value) for value in risk_off_h21["episode_ci"]),
+            brier_skill_value=float(calibration["h21"]["brier_skill_vs_baked_base"]),
+            effective_n=int(risk_off_h21["effective_n_ceiling"]),
+            hit_episodes=int(risk_off_h21["hit_episodes"]),
+            nonhit_episodes=int(risk_off_h21["nonhit_episodes"]),
+            material_inversion=material_inversion,
+        )
+        probability_claim = {
+            **adjudication,
+            "basis": (
+                f"observed {float(risk_off_h21['observed']):.3f} versus displayed 0.500; "
+                f"effective episodes {int(risk_off_h21['effective_n_ceiling'])}; "
+                f"block CI {risk_off_h21['block_ci']}; episode CI {risk_off_h21['episode_ci']}."
+            ),
+        }
+
+    historical_metric = historical["ungated_risk_off"]
+    historical_stability = historical["stability"]["ungated_risk_off"]
+    historical_adjudication = adjudicate_historical_lift(
+        lift=float(historical_metric["lift"]),
+        ci=tuple(float(value) for value in historical_metric["block_ci"]),
+        split_lifts=(
+            float(historical_stability["split_half"]["first"]["lift"]),
+            float(historical_stability["split_half"]["second"]["lift"]),
+        ),
+        modern_lift=float(historical_stability["era"]["post_2016"]["lift"]),
+        loco_lifts=_finite_lifts(historical_stability["loco"]),
+        permutation_p=float(historical["permutation"]["ungated_risk_off"]["p_value"]),
+        effective_n=int(historical_metric["effective_n"]["effective_n_ceiling"]),
+    )
+    if historical_adjudication["verdict"] == "KEEP":
+        historical_adjudication["verdict"] = "KEEP_BUT_RELABEL"
+    historical_adjudication["basis"] = (
+        f"current ungated risk-off reconstruction lift {float(historical_metric['lift']):.2f}x "
+        f"with {int(historical_metric['effective_n']['effective_n_ceiling'])} effective episodes; "
+        "the original 2.07x harness and exact trigger were not committed, so this is a reconstruction, not byte-for-byte replication."
+    )
+
+    separation = calibration["h21"]["state_separation"]
+    separation_adjudication = adjudicate_state_separation(
+        difference=float(separation["difference"]),
+        ci=tuple(float(value) for value in separation["block_ci"]),
+        elevated_effective_n=int(separation["elevated_effective_n"]["effective_n_ceiling"]),
+        risk_off_effective_n=int(separation["risk_off_effective_n"]["effective_n_ceiling"]),
+        material_inversion=bool(separation["material_inversion"]),
+    )
+    separation_adjudication["basis"] = (
+        f"risk-off minus elevated observed 5%/21d rate {float(separation['difference']):.3f}; "
+        f"block CI {separation['block_ci']}; effective episodes "
+        f"{int(separation['elevated_effective_n']['effective_n_ceiling'])}/"
+        f"{int(separation['risk_off_effective_n']['effective_n_ceiling'])}."
+    )
+
+    ladder_powered = all(
+        (_find_state_row(calibration[key], "risk-off") or {}).get("effective_n_ceiling", 0) >= 20
+        for key in ("h5", "h10", "h21")
+    )
+    supported_inversion = any(
+        bool(row.get("supported_material_inversion"))
+        for key in ("h5", "h10", "h21")
+        for row in calibration[key]["dependence_aware_inversions"]
+    )
+    if supported_inversion and ladder_powered:
+        ladder_verdict = "RECALIBRATION_CANDIDATE"
+    elif not ladder_powered:
+        ladder_verdict = "INSUFFICIENT_EVIDENCE"
+    else:
+        ladder_verdict = "KEEP_BUT_RELABEL"
+
+    primary_effective = int(primary["risk_off"]["effective_n"]["effective_n_ceiling"])
+    claims = {
+        "extreme China external-driver hazard": _claim_extreme_hazard(primary, historical),
+        "98th-percentile intensity semantics": {
+            "verdict": "KEEP_BUT_RELABEL",
+            "basis": (
+                f"current score is {current_snapshot['intensity_score_0_100']:.2f}; valid only as a causal "
+                "trailing-504-session composite percentile, not 98% drawdown odds or all-history extremity."
+            ),
+        },
+        ">=5%/21d risk-off probability = 50%": probability_claim,
+        ">=10%/42d historical lift ~2.07x": historical_adjudication,
+        "elevated vs risk-off separation": separation_adjudication,
+        "5d / 10d / 21d ladder": {
+            "verdict": ladder_verdict,
+            "basis": (
+                "The surface is mechanically monotone, but its current calibrator explicitly seeds flat-at-base "
+                f"and the loud-state episode floor is not met across all horizons; supported material inversion={supported_inversion}."
+            ),
+        },
+        "context gate value-add": _claim_context_gate(
+            context_gate,
+            effective_n=primary_effective,
+        ),
+    }
+
+    discoveries = [
+        "The current production calibrator explicitly treats raw state rates as descriptive and emits a flat-at-base probability surface; it is not the provenance of the baked CN ladder.",
+        "Merged PR #711 and the engine docstring preserve the 2.07x claim, but no executable research harness, immutable result artifact, or exact original extreme trigger accompanied the claim.",
+        "The available CSI300 replication series is 510300.SS, an ETF proxy. No exact CSI300 cash-index series was found in the repository.",
+        "Historical transforms are causal on repository snapshots, but vintage identifiers are unavailable; this is not fully vintage point-in-time evidence.",
+        "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history.",
+    ]
+    proposed_followup = [
+        "Do not retune production in this PR. Open a separately preregistered calibration candidate only after the forward authority floors and independent loud-state episode floors mature.",
+        "Recover or rebuild the original PR #711 validation harness under a new provenance-only commission; do not retroactively call the present reconstruction byte-identical replication.",
+        "Acquire a lawful exact CSI300 cash-index history if the cash-index replication claim must remain exact; otherwise relabel the current evidence as a 510300.SS ETF-proxy replication.",
+    ]
+    what_must_not_be_redone = [
+        f"Preregistration commit {PREREG_SHA} is immutable and must not be rewritten after outcome inspection.",
+        "Do not merge reconstructed historical evidence with the issued forward ledger.",
+        "Do not reinterpret the 98th-percentile intensity as a 98% drawdown probability.",
+        "Do not change production bands, probabilities, gate logic, can_force, UI, Market State policy, or consumers in this research PR.",
+        "Do not silently substitute FXI or label 510300.SS as the exact CSI300 cash index.",
+    ]
+
+    return {
+        "schema": "cn_risk_radar_revalidation.v1",
+        "operation_key": OPERATION_KEY,
+        "classification": "research_only_no_production_behavior_change",
+        "base_sha": BASE_SHA,
+        "prereg_sha": PREREG_SHA,
+        "harness_path": "scripts/research/cn_risk_radar_revalidation.py",
+        "harness_sha256": sha256_file(__file__),
+        "run_parameters": {
+            "bootstrap_reps": bootstrap_reps,
+            "permutation_reps": permutation_reps,
+            "seed": seed,
+            "moving_block_length_sessions": 42,
+            "episode_gap_sessions": 42,
+        },
+        "data_provenance": data_provenance,
+        "current_snapshot": current_snapshot,
+        "targets": targets,
+        "csi300_replication": csi_replication,
+        "calibration": calibration,
+        "context_gate": context_gate,
+        "forward_ledger": forward_ledger,
+        "claims": claims,
+        "discoveries": discoveries,
+        "proposed_followup": proposed_followup,
+        "what_must_not_be_redone": what_must_not_be_redone,
+    }
+
+
+def _report_number(value, digits: int = 3) -> str:
+    if value is None:
+        return "n/a"
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    if not np.isfinite(numeric):
+        return "n/a"
+    return f"{numeric:.{digits}f}"
+
+
+def _report_pct(value, digits: int = 1) -> str:
+    if value is None:
+        return "n/a"
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    if not np.isfinite(numeric):
+        return "n/a"
+    return f"{numeric * 100.0:.{digits}f}%"
+
+
+def _report_ci(value, *, pct: bool = False) -> str:
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        return "n/a"
+    formatter = _report_pct if pct else _report_number
+    return f"[{formatter(value[0])}, {formatter(value[1])}]"
+
+
+def _render_report_v2(result: Mapping[str, object]) -> str:
+    lines: list[str] = [
+        "# China External-Driver Risk Radar — Preregistered Revalidation",
+        "",
+        f"**Operation:** `{result.get('operation_key', 'unknown')}`  ",
+        f"**Base:** `{result.get('base_sha', 'unknown')}`  ",
+        f"**Preregistration:** `{result.get('prereg_sha', 'unknown')}`  ",
+        "**Status:** Draft/HOLD research package; production behavior unchanged.",
+        "",
+    ]
+    snapshot = result.get("current_snapshot", {})
+    if isinstance(snapshot, Mapping):
+        lines.extend(
+            [
+                "## Executive conclusion",
+                "",
+                (
+                    f"As of **{snapshot.get('asof', 'n/a')}**, the exact production composite is "
+                    f"**{_report_number(snapshot.get('intensity_score_0_100'), 2)} / 100** and emits "
+                    f"**{snapshot.get('state', 'n/a')}** with the context gate "
+                    f"{'open' if snapshot.get('context_gate_open') else 'closed'}. This score is a "
+                    "causal trailing-504-session rank, not a 98% drawdown probability."
+                ),
+                "",
+                (
+                    "The construction retains meaningful hazard discrimination, especially for the historical "
+                    "10%/42-session target, but the independent-episode ceiling is 18 for the current loud state. "
+                    "That supports directional hazard language, not certification of the exact 50% displayed odds."
+                ),
+                "",
+            ]
+        )
+
+    lines.extend(["## Claim-by-claim adjudication", "", "| Claim | Verdict | Basis |", "|---|---|---|"])
+    claims = result.get("claims", {})
+    if isinstance(claims, Mapping):
+        for claim in _CLAIM_KEYS:
+            record = claims.get(claim, {})
+            if not isinstance(record, Mapping):
+                record = {}
+            basis = str(record.get("basis", "No basis recorded.")).replace("|", "\\|")
+            lines.append(f"| {claim} | **{record.get('verdict', 'INSUFFICIENT_EVIDENCE')}** | {basis} |")
+    lines.append("")
+
+    targets = result.get("targets", {})
+    lines.extend(["## Confirmatory targets — Shanghai Composite", ""])
+    if isinstance(targets, Mapping):
+        lines.extend(
+            [
+                "| Target | Eligible | Base rate | Risk-off rate | Risk-off lift | Block 95% CI | Effective episodes | Permutation p | AP / base | AUC |",
+                "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for key in ("5pct_21d", "10pct_42d"):
+            target = targets.get(key, {})
+            if not isinstance(target, Mapping):
+                continue
+            risk = target.get("risk_off", {})
+            disc = target.get("continuous_discrimination", {})
+            perm = target.get("permutation", {}).get("risk_off", {}) if isinstance(target.get("permutation"), Mapping) else {}
+            effective = risk.get("effective_n", {}) if isinstance(risk, Mapping) else {}
+            lines.append(
+                "| {label} | {eligible} | {base} | {rate} | {lift}× | {ci} | {eff} | {p} | {ap}× | {auc} |".format(
+                    label=">=5% / 21 sessions" if key == "5pct_21d" else ">=10% / 42 sessions",
+                    eligible=target.get("eligible_rows", "n/a"),
+                    base=_report_pct(target.get("base_rate")),
+                    rate=_report_pct(risk.get("conditional_rate") if isinstance(risk, Mapping) else None),
+                    lift=_report_number(risk.get("lift") if isinstance(risk, Mapping) else None, 2),
+                    ci=_report_ci(risk.get("block_ci") if isinstance(risk, Mapping) else None),
+                    eff=effective.get("effective_n_ceiling", "n/a") if isinstance(effective, Mapping) else "n/a",
+                    p=_report_number(perm.get("p_value") if isinstance(perm, Mapping) else None, 4),
+                    ap=_report_number(disc.get("ap_over_base") if isinstance(disc, Mapping) else None, 2),
+                    auc=_report_number(disc.get("roc_auc") if isinstance(disc, Mapping) else None, 3),
+                )
+            )
+        lines.extend(
+            [
+                "",
+                "The primary UI target uses the **emitted** state after the context gate. The historical claim is also shown below using the **ungated >=91st-percentile composite extreme**, because that reconstruction reproduces the recorded split-half pattern while the original executable trigger is unavailable.",
+                "",
+            ]
+        )
+
+    historical = targets.get("10pct_42d", {}) if isinstance(targets, Mapping) else {}
+    stability = historical.get("stability", {}).get("ungated_risk_off", {}) if isinstance(historical, Mapping) else {}
+    if isinstance(stability, Mapping):
+        lines.extend(["## Historical 10%/42-session stability", "", "### Split-half and era", ""])
+        lines.extend(["| Slice | Eligible rows | Risk-off rows | Base rate | Conditional rate | Lift |", "|---|---:|---:|---:|---:|---:|"])
+        split = stability.get("split_half", {})
+        era = stability.get("era", {})
+        entries = []
+        if isinstance(split, Mapping):
+            entries.extend([("First half", split.get("first", {})), ("Second half", split.get("second", {}))])
+        if isinstance(era, Mapping):
+            entries.extend([("Pre-2016", era.get("pre_2016", {})), ("2016+", era.get("post_2016", {}))])
+        for label, record in entries:
+            if not isinstance(record, Mapping):
+                continue
+            lines.append(
+                f"| {label} | {record.get('eligible_rows', 'n/a')} | {record.get('rows', 'n/a')} | "
+                f"{_report_pct(record.get('base_rate'))} | {_report_pct(record.get('conditional_rate'))} | "
+                f"{_report_number(record.get('lift'), 2)}× |"
+            )
+        lines.extend(["", "### Leave-one-crisis-out", ""])
+        lines.extend(["| Omitted episode | Applicable | Excluded rows | Remaining lift |", "|---|---:|---:|---:|"])
+        loco = stability.get("loco", [])
+        if isinstance(loco, list):
+            for record in loco:
+                if not isinstance(record, Mapping):
+                    continue
+                applicable = bool(record.get("applicable", int(record.get("excluded_rows", 0)) > 0))
+                lift = _report_number(record.get("lift"), 2) + "×" if applicable else "not testable; pre-sample"
+                lines.append(
+                    f"| {record.get('crisis', 'n/a')} | {'yes' if applicable else 'no'} | "
+                    f"{record.get('excluded_rows', 0)} | {lift} |"
+                )
+        lines.append("")
+
+    csi = result.get("csi300_replication", {})
+    if isinstance(csi, Mapping):
+        lines.extend(["## A-share replication — 510300.SS ETF proxy", ""])
+        lines.append("The repository does not contain exact CSI300 cash-index history. These are outcome-only replications on the 510300.SS ETF proxy using the unchanged Shanghai-built signal.")
+        lines.extend(["", "| Target | Eligible | Base rate | Emitted risk-off lift | Ungated risk-off lift | Effective episodes |", "|---|---:|---:|---:|---:|---:|"])
+        for key in ("5pct_21d", "10pct_42d"):
+            target = csi.get(key, {})
+            if not isinstance(target, Mapping):
+                continue
+            emitted = target.get("risk_off", {})
+            ungated = target.get("ungated_risk_off", {})
+            effective = emitted.get("effective_n", {}) if isinstance(emitted, Mapping) else {}
+            lines.append(
+                f"| {key} | {target.get('eligible_rows', 'n/a')} | {_report_pct(target.get('base_rate'))} | "
+                f"{_report_number(emitted.get('lift') if isinstance(emitted, Mapping) else None, 2)}× | "
+                f"{_report_number(ungated.get('lift') if isinstance(ungated, Mapping) else None, 2)}× | "
+                f"{effective.get('effective_n_ceiling', 'n/a') if isinstance(effective, Mapping) else 'n/a'} |"
+            )
+        lines.append("")
+
+    calibration = result.get("calibration", {})
+    if isinstance(calibration, Mapping):
+        lines.extend(["## Calibration of the displayed 5d / 10d / 21d surface", ""])
+        lines.extend(["| Horizon | Brier | Skill vs baked base | Skill vs delayed expanding base | Intercept | Slope | Supported inversion |", "|---|---:|---:|---:|---:|---:|---:|"])
+        for key in ("h5", "h10", "h21"):
+            cal = calibration.get(key, {})
+            if not isinstance(cal, Mapping):
+                continue
+            delayed = cal.get("delayed_expanding_base", {})
+            slope = cal.get("intercept_slope", {})
+            inversions = cal.get("dependence_aware_inversions", [])
+            supported = any(bool(row.get("supported_material_inversion")) for row in inversions if isinstance(row, Mapping)) if isinstance(inversions, list) else False
+            lines.append(
+                f"| {key} | {_report_number(cal.get('brier'), 4)} | {_report_pct(cal.get('brier_skill_vs_baked_base'), 2)} | "
+                f"{_report_pct(delayed.get('production_skill_vs_delayed_base') if isinstance(delayed, Mapping) else None, 2)} | "
+                f"{_report_number(slope.get('intercept') if isinstance(slope, Mapping) and slope.get('qualified') else None, 3)} | "
+                f"{_report_number(slope.get('slope') if isinstance(slope, Mapping) and slope.get('qualified') else None, 3)} | "
+                f"{'yes' if supported else 'no'} |"
+            )
+        lines.extend(["", "### Fixed state bins", ""])
+        lines.extend(["| Horizon | State | Forecast | Observed | Block 95% CI | Episode 95% CI | Effective episodes | Hit / non-hit episodes |", "|---|---|---:|---:|---:|---:|---:|---:|"])
+        for key in ("h5", "h10", "h21"):
+            cal = calibration.get(key, {})
+            rows = cal.get("states", []) if isinstance(cal, Mapping) else []
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                if not isinstance(row, Mapping):
+                    continue
+                lines.append(
+                    f"| {key} | {row.get('state')} | {_report_pct(row.get('forecast'))} | {_report_pct(row.get('observed'))} | "
+                    f"{_report_ci(row.get('block_ci'), pct=True)} | {_report_ci(row.get('episode_ci'), pct=True)} | "
+                    f"{row.get('effective_n_ceiling', 'n/a')} | {row.get('hit_episodes', 'n/a')} / {row.get('nonhit_episodes', 'n/a')} |"
+                )
+        lines.append("")
+
+    lines.extend(["## Economic baseline comparison", ""])
+    if isinstance(targets, Mapping):
+        for key in ("5pct_21d", "10pct_42d"):
+            target = targets.get(key, {})
+            if not isinstance(target, Mapping):
+                continue
+            lines.extend([f"### {key}", "", "| Construction | AP | AUC | Risk-off lift | Elevated-plus lift |", "|---|---:|---:|---:|---:|"])
+            disc = target.get("continuous_discrimination", {})
+            risk = target.get("risk_off", {})
+            elevated = target.get("elevated_plus", {})
+            lines.append(
+                f"| Current emitted radar | {_report_number(disc.get('average_precision') if isinstance(disc, Mapping) else None, 3)} | "
+                f"{_report_number(disc.get('roc_auc') if isinstance(disc, Mapping) else None, 3)} | "
+                f"{_report_number(risk.get('lift') if isinstance(risk, Mapping) else None, 2)}× | "
+                f"{_report_number(elevated.get('lift') if isinstance(elevated, Mapping) else None, 2)}× |"
+            )
+            baselines = target.get("baseline_comparison", {})
+            if isinstance(baselines, Mapping):
+                for name in ("breadth_only", "rates_only", "trend_context", "ungated_composite"):
+                    record = baselines.get(name, {})
+                    if not isinstance(record, Mapping):
+                        continue
+                    lines.append(
+                        f"| {name} | {_report_number(record.get('average_precision'), 3)} | {_report_number(record.get('roc_auc'), 3)} | "
+                        f"{_report_number(record.get('risk_off_lift'), 2)}× | {_report_number(record.get('elevated_plus_lift'), 2)}× |"
+                    )
+            lines.append("")
+
+    context = result.get("context_gate", {})
+    if isinstance(context, Mapping):
+        lines.extend(
+            [
+                "## Context-gate value-add",
+                "",
+                f"- 5%/21d gated risk-off lift: **{_report_number(context.get('gated_risk_off_lift'), 2)}×**; ungated: **{_report_number(context.get('ungated_risk_off_lift'), 2)}×**.",
+                f"- Lift difference: **{_report_number(context.get('risk_off_lift_difference_gated_minus_ungated'), 2)}×**, block CI {_report_ci(context.get('risk_off_lift_difference_block_ci'))}.",
+                f"- Brier difference, gated minus ungated: **{_report_number(context.get('brier_difference_gated_minus_ungated'), 4)}**, block CI {_report_ci(context.get('brier_difference_block_ci'))}. Negative favors the gate.",
+                f"- 10%/42d gated/ungated lifts: **{_report_number(context.get('historical_10pct_42d_gated_lift'), 2)}× / {_report_number(context.get('historical_10pct_42d_ungated_lift'), 2)}×**.",
+                "",
+            ]
+        )
+
+    forward = result.get("forward_ledger", {})
+    if isinstance(forward, Mapping):
+        lines.extend(
+            [
+                "## Genuinely issued forward ledger — kept separate",
+                "",
+                "| Rows | Matured | Pending | Matured loud | Loud hits | Matured risk-off | Risk-off hits | can_force |",
+                "|---:|---:|---:|---:|---:|---:|---:|---:|",
+                (
+                    f"| {forward.get('total_rows', 'n/a')} | {forward.get('matured_rows', 'n/a')} | "
+                    f"{forward.get('pending_rows', 'n/a')} | {forward.get('matured_loud_alerts', 'n/a')} | "
+                    f"{forward.get('matured_loud_hits', 'n/a')} | {forward.get('matured_risk_off_rows', 'n/a')} | "
+                    f"{forward.get('matured_risk_off_hits', 'n/a')} | {str(forward.get('can_force', False)).lower()} |"
+                ),
+                "",
+                f"Pending issuance spans **{forward.get('pending_asof_range')}**; the September episode remains unresolved. `{forward.get('authority_interpretation', '')}`",
+                "",
+            ]
+        )
+
+    provenance = result.get("data_provenance", {})
+    if isinstance(provenance, Mapping):
+        construction = provenance.get("construction", {})
+        lines.extend(["## Provenance and reproducibility", ""])
+        if isinstance(construction, Mapping):
+            lines.append(f"- Exact construction hash: `{construction.get('construction_hash', 'n/a')}`")
+        lines.extend(
+            [
+                f"- Historical PIT qualification: **{provenance.get('historical_snapshot_pit_status', 'n/a')}**.",
+                "- CSI replication: **510300.SS ETF proxy**, not the exact CSI300 cash index.",
+                "- Historical reconstruction and issued forward evidence are distinct evidence classes and are never pooled.",
+                "",
+                "### Data files",
+                "",
+                "| Source | Role | Rows | Date range | SHA-256 |",
+                "|---|---|---:|---|---|",
+            ]
+        )
+        source_files = provenance.get("source_files", {})
+        if isinstance(source_files, Mapping):
+            for name, record in source_files.items():
+                if not isinstance(record, Mapping):
+                    continue
+                date_range = (
+                    f"{record.get('first_date')} → {record.get('last_date')}"
+                    if record.get("first_date") else "n/a"
+                )
+                lines.append(
+                    f"| {name} | {record.get('role', 'n/a')} | {record.get('rows', 'n/a')} | {date_range} | "
+                    f"`{str(record.get('sha256', ''))[:16]}…` |"
+                )
+        lines.append("")
+
+    discoveries = result.get("discoveries", [])
+    lines.extend(["## Discoveries", ""])
+    if isinstance(discoveries, list):
+        lines.extend(f"- {item}" for item in discoveries)
+    lines.append("")
+
+    followup = result.get("proposed_followup", [])
+    lines.extend(["## Proposed follow-up", ""])
+    if isinstance(followup, list):
+        lines.extend(f"- {item}" for item in followup)
+    lines.append("")
+
+    no_redo = result.get("what_must_not_be_redone", [])
+    lines.extend(["## What must not be redone", ""])
+    if isinstance(no_redo, list):
+        lines.extend(f"- {item}" for item in no_redo)
+    lines.extend(
+        [
+            "",
+            "## One-command reproduction",
+            "",
+            "```bash",
+            "python3 -m scripts.research.cn_risk_radar_revalidation \\",
+            "  --repo-root . \\",
+            "  --output-dir research/cn_risk_revalidation \\",
+            "  --bootstrap-reps 5000 \\",
+            "  --permutation-reps 5000 \\",
+            "  --seed 20260923",
+            "```",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+render_report = _render_report_v2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
