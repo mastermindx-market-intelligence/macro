@@ -5524,6 +5524,55 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
+  finance-intelligence:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+      - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
+      - "tests/test_finance_intelligence_contract.py"
+      - "engine/sector_intelligence/contracts.py"
+      - "contracts/sector_intelligence/**"
+      - "data/sector_intelligence/fixtures/**"
+      # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
+      # earnings_narrative -> biocatalyst); listed so the exclusive scope covers itself.
+      - "collectors/biocatalyst/drugs_at_fda.py"
+      - "config/biocatalyst_sources.yml"
+      - "config/earnings_story_promotion.yml"
+      - "contracts/capital_structure_projection.schema.json"
+      - "engine/biocatalyst/discovery.py"
+      - "engine/biocatalyst/endpoint_alignment.py"
+      - "engine/biocatalyst/fixed_cohort.py"
+      - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/storage.py"
+      - "engine/biocatalyst/trial_screen.py"
+      - "engine/biocatalyst/trials.py"
+      - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/sector_intelligence/__init__.py"
+      - "engine/sector_intelligence/launch_slo_verifier.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jsonschema referencing pyyaml
+      - name: finance intelligence contract tests
+        run: python -m pytest tests/test_finance_intelligence_contract.py -q
+
   flow-signals-ledger:
     if: ${{ false }}
     gate: code
