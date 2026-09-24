@@ -312,11 +312,13 @@ def _row_text(row: Sequence[_Cell]) -> str:
 
 
 def _section_text(row: Sequence[_Cell]) -> str | None:
-    """A row that carries no metric literal is a label row -- one cell or several, in any column, at any colspan --
-    and its whole text is what names a section (R51, R57, R62); a row holding a literal is a data row."""
-    if not row or any(_is_literal_cell(cell.text) for cell in row):
+    """A row that carries no metric literal other than dashes is a label row -- one cell or several, in any
+    column, at any colspan -- and its whole text is what names a section (R51, R57, R62, R84); a row holding a
+    number is a data row."""
+    if not row or any(_is_literal_cell(cell.text) and cell.text.strip() not in _DASHES for cell in row):
         return None
-    return _row_text(row)
+    # A label row may carry dashes in its value columns ("Twelve Months Ended June 30, 2026 | — | —") (R84).
+    return _row_text([cell for cell in row if cell.text.strip() not in _DASHES])
 
 
 def _marked_context(text: str, identity: tuple[int, int, date]) -> str | None:
@@ -469,11 +471,12 @@ def parse_pg_literal(value: str, *, unit: str) -> float | None:
 
 
 _NON_GAAP_SPELLING = re.compile(r"\bnon[\s-]?gaap\b")
+_US_DOLLAR_SPELLING = re.compile(r"\bus\s+\$")
 
 
 def _normal(value: str) -> str:
     normal = " ".join(value.replace("\xa0", " ").replace("&nbsp;", " ").casefold().split())
-    return _NON_GAAP_SPELLING.sub("non-gaap", normal)
+    return _US_DOLLAR_SPELLING.sub("us$", _NON_GAAP_SPELLING.sub("non-gaap", normal))
 
 
 def _fiscal_identity(current_start: date, current_end: date) -> tuple[int, int]:
@@ -516,9 +519,14 @@ _FISCAL_YEAR_LABEL = re.compile(r"\b" + _FY_TAIL, re.IGNORECASE)
 _QUARTER_WORD = re.compile(
     r"\b(first|second|third|fourth)[\s-]+quarter\b(?:[\s-]+(?:of\s+)?(?:" + _FY_TAIL + r"|['\u2019](\d{2})\b))?", re.IGNORECASE
 )
-_Q_FY = re.compile(r"\bq[\s-]*([1-4])[\s\-]*(?:of\s+)?fy[\s\-]*['\u2019]?\s*(?:20)?(\d{2})\b", re.IGNORECASE)
+_Q_FY = re.compile(
+    r"\b(?:q[\s-]*([1-4])|([1-4])q)[\s\-]*(?:of\s+)?fy[\s\-]*['\u2019]?\s*(?:20)?(\d{2})\b", re.IGNORECASE
+)
 # The same form with the fiscal year first: "FY26 Q4", "Fiscal Year 2026 Q4", "fiscal '26 Q4" (R72).
 _FY_Q = re.compile(r"\b" + _FY_TAIL + r"[\s\-]*q[\s-]*([1-4])\b", re.IGNORECASE)
+# A bare quarter number with no year anywhere in the text ("Q3 Highlights"): the admitted quarter when the number
+# matches; beside any year it stays an unreadable token, because "Q3 2026" may be fiscal or calendar (R82).
+_Q_BARE = re.compile(r"\bq[\s-]?([1-4])\b(?![\s-]*(?:fy|fiscal|20\d\d|['\u2019]\d\d))", re.IGNORECASE)
 _QUARTER_ENDED = re.compile(
     r"\b(?:(?:three|3)[\s-]+months?(?:\s+period)?|(?:fiscal\s+)?quarter(?:ly\s+period)?)\s+(?:ended|ending)\s+" + _DATE,
     re.IGNORECASE,
@@ -569,7 +577,13 @@ _STRONG_PERIOD_TOKEN = re.compile(
     re.IGNORECASE,
 )
 _LABEL_PREFIX = re.compile(r"^for(?: the)?\s+")
-_LABEL_NOISE = re.compile(r"\([^()]*\)|\bunaudited\b|[\u2014\u2013:;]")
+# Decoration that says nothing about period, topic or basis (R82): "(unaudited)", a units note, a footnote mark.
+# Any OTHER parenthetical keeps its words -- "(Outlook)", "(Pro Forma Combined Company)" -- so admission sees them.
+_DECORATION = re.compile(
+    r"\((?:unaudited|(?:amounts?|dollars|figures|\$|us\$)?\s*in\s+(?:millions|thousands|billions)[^()]*|\d{1,2}[a-z]?|[a-z]"
+    r"|[ivx]{2,4}|\*{1,3}|\u2020|\u2021|%|percent(?:ages?)?)\)"
+)
+_LABEL_NOISE = re.compile(r"\bunaudited\b|[\u2014\u2013:;()]")
 
 
 def visible_text(source: str) -> str:
@@ -601,6 +615,35 @@ def _match_date(match: "re.Match[str]") -> tuple[int, int, int] | None:
     return int(year), _MONTHS[month], int(day)
 
 
+def _prior_quarter_end(current_end: date) -> date:
+    try:
+        return current_end.replace(year=current_end.year - 1)
+    except ValueError:
+        return current_end.replace(year=current_end.year - 1, day=28)
+
+
+def _date_verdict(parsed: tuple[int, int, int] | None, current_end: date, prior_end: date, current: str) -> str:
+    """A quarter-end date: the admitted one (``current`` -- "scope" for a quarter-ended form, "year" for a bare
+    date), the prior year's ("prior_quarter": neutral only beside a scope form, as in "Three Months Ended June 30,
+    2026 and 2025"), or another ("foreign") (R81)."""
+    if parsed == (current_end.year, current_end.month, current_end.day):
+        return current
+    if parsed == (prior_end.year, prior_end.month, prior_end.day):
+        return "prior_quarter"
+    return "foreign"
+
+
+def _quarter_year_verdict(ordinal: int, year: int, quarter: int, fiscal_year: int) -> str:
+    """A quarter named with its fiscal year: the admitted one, the same quarter of the prior fiscal year
+    ("prior_quarter": neutral beside a scope form, foreign alone or beside a year-level form -- frozen s12), or
+    another (R81)."""
+    if ordinal != quarter:
+        return "foreign"
+    if year == fiscal_year:
+        return "scope"
+    return "prior_quarter" if year == fiscal_year - 1 else "foreign"
+
+
 def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[str], str]:
     """Every recognised period form in ``normal`` with its verdict, and the residual text they leave (R67).
 
@@ -625,14 +668,18 @@ def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[st
     if _ANNUAL_QUALIFIER.search(normal):
         verdicts.append("annual")
         residual = _ANNUAL_QUALIFIER.sub(" ", residual)
-    quarter_forms = bool(take(_QUARTER_ENDED, lambda m: "scope" if _match_date(m) == (current_end.year, current_end.month, current_end.day) else "foreign"))
-    quarter_forms |= bool(take(_Q_FY, lambda m: "scope" if int(m.group(1)) == quarter and 2000 + int(m.group(2)) == fiscal_year else "foreign"))
-    quarter_forms |= bool(take(_FY_Q, lambda m: "scope" if int(m.group(2)) == quarter and 2000 + int(m.group(1)) == fiscal_year else "foreign"))
-    # The drivers heading is a YEAR-level signal (R35): consistent with the admitted year, never quarter-binding.
-    take(_DRIVERS_YEARS, lambda m: "year" if int(m.group(1)) == fiscal_year else "foreign")
+    prior_end = _prior_quarter_end(current_end)
+    quarter_forms = bool(take(_QUARTER_ENDED, lambda m: _date_verdict(_match_date(m), current_end, prior_end, "scope")))
+    quarter_forms |= bool(take(_Q_FY, lambda m: _quarter_year_verdict(int(m.group(1) or m.group(2)), 2000 + int(m.group(3)), quarter, fiscal_year)))
+    quarter_forms |= bool(take(_FY_Q, lambda m: _quarter_year_verdict(int(m.group(2)), 2000 + int(m.group(1)), quarter, fiscal_year)))
+    # The drivers heading is a YEAR-level signal (R35): consistent with the admitted year only when it names the
+    # fiscal year against its prior ("2026 vs. 2025"); any other pair is another table (R81).
+    take(_DRIVERS_YEARS, lambda m: "year" if (int(m.group(1)), int(m.group(2))) == (fiscal_year, fiscal_year - 1) else "foreign")
     quarter_words = list(_QUARTER_WORD.finditer(normal))
     residual = _QUARTER_WORD.sub(" ", residual)
     quarter_forms |= bool(quarter_words)
+    if _Q_BARE.search(residual) is not None and _YEAR.search(normal) is None and _FISCAL_YEAR_LABEL.search(normal) is None:
+        quarter_forms |= bool(take(_Q_BARE, lambda m: "scope" if int(m.group(1)) == quarter else "foreign"))
     labels = list(_FISCAL_YEAR_LABEL.finditer(residual))
     residual = _FISCAL_YEAR_LABEL.sub(" ", residual)
     label_years = [2000 + int(m.group(1)) for m in labels]
@@ -651,13 +698,12 @@ def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[st
         ordinal = _ORDINAL_INDEX[match.group(1).casefold()]
         tail = match.group(2) or match.group(3)
         if tail is not None:
-            verdicts.append("scope" if ordinal == quarter and 2000 + int(tail) == fiscal_year else "foreign")
+            verdicts.append(_quarter_year_verdict(ordinal, 2000 + int(tail), quarter, fiscal_year))
         else:
             verdicts.append("scope" if ordinal == quarter and not other_years_foreign else "foreign")
     verdicts.extend("fiscal" if year == fiscal_year else "foreign" for year in label_years)
     for match in dates:
-        parsed = _match_date(match)
-        verdicts.append("year" if parsed == (current_end.year, current_end.month, current_end.day) else "foreign")
+        verdicts.append(_date_verdict(_match_date(match), current_end, prior_end, "year"))
     for year in bare_years:
         if year == fiscal_year:
             verdicts.append("year")
@@ -700,6 +746,8 @@ def period_context(text: str, identity: tuple[int, int, date], *, bare_fiscal_is
     # bare calendar year that is not the fiscal year is ambiguous alone (R76).
     if "prior" in verdicts and not ({"year", "fiscal", "calendar"} & set(verdicts)):
         return "foreign"
+    if "prior_quarter" in verdicts:
+        return "foreign"
     if "calendar" in verdicts and not ({"year", "fiscal"} & set(verdicts)):
         return "unknown"
     if "fiscal" in verdicts and bare_fiscal_is_annual:
@@ -720,7 +768,7 @@ def band_context(text: str, identity: tuple[int, int, date]) -> str | None:
             return verdict
     if "year" in verdicts or "calendar" in verdicts:
         return "scope"
-    if "prior" in verdicts:
+    if "prior" in verdicts or "prior_quarter" in verdicts:
         return "foreign"
     return "annual" if "fiscal" in verdicts else None
 
@@ -740,9 +788,10 @@ def _is_paragraph(block: Any) -> bool:
 
 
 def _period_label_text(text: str) -> str:
-    """A period label stripped of its decoration: parentheticals such as "(Unaudited)" or "(In millions)", the
-    word "unaudited", dashes, colons and semicolons anywhere, a leading "For the", edge punctuation (R56, R62)."""
-    normal = _LABEL_NOISE.sub(" ", _normal(text))
+    """A period label stripped of its decoration: the closed decoration set ("(Unaudited)", "(In millions)", a
+    footnote mark), the word "unaudited", dashes, colons, semicolons and parentheses anywhere, a leading "For
+    the", edge punctuation (R56, R62, R82).  Words inside any other parenthetical are kept."""
+    normal = _LABEL_NOISE.sub(" ", _DECORATION.sub(" ", _normal(text)))
     normal = _LABEL_PREFIX.sub("", " ".join(normal.split()))
     return normal.strip(" .,")
 
@@ -768,6 +817,12 @@ def _is_pure_period(text: str, identity: tuple[int, int, date] | None = None) ->
 
 
 PG_LABEL_CONTENT_WORDS = 3
+# An explicit period token names a period on its own -- unlike "quarter" or "year", which need context (R84).
+_EXPLICIT_PERIOD_TOKEN = re.compile(
+    r"\b(?:19|20)\d{2}\b|(?<![\w])['\u2019]\d{2}\b|\b" + _MONTH_WORD + r"\b|\b\d{0,2}[\s-]*q[\s-]*[1-4]\w*\b|\b[1-4]q\d*\b"
+    r"|\bfy\s*['\u2019]?\d|\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{4}-\d{2}-\d{2}|\b[12]h\d*\b|\bh[12]\b",
+    re.IGNORECASE,
+)
 
 
 def _pure_period_label(block: Any, identity: tuple[int, int, date] | None = None) -> bool:
@@ -799,6 +854,8 @@ def _admits(text: str, route: str, identity: tuple[int, int, date] | None) -> bo
     # (R35) only when it names the admitted FISCAL year as a bare year, alone or beside its prior; a prior year
     # alone ("... Drivers 2025") or an ambiguous calendar year ("... Drivers 2026" in Q1 FY2027) names another
     # table (R76).
+    if "prior_quarter" in verdicts and "scope" not in verdicts:
+        return False
     year_level = {"fiscal", "year", "prior", "calendar"} & set(verdicts)
     if year_level and "scope" not in verdicts:
         if route != "drivers" or "year" not in verdicts or year_level - {"year", "prior"}:
@@ -843,13 +900,33 @@ def _heading_level(block: Any) -> int:
 # "Overview", "Financial Highlights", "Business Summary".  Anything else -- "Ambitions", "Priorities", "Cumulative
 # Results" -- is not evidence of the admitted quarter's results and refuses the tables beneath it.
 _NEUTRAL_WORDS = frozenset({"overview", "highlights", "highlight", "summary", "key", "financial", "financials", "business", "results", "result", "company"})
+# Words a table's own caption or short label may add beyond the route, neutral and period vocabularies: units
+# and presentation notes (R83).
+_UNITS_WORDS = frozenset({"amounts", "amount", "in", "millions", "thousands", "billions", "except", "per", "share", "data", "dollars", "usd", "us$", "$", "percent", "%", "unaudited", "and", "of", "the", "table", "tables"})
+PG_TABLE_LABEL_WORDS = 5
+
+
+def _table_label_admissible(text: str, identity: tuple[int, int, date] | None) -> bool:
+    """A caption, or a short paragraph standing directly over a table, must decompose into period forms and
+    words of the route, neutral, units and glue vocabularies -- "Pro Forma Combined" and "Pro Forma (Unaudited)"
+    name a basis and refuse the table (R83)."""
+    verdicts, words = _residual_words(text, identity)
+    if any(verdict in {"annual", "foreign"} for verdict in verdicts):
+        return False
+    allowed = _NEUTRAL_WORDS | _UNITS_WORDS | frozenset(word for _keys, vocabulary in _ROUTE_WORDS.values() for word in vocabulary)
+    return all(word in allowed for word in words) and _PERIOD_TOKEN.search(" ".join(words)) is None
 
 
 def _is_neutral_topic(text: str, identity: tuple[int, int, date] | None) -> bool:
+    """Neutral topic words with no period, the admitted quarter, or the admitted fiscal year's bare label ("Fiscal
+    Year 2026 Highlights" heads a Q4 release's quarter AND year tables; the heading context keeps the quarter
+    tables waiting for a scope heading) (R77, R82)."""
     verdicts, words = _residual_words(text, identity)
     if not words or any(word not in _NEUTRAL_WORDS for word in words):
         return False
-    return identity is None or period_context(text, identity) in {"scope", None}
+    if identity is None:
+        return True
+    return period_context(text, identity) in {"scope", None} or set(verdicts) == {"fiscal"}
 
 
 def _is_non_results_section(text: str, identity: tuple[int, int, date] | None) -> bool:
@@ -857,19 +934,19 @@ def _is_non_results_section(text: str, identity: tuple[int, int, date] | None) -
     pure label of the admitted quarter, or consist of neutral topic words ("Overview", "Financial Highlights").
     A forward-looking word, a period other than the admitted quarter, or any other topic ("Ambitions",
     "Cumulative Results") opens a section no table binds from."""
-    if _is_admitted_heading(text, identity):
-        return False
     if _FORWARD_LOOKING.search(_normal(text)) is not None:
         return True
-    if identity is not None and _marked_context(text, identity) in _EXCLUDED:
-        return True
+    if _is_admitted_heading(text, identity):
+        return False
     return not _is_neutral_topic(text, identity)
 
 
-def _is_non_results_title(text: str, identity: tuple[int, int, date] | None) -> bool:
-    """The TITLE (the first heading block) is exempt from the topic rule only (a masthead names the company):
-    a forward-looking word with no scope form, or a period outside the admitted quarter, still opens a section
-    (R77)."""
+def _is_non_results_title(block: Any, text: str, identity: tuple[int, int, date] | None) -> bool:
+    """The TITLE -- a first heading block at level 1, a masthead naming the company -- is exempt from the topic
+    rule only: a forward-looking word with no scope form, or a period outside the admitted quarter, still opens
+    a section (R77).  A first heading at any deeper level is an ordinary ancestor (R82)."""
+    if _heading_level(block) != 1:
+        return _is_non_results_section(text, identity)
     normal = _normal(text)
     if _FORWARD_LOOKING.search(normal) is not None and (identity is None or not _has_scope_form(normal, identity)):
         return True
@@ -892,8 +969,8 @@ class _SectionState:
         level = _heading_level(block)
         if self.level is not None and level <= self.level:
             self.level = None
-        judge = _is_non_results_title if self.seen == 1 else _is_non_results_section
-        if judge(text, identity):
+        governs = _is_non_results_title(block, text, identity) if self.seen == 1 else _is_non_results_section(text, identity)
+        if governs:
             self.level = level if self.level is None else min(self.level, level)
 
     @property
@@ -948,6 +1025,7 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
     period = _PeriodContext(identity)
     immediate: str | None = None
     topic: str | None = None
+    table_label: str | None = None
     section = _SectionState()
     scanned: list[_Table] = []
     for block in blocks:
@@ -958,21 +1036,29 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
                 topic = text
             section.heading(block, text, identity)
             period.heading(text)
+            table_label = None
         elif _is_paragraph(block) and identity is not None:
             if _pure_period_label(block, identity):
                 immediate = text
                 if not _is_pure_period(text, identity):
                     topic = text
                 period.label(text)
+                table_label = None
             else:
                 period.prose(text)
+                # A short paragraph standing directly over a table is that table's label (R83).
+                normal = _normal(text)
+                table_label = text if len(normal.split()) <= PG_TABLE_LABEL_WORDS and not normal.endswith((".", "!", "?")) else None
         elif getattr(block, "table", None) is not None:
             rows = _grid(block)
             depth = _header_band(rows)
             caption = getattr(block.table, "caption", "") or ""
             band = _band_context(rows, depth, caption, identity) if identity is not None else None
-            if _layout_overflow(block):
+            if _layout_overflow(block) or getattr(block.table, "nested", False):
                 band = "unknown"
+            if identity is not None and any(not _table_label_admissible(item, identity) for item in (caption, table_label) if item and item.strip()):
+                band = "unknown"
+            table_label = None
             row_context = _row_contexts(rows, depth, identity) if identity is not None else tuple([None] * len(rows))
             governing = tuple(dict.fromkeys(item for item in (immediate, topic) if item))
             scanned.append(
@@ -1001,7 +1087,8 @@ def document_period_verdict(blocks: Sequence[Any], identity: tuple[int, int, dat
         if _is_heading(block) or _pure_period_label(block, identity):
             text = getattr(block, "text", "")
             years = _DRIVERS_YEARS.search(_normal(text))
-            verdict = "scope" if years and int(years.group(1)) == fiscal_year else _marked_context(text, identity)
+            drivers = years is not None and (int(years.group(1)), int(years.group(2))) == (fiscal_year, fiscal_year - 1)
+            verdict = "scope" if drivers else _marked_context(text, identity)
         elif getattr(block, "table", None) is not None:
             rows = _grid(block)
             verdict = _band_context(rows, _header_band(rows), getattr(block.table, "caption", "") or "", identity)
@@ -1110,7 +1197,8 @@ _PLAIN_SUBCELL = re.compile(
 
 
 def _column(
-    table: _Table, row_label: str, headers: Sequence[str], identity: tuple[int, int, date] | None = None
+    table: _Table, row_label: str, headers: Sequence[str], identity: tuple[int, int, date] | None = None, *,
+    current: bool = True, fiscal_mode: bool | None = None,
 ) -> tuple[Sequence[_Cell], int, str] | None:
     """The unique (row, column, header form) a row label and an accepted header form address in ``table`` (R37, R43, R51).
 
@@ -1163,13 +1251,18 @@ def _column(
     # The whole stack over the matched column must decompose into the matched form, period forms and plain
     # marks: "Pro Forma", "As Reported" or "Diluted" over one column names a basis, not the observation (R79).
     # Which period the stack names is judged elsewhere (the matched form, ``band_context``, the row section).
+    stack = " ".join(cell.text.strip() for cell in _column_header_cells(rows, depth, column))
     if not plain:
-        stack = " ".join(cell.text.strip() for cell in _column_header_cells(rows, depth, column))
         _verdicts, stack_words = _residual_words(stack, identity)
         _form_verdicts, form_words = _residual_words(form, identity)
         leftover = Counter(stack_words) - Counter(form_words)
         if identity is None or any(_PLAIN_SUBCELL.fullmatch(word) is None for word in leftover.elements()):
             return None
+    # The matched column's OWN stack must name this observation's period or no period at all: a current
+    # observation never binds a column stacked under "Three Months Ended June 30, 2025", a prior observation never
+    # a column stacked under the admitted quarter (R84).
+    if identity is not None and not _stack_period_agrees(stack, identity, current=current, fiscal_mode=fiscal_mode):
+        return None
     cell = row[column]
     # One literal spanning several value columns whose header stacks differ names no single period (R55).
     covered = [index for index in range(1, len(row)) if cell.origin is not None and row[index].origin is cell.origin]
@@ -1217,19 +1310,53 @@ def _select_cell(
     located = [
         (table, *found)
         for table in _candidate_tables(tables, plan.headings, identity)
-        if (found := _column(table, row_label, _band_headers(table, definition, plan, identity), identity)) is not None
+        if (found := _column(
+            table, row_label, _band_headers(table, definition, plan, identity), identity,
+            current=identity is None or plan.preferred_period != _prior_quarter_end(identity[2]).isoformat(),
+            fiscal_mode=_fiscal_mode(table, identity),
+        )) is not None
     ]
     return located[0] if len(located) == 1 else None
 
 
+def _stack_period_agrees(stack: str, identity: tuple[int, int, date], *, current: bool, fiscal_mode: bool | None) -> bool:
+    """The matched column's stack names this observation's period or none (R84).  Under the fiscal reading of a
+    Q1/Q2 band the bare quarter-end calendar year is the prior column."""
+    verdicts, residual = _period_forms(_period_label_text(stack), identity)
+    if _PERIOD_TOKEN.search(residual) is not None:
+        return False
+    found = set(verdicts)
+    if fiscal_mode and "calendar" in found:
+        found = (found - {"calendar"}) | {"prior"}
+    if current:
+        if found & {"annual", "foreign", "fiscal"} or ("prior_quarter" in found and "scope" not in found):
+            return False
+        return not found or bool(found & {"scope", "year", "calendar"})
+    return found <= {"prior", "prior_quarter"}
+
+
 def _band_years(table: _Table) -> set[int]:
+    """The bare years of the band's PURE-year columns -- a column whose stack is a bare year and plain marks --
+    the only columns a bare-year form can match; "2027 Guidance" beside "2026 | 2025" decides nothing (R81)."""
     rows, depth = table.rows, table.depth
-    return {
-        int(match.group(1))
-        for column in range(1, _band_width(rows, depth))
-        for cell in _column_header_cells(rows, depth, column)
-        for match in _YEAR.finditer(_normal(cell.text))
-    }
+    years: set[int] = set()
+    for column in range(1, _band_width(rows, depth)):
+        words = _period_label_text(" ".join(cell.text.strip() for cell in _column_header_cells(rows, depth, column))).split()
+        bare = [word for word in words if _YEAR.fullmatch(word)]
+        if len(bare) == 1 and all(_PLAIN_SUBCELL.fullmatch(word) is not None for word in words if not _YEAR.fullmatch(word)):
+            years.add(int(bare[0]))
+    return years
+
+
+def _fiscal_mode(table: _Table, identity: tuple[int, int, date] | None) -> bool | None:
+    """The band's year reading (R76, R81): None when the fiscal and quarter-end calendar years coincide, True when
+    the admitted fiscal year appears among the band's pure-year columns, False (calendar reading) otherwise."""
+    if identity is None:
+        return None
+    fiscal_year, _quarter, current_end = identity
+    if current_end.year == fiscal_year:
+        return None
+    return fiscal_year in _band_years(table)
 
 
 def _band_headers(table: _Table, definition: PGDefinition, plan: _Plan, identity: tuple[int, int, date] | None) -> tuple[str, ...]:
@@ -1242,10 +1369,10 @@ def _band_headers(table: _Table, definition: PGDefinition, plan: _Plan, identity
     if identity is None:
         return plan.header_forms
     fiscal_year, _quarter, current_end = identity
-    if current_end.year == fiscal_year:
+    fiscal_mode = _fiscal_mode(table, identity)
+    if fiscal_mode is None:
         return plan.header_forms
     current = plan.preferred_period == current_end.isoformat()
-    fiscal_mode = fiscal_year in _band_years(table)
     expected = (fiscal_year if current else fiscal_year - 1) if fiscal_mode else (current_end.year if current else current_end.year - 1)
 
     def keep(form: str) -> bool:
@@ -1278,16 +1405,22 @@ def locate_pg_observation(
 
 
 def pg_observation_present(source: str, definition: PGDefinition, *, current_start: date, current_end: date, prior_end: date) -> bool:
-    """Whether the extractor's own decision path yields a PRESENT value for ``definition`` in ``source`` (R80):
-    the document verdict, the admitted tables, the unique cell, its literal, the layout replay and the total-volume
-    cross-check -- or, for the bounded text, the unique reconciliation paragraph.  The validator refuses a typed
-    absence that hides such a value (round-6 disposition (a))."""
+    """Whether the extractor's own decision path yields a PRESENT value for ``definition`` in ``source`` (R80,
+    R85): the document verdict, the admitted tables, the unique cell, its literal and dash convention, the receipt
+    for its bytes, the layout replay and the total-volume cross-check -- or, for the bounded text, the unique
+    reconciliation paragraph and its receipt.  The validator refuses a typed absence that hides such a value
+    (round-6 disposition (a))."""
     identity = _identity(current_start, current_end)
     blocks = parse_release_blocks(source)
     if document_period_verdict(blocks, identity) in _OUT_OF_SCOPE:
         return False
     if definition.value_kind == "bounded_text":
-        return _reconciliation_paragraph(blocks, definition, identity) is not None
+        paragraph = _reconciliation_paragraph(blocks, definition, identity)
+        if paragraph is None:
+            return False
+        span = getattr(paragraph, "source_span", None)
+        text = (paragraph.text or "").strip()
+        return span is not None and expected_receipt_span(source, span.char_start, span.char_end, text) is not None
     plan = _observation_plan(definition, current_start, current_end, prior_end)
     if plan is None:
         return False
@@ -1305,8 +1438,13 @@ def pg_observation_present(source: str, definition: PGDefinition, *, current_sta
     if value is None or not math.isfinite(value):
         return False
     headers = (definition.column_label,) if definition.column_label else plan.header_forms
+    # The extractor mints a receipt for the literal's bytes; a literal it cannot receipt (an entity, a comment
+    # inside the cell) is absent for it, so it is absent here (R85).
+    receipt = expected_receipt_span(source, cell.char_start, cell.char_end, literal)
+    if receipt is None:
+        return False
     try:
-        start, end = expected_receipt_span(source, cell.char_start, cell.char_end, literal)
+        start, end = receipt
         replayed_row, replayed_header, _column_index = replay_table_layout(source, start=start, end=end, header_forms=headers, identity=identity)
     except ValueError:
         return False
@@ -1470,15 +1608,16 @@ _VOLUME_COLUMN_QUALIFIERS = ("excluding", "organic", "mix")
 
 
 def _other_period_sentence(sentence: str, identity: tuple[int, int, date]) -> bool:
-    """A sentence that names a readable other period, or an unreadable one by a strong token ("in Q3 2026"),
-    is not a same-period statement; a sentence that merely says "the quarter" is (R47, R79)."""
+    """A sentence that names a readable other period, or an unreadable one by an EXPLICIT token -- a year, a
+    month, a quarter number, a date ("in Q3 2026") -- is not a same-period statement; a sentence that merely
+    says "the quarter" or "this quarter" is, and conflicts (R47, R79, R84)."""
     verdict = period_context(sentence, identity)
     if verdict in _OUT_OF_SCOPE:
         return True
     if verdict != "unknown":
         return False
     _verdicts, residual = _period_forms(_normal(sentence), identity)
-    return _STRONG_PERIOD_TOKEN.search(residual) is not None
+    return _EXPLICIT_PERIOD_TOKEN.search(residual) is not None
 
 
 def _volume_statements(tables: Sequence[_Table], blocks: Sequence[Any], *, identity: tuple[int, int, date], skip: _Table) -> list[float]:

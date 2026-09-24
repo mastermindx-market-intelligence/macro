@@ -271,6 +271,9 @@ def validate_selected_facts(
                     release_source, current_start=current_start, current_end=current_end, prior_end=prior_end
                 ):
                     raise EconomicObservationError("combined typed_absence has no combined volume/mix drivers column in the source")
+                # R85: a combined absence may not hide a separately disclosed value either.
+                if pg_observation_present(release_source, definition, current_start=current_start, current_end=current_end, prior_end=prior_end):
+                    raise EconomicObservationError("combined typed_absence hides an observation the source uniquely addresses")
             elif subject != metric:
                 raise EconomicObservationError("typed_absence subject is neither its metric nor the combined volume/mix form")
             else:
