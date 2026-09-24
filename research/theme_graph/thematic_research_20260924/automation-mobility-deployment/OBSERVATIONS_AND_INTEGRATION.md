@@ -109,7 +109,7 @@ C-R1–C-R3 additionally require the measured-versus-prospective status, schedul
 - energy per scheduled eligible stall-day = observed kWh / integrated eligible stall-days. Energy per available stall-hour = observed kWh / available stall-hours. These are different rate bases, not interchangeable denominators;
 - session utilization = sessions / integrated eligible stall-days;
 - realized charging yield = matched direct charging revenue / matched delivered kWh. An aggregate quotient is not a measured site tariff, and a yield derived from revenue supplies no independent confirmation of the same revenue;
-- energy/site cost intensity = matched energy + site operating cost / matched delivered kWh;
+- energy/site cost intensity = (matched energy cost + matched site operating cost) / matched delivered kWh;
 - contribution intensity = matching charging contribution / matched delivered kWh, with included costs and accounting/cash status explicit;
 - an end-quarter count times all quarter days is not integrated exposure. `3930 * 276 * 91 = 98,705,880 kWh` remains a hypothetical endpoint approximation, not a reconciliation to 99 GWh. Actual comparable exposure and averaging definition remain unmeasured here. No causal expansion attribution or mature-site return follows from numerical closeness.
 
@@ -168,7 +168,7 @@ A site cash-return measure must name its numerator (before/after investment and 
 - productive rate = accepted tons / available truck-hour;
 - availability = available scheduled truck-hours / scheduled truck-hours;
 - intervention intensity = intervention/supervision hours / operating truck-hour or accepted ton;
-- full cost per accepted ton = matched labor + fuel + maintenance + software/support + depreciation/capital charge + other attributable cost / accepted tons. Declare an accounting-cost or explicitly modelled lifecycle-cost basis; do not add cash asset purchases on top of a depreciation/capital charge for the same investment. A cash-investment view is separate and follows C-R3, with tax, working-capital and financing scope explicit where included.
+- full cost per accepted ton = (matched labor + fuel + maintenance + software/support + depreciation/capital charge + other attributable cost) / accepted tons. All numerator terms are costs on the same currency/period/perimeter. Declare an accounting-cost or explicitly modelled lifecycle-cost basis; do not add cash asset purchases on top of a depreciation/capital charge for the same investment. A cash-investment view is separate and follows C-R3, with tax, working-capital and financing scope explicit where included.
 
 **Existing evidence.** Caterpillar reports Bull Run go-live in November 2024, productivity matching staffed machines shortly after go-live, more than 2m tons in the first year and more than 3.5m tons after 18+ months, followed by expansion to two additional Virginia sites. Caterpillar/Carter Machinery also report embedded implementation/support and training.
 
