@@ -4,7 +4,11 @@
 
 ## Chairman-selected handoff route
 
-The Chairman will receive the manual startup prompt and complete packet **later**, then initiate a **NEW Healthcare-specific Fable CEO session**. The existing Semiconductor Fable on #7870 is a shared-infrastructure/compatibility counterpart, **not the Healthcare build receiver**. Do not send it the Healthcare build, dispatch a worker, or create a wake from this index. The eventual new Healthcare Fable orchestrates bounded implementation and independent review; foundational Healthcare research stays with this principal-led program.
+The [master manual handoff](../../agentos/handoffs/GMI-HEALTHCARE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md) is now prepared for the Chairman to initiate a **NEW Healthcare-specific Fable CEO session**. Section 12 contains the copy-ready startup text. The existing Semiconductor Fable/#7870 remains shared-foundation/compatibility only, **not the Healthcare build receiver**. No packet has been delivered to that session and no automatic Healthcare dispatch, wake or implementation START is authorized by this index.
+
+**Launch mode: REVIEW_FIRST / IMPLEMENTATION_HELD.** Independent Healthcare-plan review is still outstanding. Preparing or manually delivering the packet permits fresh recovery and review coordination under the live assignment; it does not mark the plan accepted or waive review before product writes. This replaces the earlier preparation-only assumption that a manual packet could not be finished until a review returned. D1 may receive release-scoped independent approval while later shared dependencies remain held.
+
+The frozen full research input is commit `e5789583de2428b6dbdaa26266e8fc8e0655789a`. The newer handoff is separately pinned by its publication commit, not falsely claimed present at the older research commit. Use one operative plan and the supplied corpus, not the old chat history. The new Fable retains CEO integration/review/proof judgment and uses admitted bounded workers without outsourcing generic Healthcare rediscovery.
 
 ## Start here
 
