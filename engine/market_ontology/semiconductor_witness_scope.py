@@ -148,7 +148,10 @@ def _load_issuer_master(root: Path | None = None) -> IssuerMaster | None:
     name the artifact). ``None`` when the artifact is absent or unreadable —
     every witness then resolves as ``identity_unverified``. Nothing here can
     raise: locating the artifact (``config.data_dir()`` reads the repo's
-    ``config.yml``) is inside the same fail-closed guard as reading it."""
+    ``config.yml``) is inside the same fail-closed guard as reading it. The
+    accepted cost: a programming error in the locate step is indistinguishable
+    from an absent artifact — both surface to the operator only as
+    :data:`IDENTITY_SOURCE_UNAVAILABLE` on the caller's omissions."""
     try:
         base = Path(root) if root is not None else config.data_dir()
         path = base / identity_resolution.REFERENCE_SUBDIR / identity_resolution.MASTER_FILE
@@ -195,6 +198,9 @@ def resolve_witness_scope(slice_key: str) -> WitnessScope:
     if not isinstance(slice_key, str):
         return WitnessScope(slice_key="", identities=(),
                             omissions=("slice_unknown:<non_string>", SLICE_SCOPE_UNOWNED))
+    # Exact-``str`` copy: a hostile ``str`` subclass (raising ``__hash__`` /
+    # ``__str__`` / ``__format__``) runs no code in the lookup or the token.
+    slice_key = str.__str__(slice_key)
     tickers = WITNESS_ROSTER.get(slice_key)
     if tickers is None:
         omissions.append(f"slice_unknown:{slice_key}")
@@ -218,6 +224,9 @@ def resolve_witness_scope(slice_key: str) -> WitnessScope:
 def verify_workspace_cik(identity: WitnessIdentity, workspace_cik: object) -> bool:
     """Exact string equality on the ten-digit form — the binder refuses a
     workspace whose CIK disagrees with the identity plane. No padding, no
-    stripping, no int coercion; always a real ``bool`` (a ``str`` subclass with
-    a truthy non-bool ``__eq__`` cannot pass as a match)."""
-    return bool(isinstance(workspace_cik, str) and workspace_cik == identity.cik)
+    stripping, no int coercion; always a real ``bool``. The comparison is
+    ``str.__eq__`` bound on the identity's exact ``str`` (never the operand's
+    reflected ``__eq__``), so a ``str`` subclass with a truthy non-bool
+    ``__eq__`` cannot pass as a match and one with a falsy ``__eq__`` cannot
+    hide a real match."""
+    return isinstance(workspace_cik, str) and str.__eq__(identity.cik, workspace_cik) is True

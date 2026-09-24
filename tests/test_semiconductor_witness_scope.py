@@ -107,7 +107,23 @@ def test_non_string_slice_never_raises(probe) -> None:
     assert scope.omissions[0].startswith("slice_unknown:")
 
 
-@needs_artifacts
+def test_hostile_str_subclass_slice_key_never_raises() -> None:
+    class Hostile(str):
+        def __hash__(self):
+            raise RuntimeError("never hashed")
+
+        def __str__(self):
+            raise RuntimeError("never stringified")
+
+        def __format__(self, spec):
+            raise RuntimeError("never formatted")
+
+    scope = resolve_witness_scope(Hostile("unknown_slice"))
+    assert type(scope.slice_key) is str and scope.slice_key == "unknown_slice"
+    assert scope.identities == ()
+    assert scope.omissions == ("slice_unknown:unknown_slice", SLICE_SCOPE_UNOWNED)
+
+
 @pytest.mark.parametrize("slice_key", [*WITNESS_ROSTER, "unknown_slice"])
 def test_every_result_carries_slice_scope_unowned_exactly_once(slice_key) -> None:
     scope = resolve_witness_scope(slice_key)
@@ -148,8 +164,17 @@ def test_verify_workspace_cik_always_returns_a_real_bool() -> None:
         def __eq__(self, other):
             raise RuntimeError("never compared: type check comes first")
 
-    assert verify_workspace_cik(_TSM, TruthyEq("zzz")) is True or \
-        verify_workspace_cik(_TSM, TruthyEq("zzz")) is False
+    class FalsyEq(str):
+        def __eq__(self, other):  # a hostile str subclass: hides a real match
+            return []
+
+        __hash__ = str.__hash__
+
+    # Content decides, never the operand's reflected __eq__:
+    assert verify_workspace_cik(_TSM, TruthyEq("zzz")) is False
+    assert verify_workspace_cik(_TSM, TruthyEq("0001046179")) is True
+    assert verify_workspace_cik(_TSM, FalsyEq("0001046179")) is True
+    assert verify_workspace_cik(_TSM, FalsyEq("zzz")) is False
     assert isinstance(verify_workspace_cik(_TSM, TruthyEq("zzz")), bool)
     assert verify_workspace_cik(_TSM, RaisingEq()) is False
 
@@ -159,10 +184,25 @@ def test_verify_workspace_cik_always_returns_a_real_bool() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+_KNOWN_MASTER = IssuerMaster.from_records([
+    {"security_id": "SEC:US-XNYS-TSM", "issuer_id": "ISS:US-XNYS-TSM",
+     "issuer_state": "RESOLVED", "issuer_cik": TSM_CIK, "listing_key": "US-XNYS-TSM"},
+    {"security_id": "SEC:US-XNAS-ON", "issuer_id": "ISS:US-XNAS-ON",
+     "issuer_state": "RESOLVED", "issuer_cik": ON_CIK, "listing_key": "US-XNAS-ON"},
+])
+
+
+def _pin_master(monkeypatch) -> None:
+    """Isolate the graph-side refusal: the Data OS master is present and knows
+    both witnesses, so the only refusal left is the injected graph answer."""
+    monkeypatch.setattr(scope_module, "_load_issuer_master", lambda root=None: _KNOWN_MASTER)
+
+
 def test_unresolved_graph_identity_yields_identity_unverified(monkeypatch) -> None:
     def unresolved(node_id, asof=None):
         return {"node_id": node_id, "resolution_state": "UNRESOLVED", "issuer_id": None}
 
+    _pin_master(monkeypatch)
     monkeypatch.setattr(scope_module.identity_resolution, "resolve_graph_node_identity", unresolved)
     scope = resolve_witness_scope("hbm_packaging")
     assert scope.identities == ()
@@ -170,6 +210,7 @@ def test_unresolved_graph_identity_yields_identity_unverified(monkeypatch) -> No
 
 
 def test_resolved_row_without_issuer_id_yields_identity_unverified(monkeypatch) -> None:
+    _pin_master(monkeypatch)
     monkeypatch.setattr(
         scope_module.identity_resolution, "resolve_graph_node_identity",
         lambda node_id, asof=None: {"node_id": node_id, "resolution_state": "RESOLVED", "issuer_id": ""},
@@ -181,6 +222,7 @@ def test_owner_exception_yields_identity_unverified_not_a_raise(monkeypatch) -> 
     def boom(node_id, asof=None):
         raise scope_module.identity_resolution.UnknownGraphNodeError(node_id)
 
+    _pin_master(monkeypatch)
     monkeypatch.setattr(scope_module.identity_resolution, "resolve_graph_node_identity", boom)
     scope = resolve_witness_scope("hbm_packaging")
     assert scope.identities == () and scope.omissions == ("identity_unverified:TSM", SLICE_SCOPE_UNOWNED)
@@ -249,7 +291,6 @@ def test_no_ticker_equality_fallback_when_the_graph_node_is_unknown(monkeypatch)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-@needs_artifacts
 def test_no_result_exposes_mapping_learned_at() -> None:
     for cls in (WitnessIdentity, WitnessScope):
         assert "mapping_learned_at" not in {f.name for f in dataclasses.fields(cls)}
@@ -318,7 +359,12 @@ def test_module_imports_only_the_named_owners_and_writes_nothing() -> None:
     # The ONE parquet read lives in _load_issuer_master and reads the Data OS
     # master only — no direct theme_graph / other data/ read anywhere else.
     read_sites = [node for node in ast.walk(tree)
-                  if isinstance(node, ast.Call) and getattr(node.func, "attr", "") == "read_parquet"]
+                  if isinstance(node, ast.Call)
+                  and getattr(node.func, "attr", getattr(node.func, "id", "")) == "read_parquet"]
+    # ...and `from pandas import read_parquet` is not an escape hatch either.
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            assert "read_parquet" not in {alias.name for alias in node.names}
     assert len(read_sites) == 1
     loader = next(node for node in ast.walk(tree)
                   if isinstance(node, ast.FunctionDef) and node.name == "_load_issuer_master")
