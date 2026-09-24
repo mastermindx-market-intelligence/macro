@@ -1,0 +1,285 @@
+{
+  "artifact_type": "energy_fable_handoff_integrity_receipt",
+  "operation_key": "gmi-energy-fable-ceo-e2e-20260923-chairman-001",
+  "handoff_file": "agentos/handoffs/GMI-ENERGY-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md",
+  "handoff_git_blob": "f628167227613175cc3ede088f40423add7252fb",
+  "handoff_sha256": "1f7d92ca52c8c41cb72c5942635369fc526b066b68736d3f7f0cf7661d4a02bf",
+  "checkpoint_git_blob": "6696e76eff9f93a7822a5dc50afb4d340c6aa075",
+  "spec_git_blob": "d6dac80bead5a028da8d757b419c896b1b8437ed",
+  "plan_git_blob": "f7dc93621532b06e2478f90ef3876d6c31236242",
+  "passed": 53,
+  "failed": 0,
+  "receiver_assigned": false,
+  "pickup_ack_observed": false,
+  "start_observed": false,
+  "implementation_started": false,
+  "application_tests_run": 0,
+  "claim_limit": "Packet/source/receiver-semantics integrity only. This receipt does not assign Fable, create runtime work, establish shared-interface acceptance, start implementation, prove source rights, deploy product code or satisfy browser/production acceptance.",
+  "checks": [
+    {
+      "name": "handoff_blob_identity",
+      "pass": true,
+      "detail": "f628167227613175cc3ede088f40423add7252fb"
+    },
+    {
+      "name": "checkpoint_blob_identity",
+      "pass": true,
+      "detail": "6696e76eff9f93a7822a5dc50afb4d340c6aa075"
+    },
+    {
+      "name": "spec_blob_identity",
+      "pass": true,
+      "detail": "d6dac80bead5a028da8d757b419c896b1b8437ed"
+    },
+    {
+      "name": "plan_blob_identity",
+      "pass": true,
+      "detail": "f7dc93621532b06e2478f90ef3876d6c31236242"
+    },
+    {
+      "name": "metadata_operation_key_gmi_energy_fable_ceo_e2e_20260923_chairman_001",
+      "pass": true,
+      "detail": "operation_key: gmi-energy-fable-ceo-e2e-20260923-chairman-001"
+    },
+    {
+      "name": "metadata_parent_operation_gmi_energy_sector_research_20260923_sol_001",
+      "pass": true,
+      "detail": "parent_operation: gmi-energy-sector-research-20260923-sol-001"
+    },
+    {
+      "name": "metadata_preferred_avenue_fable",
+      "pass": true,
+      "detail": "preferred_avenue: Fable"
+    },
+    {
+      "name": "metadata_receiver_mode_open_pickup",
+      "pass": true,
+      "detail": "receiver_mode: OPEN_PICKUP"
+    },
+    {
+      "name": "metadata_receiver_binding_mode_capacity_selectable",
+      "pass": true,
+      "detail": "receiver_binding_mode: CAPACITY_SELECTABLE"
+    },
+    {
+      "name": "metadata_placement_state_waiting_capacity",
+      "pass": true,
+      "detail": "placement_state: WAITING_CAPACITY"
+    },
+    {
+      "name": "metadata_needs_placement_true",
+      "pass": true,
+      "detail": "needs_placement: true"
+    },
+    {
+      "name": "metadata_mission_complete_false",
+      "pass": true,
+      "detail": "mission_complete: false"
+    },
+    {
+      "name": "live_delivery_is_assignment",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_second_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pickup_start_distinct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_current_receiver_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_current_ack_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_current_start_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_exec_job_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "source_ref_a7d2b3049e5c",
+      "pass": true,
+      "detail": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157"
+    },
+    {
+      "name": "source_ref_b9c794cab7c5",
+      "pass": true,
+      "detail": "b9c794cab7c5a1d81f033fd27622aee4232f307d"
+    },
+    {
+      "name": "source_ref_6696e76eff9f",
+      "pass": true,
+      "detail": "6696e76eff9f93a7822a5dc50afb4d340c6aa075"
+    },
+    {
+      "name": "source_ref_33774cd8fb89",
+      "pass": true,
+      "detail": "33774cd8fb89ddcf156469dec60e90bfb0b2ef82"
+    },
+    {
+      "name": "source_ref_d6dac80bead5",
+      "pass": true,
+      "detail": "d6dac80bead5a028da8d757b419c896b1b8437ed"
+    },
+    {
+      "name": "source_ref_0166518d5b4a",
+      "pass": true,
+      "detail": "0166518d5b4a7ac4d9278b689225c5d193dbda0f"
+    },
+    {
+      "name": "source_ref_f7dc93621532",
+      "pass": true,
+      "detail": "f7dc93621532b06e2478f90ef3876d6c31236242"
+    },
+    {
+      "name": "source_ref_715eb2ff74a4",
+      "pass": true,
+      "detail": "715eb2ff74a424ef016025de6315bbd36ff38486"
+    },
+    {
+      "name": "source_ref_b7fa282e7165",
+      "pass": true,
+      "detail": "b7fa282e71650496ec6a5751499f7927268ff63b"
+    },
+    {
+      "name": "source_ref_07b0eeb44317",
+      "pass": true,
+      "detail": "07b0eeb44317b5bb104da46abef5f233cbe77703"
+    },
+    {
+      "name": "collision_7462",
+      "pass": true,
+      "detail": "#7462"
+    },
+    {
+      "name": "collision_7664",
+      "pass": true,
+      "detail": "#7664"
+    },
+    {
+      "name": "collision_7669",
+      "pass": true,
+      "detail": "#7669"
+    },
+    {
+      "name": "collision_7777",
+      "pass": true,
+      "detail": "#7777"
+    },
+    {
+      "name": "collision_7773",
+      "pass": true,
+      "detail": "#7773"
+    },
+    {
+      "name": "collision_7793",
+      "pass": true,
+      "detail": "#7793"
+    },
+    {
+      "name": "collision_7788",
+      "pass": true,
+      "detail": "#7788"
+    },
+    {
+      "name": "nuclear_first_vertical",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "primary_supplemental",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "power_next_expansion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "why_fable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "do_not_redo",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "research_pr_not_product_branch",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_second_owner_planes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "privacy_completion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "non_regression_completion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "real_update_liveness",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "r5_grammar",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_placeholders",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "research_hold",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "packet_ready_not_delivered",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "ene_requirements_source_intact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "plan_tasks_intact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "checkpoint_next_action_packet",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
