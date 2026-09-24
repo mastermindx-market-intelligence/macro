@@ -18,6 +18,84 @@ import pandas as pd
 log = logging.getLogger("stock_library")
 
 
+def _read_prophet_owner_read(index_path: Path, ticker: str) -> dict:
+    """Read the bounded Prophet plan-book facts Security State is allowed to see.
+
+    This adapter owns I/O only. It does not derive plan lifecycle: closed is
+    the Prophet owner's own open/closed fact. The compiler decides whether the
+    owner publication is current/stale/partial and how that maps to the public
+    Opportunity Context vocabulary.
+    """
+    empty = {
+        "disposition": "unavailable",
+        "published_asof": None,
+        "source_asof": None,
+        "source_delayed": None,
+        "source_unknown": None,
+        "current_plan_refs": [],
+    }
+    try:
+        payload = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return empty
+    if not isinstance(payload, dict) or payload.get("schema") != "prophet.index/v1":
+        return {**empty, "disposition": "conflicted"}
+
+    plans = payload.get("plans")
+    if not isinstance(plans, list):
+        return {**empty, "disposition": "conflicted"}
+
+    refs: list[str] = []
+    malformed_match = False
+    for row in plans:
+        if not isinstance(row, dict) or str(row.get("asset") or "").strip().upper() != ticker:
+            continue
+        closed = row.get("closed")
+        lifecycle = str(row.get("lifecycle_state") or "").strip().lower()
+        if not isinstance(closed, bool) or lifecycle not in {
+            "ready",
+            "entered",
+            "invalidated",
+            "resolved",
+        }:
+            malformed_match = True
+            continue
+        # Consume the Prophet owner's lifecycle truth; do not reconstruct it.
+        # READY/ENTERED are current plan episodes. INVALIDATED and RESOLVED are
+        # history/non-actionable context even when a legacy row's closed
+        # projection has not yet flipped true. Quarantined rows are withdrawn
+        # from live instructions regardless of lifecycle state.
+        if (
+            lifecycle not in {"ready", "entered"}
+            or closed
+            or row.get("integrity_status") == "quarantined"
+        ):
+            continue
+        plan_id = str(row.get("id") or "").strip()
+        if not plan_id:
+            malformed_match = True
+            continue
+        refs.append(plan_id)
+
+    published_asof = str(payload.get("asof") or "").strip() or None
+    source_asof = str(payload.get("source_asof") or "").strip() or None
+    result = {
+        "disposition": "conflicted" if malformed_match else "found",
+        "published_asof": published_asof,
+        "source_asof": source_asof,
+        "source_delayed": payload.get("source_delayed")
+        if isinstance(payload.get("source_delayed"), bool)
+        else None,
+        "source_unknown": payload.get("source_unknown")
+        if isinstance(payload.get("source_unknown"), bool)
+        else None,
+        "current_plan_refs": sorted(refs),
+    }
+    if published_asof is None:
+        result["disposition"] = "conflicted"
+    return result
+
+
 def _read_security_state_identity_rows(
     data_dir: Path,
     tickers: tuple[str, ...],
@@ -298,6 +376,7 @@ def _compile_security_state_for_ticker(
     find_event_id,
     load_workspace,
     fetch_manifest,
+    prophet_owner_read: dict | None = None,
 ) -> dict:
     """Compile one security's state after bounded owner/dependency reads.
 
@@ -336,7 +415,8 @@ def _compile_security_state_for_ticker(
     )
     return ss.compile_security_state(
         validator=validator, now=now, workspace=workspace, workspace_disposition=disposition,
-        blob=rec, manifest_sha256=manifest_sha256, k1_bundle=k1_bundle, **identity,
+        blob=rec, manifest_sha256=manifest_sha256, k1_bundle=k1_bundle,
+        prophet_owner_read=prophet_owner_read, **identity,
     )
 
 

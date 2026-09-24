@@ -4817,12 +4817,17 @@ def main() -> int:
                         break
                 continue
             try:
+                _ss_prophet_owner_read = _security_state_producer._read_prophet_owner_read(
+                    site / "prophet" / "index.json",
+                    _ss_ticker,
+                )
                 _ss_state = _security_state_producer._compile_security_state_for_ticker(
                     _ss_ticker, _ss_rec, now=_ss_now, identity=_ss_identity,
                     validator=_ss_validator,
                     find_event_id=_security_state_reader.find_current_event_id_for_company,
                     load_workspace=_security_state_reader.load_workspace_with_disposition,
                     fetch_manifest=_security_state_reader.fetch_generation_manifest,
+                    prophet_owner_read=_ss_prophet_owner_read,
                 )
             except Exception as e:  # noqa: BLE001 — never lose the blob write to this stage
                 log.warning("security_state.v1 compile failed for %s (%s)", _ss_ticker, e)

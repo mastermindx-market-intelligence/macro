@@ -205,6 +205,27 @@ while push_attempt; do
         echo "::error title=Prophet R2 arm hash mismatch::checkpointed index bytes do not match the proven build delta; R2 publication withheld"
         exit 1
       fi
+
+      # Only after the guarded Prophet checkpoint is durable and current may
+      # public Security State consume it. Reconstruct the exact accepted index
+      # from the commit rather than reading the dirty engine worktree's copy.
+      # This remains display-only and non-fatal to Prophet durability: the
+      # refresh itself is transactional and restores the prior AAPL/MSFT
+      # stockdata/pages if compile/render fails.
+      SECURITY_STATE_PROPHET_INDEX="$(mktemp "${RUNNER_TEMP}/security-state-prophet.XXXXXX.json")"
+      if git show "${CHECKPOINT_SHA}:site/prophet/index.json" > "$SECURITY_STATE_PROPHET_INDEX"; then
+        if ! (
+          cd "$GITHUB_WORKSPACE"
+          python -m scripts.refresh_security_state_prophet_outlook \
+            --prophet-index "$SECURITY_STATE_PROPHET_INDEX"
+        ); then
+          echo "::warning title=security-state Prophet refresh::accepted Prophet checkpoint is durable, but the bounded public Security State refresh failed; prior Security State bytes were preserved"
+        fi
+      else
+        echo "::warning title=security-state Prophet refresh::accepted Prophet index could not be reconstructed; prior Security State bytes were preserved"
+      fi
+      rm -f -- "$SECURITY_STATE_PROPHET_INDEX"
+
       echo "r2_ready=true" >> "$GITHUB_OUTPUT"
       echo "checkpoint_sha=$CHECKPOINT_SHA" >> "$GITHUB_OUTPUT"
       echo "index_sha256=$INDEX_SHA256" >> "$GITHUB_OUTPUT"

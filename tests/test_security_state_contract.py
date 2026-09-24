@@ -439,6 +439,193 @@ def test_case5_prophet_unavailable() -> None:
     assert prophet["reason"] == "PROPHET_OWNER_OUTPUT_ABSENT"
 
 
+
+
+def test_case5_prophet_current_owner_no_plan_is_known_absence() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet == {
+        "ref": None,
+        "refs": [],
+        "state": "NOT_APPLICABLE",
+        "reason": "PROPHET_NO_CURRENT_PLAN",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+    }
+
+
+def test_case5_prophet_current_owner_single_plan_is_available() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": ["AAPL-BULL-20260823"],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "AVAILABLE"
+    assert prophet["ref"] == "AAPL-BULL-20260823"
+    assert prophet["refs"] == ["AAPL-BULL-20260823"]
+    assert prophet["reason"] is None
+    assert prophet["published_asof"] == "2026-08-23"
+    assert prophet["source_asof"] == "2026-08-23"
+
+
+def test_case5_prophet_previous_publication_is_stale_not_current() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-22",
+        "source_asof": "2026-08-22",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": ["AAPL-BULL-20260822"],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "STALE"
+    assert prophet["ref"] == "AAPL-BULL-20260822"
+    assert prophet["reason"] == "PROPHET_OWNER_OUTPUT_STALE"
+
+
+def test_case5_prophet_delayed_owner_output_is_partial_not_clean_absence() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-20",
+        "source_delayed": True,
+        "source_unknown": False,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "PARTIAL"
+    assert prophet["ref"] is None
+    assert prophet["reason"] == "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED"
+
+
+def test_case5_prophet_multiple_current_plans_remain_visible_without_inventing_precedence() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": ["AAPL-BEAR-20260823", "AAPL-BULL-20260823"],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "AVAILABLE"
+    assert prophet["ref"] is None
+    assert prophet["refs"] == ["AAPL-BEAR-20260823", "AAPL-BULL-20260823"]
+    assert prophet["reason"] == "PROPHET_MULTIPLE_CURRENT_PLANS"
+
+
+def test_case5_prophet_future_publication_clock_conflicts() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-24",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "CONFLICTED"
+    assert prophet["reason"] == "PROPHET_OWNER_CLOCK_FUTURE"
+
+
+
+def test_case5_prophet_missing_source_freshness_is_partial() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": None,
+        "source_delayed": None,
+        "source_unknown": None,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "PARTIAL"
+    assert prophet["reason"] == "PROPHET_SOURCE_UNKNOWN"
+
+
+def test_case5_prophet_source_clock_after_publication_conflicts() -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-24",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "CONFLICTED"
+    assert prophet["reason"] == "PROPHET_OWNER_CONFLICTED"
+
+
+
+def test_case5_prophet_uses_eastern_decision_day_not_utc_midnight() -> None:
+    inp = _golden_input()
+    # 01:00 UTC is still the prior US market-calendar day. A publication stamped
+    # for that US day is current, not spuriously stale at UTC midnight.
+    inp["now"] = "2026-08-24T01:00:00Z"
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": ["AAPL-BULL-20260823"],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "AVAILABLE"
+    assert prophet["ref"] == "AAPL-BULL-20260823"
+
+
+def test_case5_prophet_publication_clock_is_independent_of_market_data_asof() -> None:
+    inp = _golden_input()
+    # Real production can publish a current Decision Spine while the stock blob
+    # carries an older market-data date. Prophet owns its own publication/source
+    # clocks, so market_at must not make a current owner publication look FUTURE.
+    inp["now"] = "2026-09-24T23:39:01Z"
+    inp["blob"] = dict(inp["blob"])
+    inp["blob"]["asof"] = "2026-09-22"
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-09-24",
+        "source_asof": "2026-09-21",
+        "source_delayed": True,
+        "source_unknown": False,
+        "current_plan_refs": [],
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet["state"] == "PARTIAL"
+    assert prophet["ref"] is None
+    assert prophet["reason"] == "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED"
+
 def test_case6_entry_unavailable() -> None:
     state = ss.compile_security_state(**_load("entry_unavailable_input.json"))
     entry = state["legs"]["opportunity_context"]["entry"]

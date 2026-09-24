@@ -1583,6 +1583,102 @@ def test_m1_subread_reason_is_house_copy_never_english_on_zh_page() -> None:
     assert _SS_COVERAGE_FALLBACK["zh"] in unmapped_zh
 
 
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "PROPHET_NO_CURRENT_PLAN",
+        "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED",
+        "PROPHET_SOURCE_DELAYED",
+        "PROPHET_SOURCE_UNKNOWN",
+        "PROPHET_OWNER_OUTPUT_STALE",
+        "PROPHET_OWNER_CLOCK_FUTURE",
+        "PROPHET_OWNER_CONFLICTED",
+        "PROPHET_MULTIPLE_CURRENT_PLANS",
+    ],
+)
+def test_prophet_owner_reason_codes_have_bilingual_house_copy(code: str) -> None:
+    from scripts.build_ticker_pages import _SS_REASON, _ss_map_subread_reason
+
+    en, zh = _ss_map_subread_reason(code)
+    assert en == _SS_REASON[code]["en"]
+    assert zh == _SS_REASON[code]["zh"]
+    assert en != zh
+    assert code not in en
+    assert code not in zh
+
+
+
+def test_prophet_available_ref_reaches_decision_spine_drilldown() -> None:
+    contract = _contract(legs={
+        **_contract()["legs"],
+        "opportunity_context": {
+            "prophet": {
+                "ref": "AAPL-BULL-20260823",
+                "state": "AVAILABLE",
+                "reason": None,
+                "published_asof": "2026-08-23",
+                "source_asof": "2026-08-23",
+            },
+            "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
+            "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
+            "dislocation": {"ref": None, "state": "NOT_COVERED"},
+            "coverage_state": "AVAILABLE",
+        },
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    prophet = next(
+        s for s in _axis(view, "opportunity_context")["subreads"]
+        if s["en"] == "Prophet outlook"
+    )
+    assert prophet["ref"] == "AAPL-BULL-20260823"
+
+    en_html = _render_section(view, lang="en")
+    zh_html = _render_section(view, lang="zh")
+    assert "Owner reference" in en_html
+    assert "所有者引用" in zh_html
+    assert "AAPL-BULL-20260823" in en_html
+    assert "AAPL-BULL-20260823" in zh_html
+
+
+
+def test_prophet_multiple_strategy_refs_remain_visible_without_precedence() -> None:
+    contract = _contract(legs={
+        **_contract()["legs"],
+        "opportunity_context": {
+            "prophet": {
+                "ref": None,
+                "refs": ["AAPL-CYCLE-20260823", "AAPL-TACTICAL-20260823"],
+                "state": "AVAILABLE",
+                "reason": "PROPHET_MULTIPLE_CURRENT_PLANS",
+                "published_asof": "2026-08-23",
+                "source_asof": "2026-08-23",
+            },
+            "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
+            "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
+            "dislocation": {"ref": None, "state": "NOT_COVERED"},
+            "coverage_state": "AVAILABLE",
+        },
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    prophet = next(
+        s for s in _axis(view, "opportunity_context")["subreads"]
+        if s["en"] == "Prophet outlook"
+    )
+    assert prophet["ref"] == ""
+    assert prophet["refs"] == ["AAPL-CYCLE-20260823", "AAPL-TACTICAL-20260823"]
+    assert prophet["cov"] == "AVAILABLE"
+
+    en_html = _render_section(view, lang="en")
+    zh_html = _render_section(view, lang="zh")
+    assert "Owner references" in en_html
+    assert "所有者引用" in zh_html
+    assert "AAPL-CYCLE-20260823" in en_html
+    assert "AAPL-TACTICAL-20260823" in en_html
+
 def test_pinned_identity_not_owner_read_house_copy_is_the_frozen_pair() -> None:
     """REQUIRED 4: PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE is a frozen
     EN/ZH pair at parity, not pipeline jargon.

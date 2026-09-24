@@ -7,13 +7,17 @@ not rebase the engine's dirty working tree to get there.
 """
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 
 from scripts.workflow_run_source import resolve_run_source
+from scripts import refresh_security_state_prophet_outlook as refresh_mod
+from scripts import security_state_producer as producer
 
 ROOT = Path(__file__).resolve().parents[1]
 DAILY = ROOT / ".github" / "workflows" / "daily.yml"
@@ -784,3 +788,488 @@ def test_heatmap_reference_wedge_is_bounded_and_cannot_skip_prophet_again() -> N
     assert heatmap["timeout-minutes"] == 15
     assert heatmap["continue-on-error"] is True
     assert "--refresh-caps-only" in heatmap["run"]
+
+# ---------------------------------------------------------------------------
+# Security State post-Prophet checkpoint refresh
+# ---------------------------------------------------------------------------
+
+SS_TICKERS = ("AAPL", "MSFT")
+
+
+def _ss_site(tmp_path: Path) -> Path:
+    site = tmp_path / "site"
+    stockdir = site / "stockdata"
+    pages = site / "stocks"
+    prophet = site / "prophet"
+    stockdir.mkdir(parents=True)
+    pages.mkdir(parents=True)
+    prophet.mkdir(parents=True)
+
+    rows = []
+    for ticker in SS_TICKERS:
+        rec = {
+            "ticker": ticker,
+            "asof": "2026-09-24",
+            "security_state": {
+                "old": ticker,
+                "coverage": {"overall_state": "AVAILABLE"},
+                "dominant_degradation": "NONE",
+                "generated_at": "2026-09-24T14:00:00+00:00",
+                "content_sha256": f"old-{ticker}",
+                "legs": {
+                    "opportunity_context": {
+                        "prophet": {
+                            "ref": None,
+                            "state": "STALE",
+                            "reason": "PROPHET_OWNER_OUTPUT_STALE",
+                        }
+                    }
+                },
+            },
+        }
+        (stockdir / f"{ticker}.json").write_text(json.dumps(rec), encoding="utf-8")
+        (pages / f"{ticker}.html").write_text(f"OLD-{ticker}", encoding="utf-8")
+        rows.append({"t": ticker, "security_state": {"old": ticker}})
+    (stockdir / "index.json").write_text(json.dumps(rows), encoding="utf-8")
+    (prophet / "index.json").write_text(
+        json.dumps({"schema": "prophet.index/v1", "asof": "2026-09-24", "plans": []}),
+        encoding="utf-8",
+    )
+    return site
+
+
+def _ss_patch_owner_stack(monkeypatch: pytest.MonkeyPatch, seen: list[tuple[str, object]]) -> None:
+    monkeypatch.setattr(refresh_mod.producer, "_load_security_state_validator", lambda _p: object())
+    monkeypatch.setattr(
+        refresh_mod.producer,
+        "_read_security_state_identity_rows",
+        lambda _d, tickers, decision_date: (
+            {ticker: {"subject": object()} for ticker in tickers},
+            {},
+        ),
+    )
+    monkeypatch.setattr(
+        refresh_mod.producer,
+        "_read_prophet_owner_read",
+        lambda _p, ticker: {
+            "disposition": "found",
+            "published_asof": "2026-09-24",
+            "source_asof": "2026-09-24",
+            "source_delayed": False,
+            "source_unknown": False,
+            "current_plan_refs": [f"{ticker}-PLAN"],
+        },
+    )
+
+    def _compile(ticker: str, _rec: dict, **kwargs: object) -> dict:
+        seen.append((ticker, kwargs["prophet_owner_read"]))
+        state = json.loads(json.dumps(_rec["security_state"]))
+        state["generated_at"] = str(kwargs["now"])
+        state["content_sha256"] = f"new-{ticker}"
+        state["legs"]["opportunity_context"]["prophet"] = {
+            "ref": f"{ticker}-PLAN",
+            "refs": [f"{ticker}-PLAN"],
+            "state": "AVAILABLE",
+            "reason": None,
+        }
+        return state
+
+    monkeypatch.setattr(refresh_mod.producer, "_compile_security_state_for_ticker", _compile)
+
+
+def test_refresh_reuses_owner_read_and_renders_only_allowlisted_pages(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site = _ss_site(tmp_path)
+    seen: list[tuple[str, object]] = []
+    _ss_patch_owner_stack(monkeypatch, seen)
+
+    def _render(*, site: Path, page_dir: Path, tickers: tuple[str, ...]) -> None:
+        assert site == page_dir.parent
+        assert tickers == SS_TICKERS
+        for ticker in tickers:
+            (page_dir / f"{ticker}.html").write_text(
+                f"NEW-{ticker}", encoding="utf-8"
+            )
+
+    monkeypatch.setattr(refresh_mod, "_render_allowlisted_pages", _render)
+
+    got = refresh_mod.refresh(
+        site=site,
+        data_dir=tmp_path / "data",
+        now="2026-09-24T15:00:00+00:00",
+    )
+
+    assert got == ["AAPL", "MSFT"]
+    assert [ticker for ticker, _read in seen] == ["AAPL", "MSFT"]
+    for ticker, owner_read in seen:
+        assert owner_read["current_plan_refs"] == [f"{ticker}-PLAN"]
+        rec = json.loads((site / "stockdata" / f"{ticker}.json").read_text())
+        assert rec["security_state"]["generated_at"] == "2026-09-24T15:00:00+00:00"
+        assert (site / "stocks" / f"{ticker}.html").read_text() == f"NEW-{ticker}"
+
+    index = json.loads((site / "stockdata" / "index.json").read_text())
+    assert {row["t"]: row["security_state"]["overall_state"] for row in index} == {
+        "AAPL": "AVAILABLE",
+        "MSFT": "AVAILABLE",
+    }
+
+
+def test_refresh_rolls_back_stockdata_index_and_pages_when_render_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site = _ss_site(tmp_path)
+    seen: list[tuple[str, object]] = []
+    _ss_patch_owner_stack(monkeypatch, seen)
+
+    before = {
+        path: path.read_bytes()
+        for path in [
+            *(site / "stockdata" / f"{ticker}.json" for ticker in SS_TICKERS),
+            site / "stockdata" / "index.json",
+            *(site / "stocks" / f"{ticker}.html" for ticker in SS_TICKERS),
+        ]
+    }
+
+    def _fail_render(*, site: Path, page_dir: Path, tickers: tuple[str, ...]) -> None:
+        assert tickers == SS_TICKERS
+        (page_dir / "AAPL.html").write_text("PARTIAL-NEW", encoding="utf-8")
+        raise RuntimeError("render failed")
+
+    monkeypatch.setattr(refresh_mod, "_render_allowlisted_pages", _fail_render)
+
+    with pytest.raises(RuntimeError, match="render failed"):
+        refresh_mod.refresh(
+            site=site,
+            data_dir=tmp_path / "data",
+            now="2026-09-24T15:00:00+00:00",
+        )
+
+    for path, prior in before.items():
+        assert path.read_bytes() == prior
+
+
+
+
+
+
+def test_refresh_refuses_any_non_prophet_state_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site = _ss_site(tmp_path)
+    seen: list[tuple[str, object]] = []
+    _ss_patch_owner_stack(monkeypatch, seen)
+
+    before = {
+        path: path.read_bytes()
+        for path in [
+            *(site / "stockdata" / f"{ticker}.json" for ticker in SS_TICKERS),
+            site / "stockdata" / "index.json",
+            *(site / "stocks" / f"{ticker}.html" for ticker in SS_TICKERS),
+        ]
+    }
+
+    def _drift(ticker: str, rec: dict, **kwargs: object) -> dict:
+        state = dict(rec["security_state"])
+        state["generated_at"] = str(kwargs["now"])
+        state["content_sha256"] = f"new-{ticker}"
+        state["dominant_degradation"] = "PARTIAL"
+        return state
+
+    monkeypatch.setattr(
+        refresh_mod.producer,
+        "_compile_security_state_for_ticker",
+        _drift,
+    )
+    monkeypatch.setattr(
+        refresh_mod,
+        "_render_allowlisted_pages",
+        lambda **_kwargs: None,
+    )
+
+    with pytest.raises(RuntimeError, match="changed non-Prophet state"):
+        refresh_mod.refresh(
+            site=site,
+            data_dir=tmp_path / "data",
+            now="2026-09-24T15:00:00+00:00",
+        )
+
+    for path, prior in before.items():
+        assert path.read_bytes() == prior
+
+def test_refresh_refuses_missing_allowlisted_index_row_without_partial_publish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site = _ss_site(tmp_path)
+    seen: list[tuple[str, object]] = []
+    _ss_patch_owner_stack(monkeypatch, seen)
+
+    index_path = site / "stockdata" / "index.json"
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    index_path.write_text(
+        json.dumps([row for row in index if row["t"] != "MSFT"]),
+        encoding="utf-8",
+    )
+    before = {
+        path: path.read_bytes()
+        for path in [
+            *(site / "stockdata" / f"{ticker}.json" for ticker in SS_TICKERS),
+            index_path,
+            *(site / "stocks" / f"{ticker}.html" for ticker in SS_TICKERS),
+        ]
+    }
+    monkeypatch.setattr(
+        refresh_mod,
+        "_render_allowlisted_pages",
+        lambda **_kwargs: None,
+    )
+
+    with pytest.raises(RuntimeError, match="stockdata index has no row for MSFT"):
+        refresh_mod.refresh(
+            site=site,
+            data_dir=tmp_path / "data",
+            now="2026-09-24T15:00:00+00:00",
+        )
+
+    for path, prior in before.items():
+        assert path.read_bytes() == prior
+
+
+
+def test_render_allowlisted_pages_uses_context_only_and_preserves_non_security_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site = tmp_path / "site"
+    page_dir = site / "stocks"
+    page_dir.mkdir(parents=True)
+    hub = page_dir / "index.html"
+    hub.write_text("UNCHANGED-HUB", encoding="utf-8")
+    seen: dict[str, object] = {}
+
+    for ticker in SS_TICKERS:
+        (page_dir / f"{ticker}.html").write_text(
+            (
+                f"BEFORE-{ticker}"
+                f'<section id="security-state"><div>OLD-{ticker}<div>NESTED</div></div></section>'
+                f'<div class="dsr-dlg" id="dlg-ss-state"><div>OLD-DIALOG-{ticker}</div></div>'
+                f"AFTER-{ticker}"
+            ),
+            encoding="utf-8",
+        )
+
+    def _run(**kwargs: object) -> int:
+        seen.update(kwargs)
+        assert kwargs["site"] == site
+        assert kwargs["context_only"] is True
+        assert kwargs["only_tickers"] == set(SS_TICKERS)
+        context_dir = kwargs["dump_context"]
+        assert isinstance(context_dir, Path)
+        context_dir.mkdir(parents=True, exist_ok=True)
+        for ticker in SS_TICKERS:
+            (context_dir / f"{ticker}.json").write_text(
+                json.dumps({"ticker": ticker}),
+                encoding="utf-8",
+            )
+        return 0
+
+    def _render(context: dict) -> str:
+        ticker = str(context["ticker"])
+        return (
+            f"NEW-SHELL-{ticker}"
+            f'<section id="security-state"><div>NEW-{ticker}<div>NESTED-NEW</div></div></section>'
+            f'<div class="dsr-dlg" id="dlg-ss-state"><div>NEW-DIALOG-{ticker}</div></div>'
+            f"NEW-TAIL-{ticker}"
+        )
+
+    monkeypatch.setattr(refresh_mod.build_ticker_pages, "run", _run)
+    monkeypatch.setattr(refresh_mod, "_render_context_html", _render)
+
+    refresh_mod._render_allowlisted_pages(
+        site=site,
+        page_dir=page_dir,
+        tickers=SS_TICKERS,
+    )
+
+    assert hub.read_text(encoding="utf-8") == "UNCHANGED-HUB"
+    for ticker in SS_TICKERS:
+        html = (page_dir / f"{ticker}.html").read_text(encoding="utf-8")
+        assert html.startswith(f"BEFORE-{ticker}")
+        assert html.endswith(f"AFTER-{ticker}")
+        assert f"NEW-{ticker}" in html
+        assert f"NEW-DIALOG-{ticker}" in html
+        assert f"OLD-{ticker}" not in html
+        assert f"OLD-DIALOG-{ticker}" not in html
+        assert f"NEW-SHELL-{ticker}" not in html
+        assert f"NEW-TAIL-{ticker}" not in html
+    assert seen["out"] != page_dir
+
+def test_checkpoint_wiring_refreshes_only_from_the_durable_accepted_prophet_index() -> None:
+    root = Path(__file__).resolve().parents[1]
+    nightly = (root / "scripts" / "ci" / "daily_engine_prophet_nightly.sh").read_text(
+        encoding="utf-8"
+    )
+    checkpoint = (root / "scripts" / "ci" / "daily_engine_prophet_checkpoint.sh").read_text(
+        encoding="utf-8"
+    )
+
+    refresh = "python -m scripts.refresh_security_state_prophet_outlook"
+    assert refresh not in nightly
+    assert refresh in checkpoint
+
+    hash_guard = 'if [ "$CHECKPOINT_INDEX_SHA256" != "$INDEX_SHA256" ]; then'
+    accepted_blob = 'git show "${CHECKPOINT_SHA}:site/prophet/index.json"'
+    guarded_blob_i = checkpoint.index(accepted_blob, checkpoint.index(hash_guard))
+    assert checkpoint.index(hash_guard) < guarded_blob_i
+    assert guarded_blob_i < checkpoint.index(refresh)
+    assert "--prophet-index" in checkpoint
+    assert "prior Security State bytes were preserved" in checkpoint
+
+# ---------------------------------------------------------------------------
+# Security State bounded Prophet owner read
+# ---------------------------------------------------------------------------
+
+def _ss_write_prophet_index(path: Path, *, plans: list[dict], **overrides: object) -> None:
+    payload = {
+        "schema": "prophet.index/v1",
+        "asof": "2026-09-24",
+        "source_asof": "2026-09-24",
+        "source_delayed": False,
+        "source_unknown": False,
+        "plans": plans,
+    }
+    payload.update(overrides)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_owner_read_selects_only_explicitly_open_plan_refs(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[
+            {"id": "MSFT-BULL-OLD", "asset": "MSFT", "closed": True, "lifecycle_state": "resolved"},
+            {"id": "MSFT-BULL-NOW", "asset": "MSFT", "closed": False, "lifecycle_state": "entered"},
+            {"id": "AAPL-BULL-NOW", "asset": "AAPL", "closed": False, "lifecycle_state": "ready"},
+        ],
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got == {
+        "disposition": "found",
+        "published_asof": "2026-09-24",
+        "source_asof": "2026-09-24",
+        "source_delayed": False,
+        "source_unknown": False,
+        "current_plan_refs": ["MSFT-BULL-NOW"],
+    }
+
+
+def test_owner_read_cleanly_distinguishes_no_current_plan(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[
+            {"id": "MSFT-BULL-OLD", "asset": "MSFT", "closed": True, "lifecycle_state": "resolved"},
+        ],
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "found"
+    assert got["current_plan_refs"] == []
+
+
+def test_owner_read_preserves_delayed_source_clock(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[],
+        source_asof="2026-09-21",
+        source_delayed=True,
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["published_asof"] == "2026-09-24"
+    assert got["source_asof"] == "2026-09-21"
+    assert got["source_delayed"] is True
+
+
+def test_owner_read_refuses_malformed_matching_plan_instead_of_calling_absence(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(path, plans=[{"id": "MSFT-BULL-UNKNOWN", "asset": "MSFT"}])
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "conflicted"
+    assert got["current_plan_refs"] == []
+
+
+
+
+def test_owner_read_excludes_invalidated_episode_even_when_closed_flag_is_false(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[
+            {
+                "id": "MSFT-BULL-INVALID",
+                "asset": "MSFT",
+                "closed": False,
+                "lifecycle_state": "invalidated",
+            },
+        ],
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "found"
+    assert got["current_plan_refs"] == []
+
+
+def test_owner_read_refuses_unknown_matching_lifecycle(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[
+            {
+                "id": "MSFT-BULL-UNKNOWN",
+                "asset": "MSFT",
+                "closed": False,
+                "lifecycle_state": "mystery",
+            },
+        ],
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "conflicted"
+    assert got["current_plan_refs"] == []
+
+
+def test_owner_read_excludes_quarantined_open_episode(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    _ss_write_prophet_index(
+        path,
+        plans=[
+            {
+                "id": "MSFT-BULL-QUARANTINED",
+                "asset": "MSFT",
+                "closed": False,
+                "lifecycle_state": "entered",
+                "integrity_status": "quarantined",
+            },
+        ],
+    )
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "found"
+    assert got["current_plan_refs"] == []
+
+def test_owner_read_unavailable_when_index_missing(tmp_path: Path) -> None:
+    got = producer._read_prophet_owner_read(tmp_path / "missing.json", "MSFT")
+    assert got == {
+        "disposition": "unavailable",
+        "published_asof": None,
+        "source_asof": None,
+        "source_delayed": None,
+        "source_unknown": None,
+        "current_plan_refs": [],
+    }
+
+
+def test_owner_read_refuses_wrong_index_schema(tmp_path: Path) -> None:
+    path = tmp_path / "index.json"
+    path.write_text(json.dumps({"schema": "wrong", "plans": []}), encoding="utf-8")
+    got = producer._read_prophet_owner_read(path, "MSFT")
+    assert got["disposition"] == "conflicted"
+    assert got["current_plan_refs"] == []
