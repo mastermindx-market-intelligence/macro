@@ -223,3 +223,33 @@ No network calls.
 
 V1-CORE merged + green is **not** `V1 PROVEN_LIVE`. It is the maximal lawful V1 subset under current
 custody. Legs 6–9 return to Sol as the exact external blocker with the receipts in §1.
+
+## 8a. Integration rulings (principal; made during delivery, bind both packets)
+
+Two conflicts surfaced between the T1 contract and the T2 projection while the packets were being
+built in parallel. Neither worker owns both sides, so the principal rules:
+
+**Ruling A — a result envelope is emitted only when its inputs exist.**
+`results[].input_refs` is `minItems: 1`, so a "result" with no inputs cannot satisfy the contract and
+must not be invented. The two states are distinct and must stay distinct:
+- inputs **absent** (a fact or its prior-period pair is missing) -> emit **no** result for that key and
+  record the key in `degraded_dependencies`. This is R15's dependency-local omission.
+- inputs **present** but the computation is refused (nonpositive denominator, or a declared rounding
+  envelope that includes zero) -> emit the result with `value_text: null`, a populated
+  `withheld_reason`, and real `input_refs`. This is R15's withholding.
+With zero facts, `results` is therefore `[]`, `degraded_dependencies` names every unmet key, and
+`availability` is `unavailable` — never `ready`, and never a phantom result whose value is null
+because nothing was ever read. A withheld result is an answer about inputs that exist; an omitted
+result is the absence of inputs.
+
+**Ruling B — `value_decimal` never reaches the emitted document.**
+`Decimal` is the required internal arithmetic carrier and must stay internal: it is not
+JSON-serializable, and the contract sets `additionalProperties: false`, so any `value_decimal` key in
+an emitted result fails validation. Carry it in intermediate structures if useful, but strip it when
+building the document. `value_text` is the only emitted value, and it stays exact decimal text.
+
+**Also adopted from the merged Finance idiom:** the document carries an `authority_caps` object whose
+booleans are all `const: false` — `rank`, `gate`, `size`, `trade`, `create_theme`,
+`change_membership`, `write_graph`, `admit_source`. This turns R15's "no ranking, entry, gating,
+sizing or origination authority" from an absence into a machine-checked assertion, and it is how the
+sibling vertical already on `main` expresses the same constraint.
