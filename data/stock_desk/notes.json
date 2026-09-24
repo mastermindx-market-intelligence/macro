@@ -1,164 +1,154 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-19T21:57:57.809277+00:00",
+  "as_of": "2026-09-22",
+  "generated_at": "2026-09-23T21:46:04.271020+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-EGBN-20260919215757-1",
-      "ticker": "EGBN",
-      "name": null,
-      "lean": "constructive",
+      "id": "2026-09-22-FIX-20260923214604-1",
+      "ticker": "FIX",
+      "name": "Comfort Systems USA",
+      "lean": "neutral",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "The verdict is constructive on a building base, and the entry axis is unblocked with a strong off-high/urgency read; the SUE leg is fresh and positive, which is the one validated selection leg in the profile.",
+      "thesis": "Leader verdict with an accounting warning and a basket below trend; the engine flags a BUY SETUP at half size, but the accounting flag and macro headwind leave no validated edge to chase.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "entry axis z=0.91, blocked=false",
-        "SUE z=0.96, fresh_days=42 (validated leg)",
-        "board state: TURN SIGNALED, off-high only -3.2%"
+        "verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "entry_tag: HALF SIZE / swing low printed, back above 10dma",
+        "accounting: warn; industrials basket below trend (caution)"
       ],
-      "dissent": "Accounting quality is flagged watch and the revision leg is negative, so fundamental follow-through may be weaker than the price signal suggests.",
+      "dissent": "SUE z=2.04 (validated tier) and insider buying could mark a genuine post-earnings drift that extends despite the accounting flag.",
       "falsifier": {
-        "text": "The turn signal fails and EGBN breaks back below its base without reclaiming it within a week.",
+        "text": "Price sustains above the 50dma and the accounting flag is resolved clean on the next filing",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "EGBN",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-21",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
+    },
+    {
+      "id": "2026-09-22-VTRS-20260923214604-2",
+      "ticker": "VTRS",
+      "name": "Viatris",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Constructive base-building verdict with positive technicals (above 50/200dma) but weak SUE (z=-0.45) and an accounting watch; support is real but the edge is modest.",
+      "evidence": [
+        "verdict: Constructive \u2014 building a base",
+        "above 50dma and 200dma; off 52w high only -3.5%",
+        "SUE z=-0.45, revisions z=-0.38 (no earnings tailwind)",
+        "accounting: watch"
+      ],
+      "dissent": "Health Care basket is deteriorating and macro liquidity is contracting, could stall the base.",
+      "falsifier": {
+        "text": "Price breaks below the 200dma",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-21",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-SONO-20260919215757-2",
-      "ticker": "SONO",
-      "name": null,
+      "id": "2026-09-22-TRLV-20260923214604-3",
+      "ticker": "TRLV",
+      "name": "Trulieve Cannabis",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is wait-for-pullback with cycle_blocked=true and entry_blocked; extended 48% above trend with left-translated prior cycle argues against new money, but no bearish signal to short.",
+      "evidence": [
+        "verdict: Extended \u2014 wait for a pullback",
+        "entry_blocked: true; cycle_blocked: true",
+        "left translation (prior cycle topped early)",
+        "48% above 200dma"
+      ],
+      "dissent": "Momentum can persist; extreme off-high -3.8% means it hasn't broken down and prior cycle failure may not repeat.",
+      "falsifier": {
+        "text": "Price pulls back to the 10dma and holds with RSI resetting below 55",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-21",
+      "engine_verdict": "Extended \u2014 wait for a pullback"
+    },
+    {
+      "id": "2026-09-22-MEDP-20260923214604-4",
+      "ticker": "MEDP",
+      "name": "Medpace",
       "lean": "constructive",
       "conviction": "medium",
       "horizon_d": 21,
-      "thesis": "Strongest confluence on the board: fresh validated insider buying and a live, positive validated SUE leg, plus clean accounting and an unblocked entry with a fresh-buy board state; this is a watch-and-ride constructive lean, not a chase.",
+      "thesis": "FRESH BUY with bullish regime and weekly agreement; clean accounting, high quality (z=1.88), SUE z=3.0 validated \u2014 a rare genuine edge.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base, band=constructive",
-        "insider z=1.5 (validated), SUE z=0.57 fresh 22d (validated)",
-        "quality z=1.94, accounting clean",
-        "board state: FRESH BUY, entry blocked=false"
+        "ladder_state: FRESH BUY / BUY ZONE",
+        "regime_label: BULLISH; weekly timeframe agrees",
+        "accounting: clean; quality z=1.88",
+        "SUE z=3.0 (validated)"
       ],
-      "dissent": "Off-high is -16.1%, so a meaningful part of the move may already be in the market and a broad risk-off tape would hit this small-cap hard.",
+      "dissent": "Investor phase late and at 52w high, so any macro shock hits hardest.",
       "falsifier": {
-        "text": "SONO rolls over and breaks below its pre-FRESH BUY consolidation low without recovering.",
+        "text": "Price closes below the 10dma",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "SONO",
+          "subject_ticker": "MEDP",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 21
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-21",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-WAT-20260919215757-3",
-      "ticker": "WAT",
-      "name": null,
+      "id": "2026-09-22-VKTX-20260923214604-5",
+      "ticker": "VKTX",
+      "name": "Viking Therapeutics",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "The engine itself is neutral with no clear edge, and the SUE leg is sharply negative; the name is extended and the only caution is basket deterioration, so there is no validated leg to support a directional lean.",
+      "thesis": "FRESH BUY signal with daily momentum crossed up but verdict is neutral \u2014 no clear edge; residual momentum z=0.06 is nil and the basket is deteriorating.",
       "evidence": [
         "verdict: Neutral \u2014 no clear edge",
-        "SUE z=-2.81 fresh 15d (validated, negative)",
-        "board state: HOLD \u2014 EXTENDED, off-high 0%",
-        "cautions: Health Care basket deteriorating"
+        "ladder_state: FRESH BUY / BUY ZONE",
+        "basket caution: GLP-1 & Obesity deteriorating",
+        "momentum z=0.06 (context only)"
       ],
-      "dissent": "Momentum is still mildly positive and extended leaders can keep grinding higher in a calm risk-on tape.",
+      "dissent": "Vol-squeeze entry and early cycle low could compound a short squeeze.",
       "falsifier": {
-        "text": "WAT breaks out of its extension to new highs on rising relative strength and holds them.",
+        "text": "Price falls back below the 10dma",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-21",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-PLUS-20260919215757-4",
-      "ticker": "PLUS",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The verdict is neutral with no clear edge: a negative validated SUE leg and negative momentum are only partly offset by positive revisions, and accounting quality is flagged watch, so the risk controls argue for standing aside.",
-      "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "SUE z=-1.52 fresh 19d (validated, negative)",
-        "quality z=-1.2, accounting watch",
-        "momentum z=-0.34 (context leg, negative)"
-      ],
-      "dissent": "Entry is strong and unblocked with a tailwind, and a fresh-buy signal can precede an oversold bounce.",
-      "falsifier": {
-        "text": "PLUS gaps up on volume and clears its recent high without fading.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-17-GATX-20260919215757-5",
-      "ticker": "GATX",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Constructive building-a-base verdict with a positive validated SUE leg and an unblocked, off-high entry; the turn signal supports a patient constructive lean even though accounting quality needs watching.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "SUE z=0.66 fresh 19d (validated, positive)",
-        "entry z=0.91, blocked=false, off-high -10.2%",
-        "board state: TURN SIGNALED"
-      ],
-      "dissent": "Momentum is flat and accounting is flagged watch, so this may be a value trap that fails to turn.",
-      "falsifier": {
-        "text": "The turn signal fails and GATX makes a new relative low against the S&P 500.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "GATX",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-USPH-20260919215757-6",
+      "id": "2026-09-22-USPH-20260923214604-6",
       "ticker": "USPH",
-      "name": null,
+      "name": "U.S. Physical Therapy, Inc.",
       "lean": "cautious",
-      "conviction": "medium",
+      "conviction": "low",
       "horizon_d": 21,
-      "thesis": "This is a genuine lagging/relative-weakness name, not merely extended: the validated SUE leg is negative, revisions and momentum are both negative, and accounting is flagged watch, so the risk call supports a cautious lean vs the S&P 500.",
+      "thesis": "Verdict is Lagging \u2014 relative weakness; SUE z=-1.28 with accounting watch and small cap risk makes this the weakest name on the board, despite the turn signal.",
       "evidence": [
         "verdict: Lagging \u2014 relative weakness",
-        "SUE z=-1.28 fresh 19d (validated, negative)",
-        "revision z=-0.50, momentum z=-0.80 (both negative)",
-        "quality z=-0.36, accounting watch",
-        "board urgency: caution, HOLD \u2014 EXTENDED"
+        "SUE z=-1.28 (validated, negative)",
+        "accounting: watch; short_interest z=-0.699 (crowded short)",
+        "board state: HOLD \u2014 EXTENDED"
       ],
-      "dissent": "The entry axis is unblocked and off-high, so a short-term oversold bounce could outpace the index even in a fundamentally weak name.",
+      "dissent": "The swing low and bottoming label could mean the bad news is priced and this is the value low.",
       "falsifier": {
-        "text": "USPH reverses and closes above its 20-day high on strong relative volume.",
+        "text": "Price closes above the 50dma and stays above it for 5 sessions",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "USPH",
@@ -168,7 +158,7 @@
           "horizon_d": 21
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-10-21",
       "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
