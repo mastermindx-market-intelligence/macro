@@ -170,9 +170,32 @@ def test_the_committed_page_matches_the_current_template_render():
         site = Path(tmp)
         build_shell(env, site)
         rendered = (site / "ontology.html").read_bytes()
-    assert rendered == PAGE.read_bytes(), (
+    assert _without_lane_owned_asset_markup(rendered) == \
+        _without_lane_owned_asset_markup(PAGE.read_bytes()), (
         "site/ontology.html is stale -- re-run "
         "`python -m scripts.build_ontology_explorer` and commit the result")
+
+
+_STAMP = re.compile(rb"\?v=[0-9a-f]{6,16}")
+_PRELOAD_LINE = re.compile(rb"^[ \t]*<link rel=\"preload\" as=\"style\" [^\n]*\n", re.M)
+_DEFER = re.compile(rb"(<script src=\"[^\"]+\") defer(></script>)")
+
+
+def _without_lane_owned_asset_markup(page: bytes) -> bytes:
+    """Strip what the render-public re-stamp lane (scripts/optimize_assets,
+    idempotent shim/externalize/stamp chain) adds AFTER a page is committed:
+    ``?v=<hash>`` stamps, ``<link rel="preload" as="style">`` hints and the
+    ``defer`` it puts on the shared scripts. The 2026-09-24 F04-X1 merge
+    (ac61896d) committed the builder's plain render; the lane's next tick
+    (64b18613, ``render-public: public pages + asset stamps``) rewrote the
+    committed bytes, and this guard -- a raw byte comparison -- went red on
+    main with no template change behind it. The template drift it exists to
+    catch (markup, copy, structure) survives the normalisation; only the
+    lane-owned asset markup is ignored."""
+    page = _STAMP.sub(b"", page)
+    page = _PRELOAD_LINE.sub(b"", page)
+    page = _DEFER.sub(rb"\1\2", page)
+    return page
 
 
 def test_a_missing_paired_asset_raises_instead_of_reporting_success(tmp_path,
