@@ -557,7 +557,6 @@ def test_uncopyable_guidance_items_are_dropped_not_raised() -> None:
     pytest.param("2026-07-21T25:00:00Z", id="impossible-instant"),
     pytest.param("", id="empty"),
     pytest.param(1721000000, id="epoch-int"),
-    pytest.param(None, id="none"),
     pytest.param(["2026-07-21"], id="list"),
 ])
 def test_lifecycle_value_outside_the_clock_grammar_is_dropped_with_typed_omission(value) -> None:
@@ -571,6 +570,24 @@ def test_lifecycle_value_outside_the_clock_grammar_is_dropped_with_typed_omissio
     assert row is not None
     assert row["lifecycle"] == {}
     assert row["omissions"] == ["lifecycle_malformed:source_available_at"]
+
+
+def test_explicit_none_lifecycle_value_is_a_typed_absence_not_malformed() -> None:
+    """Production's _lifecycle_payload emits None for an unknown clock; a typed
+    absence is dropped silently, never recorded as malformed."""
+    row = project_event_workspace(_payload(lifecycle={"observed_at": None, "source_available_at": None,
+                                                      "state": "published"}))
+    assert row is not None and row["lifecycle"] == {} and row["omissions"] == []
+
+
+def test_hostile_str_subclass_in_lifecycle_never_raises() -> None:
+    class HostileStr(str):
+        def __contains__(self, item):
+            raise RuntimeError("hostile __contains__")
+
+    row = project_event_workspace(_payload(lifecycle={"observed_at": HostileStr("2026-07-21")}))
+    assert row is not None and row["lifecycle"] == {}
+    assert row["omissions"] == ["lifecycle_malformed:observed_at"]
 
 
 def test_uncopyable_lifecycle_value_is_dropped_not_raised() -> None:
@@ -800,5 +817,5 @@ def test_module_never_reads_the_clock_and_applies_no_numeric_conversion() -> Non
         if isinstance(node, ast.Call):
             name = getattr(node.func, "attr", getattr(node.func, "id", ""))
             assert name not in {"now", "today", "utcnow", "time", "open", "float", "int",
-                                "round", "abs", "eval", "exec"}, name
+                                "str", "round", "abs", "eval", "exec"}, name
     assert roots == {"__future__", "copy", "math", "datetime", "typing"}, sorted(roots)

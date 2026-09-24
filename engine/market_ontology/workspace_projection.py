@@ -75,7 +75,9 @@ Laws (each pinned in ``tests/test_workspace_projection.py``)
   copied only when they are strings in the grammar the composer's replay
   gate parses (``YYYY-MM-DD`` or an ISO-8601 instant, ``Z`` accepted) — the
   literal ``"unknown"`` is also copied for ``source_available_at`` because
-  the composer types it. Anything else present under those keys is dropped
+  the composer types it. An explicit ``None`` under either key is production's
+  typed absence (``_lifecycle_payload`` emits ``None`` for an unknown clock) and
+  is dropped silently; anything else present under those keys is dropped
   with ``"lifecycle_malformed:<key>"``, so the composer's ``_le`` never sees a
   string it cannot parse.
 * TWO CLOCKS (N11): production's system-recording clock is
@@ -106,7 +108,7 @@ from __future__ import annotations
 
 import copy
 import math
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Mapping
 
 __all__ = ["project_event_workspace"]
@@ -176,12 +178,10 @@ def _is_clock_string(value: Any) -> bool:
     try:
         if "T" in value:
             text = value[:-1] + "+00:00" if value.endswith("Z") else value
-            moment = datetime.fromisoformat(text)
-            if moment.tzinfo is None:
-                moment.replace(tzinfo=timezone.utc)
+            datetime.fromisoformat(text)   # tz-naive instants are accepted as UTC by the composer
         else:
             datetime.strptime(value, "%Y-%m-%d")
-    except (ValueError, TypeError, OverflowError):
+    except Exception:  # noqa: BLE001 — a str subclass with a hostile protocol is not a clock string
         return False
     return True
 
@@ -320,6 +320,8 @@ def _project_lifecycle(raw: Any, omissions: list[str]) -> dict[str, Any]:
         if key not in raw:
             continue
         value = raw[key]
+        if value is None:
+            continue  # production's typed absence (_lifecycle_payload emits None): dropped, not malformed
         if _is_clock_string(value) or (
             key == "source_available_at" and value == _SOURCE_AVAILABILITY_TYPED_UNKNOWN
         ):
