@@ -1,0 +1,145 @@
+{
+  "operation": "market-tide-research-20260924-sol-001",
+  "issue": 7925,
+  "pull_request": 7929,
+  "procedure_pin": "Mastermind@2a7681601a419532a47f0d24029b55b37bfe2b5c",
+  "kind": "native_focused_repository_integration",
+  "research_only": true,
+  "mission_complete": false,
+  "source_writer": "GitHub contents API on claude/market-tide-research-20260924-sol-001",
+  "tested_head": "cb79d84ae460db4a5148cb4b2552b39c6f47448f",
+  "prior_tested_head": "5dee38de7a184b00fa9374aaca20b7b1c0ca36a3",
+  "native_environment": {
+    "device": "MacBook-Pro-9.ts.net lan",
+    "device_id": "2b8a329e-0a82-413c-b9d0-958a7de6d836",
+    "hostname": "MacBook-Pro-9.local",
+    "repository": "/Users/chriswong/lanes/repos/macro",
+    "workspace": "/Users/chriswong/lanes/repos/macro/.claude/worktrees/market-tide-research-20260924-sol-001",
+    "workspace_mode": "isolated sparse detached verification checkout; source writer remains GitHub",
+    "workspace_locked": true,
+    "interpreter": "/Users/chriswong/lanes/venv/bin/python",
+    "python_version": "3.12.14",
+    "environment": {"PYTHONDONTWRITEBYTECODE": "1"},
+    "new_dependencies_installed": false,
+    "native_source_edits": false,
+    "primary_checkout_modified": false,
+    "complete_owner_modules_imported": ["engine.event_calendar", "lib.dataos.temporal"],
+    "dependency_excerpt_or_mock_used": false
+  },
+  "scope": {
+    "focused_component_tests": true,
+    "complete_repository_owner_imports": true,
+    "full_repository_test_suite": false,
+    "independent_review": false,
+    "full_agentos_validation": false,
+    "current_head_ci_accepted": false,
+    "production_or_browser_proof": false,
+    "market_price_observations_used": 0,
+    "fitted_model": false,
+    "forecast_or_trade_authority": false
+  },
+  "source_identity": {
+    "consumer": {
+      "path": "research/options_estate/market_tide_event_binding.py",
+      "commit": "3587c625f41bdd12d879fedb9e843a9eb873267f",
+      "git_blob": "d03da7f2cdeb142f830796cd7d67757102f9dd36",
+      "bytes": 9201,
+      "sha256": "8bac1186c509d6f483929e7bcfbac5f371b66855ecd297ab0a72aa59ee9e2b22"
+    },
+    "tests": {
+      "path": "research/options_estate/test_market_tide_event_binding.py",
+      "commit": "cb79d84ae460db4a5148cb4b2552b39c6f47448f",
+      "git_blob": "53bca67b7a10c72fb0369e491725030bc1a9d2bf",
+      "bytes": 10985,
+      "sha256": "31cd3d8b5f78f2ce10c86819c0cbed0b20db9079f741452e9f118e048cd391b1"
+    },
+    "documentary_input": {
+      "path": "research/options_estate/MARKET_TIDE_REVIEWED_ADVANCE_NOTICES_2017.json",
+      "git_blob": "e1177e3623f0554eb2fefc4fc19a6b69a4d30bc1",
+      "sha256": "fd5254f21c0f40c3ebdabbe792910c6785cf2ba85a29ed6c4560bf7cde435714",
+      "document_count": 5,
+      "schedule_claim_count": 12,
+      "complete_schedule_archive": false
+    }
+  },
+  "initial_native_check": {
+    "process_id": 3081,
+    "head": "5dee38de7a184b00fa9374aaca20b7b1c0ca36a3",
+    "tests_passed": 31,
+    "test_exit": 0,
+    "cli_exit": 0,
+    "owner_import_paths": "Both actual module __file__ values resolved inside this exact verification checkout"
+  },
+  "red_green": {
+    "red_process_id": 4267,
+    "red_head": "5dee38de7a184b00fa9374aaca20b7b1c0ca36a3",
+    "red_cases": 4,
+    "red_failures": 2,
+    "red_passing_controls": 2,
+    "failing_cases": [
+      "conflicting revision identity must not resurrect an older event plan",
+      "a reused notice identity must quarantine every event reference it contaminates"
+    ],
+    "passing_controls": [
+      "future identity conflict cannot change the historical projection",
+      "unrelated event survives another event's conflict"
+    ],
+    "root_cause": "Conflicting notice IDs were discarded before event grouping, losing the event references they contaminated and allowing a separate older notice to appear unambiguous.",
+    "repair": "Retain all event references attached to conflicting visible notice identities and withhold those event groups. Public-time filtering still precedes grouping. No canonical version resolver is introduced.",
+    "green_process_id": 7519,
+    "green_tests": 35,
+    "green_failures": 0,
+    "green_exit": 0,
+    "test_command": "/Users/chriswong/lanes/venv/bin/python -m unittest discover -s research/options_estate -p test_market_tide_event_binding.py"
+  },
+  "documentary_cli": {
+    "process_id": 7519,
+    "command": "/Users/chriswong/lanes/venv/bin/python -m research.options_estate.market_tide_event_binding --input research/options_estate/MARKET_TIDE_REVIEWED_ADVANCE_NOTICES_2017.json --decision-at 2017-03-14T20:15:00Z --window-end 2017-03-15T20:00:00Z",
+    "exit": 0,
+    "stderr": "",
+    "stdout_bytes": 3557,
+    "stdout_sha256": "51430b85bd63b4f424d06c567d6cc99be01750f0d33759f7478ac2e9ec00537a",
+    "same_output_as_prior_documentary_rehearsal": true,
+    "events": [["CPI", "08:30"], ["FOMC", ""]],
+    "c1_event_features": {"E_CPI": null, "E_NFP": null, "E_FOMC": null},
+    "primary_cohort_eligible": false,
+    "system_replay": false,
+    "can_publish_forecast": false
+  },
+  "source_cleanliness": {
+    "process_id": 7519,
+    "exact_head_readback": "cb79d84ae460db4a5148cb4b2552b39c6f47448f",
+    "git_diff_check": "exit 0, no output",
+    "git_status_short": "empty",
+    "native_update": "clean fast-forward of detached verification checkout to exact GitHub commit; no reset, rebase, force push or source edits"
+  },
+  "ci_observation_of_prior_head": {
+    "subject_head": "5dee38de7a184b00fa9374aaca20b7b1c0ca36a3",
+    "tested_merge_tree": "4c5ca01b34fb4491992e6afe5af09e968c791179",
+    "base": "b076a4004599215ef21765c437aaade48f40388d",
+    "ci_run": 35997462080,
+    "fences_run": 35997461457,
+    "both_workflow_conclusions": "failure",
+    "fences_failure_detail_inspected": false,
+    "contract_delta": "success",
+    "failing_pack_job": 107626973218,
+    "owned_record_defect": "DSC-MARKET-TIDE-RESEARCH-FOUNDATION-20260924.md falsifier lacks a runnable command, file:line, or #PR token",
+    "separate_infrastructure_failure": "Exact-base fetch reported missing blob 6cdd58f0e644d5788359ffc71a866ca901dce9e0 and failed; this is not the authored-record defect",
+    "rerun_or_dispatch_performed": false,
+    "new_head_pass_inferred": false
+  },
+  "scoped_refusals": [
+    {"action": "earlier R0 public-data download/write", "effect": "EFFECT_NONE", "retry": false},
+    {"action": "earlier R1 native data footer/hash follow-up", "effect": "EFFECT_NONE", "retry": false},
+    {"action": "this turn's combined native Agent OS validate plus options-data manifest read", "effect": "EFFECT_NONE", "reason": "Tool call blocked before dispatch because safety status could not be determined", "pid": null, "retry": false}
+  ],
+  "remaining": [
+    "Correct the identified Agent OS falsifier reference without claiming the refused local validator passed",
+    "Normal independent review, applicable test enrollment and exact-head CI acceptance remain outstanding",
+    "Qualify source-owner schedule coverage and a version-bound price cohort before C1-M1 evaluation",
+    "Existing frozen research price-panel owner is a candidate integration path, not an admitted Market Tide dataset"
+  ],
+  "unresolved_modifying_effects": [],
+  "active_workers": [],
+  "automatic_wake": false
+}
