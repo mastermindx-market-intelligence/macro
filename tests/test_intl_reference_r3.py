@@ -71,7 +71,7 @@ def test_r3_covers_full_market_and_economy_universes():
         "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
     }
     assert _attr_values(html, "data-pressure-market") == {
-        "US", "CN", "HK", "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
+        "US", "CN", "HK", "CA", "TW", "JP", "EZ", "GB", "IN", "AU"
     }
     assert _attr_values(html, "data-fragility-country") == {
         "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
