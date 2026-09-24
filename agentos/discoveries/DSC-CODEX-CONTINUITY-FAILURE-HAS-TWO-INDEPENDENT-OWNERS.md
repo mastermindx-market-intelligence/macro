@@ -11,13 +11,18 @@ claim: >
   foregrounding repaired the immediate attention symptom but did not make
   delivery equivalent to target acknowledgement.
 falsifier: >
-  Demonstrate, on the current accepted architecture, either that a fresh worker
-  with the watcher-resource/source-law repair can mechanically prove exact
-  reasoning-session consumption without RuntimeBinding/Wake acknowledgement, or
-  that a production-proven exact-session TARGET_ACKNOWLEDGED path alone prevents
-  a self-blocking watcher prompt/aggregate-resource shutdown from suppressing a
-  later canonical carrier edge. A real zero-touch Codex canary proving one owner
-  closes both failure families would falsify the two-owner conclusion.
+  Re-run the existing protected proof seams with
+  `python3 -m pytest -q tests/test_watcher_resource_discipline_source_law.py
+  tests/test_executive_wake_ack_end_to_end.py tests/test_wake_ack_ingress.py`
+  in `mastermindx-market-intelligence/Mastermind`. Those tests can disprove the
+  source-law separation if the same accepted mechanism closes both classes.
+  Production falsification still requires one accepted zero-touch Codex canary
+  proving either that exact reasoning-session consumption no longer needs the
+  RuntimeBinding/Wake acknowledgement owner, or that the production-proven
+  exact-session TARGET_ACKNOWLEDGED path by itself prevents a self-blocking
+  watcher prompt / aggregate-resource shutdown from suppressing a later
+  canonical carrier edge. Until that canary exists, built/tested but globally
+  unarmed ACK1 source is not production falsification.
 so_what: >
   Preserve both existing repair owners. Mastermind #245 owns procedure/bootstrap
   mitigation: watcher prompts detect rather than govern, child-source lifetime
