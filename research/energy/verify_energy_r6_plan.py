@@ -59,9 +59,9 @@ check(checks, "fresh_implementation_carrier", "fresh product carrier" in plan an
 check(checks, "research_pr_not_product_carrier", "Product code must use a fresh implementation carrier" in plan)
 check(checks, "why_fable_present", "**WHY FABLE:**" in plan and "**WHY NOT FABLE for routine work:**" in plan)
 check(checks, "real_path_acceptance", "Real source-to-browser Nuclear proof" in plan)
-check(checks, "privacy_negative_proof", "anonymous/free/public mirrors" in plan.lower() and "private/no-store" in plan.lower())
+check(checks, "privacy_negative_proof", "anonymous/free/public mirrors" in plan.lower() and "cache-control: private, no-store" in plan.lower())
 check(checks, "decision_non_regression", "non-regression" in plan.lower() and "Prophet" in plan and "entry" in plan)
-check(checks, "r5_grammar_preserved", "R5" in plan and "evidence-grade" in plan and "forecast-year rollover" in spec)
+check(checks, "r5_grammar_preserved", "R5" in plan and "evidence-grade" in plan and "forecast-year rollover" in spec.lower())
 check(checks, "power_second_vertical_foundation", "Power-Demand Value Capture" in spec)
 check(checks, "no_placeholders", not re.search(r"\b(?:TODO|TBD|PLACEHOLDER)\b", spec + "\n" + plan))
 check(checks, "no_completion_claim", "IMPLEMENTATION_STARTED: false" in spec and "implementation blueprint" in plan.lower())
@@ -71,7 +71,7 @@ check(checks, "shared_assertion_dependency", "shared curation assertion" in plan
 check(checks, "shared_private_owner_dependency", "existing private owner" in plan.lower() and "second Energy private publisher" in plan)
 check(checks, "bounded_first_unit", "max 5 selected companies" in plan and "no pagination in v1" in plan)
 check(checks, "source_instruction_inert_requirement", "**ENE-65**" in spec)
-check(checks, "all_authority_false_semantics", "all-false authority" in spec and "all authority bits false" in plan)
+check(checks, "all_authority_false_semantics", "all decision authority false" in spec.lower() and "all authority bits false" in plan)
 check(checks, "research_do_not_redo", "R1–R5 Energy research is DO_NOT_REDO" in plan)
 
 failures = [r for r in checks if not r["pass"]]
