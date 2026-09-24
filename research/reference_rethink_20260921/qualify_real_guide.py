@@ -40,7 +40,7 @@ with sync_playwright() as p:
     page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
     url = pagefile.as_uri()
     page.goto(url)
-    assert page.locator('#app h1').inner_text() == 'Understand the signal.'
+    assert page.locator('#app h1').inner_text() == 'Market Guide'
     assert page.locator('[data-fixture-only]').get_attribute('data-fixture-only') == 'false'
     record('real registry and real rendered owner-page validators consumed; 46 entries')
     page.keyboard.press('/')

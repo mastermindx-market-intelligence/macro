@@ -184,11 +184,11 @@
     }
     function home(){
       const section=node('section');
-      add(section,node('h1',t('Understand the signal.','读懂每一个市场信号。'),{tabindex:'-1'}),node('p',t('What it means. How to read it. Where to use it.','看懂含义，理解变化，回到看板应用。'),{class:'subtitle'}));
-      const search=node('input','',{type:'search',id:'search','aria-label':t('Search signals and questions','搜索指标与问题'),placeholder:t('Search a signal or a question…','搜索指标，或你想了解的问题…')});search.value=route.query;
+      add(section,node('h1',t('Market Guide','市场指南'),{tabindex:'-1'}),node('p',t('Ask what a score or signal means. Get the answer in seconds.','问一个分数或信号代表什么，几秒内看懂。'),{class:'subtitle'}));
+      const search=node('input','',{type:'search',id:'search','aria-label':t('Search signals and questions','搜索指标与问题'),placeholder:t('Ask about a score or signal…','问一个分数或信号…')});search.value=route.query;
       section.append(add(node('label','',{class:'searchbox'}),icon('search'),search,node('kbd','/',{'aria-hidden':'true'})));
       const landing=node('section','',{id:'landing'}), rows=node('section','',{id:'results'});
-      add(landing,node('h3',t('What are you trying to understand?','你想了解什么？')));
+      add(landing,node('h3',t('Start with a question','从一个问题开始')));
       const cards=node('div','',{class:'questions'});
       const hints={strength:['Trend, participation and the big picture.','趋势、参与度与整体状态。'],risk:['Stress, volatility and warning signals.','压力、波动与预警信号。'],backdrop:['Growth, inflation and financial conditions.','增长、通胀与金融条件。']};
       for(const q of model.questions){

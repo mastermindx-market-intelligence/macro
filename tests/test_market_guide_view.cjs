@@ -59,7 +59,7 @@ function harness(url='https://review.invalid/reference.html',data=fixture(),opti
   return {context,doc,host,dialog,app,history,click:e=>{assert.ok(e,'click target exists');e.fire('click');},find:(selector)=>host.querySelector(selector),all:(selector)=>host.all(selector),fire:type=>[...(handlers[type]||[])].forEach(fn=>fn())};
 }
 test('mounts three source-defined questions and preserves fallback until valid data',()=>{
- const h=harness();assert.equal(h.find('h1').textContent,'Understand the signal.');assert.equal(h.all('[data-topic]').length,3);assert.equal(h.doc.getElementById('fallback').hidden,true);
+ const h=harness();assert.equal(h.find('h1').textContent,'Market Guide');assert.equal(h.all('[data-topic]').length,3);assert.equal(h.doc.getElementById('fallback').hidden,true);
 });
 test('question routes to curated source membership rather than all internal families',()=>{
  const h=harness();h.click(h.find('[data-topic="risk"]'));assert.equal(h.all('article').length,2);assert.match(h.find('#result-count').textContent,/2/);
