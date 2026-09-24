@@ -13431,6 +13431,27 @@ jobs:
       - name: B4 entry-policy calibration preregistration law (A1 amendment, six distinct cells, single primary endpoint)
         run: python -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q
 
+  energy-economic-change-dossier:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/market_ontology/economic_change_dossier.v1.schema.json"
+      - "engine/market_ontology/energy_economic_change.py"
+      - "engine/market_ontology/__init__.py"
+      - "tests/test_market_ontology_energy_economic_change.py"
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the economic-change dossier suite
+        run: pip install pytest jsonschema==4.26.0
+      - name: Energy economic-change dossier laws
+        run: TZ=UTC python -m pytest tests/test_market_ontology_energy_economic_change.py -q
+
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
