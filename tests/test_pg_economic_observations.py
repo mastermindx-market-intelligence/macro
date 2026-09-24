@@ -413,3 +413,45 @@ def test_selected_observations_are_exactly_twenty() -> None:
     assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
     assert len({row["fact_id"] for row in rows}) == len(rows)
     assert all(row["fact_id"].startswith("fact_") and len(row["fact_id"]) == 21 for row in rows)
+
+
+# R32 — the volume cross-check reads every same-period statement of Total P&G volume.
+def _r32_workspace(body: str, slug: str):
+    from tests.test_pg_economic_observations_probes import Q4_FY2026, _literal_workspace, _pg_rows
+
+    workspace, texts = _literal_workspace(
+        "<html><head><title>t</title></head><body>\n<p>Synthetic probe; no relationship to any filing.</p>\n" + body + "</body></html>",
+        Q4_FY2026,
+        slug,
+    )
+    return workspace, texts, _pg_rows(workspace), Q4_FY2026
+
+
+_R32_DRIVERS = (
+    "<h2>Net Sales Change Drivers 2026 vs. 2025</h2>\n<table>\n<tr><td></td><td>Volume with Acquisitions &amp; Divestitures</td>"
+    "<td>Volume Excluding Acquisitions &amp; Divestitures</td><td>Foreign Exchange</td><td>Price</td><td>Mix</td><td>Other</td>"
+    "<td>Net Sales Growth</td><td>Organic Sales Growth</td></tr>\n"
+    "<tr><td>Total P&amp;G</td><td>1.0%</td><td>1.0%</td><td>(1.0)%</td><td>0.5%</td><td>0.5%</td><td>1.0%</td><td>3.0%</td><td>1.0%</td></tr>\n</table>\n"
+)
+
+
+def test_second_table_volume_disagreement_is_cross_check_conflict() -> None:
+    body = _R32_DRIVERS + (
+        "<h2>Segment Results</h2>\n<table>\n<tr><td></td><td>Total Volume</td><td>Organic Sales Growth</td></tr>\n"
+        "<tr><td>Total P&amp;G</td><td>4.0%</td><td>1.0%</td></tr>\n</table>\n"
+    )
+    workspace, texts, rows, case = _r32_workspace(body, "r32_conflict")
+    row = rows["pg_total_volume_growth_pct"]
+    assert "value" not in row
+    assert row["typed_absence"]["reason"] == "cross_check_conflict"
+    validate_selected_facts(workspace, source_texts=texts, fiscal_scope=case.scope)
+
+
+def test_prior_year_drivers_table_is_not_a_volume_conflict() -> None:
+    body = _R32_DRIVERS + (
+        "<h2>Net Sales Change Drivers 2025 vs. 2024</h2>\n<table>\n<tr><td></td><td>Volume with Acquisitions &amp; Divestitures</td>"
+        "<td>Net Sales Growth</td></tr>\n<tr><td>Total P&amp;G</td><td>7.0%</td><td>7.0%</td></tr>\n</table>\n"
+    )
+    workspace, texts, rows, case = _r32_workspace(body, "r32_prior_year")
+    assert rows["pg_total_volume_growth_pct"].get("value") == 1.0
+    validate_selected_facts(workspace, source_texts=texts, fiscal_scope=case.scope)
