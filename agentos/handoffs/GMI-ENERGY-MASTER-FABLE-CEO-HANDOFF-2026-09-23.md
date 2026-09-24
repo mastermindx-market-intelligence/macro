@@ -44,7 +44,7 @@ The selected Fable receiver must then:
 
 Before START, lawful \`PRESTART_REBIND\` to another eligible Fable session is permitted only while no modifying effect, EFFECT_UNKNOWN, conflicting active pickup or previous START exists. After START, the concrete binding is sticky until canonical reconciliation.
 
-Do **not** ask the Chairman to “claim” this operation again after deliberate live delivery to a concrete eligible Fable session.
+Do not ask the Chairman to “claim” this operation again after deliberate live delivery to a concrete eligible Fable session.
 
 ## 1. Routing receipt — why Fable owns the remaining programme
 
@@ -54,7 +54,7 @@ Do **not** ask the Chairman to “claim” this operation again after deliberate
 
 **WHY FABLE:** the boundaries are now researched, but execution still requires sustained principal judgment where multiple active carriers can legitimately own the same shared paths, a private/public evidence boundary must remain fail-closed, and final success depends on a real source-to-entitled-browser journey rather than infrastructure alone. Fable must adjudicate current shared-interface acceptance, custody, sequencing, worker returns and product proof over multiple implementation phases.
 
-Fable is **not** the routine coder or researcher. Fable personally owns:
+**WHY NOT FABLE for routine work:** once Fable freezes exact shared interfaces, source grants and path ownership, source adapters, pure calculators, isolated tests, UI implementation and bounded verification are independently executable and should route through the least-scarce capable avenue.\n\nFable is **not** the routine coder or researcher. Fable personally owns:
 - current architecture and canonical-owner adjudication;
 - current-main compatibility and source-collision decisions;
 - implementation-carrier binding and one-carrier/effect law;
