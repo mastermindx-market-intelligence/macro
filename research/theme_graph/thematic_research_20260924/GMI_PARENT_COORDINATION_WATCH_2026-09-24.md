@@ -4,7 +4,7 @@ Parent operation: `gmi-thematic-research-meta-ceo-20260924-001`.
 Parent carrier: Macro #7886, branch `sol/gmi-theme-research-leadership-20260924`.
 Existing continuity owner: `agentos/handoffs/GMI-THEMATIC-RESEARCH-META-CEO-2026-09-24.md`.
 Date: 2026-09-24. MISSION_COMPLETE: false.
-Current baseline identity: `gmi-parent-baseline-20260924-v3`.
+Current baseline identity: `gmi-parent-baseline-20260924-v4`.
 
 The original detailed lane recovery remains immutable at32f4612c6a614ee0cc9292ede601e07d75083f1b, blob3a0a272ac9be8ae4d5f8ab098c9995fb94d1ce01. Do not replay that recovery each hour. This same record updates the bounded member set and handled state, not runtime lifecycle or source custody.
 
@@ -50,12 +50,25 @@ Current procedure for this material wake was re-pinned to protected Mastermind `
 
 Parent implication: shared schema/profile design advanced to independently reviewed proposal status and Technology consumed the publication boundary, but H1/H2, rights qualification, private adapter and real served source-to-user proof remain unbuilt/unproven. Cross-domain critical path remains H1 -> compatible reader/profile binding -> served witness proof. Capacity/refresh state is the present execution bottleneck.
 
+## Handled transition v4
+
+Current protected procedure remained Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, compatible Skillpack1.0.1/bootstrap1. The scheduled role stayed PARENT_ORCHESTRATOR; no dedicated Robotics child semantic edge was consumed or answered.
+
+- #7780/comment5815643294 at2026-09-24T14:04:33Z returns the Robotics source-rights qualification requested by5814333887. The reviewed matrix is `research/theme_graph/thematic_research_20260924/ROBOTICS_SOURCE_RIGHTS_QUALIFICATION_2026-09-24.md` on #7908; current #7908 head is `b56ba8121ef1fb1282e35b7df9aa831ce124c17e`. It covers15 publisher-host/source-class rows across11 real corpus hosts. Every proposed new family remains pending/refused; no registry row or emission permission is applied.
+- The return supplies a material shared release finding. Current #7870 head remains `382c0b399d5c8ca30899de9b1bbe790922163491`. Its `app/theme_research.py::_filter_bundle_for_rights` keeps assertions when `family_for_source_ref` returns `None`; its current `SOURCE_PREFIX_FAMILY` in `engine/theme_graph/rights.py` contains internal/file-style prefixes and no `https://` source-URI family mapping. Therefore an unmapped Robotics URL would pass the transport-level rights filter instead of refusing. The bundle rewrite also carries `interpretation_blocks` through unchanged when source assertions are dropped. This conflicts with the accepted option-A fail-closed boundary for unknown/unqualified source-dependent content.
+- This is not a current live disclosure incident. The same route still defaults `load_authorized_owner_bundle` to `PrivateStoreUnavailable`, and Robotics reports no live Robotics bundle loader. It is a release blocker before real source binding / served proof, not evidence of present external exposure.
+- The rights/representation questions remain reserved for the exact action-authoritative Sol and incumbent rights owner. The parent watcher does not decide whether JPX/HKEX/vendor terms permit retention/synthesis, does not invent rights, and does not create a second registry. Robotics reports its own dependent-interpretation repair in flight; that does not close the shared transport half.
+- #7882 has no new comment after capacity escalation5814545904. Capacity recovery therefore remains unproved and the shared critical path is unchanged.
+- Parent-only coordination comment #7886/5815839226 records this transition and exact attention boundary without writing a child ruling.
+
+Parent implication: the requested rights qualification is no longer queued; it has returned with concrete source-specific evidence and exposed an implementation mismatch in the common rights boundary. The next action-authoritative result must both adjudicate the source/representation matrix and ensure unmapped/dependent source content fails closed before any real Robotics source binding. H1/H2, private reader/publication proof, capacity recovery and source-to-user proof remain incomplete.
+
 ## Native task state and continuation
 
 Native task `6ab51a6aea9c8191820406439f835d57`, title GMI Meta-CEO Watch, remains the one hourly condition_watch. Independent native list previously showed enabled=true and last_run_time2026-09-24T12:43:58.458834Z. Scheduled invocation is observed; that old field alone did not prove successful carrier access or action.
 
-For this material wake, the current protected renderer law was loaded at Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`. The same native task was updated successfully at2026-09-24T13:33:53.176001Z by replacing the complete canonical prompt and changing only `LATEST_HANDLED_EDGE` to `gmi-parent-baseline-20260924-v3`; returned saved prompt preserves `PARENT_ORCHESTRATOR`, the same operation, aggregate carrier, schedule and role-derived body. This is native update returned-object readback, not a full account audit or proof of the next scheduled carrier access.
+For the v3 material wake, the current protected renderer law was loaded at Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`. The same native task was updated successfully at2026-09-24T13:33:53.176001Z by replacing the complete canonical prompt and changing only `LATEST_HANDLED_EDGE` to `gmi-parent-baseline-20260924-v3`; returned saved prompt preserves `PARENT_ORCHESTRATOR`, the same operation, aggregate carrier, schedule and role-derived body. This is native update returned-object readback, not a full account audit or proof of the next scheduled carrier access.
 
-On a material parent event, fresh-pin current protected procedure, resolve current exact authority/effect/custody, and act only within the parent role. Advance the handled baseline and keep the same watcher. Inaccessible carrier or write returns an exact typed boundary; do not switch accounts, race a child or claim automatic wake. Terminal parent STOP must be verified before removing only this watcher.
+This v4 transition advances only the handled source baseline and same native watcher prompt. On a material parent event, fresh-pin current protected procedure, resolve current exact authority/effect/custody, and act only within the parent role. Inaccessible carrier or write returns an exact typed boundary; do not switch accounts, race a child or claim automatic wake. Terminal parent STOP must be verified before removing only this watcher.
 
-Next useful events: action-authoritative adjudication of the v1.1 reserved decisions; accepted source/representation qualification; exact shared reader/control/data mapping and native replay/supersession tests; a concrete Capacity-owner result or recovered foundation execution; and real source-to-user proof. Pending and unchanged are not progress. The broad theme/learning mission remains incomplete.
+Next useful events: action-authoritative adjudication of the v1.1 reserved decisions; adjudication of the returned Robotics source/representation matrix plus the shared fail-closed repair; exact shared reader/control/data mapping and native replay/supersession tests; a concrete Capacity-owner result or recovered foundation execution; and real source-to-user proof. Pending and unchanged are not progress. The broad theme/learning mission remains incomplete.
