@@ -42,12 +42,9 @@ next_action: >
 artifacts:
   - research/consumer_defensive/cdv1_program/README.md
   - research/consumer_defensive/cdv1_program/reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md
-  - research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R1_2026-09-24.md
-  - research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R2_2026-09-24.md
   - research/consumer_defensive/cdv1_program/design/T7_DOSSIER_DESIGN_SPEC_2026-09-24.md
   - research/consumer_defensive/cdv1_program/integration/FOUNDATION_INTEGRATION_MAP_2026-09-24.md
   - research/consumer_defensive/cdv1_program/release/RELEASE_READINESS_CENSUS_2026-09-24.md
-  - tests/test_pg_economic_observations_probes.py
 decisions:
   - "DEC:CDV1-PLAN-SEAM-RULINGS"
   - "DEC:CDV1-FOUNDATION-INTEGRATION"
@@ -93,6 +90,14 @@ those shared homes.
 - Sparse worktrees omit `data/` and `site/`; writing there can truncate committed artifacts.
 - The private publication pointer uses strict conditional v2 writes. Never restore it best-effort after an uncertain v2 write.
 - New implementation suites are wired into the existing `gate:code` job `earnings-economic-dossier`; do not add a second workflow or scheduler.
+
+## Artifacts pending the Task 1 merge
+
+The T1 seat rulings (`research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R{1,2,3}_2026-09-24.md`,
+the Opus reviews beside them) and the two frozen probe suites
+(`tests/test_pg_economic_observations_probes.py`, `tests/test_pg_economic_observations_probes_r2.py`) live on
+PR #7905 until it merges; they join `artifacts:` then, because the Agent OS validator treats a path absent from
+`origin/main` as a phantom artifact.
 
 ## Foundation integration (2026-09-24 re-scope)
 
