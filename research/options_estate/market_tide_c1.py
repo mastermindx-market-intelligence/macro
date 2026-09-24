@@ -67,7 +67,6 @@ def measure_closes(structure, total_return):
     t = np.asarray([_number(x) for x in total_return], dtype=float)
     if np.any(s <= 0) or np.any(t <= 0):
         raise ValueError("prices_must_be_positive")
-    # Differences of logs avoid intermediate ratio overflow.
     sl, tl = np.log(s), np.log(t)
     v20 = float(np.sqrt(np.mean(np.diff(tl[43:64]) ** 2)))
     if not math.isfinite(v20) or v20 <= 0:
@@ -109,7 +108,12 @@ def fit_ridge(train_x, train_y, test_x):
         raise ValueError("invalid_fit_values")
     mean = np.mean(x[:, :3], axis=0)
     scale = np.std(x[:, :3], axis=0, ddof=0)
-    constant = scale == 0
+    # An exactly constant floating column can have nonzero computed std from
+    # summation roundoff. Compare its observed values, without a tuned floor.
+    constant = np.all(x[:, :3] == x[0, :3], axis=0)
+    if np.any((scale == 0) & ~constant):
+        raise ValueError("nonconstant_scale_underflow")
+    scale = np.where(constant, 0., scale)
     safe_scale = np.where(constant, 1., scale)
     a, b = x.copy(), z.copy()
     a[:, :3] = np.where(constant, 0., (x[:, :3] - mean) / safe_scale)
@@ -179,7 +183,10 @@ def walk_forward(packet, evaluation_at):
             decision = utc(r["decision_at"])
             if not calendar[d] < decision < calendar[days[i + 1]] or decision > evaluation:
                 raise ValueError("invalid_decision_window")
-            if utc(r["source_available_at"]) > decision or utc(r["event_schedule_known_at"]) > decision:
+            source_available = utc(r["source_available_at"])
+            if source_available < calendar[d]:
+                raise ValueError("completed_inputs_precede_session_close")
+            if source_available > decision or utc(r["event_schedule_known_at"]) > decision:
                 raise ValueError("inputs_not_available_at_decision")
             for key in ("price_ref", "event_ref"):
                 if not isinstance(r.get(key), str) or not r[key].strip():
