@@ -249,3 +249,32 @@ Boundary:completed one evidence-to-registry-to-browser unit after substantial so
 Next: recover the existing P0 correction/custody through its canonical owner, not duplicate
 its writer; qualify the combined China page only after its original action gates permit.
 Continue from this record plus minimum fresh law; no automatic wake or release is claimed.
+
+## Current continuation — episode-feed and source recovery
+Mission remains a truthful China macro/participation product; original PR7622/locked Studio.
+Fresh law Mastermind@a0779abef1a3d872d060657a1b54318db9dffab3;1.0.1/bootstrap1.
+Source remains08964f603de1f83069d4df5f4e90f1ea759c323d; no product change in this unit.
+Research receipt:research/grey_deer/CHINA_EPISODE_SCORECARD_PROJECTION_20260924.{md,json}.
+Shared scorecard has no episode-unit projection despite the accepted P2 derivation.
+18 new acceptance cases are preserved separately,17RED/1control; implementation edit
+was safety-refused and verified unapplied. Existing scorecard/P2 suites101pass/0warnings;
+registered test bytes restored exactly.14 protected source/data/page hashes unchanged.
+Actual stored CN14 complete/5 loud rows map to2 base windows/1 matured loud/1 open episode;
+HK13/3/2/1/0 and CA24/0/2/0/0 stay separate. No new writer,JSON plane or model exists.
+P0 original worktree contains unpublished changes,review and a positive browser receipt.
+Do not infer accepted source identity or runtime inactivity. Original recovery note
+PR7875 comment5814095625 requests same-carrier reconciliation; delivery is not pickup.
+No P0 source imported or altered. Sizing language remains unreconciled with P4.
+Read-only main composition atb076a4004599215ef21765c437aaade48f40388d yields3 conflicts:
+China template,China HTML,unsubscribe HTML. Keeping parent sides in2 template blocks
+is byte-exact to the qualified parent template. Unsubscribe conflict is one shared-theme
+cache stamp; derive from eventual integrated asset,never blindly drop/change the page.
+No branch merge or source reset was performed. Original China browser/publishing hold remains.
+DO_NOT_REDO:accepted P2,participation/window/cohort/clock/recovery/SignalLab proofs.
+NBS29,weight16,render-write54 and new episode-feed18 cases remain held; preserve all
+prior action-specific refusals and24auxiliary/4image exclusions. New international-issue
+source read was also refused and not retried. No unclaimed own source effect or running job.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false.
+Boundary:resolved source/consumer/merge uncertainties plus two explicit action gates after
+substantial context use. Next:consume original P0's exact-head recovery and preserve the
+qualified parent template; publish only through recovered original gates. No wake/lease transfer.
