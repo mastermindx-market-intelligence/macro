@@ -57,6 +57,10 @@ def _noop_select(query, bundle, ref):  # pragma: no cover — shape only
     return {"schema": "synthetic.evidence.v1"}
 
 
+def _noop_load(query, *, rights_snapshot=None):  # pragma: no cover — shape only
+    raise AssertionError("synthetic loader never serves")
+
+
 def _valid_kwargs(**overrides):
     kwargs = dict(
         anchor_theme_id="synthetic_vertical",
@@ -66,6 +70,7 @@ def _valid_kwargs(**overrides):
         definition_version="2026-09-24.synthetic",
         compose=_noop_compose,
         select_evidence=_noop_select,
+        load_bundle=_noop_load,
         title_en="Synthetic research",
         title_zh="合成研究",
         note_en="Synthetic note.",
@@ -123,9 +128,25 @@ def test_semiconductor_registration_carries_the_mount_copy_verbatim():
 def test_dataclass_field_names_are_the_accepted_contract():
     assert [f.name for f in dataclasses.fields(VerticalRegistration)] == [
         "anchor_theme_id", "slice_keys", "schema_id", "evidence_schema_id",
-        "definition_version", "compose", "select_evidence",
+        "definition_version", "compose", "select_evidence", "load_bundle",
         "title_en", "title_zh", "note_en", "note_zh",
     ]
+
+
+def test_semiconductor_entry_binds_the_public_half_loader():
+    """T08c-2: the ONE entry's loader is the semiconductor owner-bundle loader
+    (public half through the reader, private half declared absent) — the
+    shell dispatches to it and names no vertical itself."""
+    from engine.market_ontology.semiconductor_owner_bundle import (
+        load_semiconductor_owner_bundle,
+    )
+    assert REGISTRY["ai_semiconductors"].load_bundle is load_semiconductor_owner_bundle
+
+
+@pytest.mark.parametrize("bad", [None, "load", 7, object()])
+def test_non_callable_loader_is_refused(bad):
+    with pytest.raises(TypeError):
+        VerticalRegistration(**_valid_kwargs(load_bundle=bad))
 
 
 # ---------------------------------------------------------------------------

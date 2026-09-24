@@ -32,6 +32,7 @@ Run with the repo's virtualenv::
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 import os
 import subprocess
@@ -177,7 +178,9 @@ def bundle_loader(monkeypatch):
     directly. Tracks reader calls so anonymous paths can assert zero calls."""
     calls: list[dict] = []
 
-    def _loader(query, *, principal):
+    def _loader(query, *, principal, **_route_kwargs):
+        # The route also passes ``registration`` and ``rights_snapshot``
+        # (T08c-2); this synthetic loader ignores both.
         calls.append({"query": query, "principal": principal})
         case = load_case("witness_hbm_packaging")
         from engine.market_ontology.semiconductor_theme_research import (
@@ -199,7 +202,9 @@ def bundle_loader(monkeypatch):
 
     # Replace with a simple wrapper: the function returns a tuple (query, bundle),
     # but the route expects just the bundle. We adapt to fit both shapes.
-    def loader(query, *, principal):
+    def loader(query, *, principal, **_route_kwargs):
+        # The route also passes ``registration`` and ``rights_snapshot``
+        # (T08c-2); this synthetic loader ignores both.
         calls.append({"query": query, "principal": principal})
         case = load_case("witness_hbm_packaging")
         from engine.market_ontology.semiconductor_theme_research import (
@@ -734,10 +739,31 @@ def test_no_write_side_effects_on_any_success_path(entitled_client, monkeypatch)
 # ---------------------------------------------------------------------------
 
 def test_production_default_returns_503_service_unavailable_with_no_leak(
-    entitled_client,
+    entitled_client, monkeypatch,
 ):
-    """No monkeypatch on the loader → default raises PrivateStoreUnavailable →
-    503 with the private envelope, body contains no path/URL/exception text."""
+    """No monkeypatch on the loader → the registered loader runs for real
+    (T08c-2); with the Company Intelligence origin unreachable it raises
+    BundleUnavailable → 503 with the private envelope, body contains no
+    path/URL/exception text. (The witness scope is pinned so a sparse
+    checkout without the identity artifacts cannot turn this into an
+    empty-cohort 200.)"""
+    from engine.market_ontology import semiconductor_owner_bundle as _owner_bundle
+    from engine.market_ontology.semiconductor_witness_scope import (
+        SLICE_SCOPE_UNOWNED as _UNOWNED, WitnessIdentity as _Identity, WitnessScope as _Scope,
+    )
+    from engine.neuralweb import company_intelligence_reader as _reader
+    monkeypatch.setattr(_owner_bundle, "resolve_witness_scope", lambda key: _Scope(
+        slice_key=key, omissions=(_UNOWNED,), identities=(_Identity(
+            ticker="TSM", company_node_id="co:us:TSM", issuer_id="ISS:US-XNYS-TSM", cik="0001046179",
+        ),),
+    ))
+    _reader.clear_company_intelligence_cache()
+    monkeypatch.setattr(_reader, "_public_base_url", lambda: "https://company-intelligence.example/x")
+
+    def unreachable(url, *, limit):
+        raise _reader.CompanyIntelligenceReadError("Company Intelligence public source unavailable")
+
+    monkeypatch.setattr(_reader, "_fetch_bytes", unreachable)
     response = entitled_client.post(
         "/api/themes/v1/research/query", json=_valid_body(),
     )
@@ -1007,6 +1033,9 @@ def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
             "authority": dict(_SYNTHETIC_AUTHORITY),
         }
 
+    def default_load(query, *, rights_snapshot):  # pragma: no cover — these tests patch the route seam
+        raise AssertionError("synthetic registration's loader must not be reached here")
+
     synthetic = VerticalRegistration(
         anchor_theme_id=_SYNTHETIC_ANCHOR,
         slice_keys=(_SYNTHETIC_SLICE,),
@@ -1015,6 +1044,7 @@ def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
         definition_version="2026-09-24.synthetic",
         compose=compose or default_compose,
         select_evidence=select or default_select,
+        load_bundle=default_load,
         title_en="Synthetic research", title_zh="合成研究",
         note_en="Synthetic note.", note_zh="合成说明。",
     )
@@ -1298,3 +1328,283 @@ def test_registry_returning_a_non_registration_is_a_private_503(
     _assert_private_headers(response)
     assert response.json()["detail"]["error"]["code"] == "service_unavailable"
     assert bundle_loader == []
+
+
+# ---------------------------------------------------------------------------
+# 13. T08c-2 — the registered loader serves the PUBLIC half through the real
+#     app: production writer → real reader → witness scope → projector →
+#     composer → wire. Private half declared absent. (Sol 5813801605 cohort;
+#     R4 pending.)
+# ---------------------------------------------------------------------------
+
+from engine.market_ontology import semiconductor_owner_bundle as owner_bundle  # noqa: E402
+from engine.market_ontology.semiconductor_witness_scope import (  # noqa: E402
+    SLICE_SCOPE_UNOWNED,
+    WitnessIdentity,
+    WitnessScope,
+)
+from engine.neuralweb import company_intelligence_reader as ci_reader  # noqa: E402
+from tests.semiconductor_research_helpers import (  # noqa: E402
+    build_witness_nest,
+    wire_witness_nest,
+)
+
+_ARTIFACTS_PRESENT = (
+    (ROOT / "data" / "reference" / "security_master.parquet").is_file()
+    and (ROOT / "data" / "theme_graph" / "nodes.parquet").is_file()
+)
+needs_identity_artifacts = pytest.mark.skipif(
+    not _ARTIFACTS_PRESENT,
+    reason="committed Data OS / Theme Graph artifacts absent (sparse checkout)",
+)
+_TSM_EVENTS = ["evt_cik0001046179_2026q1_results", "evt_cik0001046179_2026q2_results"]
+_ON_EVENTS = ["evt_cik0001097864_2026q1_results", "evt_cik0001097864_2026q2_results"]
+_TSM_IDENTITY = WitnessIdentity(ticker="TSM", company_node_id="co:us:TSM",
+                                issuer_id="ISS:US-XNYS-TSM", cik="0001046179")
+_ON_IDENTITY = WitnessIdentity(ticker="ON", company_node_id="co:us:ON",
+                               issuer_id="ISS:US-XNAS-ON", cik="0001097864")
+
+
+@pytest.fixture(scope="module")
+def witness_nest_files(tmp_path_factory):
+    return build_witness_nest(tmp_path_factory.mktemp("witness_nest"))
+
+
+@pytest.fixture
+def served_witness_nest(monkeypatch, witness_nest_files):
+    """The real loader (nothing patched on the route) over the synthetic nest."""
+    return wire_witness_nest(monkeypatch, witness_nest_files)
+
+
+def _served(entitled_client, **overrides):
+    response = entitled_client.post("/api/themes/v1/research/query",
+                                    json=_valid_body(view="economics", **overrides))
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    return response.json()
+
+
+def _validates(payload) -> None:
+    import jsonschema  # noqa: PLC0415
+    jsonschema.validate(payload, json.loads(SCHEMA_PATH.read_text()))
+
+
+def _pin_witness(monkeypatch, identity, slice_key):
+    scope = WitnessScope(slice_key=slice_key, identities=(identity,),
+                         omissions=(SLICE_SCOPE_UNOWNED,))
+    monkeypatch.setattr(owner_bundle, "resolve_witness_scope", lambda key: scope)
+
+
+@needs_identity_artifacts
+def test_served_hbm_packaging_economics_is_ready_from_real_identities(
+    entitled_client, served_witness_nest,
+):
+    """W-A: TSM resolved through the real Theme Graph / Data OS owners; both
+    fiscal periods served through the real reader; the economics pane is
+    ready and the industrial half is declared absent."""
+    payload = _served(entitled_client, slice_key="hbm_packaging")
+    economics = payload["economics"]
+    assert economics["status"] == "ready" and economics["witness_gate"] == "positive"
+    assert economics["input_refs"] == _TSM_EVENTS
+    roles = economics["management"]["roles"]
+    assert set(roles) >= {"prior_outlook", "actual", "new_outlook"}
+    assert roles["prior_outlook"]["horizon"] == "2026Q2"
+    assert roles["actual"]["fiscal_period"] == "2026Q2" and roles["actual"]["metric"] == "revenue"
+    assert roles["new_outlook"]["horizon"] == "2026Q3"
+    assert economics["management"]["comparisons"]["prior_vs_actual"]["status"] == "comparable"
+    assert payload["summary"]["status"] == "unavailable"
+    assert payload["summary"]["reason"] == "no_selected_assertions"
+    assert "omitted:private_assertions_unbound" in payload["limitations"]
+    assert "omitted:slice_scope_unowned" in payload["limitations"]
+    assert payload["authority"] == {
+        "can_rank": False, "can_gate": False, "can_size": False,
+        "can_originate": False, "can_open_entry": False,
+    }
+    _validates(payload)
+    fetched = [url.rsplit("/", 1)[-1] for url in served_witness_nest]
+    assert fetched == ["manifest.json", "manifest.json",
+                       "evt_cik0001046179_2026q2_results.json",
+                       "evt_cik0001046179_2026q1_results.json"]
+
+
+@needs_identity_artifacts
+def test_served_sic_gan_specialty_uses_onsemi_and_differs_from_hbm(
+    entitled_client, served_witness_nest,
+):
+    """W-B: ON's periods; different economics inputs than W-A; same declared
+    absences."""
+    payload = _served(entitled_client, slice_key="sic_gan_specialty")
+    assert payload["economics"]["status"] == "ready"
+    assert payload["economics"]["input_refs"] == _ON_EVENTS
+    assert set(payload["economics"]["input_refs"]).isdisjoint(_TSM_EVENTS)
+    roles = payload["economics"]["management"]["roles"]
+    assert roles["actual"]["fiscal_period"] == "2026Q2" and roles["actual"]["basis"] == "reported_gaap"
+    assert roles["prior_outlook"]["horizon"] == "2026Q2" and roles["new_outlook"]["horizon"] == "2026Q3"
+    assert payload["economics"]["management"]["comparisons"]["prior_vs_actual"]["status"] == "comparable"
+    assert "omitted:private_assertions_unbound" in payload["limitations"]
+    _validates(payload)
+    hbm = _served(entitled_client, slice_key="hbm_packaging")
+    assert hbm["generation"] != payload["generation"]
+
+
+@needs_identity_artifacts
+def test_served_limitations_all_match_the_frozen_grammar(entitled_client, served_witness_nest):
+    for slice_key in ("hbm_packaging", "sic_gan_specialty"):
+        payload = _served(entitled_client, slice_key=slice_key)
+        for item in payload["limitations"]:
+            name, colon, detail = item.partition(":")
+            assert name and all(c in "abcdefghijklmnopqrstuvwxyz0123456789_" for c in name), item
+            if colon:
+                assert detail and all(
+                    c in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-"
+                    for c in detail), item
+
+
+def test_served_rights_snapshot_is_read_exactly_once_per_request(
+    entitled_client, served_witness_nest, monkeypatch,
+):
+    """One rights read per request: the route loads the snapshot, hands the
+    SAME object to the loader (fingerprint) and to the filter (enforcement);
+    the loader never re-reads."""
+    _pin_witness(monkeypatch, _TSM_IDENTITY, "hbm_packaging")
+    reads: list[int] = []
+    real = rights_module.load_registry_snapshot
+
+    def counted(*a, **kw):
+        reads.append(1)
+        return real(*a, **kw)
+
+    monkeypatch.setattr(theme_research, "load_registry_snapshot", counted)
+    monkeypatch.setattr(owner_bundle, "load_registry_snapshot",
+                        lambda *a, **kw: pytest.fail("loader re-read the registry"))
+    payload = _served(entitled_client, slice_key="hbm_packaging")
+    assert reads == [1]
+    assert payload["economics"]["status"] == "ready"
+
+
+def test_served_system_replay_is_refused_before_any_reader_fetch(
+    entitled_client, served_witness_nest,
+):
+    """Sol 5813801605: no supported as-known identity → refuse system_replay;
+    the existing not_available refusal names the mode; zero fetches."""
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body(
+        view="economics", time_mode="system_replay",
+        source_cutoff="2026-09-01", recorded_cutoff="2026-09-01",
+    ))
+    assert response.status_code == 404, response.text
+    _assert_private_headers(response)
+    assert response.json() == {"detail": {"error": {
+        "code": "not_available", "action": "none", "detail": "identity_vintage_unsupported",
+    }}}
+    assert served_witness_nest == []
+
+
+@needs_identity_artifacts
+def test_served_source_history_proceeds(entitled_client, served_witness_nest):
+    payload = _served(entitled_client, slice_key="hbm_packaging",
+                      time_mode="source_history", source_cutoff="2026-09-01")
+    assert payload["economics"]["status"] == "ready"
+    _validates(payload)
+
+
+def test_served_reader_transport_failure_is_the_fixed_private_503(
+    entitled_client, monkeypatch,
+):
+    _pin_witness(monkeypatch, _TSM_IDENTITY, "hbm_packaging")
+    ci_reader.clear_company_intelligence_cache()
+    monkeypatch.setattr(ci_reader, "_public_base_url", lambda: "https://company-intelligence.example/x")
+
+    def failing(url, *, limit):
+        raise ci_reader.CompanyIntelligenceReadError("Company Intelligence public source unavailable")
+
+    monkeypatch.setattr(ci_reader, "_fetch_bytes", failing)
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body(view="economics"))
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json() == {
+        "detail": {"error": {"code": "service_unavailable", "action": "retry_later"}},
+    }
+
+    def raising(url, *, limit):
+        raise RuntimeError("secret internal path /var/private")
+
+    monkeypatch.setattr(ci_reader, "_fetch_bytes", raising)
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body(view="economics"))
+    assert response.status_code == 503, response.text
+    assert "secret" not in response.text and "/var/" not in response.text
+
+
+def test_served_identity_plane_disagreement_never_reaches_economics(
+    entitled_client, served_witness_nest, monkeypatch,
+):
+    wrong = WitnessIdentity(ticker="TSM", company_node_id="co:us:TSM",
+                            issuer_id="ISS:US-XNYS-TSM", cik="0009999999")
+    _pin_witness(monkeypatch, wrong, "hbm_packaging")
+    payload = _served(entitled_client, slice_key="hbm_packaging")
+    assert payload["economics"]["status"] == "unavailable"
+    assert payload["economics"]["input_refs"] == []
+    assert "omitted:identity_mismatch.TSM" in payload["limitations"]
+    _validates(payload)
+
+
+def test_served_uncovered_witness_is_a_typed_omission_not_a_503(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """Production today: the nest does not cover the witness → 200 with the
+    absence said, never a failure."""
+    wire_witness_nest(monkeypatch, build_witness_nest(tmp_path, tickers=("TSM",)))
+    _pin_witness(monkeypatch, _ON_IDENTITY, "sic_gan_specialty")
+    payload = _served(entitled_client, slice_key="sic_gan_specialty")
+    assert payload["economics"]["status"] == "unavailable"
+    assert "omitted:workspace_unavailable.ON" in payload["limitations"]
+    _validates(payload)
+
+
+def test_served_single_period_nest_degrades_to_witness_economics_missing(
+    entitled_client, monkeypatch, tmp_path,
+):
+    wire_witness_nest(monkeypatch, build_witness_nest(tmp_path, periods=(2,)))
+    _pin_witness(monkeypatch, _TSM_IDENTITY, "hbm_packaging")
+    payload = _served(entitled_client, slice_key="hbm_packaging")
+    assert payload["economics"]["status"] == "unavailable"
+    assert "omitted:workspace_unavailable.TSM-2026Q1" in payload["limitations"]
+    assert "witness_economics_missing" in payload["limitations"]
+    _validates(payload)
+
+
+def test_route_dispatches_bundle_loading_through_the_registration(
+    entitled_client, monkeypatch,
+):
+    """The shell names no vertical's owner surface: a synthetic registration's
+    ``load_bundle`` is what serves, and it receives the parsed query plus the
+    request's rights snapshot — never the principal, never request JSON."""
+    seen: list[dict] = []
+
+    def synthetic_load(query, *, rights_snapshot):
+        seen.append({"query": query, "snapshot": rights_snapshot})
+        from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+        return OwnerBundle(
+            revision_tuple=(("identity", "synthetic"),), rights_revision=rights_snapshot[0],
+            assertions=(), identity_results=(), event_workspaces=(), financial_packets=(),
+            interpretation_blocks=(), native_refs=(), omissions=("synthetic_absent",),
+        )
+
+    real = _real_registration_for("ai_semiconductors")
+    monkeypatch.setattr(theme_research, "registration_for",
+                        lambda anchor: dataclasses.replace(real, load_bundle=synthetic_load))
+    payload = _served(entitled_client, slice_key="hbm_packaging")
+    assert "omitted:synthetic_absent" in payload["limitations"]
+    assert len(seen) == 1
+    assert seen[0]["query"].slice_key == "hbm_packaging"
+    assert seen[0]["snapshot"][0] == rights_module.load_registry_snapshot()[0]
+
+
+def test_route_source_names_no_owner_surface():
+    """After T08c-2 the shell still names no vertical: no reader, scope,
+    projector or witness module is imported by app/theme_research.py."""
+    source = (ROOT / "app" / "theme_research.py").read_text(encoding="utf-8")
+    for forbidden in ("company_intelligence_reader", "semiconductor_witness_scope",
+                      "workspace_projection", "semiconductor_owner_bundle",
+                      "resolve_witness_scope", "read_event_workspace"):
+        assert forbidden not in source, forbidden
+    assert "registration.load_bundle(" in source

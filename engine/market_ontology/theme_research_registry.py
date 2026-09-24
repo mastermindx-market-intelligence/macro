@@ -12,8 +12,8 @@ How a vertical registers
 A vertical (Semiconductor today; Robotics, Technology ex-Semis, Mining on
 their own carriers or via a later additive commit here) adds ONE
 :class:`VerticalRegistration` entry to :data:`REGISTRY` carrying its own
-accepted composer, evidence selector, exact schema ids and definition
-version, and the bilingual title/note the mount renders. Nothing else changes:
+accepted composer, evidence selector, owner-bundle loader, exact schema ids
+and definition version, and the bilingual title/note the mount renders. Nothing else changes:
 ``app/theme_research.py`` resolves the registration by exact anchor after auth
 and body parsing and dispatches to it. The mount partial and build scripts
 are bound to the same registration by shared hook 2 (a separate additive
@@ -47,6 +47,9 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 
+from engine.market_ontology.semiconductor_owner_bundle import (
+    load_semiconductor_owner_bundle,
+)
 from engine.market_ontology.semiconductor_theme_research import (
     DEFINITION_VERSION as _SEMICONDUCTOR_DEFINITION_VERSION,
     compose_semiconductor_research,
@@ -83,9 +86,15 @@ def _require_nonempty_text(field: str, value: object) -> None:
 class VerticalRegistration:
     """One vertical's accepted contract, bound to exactly one anchor theme.
 
-    ``compose(query, bundle) -> Mapping`` and
-    ``select_evidence(query, bundle, assertion_ref) -> Mapping`` are the
+    ``compose(query, bundle) -> Mapping``,
+    ``select_evidence(query, bundle, assertion_ref) -> Mapping`` and
+    ``load_bundle(query, *, rights_snapshot) -> OwnerBundle`` are the
     vertical's own callables; the shell never inspects their internals. The
+    loader serves the vertical's accepted owner surfaces for a request the
+    shell has already authenticated, parsed and resolved; it raises
+    :class:`~engine.market_ontology.theme_research_binding.BundleUnavailable`
+    when it cannot serve (the shell's private 503) and the composer's
+    ``ResearchRefusal`` for a research mode it does not support. The
     title/note strings are the bilingual copy the mount renders verbatim.
     """
 
@@ -96,6 +105,7 @@ class VerticalRegistration:
     definition_version: str
     compose: Callable[..., Mapping[str, Any]]
     select_evidence: Callable[..., Mapping[str, Any]]
+    load_bundle: Callable[..., Any]
     title_en: str
     title_zh: str
     note_en: str
@@ -124,9 +134,11 @@ class VerticalRegistration:
             raise ValueError(
                 "VerticalRegistration.schema_id and evidence_schema_id must differ"
             )
-        if not callable(self.compose) or not callable(self.select_evidence):
+        if not callable(self.compose) or not callable(self.select_evidence) \
+                or not callable(self.load_bundle):
             raise TypeError(
-                "VerticalRegistration.compose and select_evidence must be callable"
+                "VerticalRegistration.compose, select_evidence and load_bundle "
+                "must be callable"
             )
 
 
@@ -142,6 +154,9 @@ _SEMICONDUCTOR = VerticalRegistration(
     definition_version=_SEMICONDUCTOR_DEFINITION_VERSION,
     compose=compose_semiconductor_research,
     select_evidence=select_authorized_evidence,
+    # T08c-2: public half through the Company Intelligence reader, private
+    # half declared absent (R4 pending).
+    load_bundle=load_semiconductor_owner_bundle,
     # Bilingual copy pinned verbatim from the reviewed T10b mount
     # (templates/_theme_research_mount.html.j2, law L5).
     title_en="Semiconductor industry research",

@@ -57,6 +57,7 @@ from engine.market_ontology.semiconductor_theme_research import (
     ResearchQuery,
     ResearchRefusal,
 )
+from engine.market_ontology.theme_research_binding import BundleUnavailable
 from engine.market_ontology.theme_research_registry import (
     VerticalRegistration,
     registration_for,
@@ -89,12 +90,13 @@ _PRIVATE_HEADERS = {
 _PRIVATE_HEADER_NAMES = frozenset(name.lower() for name in _PRIVATE_HEADERS)
 
 
-class PrivateStoreUnavailable(Exception):
-    """The native readers are not bound yet (R4 ruling pending).
+class PrivateStoreUnavailable(BundleUnavailable):
+    """The transport's historical name for "the owner surface cannot serve".
 
-    Tests inject a bundle via :func:`load_authorized_owner_bundle`; production
-    must never reach a real reader until that ruling lands. The body shape is
-    fixed by the route's ``service_unavailable`` envelope.
+    Registered loaders raise the base class
+    :class:`~engine.market_ontology.theme_research_binding.BundleUnavailable`;
+    the route catches the base, so both spell the same fixed private 503 and
+    neither message ever crosses the wire.
     """
 
 
@@ -147,6 +149,14 @@ _RESEARCH_REFUSAL_MAP: dict[str, tuple[int, dict[str, str]]] = {
     ),
     "replay_cutoffs_required": (
         400, {"code": "invalid_request", "action": "fix_request"},
+    ),
+    # A registered loader refuses a research mode it cannot serve (Sol
+    # 5813801605: system_replay without a supported as-known identity). The
+    # existing not_available refusal, with the mode named so the caller can
+    # request `latest`; no new status code or error family.
+    "identity_vintage_unsupported": (
+        404, {"code": "not_available", "action": "none",
+              "detail": "identity_vintage_unsupported"},
     ),
 }
 
@@ -212,7 +222,9 @@ def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
 # family disclosure
 # ---------------------------------------------------------------------------
 
-def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
+def _filter_bundle_for_rights(
+    bundle: OwnerBundle, *, snapshot: tuple[str, dict] | None = None,
+) -> tuple[OwnerBundle, bool]:
     """Strip assertions whose source-ref family is REFUSED by the rights
     OWNER's verdict on a FRESH snapshot. The verdict is asked of
     :func:`engine.theme_graph.rights.assert_current_emission_allowed` — the
@@ -224,8 +236,14 @@ def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
     assertions were dropped — the route turns that into the
     ``rights_refused_families_hidden`` limitation string without naming which
     families were refused.
+
+    ``snapshot`` is the request's ONE rights read (the route loads it once and
+    hands the same object to the registered loader, whose fingerprinted
+    ``rights_revision`` therefore equals the revision enforced here); a direct
+    caller that passes none gets a fresh read, the historical behaviour.
     """
-    snapshot = load_registry_snapshot()
+    if snapshot is None:
+        snapshot = load_registry_snapshot()
     verdicts: dict[str, bool] = {}  # per-request memo: one owner call per distinct family
     kept: list[Mapping[str, Any]] = []
     dropped = False
@@ -282,22 +300,30 @@ def _post_process_rights_limitation(
 # ---------------------------------------------------------------------------
 
 def load_authorized_owner_bundle(
-    query: ResearchQuery, *, principal: Mapping[str, Any]
+    query: ResearchQuery,
+    *,
+    principal: Mapping[str, Any],
+    registration: VerticalRegistration,
+    rights_snapshot: tuple[str, dict],
 ) -> OwnerBundle:
-    """The thin adapter the route calls to fetch a bundle for ``query``.
+    """The seam the route calls to fetch a bundle for ``query``.
 
-    Production MUST call only the approved native readers; TODAY those readers
-    are NOT bound (private binding R4 is an open DECISION_REQUEST), so this
-    default raises :class:`PrivateStoreUnavailable` -> 503. Tests monkeypatch
-    this symbol with a synthetic bundle.
+    Production dispatches to the closed registration's own loader
+    (``registration.load_bundle``) — the shell names no vertical's owner
+    surfaces, exactly as it names no composer. The loader receives ONLY the
+    parsed query (anchor already resolved, slice already a member of the
+    registration's closed set) and the request's single rights snapshot;
+    never a path, URL, locator, event id, ticker or CIK from request JSON.
+    ``principal`` is not forwarded: entitlement was decided by the route's
+    auth dependency, and the loader must not re-decide it.
 
-    Never reads file paths, URLs or locators from request JSON: the caller
-    supplies the bundle shape from its own private store.
+    Tests monkeypatch this symbol with a synthetic bundle. A loader that
+    cannot serve raises :class:`BundleUnavailable` → 503; one that refuses a
+    research mode raises the composer's ``ResearchRefusal`` → the existing
+    private refusal mapping.
     """
-    del query, principal
-    raise PrivateStoreUnavailable(
-        "private native readers are not bound (R4 ruling pending)"
-    )
+    del principal
+    return registration.load_bundle(query, rights_snapshot=rights_snapshot)
 
 
 # ---------------------------------------------------------------------------
@@ -417,8 +443,11 @@ def _call_compose(
     body: _QueryBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
     query = _body_to_query(body)
-    bundle = load_authorized_owner_bundle(query, principal=principal)
-    bundle, dropped = _filter_bundle_for_rights(bundle)
+    snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
+    bundle = load_authorized_owner_bundle(
+        query, principal=principal, registration=registration, rights_snapshot=snapshot,
+    )
+    bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
     payload = _require_registered_contract(
         registration.compose(query, bundle),
         registration.schema_id,
@@ -432,8 +461,11 @@ def _call_evidence(
     body: _EvidenceBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
     query = _body_to_query(body)
-    bundle = load_authorized_owner_bundle(query, principal=principal)
-    bundle, dropped = _filter_bundle_for_rights(bundle)
+    snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
+    bundle = load_authorized_owner_bundle(
+        query, principal=principal, registration=registration, rights_snapshot=snapshot,
+    )
+    bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
     payload = _require_registered_contract(
         registration.select_evidence(query, bundle, body.assertion_ref),
         registration.evidence_schema_id,
@@ -471,7 +503,7 @@ async def research_query(
         return _call_compose(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
-    except (PrivateStoreUnavailable, RegisteredContractMismatch):
+    except (BundleUnavailable, RegisteredContractMismatch):
         raise _private_error(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},
@@ -504,7 +536,7 @@ async def research_evidence(
         return _call_evidence(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
-    except (PrivateStoreUnavailable, RegisteredContractMismatch):
+    except (BundleUnavailable, RegisteredContractMismatch):
         raise _private_error(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},
