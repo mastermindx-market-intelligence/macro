@@ -52,6 +52,9 @@ _LOG_FRESH_DAYS = 3     # last row this many days old or less = fresh
 # SLACK BEYOND maturation, which is what the original comment meant it to be.
 _UNGRADED_MATURATION_BD = 21   # mirrors max(risk_radar_audit.HORIZONS) — not a tunable
 _UNGRADED_BACKLOG_AGE = 7      # business days of slack past maturation before a row is backlog
+# Keep this consumer dependency-light just like _INTL_MARKETS above. The enrolled
+# writer→reader roundtrip test pins parity with risk_radar_audit.FORWARD_ISSUE_CONTRACT.
+_FORWARD_ISSUE_CONTRACT = "risk_radar_forward_issue.v1"
 
 
 # ---------------------------------------------------------------------------
@@ -530,15 +533,10 @@ def _sha256_token(value: Any) -> bool:
 
 def _prospective_issue(row: dict, day) -> tuple[dict | None, str | None]:
     """Validate the new forward-log issue receipt without upgrading legacy rows."""
-    try:
-        from engine.risk_radar_audit import FORWARD_ISSUE_CONTRACT  # noqa: PLC0415
-    except Exception:  # noqa: BLE001
-        return None, "issue_contract_unavailable"
-
     issue = row.get("forecast_issue")
     if not isinstance(issue, dict):
         return None, "missing_issue_receipt"
-    if issue.get("contract") != FORWARD_ISSUE_CONTRACT:
+    if issue.get("contract") != _FORWARD_ISSUE_CONTRACT:
         return None, "wrong_issue_contract"
     if issue.get("model_contract") != "risk_radar_forward_model.v1":
         return None, "wrong_model_contract"
