@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T03:26:31.303226+00:00",
-  "count": 2752,
+  "generated_at": "2026-09-24T03:41:32.055488+00:00",
+  "count": 2753,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -859,6 +859,25 @@
         "Affordability Constraint Impact Draft law’s KWD 200k mortgage (KWD 70k subsidy) yields KWD 1K monthly EMI, exceeding average borrower’s DBR limit (KWD 500), severely restricting loan uptake and bank profitability.",
         "Mortgage Backlog & Execution Risk 100k+ application backlog could take >10 years to clear due to infrastructure gaps and affordability constraints (EMI > DBR), delaying growth despite law.",
         "Margin/Earnings Uncertainty Subsidized mortgages (lower rates) may neutralize/drag NIMs; bank lobbying for exemptions (e.g., reserve requirements) adds policy risk to volume upside."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q59he9u3owr-2536af",
+      "title": "GS Quinn Energy Futures WTI Oil Washout 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:07Z",
+      "summary_points": [
+        "CoT Build & Unwind: Record open interest decline (-$10.7bn) amid $6.0bn gross long build across Managed Money, Other, Non-Reportable, signaling rapid speculative unwinding and heightened near-term volatility risk.",
+        "WTI Price vs Open Interest Divergence: Late August 2026 price surge to $102.5 coinciding with steep open interest drop (1.9m→1.8m) indicates short-covering pressure or supply/demand imbalance, amplifying volatility risk.",
+        "Volatility & Delta Skew Convergence: Mar-Apr 2026 spike in WTI 3m ATM volatility (orange) and positive 25 delta skew (red) confirms elevated downside risk and structural market stress."
       ],
       "tags": [],
       "tickers": [],
