@@ -178,6 +178,7 @@ def _basket_snapshot(basket_id: str) -> dict[str, Any]:
     }
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_nuclear_power_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     assert _basket_snapshot("nuclear_power") == baseline["basket_membership"]["nuclear_power"]
@@ -187,6 +188,7 @@ def test_nuclear_power_membership_unchanged_vs_frozen_baseline() -> None:
     )
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_uranium_miners_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     assert (
@@ -198,6 +200,7 @@ def test_uranium_miners_membership_unchanged_vs_frozen_baseline() -> None:
     )
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_primary_and_supplemental_populations_are_disjoint_and_never_merged() -> None:
     primary = _basket_snapshot("nuclear_power")
     supplemental = _basket_snapshot("uranium_miners")
