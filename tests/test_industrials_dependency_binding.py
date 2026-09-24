@@ -130,6 +130,64 @@ def test_run_refresh_binds_acquire_results_filing_with_ordinary_refresh_outage()
     assert result["source"] == "ordinary_refresh_outage"
 
 
+def test_run_refresh_empty_fail_sources_returns_owner_ok_shape() -> None:
+    """N3 (T01 round-5): the seam's own shape, not the seam-unbound refusal.
+
+    With ``fail_sources=()`` the harness must serve the SEC submissions +
+    archive + exhibit URLs that ``acquire_results_filing`` reaches for the
+    synthetic CIK, and the seam must return every field the owner publishes
+    on a real run — ``cik``, ``accession``, ``form``, ``filing_date``,
+    ``acceptance_datetime``, ``report_date``, ``exhibit_url``, ``items``.
+    """
+    harness = publication_harness()
+    result = harness.run_refresh({})
+    assert result["status"] == "ok"
+    for field in (
+        "cik",
+        "accession",
+        "form",
+        "filing_date",
+        "acceptance_datetime",
+        "report_date",
+        "exhibit_url",
+        "items",
+    ):
+        assert field in result, (field, sorted(result))
+    assert result["cik"] == "0000987654"
+    assert result["accession"] == "0000987654-26-000001"
+    assert result["form"] == "8-K"
+    # The seam constructs the exhibit URL as
+    #   f"{archive_base}/{filename}" = https://www.sec.gov/Archives/edgar/data/987654/<acc_nodash>/synthetic-exhibit.htm
+    # from the SEC submissions primaryDocument field; the harness serves any
+    # URL ending with that filename, so the returned URL is the live archive
+    # URL, not a re-derivation of the input document URL.
+    assert result["exhibit_url"].endswith("/synthetic-exhibit.htm")
+
+
+def test_run_refresh_fail_sources_is_causal_not_coincidental() -> None:
+    """N3 (T01 round-5): a fail_source name causes the typed refusal; deleting
+    the entry flips the result to the owner's ok shape on the very next call.
+
+    The OLD harness returned ``refresh_source_failed`` because the seam's
+    archive SGML map was empty — not because the named source failed. This
+    test pins the new contract: the same harness instance, same fixtures,
+    only the ``fail_sources`` argument changes between the two assertions.
+    """
+    harness = publication_harness()
+
+    refused = harness.run_refresh({}, fail_sources=["ordinary_refresh_outage"])
+    assert refused["status"] == "unavailable"
+    assert refused["reason"] == "refresh_source_failed"
+    assert refused["source"] == "ordinary_refresh_outage"
+    assert "503" in refused["detail"], refused
+
+    ok = harness.run_refresh({}, fail_sources=[])
+    assert ok["status"] == "ok", ok
+    assert ok["cik"] == "0000987654"
+    assert ok["accession"] == "0000987654-26-000001"
+    assert ok["exhibit_url"].endswith("/synthetic-exhibit.htm")
+
+
 def test_top_level_refusal_reasons_are_closed_set_or_unknown_field() -> None:
     from engine.company_intelligence.financial_dossier import (
         DELIVERY_REFUSAL_REASONS,

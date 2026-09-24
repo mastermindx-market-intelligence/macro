@@ -405,51 +405,94 @@ class _PublicationHarness:
         fail_sources: Iterable[str] = (),
     ) -> dict[str, Any]:
         """Inject ``acquire_results_filing`` with a fake ``http_get`` that
-        serves fixture bytes for live sources and a typed refusal for every
-        source in ``fail_sources``. Returns the seam's typed result.
+        serves the seam's own SEC submissions + SGML + exhibit shape, and
+        returns an HTTP 503 for the submissions URL whenever ``fail_sources``
+        is non-empty — that is what makes ``fail_sources`` causal: deleting
+        the entry flips the result to ``ok`` on the very next call.
+
+        The harness serves ONLY the URLs the real seam reaches for the
+        synthetic CIK ``0000987654`` — the submissions JSON (with one 8-K
+        Item 2.02 entry pointing at ``https://example.invalid/<synthetic>.htm``),
+        that entry's archive ``-index-headers.html`` (an SGML manifest with an
+        EX-99.1), and the named exhibit itself (``https://example.invalid/<synthetic>.htm``,
+        served with the synthetic fixture bytes below). Every entry in
+        ``fail_sources`` is named as the ``source`` of the typed refusal; the
+        first one wins.
         """
         from scripts.refresh_event_workspaces import (
             RefreshError,
             acquire_results_filing,
         )
 
-        failed = set(fail_sources)
-        fixtures: dict[str, bytes] = {
-            "synthetic:northgate": (
-                b'{"filings":{"recent":{"form":["8-K"],"accessionNumber":["0000987654-26-000001"],'
-                b'"primaryDocument":["ex99-1.htm"],"items":["2.02"],"filingDate":["2026-09-23"],'
-                b'"reportDate":["2026-09-22"],"acceptanceDateTime":["2026-09-23T13:30:00Z"]}}}'
-            ),
-        }
+        failed = sorted(set(fail_sources))
+        synthetic_cik = "0000987654"
+        submissions_url = "https://data.sec.gov/submissions/CIK0000987654.json"
+        exhibit_filename = "synthetic-exhibit.htm"
+        exhibit_url = f"https://example.invalid/{exhibit_filename}"
+        # Minimal valid submissions JSON — only the fields
+        # ``acquire_results_filing`` and ``submissions_rows`` read:
+        #   submissions["filings"]["recent"] with parallel arrays for
+        #   form / accessionNumber / filingDate / acceptanceDateTime /
+        #   reportDate / items / primaryDocument. One 8-K Item 2.02 entry
+        #   whose primaryDocument is the synthetic exhibit URL the harness
+        #   serves below.
+        submissions_body = json.dumps({
+            "filings": {
+                "recent": {
+                    "form": ["8-K"],
+                    "accessionNumber": ["0000987654-26-000001"],
+                    "filingDate": ["2026-09-23"],
+                    "acceptanceDateTime": ["2026-09-23T13:30:00Z"],
+                    "reportDate": ["2026-09-22"],
+                    "items": ["2.02"],
+                    "primaryDocument": [exhibit_filename],
+                }
+            }
+        }).encode("utf-8")
+        # SGML manifest format the seam parses:
+        #   unescaped text split on "<DOCUMENT>" with <TYPE>/<FILENAME> tags.
+        index_headers_body = (
+            "<DOCUMENT>"
+            "<TYPE>EX-99.1\n"
+            f"<FILENAME>{exhibit_filename}\n"
+            "</DOCUMENT>"
+        ).encode("utf-8")
+        exhibit_body = (
+            b"Three Months Ended September 30, 2026. "
+            b"Operating cash flow was 50 million."
+        )
 
         def fake_http_get(url: str) -> tuple[int, bytes]:
-            for source in failed:
-                if source in url:
+            if url == submissions_url:
+                if failed:
                     return (503, b"")
-            for source, body in fixtures.items():
-                if source in url:
-                    return (200, body)
-            return (200, b"")
+                return (200, submissions_body)
+            if url.endswith("-index-headers.html"):
+                # archive URL = https://www.sec.gov/Archives/edgar/data/987654/...
+                return (200, index_headers_body)
+            if url.endswith(exhibit_filename):
+                # The seam computes the exhibit URL as
+                #   f"{archive_base}/{filename}" =
+                #   https://www.sec.gov/Archives/edgar/data/987654/<acc_nodash>/synthetic-exhibit.htm
+                # — the same exhibit the primaryDocument field named. Serve
+                # the synthetic bytes for any URL ending with the named file.
+                return (200, exhibit_body)
+            return (404, b"")
 
-        for source in sorted(fail_sources):
-            try:
-                acquire_results_filing(cik="0000987654", http_get=fake_http_get)
-            except RefreshError as exc:
-                return {
-                    "status": "unavailable",
-                    "reason": "refresh_source_failed",
-                    "source": source,
-                    "detail": str(exc),
-                }
         try:
-            prepared = acquire_results_filing(cik="0000987654", http_get=fake_http_get)
-            return {"status": "ok", "prepared": bool(prepared)}
+            prepared = acquire_results_filing(cik=synthetic_cik, http_get=fake_http_get)
         except RefreshError as exc:
-            return {
+            source = failed[0] if failed else ""
+            unavailable: dict[str, Any] = {
                 "status": "unavailable",
                 "reason": "refresh_source_failed",
                 "detail": str(exc),
             }
+            if source:
+                unavailable["source"] = source
+            return unavailable
+
+        return {"status": "ok", **prepared}
 
     def members(self) -> set[str]:
         return set()
