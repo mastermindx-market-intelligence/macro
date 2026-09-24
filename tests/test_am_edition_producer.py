@@ -1105,7 +1105,10 @@ def test_owner_links_states_and_resolution(tmp_path):
     # The fixture always resolves at least one row (the templates exist
     # in this repo), so the state here is CURRENT.
     assert ol["state"] == "CURRENT"
-    assert ol["state_reason_en"] and "registry" in ol["state_reason_en"].lower()
+    # R8 (2026-09-24, plain-language law): the state_reason no longer
+    # names the registry or the resolved count. The reader-facing copy
+    # is "available this morning".
+    assert ol["state_reason_en"] and "available this morning" in ol["state_reason_en"].lower()
     # Every href must resolve via the producer's own resolve function so the
     # contract — owner rows resolve to an existing template OR a known
     # generated page — is enforced inside the test rather than duplicated.
@@ -1681,10 +1684,10 @@ def test_owner_links_state_includes_resolved_count(tmp_path):
     payload = build_payload(site, data, now=now)
     ol = _new_block(payload, "owner_links")
     assert ol["state"] == "CURRENT"
-    # The state_reason_en names the resolved count so the consumer knows
-    # rows exist (not a null disclosure).
-    assert "resolved" in ol["state_reason_en"].lower()
-    assert str(len(ol["rows"])) in ol["state_reason_en"]
+    # R8 (2026-09-24, plain-language law): the state_reason no longer
+    # names the resolved count. The reader-facing copy is the plain
+    # sentence "Owner pages and references are available this morning."
+    assert "available this morning" in ol["state_reason_en"].lower()
 
 
 def test_owner_links_plane_owner_by_plane_actually_used(tmp_path):

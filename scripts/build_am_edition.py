@@ -367,8 +367,12 @@ def _block(
         "classification": classification,
     }
     if state in ("UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN", "CLOSED"):
-        out["state_reason_en"] = reason_en or "Not available yet."
-        out["state_reason_zh"] = reason_zh or "暂不可用。"
+        # R8 (2026-09-24, plain-language law): default reason is plain
+        # words. The legacy _block() helper still falls through here when
+        # a caller passes None for reason_en/zh — the new defaults name
+        # the gap without internal state names.
+        out["state_reason_en"] = reason_en or "Not available this morning."
+        out["state_reason_zh"] = reason_zh or "今晨暂不可用。"
     elif state == "STALE_WITH_LAST_KNOWN" and not reason_en:
         age_en, age_zh = _humanize_age(age_minutes or 0)
         out["state_reason_en"] = (
@@ -946,11 +950,16 @@ def _context_planes_row(
     if state == "STALE_WITH_LAST_KNOWN":
         row_dict["state_reason_en"], row_dict["state_reason_zh"] = _row_age_phrase_en_zh(age)
     elif state == "NOT_COVERED":
-        row_dict["state_reason_en"] = not_covered_reason_en or "Not covered yet."
-        row_dict["state_reason_zh"] = not_covered_reason_zh or "暂未覆盖。"
+        # R8 (2026-09-24, plain-language law): the default NOT_COVERED
+        # reason is plain words — "not covered this morning." (EN) /
+        # "今晨暂未覆盖。" (ZH). No internal state names.
+        row_dict["state_reason_en"] = not_covered_reason_en or "Not covered this morning."
+        row_dict["state_reason_zh"] = not_covered_reason_zh or "今晨暂未覆盖。"
     elif state == "UNAVAILABLE":
-        row_dict["state_reason_en"] = not_covered_reason_en or "Not available yet."
-        row_dict["state_reason_zh"] = not_covered_reason_zh or "暂不可用。"
+        # R8 (2026-09-24): default UNAVAILABLE reason is plain words —
+        # "Not available this morning." / "今晨暂不可用。".
+        row_dict["state_reason_en"] = not_covered_reason_en or "Not available this morning."
+        row_dict["state_reason_zh"] = not_covered_reason_zh or "今晨暂不可用。"
     return row_dict
 
 
@@ -1098,8 +1107,8 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 source_ref=transmission_source_ref,
                 generated_at=generated_at,
                 covered=True,
-                not_covered_reason_en="Transmission state file is not available yet.",
-                not_covered_reason_zh="传输状态文件暂不可用。",
+                not_covered_reason_en="Transmission state is not available this morning.",
+                not_covered_reason_zh="今晨暂无传输状态读数。",
             ))
     if rates_state is not None:
         rows.append(rates_state)
@@ -1167,8 +1176,8 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             source_ref=commodity_source_ref,
             generated_at=generated_at,
             covered=True,
-            not_covered_reason_en="Commodity state file is not available yet.",
-            not_covered_reason_zh="商品状态文件暂不可用。",
+            not_covered_reason_en="Commodity state is not available this morning.",
+            not_covered_reason_zh="今晨暂无商品状态读数。",
         ))
 
     # international — China then HK market_state summaries. R5 (MAJOR 2,
@@ -1403,16 +1412,21 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         block["state_reason_en"] = "Some context planes are not fresh — last-known values shown."
         block["state_reason_zh"] = "部分背景面并非最新——展示的是最新已知值。"
     elif block_state == "UNAVAILABLE":
-        block["state_reason_en"] = "Context planes are not available yet."
-        block["state_reason_zh"] = "背景面暂不可用。"
+        # R8 (2026-09-24, plain-language law): plain words — no
+        # "暂不可用" / "not available yet". The reader sees the time scope
+        # (this morning) the block surfaces.
+        block["state_reason_en"] = "Context planes are not available this morning."
+        block["state_reason_zh"] = "今晨暂无背景面读数。"
     elif block_state == "NOT_COVERED":
         block["state_reason_en"] = "Some context planes are not yet covered."
         block["state_reason_zh"] = "部分背景面尚未覆盖。"
     elif block_state == "CURRENT":
         # CURRENT is why rows are not null — §0 gate 8 wants a disclosure when
         # rows are null, but a positive freshness disclosure here is fine.
-        block["state_reason_en"] = "All five planes are within their freshness budget."
-        block["state_reason_zh"] = "五个面均在时效预算内。"
+        # R8 (2026-09-24, plain-language law): drop "freshness budget" — the
+        # reader-facing word for the contract is "fresh", not "budget".
+        block["state_reason_en"] = "All five context planes are fresh this morning."
+        block["state_reason_zh"] = "今晨五个背景面均为最新读数。"
     return block
 
 
@@ -1752,13 +1766,17 @@ def _owner_links_block(site: Path, data_dir: Path) -> dict:
     # case the loader itself fails (the producer never reaches this code
     # path on a load failure; the owner_links gather returns []).
     state = "CURRENT" if rows else "NOT_COVERED"
+    # R8 (2026-09-24, plain-language law): drop "registry", drop counts,
+    # drop "freshness is not tracked here". The reader-facing copy names
+    # WHAT they can click (owner pages and references) and WHEN (this
+    # morning) — no internal state names.
     state_reason_en = (
-        f"Owner links are resolved from the registry ({len(rows)} resolved, freshness is not tracked here)."
-        if rows else "Owner links could not be resolved."
+        "Owner pages and references are available this morning."
+        if rows else "Owner pages and references are not available this morning."
     )
     state_reason_zh = (
-        f"主理页面链接来自注册表（已解析 {len(rows)} 项，此处不跟踪时效）。"
-        if rows else "主理页面暂不可解析。"
+        "今晨提供主理页面与参考链接。"
+        if rows else "今晨暂无主理页面与参考链接。"
     )
     return {
         "key": "owner_links",
