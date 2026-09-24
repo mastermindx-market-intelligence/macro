@@ -248,3 +248,5 @@ def test_event_scout_treats_attention_as_context_not_top_or_buy():
     assert "attention/inflow spikes mark TOPS" not in prompt
     assert "NEVER by itself a buy or a top call" in prompt
     assert "event-first watch may precede a price cluster" in prompt
+    assert "graded hypothesis" not in td._ADJ_SYSTEM
+    assert "never a scored thesis" in td._ADJ_SYSTEM
