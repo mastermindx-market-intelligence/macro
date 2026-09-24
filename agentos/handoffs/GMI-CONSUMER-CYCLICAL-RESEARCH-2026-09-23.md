@@ -107,3 +107,18 @@ MISSION_COMPLETE: false
 ROTATION_REASON: HARD_ROTATION_AFTER_THINKING_FAILED
 INTENDED_RESUME_SURFACE: fresh Extra High conversation
 WHAT_MUST_NOT_BE_REDONE: R1-R11 research; shared-foundation archaeology; completed review launch; existing consultations/comments; blocked native staging; branch/PR creation.
+
+
+## R15 — targeted review accepted; Fable integration-ready phase boundary
+
+Protected procedure re-pinned unchanged at Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`. The immutable R14 review packet at Consumer head `1183127d24cb9d3654516323f4e4ba530aa15cd1` received independent restricted Opus verdict **ACCEPT_FOR_FABLE_HANDOFF**, zero blocking findings. Provider result was successful/terminal; no permission denial. Sol independently replayed R12 60/60 and R13 9/9 as research-only checks. Review acceptance does not imply native/browser/deployment/product acceptance.
+
+Current mutable boundary before the handoff packet: Macro main `c99fdde7302dcc8ce66566802ea319ff3fdb9c11`; #7870 `3e3a7956d014b8c50be7b197fdbea847cecfa641`; #7780 `b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb`; #7669 `6942b2b62bad2dfc9d3b50eb7042e0a126b708c4`; #7462 `31706d7322af55696dc7b2e746ec511b08bd51d7`; #7426 `7bc04876747d773861b47519061279ae033a148d`. Main moved after R14 only through unrelated CI/Kalshi/NeuralWeb/data paths; M9 paywall/test blobs remain unchanged. #7870/#7780 did not move. Current T09 remains BUILT_NOT_PROVEN / NOT CONSUMER ACCEPTED because unmatched source families pass through and the owner says current sec.gov witness refs resolve to no family.
+
+Durable next packet: `research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.md` plus machine companion. Preferred avenue is Fable because the next phase is principal cross-owner integration; first executable mission is V1 PLNT, with routine bounded implementation/review delegated after boundaries freeze. Automatic Fable placement is not currently production-armed under protected routing/capacity source and no numbered account/session was explicitly assigned, so this boundary is truthfully `WAITING_CAPACITY / needs_placement`, not DELIVERY/ACK/START. No receiver watcher is armed.
+
+DO_NOT_REDO remains R1–R11, shared-foundation archaeology, existing consultations, both completed reviews, R12/R13 verification absent material invalidator, R14 reconciliation absent material invalidator, and the blocked native staging action. #7804 stays research/evidence only; no product code, Ready, merge, auto-merge, deploy, source admission, private payload or production claim follows.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+NEXT_ACTION: lawful Capacity/direct live placement binds an eligible Fable receiver to the R15 V1 integration packet; receiver re-pins current sources and begins only after pickup/watch/START gates.
