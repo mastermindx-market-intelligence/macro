@@ -1,8 +1,7 @@
 # RIC F3 W1 — Expected-absence path qualification
 
-Seat: Meta-CEO A. Date: 2026-09-24. Packet A-RIC-F3-W1 (lane `mo_a3_ric_f3_w1`: 3 MiniMax-fix / qwen-review
-rounds, then seat round 1). Branch `claude/mo-a-3-a-ric-f3-w1-expected-absence-20260924`. Files touched:
-`engine/yield_momentum.py`, `tests/test_yield_momentum.py`, this doc.
+Seat: Meta-CEO A. 2026-09-24. Packet A-RIC-F3-W1 (lane `mo_a3_ric_f3_w1`: 3 MiniMax-fix / qwen-review rounds, then seat
+round 1). Branch `claude/mo-a-3-a-ric-f3-w1-expected-absence-20260924`. Files: `engine/yield_momentum.py`, `tests/test_yield_momentum.py`, this doc.
 
 ## What changed
 
@@ -55,11 +54,10 @@ Reachable states W2 must handle: (a) `path_qualified True` together with `status
 ## Why
 
 `engine/yield_momentum.py::_series_read` required every one of the 1260 grid rows observed
-(`research/RIC_F3_PRODUCTION_PROOF_2026_09_22.md:170-184`), while Treasury CMT series skip US market holidays,
-so `path_qualified` was structurally False and `turn_watch` unreachable in production although every fixture
-prints every weekday. Recorded law `research/RATES_OBSERVATION_ORIGIN_2026-09-18.md:21` ("A weekday grid is not a
-verified Treasury-session calendar; holidays and other missing observations can withhold path qualification
-without invalidating supported endpoints") keeps its intent; withholding is narrowed to UNEXPECTED absences.
+(`research/RIC_F3_PRODUCTION_PROOF_2026_09_22.md:170-184`), while Treasury CMT series skip US market holidays, so
+`path_qualified` was structurally False and `turn_watch` unreachable in production although every fixture prints every
+weekday. Recorded law `research/RATES_OBSERVATION_ORIGIN_2026-09-18.md:21` ("A weekday grid is not a verified Treasury-session
+calendar; holidays and other missing observations can withhold path qualification without invalidating supported endpoints") keeps its intent; withholding is narrowed to UNEXPECTED absences.
 
 ## Fixture numbers (tests a–e, this head; `python3 -m pytest tests/test_yield_momentum.py -q` → 39 passed)
 
@@ -86,8 +84,7 @@ without invalidating supported endpoints") keeps its intent; withholding is narr
 
 ## W2 consumer note
 
-`engine/credit_momentum.py:1125` and `:1805` still read "R6: no yield_momentum.v1 yet" — consumer wiring is W2,
-NOT wired here, and starts only after one nightly shows `turn_watch` non-null on main. The new caveat is EN
-machine-vocabulary payload text; no template reads `yield_momentum` today (`rg yield_momentum templates/` → 0),
-so no crops are owed at this head, but W2 must render the condition as a plain sentence in both languages via
-`t('EN','ZH')` under the plain-language law, never the raw caveat.
+`engine/credit_momentum.py:1125` and `:1805` still read "R6: no yield_momentum.v1 yet" — consumer wiring is W2, NOT wired
+here, and starts only after one nightly shows `turn_watch` non-null on main. The new caveat is EN machine-vocabulary payload
+text; no template reads `yield_momentum` today (`rg yield_momentum templates/` → 0), so no crops are owed at this head, but W2
+must render the condition as a plain sentence in both languages via `t('EN','ZH')` under the plain-language law, never the raw caveat.
