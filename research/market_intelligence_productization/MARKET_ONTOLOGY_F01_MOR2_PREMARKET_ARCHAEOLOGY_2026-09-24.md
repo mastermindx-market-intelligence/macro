@@ -148,8 +148,7 @@ FILES MOR-2b MAY TOUCH (DEC §6 candidate paths, agentos/decisions/DEC-MARKET-ON
   shared brief partial only if shared behavior truly changes · aibrief.js + paired site asset only if interaction requires it ·
   existing workflow/schedule owner · focused tests
 
-EVIDENCE MATRIX (DEC §10 item 5, …PROJECTION-2026-08-30.md:343): desktop 1440 × {dark, light} × {EN, ZH} + mobile 390 ×
-  {dark, light} × {EN, ZH} = 8 PNGs, plus source-state and per-block clock receipts (§10 items 1–2, :339-340).
+EVIDENCE MATRIX (DEC §10 item 5, …PROJECTION-2026-08-30.md:343): {desktop 1440, mobile 390} × {dark, light} × {EN, ZH} = 8 PNGs + source-state and per-block clock receipts (§10 items 1–2, :339-340).
 
 PRIOR-CLOSE BRIEF VISIBLY OLDER (DEC §3.1 item 7 :146; handoff danger_areas :146): block 7 under its own h2 with its own
   generated_at pill; never shares chrome with the current blocks; copy "Yesterday's brief / 昨日简报" exists at build_am_edition.py:686.
