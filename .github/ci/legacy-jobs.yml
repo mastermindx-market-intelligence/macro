@@ -11960,7 +11960,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl xlrd scikit-learn
       - name: the macro-release forecast producer — projections, benchmarks and the graded forward ledger
-        run: python -m pytest tests/test_content_stamp_freshness_sweep2.py tests/test_cpi_postmortem_fixes.py tests/test_release_combined.py tests/test_release_forecast_producer.py tests/test_release_forecast_v2.py tests/test_release_integration_2a.py tests/test_release_integration_2b.py tests/test_release_integration_w11g.py tests/test_release_market_context.py -q
+        run: python -m pytest tests/test_content_stamp_freshness_sweep2.py tests/test_cpi_postmortem_fixes.py tests/test_release_combined.py tests/test_release_forecast_producer.py tests/test_release_forecast_v2.py tests/test_release_integration_2a.py tests/test_release_integration_2b.py tests/test_release_integration_w11g.py tests/test_release_market_context.py tests/test_kalshi_releases.py -q
       # Unrun backfill 2026-08-03: the CPI bridge (Track CB), the official-event
       # progressive-enhancement client, and the date-scoped Release Radar
       # selector join the producer lane that owns the release-forecast estate.
