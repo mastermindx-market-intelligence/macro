@@ -399,9 +399,10 @@ def _build_thesis(t: dict, i: int, asof, region: str, ranks: list, cfg: dict,
         or meta.get("_known_item_ids") or meta.get("_known_event_keys")
     )
     # A hallucinated ref on a legacy detector-only run must not silently change the incumbent
-    # grading contract.  Once caller-owned event context exists, however, any attempted source
-    # binding is fail-closed until it validates against that exact snapshot.
-    event_bound = has_event_context and (bool(refs) or event_ref_attempted)
+    # grading contract. Once caller-owned event context exists, however, the whole synthesis
+    # may have reasoned over later-known evidence even when the model omits refs. Fail closed:
+    # event-aware theses need an explicit prospective decision anchor before machine grading.
+    event_bound = has_event_context
     if event_bound:
         check = {
             "kind": "soft",
