@@ -1,0 +1,12 @@
+{
+  "schema": "ric.cpi_catalyst_rate_shadow.registration.v1",
+  "freeze_commit": "fed5da304400c6775a1c50734a35ef806b64e034",
+  "freeze_sha256": "5b3d9069a189225c0c27094df1bf5262047fbe1fd5cf313ec95100982d405a57",
+  "family": "ric_cpi_catalyst_rate_shadow_v1",
+  "literal_n": 1,
+  "config_hash": "4a5ee1dacd021f48",
+  "registered_at": "2026-09-24T23:50:17.516517+00:00",
+  "info_cutoff": "2026-09-24T23:49:47.727759+00:00",
+  "trial_ledger_after_sha256": "49f755010a6c593b5b3b8181a183b9a7aacc8e81617e681549ef6b2b89abac37",
+  "authority": false
+}

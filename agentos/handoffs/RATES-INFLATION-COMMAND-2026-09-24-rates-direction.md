@@ -216,3 +216,50 @@ surprise; expectation_read can compare to available external expectations but th
 captured history is only mid-2026 onward and often one-source. Preserve that
 distinction. RD2 constituent policy repricing remains a separate independent
 source-quality dependency. No live forecast/risk switch/trade authority.
+
+
+## Continuation: prospective CPI catalyst-to-rates shadow frozen and registered
+
+Procedure pin remains Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+Skillpack1.0.1/bootstrap1. Carrier remains PR7909 /
+claude/rates-direction-20260924-sol-001.
+
+After the technical and categorical-driver nulls, the next distinct hypothesis was
+moved to the missing causal layer: pre-release catalyst expectation -> realized CPI
+catalyst -> Treasury response. The source audit found two material constraints:
+historical expectation_read rows examined through the freeze use only Cleveland Fed
+nowcast, not a multi-source market-consensus series; and legacy champion target epochs
+remain evaluation-excluded by DN-004. DSC:RIC-EXPECTATION-READ-IS-NOT-MARKET-CONSENSUS
+preserves this source law.
+
+A prospective-only protocol was frozen at commit
+fed5da304400c6775a1c50734a35ef806b64e034, freeze timestamp
+2026-09-24T23:49:47.727759Z. It creates no new ledger or producer. It consumes only
+existing release_forecast forward-ledger rows:
+- coherent_ridge_v1 / alfred_same_release_vintage_proxy_v1 CPI headline+core
+  shadow_projection rows with exact calendar T-1 cutoff;
+- the same existing champion row ONLY for frozen expectation_median + source names,
+  never for legacy forecast math;
+- incumbent DGS10 history for later h0/h1/h5 grading.
+
+Headline+core are one CPI event. Component gap is coherent point minus the exact
+stored expectation median; +/-0.05pp is the frozen HOT/COOL threshold. Conflicts or
+missing inputs abstain. Only release_date >2026-09-24 is eligible. Primary DGS10 h0
+direction uses +/-2bp; h1/h5 are secondary. Baseline is prior five-observation DGS10
+direction on the same active events. Floors: >=12 eligible events and >=8 active for
+descriptive evaluation; >=24 eligible before any promotion review can be requested.
+No live RIC/equity/alert/rank/size/gate/trade authority.
+
+TrialLedger family ric_cpi_catalyst_rate_shadow_v1 was registered exactly once at
+2026-09-24T23:50:17.516517Z, config hash4a5ee1dacd021f48. Prefix hash matched the
+freeze and literal_n=1. Immediate report found2 joined pre-freeze events, both
+excluded, and ZERO prospective events / ZERO matured outcomes. Therefore there is no
+performance claim yet and no historical backfill can satisfy the future sample floor.
+Same-author integrity verifies frozen files, ledger prefix and zero-outcome boundary;
+independent review remains owed before any stronger authority.
+
+Independent rate-policy lane remains separate: PR7923 qualifies matched-contract
+policy repricing versus roll; PR7940 stacks prospective retention into the incumbent
+rates_command forward ledger and MUST NOT be duplicated here. Continue by reviewing
+that existing lane rather than building another policy path, while future CPI outcomes
+accrue through the incumbent Release Radar producer. Parent mission remains incomplete.
