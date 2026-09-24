@@ -126,6 +126,113 @@ def _install(
     return cfg
 
 
+def test_activation_canary_is_minimax_only_shadow_off_and_cost_qualified(
+    receipts, monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path)
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: 0.00001)
+    transport = FakeTransport({
+        "content": [{"type": "text", "text": "READY"}],
+        "usage": {"input_tokens": 3, "output_tokens": 1},
+    })
+
+    receipt = ppm.call_activation_canary(
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+    )
+
+    assert receipt.schema == ppm.CANARY_SCHEMA
+    assert receipt.mode_id == "minimax_payg_api"
+    assert receipt.provider_id == "minimax"
+    assert receipt.model == ppm.MINIMAX_PINNED_MODEL
+    assert receipt.ok is True
+    assert receipt.price_state == "known"
+    assert receipt.source_enabled is False
+    assert receipt.subscription_fallback_allowed is False
+    assert receipt.canary_only is True
+    assert receipt.qualification_effect is False
+    assert receipt.activation_eligible is True
+    assert (receipt.input_tokens, receipt.output_tokens) == (3, 1)
+    assert len(transport.calls) == 1
+    assert transport.calls[0]["credential"] == SECRET_VALUE
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
+    rendered = json.dumps(receipt.to_dict(), sort_keys=True)
+    assert SECRET_VALUE not in rendered
+    assert "text" not in receipt.to_dict()
+
+
+def test_activation_canary_missing_key_is_no_transport_and_not_eligible(
+    receipts, monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path)
+    transport = FakeTransport("must not run")
+
+    receipt = ppm.call_activation_canary(env={}, transport=transport)
+
+    assert receipt.ok is False
+    assert receipt.error_class == "unconfigured"
+    assert receipt.activation_eligible is False
+    assert receipt.source_enabled is False
+    assert transport.calls == []
+    assert receipts["usage"] == []
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+
+
+def test_activation_canary_refuses_glm_and_unbounded_token_budget_before_transport(
+    monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path)
+    transport = FakeTransport("must not run")
+
+    with pytest.raises(ppm.ProductionModeConfigError, match="MiniMax|Minimax|minimax"):
+        ppm.call_activation_canary(
+            "glm_general_api",
+            env={"ZAI_API_KEY": SECRET_VALUE},
+            transport=transport,
+        )
+    with pytest.raises(ppm.ProductionModeConfigError, match="max_tokens"):
+        ppm.call_activation_canary(
+            max_tokens=ppm.CANARY_MAX_TOKENS + 1,
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=transport,
+        )
+
+    assert transport.calls == []
+
+
+def test_activation_canary_transport_success_without_price_truth_stays_ineligible(
+    receipts, monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path)
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: None)
+    transport = FakeTransport({
+        "content": [{"type": "text", "text": "READY"}],
+        "usage": {"input_tokens": 2, "output_tokens": 1},
+    })
+
+    receipt = ppm.call_activation_canary(
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+    )
+
+    assert receipt.ok is True
+    assert receipt.price_state == "unknown"
+    assert receipt.activation_eligible is False
+    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
+
+
+def test_activation_canary_refuses_if_source_mode_is_already_enabled(
+    monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path, _enable("minimax_payg_api"))
+    with pytest.raises(ppm.ProductionModeConfigError, match="remain disabled"):
+        ppm.call_activation_canary(
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=FakeTransport("must not run"),
+        )
+
+
 def test_config_is_the_closed_two_mode_set():
     modes = ppm.load_modes()
     assert set(modes) == {"minimax_payg_api", "glm_general_api"}
