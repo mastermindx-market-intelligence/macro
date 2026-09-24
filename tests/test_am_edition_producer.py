@@ -1828,6 +1828,69 @@ def test_a7_no_buy_sell_in_producer_strings_surface(tmp_path):
     test_a7_no_buy_sell_in_producer_strings(tmp_path)
 
 
+def test_zh_fields_no_ascii_letters_except_allowed(tmp_path):
+    """R9 (2026-09-24): ZH fields must contain no ASCII letters except the
+    five whitelisted tokens (WTI / OAS / HY / CPI / FOMC) — these are
+    industry-standard abbreviations that ZH readers see in EN form. Any
+    other ASCII letter in a ZH field is an upstream leak (e.g. the prior
+    code mapped `rates_regime_en = "restrictive"` straight into a ZH label
+    when the owner-rendered ZH label was absent).
+
+    Scope: the test applies to the THREE NEW blocks — context_planes /
+    research_watch / owner_links — whose ZH strings the producer controls.
+    The legacy seven blocks ship owner-rendered ZH strings (`x` placeholders,
+    `bp` basis-point abbreviations) which the producer copies through
+    verbatim; translating those is an owner-side problem, out of scope here.
+    The new blocks use a small set of ZH-only templates plus the maps
+    `_COMMODITY_NAME_ZH` / `_RATES_REGIME_ZH` (and the unused-by-ZH
+    `_RATES_DIRECTION_ZH` / `_RATES_TURN_WATCH_ZH`).
+    """
+    import re as _re
+    ALLOWED = {"WTI", "OAS", "HY", "CPI", "FOMC"}
+    NEW_BLOCK_KEYS_LOCAL = ("context_planes", "research_watch", "owner_links")
+    ASCII_LETTER_RE = _re.compile(r"[A-Za-z]+")
+
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    theses = [{
+        "id": "mb-2026-09-08-1",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-08T10:00:00Z",
+        "falsifier": {"text": "Inflation rolls over back to the regime anchor."},
+        "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=True, theses_rows=theses,
+    )
+    payload = build_payload(site, data, now=now)
+
+    def _collect_zh_strings(node, out):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(v, str) and (k.endswith("_zh") or k == "zh"):
+                    out.append((k, v))
+                _collect_zh_strings(v, out)
+        elif isinstance(node, list):
+            for item in node:
+                _collect_zh_strings(item, out)
+
+    violations: list[tuple[str, str, str]] = []
+    for blk in payload["blocks"]:
+        if blk["key"] not in NEW_BLOCK_KEYS_LOCAL:
+            continue
+        zh_strings: list[tuple[str, str]] = []
+        _collect_zh_strings(blk, zh_strings)
+        for key, text in zh_strings:
+            for match in ASCII_LETTER_RE.findall(text):
+                if match not in ALLOWED:
+                    violations.append((blk["key"], key, match))
+    assert violations == [], (
+        f"ASCII letters leaked into ZH fields (R9): {violations[:10]}"
+    )
+
+
 def test_render_html_red_first_jinja2_missing_raises_on_old_branch(monkeypatch):
     """RED-first test for MAJOR 2/3: on the prior head (before the
     defensive ImportError branch), `render_html` raised ImportError when

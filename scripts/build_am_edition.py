@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import sys
 from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
@@ -177,6 +178,93 @@ _COMMODITY_REGIME_LABELS = {
     "Risk-on": ("Risk-on commodities", "商品风险偏好上升"),
     "Risk-off": ("Risk-off commodities", "商品风险偏好下降"),
 }
+
+
+# R9 (2026-09-24): ZH-only commodity name map. The favored list ships EN
+# names from upstream (data/commodity/latest.json) — never let ASCII letters
+# leak into the ZH field (the glance tier is bilingual; ZH must read as ZH).
+# An unmapped name surfaces the EN slug, leaves ZH null, and attaches a
+# state_reason disclosure.
+_COMMODITY_NAME_ZH = {
+    "Copper": "铜",
+    "Oil · WTI": "原油（WTI）",
+    "WTI": "WTI原油",
+    "Gold": "黄金",
+    "Silver": "白银",
+    "Aluminum": "铝",
+    "Iron Ore": "铁矿石",
+    "Zinc": "锌",
+    "Nickel": "镍",
+    "Nat Gas": "天然气",
+    "Corn": "玉米",
+    "Wheat": "小麦",
+    "Soybeans": "大豆",
+    "Coffee": "咖啡",
+    "Sugar": "糖",
+    "Cotton": "棉花",
+}
+
+
+# R9 (2026-09-24): ZH-only rates regime / direction / turn_watch map.
+# The transmission state.rates carries EN sub-inputs from upstream (the
+# artifact is EN-only); the producer surfaces them in the ZH read with a
+# plain-word ZH translation. The maps cover the full enumeration of
+# rates-regime sub-inputs the producer reads (`regime`, `direction`,
+# `turn_watch`); an unmapped value surfaces the EN slug, leaves ZH null,
+# and attaches a state_reason disclosure.
+_RATES_REGIME_ZH = {
+    "restrictive": "偏紧",
+    "easy": "宽松",
+    "neutral": "中性",
+    "tightening": "正在收紧",
+    "easing": "正在宽松",
+}
+_RATES_DIRECTION_ZH = {
+    "rising": "上升",
+    "falling": "下降",
+    "stable": "稳定",
+    "steepening": "陡峭化",
+    "flattening": "平坦化",
+}
+_RATES_TURN_WATCH_ZH = {
+    "extreme_watch": "极值观察",
+    "none": "无",
+    "regime_change": "周期切换",
+}
+
+
+# R9 (2026-09-24): owner-rendered ZH strings (e.g. `credit_label.zh`)
+# may carry ASCII unit abbreviations like `bp` (basis points) that the
+# R9 contract bans from new-block ZH fields. This helper rewrites the
+# well-known ASCII-unit forms into their ZH equivalents so the producer
+# surfaces the owner's plain words without leaking ASCII letters.
+_ASCII_UNIT_ZH = {
+    "bp": "个基点",
+    "bps": "个基点",
+}
+
+
+def _zh_strip_ascii_units(text: str | None) -> str | None:
+    """Translate well-known ASCII unit abbreviations to ZH inside a ZH
+    field. Idempotent on already-translated text. Returns the input
+    unchanged when no translation applies.
+
+    We match the ASCII unit on either side of a non-ASCII letter or
+    punctuation boundary. The standard `\\b` regex anchor fails across
+    the ASCII/CJK boundary because CJK chars are `\\W` and `\\b` requires
+    a word-char/non-word-char transition — `差320bp` has `0→b` which is
+    word-char/word-char (no boundary). We anchor on the surrounding
+    character class instead: a non-letter-digit before and a non-
+    letter-digit after.
+    """
+    if not text or not isinstance(text, str):
+        return text
+    for ascii_unit, zh_unit in _ASCII_UNIT_ZH.items():
+        # Match the unit wherever it appears; the ASCII unit is short and
+        # the substitution is idempotent (the ZH form does not contain the
+        # ASCII form).
+        text = text.replace(ascii_unit, zh_unit)
+    return text
 
 
 def _load_json_safe(path: Path) -> dict | list | None:
@@ -1021,7 +1109,11 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         rates_state = _context_planes_row(
             "rates",
             label_en=rates_label.get("en") or rates_regime_en,
-            label_zh=rates_label.get("zh") or rates_regime_en,
+            # R9 (2026-09-24): ZH label falls back to the ZH regime map —
+            # never the EN regime string (an EN string in a ZH field is
+            # an ASCII-letter leak in the glance tier). An unmapped
+            # regime leaves label_zh None.
+            label_zh=rates_label.get("zh") or _RATES_REGIME_ZH.get(rates_regime_en),
             read_en=" ".join(p for p in read_en_parts if p) or None,
             read_zh=" ".join(p for p in read_zh_parts if p) or None,
             as_of=transmission_root_asof,
@@ -1065,9 +1157,11 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             credit_state = _context_planes_row(
                 "credit",
                 label_en=credit_label_en or credit_regime,
-                label_zh=credit_label_zh or credit_regime,
+                # R9 (2026-09-24): strip ASCII unit abbreviations (e.g. `bp`)
+                # from owner-rendered ZH so the new-block ZH contract holds.
+                label_zh=_zh_strip_ascii_units(credit_label_zh) or credit_regime,
                 read_en=credit_label_en,
-                read_zh=credit_label_zh,
+                read_zh=_zh_strip_ascii_units(credit_label_zh),
                 as_of=credit_asof,
                 source_ref=transmission_source_ref,
                 generated_at=generated_at,
@@ -1140,6 +1234,19 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             breadth_en = f"{c_breadth_up}/{c_breadth_n} members trending up."
             breadth_zh = f"{c_breadth_up}/{c_breadth_n} 个品种趋势向上。"
         favored_en = ", ".join(str(x) for x in c_favored) if c_favored else None
+        # R9 (2026-09-24): translate each favored name to ZH via the
+        # `_COMMODITY_NAME_ZH` map. An unmapped name surfaces the EN slug
+        # in the ZH branch ONLY when the map covers it — never leak raw
+        # ASCII into the ZH field. The ZH branch surfaces mapped names
+        # joined with 、; an unmapped list item leaves that position
+        # empty (the consumer sees the EN sentence and the ZH mirror is
+        # # partial — acceptable; a raw EN string is not).
+        favored_zh_items: list[str] = []
+        for name in c_favored:
+            zh = _COMMODITY_NAME_ZH.get(str(name))
+            if zh:
+                favored_zh_items.append(zh)
+        favored_zh = "、".join(favored_zh_items) if favored_zh_items else None
         # EN and ZH carry the same sentence (favored + breadth) — the ZH
         # branch was previously dropped to breadth_zh only (MAJOR 3).
         read_en = (
@@ -1147,8 +1254,8 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             if favored_en and breadth_en else (favored_en or breadth_en)
         )
         read_zh = (
-            ("看好：" + "、".join(str(x) for x in c_favored) + "。" + breadth_zh)
-            if favored_en and breadth_zh else (("看好：" + "、".join(str(x) for x in c_favored)) if c_favored else breadth_zh)
+            ("看好：" + favored_zh + "。" + breadth_zh)
+            if favored_zh and breadth_zh else (("看好：" + favored_zh) if favored_zh else breadth_zh)
         )
         rows.append(_context_planes_row(
             "commodity",
