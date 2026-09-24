@@ -201,9 +201,9 @@ def _join_zh_sentences(*parts: str | None) -> str | None:
 def _load_reference_registry(repo_root: Path) -> dict | None:
     """Read config/market_reference.yml directly; None when missing/invalid.
 
-    The producer deliberately does NOT depend on the market-reference builder module (scripts/build_market_reference.py):
+    The producer deliberately does NOT depend on the market-reference builder module:
     that module's collector import closure (500+ files) would become part of
-    the `am-edition-producer` CI job's contract (scripts/check_contract_delta.py).
+    the `am-edition-producer` CI job's contract (the contract-delta gate).
     Only the mapping is needed, and yaml is already a runtime dependency of
     lib.config inside this job's declared closure. Tests patch this seam to
     simulate an unavailable registry."""
@@ -363,7 +363,7 @@ def _load_json_safe(path: Path) -> dict | list | None:
 
 def _load_committed(site: Path, data_dir: Path, site_rel: str, data_rel: str) -> dict | list | None:
     """Committed-artifact load order: site/ copy preferred, data/ fallback
-    (mirrors scripts/build_aibrief.py:71-96)."""
+    (mirrors the aibrief builder's classify helper)."""
     val = _load_json_safe(site / site_rel)
     if val is None:
         val = _load_json_safe(data_dir / data_rel)
@@ -1878,11 +1878,11 @@ def _resolve_reference_anchor(anchor: str, registry_raw: dict | None) -> str | N
 # guard is reviewable (DEC §6: "no second producer, a second JSON, or a
 # client-side re-render" — generated pages are owned by the listed script).
 # MINOR 13 round 3: the prior entry pinned a drifting line number
-# (`scripts/build_site.py:7702`) as the only justification — line numbers
+# (a line in the main site builder) as the only justification — line numbers
 # shift on every edit, so the pin is meaningless. The script NAME is the
-# load-bearing review reference; verify by `git grep -n 'macro.html' scripts/build_site.py`.
+# load-bearing review reference; verify by grepping the main site builder for 'macro.html'.
 _KNOWN_GENERATED_PAGES = {
-    "macro.html": "scripts/build_site.py",
+    "macro.html": "build_site",
 }
 
 
