@@ -381,12 +381,23 @@ def test_auth_acquisition_is_mdxauth_only(js_text):
 
 
 def test_fetch_targets_derive_from_mount_dataset(js_text):
-    targets = set(re.findall(r"fetch\(\s*([A-Za-z_$][\w$]*)\s*,", js_text))
-    assert targets == {"apiQueryUrl", "apiEvidenceUrl"}, (
-        f"every fetch() must target a mount-derived variable; found: {targets}"
-    )
+    # Same-origin guard resolves the mount attribute once, then the runtime
+    # references the resolved handle in every fetch(). Both the raw
+    # mount attribute AND the resolved URL must reach the fetch call.
     assert "getAttribute('data-api-query')" in js_text
     assert "getAttribute('data-api-evidence')" in js_text
+    assert "fetch(queryUrl," in js_text, "fetch must target the same-origin-resolved query URL"
+    assert "fetch(evidenceUrl," in js_text, "fetch must target the same-origin-resolved evidence URL"
+    # No cross-origin string literals may be passed to fetch.
+    assert "fetch('http" not in js_text
+    assert 'fetch("http' not in js_text
+    # The bare raw mount variables must not appear in a fetch() call.
+    bare = set(re.findall(r"fetch\(\s*apiQueryUrl\s*,", js_text))
+    bare |= set(re.findall(r"fetch\(\s*apiEvidenceUrl\s*,", js_text))
+    assert not bare, (
+        "raw mount attribute (apiQueryUrl/apiEvidenceUrl) must reach fetch "
+        "through the same-origin guard, not as the literal URL argument"
+    )
 
 
 def test_abortcontroller_used(js_text):
@@ -464,3 +475,533 @@ def test_css_has_overflow_wrap_and_bilingual_rules(css_text):
         "bilingual pair rules must ship with the component"
     )
     assert "[hidden]" in css_text, "hidden-attribute rules must ship with the component"
+
+
+# ---------------------------------------------------------------------------
+# 6. T10 review fixes — bilingual option law, limitations render,
+#    typed refusals (402, invalid_json, endpoint_not_same_origin), NIT-8
+#    qualifier, Next-button-at-end, leak/credential/exfiltration/storage/
+#    XSS-sink laws, plus the discriminating node batteries that would fail
+#    for a client that violates any of those laws.
+# ---------------------------------------------------------------------------
+
+_OPTION_TAB_KEPT = (
+    "Build the four tab-row builders identically so the same regex catches "
+    "any option-construction regression. If this comment disappears, the "
+    "discriminator broke too."
+)
+
+
+# a. Option labels: no dual-span inside <option>, data-en/data-zh set,
+#    a langchange listener exists, and optionLabelsFor is a pure helper.
+
+def test_options_no_dual_span_inside_option(js_text):
+    """BLOCKING-1. Browsers take an <option>'s label from textContent only;
+    any element children render as concatenated raw text. A regression here
+    ships a 'Latest build最新构建' closed select. The fix sets single-language
+    text plus data-en/data-zh and relabels on theme.js's langchange event."""
+    # option construction pattern: opt.setAttribute('data-en', …) AND opt.textContent = …
+    option_blocks = re.findall(
+        r"MODES\.forEach\(function\s*\(key\)\s*\{(.*?)\}\);",
+        js_text,
+        re.DOTALL,
+    )
+    assert option_blocks, "MODES.forEach option builder not found"
+    body = option_blocks[0]
+    assert "appendChild(t(" not in body, (
+        "option construction must NOT append a t(en, zh) span — the closed "
+        "<select> shows BOTH languages concatenated"
+    )
+    assert 'setAttribute(\'data-en\'' in body or 'setAttribute("data-en"' in body, (
+        "every option must carry a data-en attribute"
+    )
+    assert 'setAttribute(\'data-zh\'' in body or 'setAttribute("data-zh"' in body, (
+        "every option must carry a data-zh attribute"
+    )
+    assert re.search(r"opt\.textContent\s*=", body), (
+        "every option must set textContent to a single-language string"
+    )
+
+
+def test_langchange_listener_relabels_options(js_text):
+    """BLOCKING-1. site/theme.js dispatches 'langchange' on document; the
+    shipped a7851105.js pattern is the canonical reference. A regression
+    where the listener is dropped leaves the closed select stuck in EN
+    even when the user toggles language."""
+    assert "addEventListener('langchange'" in js_text, (
+        "langchange listener must be registered on document"
+    )
+    # the relabeling helper must walk the option data-* attributes
+    assert "querySelectorAll('option[data-zh]')" in js_text, (
+        "langchange relabel must walk every option[data-zh] node"
+    )
+    # initial label applied at boot from documentElement data-lang
+    assert "getAttribute('data-lang')" in js_text, (
+        "the boot label must derive from documentElement data-lang"
+    )
+    # the relabel reads BOTH data-zh and data-en — a regression that only
+    # reads one would silently swap a single language on toggle
+    assert "getAttribute('data-zh')" in js_text
+    assert "getAttribute('data-en')" in js_text
+    # relabelModeOptions() must be invoked at least twice — once at boot
+    # (so the closed select reflects the initial documentElement data-lang)
+    # and once on langchange (so toggles propagate)
+    assert js_text.count("relabelModeOptions") >= 2, (
+        "relabelModeOptions must be called at boot AND bound to langchange"
+    )
+
+
+@needs_node
+def test_option_labels_for_lang_pure_helper(js_text):
+    """BLOCKING-1 node battery: optionLabelsFor(lang) returns exactly three
+    single-language strings; 'en' yields no zh-only characters and vice
+    versa. The same map backs the runtime <option> construction."""
+    out = _run_review_battery(js_text)
+    en = out.get("opt_en")
+    zh = out.get("opt_zh")
+    assert en and zh, f"optionLabelsFor result missing: en={en!r} zh={zh!r}"
+    assert isinstance(en, list) and isinstance(zh, list), (
+        "optionLabelsFor must return arrays"
+    )
+    assert len(en) == 3 and len(zh) == 3, (
+        f"optionLabelsFor must return one string per closed mode key: en={en} zh={zh}"
+    )
+    for s in en + zh:
+        assert isinstance(s, str), f"optionLabelsFor strings must be plain strings: {s!r}"
+    # The EN list must NOT contain CJK characters; the ZH list must NOT
+    # contain bare English mode labels. Cross-contamination proves the
+    # helper has been wired with both data sets.
+    for s in en:
+        assert not re.search(r"[一-鿿]", s), f"EN label has CJK characters: {s!r}"
+    for s in zh:
+        assert re.search(r"[一-鿿]", s), f"ZH label has no CJK characters: {s!r}"
+
+
+# b. Limitations render — visible region, entries or status word, hidden
+#    while gated.
+
+@needs_node
+def test_limitations_model_ready_yields_entries(js_text):
+    """BLOCKING-2. A successful envelope with limitation entries yields
+    those entries (text-only) so the renderer can put them on screen."""
+    out = _run_review_battery(js_text)
+    model = out["lim_ready"]
+    assert model is not None, "limitationsModel not executed under node"
+    assert isinstance(model.get("limitations"), list), (
+        f"ready envelope must yield its limitation entries; got: {model}"
+    )
+    assert model["limitationsStatus"] == "ready", (
+        f"limitationsStatus must be 'ready'; got: {model['limitationsStatus']}"
+    )
+    assert model["limitations"], "ready envelope must yield at least one entry"
+    for entry in model["limitations"]:
+        assert isinstance(entry, str), (
+            f"limitation entries must be plain strings (renderer is textContent-only); got: {entry!r}"
+        )
+
+
+@needs_node
+def test_limitations_model_unavailable_yields_status_word(js_text):
+    """BLOCKING-2. A degraded/unavailable envelope (or a ready envelope with
+    no entries) yields null entries — the renderer prints the typed status
+    word instead of an empty region. Coverage status is reported
+    independently so the caveat line is never blank."""
+    out = _run_review_battery(js_text)
+    for label, model in (
+        ("lim_unavailable", out["lim_unavailable"]),
+        ("lim_empty", out["lim_empty"]),
+    ):
+        assert model is not None, f"{label}: limitationsModel not executed under node"
+        assert model["limitations"] is None, (
+            f"{label}: non-success / empty envelope must yield null entries; "
+            f"got: {model['limitations']!r}"
+        )
+        # Coverage status is whatever the payload carried (the caveat line
+        # is always rendered, never an empty region).
+        assert model["coverageStatus"] in ("ready", "degraded", "unavailable", "refused"), (
+            f"{label}: coverageStatus must be a closed status word; "
+            f"got: {model['coverageStatus']!r}"
+        )
+
+
+@needs_node
+def test_limitations_model_no_payload_yields_nothing(js_text):
+    """BLOCKING-2. The DOM gating (hidden region) is a render concern; the
+    pure helper must not assume a payload and must return null/None for
+    every field when given no payload at all."""
+    out = _run_review_battery(js_text)
+    model = out["lim_null"]
+    assert model is not None, "limitationsModel not executed under node"
+    assert model["limitations"] is None
+    assert model["limitationsStatus"] is None
+    assert model["coverageStatus"] is None
+
+
+# c. Arithmetic ban on paid figures.
+
+def test_no_arithmetic_on_paid_figures(js_text):
+    """Zero arithmetic on any paid figure. The only '+'/'-' arithmetic in
+    this file is the pagination math on `offset` and `PAGE_LIMIT`; every
+    other arithmetic operator on numeric literals is forbidden."""
+    # Strip string literals (single + double quoted) so attribute names like
+    # `data-theme-research-mount` don't trip the detector; strip comments
+    # so a code comment mentioning `textSafe + textContent` doesn't either.
+    stripped = re.sub(r"'[^'\n]*'", "", js_text)
+    stripped = re.sub(r'"[^"\n]*"', "", stripped)
+    stripped = re.sub(r"/\*.*?\*/", "", stripped, flags=re.DOTALL)
+    stripped = re.sub(r"//[^\n]*", "", stripped)
+    # Forbidden primitives
+    forbidden = [
+        r"parseFloat\(",
+        r"\bNumber\(",
+        r"\.toFixed\(",
+        r"\bmidpoint\b",
+        r"\bdelta\b",
+        r"\*\s*0\.5",
+        r"/\s*2\b",
+    ]
+    hits = []
+    for pat in forbidden:
+        for m in re.finditer(pat, stripped):
+            hits.append(m.group(0))
+    assert not hits, f"forbidden arithmetic on paid figures: {hits}"
+    # Pagination math on `offset` and `PAGE_LIMIT` is the only allowed '+'/'-'
+    # arithmetic on numeric identifiers in this file. A `data-theme-mount`-
+    # style HTML attribute cannot leak through (single-quote strings are
+    # stripped above) — every remaining `id <op> id` site must involve at
+    # least one of offset / PAGE_LIMIT / a Math.* wrapper.
+    sites = re.findall(r"[a-zA-Z_$][\w$]*\s*[+\-]\s*[a-zA-Z_$][\w$]*", stripped)
+    paginate_ids = {"offset", "PAGE_LIMIT"}
+    unexpected = []
+    for s in sites:
+        ids = re.findall(r"[a-zA-Z_$][\w$]*", s)
+        # at least one operand is pagination (offset / PAGE_LIMIT) or a
+        # Math.* wrapper — both safe per the standing arithmetic-on-paid-
+        # figures ban.
+        if any(i in paginate_ids or i.startswith("Math") for i in ids):
+            continue
+        unexpected.append(s)
+    assert not unexpected, (
+        f"non-pagination arithmetic on numeric identifiers: {unexpected}; "
+        f"pagination math (offset/PAGE_LIMIT) is the only allowed arithmetic "
+        f"on numbers in this file"
+    )
+
+
+# d. Credential ban.
+
+def test_no_credential_literals(js_text):
+    """No JWT-shaped string, no Bearer followed by a literal token, no
+    apikey/api_key/secret string literals anywhere in the file."""
+    offenders = []
+    # JWT-shaped literal — only matches an eyJ-shaped string with 10+ chars
+    for m in re.finditer(r"['\"]eyJ[A-Za-z0-9_-]{10,}['\"]", js_text):
+        offenders.append(("jwt", m.group(0)))
+    # Bearer followed by a literal token: 'Bearer ' followed by an alphanumeric
+    # run with no `+`/variable — `'Bearer eyJ…'` would match; `'Bearer ' + token`
+    # would not.
+    for m in re.finditer(r"['\"]Bearer\s+[A-Za-z0-9._\-]{8,}['\"]", js_text):
+        offenders.append(("bearer", m.group(0)))
+    # apikey / api_key / secret as string literals
+    for kw in ("apikey", "api_key", "secret"):
+        for m in re.finditer(rf"['\"]{kw}['\"]", js_text, re.IGNORECASE):
+            offenders.append((kw, m.group(0)))
+    assert not offenders, f"credential literal in source: {offenders}"
+    # the only `Bearer` mention is the runtime header format — verify it's a
+    # plain string literal followed by a `+` (template-built, never a token).
+    bearer = re.findall(r"Bearer", js_text)
+    assert bearer, "the only Bearer mention is the Authorization header template"
+    for m in re.finditer(r"Bearer[^;]*", js_text):
+        seg = m.group(0)
+        if "+" in seg:
+            continue
+        raise AssertionError(f"Bearer used without a + token builder: {seg!r}")
+
+
+# e. Exfiltration ban.
+
+def test_no_exfiltration_channels(js_text):
+    """No sendBeacon, no XMLHttpRequest, no `new Image(`, no WebSocket,
+    no EventSource, no postMessage, and no string-literal `fetch('http…)`
+    in the shipped file."""
+    forbidden = [
+        r"\bsendBeacon\s*\(",
+        r"\bXMLHttpRequest\b",
+        r"\bnew\s+Image\s*\(",
+        r"\bWebSocket\s*\(",
+        r"\bEventSource\s*\(",
+        r"\bpostMessage\s*\(",
+    ]
+    hits = []
+    for pat in forbidden:
+        for m in re.finditer(pat, js_text):
+            hits.append(m.group(0))
+    assert not hits, f"forbidden exfiltration channel: {hits}"
+    # No string-literal fetch('http…) — the only fetch() argument is the
+    # resolved URL handle (queryUrl/evidenceUrl).
+    for m in re.finditer(r"fetch\s*\(\s*['\"]http", js_text):
+        hits.append(m.group(0))
+    assert not hits, f"cross-origin string-literal fetch: {hits}"
+
+
+# f. Storage value — the only stored value is a JSON object whose keys
+#    are exactly the three selection keys.
+
+@needs_node
+def test_storage_value_only_three_selection_keys(js_text):
+    out = _run_review_battery(js_text)
+    valid = out["stored_valid"]
+    assert isinstance(valid, dict), f"valid stored selection not parsed: {valid!r}"
+    assert sorted(valid.keys()) == ["slice_key", "time_mode", "view"], (
+        f"stored selection must carry exactly three keys; got: {sorted(valid.keys())}"
+    )
+    assert valid["slice_key"] in ("hbm_packaging", "sic_gan_specialty"), (
+        f"stored slice must be in the closed vocabulary; got: {valid['slice_key']!r}"
+    )
+    assert valid["view"] in (
+        "composition", "manufacturing", "commercial", "capacity", "economics",
+    ), f"stored view must be in the closed vocabulary; got: {valid['view']!r}"
+    assert valid["time_mode"] in ("latest", "source_history", "system_replay"), (
+        f"stored time_mode must be in the closed vocabulary; got: {valid['time_mode']!r}"
+    )
+    # Every refusal case must yield None
+    for label, result in (
+        ("stored_payload", out["stored_payload"]),
+        ("stored_token", out["stored_token"]),
+        ("stored_extra_key", out["stored_extra_key"]),
+        ("stored_bad_view", out["stored_bad_view"]),
+        ("stored_bad_mode", out["stored_bad_mode"]),
+        ("stored_garbage", out["stored_garbage"]),
+    ):
+        assert result is None, f"{label} must refuse the stored value; got: {result!r}"
+
+
+# g. XSS sink ban broadened.
+
+def test_no_xss_sinks(js_text):
+    """Beyond innerHTML, the broader sink ban covers insertAdjacentHTML,
+    outerHTML, document.write, eval(, new Function(, createContextualFragment.
+    Any of these in a paid-theme client would be a regression."""
+    sinks = [
+        r"\binsertAdjacentHTML\s*\(",
+        r"\.outerHTML\s*=",
+        r"\bdocument\.write\s*\(",
+        r"\beval\s*\(",
+        r"\bnew\s+Function\s*\(",
+        r"\bcreateContextualFragment\s*\(",
+    ]
+    hits = []
+    for pat in sinks:
+        for m in re.finditer(pat, js_text):
+            hits.append(m.group(0))
+    assert not hits, f"forbidden XSS sink in source: {hits}"
+
+
+# h. Node battery for typed refusals, NIT-8 qualifier, Next-disabled.
+
+@needs_node
+def test_402_maps_to_gate_alongside_401_403(js_text):
+    """NIT-5. The classifyFetchStatus helper dispatches 401/402/403 to the
+    gate lane — only 'gate' allows the runtime to show the gate copy."""
+    out = _run_review_battery(js_text)
+    for code in (401, 402, 403):
+        assert out[f"cls_{code}"] == "gate", (
+            f"HTTP {code} must classify as 'gate'; got {out[f'cls_{code}']!r}"
+        )
+    assert out["cls_409"] == "conflict"
+    assert out["cls_200"] == "json"
+    assert out["cls_500"] == "http_error"
+
+
+@needs_node
+def test_same_origin_url_resolver_refuses_cross_origin(js_text):
+    """NIT-7. resolveSameOrigin refuses a different origin with the typed
+    code `endpoint_not_same_origin` and never produces a URL for fetch."""
+    out = _run_review_battery(js_text)
+    assert out["so_ok"] is True, "same-origin path must resolve"
+    assert out["so_cross_origin"] is False, "different origin must be refused"
+    assert out["so_cross_code"] == "endpoint_not_same_origin", (
+        f"cross-origin refusal must surface the typed code; got: {out['so_cross_code']!r}"
+    )
+    assert out["so_empty_code"] == "endpoint_not_same_origin", (
+        f"empty/missing URL must surface the typed code; got: {out['so_empty_code']!r}"
+    )
+
+
+@needs_node
+def test_200_non_json_yields_invalid_json_typed_code(js_text):
+    """NIT-4. A 200 with a non-JSON body surfaces the `invalid_json`
+    typed code — never a SyntaxError whose message embeds the bytes."""
+    out = _run_review_battery(js_text)
+    assert out["invalid_json_code"] == "invalid_json", (
+        f"non-JSON body must yield typed invalid_json; got: {out['invalid_json_code']!r}"
+    )
+    # the error message must NOT carry any of the response bytes
+    msg = out.get("invalid_json_msg") or ""
+    assert "<html" not in msg.lower() and "secret-token" not in msg.lower(), (
+        f"invalid_json error message leaked response bytes: {msg!r}"
+    )
+    assert msg == "invalid_json", (
+        f"invalid_json message must be the literal code only; got: {msg!r}"
+    )
+
+
+@needs_node
+def test_apply_research_response_keeps_previous_payload_with_qualifier(js_text):
+    """NIT-8. A valid envelope followed by an invalid one keeps the
+    previously good payload on screen (state.payload stays set) — the
+    qualify-the-previous-read behaviour matches the network-error branch
+    rather than contradicting ourselves in the status line."""
+    out = _run_review_battery(js_text)
+    assert out["nit8_accept"] is True, "first envelope must be accepted"
+    assert out["nit8_state_payload_kept"] is True, (
+        "after the invalid second envelope, the previous good payload must "
+        "stay set (NIT-8 decision: qualifier, not clear)"
+    )
+    assert out["nit8_state_error_set"] is True, (
+        "after the invalid second envelope, state.error must record invalid_envelope"
+    )
+    # The renderStatus qualifier copy must exist in source — proves the
+    # qualify-the-previous-read behaviour reaches the user.
+    assert "Showing the previous successful read." in js_text, (
+        "renderStatus must surface the qualifier for an invalid-envelope "
+        "branch that keeps the previous payload on screen"
+    )
+    assert "当前显示上一次成功读取的内容" in js_text, (
+        "renderStatus must surface the Chinese qualifier"
+    )
+
+
+@needs_node
+def test_next_disabled_when_page_holds_fewer_than_page_limit(js_text):
+    """NIT-9. isFinalPage(section, pageLimit) returns true when the current
+    page holds fewer rows than the page limit, false otherwise. The
+    runtime wires this directly into the Next button's disabled state."""
+    out = _run_review_battery(js_text)
+    assert out["next_full"] is False, "full page (rows == PAGE_LIMIT) must NOT be final"
+    assert out["next_partial"] is True, "partial page (rows < PAGE_LIMIT) MUST be final"
+    assert out["next_empty"] is True, "empty page (rows == 0) MUST be final"
+    assert out["next_missing"] is True, "missing section MUST be final"
+
+
+# ---------------------------------------------------------------------------
+# Helpers — node battery inputs the contract tests share
+# ---------------------------------------------------------------------------
+
+_REVIEW_HARNESS = r"""
+%(contract)s
+
+var cases = JSON.parse(process.argv[2]);
+var results = {};
+
+/* optionLabelsFor under node */
+results.opt_en = optionLabelsFor('en');
+results.opt_zh = optionLabelsFor('zh');
+
+/* limitationsModel under node */
+results.lim_ready = limitationsModel({
+  limitations: { status: 'ready', entries: ['paid data ends at fiscal Q3'] },
+  authorized_coverage: { status: 'ready' }
+});
+results.lim_unavailable = limitationsModel({
+  limitations: { status: 'unavailable' },
+  authorized_coverage: { status: 'ready' }
+});
+results.lim_empty = limitationsModel({
+  limitations: { status: 'ready', entries: [] },
+  authorized_coverage: { status: 'degraded' }
+});
+results.lim_null = limitationsModel(null);
+
+/* classifyFetchStatus under node */
+results.cls_401 = classifyFetchStatus(401);
+results.cls_402 = classifyFetchStatus(402);
+results.cls_403 = classifyFetchStatus(403);
+results.cls_409 = classifyFetchStatus(409);
+results.cls_200 = classifyFetchStatus(200);
+results.cls_500 = classifyFetchStatus(500);
+
+/* resolveSameOrigin under node — exercise the same-origin guard directly. */
+var HOME = 'http://example.test';
+try {
+  /* Strict-mode-safe stub: globalThis.location is writable on Node 18+ and
+   * provides the canonical same-origin baseline the guard checks against. */
+  if (typeof globalThis.location === 'undefined') {
+    globalThis.location = { origin: HOME };
+  }
+  var okSame = resolveSameOrigin('/api/themes/v1/research/query');
+  var cross = resolveSameOrigin('https://attacker.test/exfil');
+  var empty = resolveSameOrigin('');
+  results.so_ok = (okSame.ok === true && typeof okSame.url === 'string');
+  results.so_cross_origin = (cross.ok === true);
+  results.so_cross_code = cross.code;
+  results.so_empty_code = empty.code;
+} catch (e) {
+  results.so_error = String(e);
+}
+
+/* NIT-4: a 200 with a non-JSON body surfaces the typed `invalid_json`
+ * code — never a SyntaxError whose message embeds the response bytes.
+ * The runtime delegates the typed-error construction to newInvalidJsonError
+ * so the message is the literal code and the response bytes never reach
+ * the user. */
+var ije = newInvalidJsonError();
+results.invalid_json_code = ije.code;
+results.invalid_json_msg = ije.message;
+
+/* NIT-8: a valid envelope followed by an invalid one keeps the previous
+ * good payload and records invalid_envelope (qualifier, not clear). */
+var sN = {epoch: 1, principalKey: 'user-A', payload: null, error: null,
+          generation: null, selection: null};
+applyResearchResponse(sN, 1, 'user-A', cases.valid);
+results.nit8_accept = (sN.payload === cases.valid && sN.error === null);
+applyResearchResponse(sN, 1, 'user-A', {surprise_key: 'breaks the closed key set'});
+results.nit8_state_payload_kept = (sN.payload === cases.valid);
+results.nit8_state_error_set = (sN.error && sN.error.code === 'invalid_envelope');
+
+/* NIT-9: isFinalPage on full / partial / empty / missing. */
+results.next_full = isFinalPage({rows: new Array(20).fill({})}, 20);
+results.next_partial = isFinalPage({rows: new Array(7).fill({})}, 20);
+results.next_empty = isFinalPage({rows: []}, 20);
+results.next_missing = isFinalPage(null, 20);
+
+/* f. parseStoredSelection under node. */
+results.stored_valid = parseStoredSelection(JSON.stringify({
+  slice_key: 'hbm_packaging', view: 'composition', time_mode: 'latest'
+}));
+results.stored_payload = parseStoredSelection(JSON.stringify({
+  generation: 'g1', schema: 'semiconductor_theme_research.v1'
+}));
+results.stored_token = parseStoredSelection(JSON.stringify({
+  access_token: 'eyJabc.def.ghi', refresh_token: 'rt'
+}));
+results.stored_extra_key = parseStoredSelection(JSON.stringify({
+  slice_key: 'hbm_packaging', view: 'composition', time_mode: 'latest',
+  note: 'something else crept in'
+}));
+results.stored_bad_view = parseStoredSelection(JSON.stringify({
+  slice_key: 'hbm_packaging', view: 'not-a-real-view', time_mode: 'latest'
+}));
+results.stored_bad_mode = parseStoredSelection(JSON.stringify({
+  slice_key: 'hbm_packaging', view: 'composition', time_mode: 'definitely-not-closed'
+}));
+results.stored_garbage = parseStoredSelection('not even json {');
+
+console.log(JSON.stringify(results));
+"""
+
+
+def _run_review_battery(js_text: str) -> dict:
+    assert shutil.which("node"), "node not on PATH"
+    src = _REVIEW_HARNESS % {"contract": _contract(js_text)}
+    cases = {"valid": _envelope(), "bad": _bad_payloads()}
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "theme_research_review.js"
+        path.write_text(src, encoding="utf-8")
+        run = subprocess.run(
+            [shutil.which("node"), str(path), json.dumps(cases)],
+            capture_output=True, text=True, timeout=60,
+        )
+    assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}\n{run.stdout}"
+    assert run.stdout.strip(), f"no stdout; stderr:\n{run.stderr}"
+    return json.loads(run.stdout.strip().splitlines()[-1])

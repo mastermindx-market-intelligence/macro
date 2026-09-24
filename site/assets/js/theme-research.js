@@ -55,6 +55,119 @@
   ];
   var TR_STATUS_VOCAB = ['ready', 'degraded', 'unavailable', 'refused'];
 
+  /* Closed bilingual mode labels. The runtime L.mode points at this map so
+   * there is exactly one source of truth; optionLabelsFor() lifts the same
+   * map and yields single-language strings for a node-executed test. */
+  var TR_MODE_LABELS = {
+    latest: ['Latest build', '最新构建'],
+    source_history: ['Source history', '按来源历史'],
+    system_replay: ['System replay', '系统回放']
+  };
+  function optionLabelsFor(lang) {
+    var keys = Object.keys(TR_MODE_LABELS);
+    var out = [];
+    for (var i = 0; i < keys.length; i++) {
+      var pair_ = TR_MODE_LABELS[keys[i]];
+      out.push(lang === 'zh' ? pair_[1] : pair_[0]);
+    }
+    return out;
+  }
+
+  /* Pure view-model helper: a successful envelope yields its limitation
+   * entries (text only, the renderer is responsible for textContent); a
+   * degraded/unavailable/empty one yields null (the renderer shows the typed
+   * status word). authorised_coverage always returns its status word so the
+   * caveat line is never empty. The DOM gating (region hidden while gated)
+   * is a separate render concern — this helper does not see ui.gate. */
+  function limitationsModel(payload) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return { limitations: null, limitationsStatus: null, coverageStatus: null };
+    }
+    var lim = payload.limitations;
+    var cov = payload.authorized_coverage;
+    var limStatus = (lim && typeof lim === 'object' && !Array.isArray(lim))
+      ? lim.status : undefined;
+    var covStatus = (cov && typeof cov === 'object' && !Array.isArray(cov))
+      ? cov.status : undefined;
+    var entries = null;
+    if (limStatus === 'ready' && lim && Array.isArray(lim.entries) && lim.entries.length) {
+      entries = lim.entries;
+    }
+    return { limitations: entries, limitationsStatus: limStatus, coverageStatus: covStatus };
+  }
+
+  /* Closed slice/view vocabularies — shared with the stored-selection
+   * validator so a stored payload (anything with extra keys or non-vocabulary
+   * values) is refused outright on the next restore. */
+  var TR_SLICE_KEYS = ['hbm_packaging', 'sic_gan_specialty'];
+  var TR_VIEW_KEYS = ['composition', 'manufacturing', 'commercial', 'capacity', 'economics'];
+  var TR_MODE_KEYS = ['latest', 'source_history', 'system_replay'];
+  /* Stored selection must be EXACTLY three closed-vocabulary keys — a stored
+   * payload, a stored generation, a stored token, anything else returns
+   * null and the defaults stand. */
+  function parseStoredSelection(raw) {
+    if (!raw || typeof raw !== 'string') return null;
+    var sel;
+    try { sel = JSON.parse(raw); }
+    catch (e) { return null; }
+    if (!sel || typeof sel !== 'object' || Array.isArray(sel)) return null;
+    var keys = Object.keys(sel);
+    if (keys.length !== 3) return null;
+    if (TR_SLICE_KEYS.indexOf(sel.slice_key) < 0) return null;
+    if (TR_VIEW_KEYS.indexOf(sel.view) < 0) return null;
+    if (TR_MODE_KEYS.indexOf(sel.time_mode) < 0) return null;
+    return sel;
+  }
+
+  /* Classify the fetch response status. 401/402/403 all map to the gate
+   * (NIT-5: 402 is the payment-required response the v1 surface must refuse
+   * to render just like 401 sign-in and 403 forbidden). 409 stays in the
+   * conflict lane for refresh_required handling. Everything else falls
+   * through to the JSON branch (success) or the http-error branch. */
+  function classifyFetchStatus(status) {
+    if (status === 401 || status === 402 || status === 403) return 'gate';
+    if (status === 409) return 'conflict';
+    if (status >= 200 && status < 300) return 'json';
+    return 'http_error';
+  }
+
+  /* NIT-9: the current page is the LAST page when it holds fewer rows
+   * than pageLimit. A next-page fetch would only cost an auth round-trip
+   * and come back empty — the Next button must be disabled. */
+  function isFinalPage(section, pageLimit) {
+    if (!section || typeof section !== 'object') return true;
+    if (!Array.isArray(section.rows)) return true;
+    return section.rows.length < pageLimit;
+  }
+
+  /* NIT-4: a 200 with a non-JSON body surfaces a SyntaxError whose message
+   * embeds response bytes. The runtime catches the rejection and surfaces
+   * a typed error whose code is `invalid_json` and whose message is the
+   * literal code — the response bytes never reach the user. */
+  function newInvalidJsonError() {
+    var je = new Error('invalid_json');
+    je.code = 'invalid_json';
+    return je;
+  }
+
+  /* NIT-7: same-origin guard for the mount's data-api-* URLs. Resolves a
+   * relative or absolute URL against `location.origin`; a different origin
+   * (or an unparseable string) returns the typed `endpoint_not_same_origin`
+   * code so the runtime never fetches a cross-origin string and never
+   * attaches a bearer token to one. */
+  function resolveSameOrigin(raw) {
+    if (!raw || typeof raw !== 'string') {
+      return { ok: false, code: 'endpoint_not_same_origin' };
+    }
+    var resolved;
+    try { resolved = new URL(raw, location.origin); }
+    catch (e) { return { ok: false, code: 'endpoint_not_same_origin' }; }
+    if (resolved.origin !== location.origin) {
+      return { ok: false, code: 'endpoint_not_same_origin' };
+    }
+    return { ok: true, url: resolved.toString() };
+  }
+
   function newResearchState() {
     return {
       epoch: 0,
@@ -103,6 +216,22 @@
       }
       if (!_validStatus(section.status)) {
         return { ok: false, reason: 'section ' + key + ' has an invalid status' };
+      }
+      /* industrial_views carries a closed status word PLUS per-view entries;
+       * every entry's own status must also be one of the closed words. */
+      if (key === 'industrial_views') {
+        var ivKeys = Object.keys(section);
+        for (var iv = 0; iv < ivKeys.length; iv++) {
+          var ivk = ivKeys[iv];
+          if (ivk === 'status') continue;
+          var sub = section[ivk];
+          if (!sub || typeof sub !== 'object' || Array.isArray(sub)) {
+            return { ok: false, reason: 'industrial_views.' + ivk + ' is not an object' };
+          }
+          if (!_validStatus(sub.status)) {
+            return { ok: false, reason: 'industrial_views.' + ivk + ' has an invalid status' };
+          }
+        }
       }
     }
     var expectations = payload.expectations;
@@ -192,6 +321,18 @@
   var apiQueryUrl = MOUNT.getAttribute('data-api-query');
   var apiEvidenceUrl = MOUNT.getAttribute('data-api-evidence');
 
+  /* NIT-7. resolveSameOrigin lives in the contract block so the typed
+   * `endpoint_not_same_origin` code is testable under node. fetchTarget
+   * wraps it here: a `null` return means the runtime refuses the request
+   * without sending it and without attaching a bearer token. */
+  function fetchTarget(raw) {
+    var r = resolveSameOrigin(raw);
+    if (!r.ok) return null;
+    return r.url;
+  }
+  var queryUrl = fetchTarget(apiQueryUrl);
+  var evidenceUrl = fetchTarget(apiEvidenceUrl);
+
   var VIEWS = ['composition', 'manufacturing', 'commercial', 'capacity', 'economics'];
   var MODES = ['latest', 'source_history', 'system_replay'];
 
@@ -210,11 +351,7 @@
       capacity: ['Capacity', '产能'],
       economics: ['Economics', '经济性']
     },
-    mode: {
-      latest: ['Latest build', '最新构建'],
-      source_history: ['Source history', '按来源历史'],
-      system_replay: ['System replay', '系统回放']
-    },
+    mode: TR_MODE_LABELS,
     status: {
       ready: ['Ready', '就绪'],
       degraded: ['Degraded — partial data', '降级——部分数据'],
@@ -269,9 +406,20 @@
     return frag;
   }
 
+  /* Closed bilingual lookup. A bare map[key] hits the prototype and a
+   * payload `label_kind: "constructor"` would render "undefined"; a raw
+   * internal slug would render the API name on screen. hasOwnProperty +
+   * typed bilingual fallback keeps the failure visible and identical in
+   * both languages. */
   function pair(map, key) {
-    var entry = map[key];
-    return entry ? [entry[0], entry[1]] : [key, key];
+    if (Object.prototype.hasOwnProperty.call(map, key)) {
+      var e = map[key];
+      if (e && typeof e === 'object' && !Array.isArray(e) &&
+          typeof e[0] === 'string' && typeof e[1] === 'string') {
+        return [e[0], e[1]];
+      }
+    }
+    return ['Unmapped label', '未映射标签'];
   }
 
   function el(tag, className) {
@@ -308,14 +456,18 @@
   /* ---- remembered selection (the only storage this file touches) -------- */
 
   function restoreSelection() {
+    var restored = null;
     try {
       var raw = localStorage.getItem('theme_research_sel');
-      if (raw) {
-        var sel = JSON.parse(raw);
-        if (sel && SLICES.indexOf(sel.slice_key) >= 0) currentSlice = sel.slice_key;
-        if (sel && VIEWS.indexOf(sel.view) >= 0) currentView = sel.view;
-        if (sel && MODES.indexOf(sel.time_mode) >= 0) currentMode = sel.time_mode;
-      }
+      /* parseStoredSelection refuses anything that is not EXACTLY the three
+       * closed-vocabulary keys — a stored payload, generation, or token can
+       * never propagate back into the runtime. */
+      var sel = parseStoredSelection(raw);
+      if (sel && TR_SLICE_KEYS.indexOf(sel.slice_key) >= 0 &&
+          SLICES.indexOf(sel.slice_key) >= 0) currentSlice = sel.slice_key;
+      if (sel && TR_VIEW_KEYS.indexOf(sel.view) >= 0) currentView = sel.view;
+      if (sel && TR_MODE_KEYS.indexOf(sel.time_mode) >= 0) currentMode = sel.time_mode;
+      restored = sel;
     } catch (e) { /* unreadable memory is not an error; defaults stand */ }
     state.selection = { slice_key: currentSlice, view: currentView, time_mode: currentMode };
   }
@@ -368,7 +520,14 @@
   }
 
   function fetchPage(newOffset, isRefreshRetry) {
-    if (!apiQueryUrl) return;
+    if (!queryUrl) {
+      /* cross-origin / unparseable mount attribute — refuse the network
+       * call, never attach a bearer, and surface the typed error. */
+      ui.errorText = 'endpoint_not_same_origin';
+      ui.loading = false;
+      renderStatus();
+      return;
+    }
     var reqEpoch = state.epoch;
     var reqPrincipal = state.principalKey;
     abortInFlight();
@@ -380,7 +539,7 @@
 
     withAuthHeaders({ 'Content-Type': 'application/json' })
       .then(function (headers) {
-        return fetch(apiQueryUrl, {
+        return fetch(queryUrl, {
           method: 'POST',
           headers: headers,
           body: JSON.stringify(queryRequestBody(newOffset)),
@@ -389,12 +548,14 @@
       })
       .then(function (resp) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return null;
-        if (resp.status === 401 || resp.status === 403) {
-          /* sign-in / upgrade required: show the gate copy, never the body */
+        var statusKind = classifyFetchStatus(resp.status);
+        if (statusKind === 'gate') {
+          /* 401 sign-in / 402 payment required / 403 forbidden — surface the
+           * gate copy, never the body. */
           ui.gate = true;
           return null;
         }
-        if (resp.status === 409) {
+        if (statusKind === 'conflict') {
           return resp.json().catch(function () { return null; }).then(function (errBody) {
             var code = errBody && errBody.error && errBody.error.code;
             if (code === 'refresh_required' && !isRefreshRetry) {
@@ -408,13 +569,17 @@
             throw new Error((errBody && errBody.error && errBody.error.action) || ('http ' + resp.status));
           });
         }
-        if (!resp.ok) {
+        if (statusKind === 'http_error') {
           return resp.json().catch(function () { return null; }).then(function (errBody) {
             var err = errBody && errBody.error;
             throw new Error((err && (err.action || err.code)) || ('http ' + resp.status));
           });
         }
-        return resp.json();
+        /* statusKind === 'json': a 200-class response. NIT-4: a 200 with a
+         * non-JSON body surfaces a SyntaxError whose message embeds response
+         * bytes — catch it and surface a typed code with no body bytes in
+         * the message. */
+        return resp.json().catch(function () { throw newInvalidJsonError(); });
       })
       .then(function (payload) {
         if (payload === null || payload === undefined) { renderAll(); return; }
@@ -428,7 +593,13 @@
       .catch(function (err) {
         if (err && err.name === 'AbortError') return;
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
-        ui.errorText = (err && err.message) || 'request failed';
+        /* Surface the typed codes (invalid_envelope, invalid_json, etc.)
+         * verbatim — never echo response body bytes through the message. */
+        if (err && err.code) {
+          ui.errorText = err.code;
+        } else {
+          ui.errorText = (err && err.message) || 'request failed';
+        }
         renderAll();  /* previous payload (same epoch/principal) stays on screen */
       })
       .finally(function () {
@@ -454,7 +625,15 @@
   }
 
   function openEvidence(ref, invokingButton) {
-    if (!apiEvidenceUrl || !state.generation) return;
+    if (!evidenceUrl || !state.generation) {
+      if (!state.generation) return;
+      openDrawer(invokingButton);
+      clear(drawerBody);
+      var refuseP = el('p', 'tr-error');
+      refuseP.textContent = 'endpoint_not_same_origin';
+      drawerBody.appendChild(refuseP);
+      return;
+    }
     openDrawer(invokingButton);
     clear(drawerBody);
     drawerBody.appendChild(mutedLine(t('Loading evidence…', '正在加载证据…')));
@@ -471,7 +650,7 @@
         /* expected_generation is REQUIRED for evidence: the receipt must
          * prove it answers the generation the user is reading. */
         body.expected_generation = state.generation;
-        return fetch(apiEvidenceUrl, {
+        return fetch(evidenceUrl, {
           method: 'POST',
           headers: headers,
           body: JSON.stringify(body),
@@ -480,7 +659,7 @@
       })
       .then(function (resp) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return null;
-        if (resp.status === 401 || resp.status === 403) return { __gate: true };
+        if (resp.status === 401 || resp.status === 402 || resp.status === 403) return { __gate: true };
         if (resp.status === 409) {
           return resp.json().catch(function () { return null; }).then(function (errBody) {
             var code = errBody && errBody.error && errBody.error.code;
@@ -502,7 +681,7 @@
             throw new Error((err && (err.action || err.code)) || ('http ' + resp.status));
           });
         }
-        return resp.json();
+        return resp.json().catch(function () { throw newInvalidJsonError(); });
       })
       .then(function (payload) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
@@ -540,7 +719,7 @@
 
   /* ---- DOM scaffold ------------------------------------------------------ */
 
-  var gateBox, controlsBox, statusLine, summaryBox, tableWrap, expectationsBox,
+  var gateBox, controlsBox, statusLine, summaryBox, limitationsBox, tableWrap, expectationsBox,
       evidenceBox, evidenceList, pagerBox, prevBtn, nextBtn, pageInfo,
       drawer, drawerBody, drawerClose;
 
@@ -565,9 +744,11 @@
 
     var bodyWrap = el('div', 'tr-body');
     summaryBox = el('div', 'tr-summary');
+    limitationsBox = el('div', 'tr-limitations');
     tableWrap = el('div', 'tr-tablewrap');
     expectationsBox = el('div', 'tr-expectations');
     bodyWrap.appendChild(summaryBox);
+    bodyWrap.appendChild(limitationsBox);
     bodyWrap.appendChild(tableWrap);
     bodyWrap.appendChild(expectationsBox);
 
@@ -654,9 +835,28 @@
       var w = pair(L.mode, key);
       var opt = el('option');
       opt.value = key;
-      opt.appendChild(t(w[0], w[1]));
+      /* <option> children are ignored by browsers — the closed <select>'s
+       * label comes from textContent only. Each option carries single-
+       * language text plus data-en/data-zh, and a langchange listener
+       * (dispatched by site/theme.js:646) relabels from the page's current
+       * documentElement.dataset.lang (default "en"). */
+      opt.setAttribute('data-en', w[0]);
+      opt.setAttribute('data-zh', w[1]);
+      opt.textContent = w[0];
       modeSelect.appendChild(opt);
     });
+    function relabelModeOptions() {
+      var zh = document.documentElement &&
+        document.documentElement.getAttribute('data-lang') === 'zh';
+      var opts = modeSelect.querySelectorAll('option[data-zh]');
+      Array.prototype.forEach.call(opts, function (o) {
+        o.textContent = zh
+          ? (o.getAttribute('data-zh') || o.textContent)
+          : (o.getAttribute('data-en') || o.textContent);
+      });
+    }
+    document.addEventListener('langchange', relabelModeOptions);
+    relabelModeOptions();
     modeSelect.addEventListener('change', function () {
       if (currentMode === modeSelect.value) return;
       currentMode = modeSelect.value;
@@ -711,6 +911,17 @@
         'The response did not match the expected shape and was not shown.',
         '返回数据不符合预期格式，未予显示。'
       ));
+      /* NIT-8: applyResearchResponse keeps the previously good payload on
+       * an invalid envelope (state.payload stays set) — match the network-
+       * error branch and qualify that the previous successful read is still
+       * on screen rather than contradicting ourselves. */
+      if (state.payload) {
+        statusLine.appendChild(document.createTextNode(' '));
+        statusLine.appendChild(t(
+          'Showing the previous successful read.',
+          '当前显示上一次成功读取的内容。'
+        ));
+      }
     } else if (ui.errorText) {
       span = el('span', 'tr-error');
       span.textContent = textSafe(ui.errorText);
@@ -767,6 +978,53 @@
     if (summary.next_evidence !== undefined && summary.next_evidence !== null && summary.next_evidence !== '') {
       renderLabeledList(summaryBox, 'Next evidence to watch', '下一个待观察证据', summary.next_evidence);
     }
+  }
+
+  /* Rendered between the summary and the table on every successful envelope:
+   * limitations entries as text, authorised_coverage as a caveat line. When
+   * either carries a non-success status (or is empty), render its status
+   * word — never an empty region, never hidden outside the gated state. */
+  function renderLimitations() {
+    clear(limitationsBox);
+    if (ui.gate || !state.payload) { limitationsBox.hidden = true; return; }
+    limitationsBox.hidden = false;
+
+    var heading = el('h3');
+    heading.appendChild(t('Limitations', '限制'));
+    limitationsBox.appendChild(heading);
+
+    var model = limitationsModel(state.payload);
+
+    /* Limitations: ready+entries → text lines; else → typed status word. */
+    var limLine = el('p', 'tr-line');
+    if (model.limitations && model.limitations.length) {
+      var span = el('span');
+      span.textContent = textSafe(
+        model.limitations.map(function (entry) {
+          return typeof entry === 'object'
+            ? textSafe(entry.text !== undefined ? entry.text : (entry.value !== undefined ? entry.value : ''))
+            : textSafe(entry);
+        }).join(' · ')
+      );
+      limLine.appendChild(span);
+    } else {
+      var w = pair(L.status, model.limitationsStatus || 'unavailable');
+      limLine.appendChild(t(w[0], w[1]));
+    }
+    limitationsBox.appendChild(limLine);
+
+    /* Authorised coverage caveat — every successful envelope gets a line. */
+    var covLine = el('p', 'tr-line tr-muted');
+    var covStatus = model.coverageStatus;
+    if (covStatus === 'ready') {
+      covLine.appendChild(t('Coverage: ', '覆盖范围：'));
+      covLine.appendChild(statusWord('ready'));
+    } else {
+      covLine.appendChild(t('Coverage: ', '覆盖范围：'));
+      var cw = pair(L.status, covStatus || 'unavailable');
+      covLine.appendChild(t(cw[0], cw[1]));
+    }
+    limitationsBox.appendChild(covLine);
   }
 
   function renderTable() {
@@ -893,9 +1151,14 @@
     }
     pagerBox.hidden = false;
     prevBtn.disabled = offset <= 0;
-    nextBtn.disabled = !state.payload;
+    /* Disable Next when the current page holds fewer than PAGE_LIMIT rows:
+     * the server returned the tail and a next-page fetch would just cost
+     * an auth round-trip to come back empty. */
+    var section = sectionForView();
+    nextBtn.disabled = isFinalPage(section, PAGE_LIMIT);
+    var rowCount = (section && Array.isArray(section.rows)) ? section.rows.length : 0;
     var from = offset + 1;
-    var to = offset + PAGE_LIMIT;
+    var to = offset + rowCount;
     clear(pageInfo);
     pageInfo.appendChild(t(
       'Rows ' + from + '–' + to + ' · pinned to the read generation',
@@ -909,6 +1172,7 @@
     renderControls();
     renderStatus();
     renderSummary();
+    renderLimitations();
     renderTable();
     renderExpectations();
     renderEvidence();
