@@ -1,0 +1,22 @@
+{
+  "proof_class": "seeded_legacy_reference_equivalence",
+  "seed": 91726,
+  "cases": 160,
+  "date_units": [
+    "s",
+    "ms",
+    "us",
+    "ns"
+  ],
+  "rules": [
+    "D",
+    "W-FRI",
+    "W-MON",
+    "ME",
+    "QE"
+  ],
+  "all_exact": true,
+  "source_sha256": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65",
+  "input_mutations": 0,
+  "production": false
+}

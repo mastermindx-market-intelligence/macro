@@ -314,3 +314,97 @@ class TestStalePriceNeverReachesAFactor:
 
         trailing[list(_stale_price_columns(px))] = np.nan
         assert pd.isna(trailing["DEAD"])
+
+
+class TestThematicCloseResolution:
+    """Theme W0: one frozen-calendar, whole-column source contract."""
+
+    @staticmethod
+    def _resolve(primary, supplemental, tickers):
+        from lib.closes_panel import resolve_thematic_close_panel
+        return resolve_thematic_close_panel(primary, supplemental, tickers)
+
+    def test_supplemental_fresher_wins_without_divergent_primary_backfill(self):
+        idx = _sessions(10)
+        primary = pd.DataFrame({"A": np.arange(100.0, 110.0)}, index=idx)
+        primary.loc[idx[-1], "A"] = np.nan
+        supplemental = pd.DataFrame({"A": np.arange(200.0, 205.0)}, index=idx[-5:])
+
+        panel, receipt = self._resolve(primary, supplemental, ["A"])
+
+        assert panel["A"].iloc[:5].isna().all()
+        pd.testing.assert_series_equal(panel["A"].iloc[-5:], supplemental["A"], check_names=False)
+        assert receipt["price_source"]["A"] == "baskets_extras"
+        assert receipt["selection_reason"]["A"] == "supplemental_fresher"
+        assert "A" not in receipt["stitched"]
+    def test_primary_fresher_wins_whole_column(self):
+        idx = _sessions(10)
+        primary = pd.DataFrame({"A": np.arange(100.0, 110.0)}, index=idx)
+        supplemental = pd.DataFrame({"A": np.arange(200.0, 209.0)}, index=idx[:-1])
+
+        panel, receipt = self._resolve(primary, supplemental, ["A"])
+
+        pd.testing.assert_series_equal(panel["A"], primary["A"], check_names=False)
+        assert receipt["price_source"]["A"] == "primary_breadth"
+        assert receipt["selection_reason"]["A"] == "primary_fresher"
+        assert "A" not in receipt["stitched"]
+
+    def test_equal_tip_prefers_supplemental_without_unproven_splice(self):
+        idx = _sessions(10)
+        primary = pd.DataFrame({"A": np.arange(100.0, 110.0)}, index=idx)
+        supplemental = pd.DataFrame({"A": np.arange(200.0, 205.0)}, index=idx[-5:])
+
+        panel, receipt = self._resolve(primary, supplemental, ["A"])
+
+        assert panel["A"].iloc[:5].isna().all()
+        assert receipt["price_source"]["A"] == "baskets_extras"
+        assert receipt["selection_reason"]["A"] == "tie_supplemental"
+        assert "A" not in receipt["stitched"]
+    def test_identical_primary_can_donate_safe_history_to_supplemental_winner(self):
+        idx = _sessions(10)
+        values = pd.Series(np.linspace(10.0, 19.0, 10), index=idx)
+        primary = pd.DataFrame({"A": values})
+        supplemental = pd.DataFrame({"A": values.iloc[-6:]})
+
+        panel, receipt = self._resolve(primary, supplemental, ["A"])
+
+        pd.testing.assert_series_equal(panel["A"], values, check_names=False)
+        assert receipt["price_source"]["A"] == "baskets_extras"
+        assert receipt["selection_reason"]["A"] == "tie_supplemental"
+        assert receipt["stitched"]["A"]["donor_source"] == "primary_breadth"
+        assert receipt["stitched"]["A"]["n_overlap"] == 6
+        assert receipt["stitched"]["A"]["max_rel_diff"] <= 1e-6
+
+    def test_supplemental_only_and_unresolved_are_disclosed(self):
+        idx = _sessions(6)
+        primary = pd.DataFrame({"P": np.arange(6.0)}, index=idx)
+        supplemental = pd.DataFrame({"OFF": np.arange(10.0, 16.0)}, index=idx)
+
+        panel, receipt = self._resolve(primary, supplemental, ["P", "OFF", "MISS"])
+
+        assert list(panel.columns) == ["P", "OFF"]
+        assert receipt["price_source"] == {"P": "primary_breadth", "OFF": "baskets_extras"}
+        assert receipt["selection_reason"]["P"] == "primary_only"
+        assert receipt["selection_reason"]["OFF"] == "supplemental_only"
+        assert receipt["unresolved_tickers"] == ["MISS"]
+        assert receipt["chosen_counts"] == {"primary_breadth": 1, "baskets_extras": 1}
+        assert receipt["source_basis"] == {
+            "primary_breadth": "closes_cache_UNADJUSTED",
+            "baskets_extras": "tradj",
+        }
+        assert receipt["adjustment_vintage"] == "unrecorded"
+        assert receipt["authority"] == "measurement_only"
+
+    def test_supplemental_tail_cannot_advance_primary_calendar(self):
+        idx = _sessions(6)
+        future = idx[-1] + pd.offsets.BDay(1)
+        primary = pd.DataFrame({"A": np.arange(6.0)}, index=idx)
+        supplemental = pd.DataFrame(
+            {"A": np.arange(10.0, 17.0)}, index=idx.append(pd.DatetimeIndex([future])))
+
+        panel, receipt = self._resolve(primary, supplemental, ["A"])
+
+        assert panel.index.equals(idx)
+        assert future not in panel.index
+        assert receipt["effective_as_of"] == idx[-1].strftime("%Y-%m-%d")
+        assert panel.loc[idx[-1], "A"] == supplemental.loc[idx[-1], "A"]
