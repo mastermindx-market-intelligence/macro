@@ -9,16 +9,20 @@ from typing import Any, Mapping
 
 from .documents import ABSENCE_SCHEMA, TypedAbsence
 from .pg_profile import (
+    PG_COMBINED_VOLUME_MIX_METRICS,
     PG_DEFINITIONS,
     PG_METRIC_KEYS,
     PG_PRIVATE_RIGHTS_PROFILE,
+    _OUT_OF_SCOPE,
     _fiscal_identity,
     _normal,
     _scope_period_forms,
+    combined_volume_mix_presentation,
+    document_period_verdict,
     neutral_zero_convention,
     parse_pg_literal,
+    parse_release_blocks,
     replay_table_layout,
-    visible_text,
 )
 
 
@@ -91,6 +95,8 @@ def _verify_pg_replay(
     _, _, current_forms, prior_forms = _scope_period_forms(current_start, current_end, prior_end)
     fiscal_year, quarter = _fiscal_identity(current_start, current_end)
     identity = (fiscal_year, quarter, current_end)
+    if document_period_verdict(parse_release_blocks(source), identity) in _OUT_OF_SCOPE:
+        raise EconomicObservationError("replay_mismatch: the document's period signals do not name the admitted fiscal quarter")
     source_bytes = source.encode("utf-8")
     if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end <= len(source_bytes):
         raise EconomicObservationError("replay_mismatch: replay location is invalid")
@@ -231,12 +237,18 @@ def validate_selected_facts(
             if not str(absence_payload.get("subject") or "").startswith(metric):
                 raise EconomicObservationError("typed_absence subject does not match its metric")
             subject = str(absence_payload.get("subject") or "")
-            if "combined" in subject.casefold():
-                if subject != f"{metric} combined volume/mix":
-                    raise EconomicObservationError("combined typed_absence subject is not the combined volume/mix form")
+            if subject == f"{metric} combined volume/mix":
+                # R33/R39: the combined form is lawful only for a volume/mix observation, and only when the
+                # document's one in-scope drivers table actually presents volume and mix as a combined column.
+                if metric not in PG_COMBINED_VOLUME_MIX_METRICS:
+                    raise EconomicObservationError("combined typed_absence names an observation that is never combined")
                 release_source = source_texts.get(workspace_document_id)
-                if not isinstance(release_source, str) or "volume/mix" not in visible_text(release_source).casefold():
-                    raise EconomicObservationError("combined typed_absence has no combined volume/mix presentation in the source")
+                if not isinstance(release_source, str) or not combined_volume_mix_presentation(
+                    release_source, current_start=current_start, current_end=current_end, prior_end=prior_end
+                ):
+                    raise EconomicObservationError("combined typed_absence has no combined volume/mix drivers column in the source")
+            elif subject != metric:
+                raise EconomicObservationError("typed_absence subject is neither its metric nor the combined volume/mix form")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
             if absence_payload.get("document_id") != workspace_document_id:
