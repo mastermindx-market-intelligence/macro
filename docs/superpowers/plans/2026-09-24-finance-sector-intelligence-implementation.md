@@ -719,7 +719,7 @@ If Tasks 10–13 are not all production-qualified at that point, keep the broade
 
 **Spec coverage:** The plan maps owner preservation, four-plane rerating, 52-slice atlas, first vertical, evidence privacy, identity nulls, basket coexistence, overlap, global/regional comparability, UI hierarchy, mobile/accessibility and browser/production proof to explicit tasks.
 
-**Placeholder scan:** No implementation task relies on a TBD field or unspecified error behavior. Dynamic source-custody questions are explicit preflight gates with fail-closed behavior.
+**Placeholder scan:** No implementation task relies on an unspecified field or unspecified error behavior. Dynamic source-custody questions are explicit preflight gates with fail-closed behavior.
 
 **Type consistency:** finance_intelligence_read_model.v1 is the sole new Finance read contract; compose_finance_projection returns that contract; API and UI consume the same contract. Overlap functions are display/context only.
 
