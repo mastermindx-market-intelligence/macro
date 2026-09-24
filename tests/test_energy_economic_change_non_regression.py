@@ -290,16 +290,19 @@ def _basket_membership_section() -> dict[str, Any]:
     }
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_nuclear_power_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     _assert_section_unchanged(_basket_membership_section(), baseline, "basket_membership")
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_uranium_miners_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     _assert_section_unchanged(_basket_membership_section(), baseline, "basket_membership")
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_primary_and_supplemental_populations_are_disjoint_and_never_merged() -> None:
     primary = _basket_snapshot("nuclear_power")
     supplemental = _basket_snapshot("uranium_miners")
