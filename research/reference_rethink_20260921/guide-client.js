@@ -64,7 +64,10 @@
       coverage.set(item.id,item);
     }
     for (const question of data.questions) {
-      if (!slug(question.id) || questions.has(question.id) || !pair(question.label) || !Array.isArray(question.entry_ids) || !question.entry_ids.length || question.entry_ids.some(id => !entries.has(id)) || new Set(question.entry_ids).size !== question.entry_ids.length) throw new Error('Invalid question');
+      const terms=question.search_terms;
+      if (!slug(question.id) || questions.has(question.id) || !pair(question.label) || !Array.isArray(question.entry_ids) || !question.entry_ids.length || question.entry_ids.some(id => !entries.has(id)) || new Set(question.entry_ids).size !== question.entry_ids.length || !terms || !Array.isArray(terms.en) || !Array.isArray(terms.zh) || !terms.en.length || !terms.zh.length || [...terms.en,...terms.zh].some(term=>!text(term))) throw new Error('Invalid question');
+      const normalizedTerms=[...terms.en,...terms.zh].map(normalize);
+      if(normalizedTerms.some(term=>!term)||new Set(normalizedTerms).size!==normalizedTerms.length)throw new Error('Invalid question search terms');
       questions.set(question.id,question);
     }
     if (!data.lookup || Array.isArray(data.lookup) || typeof data.lookup !== 'object') throw new Error('Missing lookup');
@@ -84,18 +87,33 @@
     }
     function search(value, questionId='') {
       const needle = normalize(value);
-      const allowed = questionId ? new Set(questions.get(questionId)?.entry_ids || []) : null;
+      const selectedQuestion=questionId ? questions.get(questionId) : null;
+      const allowed = selectedQuestion ? new Set(selectedQuestion.entry_ids) : null;
       const exact = needle && Object.hasOwn(data.lookup,needle) ? new Set(data.lookup[needle]) : new Set();
-      const questionTargets = new Set();
-      for (const q of questions.values()) if (needle && [q.label.en,q.label.zh].some(label => normalize(label).includes(needle))) q.entry_ids.forEach(id => questionTargets.add(id));
+      const questionRank = new Map();
+      if(selectedQuestion)selectedQuestion.entry_ids.forEach((id,index)=>questionRank.set(id,index));
+      // Numbers in a natural question (for example "risk 56") are a current value,
+      // not part of the editorial lookup phrase. Removing them never changes signal data.
+      const semanticNeedle=needle.replace(/\p{N}+/gu,'');
+      const contentNeedle=semanticNeedle
+        .replace(/^(?:whatdoes|whatis|explain|tellmeabout|howdoiread)/,'')
+        .replace(/(?:mean|means)$/,'')
+        .replace(/^(?:什么是|怎么理解|如何理解|解释一下)/,'')
+        .replace(/(?:是什么意思|是什么)$/,'');
+      for (const q of questions.values()) {
+        const labels=[q.label.en,q.label.zh].map(normalize);
+        const terms=[...q.search_terms.en,...q.search_terms.zh].map(normalize);
+        const matched=semanticNeedle && (labels.some(label=>label.includes(semanticNeedle)) || terms.some(term=>semanticNeedle.includes(term)));
+        if(matched)q.entry_ids.forEach((id,index)=>{if(!questionRank.has(id))questionRank.set(id,index);});
+      }
       const hits = new Map();
       for (const record of [...entries.values(),...coverage.values()]) {
         const id = record.target || record.id;
         if (allowed && !allowed.has(id)) continue;
         const haystack = record.search_key || normalize(Object.values(record.label).join(' '));
-        let score = exact.has(id) ? 0 : questionTargets.has(id) ? 1 : haystack.includes(needle) ? 2 : Infinity;
+        let score = exact.has(id) ? 0 : questionRank.has(id) ? 100 + questionRank.get(id) : haystack.includes(needle) || contentNeedle && haystack.includes(contentNeedle) ? 200 : Infinity;
         // The source manifest holds normalized aliases; labels are never model-ranked.
-        if (!needle) score = 2;
+        if (!needle) score = allowed && questionRank.has(id) ? 100 + questionRank.get(id) : 200;
         if (Number.isFinite(score) && (!hits.has(id) || hits.get(id).score > score)) hits.set(id,{id,score});
       }
       return [...hits.values()].sort((a,b)=>a.score-b.score).map(hit => get(hit.id));

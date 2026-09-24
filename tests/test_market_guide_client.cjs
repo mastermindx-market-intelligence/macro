@@ -34,9 +34,21 @@ test('missing and malicious hashes are data, not executable markup',()=>{
 });
 test('search deduplicates aliases and returns exact source question membership',()=>{
   assert.deepEqual(model().search('Regime Badge').map(x=>x.id),['market-regime']);
-  assert.deepEqual(model().search('', 'risk').map(x=>x.id).sort(),['market-state-score','risk-radar']);
-  assert.deepEqual(model().search('风险正在累积吗').map(x=>x.id).sort(),['market-state-score','risk-radar']);
+  assert.deepEqual(model().search('', 'risk').map(x=>x.id),['risk-radar','market-state-score']);
+  assert.deepEqual(model().search('风险正在累积吗').map(x=>x.id),['risk-radar','market-state-score']);
   assert.deepEqual(model().search('zz-no-such-term'),[]);
+});
+test('plain-language questions resolve to curated answers in both languages',()=>{
+  assert.deepEqual(model().search('what does risk 56 mean').map(x=>x.id),['risk-radar','market-state-score']);
+  assert.deepEqual(model().search('风险56是什么意思').map(x=>x.id),['risk-radar','market-state-score']);
+  assert.equal(model().search('how strong is the market today')[0]?.id,'market-state-score');
+  assert.equal(model().search('what drives the market backdrop')[0]?.id,'regime-quadrant');
+  assert.equal(model().search('市场为什么这么强')[0]?.id,'market-state-score');
+});
+test('question phrasing around a specific indicator still finds that indicator',()=>{
+  assert.equal(model().search('what does Regime Quadrant mean')[0]?.id,'regime-quadrant');
+  assert.equal(model().search('什么是宏观象限')[0]?.id,'regime-quadrant');
+  assert.equal(model().search('explain Sector Heat')[0]?.id,'sector-heat');
 });
 test('risk and market strength never borrow each other’s higher interpretation',()=>{
   assert.match(model().chooseReading('market-state-score','interpretation_up').text.en,/supportive/);
