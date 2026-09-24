@@ -103,7 +103,7 @@
         var watchStatus = sourceBound
           ? ' · ' + L('source-bound · context only · unscored', '来源已绑定 · 仅供背景 · 不计分')
           : ' · ' + L('context only · unscored', '仅供背景 · 不计分');
-        watchEl.innerHTML = '<b>🔭 ' + L('Emerging-narrative watch', '新兴叙事观察') + ':</b> ' +
+        watchEl.innerHTML = '<b>' + L('Emerging-narrative watch', '新兴叙事观察') + ':</b> ' +
           L(esc(watchEn(brief.emerging_watch)), esc(watchZh(brief.emerging_watch))) +
           '<span class="muted">' + watchStatus + '</span>';
         watchEl.style.display = 'block';
