@@ -1556,5 +1556,106 @@ The evidence drawer never opens in any degraded state — the trigger buttons ge
 **Conflict pip + card rule (R-H):** the `.fi-conflict-pip` chip and the `.fi-conflict-card` both carry a visible line + an `Open evidence` button; no hover-only meaning anywhere.
 
 **Materiality colour rule (R-J):** MATERIAL → `--ink-warn`; PARTIAL → `--muted` with the word "Partial" / "部分"; IMMATERIAL / UNMEASURED → `--muted` with the word. NEVER `--up`/`--down`/`--ink-up`/`--ink-down` anywhere on the exposure surface (or anywhere else in the dossier).
+
+---
+
+## H. Acceptance matrix — 8 base shots + per-cell close-ups
+
+Per R-H: the full evidence matrix is 8 base shots (`{dark,light} × {en,zh} × {1440 desktop, 390 mobile}`) plus one close-up per acceptance cell. The single "parity" PNG from the previous spec is removed; the 390-only cell is expanded into the 8-shot matrix. The seat's browser-evidence lane runs the harness AFTER the implementation lands; this spec's obligation is only to make every cell achievable without further design intervention.
+
+### H.0 Eight base shots
+
+| # | Theme | Lang | Viewport | File |
+|---|---|---|---|---|
+| 1 | dark | EN | 1440 | `verify_shots/finance/c00_dark_en_1440.png` |
+| 2 | dark | ZH | 1440 | `verify_shots/finance/c00_dark_zh_1440.png` |
+| 3 | light | EN | 1440 | `verify_shots/finance/c00_light_en_1440.png` |
+| 4 | light | ZH | 1440 | `verify_shots/finance/c00_light_zh_1440.png` |
+| 5 | dark | EN | 390 | `verify_shots/finance/c00_dark_en_390.png` |
+| 6 | dark | ZH | 390 | `verify_shots/finance/c00_dark_zh_390.png` |
+| 7 | light | EN | 390 | `verify_shots/finance/c00_light_en_390.png` |
+| 8 | light | ZH | 390 | `verify_shots/finance/c00_light_zh_390.png` |
+
+### H.1 Per-cell close-ups
+
+| Cell | R11 §12 obligation | Design reference | Close-up PNG |
+|---|---|---|---|
+| 1 | Theme Tracker with Finance sector-deep-dive entry | §F.1 — static eyebrow + title + plain sentence + CTA; no canonical lane contamination | `verify_shots/finance/c01_theme_tracker_deep_dive_{theme}.png` |
+| 2 | Financials sector page with Finance Intelligence launch | §F.2 — "Domains mapped" + CTA; broad price context preserved, non-buy-list wording | `verify_shots/finance/c02_financials_launch_{theme}.png` |
+| 3 | Finance dossier populated — all seven L1 sections + drawer aside | §B.0–§B.7 + §B.0 aside; C-company archetype (instrument_analyzer) | `verify_shots/finance/c03_dossier_populated_{viewport}_{theme}.png` |
+| 4 | Semantic-only slice with honest no-basket state | §B.4 `.fi-slice-no-basket` element + §D.2 SEMANTIC_ONLY chip + §D.38 footer | `verify_shots/finance/c04_semantic_only_slice_{theme}.png` |
+| 5 | Candidate-basket slice | §B.4 posture chip `CANDIDATE_READY_FOR_OWNER_REVIEW` with §D.3 plain-word copy "Under owner review" | `verify_shots/finance/c05_candidate_basket_{theme}.png` |
+| 6 | Missing-consensus state | §D.11 NO_HISTORICAL_CONSENSUS chip on rerating-map expectations node + plain-word text companion | `verify_shots/finance/c06_missing_consensus_{theme}.png` |
+| 7 | Regime-break state | §D.11 REGIME_BREAK_NOT_COMPARABLE chip on a rerating node + `comparability_state` chip when ≠ COMPARABLE | `verify_shots/finance/c07_regime_break_{theme}.png` |
+| 8 | Stale-source state | §D.11 SOURCE_STALE chip + §D.12 freshness chip on the what-changed header + per-node chip | `verify_shots/finance/c08_stale_source_{theme}.png` |
+| 9 | Company exposure drill | §B.5 sticky table at 1440 + card stack at ≤767; IDENTITY_UNRESOLVED row carries no link; EXPOSURE_NOT_SEPARATELY_DISCLOSED visible chip text | `verify_shots/finance/c09_company_exposure_{viewport}_{theme}.png` |
+| 10 | Evidence drawer | §B.0 aside 14-field drawer; `role="dialog"`, `aria-modal="true"`, focus trap, Escape, `inert` on `<main>`; SOURCE_RIGHTS_HELD suppression (D.23) | `verify_shots/finance/c10_evidence_drawer_{theme}.png` |
+| 11 | Mobile flow map | §C.10 vertical rerating stepper at ≤767; exposure AND macro matrices become per-row cards listing only present cells; 16px gutter; no page-level horizontal scroll at 390 | `verify_shots/finance/c11_mobile_flow_map_{theme}_390.png` |
+| 12 | EN/ZH parity | §D label map covers every visible string; `.l-en` / `.l-zh` swap on `html[data-lang]` flip; `aria-label` reads `data-aria-zh` when `[data-lang=zh]` | `verify_shots/finance/c12_en_zh_parity_{viewport}_{theme}.png` |
+| 13 | Light/dark parity | §C.3 dark block + §C.4 light block written as TWO art directions (token-only, no hex/rgb); both rendered + screenshotted | `verify_shots/finance/c13_light_dark_parity_{viewport}.png` |
+| 14 | Keyboard-only journey | §E focus rings always visible; Tab order matches DOM; roving tabindex on system tabs; drawer trap works; deep-link open returns focus to section heading | `verify_shots/finance/c14_keyboard_journey_{theme}.png` |
+
+### H.2 Mechanism-by-mechanism proof (the five differing CSS mechanisms)
+
+The audit's strongest finding was that light was a token swap, not a light design. Each of the five mechanisms gets one close-up at 1440 dark EN + 1440 light EN so the seat can verify them visually.
+
+| # | Mechanism | §Close-up dark | §Close-up light |
+|---|---|---|---|
+| M1 | Panel elevation | `verify_shots/finance/m01_dark_panel_inset.png` | `verify_shots/finance/m01_light_panel_shadow.png` |
+| M2 | Freshness pip | `verify_shots/finance/m02_dark_freshness_glow.png` | `verify_shots/finance/m02_light_freshness_rail.png` |
+| M3 | Focus ring | `verify_shots/finance/m03_dark_focus_glow.png` | `verify_shots/finance/m03_light_focus_outline.png` |
+| M4 | Drawer scrim | `verify_shots/finance/m04_dark_scrim.png` | `verify_shots/finance/m04_light_scrim.png` |
+| M5 | Stepper rail/dot | `verify_shots/finance/m05_dark_stepper_glow.png` | `verify_shots/finance/m05_light_stepper_hairline.png` |
+
+### H.3 Responsive × theme × lang matrix
+
+Acceptance requires every one of the 14 cells to hold in BOTH themes AND in BOTH EN/ZH AND at BOTH viewports. The matrix below is the cross-product the seat's harness must walk.
+
+```
+dark / 1440 / EN   ✅  dark / 1440 / ZH   ✅
+dark /  390 / EN   ✅  dark /  390 / ZH   ✅
+light / 1440 / EN  ✅  light / 1440 / ZH  ✅
+light /  390 / EN  ✅  light /  390 / ZH  ✅
+```
+
+A failing cell in any of the four dimensions (theme × lang × viewport × cell) returns the build lane to the §B/§C owner; the dossier does NOT claim acceptance on partial coverage.
+
+---
+
+## RETURN
+
+**STATUS:** COMPLETE — the spec is the full lane deliverable; every audit finding closed; six stream-safe commits land on the branch.
+
+**RESULT:**
+
+- File: `research/finance/implementation/FINANCE_DOSSIER_DESIGN_SPEC_2026-09-24.md`
+- Sections A–H all populated.
+- §A binds ONLY to paths in the live `finance_intelligence_read_model.v1.schema.json` (on `origin/main` since `b4c6e4bd`); the prior "not yet on main" claim is removed; every field the page would like but the schema lacks is moved to **GAPS** as a proposed contract amendment.
+- §B renders seven L1 sections + one evidence-drawer aside; B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero `{% for` over document data, zero payload-bound `{{ … }}` Jinja bindings** anywhere in §B or §F.
+- §C declares two art directions as full rules; zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
+- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH; closes the label map across every enum the live schema can deliver (plane_state 9, slice_state 8, basket posture 5, membership_state 4, materiality 4, role 7, exposure basis 7, exposure state 4, constraint 10, macro driver 13, lag 5, freshness 4, first_vertical 4, outer_dossier 3, material_changes freshness 4, expectations.history 3, valuation_anchor 9+10+5+2, falsifier 2, price_basis 3, weighting 5, identity_state 3, company_route 2, source rights 4 with suppression, statement_mode 5, published_at_grain 5, measurement_class 9, gross_net_basis 4, average_end 3, reported_derived_estimated 3, indicator direction 3, indicator state 3, conflict plane 6, edge relationship per view 21, input_receipts owner 9, input_receipts state 4, degraded_sections section 8, degraded_sections state 3); visible "PLANE.state 枚举 / enum" footer copy removed; bilingual ARIA rule (plain EN in `aria-label`, ZH in `data-aria-zh`, no `t()` inside attributes).
+- §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
+- §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts / `fin.top_domains` / `evidence_horizon_label` / `coverage_state` / `slices_populated` bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; "Top research domains" renamed to "Domains mapped".
+- §G degraded-state copy fixed per R-K; "Outer dossier not accepted" rebinds to `outer_dossier_ref.state` (not 503); "refresh in a moment" copy removed; new degraded_sections per-section rows added.
+- §H evidence matrix is 8 base shots + 14 per-cell close-ups + 5 mechanism-by-mechanism proof shots + the theme × lang × viewport cross-product; the prior single-parity PNG and 390-only cell are removed.
+
+**GAPS (proposed contract amendments):**
+
+- No `slices[].display_headline` / `slices[].guardrail` / `slices[].user_action`. Tier 1 "what to look at" copy is composed at render time from `operating_implication` + state chips; this is a render-time projection, not a stored field, and is consistent with §13.5's "no owner recalculation in browser" law only because the composer pre-composes the headline before shipping.
+- No `coverage.coverage_state` / `coverage.coverage_label` / `freshness.freshness_label` / `material_changes[].evidence_horizon_label`. The page surfaces `freshness.state` and `coverage.{domains_populated, domains_total, slices_populated, slices_total}` (numeric, not labelled).
+- No `entry_href` — the dossier's CTA href is a route variable (`{{ fi_dossier_href }}`) bound at integration.
+- No `fin.top_domains` — the "Domains mapped" copy is static in §F.2.
+- No `fin.slices_populated` / `fin.selected_slices` — the slice selector is driven by `coverage.first_vertical.slice_ids` directly.
+- No `conflicts[].resolution` as user-facing string — the schema carries a literal `UNRESOLVED_BY_DESIGN` enum that surfaces only as the §D.38 footer copy.
+- No `macro_drivers` / `row.cells` — `macro_matrix[]` is iterated flat and grouped by `slice_id`; the 13-driver enum is the column header set.
+- No `nodes[].evidence_state` — the edge-level `evidence_state` is what renders in the step-list equivalent (per §A.3).
+- No `slices[].freshness.state` is rendered as a per-slice chip independent of the §A.1/A.4 chip — `freshness.state` lives on `slices[].freshness.state` AND on the top-level `freshness.state`, both consumed per their paths.
+- No live-test environment was available — no screenshots produced; the PNG paths in §H are the seat's responsibility against the build lane's output.
+
+**DEVIATIONS:**
+
+- **Mockup deferred to `fin_d1b_mockup` by seat instruction.** This run ships the spec only. The static mockup is delivered by a second lane onto the same PR after this head lands. The spec still binds every mockup obligation (eight sections in the seven + aside count, four data-bound nodes, two art directions, eleven missing states, ten conflicts, ≥1 `SEMANTIC_ONLY` slice, witness rows, mechanism-by-mechanism proof) — the build lane for `fin_d1b_mockup` reads §A–§H of THIS spec as the binding contract.
+- §H keeps the "PNG paths are the seat's responsibility" line because the spec author cannot run a browser environment; the eight base shots + per-cell close-ups + mechanism proof shots are the seat's obligation, not this spec's deliverable.
+- No other deviations.
 ```
 ```
