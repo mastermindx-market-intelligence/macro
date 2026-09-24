@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T07:17:32.676762+00:00",
-  "count": 2759,
+  "generated_at": "2026-09-24T09:27:22.898278+00:00",
+  "count": 2769,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -515,6 +515,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-7il3oildjuy-a2d65f",
+      "title": "CEEMEA Inflation Monitor Headline and Core Inflation Broadly Stable in August, with Mostly Downside Surprises",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:35Z",
+      "summary_points": [
+        "CEEMEA Headline Inflation Divergence: Low/mid-yielders (Poland, Hungary, Czechia, Ghana, Kenya, SA, Russia, Ukraine) saw headline inflation edge up, while high-yielders (Turkey, Egypt) weakened; core inflation (GS TRIM) mixed but headline disinflation dominates dovish rate expectations across CEE-3 and SA.",
+        "Poland Inflation Surprise: Headline inflation rose to 3.4% YoY (vs. 2% consensus), exceeding expectations despite negative oil/FX/food shock contributions (-1.4% Q1, -0.3% Q2), signaling persistent underlying pressures.",
+        "Turkey Stabilization: Headline inflation eased to 31.5% YoY (vs. 8% July), below consensus (31.6%), indicating broad stabilization of inflation momentum amid high volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6okz9r0x9rx-6ef9ab",
       "title": "Banks Regional Updating estimates in Regional Banks and Consumer Finance",
       "institution": "Goldman Sachs",
@@ -531,6 +550,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-msbfw0xctcu-5fbd1c",
+      "title": "Japan Games Tokyo Game Show 2026 (30th anniversary) Major domestic titles unveiled, many IP holders exhibit for first time",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:26Z",
+      "summary_points": [
+        "TGS 2026 Exhibitor Surge: Record 1,138 exhibitors (52.5% overseas) confirm global gaming market expansion, with sustained overseas participation growth.",
+        "IP-Driven Titles Strategy: Sanrio/Toei TGS debut signals strategic pivot to IP-focused titles, a critical long-term value driver for gaming equities.",
+        "CESA White Paper Data: Domestic market ¥2.5tn (2025), export ¥6.1tn (2024), 3.8x 10y export growth, and ¥7.7mn avg.",
+        "salaries validate industry maturation.",
+        "Policy Risk: Localization Costs: Government ¥12tn overseas sales target (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -617,6 +657,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-eik4lwdpaar-13bd70",
+      "title": "Europe Multi Industry 15th German Corporate Conference Key read across for EU Multis",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:10Z",
+      "summary_points": [
+        "Near-Term Demand Resilience: German industrial firms (Daimler, Siemens, Jungheinrich, Kion, Krones) project 5-10% NA/Asia truck growth, stable Europe demand (2027), 30% automation expansion (Jungheinrich), and defense/construction growth (Kion), signaling strong near-term fundamentals.",
+        "Chinese OEM Price Discount Shock: Chinese OEMs to offer 15-20% price discounts (vs. 2x investor expectations), accelerating market share gains (0%→30-40% in South Africa/Peru/Middle East) and enabling Europe truck exports with aggressive pricing.",
+        "Strategic Localization Defense: European firms counter Chinese competition via service network expansion (Daimler), localized production (Traton’s Scania plant, Siemens China innovation), and R&D (Traton TMS) to defend European market share amid Chinese OEM global penetration."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ankofapgobe-844d3b",
       "title": "Carbonomics Behind the meter power solutions for data centers gas turbines, fuel cells and reciprocating engines",
       "institution": "Goldman Sachs",
@@ -654,6 +713,65 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zgdfs5cxdyw-e85945",
+      "title": "USA S&P PMIs Rise to Their Highest Levels Since 2022 but Highlight Intensifying Price Pressures",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:52Z",
+      "summary_points": [
+        "PMI Peaks Signal Inflation Risks: Services (58.7) and manufacturing (57.0) PMIs hit 2022 highs, with input prices at multi-year peaks, indicating persistent inflation despite strong demand.",
+        "Nominal Bias Distorts Survey Data: Business survey strength likely inflated by nominal reporting (dollar terms vs. real terms), risking misinterpretation of actual economic activity.",
+        "Structural Constraints Intensify: Supply chain bottlenecks (non-pandemic) and labor shortages coincide with growth, creating material structural headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ioh3cizfpog-b49a47",
+      "title": "Europe Automobiles Chinese OEM Competition Monitor Aug 26 Chinese share hits new high of 8 on softer individual premium br...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:46Z",
+      "summary_points": [
+        "Chinese OEM Market Share Surge: Chinese domestic brands' Europe-5 registrations up 199% yoy (43,825 units Aug-26), market share at 8.13% (+524bps yoy), directly eroding mass-market brands (VW Group mass brands lost 188bps, Stellantis lost 15.12% share).",
+        "Policy Shift & Pricing Discipline: Three Chinese ministries' guidelines (Aug 24) mandate cost-based pricing and anti-disruptive competition abroad, ending aggressive price wars and providing near-term relief to European incumbents.",
+        "UK Market Correlation: BYD's +166bps R3M gain in UK directly correlates with VW Group's -139bps loss, signaling structural competitive shift in key European market.",
+        "Production & Geopolitical Hub: Spain dominates Chinese brands' European production (46%/58% volume 2026/2027), reflecting strategic manufacturing concentration amid regulatory alignment.",
+        "BEV Export Strength: BEV exports to EU up 80% yoy (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2kmnbubzbsp-c7895f",
+      "title": "Euro Area Data Update Firm Euro Area PMIs and Spanish Trade, Slightly Softer Consumer Confidence",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:41Z",
+      "summary_points": [
+        "GDP Fragmentation: Germany (0.04% qoq) weak vs Spain (0.65%); France/Italy at 0.11%; area-wide PMI at 41-month high (53.1) despite consumer confidence falling to -1.45.",
+        "Inflation Stability: Headline/core nearcasts unchanged (3.72%/2.62% yoy); refined product prices driving PMI cost pressures despite crude oil declines.",
+        "Forecast Consensus: Nearcast, GS forecast, and market consensus tightly aligned (headline 3.5-4.0%, core 2.5-2.8%), indicating no near-term inflation surprises."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -839,6 +957,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ltqyspogmo0-b993b8",
+      "title": "China Education Aug Q Preview Defensive growth at a reasonable price; Buy EDUTAL",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:31Z",
+      "summary_points": [
+        "TAL Learning Tablets Collapse: GMV down -17% yoy (2QFY27), volume -37% yoy vs +8% in 1Q, signaling severe demand deterioration and operational weakness.",
+        "Geopolitical Visa Shift: Canada Chinese student visas surged +36% YoY (Jan-Jun 2026), while US/Australia declined (-34%/-10%), directly impacting education migration and revenue streams.",
+        "East Buy Offset: East Buy (New Oriental) drove 80% revenue growth, offsetting TAL’s content solutions moderation (learning tablets -12% yoy) and supporting segment-level profitability.",
+        "Valuation vs Fundamentals Contradiction: Goldman’s $16.1 target (36.2% upside) clashes with 99% YoY non-GAAP net income drop and 55.2% margin decline, indicating deteriorating fundamentals.",
+        "Revenue Convergence & Margin Expansion: EDU/TAL revenue growth converged at +23%/+22% yoy (Aug-Q), with TAL’s OPM expanding +5.7pp yoy (18.3% OPM), reflecting disciplined cost control and margin momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-po5gpsfzoio-d65dde",
       "title": "GS Utilities Daily Iberdrola reportedly planning sale of a stake in UK offshore project Global renewable additions need to accelerate to meet 2030",
       "institution": "Goldman Sachs",
@@ -851,6 +990,26 @@
         "EU Diesel Cost Surge: Drivers pay ~40% more on diesel since year start, adding €203mn/day toll due to Middle East conflict; imported fossil fuel costs up €90bn since Feb, straining energy-intensive sectors.",
         "Europe Electrification Acceleration: Power demand growth +5% pa, PowerGen investments tripling to €2T by 2035; Agentic AI driving +25% datacenter power needs, boosting utility infrastructure demand and valuations.",
         "Global Renewable Policy Support: Critical for sector growth; requires tracking subsidies, carbon pricing, and capacity addition data to gauge market dynamics and investment opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mzcvz5cniwp-a7188f",
+      "title": "Euro Area Data Update Firm Euro Area PMIs and Spanish Trade, Slightly Softer Consumer Confidence",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:08Z",
+      "summary_points": [
+        "Euro Area GDP Fragmentation: Germany at +0.04% Q3, Spain at +0.65%, France/Italy at +0.11%—highlighting divergent regional growth with Germany lagging, signaling structural weakness.",
+        "PMI-Confidence Divergence: Composite PMIs rose to 53.8 (Germany)/51.2 (France) (highest in 41 months), yet consumer confidence fell to -1.45d (Z-Score negative), indicating manufacturing resilience vs. softening demand.",
+        "Inflation Dynamics Disconnect: Headline inflation nearcast stable at 3.72% yoy (core 2.62% yoy), but PMI prices components rose due to refined product costs despite crude oil declines—suggesting persistent supply-side pressures.",
+        "Forecast Alignment Stability: Nearcast, Goldman Sachs forecast, and consensus show minimal divergence for headline/core inflation (3.5-4.0% headline, 2.5-2.8% core), confirming no near-term policy shifts or inflation surprises."
       ],
       "tags": [],
       "tickers": [],
@@ -880,6 +1039,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ph7phbava69-acab41",
+      "title": "Fox Corp. (FOXA) F1Q27 preview Expect EBITDA beat driven by Television",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:53Z",
+      "summary_points": [
+        "EBITDA Beat: Forecast F1Q27 EBITDA $1.41bn (vs. consensus $1.36bn), driven by Television segment (EBITDA $746mn, ahead of $681mn consensus) from FIFA World Cup advertising (+54% yoy) and Tubi growth (+30% yoy).",
+        "Margin Compression Risk: Gross margin declining from 38.6% (6/26) to 33.1% (6/29E) despite revenue growth, signaling near-term profitability challenges.",
+        "Fox One Subscriber Momentum: Exceeded expectations with 97% non-pay TV acquisitions, minimal cannibalization, tracking 3-5mn subs over 3-5 years, additive to ecosystem."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zh7ydul7to8-059686",
       "title": "UBS Group (UBSG.S) Swiss parliament upper house votes for 90% CET1 backing for foreign subsidiaries",
       "institution": "Goldman Sachs",
@@ -891,6 +1069,27 @@
         "Regulatory Timeline Risk: Bill faces lower house debate and plebiscite risk, delaying final ruling until 2027—creating prolonged uncertainty for capital-intensive banking operations and compliance planning.",
         "Leverage Vulnerability: Leverage rises to 18.5x (from 17.9x), signaling heightened credit risk and susceptibility to interest rate volatility despite strong revenue (+10.0%) and net income growth (+47.0%).",
         "Capital Shortfall Escalation: 90% CET1 backing scenario reveals $7bn shortfall (Q26), escalating to $9bn with mitigation; upstreaming adjustments (e.g., $3bn UK repatriation) fail to resolve critical gap."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rzrrmvfcavm-bcfe29",
+      "title": "Siemens AG (SIEGn.DE) 15th German Corporate Conference Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:39Z",
+      "summary_points": [
+        "SaaS Transition & AI Margin Driver: DI Software SaaS transition nearly complete; AI acts as moat/cost lever with 17-23% margin guidance.",
+        "Software growth via pipeline health, fading SaaS impacts, and AI deployment in productivity/back-office.",
+        "Capital Allocation & M&A Focus: Accelerated €6bn 5-year buyback (€1bn executed), progressive dividends, prudent M&A.",
+        "Key risks: long project cycles delaying P&L impact and hardware/asset management execution gaps.",
+        "China Market Defense via Local Innovation: 17% order growth in China DI Automation with 26+ local products; strong demand and no distributor inventory buildup."
       ],
       "tags": [],
       "tickers": [],
