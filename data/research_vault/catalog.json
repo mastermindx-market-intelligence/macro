@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T02:26:21.804458+00:00",
-  "count": 2749,
+  "generated_at": "2026-09-24T02:56:26.672781+00:00",
+  "count": 2750,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -180,6 +180,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pyms1cbi93c-f9702e",
+      "title": "Systematic Flows Monitor Equity stop outs spread and trend followers rotate to USD",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:18Z",
+      "summary_points": [
+        "USD positioning shift: CTAs aggressively buying USD post-Fed hike, driving USD strength against EUR/GBP/CAD (critical flow for portfolio managers) - Equity trend reversal risk: Russell 2000/Nasdaq-100 short-term signals negative; S&P 500 stop-outs 1.3% away (key risk for trend-following strategies) - Systematic equity flow asymmetry: $157bn sell in down markets vs.",
+        "$8bn buy in up markets; risk parity/vol control amplifying downside exposure (Exhibits 1-2) - Delta-hedging volatility suppression: Gamma-driven S&P 500 e-mini realized volatility suppressed by 1pt (10%) via last-15-min delta-hedging (critical risk factor) - S&P 500 CTA unwind triggers: Long positions across all timeframes; sell triggers at 7521–7565 (imminent unwinds near 7586) - ETF-driven liquidity shock: Leveraged/inverse ETFs generate $1.1bn (S&P 500) and $2.8bn (NASDAQ-100) per 1% index move; NVDA/MU flows amplify volatility (Exhibits 67)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
