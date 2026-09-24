@@ -90,8 +90,18 @@ def _is_loud(row: dict[str, Any]) -> bool:
 
 
 def _is_graded(row: dict[str, Any]) -> bool:
+    """Return the exact legacy truthy-grade predicate."""
     graded = row.get("graded")
     return isinstance(graded, dict) and bool(graded)
+
+
+def _has_authority_outcome(row: dict[str, Any]) -> bool:
+    """True only when a row has the binary outcome required by authority.v2."""
+    graded = row.get("graded")
+    return (
+        isinstance(graded, dict)
+        and isinstance(graded.get("any_dd5_within_h21"), bool)
+    )
 
 
 def _is_hit(row: dict[str, Any]) -> bool:
@@ -151,12 +161,12 @@ def _loud_episodes(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _independent_windows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Select graded anchors separated by 21 rows or a 42-day horizon buffer."""
+    """Select authority-complete anchors separated by 21 rows or 42 calendar days."""
     selected: list[dict[str, Any]] = []
     last_anchor_index: int | None = None
     last_anchor_asof: str | None = None
     for index, row in enumerate(rows):
-        if not _is_graded(row):
+        if not _has_authority_outcome(row):
             continue
         elapsed = (
             _calendar_days(last_anchor_asof, str(row["asof"]))
@@ -191,17 +201,21 @@ def derive_evidence(rows: list[dict[str, Any]]) -> dict[str, Any]:
     legacy_base_hits = sum(_is_hit(row) for row in legacy_graded)
 
     ordered = _ordered_rows(rows)
-    graded = [row for row in ordered if _is_graded(row)]
+    graded = [row for row in ordered if _has_authority_outcome(row)]
     loud_rows = [row for row in graded if _is_alert(row)]
     row_hits = sum(_is_hit(row) for row in loud_rows)
     row_base_hits = sum(_is_hit(row) for row in graded)
 
     all_loud_episodes = _loud_episodes(ordered)
     matured_loud_episodes = [
-        episode for episode in all_loud_episodes if _is_graded(episode["anchor"])
+        episode
+        for episode in all_loud_episodes
+        if _has_authority_outcome(episode["anchor"])
     ]
     unmatured_loud_episodes = [
-        episode for episode in all_loud_episodes if not _is_graded(episode["anchor"])
+        episode
+        for episode in all_loud_episodes
+        if not _has_authority_outcome(episode["anchor"])
     ]
     episode_hits = sum(_is_hit(episode["anchor"]) for episode in matured_loud_episodes)
 
