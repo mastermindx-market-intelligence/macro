@@ -1,11 +1,11 @@
 ---
 key: MARKET-TIDE-RESEARCH-FOUNDATION-20260924
 claim: "Time decay and falling implied volatility do not imply uniformly supportive dealer hedging: a fixed-price short-put model reverses hedge-flow signs between out-of-the-money and in-the-money positions."
-falsifier: "Recompute the zero-rate European put-delta example preserved at Macro commit 8de2d6b386ba2b9102c708caf6db71af84929167 in this same file; incorrect signs or arithmetic would falsify the specific model counterexample."
-so_what: "Keep inventory-dependent hedge scenarios, failed GEX evidence and honest historical eligibility; reuse the tested notice consumer without converting missing coverage, date-only plans or retrospective documents into qualified forecasts."
+falsifier: "Inspect #7929 and run git show 8de2d6b386ba2b9102c708caf6db71af84929167:agentos/discoveries/DSC-MARKET-TIDE-RESEARCH-FOUNDATION-20260924.md; execute the contained Python short-put example. Incorrect signs or arithmetic falsify this specific model illustration."
+so_what: "Keep inventory-dependent hedge scenarios and prior GEX rejections; use the native-tested event consumer without promoting incomplete schedules or retrospective prices into qualified forecasts."
 kind: constraint
 verified_at: 2026-09-24
-verified_by: "Macro #7925 / #7929; original mechanical and C1-M1 measurement receipts remain preserved; MARKET_TIDE_EVENT_BINDING_PROOF_2026-09-24.json records31 sandbox consumer tests and the official-notice run, not a market backtest or full-repository validation."
+verified_by: "Macro #7925 / #7929; original mechanical proof at 8de2d6b386ba2b9102c708caf6db71af84929167; MARKET_TIDE_EVENT_NATIVE_PROOF_2026-09-24.json records 35 native focused tests and the documentary-input CLI at cb79d84ae460db4a5148cb4b2552b39c6f47448f, not a market backtest."
 scope:
   - macro
   - WS:ADVANCED-DATA-OPTIONS
@@ -15,72 +15,81 @@ confidence: verified
 
 # Market Tide — cumulative continuation
 
-## Mission and current authority
+## Mission, authority and source carrier
 
-Sol retains the Chairman's September24 end-to-end commission and current continuation: deep research, statistical validation and useful system integration combining expiry/positioning, economic-event sequence and observed trend/participation/stress. The user job is exposure review and entry/exit/re-entry preparation, not a decorative OPEX indicator. A dedicated Market Tide page remains conditional on useful evidence. Research prioritization, forecast qualification and trade/size authority remain separate.
+Sol retains the Chairman's September 24 end-to-end commission and current continuation: rigorous research and eventual useful integration of expiry/positioning, economic-event sequence and observed trend/participation/stress. The user job is exposure review and entry/exit/re-entry preparation. A dedicated Market Tide page remains conditional on useful evidence. Research priority, forecast qualification and trading/size authority remain separate.
 
-Operation `market-tide-research-20260924-sol-001`; research/evidence parent Macro #7925; original branch `claude/market-tide-research-20260924-sol-001`; original Draft/HOLD PR #7929. No replacement workstream, source carrier, runtime Job or control plane.
+Operation `market-tide-research-20260924-sol-001`; parent research/evidence issue Macro #7925; same cumulative checkpoint comment `5812208225`; same Draft/HOLD PR #7929 and branch `claude/market-tide-research-20260924-sol-001`. No replacement workstream, worker, forecast ledger or control plane.
 
-Fresh procedure: protected Mastermind `a0779abef1a3d872d060657a1b54318db9dffab3`, compatible Skillpack1.0.1/bootstrap1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT blobs matched the same procedures already fully read. Their current source pin, not chat recollection, governs. Direct work retained for PRINCIPAL_JUDGMENT on evidence/measurement boundaries; no worker was submitted.
+Protected procedure freshly pinned to Mastermind `2a7681601a419532a47f0d24029b55b37bfe2b5c`, Skillpack 1.0.1 / bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT matched the already fully read procedure blobs. GitHub remains the source-writing carrier. Direct retained work: PRINCIPAL_JUDGMENT on evidence semantics plus LOWER_TOTAL_OVERHEAD for the bounded verification/repair; no worker was submitted.
 
-## Material capability now built, with exact limits
+## New material result: complete owner imports and native focused verification
 
-Before this tranche the reviewed advance notices and missingness rules existed only as research notes. Now a read-only, supplied-input Python consumer projects them into the incumbent event shape while using the incumbent Data OS time functions. Source is research-only and not installed into a production page or calendar.
+The previous sandbox rehearsal is preserved in `research/options_estate/MARKET_TIDE_EVENT_BINDING_PROOF_2026-09-24.json`. It was not full-module integration. The new evidence is `research/options_estate/MARKET_TIDE_EVENT_NATIVE_PROOF_2026-09-24.json`, added at commit `61a909581c35a98cd41a0caf0e20986f82e30122`.
 
-New source and documentary input are present by commit `f038f682731a579eba066c879629a0c8166f12f4`; the proof record was added at `dd39d4e38bb04b62887fb6af63abaeb1e78e8ce1`:
+A native, isolated, sparse verification checkout now imports the COMPLETE `engine.event_calendar` and `lib.dataos.temporal` modules from the exact repository source. No dependency excerpts or mocks, new dependencies, collector calls or primary-checkout edits were used.
 
-- `research/options_estate/market_tide_event_binding.py`: blob `cd851591e942d4e5ef9fb0f7455b4021370d1ddf`, SHA256 `c30cdf600fcdb0bdf16a370ccef59714ee1ee035b6975b1013cc69ea13def19a`.
-- `research/options_estate/test_market_tide_event_binding.py`: blob `d0e159001496352b66e584c89cd32579e3b8854b`, SHA256 `70b5b3890b3258f719c0235348aa72b27b957939cdb655fb607a7838c654b847`.
-- `research/options_estate/MARKET_TIDE_REVIEWED_ADVANCE_NOTICES_2017.json`: blob `e1177e3623f0554eb2fefc4fc19a6b69a4d30bc1`, SHA256 `fd5254f21c0f40c3ebdabbe792910c6785cf2ba85a29ed6c4560bf7cde435714`.
-- `research/options_estate/MARKET_TIDE_EVENT_BINDING_PROOF_2026-09-24.json`: executed commands, source identities, actual result summary, source-trace scope and limitations. Final blob/head are recorded in #7925 after readback.
+- Native host: MacBook-Pro-9.ts.net lan, device `2b8a329e-0a82-413c-b9d0-958a7de6d836`.
+- Checkout: `/Users/chriswong/lanes/repos/macro/.claude/worktrees/market-tide-research-20260924-sol-001`.
+- Interpreter: `/Users/chriswong/lanes/venv/bin/python`, Python 3.12.14.
+- Verification checkout is detached and locked; GitHub remains the only source writer. Exact latest observed native HEAD is `cb79d84ae460db4a5148cb4b2552b39c6f47448f`. Later proof/record-only commits are not silently called tested native heads.
+- Process 3081: original 31 tests passed against complete owners at `5dee38de7a184b00fa9374aaca20b7b1c0ca36a3`; supplied-input CLI exit 0.
+- Process 7519: after the repair below, all **35 focused tests passed**, exit 0; actual CLI exit 0, empty stderr; `git diff --check` and `git status --short` clean. No active process remains.
 
-The consumer imports `engine.event_calendar._event` (source blob `ef9ebd3c380da1d81411dd62fc4b2885b231fafe`) and `lib.dataos.temporal` (blob `094b149a8b9158f19cb99c4005568c12db96ed41`). It creates no replacement calendar, clock parser, collector, registry, historical database, canonical revision resolver or qualification service. Multiple visible event versions return to the incumbent source owner for resolution. Its local research notice keys are not a new canonical event identity plane.
+The canonical native test command is:
 
-### Actual verification
+```sh
+PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python -m unittest discover -s research/options_estate -p test_market_tide_event_binding.py
+```
 
-31 behavioral tests passed under Python3.13.5 in a sandbox rehearsal using source-extracted owner boundary functions. This is NOT a full import of the entire repository modules, native repository test run, hosted CI or production proof. Sandbox owner excerpts were NOT committed. The committed consumer and tests matched the executed source blobs.
+The real documentary-input CLI still emits 3,557 bytes, SHA-256 `51430b85bd63b4f424d06c567d6cc99be01750f0d33759f7478ac2e9ec00537a`. At the March 14, 2017 origin, the 12 supplied claims yield CPI at 08:30 ET and tentative date-only FOMC on March 15; ten rows lie outside the window. All C1 event flags stay null; primary eligibility, system replay and forecast publication stay false. This is an input-component result with zero price observations, not market-performance evidence.
 
-RED→GREEN discriminators included absent consumer; lexical sorting of unknown time as earliest; individual cancelled-plan acceptance; and a visible cancellation being dropped before grouping, which could resurrect an older active plan. The latter was repaired on the same GitHub source carrier at `a77a71759f4e8040dca4cb93580260152173ccb7` with the31st regression test. Other checks cover future notice/revision leakage, unzoned timestamps, documentary versus system-ingestion clocks, date precision, inconsistent event dates, duplicates, conflicts, reference periods, EST/EDT, source immutability and exclusion of actual/consensus/surprise values.
+### Newly proven defect and RED-to-GREEN repair
 
-The real supplied-input invocation used12 schedule-only claims from five previously reviewed BLS/Fed pages. At decision `2017-03-14T20:15:00Z` through `2017-03-15T20:00:00Z`, it produced:
+Native adversarial process 4267 at the original head ran four cases: two failed and two controls passed. Conflicting records reusing one notice ID were dropped before event grouping. Their event references were lost, so a separate older notice could reappear as an apparently unambiguous plan. An ID reused across two events could leak both old plans.
 
-- CPI: March15,08:30ET, known from the February15 publication; upcoming reference period February2017.
-- FOMC: March15, tentative/date-only, known from the June28,2016 notice; no invented statement time.
-- Ten other documentary claims excluded as outside this window.
-- All C1 event feature flags null; `primary_cohort_eligible=false`; `system_replay=false`; `can_publish_forecast=false`.
+The narrow repair retains every event reference contaminated by a conflicting VISIBLE notice ID and withholds those groups for the existing source owner to resolve. Public-time filtering still comes first: future corrections cannot rewrite an earlier decision. Unrelated events remain visible. No new revision resolver or qualification switch.
 
-The full stdout was3557bytes, SHA256 `51430b85bd63b4f424d06c567d6cc99be01750f0d33759f7478ac2e9ec00537a`. Documentary input is not a complete schedule/update archive, and raw-document hashes/original ingestion remain unavailable. A documented plan is not proof the plan remained unchanged. Unknown time is displayed separately from known-time ordering, not silently treated as midnight. No probability or market-return estimate was produced.
+- Consumer fix commit `3587c625f41bdd12d879fedb9e843a9eb873267f`, file `research/options_estate/market_tide_event_binding.py`, blob `d03da7f2cdeb142f830796cd7d67757102f9dd36`, SHA-256 `8bac1186c509d6f483929e7bcfbac5f371b66855ecd297ab0a72aa59ee9e2b22`.
+- Four regression cases retained in the original test file, commit `cb79d84ae460db4a5148cb4b2552b39c6f47448f`, blob `53bca67b7a10c72fb0369e491725030bc1a9d2bf`, SHA-256 `31cd3d8b5f78f2ce10c86819c0cbed0b20db9079f741452e9f118e048cd391b1`.
+- Documentary input unchanged, blob `e1177e3623f0554eb2fefc4fc19a6b69a4d30bc1`. Native output unchanged after repair.
 
-## Prior results and method — preserve without replaying history
+## CI finding, record correction and precise limitations
 
-- Original mechanical sign counterexample remains at `8de2d6b386ba2b9102c708caf6db71af84929167`. Eight model checks, no empirical market conclusion.
-- Original R0 calendar-only preregistration remains unchanged in #7925 and unexecuted. Do not rewrite it or route around its refused acquisition.
-- R1 report `research/options_estate/MARKET_TIDE_R1_SOURCE_AND_EVENT_SEQUENCE_2026-09-24.md`, blob `f7abf209ee811290c257335a37228b9eb47a7924`, remains unchanged.
-- C1-M1 amendment `research/options_estate/MARKET_TIDE_C1_M1_PUBLICATION_AND_MEASUREMENT_2026-09-24.md`, blob `19eeb6a515ee2419fd37c4ec85eb821d8d0b776b`, remains unchanged: conditional MEAN of original normalized five-session downside Y5, naive MEAN reference and primary MSE; MAE secondary/nonpromoting. Original fixed features, ridge, chronology, overlap/maturity handling, paired resampling and research hurdle remain. The16-check measurement attachment is preserved, not rerun by habit.
-- MAS-260's actual GEX-transfer receipt was previously recovered at its incumbent local HEAD `b281fe529717656e070abaa15651c75fb74bf93f`, SHA256 `5f241659cda73bb9283de75875b630ee79482ff318df674fb3541f095541b975`. QQQ tested recipe worse; IWM too thin; SPY exploratory lift did not transfer robustly. Receipt verification is not a new rerun. Later interval-calibration rejection remains handoff-reported. Do not retune rejected recipes or infer all options information is useless.
-- Recomputed historical breadth uses today's membership and remains excluded from the primary predictive cohort. Use accepted historical membership or existing first-seen Market Memory capture for any later breadth increment.
+Observed CI at old subject head `5dee38de7a184b00fa9374aaca20b7b1c0ca36a3`: run `35997462080` and fences `35997461457` failed. Contract-delta succeeded. The old CI tested merge tree `4c5ca01b34fb4491992e6afe5af09e968c791179`; it is not evidence about the later repaired candidate.
 
-## Remaining price and schedule dependencies, now precise
+Bounded job-log read of job `107626973218` identified an authored error in THIS discovery: its falsifier lacked a runnable command, file:line or #PR token. This revision fixes that field with #7929 and an exact `git show` retrieval of the original executable example. The check itself was not weakened. The same job separately reported a missing Git blob during exact-base fetch; that infrastructure failure is not the record defect and was not repaired here. Fences-specific failure details were not inspected.
 
-At source-trace pin Macro `c210dcacc9fb4242d87355820d2c227b697fd717`, the inspected `collectors/base.py::run_adapter` calls validation/upsert then returns status, row count, last_date and notes. The indexed `scripts/collect.py` source-health assignment adds checked_at/elapsed_sec. These are not automatically historical per-row value-version/publication receipts. Source blobs and scope are in the proof. A separate qualifying archive/manifest is still unverified; no site-wide absence claim is made.
+A combined native request to run the full Agent OS validator and read the options-data manifest was explicitly blocked BEFORE dispatch. No PID or effect; no retry, alternate carrier or delegated substitute. Therefore the corrected record is NOT claimed validator-green. Focused native consumer success does not establish full repository suite, CI enrollment, independent review, all-record validation or production acceptance. No workflow rerun/dispatch, merge or deployment was performed.
 
-The consumer currently withholds ALL primary C1 flags because complete schedule-update and known-negative coverage is not attested. Do not add a caller boolean that turns a partial fixture into a complete calendar. A source-owner integration must provide the exact reviewed coverage and version facts. Likewise no code in this tranche admits the previously inspected SPY file or asserts historical source freshness. No price acquisition or refused native metadata operation was attempted.
+## Remaining data dependency: reuse the existing frozen price-panel owner
 
-The specific next implementation gate is full-repository execution of the committed consumer and31 tests through an admitted same-carrier workspace, with actual complete modules rather than the sandbox excerpts. Commands are in the proof. Then qualify source-owner schedule coverage and one version-bound price input cohort for C1-M1. Code/source completion does not require changing the research target or reopening completed literature.
+A bounded source read located `research/RESEARCH_PRICE_PANEL_ADOPTION.md` at Macro `cdcfbb27681efcd86151dfb2149633f0b343dfde`, blob `32f0ccf67c2486676e83b2f4ae7d4abd156ef353`.
 
-## Custody, effects and source acceptance
+The existing owner is `research/research_panels/price_panel.py` and `data/research_panels/`: write-once versions, explicit version reads without latest/fallback, byte-integrity checks, per-name source/basis coverage and close-only limitations. The documented historical version is not automatically a suitable Market Tide cohort. This turn inspected the contract only; no panel data were acquired, loaded, built, hashed or admitted.
 
-All new source effects remain on #7929's original GitHub branch. No native repository workspace or incumbent #7328 source changed. Original R0 download/write and R1 native metadata/hash refusals remain pre-dispatch TOOL_DEGRADED/EFFECT_NONE; no retry, rephrasing, alternate host/carrier or delegated replacement. No new refusal or unresolved modifying effect occurred in this tranche.
+Freezing bytes establishes reproducibility, not historical publication, ingestion or schedule completeness. Next source qualification must establish actual period, SPY/QQQ/IWM availability, required structure/total-return bases and version semantics from permitted existing-owner evidence. Do not create a second price-freeze store or use this discovery to route around earlier refused data operations.
 
-#7328 retains its source lock, CI-deferral, calibration/state/shadow work and30/60/90/120-minute horizons. Release Radar#6868/WS:RATES-INFLATION-COMMAND/MAS-204, Market Ontology#6819 F03/F05/F08/F10, Market Memory, Risk Radar, Portfolio and Prophet keep their contracts. No live scores, weights, forecasts, risk ladder, trades, runtime, collector, calendar or CI configuration changed.
+The event consumer still deliberately withholds all primary C1 flags: complete schedule-update and known-negative coverage have not been established. It has no caller boolean for fabricating that qualification. Correct code is not a qualified dataset.
 
-No worker/child/watcher/automatic wake. Full repository tests, test enrollment/required CI, independent review, source acceptance and production/browser proof remain owed. Draft/HOLD remains; do not merge because the sandbox checks pass. These records are recoverable candidate source, not main or generated live Agent OS acceptance.
+## Preserve prior research and source custody
 
-## Continuation
+- Original Greek-sign illustration remains immutable at `8de2d6b386ba2b9102c708caf6db71af84929167`; model arithmetic only.
+- R0 calendar-only preregistration remains unchanged in #7925 and unexecuted. No alternate acquisition.
+- R1/C1 report remains unchanged, blob `f7abf209ee811290c257335a37228b9eb47a7924`; explicit C1-M1 amendment remains unchanged, blob `19eeb6a515ee2419fd37c4ec85eb821d8d0b776b`.
+- C1-M1 targets conditional MEAN of normalized five-session downside Y5, with mean reference and primary MSE; MAE is secondary/nonpromoting. Frozen features, ridge, chronology, maturity/overlap rules and research hurdle remain. No fitted benchmark or market result exists yet.
+- MAS-260/#7328 actual GEX-transfer receipt was previously verified on its original local carrier at `b281fe529717656e070abaa15651c75fb74bf93f`, SHA-256 `5f241659cda73bb9283de75875b630ee79482ff318df674fb3541f095541b975`. Tested QQQ recipe worse, IWM too thin, SPY exploratory lift not robustly transferred. Do not rerun/retune those recipes; later calibration rejection remains handoff-reported. Its lock, CI-deferral, source and 30/60/90/120-minute contracts were untouched.
+- Historical breadth recomputed using today's membership remains excluded. Use accepted historical membership or existing first-seen capture for a later increment.
+- Release Radar #6868 / WS:RATES-INFLATION-COMMAND / MAS-204, Market Ontology #6819 F03/F05/F08/F10, Market Memory, Risk Radar, Portfolio and Prophet retain their owners and contracts. No live score, weight, sizing rule, trading action or operational page changed.
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after final exact-head/blob and same-comment checkpoint readback.
-MISSION_COMPLETE: false.
+## Effects and continuation
 
-Boundary: the first executable notice-consumer tranche and actual documentary input run are complete, with substantial accumulated source/test/publication context. This is not mission completion, worker termination, custody transfer or source-writer release.
+Three action-scoped pre-dispatch refusals remain TOOL_DEGRADED/EFFECT_NONE: original R0 download/write; R1 native data footer/hash follow-up; this turn's combined full Agent OS validator/options-data manifest read. None was retried, rephrased, moved or delegated. Do not call other successful actions proof these denied effects became permitted. No unresolved modifying effect is observed.
 
-Next: full-repository boundary validation of the exact committed consumer/test/input/proof, preserving its research-only state; then source-owner coverage/version admission for one C1-M1 cohort. Do not rebuild the consumer, change its source carrier, repeat the broad source census, rerun prior GEX/calibration failures, repeat the original measurement proof, manufacture price clocks or retry either refused operation. Resume from #7925 comment5812208225 plus the final immutable head/this cumulative record and fresh compatible procedure. No automatic continuation between turns is claimed.
+Native verification workspace remains locked at the exact tested head; do not create a second checkout or delete it during continuation. All source writes are on the original GitHub branch and are reconciled by returned commit/blob IDs. No active worker, child, process, watcher or automatic wake exists.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after immutable proof/record and same-comment checkpoint readback. MISSION_COMPLETE: false. Boundary: native integration and the independently discriminating conflict repair are complete, with substantial accumulated source/test/CI context; this is continuity, not completion, cancellation or source-writer release.
+
+Exact next material unit: qualify one existing version-bound price panel and a bounded event schedule/update block for C1-M1 through permitted owner evidence; retain retrospective-only or forward-only disposition when availability cannot support the primary cohort. Normal exact-head CI/enrollment/independent review and record acceptance remain separate release gates; the locally refused validator is not to be retried or delegated. Do not repeat full imports/35 tests unless source or dependencies materially change.
+
+DO_NOT_REDO: programme/issue/branch/PR, native verification workspace, original R0/measurement work, R1 broad audit, reviewed-notice discovery, repaired consumer/regressions, prior GEX/calibration failures, denied operations or any existing event/price/breadth/forecast/risk/learning/control owner. Resume from #7925 comment 5812208225 plus this cumulative record and the native proof at their exact final source revision under fresh compatible law.
