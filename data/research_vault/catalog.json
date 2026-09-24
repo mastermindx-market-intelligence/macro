@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T09:27:22.898278+00:00",
-  "count": 2769,
+  "generated_at": "2026-09-24T09:57:24.228933+00:00",
+  "count": 2771,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,46 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-scwhihalhqx-a9f08a",
+      "title": "JPM China AI value chain",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:26:41Z",
+      "summary_points": [
+        "Downstream Profit Dominance Shift: Downstream (models + applications) to capture 54% of China AI industry operating profit by 2030E (vs. 30% in 2026E), driving 64% of annual profit growth from 2026E-2030E as hardware profit share collapses from 93%→30%.",
+        "Preferred Exposures & Value Capture: Alibaba (integrated chip/cloud/model), Tencent (AI application assets), and Zhipu (Z.AI) prioritized for scarcity + monetization leverage in downstream value chain; Zhipu targets 170% upside via paid API growth.",
+        "Enterprise-Driven Token Consumption: China’s AI token consumption to surge 6.6x (2026E-2030E), with enterprises driving 69% of demand (vs. 31% consumers), enabling $1.4tn end-customer spending by 2030E (1/4 global demand)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-apj9ulrx9ye-b4d97f",
+      "title": "JPM Europe Equity Research | Today’s Morning Meeting",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:18:46Z",
+      "summary_points": [
+        "Chemicals Sector Fundamentals: Structural headwinds from China/EM competition drive consolidation (Akzo/Axalta merger, Syensqo review); Novonexis (OW), BASF/Wacker (UW) reflect sector tape divergence.",
+        "Akzo Nobel Merger Upside: 30% synergy realization by 2027, 2% EBITDA uplift (3Q26), €690 value lift from Deco separation potential; merger closes 2026/2027.",
+        "Brazil Gaming Policy Risk: Potential online casino ban under review creates immediate policy-driven uncertainty for covered companies.",
+        "EPS Divergence Signals: DSM-Firmenich (+12% current EPS) vs.",
+        "Akzo Nobel/Aynens/Pirelli (-0.4% to -4.2%); Burberry revised up (+1.0% next EPS)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-alc0nknqxhy-851f9b",
       "title": "Daily ShortActivity22Sept2026 US CLEARED",
