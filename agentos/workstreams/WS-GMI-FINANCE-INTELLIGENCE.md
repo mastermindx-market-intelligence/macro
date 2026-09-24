@@ -76,9 +76,11 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Dispatch Wave 1 fabric lanes fin_t1_contract and fin_t3_overlap on mini2, then
-  fin_t2_projection and fin_t4_private once the frozen schema lands; seat consumes
-  returns, reviews seams, merges on concluded green.
+  Wave 1 is landing: T1 contract MERGED (#7896, b4c6e4bdb347); T3 overlap on PR #7900 awaits the
+  seat's CI-wiring commit then merge; D1a (spec) and T4 (private evidence) lanes run on mb/m1;
+  T2 projection dispatches once T3 is on main, then T5 ∥ T7 → T6 (dry-run → nonce_probe →
+  publish under the Sol R4 privacy gate); D1b mockup onto the D1a PR; Opus read-only audit of
+  the spec before T8. Records ride fresh branches per DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN.
 ---
 
 # Finance Intelligence workstream
