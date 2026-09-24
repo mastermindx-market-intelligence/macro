@@ -346,7 +346,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jinja2
       - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
@@ -14528,6 +14528,12 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "tests/test_energy_economic_change_non_regression.py"
+      - "tests/fixtures/energy_non_regression/**"
+      - "data/baskets/membership.json"
+      - "data/neuralweb/theme_state.json"
+      - "site/basket/nuclear_power.html"
+      - "lib/pages.py"
       - "collectors/base.py"
       - "collectors/fda_shortages.py"
       - "config/**"
@@ -14606,7 +14612,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
-        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py -q
+        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
         run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
 
@@ -16775,3 +16781,50 @@ jobs:
             tests/test_payoff_lab_launchd.py \
             tests/test_options_skew_backfill.py \
             -q
+
+  industrials-result-cash:
+    # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
+    # corpus, helper harness and the delivery-input validator. One exclusive gate:code job
+    # for the whole Industrials program; every later task adds its suite to `paths:` and
+    # the run line (never a second job). Disabled entry: the file is a pack inventory
+    # read by scripts/run_ci_pack.py.
+    if: ${{ false }}
+    gate: code
+    # CURATED SCOPE (2026-09-24): the suite, its helper, the fixture corpus, the owned
+    # validator module, and the owner modules the suite imports DIRECTLY (measured via
+    # `grep -hE '^(from|import) engine' tests/test_industrials_dependency_binding.py
+    # tests/industrials_result_cash_helpers.py` -> 3 modules). No transitive modules.
+    scope: exclusive
+    paths:
+      - "tests/test_industrials_dependency_binding.py"
+      - "tests/industrials_result_cash_helpers.py"
+      - "tests/fixtures/industrials_result_cash/**"
+      - "engine/company_intelligence/financial_dossier.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "config/earnings_story_promotion.yml"
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Industrials result-to-cash suite
+        # pyyaml: engine.earnings_narrative.promotion imports yaml (transitive via
+        # engine.company_intelligence.documents -> ..earnings_narrative.contracts).
+        # Stated identically in clean-venv proof below.
+        run: pip install pytest pyyaml
+      - name: Industrials synthetic dependency binding (T01)
+        run: python -m pytest tests/test_industrials_dependency_binding.py -q
