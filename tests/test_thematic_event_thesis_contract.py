@@ -151,6 +151,19 @@ def test_event_aware_thesis_cannot_backdate_a_machine_grade():
     assert thesis["evaluation_status"] == "prospective_anchor_required"
 
 
+def test_event_context_without_returned_refs_still_cannot_backdate_a_machine_grade():
+    payload = _thesis_payload()
+    payload["theses"][0].pop("evidence_refs")
+    brief = td.synthesize(_state(), {"panel": {"enabled": False}}, _call(payload))
+    thesis = brief["theses"][0]
+
+    check = thesis["falsifier"]["check"]
+    assert check["kind"] == "soft"
+    assert thesis["evaluation_status"] == "prospective_anchor_required"
+    assert thesis["event_evidence_bound"] is True
+    assert thesis["evidence_refs"] == []
+
+
 def test_legacy_thesis_without_event_context_keeps_existing_machine_check():
     brief = td.synthesize(_state(event_context=False), {"panel": {"enabled": False}},
                           _call(_thesis_payload()))
