@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../../templates/theme.css">
 <title>Finance Intelligence — dossier (static mockup)</title>
 <meta name="fi-mockup-purpose" content="static visual snapshot for the D1 audit; not product code">
-<!-- Self-contained: no external assets, no network, no localStorage. -->
+<!-- No network, no localStorage. The only external asset is the repo's own theme.css (relative link) — it owns the base tokens this file only references. -->
 <style>
 /* =========================================================================
    Finance Intelligence dossier — static mockup
@@ -448,9 +449,9 @@ html[data-lang="zh"] .l-en { display: none; }
     <h1 id="fi-hero-title"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></h1>
     <p class="fi-deck"><span class="l-en">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</span><span class="l-zh">阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。</span></p>
     <p class="fi-meta">
-      <span class="l-en"><span data-tip-en="As of 2026-09-19" data-tip-zh="截至 2026-09-19">As of 2026-09-19</span></span>
+      <span class="l-en"><span data-tip-en="As of 2026-09-19" data-tip-zh="截至 2026-09-19">As of 2026-09-19</span></span><span class="l-zh">截至 2026-09-19</span>
       <span aria-hidden="true">·</span>
-      <span class="l-en"><span data-tip-en="Knowledge cutoff 2026-09-12" data-tip-zh="知识截止 2026-09-12">Knowledge cutoff 2026-09-12</span></span>
+      <span class="l-en"><span data-tip-en="Knowledge cutoff 2026-09-12" data-tip-zh="知识截止 2026-09-12">Knowledge cutoff 2026-09-12</span></span><span class="l-zh">知识截止 2026-09-12</span>
       <span class="fi-chip fi-freshness-chip" data-state-freshness="AGING"><span class="l-en">Aging</span><span class="l-zh">趋于陈旧</span></span>
       <span class="fi-chip fi-outer-dossier-chip" data-state-outer-dossier="OUTER_CONTRACT_NOT_ACCEPTED"><span class="l-en">Outer dossier not accepted</span><span class="l-zh">外部报告尚未接入</span></span>
     </p>
@@ -1410,8 +1411,12 @@ html[data-lang="zh"] .l-en { display: none; }
     <p class="fi-receipt-line"><span class="l-en">Private publication — not accepted · upstream vendor gate</span><span class="l-zh">私有发布 — 未接入 · 上游厂商未开通</span></p>
   </footer>
 
+</main>
+
+<!-- Mockup-only evidence: the §G degraded states, shown OUTSIDE the shell so <main> carries exactly the seven L1 sections. -->
+<div class="fi-shell fi-mockup-showcase-wrap" aria-label="Degraded states (mockup only)">
   <!-- =================== Degraded-state showcase (per §G — public shell only) =================== -->
-  <section id="fi-degraded-states" class="fi-section fi-panel" aria-labelledby="fi-degraded-states-title">
+  <section id="fi-degraded-states" class="fi-section fi-panel fi-mockup-showcase" aria-labelledby="fi-degraded-states-title">
     <header class="fi-section-head">
       <h2 id="fi-degraded-states-title" class="fi-section-title">
         <span class="l-en">Degraded-state copies</span><span class="l-zh">降级文案</span>
@@ -1453,8 +1458,7 @@ html[data-lang="zh"] .l-en { display: none; }
       </li>
     </ul>
   </section>
-
-</main>
+</div>
 
 <!-- =================== Evidence drawer aside (single instance, dialog role) =================== -->
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
