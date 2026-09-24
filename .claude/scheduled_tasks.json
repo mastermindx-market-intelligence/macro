@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    {
+      "id": "9bc16e90",
+      "cron": "7,22,37,52 * * * *",
+      "prompt": "Poll PR state for `claude/finance-t8-dossier-page-shell` and append one line to `mockups/evidence/finance-t8-shell/PR_POLL.log`. Step 1: run `gh pr view --repo mastermindx-market-intelligence/macro --head claude/finance-t8-dossier-page-shell --json number,state,mergeStateStatus,statusCheckRollup,url,headRefOid` (read-only — lane shim passes through). Step 2: if a PR exists, append `{\"ts\":\"<ISO8601 UTC>\",\"pr\":<gh-output>,\"transition_since_last\":\"<open|check_change|merge_ready|merged>\"}`. Step 3: if `state` is MERGED, capture the merge commit SHA and the SHA `382e9bcc90e960bb4e4bd2d1e7ac44f66e42c258` and exit silently. Step 4: if no PR exists, append `{\"ts\":\"<ISO>\",\"pr\":null,\"transition_since_last\":\"none\"}`. Step 5: never run a write that the lane gh shim forbids (the shim auto-refuses). The seat action that unblocks the wait is `LANE_GUARD_OFF=1 gh pr create --repo mastermindx-market-intelligence/macro --draft --base main --head claude/finance-t8-dossier-page-shell --title \"feat(finance-intelligence): dossier page shell + client hydration from the frozen design spec (Finance T8)\"`. Never poll within 900s.",
+      "createdAt": 1790264493087,
+      "recurring": true,
+      "createdBySessionId": "d8771aef-117e-4cc1-b16a-809473eee3e4",
+      "createdByPid": 63084,
+      "createdByProcStart": "Thu Sep 24 15:02:16 2026"
+    }
+  ]
+}
