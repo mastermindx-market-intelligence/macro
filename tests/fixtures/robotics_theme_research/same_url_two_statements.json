@@ -92,7 +92,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_bcb7524f4707d00bbd425b812c87ccb3",
+        "curation_revision": "gmirca_ea88d3756226ea43a0755173d1a0cdf0",
         "limitations": {
           "coverage": "second statement of two at the same URL and publication state; both survive as distinct evidence",
           "does_not_establish": [
@@ -112,9 +112,9 @@
           "estimate_status": "reported",
           "gross_net_basis": null,
           "precision": "integer",
-          "quantity_basis": "per_robot",
+          "quantity_basis": "absolute",
           "stock_flow": null,
-          "unit": "camera",
+          "unit": null,
           "value": null,
           "value_high": null
         },
@@ -182,7 +182,7 @@
       ],
       [
         "assertion",
-        "gmirca_bcb7524f4707d00bbd425b812c87ccb3"
+        "gmirca_ea88d3756226ea43a0755173d1a0cdf0"
       ],
       [
         "identity",

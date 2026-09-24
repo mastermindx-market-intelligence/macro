@@ -26,7 +26,7 @@ def load_case(name: str) -> dict:
 
     Raises ``ValueError`` if the name is not a safe alphanumeric slug, and
     raises ``ValueError`` if the loaded payload is not explicitly marked
-    ``{"synthetic": true}`. Both refusals are loud on purpose: a real
+    ``{"synthetic": true}``. Both refusals are loud on purpose: a real
     fixture whose ``synthetic`` flag is missing or false is a contract
     violation, not a soft warning.
     """

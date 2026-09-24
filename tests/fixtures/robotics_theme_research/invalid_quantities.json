@@ -40,7 +40,7 @@
           "quantity_basis": "per_robot",
           "stock_flow": null,
           "unit": "camera",
-          "value": NaN,
+          "value": "__nan__",
           "value_high": null
         },
         "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
@@ -122,7 +122,7 @@
           "quantity_basis": "per_robot",
           "stock_flow": null,
           "unit": "camera",
-          "value": Infinity,
+          "value": "__inf__",
           "value_high": null
         },
         "predicate": "DOCUMENTED_PRODUCT_INCLUSION",

@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_f7a3df18d8bcaf4015ea030c545899d4",
+        "curation_revision": "gmirca_e5f7cb7bca9c2775d9490ac0314719bb",
         "limitations": {
           "coverage": "retention postdates the recorded cutoff; the assertion cannot support a historically-known claim before its retention time",
           "does_not_establish": [
@@ -28,7 +28,7 @@
         },
         "object": {
           "configuration": null,
-          "source_product_label": "Backlog - Speed reducers (published total)"
+          "source_product_label": "Backlog - published total (All product groups)"
         },
         "observation": {
           "estimate_status": "reported",
@@ -73,7 +73,7 @@
           "configuration": null,
           "source_business_label": "Harmonic Drive Systems",
           "source_platform_label": null,
-          "source_product_label": "Speed reducers"
+          "source_product_label": "All product groups"
         },
         "temporal": {
           "business_valid_from": null,
@@ -100,7 +100,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_f7a3df18d8bcaf4015ea030c545899d4"
+        "gmirca_e5f7cb7bca9c2775d9490ac0314719bb"
       ],
       [
         "identity",

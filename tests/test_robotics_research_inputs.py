@@ -556,6 +556,13 @@ def test_invalid_quantities_fail_with_pinned_errors():
     assert {e['case'] for e in entries} == INVALID_CASE_NAMES
     for entry in entries:
         payload = entry['payload']
+        # Fixtures are strict JSON: non-finite values travel as string sentinels
+        # and are materialised here (RBV-25 refusal of NaN/inf stays real).
+        sentinel = payload['observation']['value']
+        if sentinel == '__nan__':
+            payload['observation']['value'] = float('nan')
+        elif sentinel == '__inf__':
+            payload['observation']['value'] = float('inf')
         assert payload['curation_revision'] is None, (
             'invalid payloads are stored unstamped'
         )
@@ -581,12 +588,11 @@ def test_invalid_quantities_fail_with_pinned_errors():
 #   www.1x.tech               S23  1X NEO hands page
 #   www.robotis.com           S42  ROBOTIS Dynamixel 2X product page
 #   investors.teradyne.com    S01  Teradyne FY2025 10-K (rights_partial)
-#   www.leaderdrive.com       S27  Leaderdrive harmonic reducer catalog
 ALLOWED_HOSTS = {
     'www1.hkexnews.hk', 'discover.parker.com', 'www2.jpx.co.jp',
     'group.stabilus.com', 'example.invalid', 'www.orbbec.com',
     'robotics.hexagon.com', 'www.zebra.com', 'www.ptc.com', 'www.1x.tech',
-    'www.robotis.com', 'investors.teradyne.com', 'www.leaderdrive.com',
+    'www.robotis.com', 'investors.teradyne.com',
 }
 FORBIDDEN_TOKENS = (
     'sk-', 'bearer ', 'akia', 'r2://', 'theme_graph_private/', 'r2_', '.env',
@@ -629,3 +635,59 @@ def test_semiconductor_corpus_untouched():
         capture_output=True, text=True, check=True,
     ).stdout
     assert current == head, 'semiconductor research helpers were modified'
+
+
+# ---------------------------------------------------------------------------
+# HDS snapshot: data-driven pin of the acceptance doc table (RBV-24)
+# ---------------------------------------------------------------------------
+
+# Acceptance doc "HDS observed operating snapshot" (D3, JPY million, 1 Apr-30 Jun 2026).
+# Column order: Production, Orders, Backlog, Sales. None = the source's dash.
+HDS_TABLE = {
+    ('Japan', 'Speed reducers'): (8806, 8857, 7146, 7279),
+    ('Japan', 'Mechatronics'): (1759, 1193, 1287, 811),
+    ('China', 'Speed reducers'): (None, 981, 980, 703),
+    ('China', 'Mechatronics'): (None, 149, 119, 304),
+    ('North America', 'Speed reducers'): (1308, 2663, 5259, 1735),
+    ('North America', 'Mechatronics'): (1014, 4416, 5330, 1299),
+    ('Europe', 'Speed reducers'): (2859, 4309, 6947, 3073),
+    ('Europe', 'Mechatronics'): (1318, 1555, 2385, 1473),
+}
+HDS_TOTALS = {'Production': 17068, 'Orders': 24128, 'Backlog': 29457, 'Sales': 16681}
+HDS_RESIDUALS = {'Production': 4, 'Orders': 5, 'Backlog': 4, 'Sales': 4}
+HDS_MEASURES = ('Production', 'Orders', 'Backlog', 'Sales')
+
+
+def test_hds_snapshot_reproduces_acceptance_table():
+    rows = _bundle('hds_operating_snapshot')['assertions']
+    by_label = {x['object']['source_product_label']: x for x in rows}
+    assert len(by_label) == 36
+    for (geo, group), values in HDS_TABLE.items():
+        for measure, expected in zip(HDS_MEASURES, values):
+            row = by_label[f'{measure} - {group} ({geo})']
+            assert row['observation']['value'] == expected, (measure, group, geo)
+            assert row['subject']['source_product_label'] == group
+            assert row['scope']['region'] == geo
+    for measure in HDS_MEASURES:
+        total = by_label[f'{measure} - published total (All product groups)']
+        assert total['observation']['value'] == HDS_TOTALS[measure]
+        assert total['subject']['source_product_label'] == 'All product groups'
+        components = [v[HDS_MEASURES.index(measure)] for v in HDS_TABLE.values()]
+        assert HDS_TOTALS[measure] - sum(c for c in components if c is not None) == HDS_RESIDUALS[measure]
+
+
+def test_every_fixture_is_strict_json():
+    def _refuse(constant):
+        raise AssertionError(f'non-strict JSON constant {constant!r}')
+    for path in _all_fixture_paths():
+        json.loads(path.read_text(), parse_constant=_refuse)
+
+
+def test_published_total_rows_are_never_attributed_to_one_product_group():
+    """A value equal to an HDS published total must carry the all-groups label
+    wherever it appears in the corpus (the R1 review caught three mislabels)."""
+    for name in _ready_names():
+        for a in _bundle(name)['assertions']:
+            if a['observation']['value'] in HDS_TOTALS.values() and a['observation']['unit'] == 'JPY_million':
+                assert a['subject']['source_product_label'] == 'All product groups', (name, a['object']['source_product_label'])
+                assert 'published total (All product groups)' in a['object']['source_product_label'], name
