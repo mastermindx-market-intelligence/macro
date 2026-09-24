@@ -1112,3 +1112,26 @@ def test_regime_context_links_preserve_all_original_deep_destinations():
     assert {a['href'] for a in links}=={'#cnx-dlg-policy','#cnx-dlg-flows','#cnx-dlg-risk','#cnx-dlg-property'}
     assert all(soup.select_one(a['href']) is not None for a in links)
     assert soup.select_one('a[href="flow_velocity.html"]') is not None
+
+
+def test_backdrop_helpers_reach_existing_fast_renderer(tmp_path,monkeypatch):
+    import pickle
+    from scripts import render_china_fast as fast
+    from engine import china_tier1 as tier
+    cache=tmp_path/'_dev_china_vm.pkl';cache.write_bytes(pickle.dumps({}))
+    monkeypatch.setattr(fast.config,'data_dir',lambda:tmp_path)
+    monkeypatch.setattr(fast.config,'load',lambda:{'storage':{'site_dir':str(tmp_path)}})
+    modes=[]
+    class Template:
+        def __init__(self,owner): self.owner=owner
+        def render(self,**vm):
+            assert self.owner.globals.get('connect_flow_face') is tier.connect_flow_face
+            assert self.owner.globals.get('regime_watch_face') is tier.regime_watch_face
+            modes.append(vm['mode']);return '<html>contract probe</html>'
+    class Env:
+        def __init__(self,*args,**kwargs): self.globals={}
+        def get_template(self,name):
+            assert name=='china.html.j2';return Template(self)
+    monkeypatch.setattr(fast,'Environment',Env)
+    monkeypatch.setattr(fast,'write_page',lambda path,content:path.write_text(content))
+    assert fast.main()==0 and modes==['macro','stocks']
