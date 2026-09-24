@@ -103,6 +103,16 @@ def test_publish_binds_owner_entry_points(tmp_path) -> None:
     assert result["read_count"] > before
 
 
+def test_run_refresh_binds_acquire_results_filing_with_ordinary_refresh_outage() -> None:
+    from tests.industrials_result_cash_helpers import publication_harness
+
+    harness = publication_harness()
+    result = harness.run_refresh({}, fail_sources=["ordinary_refresh_outage"])
+    assert result["status"] == "unavailable"
+    assert result["reason"] == "refresh_source_failed"
+    assert result["source"] == "ordinary_refresh_outage"
+
+
 def test_unknown_delivery_input_key_refused() -> None:
     from engine.company_intelligence.financial_dossier import validate_delivery_inputs
 
