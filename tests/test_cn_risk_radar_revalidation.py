@@ -825,3 +825,212 @@ def test_write_result_artifacts_writes_data_manifest_when_present(tmp_path):
     assert (tmp_path / "data_manifest.json").is_file()
     assert "data_manifest_json" in written
     assert "data_manifest_sha256" in written
+
+
+def test_average_precision_is_threshold_tie_invariant():
+    idx = pd.bdate_range("2024-01-02", periods=6)
+    score = pd.Series([1.0, 1.0, 1.0, 0.0, 0.0, 0.0], index=idx)
+    first_order = pd.Series([1.0, 0.0, 1.0, 0.0, 1.0, 0.0], index=idx)
+    second_order = pd.Series([0.0, 1.0, 1.0, 1.0, 0.0, 0.0], index=idx)
+
+    expected = 11.0 / 18.0
+    assert _fn("average_precision")(score, first_order) == pytest.approx(expected)
+    assert _fn("average_precision")(score, second_order) == pytest.approx(expected)
+
+
+def test_block_permutation_uses_requested_replication_denominator(monkeypatch):
+    idx = pd.bdate_range("2024-01-02", periods=20)
+    condition = pd.Series([True, False] * 10, index=idx)
+    outcome = pd.Series([1.0, 0.0] * 10, index=idx)
+    values = iter([1.5, 2.0, np.nan, 1.0, np.nan, 3.0])
+
+    def fake_lift_summary(_condition, _outcome):
+        return {"lift": next(values)}
+
+    monkeypatch.setattr(SUBJECT, "lift_summary", fake_lift_summary)
+    result = _fn("circular_shift_permutation")(
+        condition,
+        outcome,
+        reps=5,
+        min_shift=2,
+        seed=7,
+    )
+
+    assert result["valid_reps"] == 3
+    assert result["invalid_reps"] == 2
+    assert result["p_value"] == pytest.approx(3.0 / 6.0)
+
+
+def test_context_gate_keep_uses_supported_brier_or_elevated_plus_lift():
+    brier_supported = _fn("_claim_context_gate")(
+        {
+            "brier_difference_gated_minus_ungated": -0.01,
+            "brier_difference_block_ci": [-0.02, -0.001],
+            "elevated_plus_lift_difference_gated_minus_ungated": -0.10,
+            "elevated_plus_lift_difference_block_ci": [-0.30, 0.10],
+        },
+        effective_n=24,
+    )
+    lift_supported = _fn("_claim_context_gate")(
+        {
+            "brier_difference_gated_minus_ungated": 0.001,
+            "brier_difference_block_ci": [-0.01, 0.02],
+            "elevated_plus_lift_difference_gated_minus_ungated": 0.22,
+            "elevated_plus_lift_difference_block_ci": [0.02, 0.45],
+        },
+        effective_n=24,
+    )
+
+    assert brier_supported["verdict"] == "KEEP"
+    assert lift_supported["verdict"] == "KEEP"
+
+
+def test_forward_ledger_uses_25_row_research_floor_and_discloses_missing_cohort(tmp_path):
+    import json
+
+    rows = []
+    dates = pd.bdate_range("2026-01-02", periods=25)
+    for position, date in enumerate(dates):
+        loud = position < 8
+        rows.append(
+            {
+                "asof": str(date.date()),
+                "state": "risk-off" if loud else "caution",
+                "alert": loud,
+                "graded": {
+                    "any_dd5_within_h21": bool(position % 3 == 0),
+                    "fwd_dd": {"h21": -0.06 if position % 3 == 0 else -0.02},
+                },
+            }
+        )
+    path = tmp_path / "cn_forward_log.jsonl"
+    path.write_text("\n".join(json.dumps(row) for row in rows) + "\n")
+
+    result = _fn("summarize_forward_ledger")(path)
+
+    assert result["research_count_floor_met"] is True
+    assert result["research_recalibration_floor_met"] is False
+    assert result["production_force_count_floor_met"] is False
+    assert result["cohort_identifiers_present"] is False
+    assert result["cohort_qualification"] == "unverifiable_from_ledger_schema"
+    assert result["can_force"] is False
+
+
+def test_csi300_proxy_only_is_insufficient_not_a_quantitative_replication(tmp_path):
+    china = tmp_path / "data" / "china"
+    china.mkdir(parents=True)
+    (china / "510300.SS.parquet").write_bytes(b"proxy-present")
+
+    result = _fn("qualify_csi300_replication")(tmp_path)
+
+    assert result["verdict"] == "INSUFFICIENT_EVIDENCE"
+    assert result["cash_index_series_available"] is False
+    assert result["proxy_available"] is True
+    assert result["proxy_symbol"] == "510300.SS"
+    assert "targets" not in result
+    assert "lift" not in str(result).lower()
+
+
+def test_historical_claim_adjudication_uses_emitted_production_state_and_can_keep():
+    emitted = {
+        "lift": 2.05,
+        "block_ci": [1.25, 2.90],
+        "effective_n": {"effective_n_ceiling": 24},
+    }
+    ungated = {
+        "lift": 0.75,
+        "block_ci": [0.40, 1.10],
+        "effective_n": {"effective_n_ceiling": 30},
+    }
+    robust_stability = {
+        "split_half": {
+            "first": {"lift": 1.70},
+            "second": {"lift": 2.20},
+        },
+        "era": {"post_2016": {"lift": 1.80}},
+        "loco": [
+            {"lift": 1.30, "excluded_rows": 20},
+            {"lift": 1.45, "excluded_rows": 15},
+        ],
+    }
+    historical = {
+        "risk_off": emitted,
+        "ungated_risk_off": ungated,
+        "stability": {
+            "emitted_risk_off": robust_stability,
+            "ungated_risk_off": {
+                **robust_stability,
+                "split_half": {
+                    "first": {"lift": 0.70},
+                    "second": {"lift": 0.80},
+                },
+            },
+        },
+        "permutation": {
+            "risk_off": {"p_value": 0.01},
+            "ungated_risk_off": {"p_value": 0.90},
+        },
+    }
+
+    result = _fn("adjudicate_historical_record_claim")(historical)
+
+    assert result["verdict"] == "KEEP"
+    assert result["metric_source"] == "emitted_production_risk_off"
+    assert result["observed_lift"] == pytest.approx(2.05)
+    assert "ungated" not in result["basis"].lower()
+
+
+def test_band_cutoff_assessment_separates_ordering_from_cutoff_optimality():
+    calibration = {
+        horizon: {
+            "states": [
+                {"state": "calm", "effective_n_ceiling": 12},
+                {"state": "watch", "effective_n_ceiling": 34},
+                {"state": "caution", "effective_n_ceiling": 27},
+                {"state": "elevated", "effective_n_ceiling": 18},
+                {"state": "risk-off", "effective_n_ceiling": 18},
+            ],
+            "dependence_aware_inversions": [
+                {"supported_material_inversion": False}
+            ],
+        }
+        for horizon in ("h5", "h10", "h21")
+    }
+
+    result = _fn("assess_band_cutoffs")(
+        calibration,
+        {"watch": 58.0, "caution": 72.0, "elevated": 83.0, "risk_off": 91.0},
+    )
+
+    assert result["exact_cutoffs"] == {
+        "watch": 58.0,
+        "caution": 72.0,
+        "elevated": 83.0,
+        "risk_off": 91.0,
+    }
+    assert result["monotonic_ordering_verdict"] == "KEEP_BUT_RELABEL"
+    assert result["cutoff_optimality_verdict"] == "INSUFFICIENT_EVIDENCE"
+    assert result["post_hoc_threshold_search_performed"] is False
+
+
+def test_reconstructed_states_match_frozen_production_band_and_gate_contract():
+    from engine import risk_radar_intl as production
+
+    idx = pd.bdate_range("2024-01-02", periods=8)
+    composite = pd.Series([0.57, 0.58, 0.72, 0.83, 0.91, 0.99, np.nan, 0.84], index=idx)
+    gate = pd.Series([True, True, True, True, True, False, True, False], index=idx)
+
+    result = _fn("reconstruct_states")(composite, gate, production.CN_PROFILE.bands)
+    expected_ungated = [
+        production._band(float(value) * 100.0, production.CN_PROFILE.bands)
+        if pd.notna(value)
+        else production._band(float("nan"), production.CN_PROFILE.bands)
+        for value in composite
+    ]
+    expected_emitted = [
+        "caution" if (not bool(is_open) and state in {"elevated", "risk-off"}) else state
+        for state, is_open in zip(expected_ungated, gate)
+    ]
+
+    assert result["state_ungated"].tolist() == expected_ungated
+    assert result["state"].tolist() == expected_emitted

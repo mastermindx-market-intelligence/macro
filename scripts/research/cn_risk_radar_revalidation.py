@@ -181,17 +181,25 @@ def roc_auc(score: pd.Series, outcome: pd.Series) -> float:
 
 
 def average_precision(score: pd.Series, outcome: pd.Series) -> float:
+    """Threshold-based average precision with deterministic, tie-honest grouping."""
     frame = _aligned_numeric(score, outcome)
     if frame.empty:
         return float("nan")
-    ordered = frame.sort_values("v0", ascending=False, kind="mergesort")
-    y = (ordered["v1"].to_numpy(dtype=float) >= 0.5).astype(float)
-    positives = int(y.sum())
-    if positives == 0:
+    positives = float((frame["v1"] >= 0.5).sum())
+    if positives <= 0.0:
         return float("nan")
-    precision = np.cumsum(y) / np.arange(1, len(y) + 1, dtype=float)
-    return float(np.sum(precision * y) / positives)
-
+    grouped = (
+        frame.assign(_positive=(frame["v1"] >= 0.5).astype(float))
+        .groupby("v0", sort=True)["_positive"]
+        .agg(["sum", "count"])
+        .sort_index(ascending=False)
+    )
+    true_positives = grouped["sum"].cumsum().to_numpy(dtype=float)
+    observations = grouped["count"].cumsum().to_numpy(dtype=float)
+    recall = true_positives / positives
+    precision = true_positives / observations
+    previous_recall = np.concatenate(([0.0], recall[:-1]))
+    return float(np.sum((recall - previous_recall) * precision))
 
 def lift_summary(condition: pd.Series, outcome: pd.Series) -> dict[str, float | int]:
     frame = pd.concat(
@@ -326,7 +334,7 @@ def circular_shift_permutation(
         else:
             invalid += 1
     exceed = sum(value >= observed for value in null_values)
-    p_value = float((1 + exceed) / (1 + len(null_values))) if null_values else float("nan")
+    p_value = float((1 + exceed) / (1 + reps)) if null_values else float("nan")
     return {
         "observed": observed,
         "p_value": p_value,
@@ -1047,7 +1055,41 @@ def summarize_forward_ledger(path) -> dict[str, object]:
     matured_dates = sorted(str(row.get("asof")) for row in matured if row.get("asof"))
     total_state_counts = Counter(str(row.get("state")) for row in rows)
     matured_state_counts = Counter(str(row.get("state")) for row in matured)
-    floors_met = len(matured) >= 30 and len(loud) >= 8
+
+    cohort_keys = ("model", "model_version", "construction_hash", "source_sha", "profile")
+    cohort_values = {
+        key: sorted({str(row.get(key)) for row in rows if row.get(key) not in (None, "")})
+        for key in cohort_keys
+    }
+    cohort_identifiers_present = any(cohort_values.values())
+    episode_identifiers_present = any(
+        row.get("episode_id") not in (None, "") or row.get("alert_episode_id") not in (None, "")
+        for row in rows
+    )
+    research_count_floor_met = len(matured) >= 25
+    loud_count_floor_met = len(loud) >= 8
+    production_force_count_floor_met = len(matured) >= 30 and loud_count_floor_met
+    research_recalibration_floor_met = bool(
+        research_count_floor_met
+        and loud_count_floor_met
+        and cohort_identifiers_present
+        and episode_identifiers_present
+    )
+    if not research_count_floor_met:
+        authority_interpretation = "not eligible: fewer than 25 matured issued rows"
+    elif not cohort_identifiers_present:
+        authority_interpretation = (
+            "count floor met, but exact model cohort is unverifiable from the ledger schema"
+        )
+    elif not episode_identifiers_present:
+        authority_interpretation = (
+            "count floor met, but independent loud/risk-off episodes are unverifiable from the ledger schema"
+        )
+    elif not loud_count_floor_met:
+        authority_interpretation = "count floor met, but fewer than 8 matured loud rows"
+    else:
+        authority_interpretation = "research count/cohort/episode floors met; no production authority inferred"
+
     return {
         "evidence_class": "genuinely_issued_forward",
         "source_sha256": sha256_file(source),
@@ -1065,17 +1107,21 @@ def summarize_forward_ledger(path) -> dict[str, object]:
         "september_pending_rows": sum(date.startswith("2026-09") for date in pending_dates),
         "total_state_counts": dict(sorted(total_state_counts.items())),
         "matured_state_counts": dict(sorted(matured_state_counts.items())),
-        "authority_floors_met": floors_met,
-        "can_force": False,
-        "authority_interpretation": (
-            "not eligible: fewer than 30 matured rows or 8 matured loud alerts"
-            if not floors_met
-            else "floor eligible but no authority inferred without the live constitution gate"
+        "research_count_floor_met": research_count_floor_met,
+        "loud_count_floor_met": loud_count_floor_met,
+        "research_recalibration_floor_met": research_recalibration_floor_met,
+        "production_force_count_floor_met": production_force_count_floor_met,
+        "authority_floors_met": research_recalibration_floor_met,
+        "cohort_identifiers_present": cohort_identifiers_present,
+        "cohort_identifiers": cohort_values,
+        "cohort_qualification": (
+            "identified" if cohort_identifiers_present else "unverifiable_from_ledger_schema"
         ),
+        "episode_identifiers_present": episode_identifiers_present,
+        "can_force": False,
+        "authority_interpretation": authority_interpretation,
         "pool_with_reconstructed_history": False,
     }
-
-
 
 def _sample_conditional_rate(sample: pd.DataFrame) -> float:
     condition = sample["condition"].fillna(False).to_numpy(dtype=bool)
@@ -1502,7 +1548,7 @@ DATA_SOURCE_SPECS = {
     ),
     "csi300_etf_proxy": (
         "data/china/510300.SS.parquet",
-        "outcome_only_replication_proxy",
+        "available_proxy_not_used_for_confirmatory_replication",
         "repo_store_yahoo_adjusted",
     ),
     "china_breadth": (
@@ -1596,13 +1642,7 @@ def build_data_provenance(repo_root, profile) -> dict[str, object]:
         "source_files": sources,
         "frozen_source_files": frozen_sources,
         "construction": construction,
-        "csi300_replication_qualification": {
-            "instrument": "510300.SS",
-            "label": "CSI300 ETF proxy",
-            "cash_index_series_available": False,
-            "signal_rebuilt_on_replication_benchmark": False,
-            "method": "outcome-only alignment to the exact Shanghai-built production signal",
-        },
+        "csi300_replication_qualification": qualify_csi300_replication(root),
         "historical_claim_provenance": {
             "record": "merged PR #711 prose and production docstring",
             "claimed_composite_lift": 2.07,
@@ -1697,6 +1737,7 @@ def context_gate_analysis(
     probability_surface: Mapping[str, float],
     bootstrap_reps: int,
     seed: int,
+    horizon: int = 21,
 ) -> dict[str, object]:
     frame = pd.concat(
         [
@@ -1707,16 +1748,11 @@ def context_gate_analysis(
         axis=1,
         join="inner",
     ).dropna()
-    frame["gated_probability"] = state_probability_series(
-        frame["state"], probability_surface
-    )
+    frame["gated_probability"] = state_probability_series(frame["state"], probability_surface)
     frame["ungated_probability"] = state_probability_series(
         frame["state_ungated"], probability_surface
     )
-    frame["gated_condition"] = frame["state"].eq("risk-off")
-    frame["ungated_condition"] = frame["state_ungated"].eq("risk-off")
     brier_difference = _sample_brier_difference(frame)
-    lift_difference = _sample_lift_difference(frame)
     brier_bootstrap = moving_block_bootstrap(
         frame,
         statistic=_sample_brier_difference,
@@ -1724,15 +1760,49 @@ def context_gate_analysis(
         reps=bootstrap_reps,
         seed=seed,
     )
-    lift_bootstrap = moving_block_bootstrap(
-        frame,
-        statistic=_sample_lift_difference,
-        block_length=42,
-        reps=bootstrap_reps,
-        seed=seed + 1,
+
+    def lift_comparison(
+        gated_condition: pd.Series,
+        ungated_condition: pd.Series,
+        *,
+        local_seed: int,
+    ) -> dict[str, object]:
+        comparison = frame.copy()
+        comparison["gated_condition"] = gated_condition.to_numpy(dtype=bool)
+        comparison["ungated_condition"] = ungated_condition.to_numpy(dtype=bool)
+        difference = _sample_lift_difference(comparison)
+        bootstrap = moving_block_bootstrap(
+            comparison,
+            statistic=_sample_lift_difference,
+            block_length=42,
+            reps=bootstrap_reps,
+            seed=local_seed,
+        )
+        gated_lift = lift_summary(comparison["gated_condition"], comparison["outcome"])
+        ungated_lift = lift_summary(comparison["ungated_condition"], comparison["outcome"])
+        return {
+            "gated_lift": float(gated_lift["lift"]),
+            "ungated_lift": float(ungated_lift["lift"]),
+            "difference": difference,
+            "block_ci": [float(bootstrap["ci_low"]), float(bootstrap["ci_high"])],
+        }
+
+    gated_risk_off = frame["state"].eq("risk-off")
+    ungated_risk_off = frame["state_ungated"].eq("risk-off")
+    gated_elevated_plus = frame["state"].isin(["elevated", "risk-off"])
+    ungated_elevated_plus = frame["state_ungated"].isin(["elevated", "risk-off"])
+    risk = lift_comparison(gated_risk_off, ungated_risk_off, local_seed=seed + 1)
+    elevated = lift_comparison(
+        gated_elevated_plus,
+        ungated_elevated_plus,
+        local_seed=seed + 2,
     )
-    gated_lift = lift_summary(frame["gated_condition"], frame["outcome"])
-    ungated_lift = lift_summary(frame["ungated_condition"], frame["outcome"])
+    elevated_effective_n = episode_summary(
+        condition=gated_elevated_plus,
+        outcome=frame["outcome"],
+        horizon=horizon,
+        episode_gap=42,
+    )
     return {
         "rows": int(len(frame)),
         "gated_brier": brier_score(frame["gated_probability"], frame["outcome"]),
@@ -1742,15 +1812,18 @@ def context_gate_analysis(
             float(brier_bootstrap["ci_low"]),
             float(brier_bootstrap["ci_high"]),
         ],
-        "gated_risk_off_lift": float(gated_lift["lift"]),
-        "ungated_risk_off_lift": float(ungated_lift["lift"]),
-        "risk_off_lift_difference_gated_minus_ungated": lift_difference,
-        "risk_off_lift_difference_block_ci": [
-            float(lift_bootstrap["ci_low"]),
-            float(lift_bootstrap["ci_high"]),
-        ],
+        "gated_risk_off_lift": risk["gated_lift"],
+        "ungated_risk_off_lift": risk["ungated_lift"],
+        "risk_off_lift_difference_gated_minus_ungated": risk["difference"],
+        "risk_off_lift_difference_block_ci": risk["block_ci"],
+        "gated_elevated_plus_lift": elevated["gated_lift"],
+        "ungated_elevated_plus_lift": elevated["ungated_lift"],
+        "elevated_plus_lift_difference_gated_minus_ungated": elevated["difference"],
+        "elevated_plus_lift_difference_block_ci": elevated["block_ci"],
+        "gated_elevated_plus_effective_n": elevated_effective_n,
+        "ranking_score_unchanged": True,
+        "continuous_ap_difference": 0.0,
     }
-
 
 def _sample_adjacent_state_difference(
     sample: pd.DataFrame,
@@ -1943,29 +2016,141 @@ def _claim_context_gate(
     effective_n: int,
 ) -> dict[str, object]:
     brier_delta = float(context["brier_difference_gated_minus_ungated"])
-    lift_delta = float(context["risk_off_lift_difference_gated_minus_ungated"])
+    lift_delta = float(context["elevated_plus_lift_difference_gated_minus_ungated"])
     brier_ci = context["brier_difference_block_ci"]
-    lift_ci = context["risk_off_lift_difference_block_ci"]
-    favorable = brier_delta <= 0.0 and lift_delta >= 0.0
-    supported = float(brier_ci[1]) < 0.0 and float(lift_ci[0]) > 0.0 and effective_n >= 20
-    harmful = brier_delta > 0.0 and lift_delta < 0.0
-    harmful_supported = float(brier_ci[0]) > 0.0 and float(lift_ci[1]) < 0.0
-    if favorable and supported:
-        verdict = "KEEP"
-    elif harmful and harmful_supported:
-        verdict = "FAIL / REMOVE"
-    elif effective_n < 8:
+    lift_ci = context["elevated_plus_lift_difference_block_ci"]
+    brier_supported = brier_delta < 0.0 and float(brier_ci[1]) < 0.0
+    lift_supported = lift_delta > 0.0 and float(lift_ci[0]) > 0.0
+    harmful_supported = (
+        brier_delta > 0.0
+        and float(brier_ci[0]) > 0.0
+        and lift_delta < 0.0
+        and float(lift_ci[1]) < 0.0
+    )
+    if effective_n < 8:
         verdict = "INSUFFICIENT_EVIDENCE"
+    elif effective_n >= 20 and (brier_supported or lift_supported):
+        verdict = "KEEP"
+    elif harmful_supported:
+        verdict = "FAIL / REMOVE"
     else:
         verdict = "KEEP_BUT_RELABEL"
     return {
         "verdict": verdict,
         "basis": (
-            f"gate-minus-ungated Brier difference {brier_delta:.4f}; risk-off lift difference {lift_delta:.2f}x; "
-            f"effective gated risk-off episodes {effective_n}."
+            f"gate-minus-ungated Brier difference {brier_delta:.4f}; elevated-plus lift difference "
+            f"{lift_delta:.2f}x; effective gated elevated-plus episodes {effective_n}; "
+            "continuous ranking score unchanged."
         ),
     }
 
+
+def qualify_csi300_replication(repo_root) -> dict[str, object]:
+    """Apply the preregistered cash-index requirement without substituting an ETF proxy."""
+    from pathlib import Path
+
+    root = Path(repo_root)
+    exact_candidates = (
+        "data/china/000300.SS.parquet",
+        "data/china/000300.SH.parquet",
+        "data/china/CSI300.parquet",
+    )
+    exact_present = [relative for relative in exact_candidates if (root / relative).is_file()]
+    proxy_relative = "data/china/510300.SS.parquet"
+    proxy_available = (root / proxy_relative).is_file()
+    if exact_present:
+        basis = (
+            "An exact cash-index candidate exists but was not part of this frozen source manifest; "
+            "a separately frozen exact-series run is required."
+        )
+    else:
+        basis = (
+            "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed "
+            "but is not used as confirmatory replication evidence."
+        )
+    return {
+        "verdict": "INSUFFICIENT_EVIDENCE",
+        "cash_index_series_available": bool(exact_present),
+        "exact_candidates_checked": list(exact_candidates),
+        "exact_candidates_present": exact_present,
+        "proxy_available": proxy_available,
+        "proxy_symbol": "510300.SS" if proxy_available else None,
+        "proxy_path": proxy_relative if proxy_available else None,
+        "quantitative_replication_performed": False,
+        "basis": basis,
+    }
+
+
+def adjudicate_historical_record_claim(historical: Mapping[str, object]) -> dict[str, object]:
+    """Adjudicate the historical record against the exact emitted production state."""
+    metric = historical["risk_off"]
+    stability = historical["stability"]["emitted_risk_off"]
+    adjudication = adjudicate_historical_lift(
+        lift=float(metric["lift"]),
+        ci=tuple(float(value) for value in metric["block_ci"]),
+        split_lifts=(
+            float(stability["split_half"]["first"]["lift"]),
+            float(stability["split_half"]["second"]["lift"]),
+        ),
+        modern_lift=float(stability["era"]["post_2016"]["lift"]),
+        loco_lifts=_finite_lifts(stability["loco"]),
+        permutation_p=float(historical["permutation"]["risk_off"]["p_value"]),
+        effective_n=int(metric["effective_n"]["effective_n_ceiling"]),
+    )
+    adjudication.update(
+        {
+            "metric_source": "emitted_production_risk_off",
+            "observed_lift": float(metric["lift"]),
+            "basis": (
+                f"exact emitted production risk-off lift {float(metric['lift']):.2f}x with "
+                f"{int(metric['effective_n']['effective_n_ceiling'])} effective episodes; the "
+                "historical record is 2.07x, and its original executable harness was not committed."
+            ),
+        }
+    )
+    return adjudication
+
+
+def assess_band_cutoffs(
+    calibration: Mapping[str, object],
+    bands: Mapping[str, float],
+) -> dict[str, object]:
+    """Separate observed state ordering from untested threshold optimality."""
+    supported_inversion = False
+    minimum_effective_by_horizon: dict[str, int] = {}
+    for horizon in ("h5", "h10", "h21"):
+        record = calibration.get(horizon, {})
+        inversions = record.get("dependence_aware_inversions", []) if isinstance(record, Mapping) else []
+        supported_inversion = supported_inversion or any(
+            bool(row.get("supported_material_inversion"))
+            for row in inversions
+            if isinstance(row, Mapping)
+        )
+        states = record.get("states", []) if isinstance(record, Mapping) else []
+        effective = [
+            int(row.get("effective_n_ceiling", 0))
+            for row in states
+            if isinstance(row, Mapping)
+        ]
+        minimum_effective_by_horizon[horizon] = min(effective) if effective else 0
+    if supported_inversion:
+        ordering_verdict = "RECALIBRATION_CANDIDATE"
+    elif all(value >= 20 for value in minimum_effective_by_horizon.values()):
+        ordering_verdict = "KEEP"
+    else:
+        ordering_verdict = "KEEP_BUT_RELABEL"
+    return {
+        "exact_cutoffs": {key: float(bands[key]) for key in ("watch", "caution", "elevated", "risk_off")},
+        "monotonic_ordering_verdict": ordering_verdict,
+        "supported_material_inversion": supported_inversion,
+        "minimum_state_effective_n_by_horizon": minimum_effective_by_horizon,
+        "cutoff_optimality_verdict": "INSUFFICIENT_EVIDENCE",
+        "cutoff_optimality_basis": (
+            "The fixed production cuts were tested as-is. No preregistered neighborhood sensitivity or "
+            "threshold search was permitted, so optimality is not established."
+        ),
+        "post_hoc_threshold_search_performed": False,
+    }
 
 def run_revalidation(
     *,
@@ -2080,30 +2265,7 @@ def run_revalidation(
     context_gate["historical_10pct_42d_gated_lift"] = targets["10pct_42d"]["risk_off"]["lift"]
     context_gate["historical_10pct_42d_ungated_lift"] = targets["10pct_42d"]["ungated_risk_off"]["lift"]
 
-    csi_close = _read_close_from_parquet(root / "data/china/510300.SS.parquet")
-    csi_replication: dict[str, dict[str, object]] = {}
-    canonical_signal = signal[["score", "composite", "state", "state_ungated", "gate"]]
-    for position, target_name in enumerate(("5pct_21d", "10pct_42d")):
-        spec = TARGET_SPECS[target_name]
-        replication = align_replication_outcome(
-            canonical_signal,
-            csi_close,
-            horizon=int(spec["horizon"]),
-            threshold=float(spec["threshold"]),
-            outcome_name="outcome",
-        )
-        analysis = analyze_target(
-            replication,
-            target_name=target_name,
-            benchmark_label="CSI300 ETF proxy (510300.SS), outcome-only replication",
-            horizon=int(spec["horizon"]),
-            bootstrap_reps=bootstrap_reps,
-            permutation_reps=permutation_reps,
-            seed=seed + 140000 + position * 10000,
-        )
-        analysis["threshold"] = float(spec["threshold"])
-        analysis["instrument_qualification"] = "ETF proxy; not exact cash-index history"
-        csi_replication[target_name] = analysis
+    csi_replication = qualify_csi300_replication(root)
 
     forward_ledger = summarize_forward_ledger(
         root / "data/risk_radar_intl/cn_forward_log.jsonl"
@@ -2154,27 +2316,7 @@ def run_revalidation(
             ),
         }
 
-    historical_metric = historical["ungated_risk_off"]
-    historical_stability = historical["stability"]["ungated_risk_off"]
-    historical_adjudication = adjudicate_historical_lift(
-        lift=float(historical_metric["lift"]),
-        ci=tuple(float(value) for value in historical_metric["block_ci"]),
-        split_lifts=(
-            float(historical_stability["split_half"]["first"]["lift"]),
-            float(historical_stability["split_half"]["second"]["lift"]),
-        ),
-        modern_lift=float(historical_stability["era"]["post_2016"]["lift"]),
-        loco_lifts=_finite_lifts(historical_stability["loco"]),
-        permutation_p=float(historical["permutation"]["ungated_risk_off"]["p_value"]),
-        effective_n=int(historical_metric["effective_n"]["effective_n_ceiling"]),
-    )
-    if historical_adjudication["verdict"] == "KEEP":
-        historical_adjudication["verdict"] = "KEEP_BUT_RELABEL"
-    historical_adjudication["basis"] = (
-        f"current ungated risk-off reconstruction lift {float(historical_metric['lift']):.2f}x "
-        f"with {int(historical_metric['effective_n']['effective_n_ceiling'])} effective episodes; "
-        "the original 2.07x harness and exact trigger were not committed, so this is a reconstruction, not byte-for-byte replication."
-    )
+    historical_adjudication = adjudicate_historical_record_claim(historical)
 
     separation = calibration["h21"]["state_separation"]
     separation_adjudication = adjudicate_state_separation(
@@ -2208,6 +2350,8 @@ def run_revalidation(
         ladder_verdict = "KEEP_BUT_RELABEL"
 
     primary_effective = int(primary["risk_off"]["effective_n"]["effective_n_ceiling"])
+    band_cutoff_assessment = assess_band_cutoffs(calibration, profile.bands)
+
     claims = {
         "extreme China external-driver hazard": _claim_extreme_hazard(primary, historical),
         "98th-percentile intensity semantics": {
@@ -2229,21 +2373,23 @@ def run_revalidation(
         },
         "context gate value-add": _claim_context_gate(
             context_gate,
-            effective_n=primary_effective,
+            effective_n=int(
+                context_gate["gated_elevated_plus_effective_n"]["effective_n_ceiling"]
+            ),
         ),
     }
 
     discoveries = [
         "The current production calibrator explicitly treats raw state rates as descriptive and emits a flat-at-base probability surface; it is not the provenance of the baked CN ladder.",
         "Merged PR #711 and the engine docstring preserve the 2.07x claim, but no executable research harness, immutable result artifact, or exact original extreme trigger accompanied the claim.",
-        "The available CSI300 replication series is 510300.SS, an ETF proxy. No exact CSI300 cash-index series was found in the repository.",
+        "No exact CSI300 cash-index series was found. The available 510300.SS ETF proxy is disclosed but withheld from confirmatory replication under the preregistration.",
         "Historical transforms are causal on repository snapshots, but vintage identifiers are unavailable; this is not fully vintage point-in-time evidence.",
-        "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history.",
+        "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history; the ledger lacks exact model-cohort and independent-episode identifiers.",
     ]
     proposed_followup = [
         "Do not retune production in this PR. Open a separately preregistered calibration candidate only after the forward authority floors and independent loud-state episode floors mature.",
         "Recover or rebuild the original PR #711 validation harness under a new provenance-only commission; do not retroactively call the present reconstruction byte-identical replication.",
-        "Acquire a lawful exact CSI300 cash-index history if the cash-index replication claim must remain exact; otherwise relabel the current evidence as a 510300.SS ETF-proxy replication.",
+        "Acquire a lawful exact CSI300 cash-index history for the canonical replication; any 510300.SS ETF-proxy study requires its own separately preregistered, explicitly proxy-labeled analysis.",
     ]
     what_must_not_be_redone = [
         f"Preregistration commit {PREREG_SHA} is immutable and must not be rewritten after outcome inspection.",
@@ -2274,6 +2420,7 @@ def run_revalidation(
         "csi300_replication": csi_replication,
         "calibration": calibration,
         "context_gate": context_gate,
+        "band_cutoff_assessment": band_cutoff_assessment,
         "forward_ledger": forward_ledger,
         "claims": claims,
         "discoveries": discoveries,
@@ -2391,13 +2538,13 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
         lines.extend(
             [
                 "",
-                "The primary UI target uses the **emitted** state after the context gate. The historical claim is also shown below using the **ungated >=91st-percentile composite extreme**, because that reconstruction reproduces the recorded split-half pattern while the original executable trigger is unavailable.",
+                "Both confirmatory targets use the exact **emitted production state after the context gate**. The ungated composite remains a preregistered counterfactual baseline only; it is not used to rescue or reproduce the historical claim.",
                 "",
             ]
         )
 
     historical = targets.get("10pct_42d", {}) if isinstance(targets, Mapping) else {}
-    stability = historical.get("stability", {}).get("ungated_risk_off", {}) if isinstance(historical, Mapping) else {}
+    stability = historical.get("stability", {}).get("emitted_risk_off", {}) if isinstance(historical, Mapping) else {}
     if isinstance(stability, Mapping):
         lines.extend(["## Historical 10%/42-session stability", "", "### Split-half and era", ""])
         lines.extend(["| Slice | Eligible rows | Risk-off rows | Base rate | Conditional rate | Lift |", "|---|---:|---:|---:|---:|---:|"])
@@ -2433,23 +2580,20 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
 
     csi = result.get("csi300_replication", {})
     if isinstance(csi, Mapping):
-        lines.extend(["## A-share replication — 510300.SS ETF proxy", ""])
-        lines.append("The repository does not contain exact CSI300 cash-index history. These are outcome-only replications on the 510300.SS ETF proxy using the unchanged Shanghai-built signal.")
-        lines.extend(["", "| Target | Eligible | Base rate | Emitted risk-off lift | Ungated risk-off lift | Effective episodes |", "|---|---:|---:|---:|---:|---:|"])
-        for key in ("5pct_21d", "10pct_42d"):
-            target = csi.get(key, {})
-            if not isinstance(target, Mapping):
-                continue
-            emitted = target.get("risk_off", {})
-            ungated = target.get("ungated_risk_off", {})
-            effective = emitted.get("effective_n", {}) if isinstance(emitted, Mapping) else {}
-            lines.append(
-                f"| {key} | {target.get('eligible_rows', 'n/a')} | {_report_pct(target.get('base_rate'))} | "
-                f"{_report_number(emitted.get('lift') if isinstance(emitted, Mapping) else None, 2)}× | "
-                f"{_report_number(ungated.get('lift') if isinstance(ungated, Mapping) else None, 2)}× | "
-                f"{effective.get('effective_n_ceiling', 'n/a') if isinstance(effective, Mapping) else 'n/a'} |"
-            )
-        lines.append("")
+        lines.extend(["## CSI300 replication", ""])
+        lines.append(
+            f"**{csi.get('verdict', 'INSUFFICIENT_EVIDENCE')}** — {csi.get('basis', 'No exact cash-index series available.')}"
+        )
+        lines.extend(
+            [
+                "",
+                f"- Exact cash-index history available: **{str(csi.get('cash_index_series_available', False)).lower()}**.",
+                f"- 510300.SS ETF proxy available: **{str(csi.get('proxy_available', False)).lower()}**.",
+                f"- Quantitative proxy replication performed: **{str(csi.get('quantitative_replication_performed', False)).lower()}**.",
+                "- The ETF proxy is disclosed in provenance but withheld from confirmatory evidence; no FXI or offshore substitute is used.",
+                "",
+            ]
+        )
 
     calibration = result.get("calibration", {})
     if isinstance(calibration, Mapping):
@@ -2487,6 +2631,21 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
                 )
         lines.append("")
 
+    band_assessment = result.get("band_cutoff_assessment", {})
+    if isinstance(band_assessment, Mapping):
+        lines.extend(
+            [
+                "## Band cutoffs and monotonic ordering",
+                "",
+                f"- Exact production cuts tested unchanged: **{band_assessment.get('exact_cutoffs', {})}**.",
+                f"- Observed monotonic ordering: **{band_assessment.get('monotonic_ordering_verdict', 'INSUFFICIENT_EVIDENCE')}**.",
+                f"- Exact cutoff optimality: **{band_assessment.get('cutoff_optimality_verdict', 'INSUFFICIENT_EVIDENCE')}** — {band_assessment.get('cutoff_optimality_basis', '')}",
+                f"- Supported material probability-bin inversion: **{str(band_assessment.get('supported_material_inversion', False)).lower()}**.",
+                f"- Post-hoc threshold search performed: **{str(band_assessment.get('post_hoc_threshold_search_performed', False)).lower()}**.",
+                "",
+            ]
+        )
+
     lines.extend(["## Economic baseline comparison", ""])
     if isinstance(targets, Mapping):
         for key in ("5pct_21d", "10pct_42d"):
@@ -2517,14 +2676,19 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
 
     context = result.get("context_gate", {})
     if isinstance(context, Mapping):
+        elevated_effective = context.get("gated_elevated_plus_effective_n", {})
         lines.extend(
             [
                 "## Context-gate value-add",
                 "",
-                f"- 5%/21d gated risk-off lift: **{_report_number(context.get('gated_risk_off_lift'), 2)}×**; ungated: **{_report_number(context.get('ungated_risk_off_lift'), 2)}×**.",
-                f"- Lift difference: **{_report_number(context.get('risk_off_lift_difference_gated_minus_ungated'), 2)}×**, block CI {_report_ci(context.get('risk_off_lift_difference_block_ci'))}.",
+                f"- 5%/21d gated elevated-plus lift: **{_report_number(context.get('gated_elevated_plus_lift'), 2)}×**; ungated: **{_report_number(context.get('ungated_elevated_plus_lift'), 2)}×**.",
+                f"- Elevated-plus lift difference: **{_report_number(context.get('elevated_plus_lift_difference_gated_minus_ungated'), 2)}×**, block CI {_report_ci(context.get('elevated_plus_lift_difference_block_ci'))}.",
+                f"- Elevated-plus effective episode ceiling: **{elevated_effective.get('effective_n_ceiling', 'n/a') if isinstance(elevated_effective, Mapping) else 'n/a'}**.",
                 f"- Brier difference, gated minus ungated: **{_report_number(context.get('brier_difference_gated_minus_ungated'), 4)}**, block CI {_report_ci(context.get('brier_difference_block_ci'))}. Negative favors the gate.",
-                f"- 10%/42d gated/ungated lifts: **{_report_number(context.get('historical_10pct_42d_gated_lift'), 2)}× / {_report_number(context.get('historical_10pct_42d_ungated_lift'), 2)}×**.",
+                f"- Continuous ranking score unchanged by the state cap: **{str(context.get('ranking_score_unchanged', True)).lower()}**; AP difference {_report_number(context.get('continuous_ap_difference'), 4)}.",
+                f"- Secondary risk-off lift difference: **{_report_number(context.get('risk_off_lift_difference_gated_minus_ungated'), 2)}×**, block CI {_report_ci(context.get('risk_off_lift_difference_block_ci'))}.",
+                f"- 10%/42d gated/ungated risk-off lifts: **{_report_number(context.get('historical_10pct_42d_gated_lift'), 2)}× / {_report_number(context.get('historical_10pct_42d_ungated_lift'), 2)}×**.",
+                "- Preregistered promotion uses supported Brier improvement **or** supported elevated-plus lift improvement, plus the effective-episode floor.",
                 "",
             ]
         )
@@ -2545,6 +2709,8 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
                 ),
                 "",
                 f"Pending issuance spans **{forward.get('pending_asof_range')}**; the September episode remains unresolved. `{forward.get('authority_interpretation', '')}`",
+                f"Research count floor (25 matured) met: **{str(forward.get('research_count_floor_met', False)).lower()}**; research recalibration floor including cohort/episode qualification met: **{str(forward.get('research_recalibration_floor_met', False)).lower()}**.",
+                f"Exact model cohort identifiers present: **{str(forward.get('cohort_identifiers_present', False)).lower()}**; independent episode identifiers present: **{str(forward.get('episode_identifiers_present', False)).lower()}**.",
                 "",
             ]
         )
@@ -2558,7 +2724,7 @@ def _render_report_v2(result: Mapping[str, object]) -> str:
         lines.extend(
             [
                 f"- Historical PIT qualification: **{provenance.get('historical_snapshot_pit_status', 'n/a')}**.",
-                "- CSI replication: **510300.SS ETF proxy**, not the exact CSI300 cash index.",
+                "- CSI replication: **INSUFFICIENT_EVIDENCE** for the exact cash index; 510300.SS is disclosed as an ETF proxy and withheld from confirmatory results.",
                 "- Historical reconstruction and issued forward evidence are distinct evidence classes and are never pooled.",
                 "",
                 "### Data files",
