@@ -5,50 +5,85 @@ operation_key: gmi-consumer-cyclical-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
+finalization_classification: CHECKPOINTED_CONTINUATION
 ---
 
-# Consumer Cyclical — R6 native-fit frontier, specification publication in progress
+# Consumer Cyclical — R1–R6 cumulative frontier
 
-## Mission, authority and carrier
+## Mission and authority
 
-Consumer Cyclical only. The current Chairman continuation follows R5's proposed economic-change dossier and authorizes continued direct principal research and written design before a mature Fable CEO implementation/integration handoff. Direct-work reason: PRINCIPAL_JUDGMENT. No core research delegated. Do not repeat the resolved Healthcare correction or touch Healthcare, Robotics or the shared-template owner.
+Consumer Cyclical only. The latest Chairman continuation follows R5's proposed economic-change dossier and authorizes direct principal research and written design before a mature Fable CEO implementation/integration handoff. Direct-work reason: PRINCIPAL_JUDGMENT. No foundational research delegated. Healthcare correction is complete; Healthcare, Robotics and shared-template owners remain untouched.
 
-Carrier: Draft/HOLD Macro PR #7804, branch `sol/consumer-cyclical-research-20260923`. Immediate pre-write head: `6ae4efacf7ef6429c6dde3ba6621630be626b3ca`, verified unchanged. Write scope remains `research/consumer_cyclical/` and this cumulative record. No source-writer transfer, new branch, rebase, merge or implementation permission is implied.
+The destination remains granular themes/subthemes and company/business exposure, demand and retained cash, competition/capacity/financing, expectations and re-rating, and useful existing Theme Tracker/Sector Intelligence/Prophet workflows with validation before decision authority. A three-case descriptive milestone cannot complete the parent program or erase its broader empirical research.
 
-Fresh protected procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, protected master verified, Skillpack 1.0.1/bootstrap 1 compatible. INDEX and ACTIVE_EXECUTION changes were read; WEB_CEO_DELEGATION and CLOSEOUT fetched at the same revision, with unchanged blobs matching prior full reads. Current native-source inspection pin: Macro `2c7436bea5d1fca9d2ad1778eed1a6b55fa9e8ea`. GitHub admin permission for current established principal `mastermindx-3` rechecked before writing. No negative write-capability claim or Extra High gate exists.
+## Exact canonical identities
+
+- Carrier: Draft/HOLD Macro PR #7804; branch `sol/consumer-cyclical-research-20260923`.
+- R6 recovery/pre-effect head: `6ae4efacf7ef6429c6dde3ba6621630be626b3ca`, freshly verified unchanged before writes.
+- Current R6 content head before this final checkpoint: `911252113ae4481261bfd34fe1082f8381e5947b`.
+- Protected Mastermind: `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`; protected master verified, Skillpack 1.0.1/bootstrap 1 compatible. INDEX and changed ACTIVE_EXECUTION read; WEB_CEO_DELEGATION and CLOSEOUT fetched at the same revision with unchanged blobs matching earlier full canonical reads.
+- Native inspection pin: Macro `2c7436bea5d1fca9d2ad1778eed1a6b55fa9e8ea`. Original research base `147d245a6a7207daf59b994b54ab5adb545ef8be` remains historical; no rebase or release qualification.
+- Parent: existing `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; GMI/STSI/F04/financial/company-event/identity/evidence/relationship/market/evaluation/publication owners stay canonical.
+- Write scope remains `research/consumer_cyclical/` and this cumulative record. No product-source custody was acquired. Current established GitHub principal `mastermindx-3` repository admin permission was checked; actual scoped writes/readbacks succeeded, so no Extra High switch was needed.
 
 ## Preserve R1–R5 without replay
 
-Eleven existing research files and their 116 NOT_EXECUTED prospective cases remain unchanged. R1: 14-family framework. R2: housing/brands/restaurants and guidance. R3: autos/durables and finance. R4: travel/luxury/commerce. R5: services/cohorts plus coverage/product proposal. Exact prior receipts remain in the predecessor checkpoint at `6ae4efacf7ef6429c6dde3ba6621630be626b3ca`, blob `9a437d962dc54650da3cee55b9001a0cd2b9cfac`; use that only when a detail is necessary. The original reports remain the evidence, not summary recollections.
+Eleven preceding research files and their 116 NOT_EXECUTED prospective cases remain unchanged. R1: 14-family framework. R2: housing/brands/restaurants and guidance. R3: autos/durables and finance. R4: travel/luxury/commerce. R5: services/cohorts and coverage/product proposal. Their exact prior receipts are retained in the checkpoint at `6ae4efacf7ef6429c6dde3ba6621630be626b3ca`, blob `9a437d962dc54650da3cee55b9001a0cd2b9cfac`, and the immutable original reports. Use those only when a particular detail is necessary; do not replay the source crawl.
 
-Parent destination remains granular themes/subthemes and business exposure, demand and retained cash, competition/capacity, expectations/valuation and eventually validated opportunity research. A three-case descriptive slice does not complete the sector program. No current valuation or alpha claim is accepted.
+## R6 material result and verified publication
 
-## New native-fit result
+Before R6: a research proposal, unresolved native real-KPI source path and no written first-vertical specification. After R6: a source-pinned written design chooses the existing company-event profile seam, deterministic F04/STSI economic view, versioned private earnings transport and existing company routes, with concrete source cases, interface gaps and proof criteria. This is a WRITTEN_SPEC_FOR_REVIEW, not approved implementation or a live product.
 
-The correct first extension point is existing `IssuerProfile.extract_release_facts` in Company Intelligence, not a fabricated Consumer source store or the synthetic FIF fixture adapter. The generic event workspace already binds real Exhibit 99.1 sources and issuer-specific direct facts. Its current production registry covers Apple and four homebuilders, not proof of PLNT/LTH/LULU enrollment.
+Specification:
+`research/consumer_cyclical/CONSUMER_CYCLICAL_ECONOMIC_CHANGE_DOSSIER_DESIGN_R6_2026-09-23.md`
+- Commit `c78370dcfbdea21b2a4ce1577082c45fce67c00d`.
+- Blob `6d3159738500e45f118c288f7ebfa470daade0ec`.
+- 28,909 bytes; 3,790 whitespace-delimited words.
+- SHA256 `d679f3cf85a8e48cbf960ea04294d5ba26c6eb97940068664fb1399817612ea8`.
 
-Real cached 10-K/10-Q disclosure projection also exists but is not this release-KPI extraction path. The GAAP registry/raw ledger cannot be treated as universal untagged KPI admission. Source text receipts are byte-replayable; table/slide address-only receipts must not be upgraded. Literal facts and derived economic bridges stay distinct.
+Evidence and prospective acceptance:
+`research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json`
+- Commit `911252113ae4481261bfd34fe1082f8381e5947b`.
+- Blob `cdab90b867e16b36ff08fd6a678d4547308cec95`.
+- 26,005 bytes; SHA256 `6a718c0bfb370e9b76e1fc1e950637749931234bcd473a80ce3c99188931b313`.
+- Four official SEC releases and four filing indexes; 15 decisive pinned native-source records; 16 selected numeric inputs; 15 arithmetic expectations; 32 prospective cases CC6-A01..32.
 
-Current private earnings publication and `/api/earnings/v1/records/{slug}` already supply private-store readback, pointer-last publication, site_full and private/no-store transport. Today's member payload is closed HTML-oriented v1, so a structured dossier needs a versioned extension within this owner. No new bucket, marker authority, auth, publisher or cache is permitted. Existing PLNT/LTH/LULU stock pages are present; exact canonical thematic links are not established by page metadata.
+Both remote file blobs were fetched at immutable commits and matched independently computed local Git blob hashes exactly. JSON metadata-only readback establishes byte identity with the locally parsed JSON; no separate remote parser run is claimed. Forty-two final local design-document/JSON/arithmetic checks passed, including all fifteen arithmetic expectations. An earlier tautological text check was removed before final verification; no weaker product criterion was substituted. Separate local/remote hash assertions passed. The R5-to-R6-content comparison reports exactly two added research files and this checkpoint, without changes to R1–R5 or implementation files.
 
-Shared dependency #7426 remains OPEN/DRAFT/HOLD at `7bc04876747d773861b47519061279ae033a148d`. It owns the semantic revision index. #7331/comment `5758415772` already proposes event-type forwarding, separate release-guidance extraction, revision meaning and alias treatment for a China case. That is a proposal, not accepted source law or release proof. Do not duplicate the shared repair or lift its hold. Preserve transcript guidance and do not disguise releases as transcripts. Current builder hash changes alone produce corrected; a new forecast is not automatically a documentary correction.
+All 148 cumulative prospective cases remain NOT_EXECUTED. Zero native extractor runs, application tests, live-source admission, browser tests, source audits, independent design acceptance or investment backtests occurred. Portable scripts/receipts are conversation artifacts, not repository implementation. Do not present local arithmetic as native product proof.
 
-Selected comparison: LULU Q1 and Q2 reporting events each retain their own source document; both contain guidance targeting FY2026 ending January 31, 2027. The Consumer view compares selected observations without inventing a new annual lifecycle or using consensus beat/miss deltas.
+## Decisions and material findings that must survive
 
-## Exact selected public sources
+Use `IssuerProfile.extract_release_facts` and bound Exhibit 99.1 intake, not a new Consumer facts store, fake XBRL KPIs or fake transcript segments. Existing real cached 10-K/10-Q disclosure projection is useful but not this release-KPI producer. Current five-issuer event registry does not prove the three chosen companies are enrolled.
 
-PLNT CIK0001637207 / 8-K0001637207-26-000042 / `plntq22026pressreleaseex991.htm`; LTH CIK0001869198 / 8-K0001869198-26-000041 / `lth-20260630xex991.htm`; LULU CIK0001397187 / 8-K0001397187-26-000077 / `lulu-20260503xex991.htm` and 8-K0001397187-26-000126 / `lulu-20260802xex991.htm`. Official SEC exhibits and indexes were read. No native source bytes/spans were admitted or extractor executed. Raw index timestamps are preserved without an inferred timezone.
+Propose source-owner-validated optional measurement context for exact interval, unit/scale, definition, actual/guidance role and scope; preserve legacy objects. Derive economic calculations in the existing F04/STSI read layer with immutable dependencies, not by overwriting source values or loosening licensed-consensus deltas. A fact reference includes issuer/event/generation/revision, not fact_id alone.
 
-Precision refinement: PLNT table changes are 24344 total revenue, 10141 advertising revenue and 10145 advertising expense, all USD thousands; advertising net change is -4, not exact zero. R5's equal $10.1m narrative increments remain historical rounded evidence, not overwritten. LTH H1 signed bridge is 408351-523276+200191=85266, with -114925 before sale-leaseback proceeds. LULU FY revenue ranges 11000–11150 to 10350–10500 USD million move both bounds -650; the later upper is500 below the earlier lower. EPS adjustment bases remain distinct from comparable guidance.
+Private Research Vault publication and `app/earnings.py` already exist. Today's private member payload is closed HTML v1 and must receive an explicitly versioned structured representation within that owner. Preserve the existing store, pointer-last/readback discipline, site_full-before-read and private/no-store errors. Do not leak full new evidence through a legacy public workspace nest or invent a second publisher/auth plane.
 
-## Next action in this active turn
+PLNT/LTH/LULU stock routes exist in inspected source. A compact visible economic summary and expandable calculation belong in the incumbent page/template. Exact canonical theme links are not established by page metadata. Company-only progress is possible; the full theme-integrated slice requires a real accepted GMI navigation chain, never fabricated membership or a new Fitness basket.
 
-Publish the locally prepared written specification and design-evidence companion on this same research branch, verify exact byte identity, then update this cumulative checkpoint and bounded PR metadata. The written specification is FOR_REVIEW, not accepted implementation or a final Fable packet. Local document/JSON/arithmetic checks have run; their exact receipts must accompany publication. Product acceptance cases remain NOT_EXECUTED.
+The four selected cases are PLNT accession0001637207-26-000042; LTH0001869198-26-000041; and LULU0001397187-26-000077 plus0001397187-26-000126. SEC HTML/index reading is not native retained-byte admission. Raw index timestamps have no inferred timezone or invented first-system observation.
 
-The next phase after written review is incumbent source-owner/interface adjudication and a bounded implementation plan. Unresolved gates: measurement context and release-guidance contracts, issuer/GMI admission, actual retained bytes and aware clocks, historical reader/index readiness, private payload binding, page/template custody and real-path proof. Preserve the full parent research backlog: broader international/undercovered coverage, customer/site cohorts, cash/capital allocations, ordinary failed recoveries, expectations, valuation and investment validation.
+Precision refinement of R5: PLNT table changes are24344 total revenue,10141 advertising revenue and10145 expense in USD thousands, producing advertising net change-4, not exact zero. The narrative-rounded $10.1m increases are preserved as historical rounded evidence. LTH H1 bridge408351-523276+200191=85266 has pre-sale-leaseback subtotal-114925, not normalized maintenance cash. LULU two FY2026 revenue ranges move both bounds-650million; new upper10500 is500 below old lower11000. Fiscal2026 ends2027-01-31. Different EPS-benefit bases are not like-for-like normalized guidance.
 
-## Effects, holds and do-not-redo
+## Shared source dependency — preserve incumbent ownership
 
-This update is the first remote R6 effect. No previous effect is unknown. No worker, Attempt, watcher, automatic wake or Fable dispatch exists from this session. No production facts, schemas, memberships, ranks, entry, size, trades, auth, CI configuration or publisher source changed. HOLD: do not merge, mark Ready, auto-merge, deploy or dispatch Fable. No autonomous work after a final response is claimed.
+#7426 is OPEN/DRAFT/HOLD at `7bc04876747d773861b47519061279ae033a148d`; its semantic revision index is not released by this design. #7331/comment `5758415772` already proposes event-type forwarding, separately typed release-guidance extraction, correct distinction between new forecast/actual/correction and alias handling for another program. It is proposal evidence, not acceptance.
 
-DO_NOT_REDO: Healthcare correction, R1–R5 artifacts/recovery, Robotics/template, this same branch/PR, or the incumbent #7426 index. Current research resolves source fit; it does not make fixtures production, metadata browser proof, or prospective cases executed tests. Verify this update on its returned commit before relying on its persistence.
+Do not duplicate that repair, suppress prior-source identity to bypass it, or fabricate an annual guidance event. For LULU, preserve the Q1 and Q2 reporting events and compare guidance for their shared FY2026 target. PLNT/LTH single-event research/extraction design is independent; historical/as-known comparison waits for accepted revision/selection capability and real read proof. Source-known, system-observed and actually-served histories differ.
+
+## Effects and held scope
+
+R6 effects: an in-progress checkpoint at `d68918eef42f414df10cbda9afe4655861589589`, the two research/design files, this final cumulative checkpoint, and a bounded PR metadata update if reflected by current PR readback. No source writer was replaced or re-homed. EFFECT_UNKNOWN: none from completed writes/readbacks.
+
+No worker, runtime Attempt, watcher, automatic wake or Fable delivery was created. No production fact, contract enrollment, graph membership, basket, selection, rank, gate, entry, size, trade, auth, CI configuration or publishing code changed. HOLD: do not merge, mark Ready, auto-merge, deploy or dispatch Fable. FABLE_HANDOFF: NOT_ISSUED. Written-spec and source-owner acceptance are not inferred from artifact existence.
+
+## Exact next action and continuation boundary
+
+Next: obtain written-spec review and reconcile the named incumbent interface decisions, then prepare the bounded implementation plan against accepted owner versions. Native source-owner adoption, issuer/GMI admission, exact retained bytes and aware clocks, historical reader/index readiness, private payload schema binding and source-template custody remain explicit gates. These are not all Chairman-only tasks, and none authorizes a duplicate platform. The final Fable packet must carry the reviewed spec, accepted plan, source cases and real-path proof contract.
+
+Parent obligations remain broader international/undercovered coverage, customer/site cohorts, retained cash/capital allocations, ordinary failed recoveries, actual expectations/valuation and investment validation. A useful descriptive first slice does not erase them.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. This is the specific native-fit-to-written-spec review boundary after substantial source inspection, decisive architecture selection and exact-byte publication. Preserve recovery after high-context work rather than replaying it. Verify this final checkpoint on its returned immutable commit. Intended resume: active principal research/design conversation from this checkpoint and the R6 specification; no autonomous wake or custody transfer is implied.
+
+WHAT MUST NOT BE REDONE: Healthcare correction; R1–R5 artifacts/source recovery; Robotics/template; the R6 source-fit discovery or publication without material invalidation; the same research branch/PR; #7426's index; any duplicate identity/evidence/metric/event/correction/publisher plane. Never treat prospective cases as executed tests or this written spec as a shipped product.
