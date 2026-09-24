@@ -10,6 +10,13 @@
         "name": "hero_hover",
         "spec": "hero_hover:hover(.mx5-sc-btn)",
         "value": ".mx5-sc-btn"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "hero_focus",
+        "spec": "hero_focus:focus(.mx5-sc-btn)",
+        "value": ".mx5-sc-btn"
       }
     ],
     "locales": [
@@ -32,7 +39,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-24T04:57:23Z",
+  "generated_at": "2026-09-24T06:41:59Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -44,334 +51,442 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:52691/chart_i18n.js?v=23272c48",
-          "text": "Failed to load resource: net::ERR_SOCKET_NOT_CONNECTED"
-        },
-        {
-          "source_url": "http://127.0.0.1:52691/live/overlay.json",
+          "source_url": "http://127.0.0.1:55695/live/overlay.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/quotes.json",
+          "source_url": "http://127.0.0.1:55695/live/quotes.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225844260",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232119824",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225844261",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232119824",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/release_publications.json",
+          "source_url": "http://127.0.0.1:55695/live/release_publications.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/wh_banner.json",
+          "source_url": "http://127.0.0.1:55695/wh_banner.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/rr_banner.json",
+          "source_url": "http://127.0.0.1:55695/rr_banner.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live.js?v=4c6fe392",
-          "text": "WebSocket connection to 'ws://127.0.0.1:52691/ws/tape' failed: Error during WebSocket handshake: Unexpected response code: 404"
+          "source_url": "http://127.0.0.1:55695/live.js?v=4c6fe392",
+          "text": "WebSocket connection to 'ws://127.0.0.1:55695/ws/tape' failed: Error during WebSocket handshake: Unexpected response code: 404"
         },
         {
-          "source_url": "http://127.0.0.1:52691/api/brain/me",
+          "source_url": "http://127.0.0.1:55695/api/brain/me",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225846690",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232122264",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225846690",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232122265",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225849483",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232125031",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225849483",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232125031",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225851785",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232127853",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225851785",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232127853",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225854499",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232130159",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225854499",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232130159",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/charts.js?v=5372d2a2",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
-        },
-        {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225856985",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232132862",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225856986",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232132862",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/fonts/InterDisplay-600.woff2",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
-        },
-        {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225859816",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232135547",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225859816",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232135548",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225862095",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232137940",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225862095",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232137940",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/overlay.json",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
-        },
-        {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225864820",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232140734",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225864820",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232140734",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/quotes.json",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
-        },
-        {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225867052",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232143509",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225867052",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232143510",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225869711",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232145744",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225869711",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232145745",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225871930",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232148500",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225871931",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232148500",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225874570",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232151156",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225874571",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232151156",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225876812",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232153411",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225876812",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232153411",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225879474",
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232156097",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225879474",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232156097",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225881685",
-          "text": "Failed to load resource: net::ERR_SOCKET_NOT_CONNECTED"
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232158734",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/rr_banner.json",
-          "text": "Failed to load resource: net::ERR_CONNECTION_RESET"
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232158734",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225881685",
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232160961",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232160961",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232163606",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232163606",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232166236",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232166236",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232168433",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232168433",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232171117",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232171118",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232173788",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232173788",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232175965",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232175965",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232178645",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232178645",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/overlay.json"
+          "url": "http://127.0.0.1:55695/live/overlay.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/quotes.json"
+          "url": "http://127.0.0.1:55695/live/quotes.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225844260"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232119824"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225844261"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232119824"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/release_publications.json"
+          "url": "http://127.0.0.1:55695/live/release_publications.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/wh_banner.json"
+          "url": "http://127.0.0.1:55695/wh_banner.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/rr_banner.json"
+          "url": "http://127.0.0.1:55695/rr_banner.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/api/brain/me"
+          "url": "http://127.0.0.1:55695/api/brain/me"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225846690"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232122264"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225846690"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232122265"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225849483"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232125031"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225849483"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232125031"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225851785"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232127853"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225851785"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232127853"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225854499"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232130159"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225854499"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232130159"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225856985"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232132862"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225856986"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232132862"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225859816"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232135547"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225859816"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232135548"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225862095"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232137940"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225862095"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232137940"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225864820"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232140734"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225864820"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232140734"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225867052"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232143509"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225867052"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232143510"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225869711"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232145744"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225869711"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232145745"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225871930"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232148500"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225871931"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232148500"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225874570"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232151156"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225874571"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232151156"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225876812"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232153411"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225876812"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232153411"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225879474"
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232156097"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_envelope.json?t=1790225879474"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232156097"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:52691/live/risk_state.json?t=1790225881685"
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232158734"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232158734"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232160961"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232160961"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232163606"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232163606"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232166236"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232166236"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232168433"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232168433"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232171117"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232171118"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232173788"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232173788"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232175965"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232175965"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_state.json?t=1790232178645"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:55695/live/risk_envelope.json?t=1790232178645"
         }
       ],
       "gaps": [
@@ -432,7 +547,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 4,
+        "console_error_count": 2,
         "document_height_px": 2333,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
@@ -453,7 +568,7 @@
           "viewport": "desktop"
         },
         "panel_count": 33,
-        "payload_bytes_total": 1542035,
+        "payload_bytes_total": 552304,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 52,
@@ -473,13 +588,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 692432,
+          "bytes": 691424,
           "captured": true,
-          "file": "cells/60fc909812f7a2ef.png",
+          "file": "cells/e1c0d5f6da791c40.png",
           "force_state": null,
           "height": 2333,
           "locale": "en",
-          "sha256": "60fc909812f7a2efdbd4970c17677317973ae482eeb479b1ec091c83ad6a4a3b",
+          "sha256": "e1c0d5f6da791c407ac7565f906e6e917ee4127f77f98ae1e61961f0860dca0f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -491,13 +606,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 685636,
+          "bytes": 685141,
           "captured": true,
-          "file": "cells/3d81d490b60c3503--hero_hover.png",
+          "file": "cells/b3498d9fd887c23e--hero_hover.png",
           "force_state": "hero_hover",
           "height": 2333,
           "locale": "en",
-          "sha256": "3d81d490b60c3503a00e21edb2a894849993bfdf40444db791b8d793e18b6d20",
+          "sha256": "b3498d9fd887c23e636b31fe21dca595ce7f54ce88ffdcc91303fd680ad32cf0",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 686551,
+          "captured": true,
+          "file": "cells/3e2b6578337ebb62--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 2333,
+          "locale": "en",
+          "sha256": "3e2b6578337ebb6241a002a3ad30e540444fd95dde3ea3b47f1f840acec2fa56",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -508,13 +641,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 472917,
+          "bytes": 473032,
           "captured": true,
-          "file": "cells/2b47e2b19eb8121b.png",
+          "file": "cells/0a3e8386cedf2abb.png",
           "force_state": null,
           "height": 2333,
           "locale": "en",
-          "sha256": "2b47e2b19eb8121b415d22c152abb28d724961e03cfb33d28a4db019b83684ed",
+          "sha256": "0a3e8386cedf2abbc642123f9b665b7db8e924f8f36aefe952012a4932f43c76",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -526,13 +659,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 465105,
+          "bytes": 464495,
           "captured": true,
-          "file": "cells/394c18da3dc44acc--hero_hover.png",
+          "file": "cells/c6d937266691b955--hero_hover.png",
           "force_state": "hero_hover",
           "height": 2333,
           "locale": "en",
-          "sha256": "394c18da3dc44acc0e4559e26edd99ad88117cb4dfd3880568fec42a4661bfaf",
+          "sha256": "c6d937266691b9554b991fb6652d3f4a14bc89e7bcd073a3387146d65d7e956e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 465296,
+          "captured": true,
+          "file": "cells/32651d6fb9fd61ee--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 2333,
+          "locale": "en",
+          "sha256": "32651d6fb9fd61ee93dd64779841680e4c3a9c39b1bda23e9e857edb11d9fe62",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -543,13 +694,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 663573,
+          "bytes": 662873,
           "captured": true,
-          "file": "cells/96552cf7cfc5ca9c.png",
+          "file": "cells/e718e1be591fdbc3.png",
           "force_state": null,
           "height": 2212,
           "locale": "zh",
-          "sha256": "96552cf7cfc5ca9c29c9b5955465bf33d65618510a6cd35752ae8cc707f1627e",
+          "sha256": "e718e1be591fdbc37c540f27a88af0d0de12ddd46a322bfc9f600449d504e2b0",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -561,13 +712,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 658531,
+          "bytes": 658291,
           "captured": true,
-          "file": "cells/23a06c0efbce7501--hero_hover.png",
+          "file": "cells/0438d86c38019262--hero_hover.png",
           "force_state": "hero_hover",
           "height": 2212,
           "locale": "zh",
-          "sha256": "23a06c0efbce750196dba79685fb0a79ab1b3569ebb5997f47e47cd11c4c42fc",
+          "sha256": "0438d86c3801926252ca2daf07db695227608f0dbbbe53ac504946f1e50d2d2d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 659272,
+          "captured": true,
+          "file": "cells/05224258436fd9a7--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 2212,
+          "locale": "zh",
+          "sha256": "05224258436fd9a7acf84d07945726b2ec7e080f8fdca9c57a957df780c4c11a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -578,13 +747,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 462913,
+          "bytes": 462813,
           "captured": true,
-          "file": "cells/881b2e6139b53964.png",
+          "file": "cells/19411bfa77a16cf1.png",
           "force_state": null,
           "height": 2212,
           "locale": "zh",
-          "sha256": "881b2e6139b53964bdfeb7e3750476963674091fdab68bcc76168655b42ded65",
+          "sha256": "19411bfa77a16cf1c626ae497ffa7869be242574332313de7f590342373828d6",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -596,13 +765,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 454313,
+          "bytes": 455043,
           "captured": true,
-          "file": "cells/74c5430582f2ae02--hero_hover.png",
+          "file": "cells/f4f9170b3ba3fceb--hero_hover.png",
           "force_state": "hero_hover",
           "height": 2212,
           "locale": "zh",
-          "sha256": "74c5430582f2ae0276557bb44e67b025c9ea4d271124e0caf5999192e855c944",
+          "sha256": "f4f9170b3ba3fceb38041409f13a15631d59fc97fb6890e5551286d43d2f0182",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 453773,
+          "captured": true,
+          "file": "cells/b6717f8d63c341bb--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 2212,
+          "locale": "zh",
+          "sha256": "b6717f8d63c341bbf2a96e7074d4d68d791ff5e1c3fd23a33927d17417d150b8",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -613,13 +800,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 489300,
+          "bytes": 489391,
           "captured": true,
-          "file": "cells/991d39113a97aacd.png",
+          "file": "cells/afa14993d880f019.png",
           "force_state": null,
           "height": 4443,
           "locale": "en",
-          "sha256": "991d39113a97aacd04260c8e56d2459f817f01aca3d48194e0dcd39fc71568eb",
+          "sha256": "afa14993d880f01902da311c2a03a4be74b9fbdcb4b17705721af3892b90a308",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -631,48 +818,84 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 491948,
+          "bytes": 487938,
           "captured": true,
-          "file": "cells/acf95c08669c74b6--hero_hover.png",
-          "force_state": "hero_hover",
-          "height": 4461,
-          "locale": "en",
-          "sha256": "acf95c08669c74b60f73629f5c7104b8b8142e19178069acd9f52c2a59838666",
-          "theme": "dark",
-          "viewport": "mobile",
-          "viewport_height": 844,
-          "viewport_width": 390,
-          "width": 390
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "en",
-          "applied_theme": "light",
-          "bytes": 370329,
-          "captured": true,
-          "file": "cells/2cddf821d2a9d4a4.png",
-          "force_state": null,
-          "height": 4443,
-          "locale": "en",
-          "sha256": "2cddf821d2a9d4a44c882de86d22eb610ed4d3b2c6e26ed9002e0237826af454",
-          "theme": "light",
-          "viewport": "mobile",
-          "viewport_height": 844,
-          "viewport_width": 390,
-          "width": 390
-        },
-        {
-          "access": "anonymous",
-          "applied_force_state": "hero_hover",
-          "applied_locale": "en",
-          "applied_theme": "light",
-          "bytes": 369668,
-          "captured": true,
-          "file": "cells/03ae99fcf313adea--hero_hover.png",
+          "file": "cells/466d8a6b2f2de3e8--hero_hover.png",
           "force_state": "hero_hover",
           "height": 4443,
           "locale": "en",
-          "sha256": "03ae99fcf313adeae928e2bbd110c098981e48cd0577942b31d92d6726c13569",
+          "sha256": "466d8a6b2f2de3e89f18987316aa809f42811e9dfdbcc02c32f2f7aa57a74e14",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 489735,
+          "captured": true,
+          "file": "cells/0faa08e4bbb2f074--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 4443,
+          "locale": "en",
+          "sha256": "0faa08e4bbb2f0740b948493547f7b596672323f5b5deb1a6731d2c59c5866dc",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 370434,
+          "captured": true,
+          "file": "cells/facd6de8603ba4d2.png",
+          "force_state": null,
+          "height": 4443,
+          "locale": "en",
+          "sha256": "facd6de8603ba4d2a6d11d9e2657a8f86951229a75b8302691ebb0a712ce77a5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 369532,
+          "captured": true,
+          "file": "cells/7001202c31abc935--hero_hover.png",
+          "force_state": "hero_hover",
+          "height": 4443,
+          "locale": "en",
+          "sha256": "7001202c31abc93518178e22fee33940a9909f4313b1c51549bc567b9003da36",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 369473,
+          "captured": true,
+          "file": "cells/e6dba55487cdc599--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 4443,
+          "locale": "en",
+          "sha256": "e6dba55487cdc599d1ec6c6f58acd80dfca655a8fabaaa41b69b7ed353357381",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -683,13 +906,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 467112,
+          "bytes": 467609,
           "captured": true,
-          "file": "cells/6f2f27dc1846e764.png",
+          "file": "cells/7c197b13c3a91108.png",
           "force_state": null,
           "height": 4089,
           "locale": "zh",
-          "sha256": "6f2f27dc1846e764fd3a6c6ac00d26a9b9da42c317934f271b8c859cf28fc970",
+          "sha256": "7c197b13c3a9110853422e5617d50a5fd96ace8ac55b824aad0489777b0835bc",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -701,13 +924,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 465709,
+          "bytes": 465939,
           "captured": true,
-          "file": "cells/95ee04cde2d70f44--hero_hover.png",
+          "file": "cells/d5caff2802eb95c4--hero_hover.png",
           "force_state": "hero_hover",
           "height": 4089,
           "locale": "zh",
-          "sha256": "95ee04cde2d70f44e2874dc988cb3405a4ad50e8fe3e2741e5843cc1e520ad34",
+          "sha256": "d5caff2802eb95c4441c2cfd160481aef315713197e9e8d48ed2560d2c4158c1",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 467753,
+          "captured": true,
+          "file": "cells/cd96dbb6e8d24ded--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 4089,
+          "locale": "zh",
+          "sha256": "cd96dbb6e8d24ded98fbb790536418a6fedce8342f3e5cfc9bd5519d10ace602",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -718,13 +959,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 362620,
+          "bytes": 362644,
           "captured": true,
-          "file": "cells/7a831fe97a9f5297.png",
+          "file": "cells/e29eabc8fa529f20.png",
           "force_state": null,
           "height": 4089,
           "locale": "zh",
-          "sha256": "7a831fe97a9f5297de65b1d75f384b12899e67934ba4a8ab89d3a99bb6d23a09",
+          "sha256": "e29eabc8fa529f20cd4e96ccd98db760371321f05d9781953a14b9a1474b0503",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -736,13 +977,31 @@
           "applied_force_state": "hero_hover",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 361974,
+          "bytes": 361933,
           "captured": true,
-          "file": "cells/026563a8b4ede185--hero_hover.png",
+          "file": "cells/fe844f4354a059cb--hero_hover.png",
           "force_state": "hero_hover",
           "height": 4089,
           "locale": "zh",
-          "sha256": "026563a8b4ede18507f13f82950b12121d1cb58d8621c9b384c3e29acbb1d36d",
+          "sha256": "fe844f4354a059cbde69e923a9ae1e6291f50afa66248575d4be55c61b126770",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "hero_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 361474,
+          "captured": true,
+          "file": "cells/f80b684ab3aefab1--hero_focus.png",
+          "force_state": "hero_focus",
+          "height": 4089,
+          "locale": "zh",
+          "sha256": "f80b684ab3aefab14fe49f9e05a1b81f97880cc4abd388b9f8da65562dbe15ea",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -769,10 +1028,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/mini3/Documents/mmx-macro-7859/.git",
-    "resolved_sha_or_none": "d5cb33430e8369fa260832e6400c935921f55f23",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/mini3/Documents/mmx-macro-7859/.git (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Users/mini3/Documents/mmx-macro-7859/site"
+    "resolved_gitdir_or_none": "/Users/mini3/Documents/mmx-macro-7859-repair/.git",
+    "resolved_sha_or_none": "bd78def3408f0f6de6df22fabbeb364a1baa2466",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/mini3/Documents/mmx-macro-7859-repair/.git (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/mini3/Documents/mmx-macro-7859-repair/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
@@ -782,7 +1041,7 @@
   },
   "totals": {
     "pages": 1,
-    "states_attempted": 16,
-    "states_captured": 16
+    "states_attempted": 24,
+    "states_captured": 24
   }
 }
