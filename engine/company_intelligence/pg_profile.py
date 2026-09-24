@@ -314,17 +314,11 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_scope is None:
         raise ValueError("PG extraction requires fiscal_scope")
     _current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
-    current = current_end.isoformat()
-    prior = prior_end.isoformat()
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     blocks = bound.document.blocks
     current_year = current_end.year
-    prior_year = prior_end.year
-    current_quarter = f"Fourth Quarter {current_year}"
-    prior_quarter = f"Fourth Quarter {prior_year}"
     current_date = f"{current_end:%B} {current_end.day}, {current_end.year}"
-    prior_date = prior_end.strftime("%B %#d, %Y")
     current_header = current_end.isoformat()
     prior_header = prior_end.isoformat()
     eps_rows = {
