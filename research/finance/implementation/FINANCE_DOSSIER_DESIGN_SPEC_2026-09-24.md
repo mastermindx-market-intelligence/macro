@@ -604,54 +604,89 @@ html[data-theme="light"] {
 
 The five mechanisms below are the load-bearing art-direction differences; each is a complete CSS rule (token-mixed). The audit found them either missing or wrongly shared.
 
-**(1) Panel elevation.** Dark: nested luminance steps + a hairline inset highlight (no shadow). Light: 1px hairline border + a 2-stop shadow stack (no inset). Selectors cover ALL elevation surfaces: `.fi-panel` + `.fi-toc` + `.fi-conflict-card` + `.fi-falsifier` + `.fi-constraint-row` + `.fi-domain` + `.fi-exposure-card` + `.fi-macro-card` (the eight classes that wear the elevation treatment in §B).
+**Surface tiers (R1).** The dossier uses TWO elevation tiers. **Tier 1** = `.fi-panel`: the seven L1 sections (`.fi-section.fi-panel` in §B.1–§B.7) plus `.fi-toc`. **Tier 2** = `.fi-panel2`: every nested surface (`.fi-domain`, `.fi-slice`, `.fi-conflict-card`, `.fi-macro-card`, `.fi-exposure-card`, `.fi-falsifier`, `.fi-constraint-row`, plus the `.fi-conflict-side` and `.fi-constraint-row` row surfaces). Tier 1 paints with `--fi-panel` in both themes — the seven L1 sections are the elevation surface. Tier 2 paints with `--fi-panel2` in dark (the luminance step) and with `color-mix(in srgb, var(--panel) 92%, var(--bg))` in light — a perceptibly different panel tone from tier 1. Light tier 1 carries `border: 1px solid var(--line)` + a 2-stop shadow stack; light tier 2 carries `border: 1px solid var(--line)` and NO shadow — only tier 1 casts shadow in light. `<main class="fi-shell">` carries NO `.fi-panel` — its background is `var(--fi-canvas)`, and tier 1 sits on the canvas.
+
+**(1) Panel elevation.** Dark tier 1: `background: var(--fi-panel)` + 1px line + inset top highlight (no shadow). Dark tier 2: `background: var(--fi-panel2)` + 1px line, NO inset highlight. Light tier 1: white `var(--fi-panel)` + `1px solid var(--line)` + 2-stop shadow stack. Light tier 2: `color-mix(in srgb, var(--panel) 92%, var(--bg))` + `1px solid var(--line)` + NO shadow.
 
 ```css
+/* Tier 1 — dark */
 .fi-panel,
-.fi-toc,
-.fi-conflict-card,
-.fi-falsifier,
-.fi-constraint-row,
-.fi-domain,
-.fi-exposure-card,
-.fi-macro-card {
+.fi-toc {
   background: var(--fi-panel);
   border: 1px solid var(--fi-line);
   border-radius: 12px;
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 7%, transparent);
 }
-.fi-panel2 { background: var(--fi-panel2); }
+/* Tier 2 — dark */
+.fi-panel2,
+.fi-domain,
+.fi-slice,
+.fi-conflict-card,
+.fi-macro-card,
+.fi-exposure-card,
+.fi-falsifier,
+.fi-constraint-row,
+.fi-conflict-side {
+  background: var(--fi-panel2);
+  border: 1px solid var(--fi-line);
+  border-radius: 10px;
+}
+/* Tier 1 — light (shadow stack + 1px line) */
 html[data-theme="light"] .fi-panel,
-html[data-theme="light"] .fi-toc,
-html[data-theme="light"] .fi-conflict-card,
-html[data-theme="light"] .fi-falsifier,
-html[data-theme="light"] .fi-constraint-row,
-html[data-theme="light"] .fi-domain,
-html[data-theme="light"] .fi-exposure-card,
-html[data-theme="light"] .fi-macro-card {
+html[data-theme="light"] .fi-toc {
   background: var(--fi-panel);
   border: 1px solid var(--fi-line);
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
     0 6px 20px color-mix(in srgb, var(--text) 5%, transparent);
 }
-html[data-theme="light"] .fi-panel2 { background: var(--fi-panel2); }
-```
-
-**(2) Freshness pip.** Dark: glow halo on the chip (focused/active state only). Light: NO glow; a 3px left rail on the section header element. The element is the section header `.fi-section-head` on `what-changed` (per B.1 markup); the rail is on THAT element, not on the chip. The selector targets the enum value `data-state-freshness="FRESH"` (not the label word "Fresh"). Both top-level and slice-level freshness chips (per E.2(b)) bind here; the colour uses `var(--fresh-ok)` from `theme.css` (the freshness law), never `--ok`.
-
-```css
-.fi-chip-fresh[data-state-freshness="FRESH"],
-.fi-slice-fresh[data-state-freshness="FRESH"] {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fresh-ok) 25%, transparent);
-  color: var(--fresh-ok);
-}
-html[data-theme="light"] .fi-chip-fresh[data-state-freshness="FRESH"],
-html[data-theme="light"] .fi-slice-fresh[data-state-freshness="FRESH"] {
+/* Tier 2 — light (slightly darker than tier 1 + line + NO shadow) */
+html[data-theme="light"] .fi-panel2,
+html[data-theme="light"] .fi-domain,
+html[data-theme="light"] .fi-slice,
+html[data-theme="light"] .fi-conflict-card,
+html[data-theme="light"] .fi-macro-card,
+html[data-theme="light"] .fi-exposure-card,
+html[data-theme="light"] .fi-falsifier,
+html[data-theme="light"] .fi-constraint-row,
+html[data-theme="light"] .fi-conflict-side {
+  background: color-mix(in srgb, var(--panel) 92%, var(--bg));
+  border: 1px solid var(--fi-line);
   box-shadow: none;
 }
-html[data-theme="light"] #what-changed .fi-section-head {
+```
+
+**(2) Freshness rail/pip (R2).** One colour map used by both themes, keyed on the `data-state-freshness` attribute that hydration mirrors onto `#what-changed .fi-section-head` (per §E.4). The map: FRESH → `var(--fresh-ok)`, AGING → `var(--warn)`, SOURCE_STALE → `var(--act)`, NO_EVIDENCE → `var(--line)`. **Dark = pip glow** on the section head itself: `box-shadow: 0 0 0 3px color-mix(in srgb, <colour> 25%, transparent)`. **Light = 3px left rail** on the section head in that colour (no glow). There is NO unconditional rail — the rule only fires when the attribute is set; default state (no attribute) is no rail, no pip. NO_EVIDENCE in light uses `--line` (the hairline) so the rail reads as "no signal", not as a coloured signal. The same colour map drives both `.fi-chip[data-state-freshness]` chips and the `[data-state-freshness]` on `.fi-section-head`.
+
+```css
+/* Common colour map — dark = pip glow */
+.fi-section-head[data-state-freshness="FRESH"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fresh-ok) 25%, transparent);
+}
+.fi-section-head[data-state-freshness="AGING"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 25%, transparent);
+}
+.fi-section-head[data-state-freshness="SOURCE_STALE"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--act) 25%, transparent);
+}
+.fi-section-head[data-state-freshness="NO_EVIDENCE"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 25%, transparent);
+}
+/* Light = 3px left rail, NO glow */
+html[data-theme="light"] .fi-section-head[data-state-freshness="FRESH"] {
   border-left: 3px solid var(--fresh-ok);
+  padding-left: 12px;
+}
+html[data-theme="light"] .fi-section-head[data-state-freshness="AGING"] {
+  border-left: 3px solid var(--warn);
+  padding-left: 12px;
+}
+html[data-theme="light"] .fi-section-head[data-state-freshness="SOURCE_STALE"] {
+  border-left: 3px solid var(--act);
+  padding-left: 12px;
+}
+html[data-theme="light"] .fi-section-head[data-state-freshness="NO_EVIDENCE"] {
+  border-left: 3px solid var(--line);
   padding-left: 12px;
 }
 ```
@@ -674,13 +709,18 @@ html[data-theme="light"] .fi-drawer *:focus-visible {
 }
 ```
 
-**(4) Drawer elevation.** Dark: a `border-left` rail (1px hairline at `--fi-line`). Light: shadow elevation only (2-stop stack with `color-mix(... var(--text) ...)`); no border-left, so the panel reads as paper laid on the desk.
+**(4) Drawer elevation (E4).** The drawer is tier 1 material (it lives in the dialog surface). Dark: a `border-left` rail (1px hairline at `--fi-line`). Light: shadow elevation only (2-stop stack with `color-mix(... var(--text) ...)`); no border-left, so the panel reads as paper laid on the desk. The drawer is on screen when open (the `[hidden]` attribute is removed by §E.4); the `transform` transition slides it off when closed and lands at `transform: none` when open.
 
 ```css
 .fi-drawer {
-  background: var(--fi-panel);
-  border-left: 1px solid var(--fi-line);
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 92vw);
+  background: var(--fi-panel); border-left: 1px solid var(--fi-line);
+  transform: translateX(100%);
+  transition: transform .22s cubic-bezier(.2,.7,.3,1);
+  display: flex; flex-direction: column; z-index: 80;
 }
+.fi-drawer[hidden] { display: none; }
+.fi-drawer:not([hidden]) { transform: none; }
 html[data-theme="light"] .fi-drawer {
   border-left: 0;
   box-shadow:
@@ -691,20 +731,41 @@ html[data-theme="light"] .fi-drawer {
 html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 35%, transparent); }
 ```
 
-**(5) Stepper rail/dot.** Dark: glow on the active dot. Light: solid dot + hairline rail. §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets `data-active="true"`; if all four are OBSERVED, the price step receives it.
+**(5) Stepper rail/dot (E5).** Dark: glow on the active dot. Light: solid dot + hairline rail. §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets `data-active="true"`; if all four are OBSERVED, the price step receives it. The stepper spine is visible between steps: each step carries NO opaque background (the rail shows through the gap between dots); only the active dot's box-shadow paints the rail colour. Dark rail colour = `color-mix(in srgb, var(--text) 14%, transparent)`; light rail colour = 1px hairline `var(--line)`. The `.fi-rerating-step` element has NO background (the mask is on the dot only).
 
 ```css
 .fi-rerating-step[data-active="true"] .fi-step-dot {
-  box-shadow: 0 0 0 3px var(--fi-step-ring);
+  box-shadow: 0 0 0 4px var(--fi-panel);
+}
+.fi-rerating-steps::before {
+  content: ""; position: absolute; left: 5%; right: 5%; top: 23px; height: 2px;
+  background: color-mix(in srgb, var(--text) 14%, transparent);
+  border-radius: 2px; z-index: 0;
 }
 html[data-theme="light"] .fi-rerating-step[data-active="true"] .fi-step-dot {
-  box-shadow: none;
+  box-shadow: 0 0 0 4px var(--panel);
   background: var(--fi-step-fill);
   border-color: var(--fi-link);
 }
 html[data-theme="light"] .fi-rerating-steps::before {
-  background: color-mix(in srgb, var(--line) 60%, transparent);
+  background: var(--line);
 }
+```
+
+**(6) `.fi-chip` base rule (E8).** A single shared base for every chip element so per-state rules (`.fi-slice-chip`, `.fi-membership-chip`, `.fi-posture-chip`, `.fi-constraint-chip`, `.fi-step-chip`, `.fi-comparability-chip`, `.fi-anchor-chip`, `.fi-history-chip`, `.fi-valuation-chip`, `.fi-price-chip`, `.fi-identity-chip`, `.fi-macro-cell-state`, `.fi-outer-dossier`) layer cleanly. The base carries padding, radius, font-size, and the hairline — NEVER a colour. Each per-state rule paints the colour; the visible label text always carries the plain-word row from §D. The prior `.fi-freshness`, `.fi-chip-fresh`, and `.fi-slice-fresh` rules are REMOVED (all unused — freshness state is read via `.fi-section-head[data-state-freshness]` in (2) above; no chip element carries the freshness state).
+
+```css
+.fi-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid var(--fi-line);
+  background: var(--fi-panel);
+  color: var(--fi-text);
+}
+html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 ```
 
 ### C.6 Shell + layout
@@ -722,7 +783,6 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-hero h1 { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; margin: 0; }
 .fi-deck { font-size: var(--fs-md); line-height: 1.55; margin: 8px 0 0; max-width: 70ch; color: var(--fi-text); }
 .fi-meta { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; display: flex; gap: 10px; flex-wrap: wrap; }
-.fi-freshness { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--fi-line); }
 .fi-outer-dossier { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--fi-line); }
 .fi-toc { margin: 18px 0 8px; padding: 12px 16px; border: 1px solid var(--fi-line); border-radius: 12px; background: var(--fi-panel); }
 .fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
@@ -730,6 +790,8 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-toc a:hover, .fi-toc-evidence:hover { background: var(--fi-panel2); }
 .fi-section { margin-top: 40px; }
 .fi-section-title { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em; margin: 0 0 4px; }
+/* R3 — answer tier (rerating-map). The five support sections keep --fs-h2. */
+.fi-section-title-answer { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; }
 .fi-section-eyebrow { display: block; font-size: var(--fs-sm); color: var(--fi-muted); font-weight: 400; margin-top: 2px; }
 .fi-section-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; max-width: 75ch; }
 .fi-section-head { padding: 4px 0; }
@@ -756,7 +818,8 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-rerating-step {
   position: relative; z-index: 1;
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 0 6px; gap: 6px; background: var(--fi-canvas);
+  padding: 0 6px; gap: 6px;
+  /* E5 — no opaque background; the rail shows between steps; mask is on the dot only. */
 }
 .fi-step-dot {
   width: 12px; height: 12px; border-radius: 50%;
@@ -768,13 +831,15 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-step-chip {
   display: inline-block; font-size: var(--fs-sm); font-weight: 600;
   padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line);
-  background: var(--fi-panel); color: var(--fi-text); white-space: nowrap;
+  background: var(--fi-panel); color: var(--fi-text);
+  /* E7 — chip may wrap when the step row wraps at ≤1199. */
 }
 .fi-step-clock { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; }
 .fi-anchor-chip, .fi-history-chip {
   display: inline-block; font-size: var(--fs-sm); font-weight: 600;
   padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line);
-  background: var(--fi-panel); color: var(--fi-text); white-space: nowrap;
+  background: var(--fi-panel); color: var(--fi-text);
+  /* E7 — chip may wrap when the step row wraps at ≤1199. */
 }
 .fi-step-evidence {
   background: transparent; border: 1px solid var(--fi-line);
@@ -929,13 +994,13 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
 @media (min-width: 768px) and (max-width: 1199px) {
   .fi-rerating-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .fi-rerating-steps::before { display: none; }
-  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); flex-wrap: wrap; }
   .fi-step-dot { margin: 0 6px 0 0; }
 }
 @media (max-width: 767px) {
   .fi-rerating-steps { grid-template-columns: 1fr; gap: 6px; }
   .fi-rerating-steps::before { display: none; }
-  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); flex-wrap: wrap; }
   .fi-step-dot { margin: 0 6px 0 0; }
   .fi-domain-grid { grid-template-columns: 1fr; }
   .fi-exposure-table-wrap { display: none; }
@@ -999,7 +1064,7 @@ These two formatters are referenced by every section. They are not enumerated st
 | CONFLICTING | `The numbers disagree` | `读数之间存在分歧` |
 | STALE | `Older than freshness window` | `已超出新鲜度窗口` |
 | REGIME_BREAK | `Not comparable to history` | `与历史不可比` |
-| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor on file` | `暂无估值锚点` |
+| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor on file` | `暂无估值锚` |
 | PRICE_BASIS_UNQUALIFIED | `No qualified price basis` | `价格口径未达合格` |
 | NOT_APPLICABLE | `Not applicable here` | `此处不适用` |
 
@@ -1230,7 +1295,7 @@ The chip is bound via `<span class="fi-macro-cell-state" data-state="{macro_matr
 | enum | EN | ZH |
 |---|---|---|
 | AVAILABLE | `Anchor available` | `锚点可用` |
-| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor available` | `暂无估值锚点` |
+| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor on file` | `暂无估值锚` |
 
 ### D.18 Falsifier state chips
 
@@ -1452,19 +1517,19 @@ This is the canonical table the audit pinned D.11 to. Every row is one schema to
 
 | # | Token | Contract path (live schema, line reference) | DOM location | EN chip | ZH chip |
 |---|---|---|---|---|---|
-| 1 | NO_HISTORICAL_CONSENSUS | `$defs.expectations_plane[0].history.state` enum (`schema.json` line 1186) | `rerating-map` expectations node chip — bound via `<span class="fi-chip fi-history-chip" data-history="">` | `No dated consensus on file` | `暂无可追溯的市场预期` |
-| 2 | VALUATION_ANCHOR_UNAVAILABLE | `$defs.valuation_anchor[0].state` enum + `$defs.plane_state` VALUATION_ANCHOR_UNAVAILABLE (schema.json line 1630) | `rerating-map` valuation node chip + anchor chip | `No valuation anchor available` | `暂无估值锚点` |
-| 3 | PRICE_BASIS_UNQUALIFIED | `$defs.plane_state` PRICE_BASIS_UNQUALIFIED (schema.json plane_state enum) | `rerating-map` price node chip | `No qualified price basis` | `价格口径未达合格` |
-| 4 | REGIME_BREAK_NOT_COMPARABLE | `$defs.plane[0].comparability_state[0]` enum (schema.json line 1062) | any `rerating-map` node chip — bound via `<span class="fi-chip fi-comparability-chip" data-comparability="">` (system-map edges do NOT carry a comparability chip; edges carry `evidence_state` only) | `Regime break — not comparable` | `制度断裂 — 不可比` |
-| 5 | CURRENT_MEMBERSHIP_ONLY | `$defs.basket_state[0].membership_state` enum (schema.json line 1456) | `subtheme-atlas` per-slice membership chip — bound via `<span class="fi-chip fi-membership-chip" data-state-membership="{slices[].basket_state.membership_state}">` | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
+| 1 | NO_HISTORICAL_CONSENSUS | `$defs.expectations_plane[0].history.state` enum (`schema.json` line 1186) | `rerating-map` expectations node chip — bound via `<span class="fi-chip fi-history-chip" data-history="" data-state-marker="NO_HISTORICAL_CONSENSUS">` | `No dated consensus on file` | `暂无可追溯的市场预期` |
+| 2 | VALUATION_ANCHOR_UNAVAILABLE | `$defs.valuation_anchor[0].state` enum + `$defs.plane_state` VALUATION_ANCHOR_UNAVAILABLE (schema.json line 1630) | `rerating-map` valuation node chip + anchor chip — bound via `<span class="fi-chip fi-valuation-chip" data-valuation-state="" data-state-marker="VALUATION_ANCHOR_UNAVAILABLE">` | `No valuation anchor on file` | `暂无估值锚` |
+| 3 | PRICE_BASIS_UNQUALIFIED | `$defs.plane_state` PRICE_BASIS_UNQUALIFIED (schema.json plane_state enum) | `rerating-map` price node chip — bound via `<span class="fi-chip fi-price-chip" data-price-state="" data-state-marker="PRICE_BASIS_UNQUALIFIED">` | `No qualified price basis` | `价格口径未达合格` |
+| 4 | REGIME_BREAK_NOT_COMPARABLE | `$defs.plane[0].comparability_state[0]` enum (schema.json line 1062) | any `rerating-map` node chip — bound via `<span class="fi-chip fi-comparability-chip" data-comparability="" data-state-marker="REGIME_BREAK_NOT_COMPARABLE">` (system-map edges do NOT carry a comparability chip; edges carry `evidence_state` only) | `Regime break — not comparable` | `制度断裂 — 不可比` |
+| 5 | CURRENT_MEMBERSHIP_ONLY | `$defs.basket_state[0].membership_state` enum (schema.json line 1456) | `subtheme-atlas` per-slice membership chip — bound via `<span class="fi-chip fi-membership-chip" data-state-membership="" data-state-marker="CURRENT_MEMBERSHIP_ONLY">` | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
 | 6 | PIT_MEMBERSHIP_INCOMPLETE | `$defs.basket_state[0].membership_state` enum (same path) | `subtheme-atlas` per-slice membership chip (visible) — bound via same `<span class="fi-chip fi-membership-chip">` | `Point-in-time membership incomplete` | `时点成员数据不完整` |
-| 7 | CAUSAL_EFFECT_UNMEASURED | `macro_matrix[].state` enum (schema.json line 345) | `macro-matrix` cell chip — bound via `<span class="fi-macro-cell-state" data-state="{macro_matrix[].state}">` (D.11b) | `Causal effect not measured` | `因果效应尚未测算` |
-| 8 | EXPOSURE_NOT_SEPARATELY_DISCLOSED | `exposure.state` enum (schema.json line 2254) | `company-exposure` cell chip (visible text — never a `focus` handler on a `<td>`) — bound via `<td data-state-exposure="{cells[].exposure.state}">` | `Exposure not separately disclosed` | `敞口未单独披露` |
-| 9 | IDENTITY_UNRESOLVED | `company_exposures[].identity.state` + `source_records[].identity_state` enum (schema.json lines 2428 / 1985) | `company-exposure` row chip — bound via `<span class="fi-chip fi-identity-chip" data-identity="">` on the `<tr>`; AND `evidence-drawer` field — bound via `<dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}">` (visible, bilingual) | `Identity unresolved` | `身份尚未确认` |
-| 10 | SOURCE_STALE | `freshness.state` + `material_changes[].freshness_state` + `slices[].freshness.state` enum (schema.json line 578 / coverage line 149) | `what-changed` header chip — bound via `<span class="fi-chip fi-chip-fresh" data-state-freshness="">` on the §B.1 `<header class="fi-section-head">`; AND `rerating-map` stepper header chip — bound via `<span class="fi-chip fi-slice-fresh" data-state-freshness="">` on the §B.2 stepper header (two freshness chips total — one per freshness location) | `Source is stale` | `来源已陈旧` |
-| 11 | SOURCE_RIGHTS_HELD | `source_records[].rights_state` enum (schema.json line 1985) | `evidence-drawer` chip — bound via `<dd class="fi-evidence-rights" data-rights="{source_records[].rights_state}">` + suppression rule (D.23) | `Source rights restrict display` | `来源权利限制展示` |
+| 7 | CAUSAL_EFFECT_UNMEASURED | `macro_matrix[].state` enum (schema.json line 345) | `macro-matrix` cell chip — bound via `<span class="fi-macro-cell-state" data-state="" data-state-marker="CAUSAL_EFFECT_UNMEASURED">` (D.11b) | `Causal effect not measured` | `因果影响未测量` |
+| 8 | EXPOSURE_NOT_SEPARATELY_DISCLOSED | `exposure.state` enum (schema.json line 2254) | `company-exposure` cell chip (visible text — never a `focus` handler on a `<td>`) — bound via `<td data-state-exposure="" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED">` | `Exposure not separately disclosed` | `敞口未单独披露` |
+| 9 | IDENTITY_UNRESOLVED | `company_exposures[].identity.state` + `source_records[].identity_state` enum (schema.json lines 2428 / 1985) | `company-exposure` row chip — bound via `<span class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="" data-state-marker="IDENTITY_UNRESOLVED">` on the `<tr>`; AND `evidence-drawer` field — bound via `<dd class="fi-evidence-identity" data-identity="">` (visible, bilingual) | `Identity unresolved` | `身份尚未确认` |
+| 10 | SOURCE_STALE | `freshness.state` + `material_changes[].freshness_state` + `slices[].freshness.state` enum (schema.json line 578 / coverage line 149) | `<header class="fi-section-head" data-state-freshness="">` on the §B.1 `what-changed` section — hydration mirrors top-level `freshness.state` onto the attribute (per §E.4); §C.5 (2) paints the rail/pip keyed on the attribute. No `.fi-chip-fresh` or `.fi-slice-fresh` element exists — the attribute alone drives the rail/pip. The rerating-map slice freshness rides the same attribute on the §B.2 `<header class="fi-section-head">` (mirrored from `slices[].freshness.state` for the selected slice). | `Source is stale` | `来源已陈旧` |
+| 11 | SOURCE_RIGHTS_HELD | `source_records[].rights_state` enum (schema.json line 1985) | `evidence-drawer` chip — bound via `<dd class="fi-evidence-rights" data-rights="" data-state-marker="SOURCE_RIGHTS_HELD">` + suppression rule (D.23) | `Source rights restrict display` | `来源权利限制展示` |
 
-Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`data-*` binding so the CSS / hydration can render the chip (check #12 — `awk '/^## B\./,/^## C\./' $F | grep -c <TOKEN>` ≥ 1 per token). For self-check coverage, each row also carries a HTML-comment marker of the form `<!-- state: <TOKEN> → chip -->` immediately beside its chip so the token remains greppable AND the visible text stays a plain word.
+Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`data-*` binding so the CSS / hydration can render the chip (check #12 — `awk '/^## B\./,/^## C\./' $F | grep -c <TOKEN>` ≥ 1 per token). For self-check coverage, every row carries a `data-state-marker="<TOKEN>"` attribute on the chip element itself so the literal enum value remains greppable in the markup AND the visible text stays a plain word. Per E2, the spec NEVER uses HTML-comment markers (`<!-- state: X → chip -->`) inside fenced `html` blocks: HTML comments cannot nest, and the marker pattern leaked nested comments in the prior draft. The `data-state-marker` attribute is the canonical self-check anchor; the prose above each fence carries the `[state: X → chip]` plain-text marker when a fence-level explanation is needed.
 
 ### D.37 The ten conflict labels (cards inside `.fi-conflicts`)
 
@@ -1483,7 +1548,7 @@ The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum t
 | CAPITAL_COST_UP_GROWTH_STILL_STRONG | `Cost of capital up, growth still strong` | `资本成本上升，增长仍然强劲` |
 | VOLUME_UP_REVENUE_MATERIALITY_UNPROVEN | `Volume up, revenue materiality not proven` | `交易量上升，收入重要性未证实` |
 
-### D.38 Action labels and footer copy
+### D.38 Action labels, footer copy, and surface chrome
 
 | Surface | EN | ZH |
 |---|---|---|
@@ -1496,7 +1561,11 @@ The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum t
 | System view: expand | `Expand` | `展开` |
 | System view: collapse | `Collapse` | `收起` |
 | Section foot (generic) | `Read the underlying receipts before acting on any line.` | `请先查阅原始凭据再行判断。` |
-| Conflict card footer | `Unresolved by design — both statements stand.` | `设计上不予调和 — 两种陈述同时成立。` |
+| Conflict card footer (every card under `.fi-conflicts`) | `Left unresolved by design — both statements stand.` | `有意不作裁决 — 两种陈述同时成立。` |
+| Falsifier list heading (§B.3) | `What we're watching` | `我们正在观察` |
+| Atlas footer chip (§B.4) | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
+
+The Conflict-card footer row is the canonical copy for *every* render point where a conflict surfaces (B.2 stepper slices, B.4 atlas conflict cards, B.6 macro-matrix conflict cards). The literal enum `UNRESOLVED_BY_DESIGN` never appears in visible text — the token surfaces only as data, and the visible text comes from this row.
 
 ### D.39 Conflict-resolution enum (conflicts[].resolution)
 
@@ -1505,22 +1574,6 @@ The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum t
 | UNRESOLVED_BY_DESIGN | `Left unresolved by design` | `有意不作裁决` |
 
 The schema's literal `UNRESOLVED_BY_DESIGN` enum surfaces only as this plain-word footer copy; the token never appears in visible text.
-| Falsifier list heading | `What we're watching` | `我们正在观察` |
-| Atlas footer chip | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
-
-### D.40 Documented-but-not-yet-bound chip set (proposed §G additions)
-
-These enum tokens appear in the §A schema-binding prose but the page does not yet have a plain-word chip row for them. They are listed here as greppable chip candidates so the audit can confirm the spec carries the token even when no visible row exists.
-
-| enum | EN chip candidate | ZH chip candidate |
-|---|---|---|
-| MATERIALITY_NOT_PROVIDED | `Materiality not provided` | `重要性未提供` |
-| DERIVED_FROM_RAW_DOCUMENT | `Derived from raw document` | `由原始文件推导` |
-| BASKET_STATE_UNRESOLVED | `Basket state unresolved` | `篮子状态未决` |
-| SLICE_STATE_UNRESOLVED | `Slice state unresolved` | `切片状态未决` |
-| PAYOUT_NOT_REPRESENTED | `Payout not represented` | `未表达收益` |
-
-These tokens are NOT bound in §B and NOT rendered by the §E hydration contract — they live here so a follow-up contract amendment can promote any one of them to a real chip without re-discovering the surface.
 
 ---
 
