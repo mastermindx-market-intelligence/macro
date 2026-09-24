@@ -201,3 +201,16 @@ The fresh repository-native review requested in Mastermind #946 comment 58098609
 At this checkpoint the exact-head hosted security analyses are successful; the required repository `test` job remains IN_PROGRESS in run 35970417169. Therefore #946 remains Draft/HOLD and unmerged. Current protected master remains `294b4c00ed668b497edb834be8108f14bc1bee8a`, and the source workspace is clean with protected master an ancestor of the exact published head.
 
 Next action is only to consume the required exact-head test result. If it succeeds and no material source/base invalidator appears, Sol may adjudicate release through the existing PR carrier under current delivery law. If it fails, repair the exact failure on the same carrier and refresh only invalidated evidence. Do not start the next model-cognition source wave before this release boundary is resolved.
+
+
+## 2026-09-24 merge-queue release boundary
+
+Protected Mastermind repinned to `ed678f27466392bc53cc03f584f91e4f3adf3aa3`; Skillpack remains compatible 1.0.1/bootstrap 1. Movement from the prior protected pin is one disjoint test-only path, `integrations/studio_direct_mcp/private_service_test.py`, with no intersection with PR #946 owned paths, dependency closure, or governing procedure. Semantic review reuse remains allowed.
+
+PR #946 exact semantic head remains `be0b04b0bdbd15e629aad0da2e1d355bf80c8d60`. Exact-head repository CI and security checks are green and the fresh independent review returned no new actionable finding. The PR was marked Ready after those gates cleared. A direct expected-head merge was refused with no effect because protected master requires the GitHub merge queue. The existing queue path was then used without admin bypass: timeline records `added_to_merge_queue` at 2026-09-24T07:59:59Z.
+
+Current merge-group integration candidate is `548682c96221b4068d46afdfc332395b5253b7c5` on `gh-readonly-queue/master/pr-946-ed678f27466392bc53cc03f584f91e4f3adf3aa3`. Its Mastermind OS check passed; merge-group CI remains in progress at this checkpoint. No merge or deployment is yet claimed.
+
+Read-only production baseline before release: deployed marker and health both report `2e5da23c48e4eed49f14608a5b4ee281f53cb817`; `mastermind.service` is active. Live-data NW reflection is legacy-shaped at asof 2026-09-23 / generated 2026-09-23T23:55:07Z with coverage state `context_absent`, no `inputs_complete` or `subjects_n`, and no nudges. Latest persisted Agenda is 2026-09-20 with 7 ranked items and no `discovery` field. These are pre-deploy baselines, not deficiencies inferred from missing legacy fields.
+
+Exact next action: consume merge-group CI. On success, read back protected master and PR merge identity, then deploy that exact protected commit through `scripts/deploy_from_git.sh`; verify exact health/deployed marker and exercise the existing owner-to-Agenda path without creating a new writer. On failure, repair only the exact queue failure on the same source carrier. Do not start the next model-hypothesis source wave until this release/deployed-proof boundary is closed.
