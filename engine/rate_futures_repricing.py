@@ -197,9 +197,14 @@ def _horizon_change(previous, current, horizon):
     roll = sum((qa[k]['implied_rate'] + qb[k]['implied_rate']) / 2 *
                (wb.get(k, 0) - wa.get(k, 0)) for k in union) * 100
     raw = (current['path'][horizon] - previous['path'][horizon]) * 100
+    residual = raw - repricing - roll
+    # Finite source numbers do not guarantee finite products, sums or bp scaling.
+    # Withhold the entire attribution rather than publish Infinity/NaN as available.
+    if not all(math.isfinite(value) for value in (raw, repricing, roll, residual)):
+        return dict(out, reason='nonfinite_derived_attribution')
     return dict(out, status='available', raw_change_bp=raw,
                 matched_contract_change_bp=repricing, roll_change_bp=roll,
-                rounding_residual_bp=raw - repricing - roll,
+                rounding_residual_bp=residual,
                 forward_reference_only=all(qb[k]['reference_period'][0] >
                                            current['observation_date'] for k in union),
                 causal_policy_shock=False)

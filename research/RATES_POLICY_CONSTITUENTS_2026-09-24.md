@@ -131,3 +131,67 @@ is not an intraday pre-release knowledge receipt, nor an archived market-consens
 estimate. Preserve MRI and its experiments; qualify the existing release-time and
 consensus owners before any surprise-response rate model. No claim that every
 other company archive is absent is made by this bounded source inspection.
+
+## Adversarial repair on the same carrier
+
+The published continuation at 100cf1edd70ebbdebc26348bd694aac74efe8f70
+reconciled the formerly dirty writer: local/remote source was clean, no external
+child or unresolved modifying effect was recorded, and candidate repair was the
+next authorized action. PR comment 5812272237 records same-carrier continuation;
+no replacement branch, worktree, collector, provider or review identity was created.
+
+Exact-source cross-check 5812118161 reproduced two release-blocking defects:
+finite but corrupted extreme quotes could overflow bp arithmetic and return an
+available result containing Infinity/NaN; an empty second-family batch could
+throw away valid first-family output. Six new cases preserve the initial RED,
+then prove the repaired native collector/Parquet/RIC path. The empty-family
+regression was strengthened to call the actual _download retry layer with a
+synthetic vendor response; this caught and repaired the terminal empty-response
+exception, not merely an unreachable post-download guard. Only the typed empty
+outcome is isolated; other download exceptions and unidentified nonempty batches
+still fail. The existing retry budget and backoff owner are unchanged.
+
+Current local qualification: 146 passed, 301 warnings across test_rates_command,
+test_fed_path and test_yield_momentum. The old and repaired consumers returned
+identical objects on the same retained real-quote capture at its recorded
+2026-09-24 evaluation cut, with strict JSON serialization and unchanged four
+Parquet hashes. This replay made no new vendor request and did not alter a live
+store. It is not an independent review, live deployment or forecasting result.
+The existing proof JSON preserves prior evidence and appends post_review_repair
+with source/log hashes, native parity and the following input-eligibility audit.
+
+## Next forecasting-input gap: first prints are not the GDPNow update path
+
+At parent research snapshot 748067a3631959e2dd6ffe25ebc7675ed82395ee, the existing
+initial-release vintage store contains 41 GDPNOW rows and 41 distinct reference
+quarters, versus 356 CPIAUCSL, 356 CPILFESL, 357 PAYEMS and 903 ICSA periods.
+Those are metadata counts, not new empirical trials. GDPNOW availability dates
+in that named file end 2026-07-30; it cannot reconstruct within-quarter revisions.
+The nearby current-vintage GDPNOW series cannot repair that historical knowledge
+loss by backfilling its latest values. Date-only ALFRED vintage labels also do
+not establish knowledge before an intraday release.
+
+The source capability already exists: collectors.fred.fetch_all_vintages uses
+ALFRED output_type=2; the first-print collector uses output_type=4. Reuse that
+source owner instead of creating a new GDPNow collector. The current native
+source environment reports FRED_API_KEY unavailable (presence only checked; no
+credential value read or exposed). This is local source eligibility, not proof
+that existing CI/data-owner environments lack their authorized credential.
+The dedicated release-target cohort/normalizer must not be widened casually:
+GDPNow is a changing nowcast feature, not the CPI/PAYEMS release-target contract.
+Related held #7165 remains a distinct date-level Macro Turnaround research owner;
+its reviewed code and source/continuity gates are not changed or reimplemented.
+
+Primary public-source checks on 2026-09-24:
+- https://fred.stlouisfed.org/docs/api/fred/series_observations.html documents all-vintage versus initial-release output.
+- https://fred.stlouisfed.org/series/GDPNOW labels the FRED series quarterly.
+- https://www.atlantafed.org/research-and-data/data/gdpnow describes multiple updates per month, publisher tracking archives, and update times following underlying data releases. Its pre-live deep archives must not be treated as contemporaneously public forecasts.
+- https://www.atlantafed.org/terms-of-use separates Bank and third-party rights. Do not infer commercial redistribution permission from a public workbook link.
+
+No workbook was imported or republished. The existing MRI artifact explicitly
+reports street_consensus unavailable; a residual versus an internal benchmark
+must remain a separately named estimand, never be relabelled a market surprise.
+The next scientific slice must bind complete same-quarter vintage updates and
+conservative knowledge cuts before registering a new rates hypothesis. No new
+model fit, forecast, trial, scoring authority or retrospective holdout reset
+occurred during this repair and metadata audit.

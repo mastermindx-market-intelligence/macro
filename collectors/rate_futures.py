@@ -161,6 +161,10 @@ def implied_path_with_components(contracts, horizons_m, max_months, cadence):
     return path, components
 
 
+class _EmptyQuoteBatch(RuntimeError):
+    """Provider returned no rows after the incumbent download retry budget."""
+
+
 class RateFuturesAdapter(Adapter):
     name = "rate_futures"
     group = "rate_futures"
@@ -186,7 +190,16 @@ class RateFuturesAdapter(Adapter):
                                       int(spec.get("months", 12)), asof)
             # one batch download of every candidate symbol; pick the variant that prints
             symbols = [s for c in contracts for s in c["symbols"]]
-            raw = self._download(symbols, period, yf)
+            try:
+                raw = self._download(symbols, period, yf)
+            except _EmptyQuoteBatch:
+                log.warning("rate_futures: %s - exhausted empty batch; retaining other families", key)
+                continue
+            if raw is None or raw.empty:
+                # Empty is not unidentified nonempty data. Keep earlier valid
+                # families, while the existing consumer reports this source missing.
+                log.warning("rate_futures: %s - empty batch; retaining other families", key)
+                continue
             if len(symbols) > 1 and not isinstance(raw.columns, pd.MultiIndex):
                 # A flat batch response cannot identify which contract was quoted.
                 raise ValueError('batch_quotes_lack_contract_identity')
@@ -241,7 +254,7 @@ class RateFuturesAdapter(Adapter):
                 df = yf.download(symbols, period=period, auto_adjust=False,
                                  progress=False, group_by="ticker", threads=True)
                 if df is None or df.empty:
-                    raise RuntimeError("empty yfinance response")
+                    raise _EmptyQuoteBatch("empty yfinance response")
                 return df
             except Exception as e:  # noqa: BLE001 — retried, then surfaced to the runner
                 last_exc = e

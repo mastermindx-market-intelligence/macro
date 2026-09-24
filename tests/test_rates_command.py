@@ -960,3 +960,85 @@ def test_rd2_shared_collector_runner_accepts_companion_tables(monkeypatch, tmp_p
     assert result.rows == sum(len(frame) for frame in frames.values())
     out = _rd2_read(tmp_path / 'data')
     assert out['families']['zq']['horizons']['m12']['matched_contract_change_bp'] == pytest.approx(15)
+
+
+@pytest.mark.parametrize('prices', [(1e307, 2e307), (-1e307, -2e307)])
+def test_rd2_finite_quotes_cannot_publish_nonfinite_attribution(monkeypatch, tmp_path, prices):
+    from collectors import rate_futures as rf
+    from engine.rate_futures_repricing import build_policy_repricing
+    from lib import config, store
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    idx = pd.DatetimeIndex(['2026-09-30', '2026-10-01'])
+    contracts = rf.gen_contracts('ZQ', ['CBT'], 'monthly', 14, rf.datetime.now(None).date())
+    raw = pd.concat({c['symbols'][0]: pd.DataFrame({'Close': list(prices)}, index=idx)
+                     for c in contracts}, axis=1)
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: raw)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    for key, frame in adapter.fetch().items():
+        store.upsert(adapter.group, key, adapter.validate(key, frame))
+    out = build_policy_repricing(tmp_path, asof='2026-10-01',
+                                evaluated_at='2026-10-02T10:00:00Z')
+    horizon = out['families']['zq']['horizons']['m12']
+    assert horizon['status'] == 'unavailable'
+    assert horizon['reason'] == 'nonfinite_derived_attribution'
+    for key in ('raw_change_bp', 'matched_contract_change_bp',
+                'roll_change_bp', 'rounding_residual_bp'):
+        assert horizon[key] is None
+    assert out['authority'] is False
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize('empty', [pd.DataFrame(), None])
+def test_rd2_empty_second_family_keeps_valid_first_through_ric(monkeypatch, tmp_path, empty):
+    from copy import deepcopy
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from collectors import base, rate_futures as rf
+    from engine import rates_inflation_command as ric
+    from lib import config
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    download = adapter._download
+    adapter.cfg['roots']['sofr'] = {'symbol_root': 'SR3', 'exchanges': ['CME'],
+                                    'cadence': 'quarterly', 'months': 6}
+    requests = []
+    def vendor_download(symbols, **kwargs):
+        requests.append(symbols[0])
+        return download(symbols, kwargs['period'], None) if symbols[0].startswith('ZQ') else empty
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace(download=vendor_download))
+    # Exercise the actual download/retry boundary: an empty vendor response is
+    # raised inside _download, not returned by it. Do not mock that behavior away.
+    monkeypatch.setattr(adapter, '_download', rf.RateFuturesAdapter._download.__get__(adapter))
+    adapter.retries, adapter.backoff = 2, 0
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rf.datetime)
+    monkeypatch.setattr(ric, 'datetime', SimpleNamespace(
+        now=lambda tz: datetime(2026, 10, 2, 10, tzinfo=timezone.utc)))
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    out = ric.build_board(root=tmp_path / 'data')['policy_path_repricing']
+    assert out['families']['zq']['horizons']['m12']['matched_contract_change_bp'] == pytest.approx(15)
+    assert out['families']['sofr']['reason'] == 'missing_source'
+    assert out['authority'] is False
+    assert sum(symbol.startswith('ZQ') for symbol in requests) == 1
+    assert sum(symbol.startswith('SR3') for symbol in requests) == adapter.retries
+
+
+def test_rd2_all_empty_families_still_fail_without_manufacturing_data(monkeypatch):
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: pd.DataFrame())
+    with pytest.raises(RuntimeError, match='no implied path'):
+        adapter.fetch()
+
+
+def test_rd2_empty_family_repair_does_not_swallow_other_download_errors(monkeypatch):
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    def fail(symbols, period, yf):
+        raise ConnectionError('synthetic transport failure')
+    monkeypatch.setattr(adapter, '_download', fail)
+    with pytest.raises(ConnectionError, match='synthetic transport failure'):
+        adapter.fetch()

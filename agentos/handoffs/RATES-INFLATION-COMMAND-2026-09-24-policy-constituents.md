@@ -25,7 +25,7 @@ changed:
 verified:
   - claim: Selected rates/RIC/yield tests pass.
     command: python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short
-    result: 140 passed, 301 warnings; no forecast model or empirical trial was run.
+    result: 146 passed, 301 warnings after the six-case finite-arithmetic and empty-family repair; no forecast model or empirical trial was run.
   - claim: Held7521's policy normalizer and RIC compose without changing any legacy field.
     command: Private held_composition.py against exact held source 8da98209ad4a34450745780666c48b6999f2bfb2.
     result: PASS; all legacy RIC fields equal; same-author synthetic proof, no held-branch mutation.
@@ -102,3 +102,48 @@ no unresolved modifying effect remains. No model trial, forecast promotion, trad
 vendor purchase, held-sibling change or production-store mutation occurred.
 The next session continues from these exact carriers after source/effect reconciliation;
 it does not restart RD1, recreate this leaf, or inherit runtime custody from prose.
+
+## Same-carrier adversarial repair and source-eligibility continuation
+
+The former dirty source writer published 100cf1edd70ebbdebc26348bd694aac74efe8f70
+and left the worktree clean. After local/remote/preimage reconciliation and the
+current Chairman continuation, comment 5812272237 records bounded repair on the
+same operation/carrier. Comment 5812118161 contains the reproduced findings.
+No runtime lease was displaced, no external worker started, and no second source
+workspace or implementation was created.
+
+The finite-derived-output guard now refuses Infinity/NaN as available attribution.
+Empty vendor batches are isolated only after the existing typed download retry
+path has exhausted its unchanged budget; valid other families remain usable.
+Nonempty unidentified batches and unrelated transport exceptions still fail.
+Six new native-path regression cases retain their RED evidence; the real vendor
+boundary refinement also has a distinct two-case RED receipt. Final selected
+suite: 146 passed, 301 warnings. Stored real-quote outputs are exactly unchanged
+against 100cf1ed at the retained capture's evaluation cut, with strict JSON and
+four unchanged Parquet hashes. No fresh vendor fetch or model trial ran.
+
+Latest evidence is appended as post_review_repair in the existing proof JSON;
+its current SHA256 is d60620a9cd7517f3fec0f28a730f63b1f7b719c51cb02a0f9cdc2464671b699b.
+The former proof digest above remains historical evidence, not the repaired file.
+Cross-check/replay source and logs:
+/Volumes/Mastermind/evidence/rates-direction-rd2-adversarial-20260924-sol-003/.
+This is same-program author repair, not independent statistical or source review.
+
+The next rates-model input gap is now precise: the inspected initial-release
+archive has 41 GDPNOW rows/quarters and no within-quarter update trajectory.
+The source owner already implements fetch_all_vintages(output_type=2); reuse it
+through its authorized data environment. This Studio source shell lacks an
+exposed FRED_API_KEY, but that does not establish absence from existing CI.
+GDPNow update times follow the underlying releases; daily vintage dates cannot
+be retroactively stamped with an 08:30 pre-event timestamp. The existing MRI
+artifact also reports street_consensus unavailable. Do not relabel internal
+forecast residuals as market surprises, expand the CPI release-target contract
+for GDPNow by analogy, import pre-live archival forecasts as real-time evidence,
+or infer commercial redistribution rights from a public workbook link.
+
+Next: obtain genuinely non-author review of the exact repaired #7923 head and
+its required CI; no Ready, merge, deployment or trade authority follows from
+local tests. Independent source work may qualify complete GDPNow vintages and
+release-time/consensus inputs through existing owners without reopening RD1.
+The program remains incomplete. No reviewer START, automatic wake, background
+execution or prospective forecasting advantage is asserted by this checkpoint.
