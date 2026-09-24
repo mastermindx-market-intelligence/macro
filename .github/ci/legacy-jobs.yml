@@ -16795,6 +16795,7 @@ jobs:
     paths:
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
+      - "tests/test_mining_shared_contract_probes.py"
       - "tests/fixtures/mining_economic_dossier/**"
       - "engine/market_ontology/mining_dependency_binding.py"
     timeout-minutes: 8
@@ -16807,4 +16808,4 @@ jobs:
       - name: install deps for the Mining economic-dossier suites
         run: pip install pytest jsonschema pyyaml
       - name: mining economic dossier — shared-contract harness
-        run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
