@@ -75,7 +75,7 @@ def test_card_leader_is_selected_before_the_four_row_strip_cap(monkeypatch):
     assert [r["id"] for r in view["heating"]] == pulse["heating"][:4]
     assert view["desk"]["leader"]["id"] == "ai_semiconductors"
     assert view["desk"]["leader"]["rank_delta_5d"] == 30
-    assert view["desk"]["entry_leader"]["id"] == "ai_semiconductors"
+    assert view["desk"]["positive_rating_leader"]["id"] == "ai_semiconductors"
     assert [r["id"] for r in view["rotation"]] == ["ai_semiconductors", "memory_storage"]
     assert pulse == before
 
@@ -84,11 +84,11 @@ def test_full_population_velocity_beats_absolute_rank_and_latest_day_alone():
     out = _desk()
     assert out["status"] == "ready"
     # Five-session velocity wins even when the latest session is weak and the
-    # rating is non-actionable. Entry suitability remains a separate answer.
+    # rating is Hold. Positive-rating context remains a separate answer.
     assert out["leader"]["id"] == "cybersecurity"
     assert out["leader"]["rank_delta_1d"] == -3
-    assert out["leader"]["entry_actionable"] is False
-    assert out["entry_leader"]["id"] == "ai_semiconductors"
+    assert out["leader"]["positive_rating"] is False
+    assert out["positive_rating_leader"]["id"] == "ai_semiconductors"
     assert out["as_of"] == "2026-09-18"
     assert out["href"] == "basket/cybersecurity.html"
 
@@ -177,8 +177,8 @@ def test_macro_renders_exact_desk_with_source_date_and_real_destination():
     assert "网络安全" in card.get_text()
     assert "Hottest desk" in card.get_text()
     assert "Up 25 places over 5 sessions" in card.get_text()
-    assert "Entry rating: Hold" in card.get_text()
-    assert card["data-entry-rating"] == "hold"
+    assert "Current rating: Hold" in card.get_text()
+    assert card["data-desk-rating"] == "hold"
     assert card["data-entry-actionable"] == "false"
     assert card.select_one("time")["datetime"] == "2026-09-18"
     assert "Running hot right now" not in card.get_text()
@@ -207,14 +207,14 @@ def test_hold_rating_does_not_hide_descriptive_leadership():
     ])
     assert out["leader"]["id"] == "ai_semiconductors"
     assert out["leader"]["reco"] == "hold"
-    assert out["leader"]["entry_label_en"] == "Hold"
-    assert out["leader"]["entry_actionable"] is False
-    assert out["entry_leader"]["id"] == "memory_storage"
-    assert out["entry_leader"]["entry_actionable"] is True
+    assert out["leader"]["rating_label_en"] == "Hold"
+    assert out["leader"]["positive_rating"] is False
+    assert out["positive_rating_leader"]["id"] == "memory_storage"
+    assert out["positive_rating_leader"]["positive_rating"] is True
 
 
 @pytest.mark.parametrize(
-    ("reco", "label_en", "actionable"),
+    ("reco", "label_en", "positive_rating"),
     [
         ("enter", "Enter", True),
         ("accumulate", "Accumulate", True),
@@ -226,17 +226,17 @@ def test_hold_rating_does_not_hide_descriptive_leadership():
         ("unknown", "Unavailable", False),
     ],
 )
-def test_entry_state_is_secondary_metadata_not_leadership_filter(reco, label_en, actionable):
+def test_recommendation_state_is_secondary_metadata_not_leadership_filter(reco, label_en, positive_rating):
     row = _row("leader", 4, 18, 2, reco="accumulate")
     row["reco"] = reco
     out = _desk([row])
     assert out["leader"]["id"] == "leader"
-    assert out["leader"]["entry_label_en"] == label_en
-    assert out["leader"]["entry_actionable"] is actionable
-    if actionable:
-        assert out["entry_leader"]["id"] == "leader"
+    assert out["leader"]["rating_label_en"] == label_en
+    assert out["leader"]["positive_rating"] is positive_rating
+    if positive_rating:
+        assert out["positive_rating_leader"]["id"] == "leader"
     else:
-        assert out["entry_leader"] is None
+        assert out["positive_rating_leader"] is None
 
 
 @pytest.mark.parametrize("history", [None, {}, {"basis": "archive_rows"},
