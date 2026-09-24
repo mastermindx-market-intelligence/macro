@@ -10,7 +10,7 @@ implementation_authority: none
 
 # Basic Materials Economics — current Fable integration packet
 
-**Updated:** 2026-09-24, through R14. Prepared for bounded principal integration, not an unblocked production build. This updates the existing packet; it creates no parallel handoff or lifecycle owner.
+**Updated:** 2026-09-24, through R15. Prepared for bounded principal integration, not an unblocked production build. This updates the existing packet; it creates no parallel handoff or lifecycle owner.
 
 **Preferred avenue:** Fable for cross-owner integration and final acceptance, with routine implementation assigned to the least-scarce capable workers. **Binding:** CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment is not a Materials assignment.
 
@@ -27,7 +27,7 @@ Preserve all44 requirements, the eight-task implementation plan, five original d
 ## 2. Minimal reading order
 
 1. Current cumulative owner: `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`. It preserves current effects, holds and exact next action; this packet is not a second current-state authority.
-2. New R14 inputs: `research/basic_materials/BASIC_MATERIALS_R14_SELECTED_SOURCE_REVIEW_AND_DOSSIER_READINESS_2026-09-24.md` and `R14_SELECTED_SOURCE_BINDING_REVIEW_2026-09-24.json`. These supply two source-bound dossier drafts and the exact unfilled native review/retention fields.
+2. R15 completes the selected five-document preparation: `research/basic_materials/BASIC_MATERIALS_R15_COMPLETE_SELECTED_SOURCE_PROOF_SET_2026-09-24.md` and `R15_REMAINING_SOURCE_REVIEW_AND_PROOF_SET_2026-09-24.json`. The latter indexes unchanged R14 inputs rather than replacing them. Read the new customer-testing/MOU distinctions and the explicitly synthetic threshold cases. Existing R14 inputs: `research/basic_materials/BASIC_MATERIALS_R14_SELECTED_SOURCE_REVIEW_AND_DOSSIER_READINESS_2026-09-24.md` and `R14_SELECTED_SOURCE_BINDING_REVIEW_2026-09-24.json`. These retain the two earlier source-bound dossier drafts and the exact unfilled native review/retention fields. All five selected sources now have preparation drafts; native admission remains unproved.
 3. R11 foundation adoption and `R11_FOUNDATION_ADOPTION_MATRIX_2026-09-24.json`, blob `443a29e64069c029e48aed14a2ea11f51e705257`. Read this before the saved R9 plan; it supersedes the duplicated API/client and foundation-build instructions.
 4. Saved plan `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, unchanged blob `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 matrix blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`. All32 BM-R8 plus12 R9 requirements retain their task mappings.
 5. R8 integrated specification blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` and manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce` index the family studies. R12 supplies the 48 economic reference cases/evaluation boundaries. R13 supplies actual identity observations. Read individual family studies only for the mechanism being implemented or disputed.
@@ -64,7 +64,11 @@ Private profile/R4, export and entitlement behavior remain with their existing o
 
 R9's standalone `app/materials_economics.py`, GET `/api/themes/materials/economics/v1`, `materials-economics.js`/`.css` and second mount are superseded by R11. Materials composer paths remain the bounded sector-specific implementation. Shared code existence or tests do not mark Materials T1–T8 complete.
 
-## 5. Real inputs now available for preparation
+## 5. Complete selected-source preparation now available
+
+R15 adds three source-specific records: NOVONIX September 9 customer testing, September 16 nonbinding MOU, and Wheaton April 1 BHP/Antamina closing. Nineteen atomic observations retain attribution, future conditions, missing identities and agreement scope. All native review/retention/rights/identity/route fields stay null for these new subjects. Do not infer the unnamed customer from related links, count an MOU as qualification, or treat a stream as mine ownership.
+
+Six explicitly synthetic contract scenarios distinguish pre-threshold, post-threshold and mid-period crossing; already-payable quantities are not discounted twice. Unknown actual cumulative deliveries refuse an actual-phase calculation. The 100-million-ounce threshold applies to the named BHP agreement, not every Antamina interest. None of these scenarios values the upfront investment or establishes current receipts. The source summary does not settle undisclosed legal allocation rules.
 
 R14's Nutrien and Weyerhaeuser worksheets specify ten original measurements, seven arithmetic reconciliations, exact source locators and eighteen future review conditions. Values remain separate from original interpretation; source publication dates remain separate from comparative periods and later system recording. These are non-native drafts: retention, native review, current rights, curation revisions, production generations and emitted hrefs are deliberately null.
 
@@ -72,7 +76,7 @@ R13 qualified two actual NYSE chains: `co:us:NTR` -> `ISS:US-XNYS-NTR` / `SEC:US
 
 The Canadian Nutrien node remains unresolved. The R13 August20 historical-name versus as-recorded contrast remains a real evaluation control; an old query date over a new master is not system-known-at replay. No hand-built ticker/CIK/route map is authorized.
 
-The positive proof set remains Nutrien, two NOVONIX documents, Wheaton/Antamina and Weyerhaeuser. Preserve product versus issuer scope; testing versus acceptance versus shipment; contractual participation versus ownership; and actual cash spending versus issuer-adjusted cash measures. AMS/China missing cases remain explicit. These two drafts do not replace the other subjects or establish a full global census.
+The positive proof set remains Nutrien, two NOVONIX documents, Wheaton/Antamina and Weyerhaeuser. Preserve product versus issuer scope; testing versus acceptance versus shipment; contractual participation versus ownership; and actual cash spending versus issuer-adjusted cash measures. AMS/China missing cases remain explicit. R14 plus R15 prepares all five selected documents; preparation is not independent review, native admission, current full-contract coverage or a full global census.
 
 ## 6. Holds, boundaries and proof
 
@@ -86,10 +90,10 @@ Acceptance requires original source -> actual retention/review -> native evidenc
 
 ## 7. Next action and completion boundary
 
-After accepted shared measurement/private interfaces, use existing source/review owners to retain the two R14 originals and admit the drafted statements against the exact R13 identity evidence. Map the seven compatible bridges with reported/derived labels, then render under the accepted Materials profile and complete the entire selected-case proof. Do not fill null admission fields just to make a schema validate.
+After accepted shared measurement/private interfaces and lawful implementation assignment, perform one full selected-case rehearsal using all five prepared originals through the actual source/review owners. For Nutrien/Weyerhaeuser, consume exact R13 identity evidence; for NOVONIX/Wheaton, require actual native identity evidence rather than filling the remaining nulls. Compare generated explanations against R14/R15 scopes and R12 reference expectations, then complete the T7/T8 private source-to-browser proof. Do not fill admission fields merely to make a schema validate. R13 denied browser/other-subject queries still require actual platform-permitted recovery; this packet does not authorize a workaround.
 
 Before native gates clear, advance only a concrete independent source/economic/evaluation question. Do not restart R1–R7, repeat the unanswered Fable request or create another generic platform plan. V0 explanations, V1 comparable changes, V2 conditional economics, V3 evaluated proactive discovery and V4 broader global learning all remain in scope.
 
-R14 executed25 local worksheet checks including seven arithmetic reconciliations; eighteen review obligations are specifications, not product tests. No native admission, model evaluation, browser proof or independent acceptance was performed. Preparation procedure was freshly pinned to Mastermind `548682c96221b4068d46afdfc332395b5253b7c5`, Skillpack1.0.1/bootstrap1. Re-pin current procedure and action-specific source custody before effects.
+R15 executed 12 named offline scenario tests and 43 worksheet checks, including six synthetic scenarios and the seven unchanged R14 reconciliations. Two deliberately incorrect research-helper variants were detected. These are development/reference checks, not native product tests or an independent audit of the sources or agreement. Twenty-four R15 review obligations are future acceptance conditions. No native admission, model evaluation, browser proof or independent semantic acceptance occurred. R14 checks remain historical evidence rather than a new product pass. Preparation procedure was pinned to Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`, Skillpack1.0.1/bootstrap1. Re-pin current procedure and action-specific source custody before effects.
 
 Mission complete remains false. No Materials receiver assignment, START or background execution is conveyed by this packet.
