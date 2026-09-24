@@ -376,7 +376,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-09-23T10:38:17Z",
+  "as_of": "2026-09-23T22:04:34Z",
   "halted": [],
   "metrics": [
     "approval_rate",
