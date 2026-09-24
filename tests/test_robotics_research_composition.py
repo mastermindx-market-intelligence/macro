@@ -589,17 +589,15 @@ def test_declared_cohort_limitation_on_every_response_and_evidence():
             # refs ARE the authorized selection, and every returned row
             # comes from that same selection
             row_refs = {row["assertion_ref"]
-                        for v in robotics.VIEWS
-                        for row in robotics.compose_robotics_research(
-                            dataclasses.replace(query, view=v), bundle)["industrial_views"][v]["rows"]}
+                        for row in response["industrial_views"][view]["rows"]}
             evidence = {e["assertion_ref"] for e in response["evidence_refs"]
                         if e["kind"] == "assertion"}
             assert {ref.rsplit("/", 1)[1] for ref in evidence} == set(
-                response["authorized_coverage"]["input_refs"]), name
-            assert row_refs <= evidence, name
-        for ref in evidence:
-            assert "slice_scope_unowned" in robotics.select_authorized_evidence(
-                query, bundle, ref)["limitations"]
+                response["authorized_coverage"]["input_refs"]), (name, view)
+            assert row_refs <= evidence, (name, view)
+            for ref in evidence:
+                assert "slice_scope_unowned" in robotics.select_authorized_evidence(
+                    dataclasses.replace(query, view=view), bundle, ref)["limitations"]
 
 
 def _zebra_role(**changes):
@@ -630,10 +628,67 @@ def test_ownership_side_comes_from_establishes_only():
     assert _zebra_role(**{"limitations.coverage":
                           "issuer press release announcing a sale to Skild AI, "
                           "whose acquisition closes later"}) == "announced_seller"
-    # the subject's own establishing verb does
+    # a verb anchored to the subject as its explicit agent decides the side
     assert _zebra_role(**{"limitations.establishes":
                           ["an announced acquisition by Zebra of a perception software business"]}) \
         == "announced_acquirer"
-    # both verbs established = ambiguous, never guessed
+    assert _zebra_role(**{"limitations.establishes":
+                          ["Zebra acquires a perception software business"]}) == "announced_acquirer"
+    # both sides anchored to the subject = ambiguous, never guessed
     assert _zebra_role(**{"limitations.establishes":
                           ["an announced sale to X and the acquisition of Y"]}) == "announced_party"
+
+
+def test_ownership_side_ignores_the_counterparty_verb_inside_establishes():
+    # the counterparty is the agent of the acquire verb, in either voice: the
+    # subject's side is not established, so the neutral role is served
+    assert _zebra_role(**{"limitations.establishes": [
+        "an announced ownership change in which Skild AI acquires the "
+        "Robotics Automation business from Zebra"]}) == "announced_party"
+    assert _zebra_role(**{"limitations.establishes": [
+        "the announced acquisition of Zebra's Robotics Automation business by Skild AI"]}) \
+        == "announced_party"
+    # a passive verb with no agent phrase anchors to nobody
+    assert _zebra_role(**{"limitations.establishes": [
+        "Zebra's Robotics Automation business was acquired"]}) == "announced_party"
+    # a relative clause binds the verb to the nearer party, not the subject
+    assert _zebra_role(**{"limitations.establishes": [
+        "Zebra announced the sale to Skild AI, whose acquisition closes later"]}) \
+        == "announced_seller"
+
+
+def test_view_reasons_are_the_shared_closed_set_and_never_contradict_the_selection():
+    allowed = {"no_selected_assertions", "no_rows_for_view", "no_manufacturing_evidence"}
+    seen = set()
+    for name in _READY:
+        query, bundle = load_bundle_case(name)
+        for view in robotics.VIEWS:
+            response = robotics.compose_robotics_research(
+                dataclasses.replace(query, view=view), bundle)
+            selected = response["authorized_coverage"]["selected"]
+            section = response["industrial_views"][view]
+            if section["rows"]:
+                assert "reason" not in section
+                continue
+            reason = section["reason"]
+            seen.add(reason)
+            assert reason in allowed, (name, view, reason)
+            # ``no_selected_assertions`` is only true when nothing was
+            # selected; a selection with no row for the view says so
+            assert (reason == "no_selected_assertions") == (selected == 0), (name, view)
+            if view == "manufacturing" and selected:
+                assert reason == "no_manufacturing_evidence"
+    assert {"no_rows_for_view", "no_manufacturing_evidence"} <= seen
+
+
+def test_slug_keyed_count_follows_the_slice_gate():
+    query, bundle = load_bundle_case("zebra_skild_ownership")
+    keep, drop = bundle.assertions
+    other_slice = next(s for s in robotics.SLICES if s != query.slice_key)
+    slug_elsewhere = _restamped(drop, **{"scope.canonical_theme_id": query.anchor_theme_id,
+                                         "scope.technology_facet": other_slice})
+    response = robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial"),
+        dataclasses.replace(bundle, assertions=(keep, slug_elsewhere)))
+    assert not any(l.startswith("scope_slug_keyed") for l in response["limitations"])
+    assert "slice_scope_unowned" in response["limitations"]

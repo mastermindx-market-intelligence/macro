@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+from pathlib import Path
 import json
 
 import pytest
@@ -126,6 +127,18 @@ def test_refusal_shape():
     assert isinstance(exc, ValueError)
     assert exc.code == "not_available"
     assert str(exc) == "not_available"
+
+
+def test_identity_vintage_unsupported_is_a_robotics_side_refusal_code():
+    # Sol #7780 5813801605 / shared owner #7870 5813976021: the replay-vintage
+    # refusal speaks the shared token; at this base only the Robotics
+    # composer raises it (the shared composer still passes the case through —
+    # divergence registered with the shared owner, never edited here)
+    source = Path(robotics.__file__).read_text(encoding="utf-8")
+    assert 'ResearchRefusal("identity_vintage_unsupported")' in source
+    if semiconductor is not None:
+        shared = Path(semiconductor.__file__).read_text(encoding="utf-8")
+        assert "identity_vintage_unsupported" not in shared
 
 
 def test_refusal_ladder_order():
@@ -284,7 +297,7 @@ def test_rbv04_announcement_is_not_qualified_capacity():
     capacity = view_of(response, "capacity")
     assert capacity["rows"] == []
     assert capacity["status"] == "unavailable"
-    assert capacity["reason"] == "no_selected_assertions"
+    assert capacity["reason"] == "no_rows_for_view"
     commercial_rows = view_of(response, "commercial")["rows"]
     assert len(commercial_rows) == 1
     assert commercial_rows[0]["relation_kind"] == "announced_development"
@@ -606,7 +619,7 @@ def test_rbv23_backlog_ratio_is_interpretation_not_a_capacity_row():
     capacity = view_of(response, "capacity")
     assert capacity["rows"] == []
     assert capacity["status"] == "unavailable"
-    assert capacity["reason"] == "no_selected_assertions"
+    assert capacity["reason"] == "no_rows_for_view"
     keys = set(walk_keys(response))
     assert not any("lead_time" in k for k in keys)
     # the reading survives verbatim as an attributed interpretation summary item

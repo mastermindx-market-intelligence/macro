@@ -35,6 +35,7 @@ importable (and its tests green) on a base without #7870.
 from __future__ import annotations
 
 import copy
+import re
 import hashlib
 import json
 import math
@@ -380,12 +381,15 @@ class _Selection:
             # CANONICAL id only (theme:<slug>); a bare-slug scope is the
             # pre-ruling defect and is dropped but counted, never healed.
             theme = scope.get("canonical_theme_id")
-            if theme == query.anchor_theme_id:
-                slug_keyed += 1
-                continue
-            if theme != canonical_theme:
+            if theme != canonical_theme and theme != query.anchor_theme_id:
                 continue
             if scope.get("technology_facet") != query.slice_key:
+                continue
+            if theme == query.anchor_theme_id:
+                # counted after the slice gate so the count describes the
+                # drop it names (never bleeds across slices); before the
+                # time gate so a slug-keyed record adds no time limitation
+                slug_keyed += 1
                 continue
             if not _passes_time_mode(_adapt_source(assertion), query,
                                      self.limitations):
@@ -703,9 +707,94 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
 # Companies
 # ---------------------------------------------------------------------------
 
-_ACQUIRER_MARKERS = ("acquires", "acquired", "acquisition")
-_SELLER_MARKERS = ("sale to", "divest", "transferring", "transfer of",
-                   "change of")
+_ACQUIRER_MARKERS = ("acquires", "acquired", "acquire", "acquisition",
+                     "purchase of", "purchases", "buys")
+_SELLER_MARKERS = ("sale to", "sale of", "sells", "sold", "divest", "transferring",
+                   "transfer of", "transfers", "change of")
+_PARTY_RUN = re.compile(r"\b[A-Z][A-Za-z0-9&.'-]*(?:\s+[A-Z][A-Za-z0-9&.'-]*)*")
+_RUN_STOPWORDS = frozenset({"the", "a", "an", "its", "in", "whose", "this", "that",
+                            "and", "it"})
+_CLAUSE_RESET = frozenset({"and", "while", "whereas", "plus", "also"})
+_RELATIVE_BINDERS = frozenset({"whose", "which", "who", "that"})
+_PASSIVE_AUX = frozenset({"was", "were", "is", "are", "been", "being"})
+_AGENT_WINDOW_TOKENS = 4
+
+
+def _subject_mentions(label: object) -> frozenset[str]:
+    text = str(label or "").strip()
+    if not text:
+        return frozenset()
+    mentions = {text.lower()}
+    first = text.split()[0]
+    if len(first) >= 4:
+        mentions.add(first.lower())
+    return frozenset(mentions)
+
+
+def _agent_is_subject(sentence: str, marker_start: int, marker_end: int,
+                      mentions: frozenset[str]) -> bool:
+    """Whether the verb at ``sentence[marker_start:marker_end]`` is anchored to
+    the assertion's SUBJECT (the role holder).
+
+    Closed rule, no guessing: (1) an explicit agent phrase ``by <party>`` right
+    after the verb decides it; (2) otherwise the nearest party run within a
+    few tokens before the verb is the agent (a relative binder such as
+    ``whose`` keeps that party as the agent; a clause reset such as ``and``
+    hands the clause back to the subject); (3) a passive auxiliary right
+    before the verb means the preceding party is the patient, so the agent
+    is unknown; (4) no party at all = the implicit subject of the
+    ``establishes`` sentence, which is the assertion's subject by contract.
+    """
+    runs = [(m.start(), m.end(), m.group(0)) for m in _PARTY_RUN.finditer(sentence)
+            if m.group(0).lower() not in _RUN_STOPWORDS]
+
+    def run_at(position: int) -> str | None:
+        for run_start, run_end, run in runs:
+            if run_start <= position < run_end:
+                return run
+        return None
+
+    # (1) explicit agent phrase after the verb, before any clause boundary
+    tail = sentence[marker_end:]
+    boundary = re.search(r"[,;.]", tail)
+    tail = tail[: boundary.start()] if boundary else tail
+    by = re.search(r"\bby\s+", tail)
+    if by:
+        agent = run_at(marker_end + by.end())
+        if agent is not None:
+            return agent.lower() in mentions
+    # (2)/(3) tokens immediately before the verb
+    head = sentence[:marker_start]
+    tokens = [(m.start(), m.group(0)) for m in re.finditer(r"\S+", head)]
+    for offset, token in reversed(tokens[-_AGENT_WINDOW_TOKENS:]):
+        word = token.strip(",;:'\"()").lower()
+        if word in _PASSIVE_AUX:
+            return False
+        if word in _CLAUSE_RESET:
+            return True
+        run = run_at(offset)
+        if run is not None:
+            return run.lower() in mentions
+        if word in _RELATIVE_BINDERS:
+            continue
+    # (4) implicit subject
+    return True
+
+
+def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
+    limits = assertion.get("limitations") or {}
+    mentions = _subject_mentions((assertion.get("subject") or {}).get("source_business_label"))
+    sides: set[str] = set()
+    for piece in limits.get("establishes") or []:
+        if not isinstance(piece, str):
+            continue
+        low = piece.lower()
+        for side, markers in (("acquirer", _ACQUIRER_MARKERS), ("seller", _SELLER_MARKERS)):
+            for marker in markers:
+                for match in re.finditer(r"\b" + re.escape(marker), low):
+                    if _agent_is_subject(piece, match.start(), match.end(), mentions):
+                        sides.add(side)
+    return sides
 
 
 def _ownership_role(assertion: Mapping[str, Any]) -> str:
@@ -718,21 +807,15 @@ def _ownership_role(assertion: Mapping[str, Any]) -> str:
             return f"owner_from:{valid_from}"
         return "owner_reported_effective_date_unknown"
     if mode == "ANNOUNCED_ARRANGEMENT":
-        limits = assertion.get("limitations") or {}
         # The side is read ONLY from what the assertion ESTABLISHES about its
-        # own subject. ``does_not_establish`` is a list of denials and
-        # ``coverage`` may carry the counterparty's verb, so neither may
-        # decide a side (R2 review nit 1). Both verbs present = ambiguous,
-        # and an ambiguous side is never guessed.
-        scanned = " ".join(
-            piece for piece in (limits.get("establishes") or [])
-            if isinstance(piece, str)
-        ).lower()
-        acquirer = any(marker in scanned for marker in _ACQUIRER_MARKERS)
-        seller = any(marker in scanned for marker in _SELLER_MARKERS)
-        if acquirer and not seller:
+        # own subject, and only from verbs anchored to that subject: a
+        # denial (``does_not_establish``), the coverage prose, or the
+        # counterparty's verb inside ``establishes`` never decides a side
+        # (R2 review nit 1, R2b review blocker 2). Ambiguous = neutral.
+        sides = _anchored_sides(assertion)
+        if sides == {"acquirer"}:
             return "announced_acquirer"
-        if seller and not acquirer:
+        if sides == {"seller"}:
             return "announced_seller"
         return "announced_party"
     return "subject"
@@ -933,11 +1016,16 @@ def _views(selection: _Selection, response_limitations: set[str]) -> dict[str, A
             section["total"] = {"value": None, "reason": "totals_not_computed"}
         else:
             section["status"] = "unavailable"
-            # closed reason set: the shared owner's ``no_selected_assertions``
-            # plus the packet-mandated ``no_manufacturing_evidence`` only
-            section["reason"] = ("no_manufacturing_evidence"
-                                 if view == "manufacturing" and selection.assertions
-                                 else "no_selected_assertions")
+            # closed reason set, shared-owner parity (``_build_views``):
+            # nothing selected -> ``no_selected_assertions``; selected but no
+            # row for this view -> ``no_rows_for_view``; the packet-mandated
+            # ``no_manufacturing_evidence`` names the one view v1 never fills
+            if not selection.assertions:
+                section["reason"] = "no_selected_assertions"
+            elif view == "manufacturing":
+                section["reason"] = "no_manufacturing_evidence"
+            else:
+                section["reason"] = "no_rows_for_view"
             section["total"] = {"value": None, "reason": None}
         graph, truncated = _graph(live_rows, selection)
         section["graph"] = graph
