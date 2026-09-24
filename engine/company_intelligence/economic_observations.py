@@ -164,6 +164,10 @@ def validate_selected_facts(
     expected_quarter = _PG_FISCAL_QUARTERS[current_start.month]
     if str(fiscal_period.get("quarter")) != str(expected_quarter):
         raise EconomicObservationError("workspace quarter does not match fiscal_scope")
+    release = workspace.get("sources", [{}])[0]
+    workspace_document_id = release.get("document_id") if isinstance(release, Mapping) else None
+    if not isinstance(workspace_document_id, str) or not workspace_document_id:
+        raise EconomicObservationError("workspace has no release document identity")
 
     facts = workspace.get("facts")
     if not isinstance(facts, list):
@@ -233,7 +237,7 @@ def validate_selected_facts(
                 raise EconomicObservationError("typed_absence subject does not match its metric")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
-            if absence_payload.get("document_id") not in source_texts:
+            if absence_payload.get("document_id") != workspace_document_id:
                 raise EconomicObservationError("typed_absence belongs to another document")
             checked.append(dict(row))
             continue
@@ -295,6 +299,8 @@ def validate_selected_facts(
             raise EconomicObservationError("span digest does not replay")
         if replayed_text != span.get("display_excerpt"):
             raise EconomicObservationError("display excerpt does not replay")
+        if document_id != workspace_document_id:
+            raise EconomicObservationError("present observation belongs to another document")
         if definition.value_kind == "bounded_text":
             replayed_value: Any = replayed_text
         elif replayed_text in {"-", "—", "–"}:
