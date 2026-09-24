@@ -181,3 +181,14 @@ Reviewer 5300666596 exposed a real downstream influence bug; source repair c9879
 Do not overwrite newer canonical work with the old chat-local patch. Do not recreate A1/A2, repeat #292 as autonomy proof, redo Finance/Communications/Industrials research, take #775's UI, or fork #900/#933/#936. Do not publish private full-fidelity hypotheses in reviews.jsonl. No duplicate registry, queue, scheduler, retry, memory or authority owner. No deployment, live-capital or autonomous-spend change.
 
 MISSION_COMPLETE: false. EFFECT_UNKNOWN: none. Current tests are concluded; review request and repository CI do not mean an autonomous discovery system is running.
+
+
+## 2026-09-24 current-head historical-cutoff repair
+
+Mastermind PR #946 is now published at exact head `be0b04b0bdbd15e629aad0da2e1d355bf80c8d60` on the existing source carrier. This supersedes the prior continuation head only for implementation identity; parent mission and source custody are unchanged.
+
+Independent review 5301050037 at `d256a70eab14970ac918db9488bd48c81c24017c` found one historical-read defect (inline 4090920998): a report with an older declared `asof` could still influence a backdated Agenda even when its bytes were generated on a later UTC day. The source owner repaired this on the same carrier. One shared predicate now requires both owner `asof` and UTC `generated_at` date to be on or before the requested Agenda date for the ranked NW Agenda consumer and default discovery projection. Existing current-time freshness and persisted-nudge validity checks remain intact; unrelated nudge families remain unaffected.
+
+The focused owner/discovery/Agenda/readiness/NW feedback/Mastermind AI/composition suite passed locally after the repair. Evidence is bound in `Mastermind/research/evidence/improvement_discovery/CONSUMER_VALIDITY_PROOF_2026-09-24.json`. Hosted CI run 35970417169 is currently in progress for exact published head. Fresh read-only review operation `improvement-discovery-historical-cutoff-review-20260924-sol-001` was requested in Mastermind #946 comment 5809860987 and is observed RUNNING at that exact head. No release, merge, deployment, Executive Job/Attempt, autonomous evidence sprint, provider execution, or trading effect is claimed.
+
+Exact next action: consume the exact-head review and hosted CI; adjudicate any supported finding on the same PR and explicitly STOP the review child when returned. If review/checks pass, reconcile current protected-base release gates while preserving Draft/HOLD until lawful release. After source release and deployed default-path proof, continue the larger mission into private model-generated competing hypotheses and one prospective evidence sprint through existing Chairman Cognition/Executive owners. Do not create a new cognition/queue/coverage authority.
