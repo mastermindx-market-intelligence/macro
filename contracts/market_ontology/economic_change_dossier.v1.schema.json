@@ -56,8 +56,7 @@
     },
     "knowledge_cutoff": {
       "type": "string",
-      "format": "date",
-      "maximum": null
+      "format": "date"
     },
     "authority_ceiling": {
       "const": "research_display_only"
@@ -1107,47 +1106,7 @@
             "type": "string"
           }
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "compatibility": {
-                "items": {
-                  "properties": {
-                    "outcome": {
-                      "not": {
-                        "const": "passed"
-                      }
-                    }
-                  },
-                  "required": [
-                    "outcome"
-                  ]
-                }
-              },
-              "required": [
-                "compatibility"
-              ]
-            }
-          },
-          "then": {
-            "properties": {
-              "result": {
-                "const": null
-              },
-              "unavailable_code": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "result",
-              "unavailable_code"
-            ]
-          }
-        }
-      ]
+      }
     },
     "bridge_step": {
       "type": "object",
