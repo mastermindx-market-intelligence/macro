@@ -16781,3 +16781,30 @@ jobs:
             tests/test_payoff_lab_launchd.py \
             tests/test_options_skew_backfill.py \
             -q
+  mining-economic-dossier:
+    # GMI MINING M1 integration (Fable Meta-CEO seat 664a0650, WS:GMI-MINING-M1-INTEGRATION,
+    # ruling R-MIN-02/R-MIN-26, 2026-09-24). T01' consumption harness: the synthetic
+    # casebook, the closed delivery-input validator and the typed route_unbound client
+    # (engine/market_ontology/mining_dependency_binding.py). Later Mining task PRs APPEND
+    # their own suites and paths to this ONE block (never to a sibling sector's job).
+    # Gate-code pure: the suites import only the standard library, jsonschema/pyyaml and
+    # the Mining modules; every fixture is synthetic; no data/ or site/ input.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/mining_casebook.py"
+      - "tests/test_mining_shared_contract.py"
+      - "tests/fixtures/mining_economic_dossier/**"
+      - "engine/market_ontology/mining_dependency_binding.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Mining economic-dossier suites
+        run: pip install pytest jsonschema pyyaml
+      - name: mining economic dossier — shared-contract harness
+        run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py -q
