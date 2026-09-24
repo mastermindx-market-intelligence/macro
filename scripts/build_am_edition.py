@@ -1723,8 +1723,21 @@ def render_html(payload: dict) -> str:
 
     Templates are looked up under <repo_root>/templates/am_edition.html.j2
     (relative to this script). A missing template returns an empty string —
-    the caller decides whether to surface that as a warning."""
-    import jinja2
+    the caller decides whether to surface that as a warning.
+
+    A missing `jinja2` module also returns '' rather than raising — the
+    contract the docstring promises ("missing X returns ''") covers the
+    runtime library itself, not just the file. The CI pack env may run this
+    function before jinja2 is on the path; an ImportError here would block
+    the contract test (ci-pack-1 / am-edition-producer, 2026-09-24) without
+    any production caller actually needing jinja2 in that env. main() and
+    lib.pages.write_page handle the real render path; render_html is the
+    pure helper for callers that want the rendered string in isolation."""
+    try:
+        import jinja2
+    except ImportError:
+        log.warning("jinja2 is not importable in this env; render_html returns ''")
+        return ""
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(Path(__file__).resolve().parent.parent / "templates")),
         autoescape=jinja2.select_autoescape(["html", "xml"]),
