@@ -74,7 +74,15 @@ STATUS: ANSWERED
 
 ## Q3 — Dossier read model
 
-STATUS: IN PROGRESS
+#7777 defines a public sector read model, not a company dossier shell contract. `sector_dossier_read_model.v1` fixes a sector identity pattern (`origin/sol/stsi1-sector-federation-technology-dossier-20260921:contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json:34-42`), closed top-level members (`:6-33`) and a sector/subsector/theme/group/structural dimension scope (`:290-298`). It can carry a simple summary as a bilingual `dimension` (`:262-345`), but its `dimension.value` allows only scalars or flat scalar maps (`:239-260`). It therefore cannot represent the closed, deeply structured `earnings.economic_interpretation/v1` without a breaking or new company read-model version.
+
+The plan's interpretation shape is a closed v1 with explicit top-level keys `schema`, `interpretation_id`, `issuer`, `event_id`, `build`, `selection`, `observations`, `comparisons`, `findings`, `missing_context`, `next_evidence`, `quality`, `clocks`, and `authority` (`origin/sol/consumer-defensive-research-20260923:docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md:245-260`). Those native fact handles and reconciliation receipts must remain a member of the existing private publication; flattening them into #7777's public dimension values would destroy closure, drilldown and authorization boundaries.
+
+Neither #7777 nor #7870/#7780 defines an auth contract for this panel. #7777's read model has no auth/entitlement field and only public input receipts (`contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json:932-945`; fixture `data/sector_intelligence/fixtures/sector_dossier_read_model.v1.valid.json:178-202`). CDV's plan requires the existing private API owner, `site_full`, pinned generation/manifest/record digest validation and no arbitrary storage scan (`docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md:174-179,411-413,435`). The foundation #7870 separately gates public theme research through an authenticated session and immediate rights checks (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/market_ontology/semiconductor_theme_research.py:33-35`), but that is not the earnings owner.
+
+Evidence drilldown should therefore use the foundation receipt grammar while retaining CDV's pinned evidence endpoint: `source_span.v1` supplies byte replay and `rp_*` classification (`origin/main:engine/company_intelligence/documents.py:15-25,328-345,468-490`); Evidence Foundation supplies pointer-only owner references and bounded consumer blocks (`origin/main:contracts/evidence_foundation/reference.v1.schema.json:5`; `origin/main:contracts/evidence_foundation/block.v1.schema.json:5`); the dossier schema can carry only a public summary/`source_ref`, not the private native closure. The cheapest future integration is a new company dossier read-model contract or additive v2 that references an Evidence Foundation block/receipt while the interpretation remains in the existing private v2 publication.
+
+STATUS: ANSWERED
 
 ## Q4 — Shell integration
 
