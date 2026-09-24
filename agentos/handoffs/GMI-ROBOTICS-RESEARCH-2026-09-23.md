@@ -129,3 +129,31 @@ Master handoff:
 This selection closes the implementation-plan execution-method gate. It **does not** self-assign a concrete provider session. Current routing state is `WAITING_CAPACITY / needs_placement=true` with `PREFERRED_AVENUE: Fable` and `RECEIVER_BINDING_MODE: CAPACITY_SELECTABLE`. Deliberate live delivery to a concrete eligible Fable session becomes receiver assignment; that session then owes separate PICKUP_ACK and START receipts under current law.
 
 The #7773 branch remains research/spec/plan/handoff truth only. Fable must create one fresh implementation carrier from then-current Macro main after current collision/effect reconciliation. Do not turn this branch into the implementation base.
+
+
+## 2026-09-24 — Semiconductor shared-foundation invalidator reconciled
+
+Robotics Fable operation `gmi-robotics-fable-ceo-e2e-20260923-chairman-001` is still **not evidenced as handed off to a concrete Fable receiver**: no Slack search result for the exact operation/prefix, no Robotics PICKUP_ACK/START receipt, and #7773 remains Draft/HOLD. Current routing remains `WAITING_CAPACITY / needs_placement=true`.
+
+A material upstream implementation dependency has changed: Semiconductor B's concrete Fable CEO operation `gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001` is STARTed on #7870 and is implementing the ONE shared GMI sector/theme research substrate.
+
+Current #7870 head at reconciliation: `45eb37bbf832e007e67ce2594674d6bfeeb3b880`.
+
+Accepted-for-consumption shared foundation on that carrier:
+- one `theme_graph.curation_assertion.v1` schema/module, including the frozen Robotics reference payload;
+- generic `source_ref_for` using `scope.canonical_theme_id`;
+- additive optional `industrial_context` that Robotics need not emit;
+- optional `curation_assertion` property added to `evidence.v1`;
+- published-at grain/date consistency strengthening accepted by Robotics.
+
+Still unaccepted/in-flight/shared-gated:
+- `store.py` `EVIDENCE_COLUMNS` append blocked by #7462;
+- K1 curation subtype T04 in flight;
+- generic F04/theme-research composition under review/in flight;
+- generic theme-research JS/CSS client returned but requires accepted fix;
+- generic paid API T09 queued;
+- real private publication/live admission blocked on the shared R4 ruling.
+
+Master Fable handoff updated on this same branch at commit `f9e2cbd2a35291fd7d5102ec7b5c6a33d047eb6a`. New precedence: Robotics consumes accepted shared infrastructure from #7870 or its successor; it must not re-author shared assertion/K1/API/client/private-publication planes. Robotics-specific work remains the domain dossier/composition, evidence qualification, integration and production/browser/non-regression proof.
+
+DO_NOT_REDO now includes the Robotics plan's original Task 1 as an independent implementation. Tasks 2/3/5/6 are partially or fully shared-owner dependencies and must be marked consumed/held based on current accepted #7870/#7462 state before a Robotics implementation child starts.
