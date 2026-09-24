@@ -340,7 +340,8 @@ def test_fact_id_identity_and_duplicate_refused() -> None:
 
     _invalid(mutate)
     _workspace, baseline = _selected()
-    assert all(row["fact_id"] == f"fact_{row['metric']}" for row in baseline)
+    assert len({row["fact_id"] for row in baseline}) == len(baseline)
+    assert all(row["fact_id"].startswith("fact_") and len(row["fact_id"]) == 21 for row in baseline)
 
 
 def test_span_must_use_registered_private_rights_profile() -> None:
@@ -367,4 +368,5 @@ def test_selected_observations_are_exactly_twenty() -> None:
     _workspace, rows = _selected()
     assert len(rows) == 20
     assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
-    assert all(row["fact_id"] == f"fact_{row['metric']}" for row in rows)
+    assert len({row["fact_id"] for row in rows}) == len(rows)
+    assert all(row["fact_id"].startswith("fact_") and len(row["fact_id"]) == 21 for row in rows)

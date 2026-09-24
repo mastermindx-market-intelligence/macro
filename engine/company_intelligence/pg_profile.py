@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+import hashlib
 import math
 import re
 from typing import Any, Sequence
@@ -216,9 +217,11 @@ def _span(document_id: str, bound: BoundRelease, receipt: SpanReceipt) -> dict[s
 
 
 def _present(*, definition: PGDefinition, value: Any, document_id: str, bound: BoundRelease, receipt: SpanReceipt, event_id: str, period: str) -> dict[str, Any]:
+    identity = "|".join((event_id, definition.metric, period, definition.basis))
+    fact_digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
     return {
         "schema": "event_fact.v1",
-        "fact_id": f"fact_{definition.metric}",
+        "fact_id": f"fact_{fact_digest}",
         "event_id": event_id,
         "metric": definition.metric,
         "value": value,
@@ -238,9 +241,11 @@ def _absent(
     reason: str = "no_span_addressable_evidence",
     subject: str | None = None,
 ) -> dict[str, Any]:
+    identity = "|".join((event_id, definition.metric, definition.metric, definition.basis))
+    fact_digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
     return {
         "schema": "event_fact.v1",
-        "fact_id": f"fact_{definition.metric}",
+        "fact_id": f"fact_{fact_digest}",
         "event_id": event_id,
         "metric": definition.metric,
         "typed_absence": TypedAbsence(

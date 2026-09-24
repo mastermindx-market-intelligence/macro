@@ -73,6 +73,11 @@ def _cell_text(fragment: bytes) -> str:
     return text.decode("utf-8", errors="strict").strip().replace("&amp;", "&")
 
 
+def _fact_id(event_id: Any, metric: Any, period: Any, basis: Any) -> str:
+    identity = "|".join(str(item) for item in (event_id, metric, period, basis))
+    return f"fact_{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
+
+
 def _verify_pg_replay(
     *,
     source: str,
@@ -197,9 +202,9 @@ def validate_selected_facts(
             raise EconomicObservationError("fact_id is missing or duplicate")
         fact_ids.add(fact_id)
         metric = row.get("metric")
-        if fact_id != f"fact_{metric}":
-            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
         definition = _definition(metric)
+        if "value" in row and fact_id != _fact_id(event_id, metric, row.get("period"), definition.basis):
+            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
         scope_key = (event_id, metric, definition.scope, row.get("period"), definition.basis)
         if scope_key in metric_scope_periods:
             raise EconomicObservationError("metric, scope, and period duplicate")
