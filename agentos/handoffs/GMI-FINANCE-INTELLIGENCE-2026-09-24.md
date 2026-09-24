@@ -133,7 +133,7 @@ records, 28 source-native assertions, identity RESEARCH_HINT_UNVALIDATED),
 
 ## Seat rulings
 
-- **R-FIN-1 carrier topology** — `DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN`.
+- **R-FIN-1 carrier topology** — `DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN` (records merge at wave boundaries; #7887 = Wave 0; later checkpoints ride fresh records PRs citing the operation key).
 - **R-FIN-2 evidence grammar** — `DEC:FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS`.
 - **R-FIN-3 Theme Tracker card is static** — a template partial with no builder context, so
   `scripts/build_state_of_themes.py` (#7664) is never touched; the card links only.

@@ -6,8 +6,11 @@ question: >
   Finance programme integrate task work on one long-lived carrier branch, or ship each task
   as its own PR off main?
 answer: >
-  One seat DRAFT PR (claude/finance-intelligence-implementation-20260924) is the OPERATION
-  carrier — it holds Agent OS records, checkpoints, receipts and integration rulings. Task
+  The seat records PR (#7887, claude/finance-intelligence-implementation-20260924) is the
+  OPERATION carrier identity — it holds Agent OS records, checkpoints, receipts and
+  integration rulings, and it MERGES at each wave boundary (Wave 0 lands as soon as pickup,
+  reconciliation and START are recorded); later checkpoints ride fresh records PRs that cite
+  the operation key and #7887, because a squash-merged branch is never reused. Task
   work ships as fabric-built PRs off fresh origin/main in dependency order (Wave 1: contract →
   projection/overlap/private; Wave 2: evidence + API; Wave 3: UI + entries), each armed
   merge-on-green and merged by the seat on concluded green. Every task PR is recorded on the
