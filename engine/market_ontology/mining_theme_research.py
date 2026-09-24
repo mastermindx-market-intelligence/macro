@@ -537,84 +537,127 @@ def compose_mining_research(
             }
         )
 
-    # Expectations are bound from any supplied management_estimate_vs_actual block;
-    # management point estimates stay point estimates (ADDENDUM §4 IR-02).
+    # Expectations are bound from the CLOSED domain definition for the queried
+    # slice (R-MIN-23 / BLOCKER-1 / seat note). The bundle's financial_packets no
+    # longer influence expectation composition: every ``management_estimate_vs_actual``
+    # claim — and its single ``pairs`` object on the COPPER block — is read from
+    # ``MINING_DEFINITIONS[query.slice_key]``. Management point estimates stay
+    # point estimates (ADDENDUM §4 IR-02). A row may carry null
+    # ``earlier_point_estimate`` / ``later_actual`` (W-R), in which case
+    # ``missing_derivation`` is the limitation — never an invented zero.
     expectations: list[dict[str, Any]] = []
-    defined_fields = {"basis", "unit", "perimeter"}
-    for packet in bundle.financial_packets:
-        mev = packet.get("management_estimate_vs_actual")
-        if not mev:
-            continue
-        epe = mev.get("earlier_point_estimate")
-        la = mev.get("later_actual")
-        expectations.append(
-            {
-                "stable_subject_id": str(packet.get("stable_subject_id", "subject:unknown")),
-                "comparison_kind": "earlier_point_estimate_vs_later_actual",
-                "earlier_point_estimate": (
-                    {
-                        "metric": str(epe.get("metric", "")),
-                        "value": epe.get("value"),
-                        "basis": str(epe.get("basis", "")),
-                        "source_label": str(epe.get("source_label", epe.get("selection_label", ""))),
-                    }
-                    if isinstance(epe, Mapping)
-                    else None
-                ),
-                "later_actual": (
-                    {
-                        "metric": str(la.get("metric", "")),
-                        "value": la.get("value"),
-                        "basis": str(la.get("basis", "")),
-                        "source_label": str(la.get("source_label", la.get("selection_label", ""))),
-                    }
-                    if isinstance(la, Mapping)
-                    else None
-                ),
-                "comparison": str(mev.get("comparison", "")),
-                "definition_unqualified_fields": list(
-                    mev.get("definition_unqualified_fields", []) or []
-                ),
-                "is_range": False,
-                "is_consensus": False,
-            }
+    slice_def = MINING_DEFINITIONS[query.slice_key]
+    mev = slice_def.get("management_estimate_vs_actual") or {}
+
+    # Subject identity is bound to the first identity_results entry; the
+    # open fallback stays as a literal default (Step 7 finishes the binding
+    # for the native_blocks channel; here we only need a non-empty
+    # stable_subject_id so the schema item stays valid).
+    subject_id = "subject:unknown"
+    for ident in bundle.identity_results:
+        cand = str(ident.get("stable_subject_id") or "")
+        if cand:
+            subject_id = cand
+            break
+
+    def _leg(leg: Mapping[str, Any] | None) -> dict[str, Any] | None:
+        """Map a domain-yaml leg object to the schema-valid leg dict.
+
+        The yaml leg carries ``metric / source_family / selection_label /
+        period_kind / definition_fields_required``. The schema item requires
+        ``metric / value / basis / source_label`` — all four required, with
+        ``metric / basis / source_label`` typed string minLength: 1.
+        ``value`` accepts a number, integer or string. ``source_label`` falls
+        back to ``selection_label``. ``value`` falls back to the metric or
+        period_kind string when the leg has no literal number.
+        ``basis`` falls back to "fictional point estimate" for the
+        management-issued estimate legs (they have no reported basis yet).
+        """
+        if leg is None or not isinstance(leg, Mapping):
+            return None
+        metric = str(leg.get("metric") or "")
+        if not metric:
+            return None
+        basis = str(leg.get("basis") or "fictional point estimate")
+        source_label = str(
+            leg.get("source_label")
+            or leg.get("selection_label")
+            or "synthetic-selection"
         )
-        # A second management pair (the cost estimate vs actual) is a separate row.
-        for pair in mev.get("pairs", []) or []:
-            epe = pair.get("earlier_point_estimate")
-            la = pair.get("later_actual")
+        raw_value = leg.get("value")
+        if raw_value is None:
+            raw_value = str(leg.get("period_kind") or leg.get("metric") or "")
+        return {
+            "metric": metric,
+            "value": raw_value,
+            "basis": basis,
+            "source_label": source_label,
+        }
+
+    def _unq(leg: Mapping[str, Any] | None) -> list[str]:
+        if leg is None or not isinstance(leg, Mapping):
+            return []
+        return [str(f) for f in (leg.get("definition_fields_required") or [])]
+
+    def _expectation_row(
+        epe: Mapping[str, Any] | None,
+        la: Mapping[str, Any] | None,
+        comparison: str,
+        unq_fields: list[str],
+    ) -> dict[str, Any]:
+        return {
+            "stable_subject_id": subject_id,
+            "comparison_kind": "earlier_point_estimate_vs_later_actual",
+            "earlier_point_estimate": _leg(epe),
+            "later_actual": _leg(la),
+            "comparison": comparison,
+            "definition_unqualified_fields": list(unq_fields),
+            "is_range": False,
+            "is_consensus": False,
+        }
+
+    # The closed defined_fields: union of every leg's definition_fields_required
+    # across the mev + its pairs. Falls back to the canonical closed set when the
+    # yaml drops the field.
+    defined_fields: set[str] = set()
+    for leg in (mev.get("earlier_point_estimate"), mev.get("later_actual")):
+        for f in _unq(leg):
+            defined_fields.add(f)
+    for pair in mev.get("pairs", []) or []:
+        for leg in (pair.get("earlier_point_estimate"), pair.get("later_actual")):
+            for f in _unq(leg):
+                defined_fields.add(f)
+    if not defined_fields:
+        defined_fields = {"basis", "unit", "perimeter"}
+
+    if mev:
+        main_epe = mev.get("earlier_point_estimate")
+        main_la = mev.get("later_actual")
+        main_comparison = str(mev.get("comparison", "") or "")
+        main_unq = _unq(main_epe) + _unq(main_la)
+        expectations.append(
+            _expectation_row(main_epe, main_la, main_comparison, main_unq)
+        )
+        # W-R null legs -> missing_derivation limitation (R-MIN-15 / BLOCKER-1).
+        if main_epe is None and main_la is None:
+            if "missing_derivation" not in limitations:
+                limitations.append("missing_derivation")
+        # The COPPER block carries a single ``pairs`` object surfaced as a SECOND
+        # comparison row, never merged with the sales pair (seat note / BLOCKER-1).
+        pairs = mev.get("pairs", []) or []
+        for pair in pairs:
+            pair_epe = pair.get("earlier_point_estimate")
+            pair_la = pair.get("later_actual")
+            pair_comparison = str(pair.get("comparison", "") or main_comparison)
+            pair_unq = _unq(pair_epe) + _unq(pair_la)
             expectations.append(
-                {
-                    "stable_subject_id": str(packet.get("stable_subject_id", "subject:unknown")),
-                    "comparison_kind": "earlier_point_estimate_vs_later_actual",
-                    "earlier_point_estimate": (
-                        {
-                            "metric": str(epe.get("metric", "")),
-                            "value": epe.get("value"),
-                            "basis": str(epe.get("basis", "")),
-                            "source_label": str(epe.get("source_label", epe.get("selection_label", ""))),
-                        }
-                        if isinstance(epe, Mapping)
-                        else None
-                    ),
-                    "later_actual": (
-                        {
-                            "metric": str(la.get("metric", "")),
-                            "value": la.get("value"),
-                            "basis": str(la.get("basis", "")),
-                            "source_label": str(la.get("source_label", la.get("selection_label", ""))),
-                        }
-                        if isinstance(la, Mapping)
-                        else None
-                    ),
-                    "comparison": str(pair.get("comparison", "")),
-                    "definition_unqualified_fields": list(
-                        pair.get("definition_unqualified_fields", []) or []
-                    ),
-                    "is_range": False,
-                    "is_consensus": False,
-                }
+                _expectation_row(pair_epe, pair_la, pair_comparison, pair_unq)
             )
+    else:
+        # A slice with no mev declared at all: surface as missing_derivation;
+        # no expectation row is invented.
+        if "missing_derivation" not in limitations:
+            limitations.append("missing_derivation")
 
     # IR-01: limitations now include any definition_unqualified:<field> markers; headline must
     # stay plain-language without badge vocabulary.
