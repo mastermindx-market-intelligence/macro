@@ -483,6 +483,17 @@ def test_observation_receipt_line_is_truthful_and_neutral(tmp_path):
         "source_generation=unknown last_refresh=none legacy=False inconsistent=False"
     )
 
+    failed = fda_shortages.read_shortage_observation(path=path)
+    failed["last_refresh"] = {
+        "attempted_at": "2026-09-24T12:00:03+00:00", "qualified": False,
+        "failure_code": "FIRST_PAGE_OUTAGE",
+    }
+    assert fda_shortages.format_observation_receipt(failed) == (
+        "fda_shortages: observation qualified=False failure_code=FIRST_PAGE_OUTAGE "
+        "source_generation=2026-09-23 last_refresh=2026-09-24T12:00:03+00:00 "
+        "legacy=False inconsistent=False"
+    )
+
     legacy = {"legacy": True}
     assert fda_shortages.format_observation_receipt(legacy) == (
         "fda_shortages: observation qualified=False failure_code=none "

@@ -256,8 +256,8 @@ def format_observation_receipt(observation: dict) -> str:
     source_generation = capture.get("source_generation")
     attempted_at = refresh.get("attempted_at")
     return (
-        f"fda_shortages: observation qualified={bool(capture.get('complete'))} "
-        f"failure_code={capture.get('failure_code') or 'none'} "
+        f"fda_shortages: observation qualified={bool(refresh.get('qualified'))} "
+        f"failure_code={refresh.get('failure_code') or 'none'} "
         f"source_generation={source_generation if isinstance(source_generation, str) else 'unknown'} "
         f"last_refresh={attempted_at if isinstance(attempted_at, str) else 'none'} "
         f"legacy={bool((observation or {}).get('legacy'))} "
