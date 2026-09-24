@@ -4,126 +4,84 @@ session: sol/consumer-defensive-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Lead Consumer Defensive economic research, granular exposure intelligence and
-  product/masterplan design within existing Mastermind owners; retain principal
-  synthesis here and route final accepted buildout/orchestration to Fable CEO.
+  Principal-led Consumer Defensive research, architecture and planning within existing
+  Mastermind owners; mature the design/implementation plan before final Fable buildout.
 state_before: >
-  R1-R3 were preserved at f06a8f1d29a1f76ba91c0d8be3c79f825e7d6982.
-  Alcohol/nicotine, Asia-facing coverage and worked historical business/market
-  evidence remained material research gaps.
+  R1-R4 preserved at 6fa549984b98690f06b442db5bae944530788d83; R5 native-owner
+  feasibility and consolidated design were the next dependency.
 changed:
-  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_ALCOHOL_NICOTINE_R4_2026-09-23.md
-    what: "Eight issuer dossiers, 12 source entries, channel/aging-stock/conversion economics and 20 proposed controls."
-  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_ASIA_EXPOSURES_R4_2026-09-23.md
-    what: "Seven current-period dossiers plus one historical monthly-data case, ten source entries and 20 proposed controls."
-  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_HISTORICAL_OUTCOME_CONTROLS_R4_2026-09-23.md
-    what: "Four issuer-period observations across two issuers; actual ex-post price/EPS decomposition; five source entries and 12 proposed controls."
+  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_NATIVE_OWNER_FEASIBILITY_R5_2026-09-23.md
+    what: "Ten native-interface findings, eighteen field-to-owner mappings and selected primary rechecks."
   - path: agentos/handoffs/GMI-CONSUMER-DEFENSIVE-RESEARCH-2026-09-23.md
-    what: "Cumulative R4 frontier and exact R5 feasibility/masterplan dependency; mission remains incomplete."
+    what: "Intermediate cumulative checkpoint before masterplan and written first-vertical design."
 verified:
-  - claim: "Protected procedure is compatible and actual native GitHub research writes work."
-    command: "master protection/INDEX and same-pin companion blob reads; get_repo; successful same-branch create/update actions"
-    result: "Mastermind 4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2, Skillpack1.0.1/bootstrap1; no Extra High switch needed for these actions."
-  - claim: "All three R4 research units persisted on the incumbent carrier with immutable readbacks."
-    command: "GitHub create_file and exact-commit fetch_file"
-    result: "R4A 0364b4587ce60a263695fc280687fbfb1c37e83f; R4B c2fcab1b75f530bb1fedaacbc9cb6f8905c0a640; R4C b0f99a1610b9951cb87950ec4d34cdd14329fd62."
-  - claim: "Research arithmetic/semantic-example checks executed and their outputs were inspected."
-    command: "Python Decimal/date assertions on manually transcribed primary inputs and labeled synthetic scenarios"
-    result: "R4A eight checks; R4B27; R4C24. The two Hershey price identities were also recomputed during closeout. These are not product tests or investment backtests."
+  - claim: "Native-owner feasibility artifact persisted and immutable header read back."
+    command: "GitHub create_file plus fetch_file at returned commit"
+    result: "32a37c79aff4a602f5e15a1e3b7d5599e5805fde; blob e262f4fc2ea616223496c0614cfd02567958bd73."
+  - claim: "Fresh compatible procedure and incumbent research carrier recovered."
+    command: "Protected branch/INDEX/companion reads and get_pr_info #7792"
+    result: "Mastermind 4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2; 1.0.1/bootstrap1; incumbent research head unchanged at pickup."
+  - claim: "Shared dossier contract is not merged at this interface pin."
+    command: "Exact-main file read returned404; #7777 metadata and candidate schema read"
+    result: "#7777 open/unmerged, head4122e3b7e1524482216fb156f201f8229c14011b; no template takeover."
 unverified:
-  - claim: "Final design/masterplan, empirical predictive validation, Fable delivery or production outcome is complete."
-    what_would_verify: "Current native-owner/data feasibility, accepted written design/plan, lawful Fable receiver and buildout, plus required source-to-browser proof and separately accepted predictive evaluation."
+  - claim: "Target-company native production coverage, private runtime or final design acceptance."
+    what_would_verify: "Actual accepted source/profile/generation/reader proof, entitlement-safe publication and reviewed written design."
 next_actions:
-  - >
-    R5: reconcile current native financial/evidence/identity/valuation/market and
-    shared-template seams for a selected Consumer Defensive first vertical;
-    map required observations to actual owners, availability and missingness;
-    consolidate the research into the proposed masterplan and written design.
-  - >
-    Treat remaining geographic/company gaps as targeted expansion unless the
-    selected first user journey depends on them. Do not restart broad censuses
-    or hand Fable unresolved principal economic design questions.
+  - "Continue now with consolidated masterplan and bounded source-to-dossier written specification on this same carrier."
 do_not_redo:
-  - "R1-R3 and verified R4 documents are DO_NOT_REDO unless source, dependency, evidence or authority materially changes."
-  - "No broad Robotics/template archaeology, replacement carrier or parallel graph/identity/evidence/state/valuation/publication owner."
-  - "No universal BOM-first framework, fused fundamentals/expectations/valuation/price score or theme bonus."
-  - "Preserve corrected Pepsi locator and Utz price-versus-volume/mix labels from R2."
-  - "No guessed brand purity, inventory quantities, current consensus, procurement lag, fair value or security eligibility."
-  - "No premature Fable commission or live basket/rank/entry/size/trade effect."
-danger_areas:
-  - "Reported/adjusted EPS and price/total return must remain separately typed and dated."
-  - "Year-end price divided by later-reported annual earnings is an ex-post ratio, not then-observable valuation."
-  - "Category share gains can coexist with aggregate share loss; group/perimeter/currency denominators matter."
-  - "Regulatory authorization, launch, use and profit are separate product/territory events, not assurances of safety."
-  - "Primary-authored archive copies are not native retention receipts; failed reads and incomplete KPI bridges stay explicit."
+  - "Preserve R1-R4 and R5 feasibility; no broad census or Robotics/template reconstruction."
+  - "No private current payload in public company_intelligence R2 or public Git."
+  - "No arbitrary facts in K1/GMI receipts or synthetic facts relabeled native financial occurrences."
+  - "No cross-type K1 identity join inferred from ticker/CIK labels."
+  - "No final Fable commission, native source admission, basket or trade change from these research documents."
 ---
 
-# Consumer Defensive — cumulative R4 continuation
+# Consumer Defensive — cumulative R5 working checkpoint
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE: false
-Capability: SPEC_ONLY / RESEARCH_IN_PROGRESS
-Fable handoff: NOT_ISSUED
+MISSION_COMPLETE: false. Capability: SPEC_ONLY / RESEARCH_AND_DESIGN_IN_PROGRESS.
+This is an intermediate persistence point; work continues on the written masterplan/design. Fable handoff: NOT_ISSUED.
 
-## Authority and carrier
+## Authority and exact carrier
 
-The live Chairman continues principal-led research/planning, with final buildout intended for Fable CEO after a mature masterplan. Direct-work reason: PRINCIPAL_JUDGMENT. This turn advanced three substantial research units with intermediate persistence. User-reported Pro mode and long-turn preferences are not platform attestation, guaranteed duration or a hidden-budget receipt. Native GitHub research-document writes succeeded; no Extra High change is needed for the demonstrated actions. No parallel Sol/Fable worker was commissioned or claimed running.
+Current Chairman continues the existing research/design commission in user-reported Pro mode. Principal work is economic synthesis and architecture (PRINCIPAL_JUDGMENT); no platform budget or mode attestation is claimed. Eventual Fable role is final principal integrator/orchestrator. No child or worker is assigned here.
 
-Operation: `gmi-consumer-defensive-research-20260923-sol-001`.
-Repository: `mastermindx-market-intelligence/macro`.
-Carrier: Draft/HOLD PR #7792, branch `sol/consumer-defensive-research-20260923`.
-Protected procedure: `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, compatible Skillpack1.0.1/bootstrap1. INDEX fully read; ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT same-pin header/blob reads match their full texts already loaded in this continuing conversation.
-Original research base/interface reference: Macro `c4da107fe729e46b4d4036b3e0e290390315d0fd`, not current-main certification; no rebase. Mergeability false at recovery did not trigger source churn on a held research carrier.
+Operation `gmi-consumer-defensive-research-20260923-sol-001`; repository `mastermindx-market-intelligence/macro`; Draft/HOLD #7792; branch `sol/consumer-defensive-research-20260923`. One carrier remains bound. Protected source is `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, compatible Skillpack1.0.1/bootstrap1; same-pin header/blob reads match the full laws already loaded. New Macro interface pin is `2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a`; original research base `c4da107fe729e46b4d4036b3e0e290390315d0fd` is unchanged, not current main.
 
-Existing GMI/F04, financial facts, identity, evidence, corrections, state, rights, market, valuation, evaluation and publication owners remain authoritative. Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` and STSI/shared-template work remain reference owners, not reassigned or modified. Their actual current interfaces must be reconciled only when the next design decision depends on them.
+## Retained artifacts
 
-## Exact retained research
+All research paths are under `research/consumer_defensive/`:
 
-All paths below are under `research/consumer_defensive/`.
+| File | Content commit |
+|---|---|
+| CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md | d6c1b2e1fe500b867a46607c414635c08fe496cf |
+| CONSUMER_DEFENSIVE_COMPANY_EXPOSURES_R2_2026-09-23.md | b80a30032a9b0042a66713c91767f6cf7c45f3e3 |
+| CONSUMER_DEFENSIVE_MECHANISMS_AND_MEASUREMENT_R2_2026-09-23.md | afa2c30a4e83a1a321bd168a06488878f45449ad |
+| CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md | b0f721fd71058b3ac8eece52934bfa5348383c02 |
+| CONSUMER_DEFENSIVE_TRADE_DOWN_PASS_THROUGH_AND_CASH_R3_2026-09-23.md | db0ac3bfa497a4738be72af5d58a4e31b3cd8c10 |
+| CONSUMER_DEFENSIVE_ALCOHOL_NICOTINE_R4_2026-09-23.md | 0364b4587ce60a263695fc280687fbfb1c37e83f |
+| CONSUMER_DEFENSIVE_ASIA_EXPOSURES_R4_2026-09-23.md | c2fcab1b75f530bb1fedaacbc9cb6f8905c0a640 |
+| CONSUMER_DEFENSIVE_HISTORICAL_OUTCOME_CONTROLS_R4_2026-09-23.md | b0f99a1610b9951cb87950ec4d34cdd14329fd62 |
+| CONSUMER_DEFENSIVE_NATIVE_OWNER_FEASIBILITY_R5_2026-09-23.md | 32a37c79aff4a602f5e15a1e3b7d5599e5805fde |
 
-| Artifact | Immutable content commit | Blob |
-|---|---|---|
-| CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md | d6c1b2e1fe500b867a46607c414635c08fe496cf | 2310f6d95ec7ba9f9fa353471624880b55a33ba3 |
-| CONSUMER_DEFENSIVE_COMPANY_EXPOSURES_R2_2026-09-23.md | b80a30032a9b0042a66713c91767f6cf7c45f3e3 | fd0e767c4d144f188272f821631dcf5ad2405f9e |
-| CONSUMER_DEFENSIVE_MECHANISMS_AND_MEASUREMENT_R2_2026-09-23.md | afa2c30a4e83a1a321bd168a06488878f45449ad | 395766f9f0a854c00dd94c047c08a358c5b660df |
-| CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md | b0f721fd71058b3ac8eece52934bfa5348383c02 | 0617eaad8a4765b17b8f7a898a7f3e69dedfa3fb |
-| CONSUMER_DEFENSIVE_TRADE_DOWN_PASS_THROUGH_AND_CASH_R3_2026-09-23.md | db0ac3bfa497a4738be72af5d58a4e31b3cd8c10 | b2e773cf8cc3de4a6a5d266d5f12136f85b3f803 |
-| CONSUMER_DEFENSIVE_ALCOHOL_NICOTINE_R4_2026-09-23.md | 0364b4587ce60a263695fc280687fbfb1c37e83f | 37ae37f193a4a9826ceea1682871a1d410dddd2d |
-| CONSUMER_DEFENSIVE_ASIA_EXPOSURES_R4_2026-09-23.md | c2fcab1b75f530bb1fedaacbc9cb6f8905c0a640 | 67f18f6f835d8352bf7bbb42125d5cacf45f58b2 |
-| CONSUMER_DEFENSIVE_HISTORICAL_OUTCOME_CONTROLS_R4_2026-09-23.md | b0f99a1610b9951cb87950ec4d34cdd14329fd62 | 9eac36bc0d20de9047c180a71d352514f6ee0fd6 |
+R1-R4 remain unchanged; their source/limitation registers and exact blobs remain in those immutable artifacts. Research claims are not automatically accepted product facts. Preserve the corrected R2 Pepsi locator and Utz metric semantics; Cal-Maine external/internal sales distinction; acquisition-related current-eligibility limitations; ITC unresolved net-revenue reconciliation; and historical price/earnings lookahead boundaries. R4 four issuer-period examples are not four independent strategy tests.
 
-The R4A intermediate checkpoint `aabc1ff0e10d37a9ad16ea5617c3dfbe2e73e71f` was committed/read back before the Asia/historical units. This cumulative update supersedes its next-action state, not its evidence. This file's own immutable revision is established by the write/readback receipt, not embedded self-referentially.
+## New R5 findings
 
-## Material results to preserve
+Use Earnings event-workspace issuer profiles for literal release observations; FIF only for actual filing-native financial occurrences/calculations; GMI for accepted relations; K1 for references, not stored facts. `event_workspace` outer validation does not establish full nested economic scope. New profiles require native semantic validation and tests. The inspected production registry lists Apple and four homebuilders; actual PG/HSY coverage remains unproved.
 
-The governing economic sequence remains consumption -> documented commercial exposure -> price/volume/mix -> retained profit/investment -> shareholder cash -> expectations/valuation -> market recognition. Evidence coverage is not attractiveness. Company, business, brand rights, territory, channel, fiscal period and accounting perimeter remain distinct. A descriptive explanation can be useful before predictive validation; it cannot promote itself into trade authority.
+K1 current compile input cannot resolve arbitrary native-to-security joins. Separate typed owner-local blocks may be usable; do not display a falsely fused security recipe. Current GMI evidence schema lacks Robotics' proposed curation body. Keep #7773 and shared-template custody untouched.
 
-R1-R3 preserve sector-native families and archetypes; sourced company exposures; management-expectations versus year-over-year trend; contract pass-through; amount versus margin rate; working-capital release versus recurring profit; and productive reinvestment. Cal-Maine's53% reconciles on external sales, not internal-inclusive figures. Historical TreeHouse/SunOpta business cases do not preserve current listed-stock eligibility. PLMA public summaries do not confer access to its underlying panel.
+STSI #7777 is open/unmerged at head4122e3b7e1524482216fb156f201f8229c14011b and is a contract slice, not the entire shared composer/UI. The schema is absent from current interface main. A bounded PR text search is not complete source-writer clearance.
 
-R4A adds8 issuer dossiers/12 source entries/20 proposed controls. Preserve shipments, depletions and in-market measures; licensed versus consolidated/system volumes; aging-stock cohorts and cash investment; excise/net-revenue denominators; new-format contribution less legacy displacement and launch support. BAT New Categories/group derives15.76%, not the broader Smokeless19.8% measure. FDA product-specific authorization and modified-risk/renewal events are not launch, demand, profit or safety assurances.
+Public `company_intelligence_reader` is unsuitable for exposing protected new research. Existing `app/earnings.py` plus `engine/earnings_narrative/private_publication.py` positively establish a private authenticated, receipt-bound publication mechanism using the existing Research Vault. Their closed content contract still needs accepted binding/extension; no second store, bucket, pointer or publisher is authorized. Source existence is not runtime proof.
 
-R4B adds7 current-period dossiers plus1 explicitly historical Kirin source-feasibility case,10 source entries and20 proposed controls. Nongfu tea accounts for44.16% of reviewed H1 revenue and about74.07% of its increment; this is neither valuation weight nor a forward allocation. JT's reported category-share gains with aggregate-share loss illustrate category-weight effects. Wuliangye's profit/cash divergence remains a collections question, not a misconduct inference. Tata volume/pass-through/FX and fiscal/calendar/scale distinctions survive. ITC's constructed gross-minus-excise series does not fully reconcile to its named net-revenue KPI; retain the incomplete bridge instead of asserting a source error. Kirin historical indices are not growth percentages or current2026 reads.
+SEC documentation confirms aggregate XBRL APIs' non-custom/entity-wide scope; no assumption that Company Facts supplies all segment/non-GAAP metrics. PG July29,2026 and Hershey February6,2025 releases were directly rechecked as semantic examples; the latter stays historical, not current launch input.
 
-R4C adds4 historical issuer-period observations across2 issuers, not4 independent empirical samples or a strategy backtest. P&G FY2025 reported EPS rose8.14% while its rounded annual reinvested-return index implies roughly-flat/slightly-negative return. Hershey2024 reported EPS rose20.53%, adjusted EPS fell2.29%, and common-share price fell9.17%. Price divided by eventual annual EPS implies ex-post multiple changes of-24.64% on GAAP versus-7.03% on adjusted basis. BOTH denominators were disclosed after the respective price dates: these are retrospective ratios, not then-observable forward P/E or causal rerating estimates. Total return from reinvested indices is not price return. The Costco chart was viewed but unlabeled points were not digitized into invented exact data.12 further proposed controls and5 source entries are retained.
+## Effect, access and continuation state
 
-## Verification and access limitations
+Effects: research/continuity only. Native GitHub permission read and actual scoped documentation write succeeded; no Extra High switch is needed for that path. Public workspace-manifest web read was inaccessible via that tool, not evidence of a production outage. No credential, host, service configuration or live source admission was touched. EFFECT_UNKNOWN:none observed. No worker, Executive Attempt, Fable delivery/ACK/START, watcher or autonomous wake.
 
-R4A header, R4B header/final source-and-verification sections, and R4C header/final sections were read back at exact commits. Three Python routines passed8,27 and24 research arithmetic/semantic-example assertions respectively; outputs were inspected, and both Hershey price identities recomputed. These checks use manually transcribed primary inputs and labeled hypothetical scenarios. They do not validate extraction, source authenticity, private retention, application behavior, causal relationships or investment performance.
+HOLD FOR SOL: no ready/auto-merge/merge/deploy, no current basket/weights/rank/entry/size/trade effects, and no final Fable packet yet. This research branch is not an implementation branch. No source-custody transfer.
 
-Selected Asia reports are issuer-authored documents on public archives, not native retained-source receipts. Mengniu's native IR index supplied its financial announcement. HUL's BSE document read returned403; no bypass or invented numeric dossier. Current primary Moutai and full Tingyi coverage remain unresolved. Specific failed PDF screenshots and PMI glossary cache miss are disclosed in source registers; no verification claim relies on those failed images. Global census, licensed consensus, household/scanner panel access and current security eligibility remain unproved.
-
-Current R4 arithmetic outputs existed locally in `/mnt/data/consumer_defensive_r4/`, but GitHub documents and this owner checkpoint carry durable conclusions; continuation does not depend on those local files surviving. No extra source/evaluation control plane was created.
-
-## Effects and holds
-
-Verified effects: research and Agent OS continuity documentation on the existing branch only. EFFECT_UNKNOWN: none observed. No product source, native schema/evidence admission, current private payload, live basket/weights, rank, entry, sizing, trade, auth, publisher, CI policy, merge or deployment change. No application tests, independent design acceptance, investment backtest, CI qualification or browser/production proof. No worker, Executive Attempt, Fable dispatch/ACK/START, watcher or autonomous wake.
-
-HOLD FOR SOL: do not mark ready, merge, auto-merge, deploy or issue the final Fable commission. Research publication is not permission to expose current full-fidelity paid data. The branch remains research-only, not the eventual implementation carrier. No custody transfer or writer release is implied by continuation.
-
-## Continuation boundary and exact next action
-
-R4 reaches a real sector-breadth-to-masterplan phase boundary after three substantial units, extensive primary-document/PDF investigation, actual historical arithmetic and intermediate persistence. The conversation has accumulated substantial source/tool context; logical compaction is not a wiped host transcript. Resume on a fresh Consumer Defensive research/design surface from this checkpoint and the minimum exact artifacts needed, not the earlier tool history. No Thinking-failed event, hard seal or autonomous continuation is asserted.
-
-R5 must now consolidate rather than launch another indiscriminate company census. Reconcile the currently accepted financial/evidence/identity/valuation/market and shared-template seams for the first useful Consumer Defensive dossier. Map each required metric/evidence object to its real owner, availability, rights, clocks and missingness. Select a bounded source-to-visible-result journey using the accumulated discriminating cases; write the proposed masterplan and architectural design with explicit predictive shadow and production-proof requirements. Target unresolved geography only when that chosen slice needs it; HUL/Moutai can otherwise remain expansion coverage.
-
-The full-scale ambition remains granular subtheme/company intelligence and useful timely opportunity research across regions. A bounded first release must deliver a real explanation and connected workflow, not merely an empty schema or source list. Final Fable orchestration follows mature research plus the required written-design/plan acceptance; routine engineering should use the existing least-scarce capable fabric. This checkpoint does not issue that handoff or claim the parent product mission complete.
+Next action: write the consolidated Consumer Defensive masterplan and first useful demand/earnings-quality dossier specification. Freeze the user journey, actual required/optional inputs, comparison and freshness rules, private publication/shared-template dependencies, rollout slices and discriminating acceptance cases. Keep all proposed interfaces explicitly proposed until native-owner and written-design review. Do not replace useful synthesis with an empty receipt catalog.
