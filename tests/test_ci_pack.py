@@ -3526,6 +3526,11 @@ CURATED_EXCLUSIVE = {
     "uk-policy-desk",
     # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
     "finance-intelligence",
+    # Consumer Cyclical V1-CORE: contract + deterministic projection. Exclusive
+    # for the same reason finance-intelligence is — engine/sector_intelligence/
+    # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
+    # so the job's paths must cover its own import closure.
+    "consumer-cyclical-economic-change",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
