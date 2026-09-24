@@ -23,6 +23,7 @@ Never raises publicly: all errors are logged and produce fail-soft empty entries
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -51,6 +52,9 @@ _LOG_FRESH_DAYS = 3     # last row this many days old or less = fresh
 # SLACK BEYOND maturation, which is what the original comment meant it to be.
 _UNGRADED_MATURATION_BD = 21   # mirrors max(risk_radar_audit.HORIZONS) — not a tunable
 _UNGRADED_BACKLOG_AGE = 7      # business days of slack past maturation before a row is backlog
+# Keep this consumer dependency-light just like _INTL_MARKETS above. The enrolled
+# writer→reader roundtrip test pins parity with risk_radar_audit.FORWARD_ISSUE_CONTRACT.
+_FORWARD_ISSUE_CONTRACT = "risk_radar_forward_issue.v1"
 
 
 # ---------------------------------------------------------------------------
@@ -521,6 +525,265 @@ def _probability_clock(value: Any):
         return None
 
 
+def _sha256_token(value: Any) -> bool:
+    if not isinstance(value, str) or len(value) != 64:
+        return False
+    return all(ch in "0123456789abcdef" for ch in value)
+
+
+def _prospective_issue(row: dict, day) -> tuple[dict | None, str | None]:
+    """Validate the new forward-log issue receipt without upgrading legacy rows."""
+    issue = row.get("forecast_issue")
+    if not isinstance(issue, dict):
+        return None, "missing_issue_receipt"
+    if issue.get("contract") != _FORWARD_ISSUE_CONTRACT:
+        return None, "wrong_issue_contract"
+    if issue.get("model_contract") != "risk_radar_forward_model.v1":
+        return None, "wrong_model_contract"
+    if issue.get("risk_schema") != "risk_radar.v2":
+        return None, "wrong_risk_schema"
+    if issue.get("ledger_lane") != "nightly" or issue.get("first_writer_wins") is not True:
+        return None, "wrong_issue_lane"
+    epoch = issue.get("epoch")
+    if not isinstance(epoch, str) or not epoch.strip():
+        return None, "missing_issue_epoch"
+
+    issued = _probability_clock(issue.get("issued_at"))
+    logged = _probability_clock(row.get("logged_at"))
+    if issued is None or logged is None or issued != logged:
+        return None, "issue_clock_mismatch"
+    lag = (issued.date() - day).days
+    if lag < 0 or lag > 1:
+        return None, "issue_not_session_timely"
+
+    keys = (
+        "engine_source_sha256", "source_bundle_sha256",
+        "calibration_sha256", "model_fingerprint",
+    )
+    if not all(_sha256_token(issue.get(key)) for key in keys):
+        return None, "invalid_model_digest"
+    source_files = issue.get("source_files_sha256")
+    if (
+        not isinstance(source_files, dict)
+        or not source_files
+        or not all(
+            isinstance(path, str) and path
+            and _sha256_token(digest)
+            for path, digest in source_files.items()
+        )
+    ):
+        return None, "invalid_source_bundle"
+    expected_bundle = hashlib.sha256(
+        json.dumps(
+            source_files, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
+    if issue["source_bundle_sha256"] != expected_bundle:
+        return None, "source_bundle_mismatch"
+    if source_files.get("engine/risk_radar.py") != issue["engine_source_sha256"]:
+        return None, "engine_source_mismatch"
+    identity = {
+        "model_contract": issue["model_contract"],
+        "risk_schema": issue["risk_schema"],
+        "engine_source_sha256": issue["engine_source_sha256"],
+        "source_bundle_sha256": issue["source_bundle_sha256"],
+        "source_files_sha256": source_files,
+        "calibration_sha256": issue["calibration_sha256"],
+    }
+    expected = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if issue["model_fingerprint"] != expected:
+        return None, "model_fingerprint_mismatch"
+    return issue, None
+
+
+def _prospective_probability_audit(rows: list, reference) -> dict:
+    """Prospective same-model evidence from receipt-bearing forward-log rows.
+
+    This establishes ledger issue timing and exact model identity only. It does
+    not claim public-page publication timing or model validation.
+    """
+    from collections import Counter, defaultdict
+
+    issue_excluded = Counter()
+    dated = defaultdict(list)
+    for row in rows:
+        if not isinstance(row, dict):
+            issue_excluded["invalid_row"] += 1
+            continue
+        day = _probability_date(row.get("asof"))
+        if day is None or day > reference:
+            issue_excluded["invalid_or_future_date"] += 1
+            continue
+        dated[day].append(row)
+
+    unique = []
+    for day, group in sorted(dated.items()):
+        try:
+            same = len({
+                json.dumps(r, sort_keys=True, separators=(",", ":"))
+                for r in group
+            }) == 1
+        except (TypeError, ValueError):
+            same = False
+        if not same:
+            issue_excluded["conflicting_duplicate_date"] += len(group)
+            continue
+        issue_excluded["identical_duplicate"] += len(group) - 1
+        unique.append((day, group[0]))
+
+    issued_rows = []
+    for day, row in unique:
+        issue, reason = _prospective_issue(row, day)
+        if issue is None:
+            issue_excluded[reason or "invalid_issue_receipt"] += 1
+            continue
+        issued_rows.append((day, row, issue))
+
+    empty = {
+        "definition": "us_issued_probability_prospective.v1",
+        "status": "not_started",
+        "ledger_issue_timing_verified": False,
+        "public_publication_timing_verified": False,
+        "current_model_validated": False,
+        "latest_epoch": None,
+        "latest_model_fingerprint": None,
+        "latest_engine_source_sha256": None,
+        "latest_source_bundle_sha256": None,
+        "latest_calibration_sha256": None,
+        "same_model_issued_n": 0,
+        "same_model_graded_n": 0,
+        "awaiting_maturity": 0,
+        "prior_model_issued_n": 0,
+        "model_fingerprints_seen": 0,
+        "from": None,
+        "through": None,
+        "issue_excluded": dict(sorted(
+            (k, v) for k, v in issue_excluded.items() if v
+        )),
+        "horizons": {},
+        "note_en": (
+            "Prospective same-model evidence has not started yet. Historical rows "
+            "are not backfilled into this cohort."
+        ),
+        "note_zh": "前瞻性同模型证据尚未开始；历史记录不会被回填进该样本。",
+    }
+    if not issued_rows:
+        return empty
+
+    latest_day, _latest_row, latest_issue = max(
+        issued_rows,
+        key=lambda item: (
+            item[0],
+            _probability_clock(item[2].get("issued_at")),
+        ),
+    )
+    latest_fp = latest_issue["model_fingerprint"]
+    latest_epoch = latest_issue["epoch"]
+    cohort = [
+        (day, row, issue)
+        for day, row, issue in issued_rows
+        if issue.get("model_fingerprint") == latest_fp
+        and issue.get("epoch") == latest_epoch
+    ]
+
+    graded_valid = []
+    awaiting = 0
+    grade_excluded = Counter()
+    for day, row, issue in cohort:
+        odds, grade = row.get("drawdown_prob"), row.get("graded")
+        if not isinstance(odds, dict) or odds.get("measure") != _PROBABILITY_TARGET:
+            grade_excluded["unmatched_target"] += 1
+            continue
+        if not isinstance(grade, dict):
+            awaiting += 1
+            continue
+        issued = _probability_clock(issue.get("issued_at"))
+        graded = _probability_clock(grade.get("graded_at"))
+        if (
+            issued is None or graded is None or issued > graded
+            or graded.date() > reference
+        ):
+            grade_excluded["invalid_grade_receipt"] += 1
+            continue
+        graded_valid.append((day.isoformat(), odds, grade))
+
+    def average(values):
+        return round(sum(values) / len(values), 6) if len(values) >= _MIN_N else None
+
+    horizons = {}
+    for horizon in ("h5", "h10", "h21"):
+        excluded = grade_excluded.copy()
+        sample = []
+        for day, odds, grade in graded_valid:
+            p = odds.get(horizon)
+            hit = grade.get("hit")
+            outcome = hit.get(horizon) if isinstance(hit, dict) else None
+            y = outcome.get("dd5") if isinstance(outcome, dict) else None
+            if not _probability_number(p):
+                excluded["invalid_probability"] += 1
+            elif type(y) is not bool:
+                excluded["missing_boolean_outcome"] += 1
+            else:
+                sample.append((day, p, int(y), odds.get("base_" + horizon)))
+        pairs = [s for s in sample if _probability_number(s[3])]
+        horizons[horizon] = {
+            "n": len(sample),
+            "excluded_n": sum(excluded.values()),
+            "excluded": dict(sorted((k, v) for k, v in excluded.items() if v)),
+            "from": sample[0][0] if sample else None,
+            "through": sample[-1][0] if sample else None,
+            "events": sum(s[2] for s in sample),
+            "both_outcomes_present": 0 < sum(s[2] for s in sample) < len(sample),
+            "mean_forecast": average([s[1] for s in sample]),
+            "observed_rate": average([s[2] for s in sample]),
+            "brier": average([(s[1] - s[2]) ** 2 for s in sample]),
+            "paired_n": len(pairs),
+            "missing_baseline_n": len(sample) - len(pairs),
+            "paired_model_brier": average([(s[1] - s[2]) ** 2 for s in pairs]),
+            "paired_base_brier": average([(s[3] - s[2]) ** 2 for s in pairs]),
+            "paired_brier_delta": average([
+                (s[1] - s[2]) ** 2 - (s[3] - s[2]) ** 2
+                for s in pairs
+            ]),
+        }
+
+    fingerprints = {issue["model_fingerprint"] for _, _, issue in issued_rows}
+    return {
+        "definition": "us_issued_probability_prospective.v1",
+        "status": "accruing",
+        "ledger_issue_timing_verified": True,
+        "public_publication_timing_verified": False,
+        "current_model_validated": False,
+        "latest_epoch": latest_epoch,
+        "latest_model_fingerprint": latest_fp,
+        "latest_engine_source_sha256": latest_issue["engine_source_sha256"],
+        "latest_source_bundle_sha256": latest_issue["source_bundle_sha256"],
+        "latest_calibration_sha256": latest_issue["calibration_sha256"],
+        "same_model_issued_n": len(cohort),
+        "same_model_graded_n": len(graded_valid),
+        "awaiting_maturity": awaiting,
+        "prior_model_issued_n": len(issued_rows) - len(cohort),
+        "model_fingerprints_seen": len(fingerprints),
+        "from": cohort[0][0].isoformat() if cohort else None,
+        "through": cohort[-1][0].isoformat() if cohort else None,
+        "issue_excluded": dict(sorted(
+            (k, v) for k, v in issue_excluded.items() if v
+        )),
+        "horizons": horizons,
+        "note_en": (
+            "Prospective same-model ledger evidence. Issue timing is verified for "
+            "the forward ledger, not public-page publication; validation remains "
+            "false until a separate promotion law is satisfied."
+        ),
+        "note_zh": (
+            "前瞻性同模型台账证据。仅验证前向台账的首发时点，不代表公开页面发布时间；"
+            "在独立晋级规则满足前，模型验证状态保持为否。"
+        ),
+    }
+
+
 def probability_audit(rows: list, today=None) -> dict:
     """Score issued US odds against recorded boolean outcomes; no ledger I/O.
 
@@ -612,6 +875,7 @@ def probability_audit(rows: list, today=None) -> dict:
         "input_rows": len(rows), "min_display_n": _MIN_N, "horizons": horizons,
         "status": "descriptive_only", "sample_unit": "overlapping_daily_forecast",
         "publication_timing_verified": False, "current_model_validated": False,
+        "prospective": _prospective_probability_audit(rows, reference),
         "note_en": "Historical issued odds, not a test of today's model. Daily windows overlap; publication timing is unverified.",
         "note_zh": "历史发布概率，并非当前模型验证。每日窗口重叠；首发时点未经核实。",
     }
