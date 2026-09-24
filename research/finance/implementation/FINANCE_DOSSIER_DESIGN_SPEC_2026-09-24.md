@@ -846,5 +846,515 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
   word-break: break-word;
 }
 .fi-slice-name { overflow-wrap: anywhere; }
+
+---
+
+## D. EN / ZH label map + missing states
+
+Every visible string the dossier renders, in plain words. Internal enum tokens appear ONLY in `data-state`/`data-*` attributes — never in text nodes. The label map is **closed**: every enum the live contract can deliver has one EN + one ZH row here. The visible "PLANE.state 枚举 / enum" footer copy from the previous spec is removed.
+
+**Bilingual ARIA rule:** every `aria-label` attribute holds plain English; `data-aria-zh` carries the ZH; §E swaps the visible label by reading `data-aria-zh` when `html[data-lang="zh"]`. `t()` is never called inside an attribute (check #5).
+
+### D.0 `fmtMetric` + `fmtClock` (binding render rules)
+
+These two formatters are referenced by every section. They are not enumerated strings — they are algorithms with explicit null/empty handling.
+
+`fmtMetric(metric)`:
+
+1. If `metric.value` is null OR `metric.unit` is null OR `metric.measurement_class` is `QUALITATIVE`: render the plain-word chip "No metric on file / 暂无可用指标" (never "None" or "—").
+2. Else render `${value} ${unit}` with the value formatted per `metric.measurement_class` (one decimal place for `RATIO`/`RATE`, two for `PER_SHARE`, zero for `VOLUME_VALUE`/`VOLUME_COUNT`/`REVENUE`/`EXPENSE`/`BALANCE`), then `currency` if present, then a `(period_start – period_end)` parenthetical if both present.
+
+`fmtClock(clock)`:
+
+1. If `clock.published_at` is null: render `"observed <observed_at>"` using `observation.observed_at` from `source_records[]`, then the grain word from §D.10. Never `[:10]` on a null.
+2. Else render `clock.published_at` formatted as `YYYY-MM-DD` plus the grain word.
+
+### D.1 Plane state chips (rerating nodes + system edges)
+
+| enum (`data-state`) | EN | ZH |
+|---|---|---|
+| OBSERVED | `On file — observed` | `已观察，有据可查` |
+| INFERRED | `On file — inferred` | `有据，推断得出` |
+| MISSING | `No dated reading on file` | `暂无可追溯的读数` |
+| CONFLICTING | `The numbers disagree` | `读数之间存在分歧` |
+| STALE | `Older than freshness window` | `已超出新鲜度窗口` |
+| REGIME_BREAK | `Not comparable to history` | `与历史不可比` |
+| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor on file` | `暂无估值锚点` |
+| PRICE_BASIS_UNQUALIFIED | `No qualified price basis` | `价格口径未达合格` |
+| NOT_APPLICABLE | `Not applicable here` | `此处不适用` |
+
+(Edge `evidence_state` chips use the same row mapping under the subkey `evidence_state`.)
+
+### D.2 Slice state chips — STANCE WORDS (per R-K)
+
+| enum | EN | ZH |
+|---|---|---|
+| SEMANTIC_ONLY | `Definition only` | `仅完成定义` |
+| RESEARCH_EVIDENCE_AVAILABLE | `Research evidence on file` | `已存研究证据` |
+| MEASURABLE | `Measurable today` | `当前可量化` |
+| PRICE_SURFACE_AVAILABLE | `Price surface available` | `已具备价格曲面` |
+| EVALUATION_CONTEXT_AVAILABLE | `Evaluation context available` | `已具备评估背景` |
+| RIGHTS_RESTRICTED | `Source rights restricted` | `来源权利受限` |
+| STALE | `Stale` | `已陈旧` |
+| HELD_FOR_REVIEW | `Held for review` | `待复核` |
+
+(Stance words — "Definition only" / "Measurable today" — describe the slice's *stance* against measurement, not its lifecycle stage.)
+
+### D.3 Basket posture chips — PLAIN WORDS (per R-K)
+
+| enum | EN | ZH |
+|---|---|---|
+| SEMANTIC_ONLY | `No price basket yet` | `暂无价格组合` |
+| BROAD_CONTEXT_AVAILABLE | `Reference basket admitted` | `已收录参考组合` |
+| RESEARCH_CANDIDATE | `Research candidate` | `研究候选` |
+| CANDIDATE_READY_FOR_OWNER_REVIEW | `Under owner review` | `待负责人复核` |
+| ADMITTED | `Admitted price basket` | `已收录价格组合` |
+
+(Plain words; "Reference basket admitted" replaces the prior "Admitted price basket" for the BROAD_CONTEXT_AVAILABLE bucket.)
+
+### D.4 Membership state chips (atlas, per-slice visible chip)
+
+| enum | EN | ZH |
+|---|---|---|
+| NONE | `No membership recorded` | `未记录成员` |
+| CURRENT_MEMBERSHIP_ONLY | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
+| PIT_MEMBERSHIP_INCOMPLETE | `Point-in-time membership incomplete` | `时点成员数据不完整` |
+| PIT_MEMBERSHIP_VALIDATED | `Point-in-time membership validated` | `时点成员数据已校验` |
+
+### D.5 Materiality chips (company exposure)
+
+| enum | EN | ZH |
+|---|---|---|
+| MATERIAL | `Material exposure` | `重要敞口` |
+| PARTIAL | `Partial` | `部分` |
+| IMMATERIAL | `Immaterial` | `不重大` |
+| UNMEASURED | `Not yet measured` | `尚未量化` |
+
+### D.6 Role vocabulary (company exposure cells)
+
+| enum | EN | ZH |
+|---|---|---|
+| DIRECT_PURE_OR_HIGH_EXPOSURE | `Direct, high exposure` | `直接且高敞口` |
+| DIRECT_DIVERSIFIED | `Direct, diversified` | `直接，多元化` |
+| ENABLER_OR_TOLL_COLLECTOR | `Enabler or toll collector` | `基础设施或收费方` |
+| SECOND_ORDER_BENEFICIARY | `Second-order beneficiary` | `间接受益方` |
+| PROXY_OR_ADJACENCY | `Proxy or adjacency` | `代理或邻近` |
+| AT_RISK_OR_DISRUPTED | `At risk or disrupted` | `承压或被颠覆` |
+| HEDGE_OR_OFFSET | `Hedge or offset` | `对冲或抵消` |
+
+### D.7 Exposure basis (company exposure cells)
+
+| enum | EN | ZH |
+|---|---|---|
+| SEGMENT_REVENUE | `Segment revenue` | `分部收入` |
+| TRANSACTION_VOLUME | `Transaction volume` | `交易笔数` |
+| AUC_A | `Assets under custody` | `在管资产规模` |
+| AUM | `Assets under management` | `在管资产` |
+| NOTIONAL | `Notional value` | `名义金额` |
+| QUALITATIVE | `Qualitative read` | `定性读数` |
+| NOT_SEPARATELY_DISCLOSED | `Not separately disclosed` | `未单独披露` |
+
+### D.8 Exposure state chips (cell text)
+
+| enum | EN | ZH |
+|---|---|---|
+| MEASURED | `Measured` | `已量化` |
+| EXPOSURE_NOT_SEPARATELY_DISCLOSED | `Exposure not separately disclosed` | `敞口未单独披露` |
+| DIRECT_DIVERSIFIED | `Direct, diversified` | `直接，多元化` |
+| QUALITATIVE_ONLY | `Qualitative only` | `仅作定性` |
+
+### D.9 Constraint names
+
+| enum | EN | ZH |
+|---|---|---|
+| regulatory_permission | `Regulatory permission` | `监管许可` |
+| capital | `Capital adequacy` | `资本充足` |
+| funding_liquidity | `Funding and liquidity` | `融资与流动性` |
+| network_access | `Network access` | `网络接入` |
+| settlement_finality | `Settlement finality` | `结算终局性` |
+| data_benchmark_control | `Data and benchmark control` | `数据与基准控制` |
+| distribution | `Distribution reach` | `分销覆盖` |
+| integration_switching | `Integration and switching cost` | `集成与切换成本` |
+| trust_identity | `Trust and identity` | `信任与身份` |
+| resilience | `Operational resilience` | `运营韧性` |
+
+### D.10 Macro drivers (matrix columns)
+
+| enum | EN | ZH |
+|---|---|---|
+| policy_rates | `Policy rates` | `政策利率` |
+| yield_curve | `Yield curve` | `收益率曲线` |
+| deposit_funding | `Deposit funding` | `存款融资` |
+| credit_growth | `Credit growth` | `信贷增长` |
+| losses_defaults | `Losses and defaults` | `损失与违约` |
+| housing | `Housing activity` | `房地产活动` |
+| equity_levels | `Equity market levels` | `股市水平` |
+| volatility | `Volatility regime` | `波动率环境` |
+| issuance_ma | `Issuance and M&A` | `发行与并购` |
+| catastrophe_reinsurance | `Catastrophe and reinsurance` | `巨灾与再保` |
+| regulation_capital | `Regulation and capital` | `监管与资本` |
+| fx | `FX regime` | `汇率环境` |
+| liquidity | `Market liquidity` | `市场流动性` |
+
+### D.11 Lag (macro matrix cells)
+
+| enum | EN | ZH |
+|---|---|---|
+| IMMEDIATE | `Immediate` | `即时` |
+| ONE_QUARTER | `About a quarter` | `约一个季度` |
+| TWO_TO_FOUR_QUARTERS | `Two to four quarters` | `两到四个季度` |
+| MULTI_YEAR | `Multi-year` | `多年` |
+| UNKNOWN | `Lag not measured` | `尚未测算时滞` |
+
+### D.12 Freshness state chips
+
+| enum | EN | ZH |
+|---|---|---|
+| FRESH | `Fresh` | `新鲜` |
+| AGING | `Aging` | `趋于陈旧` |
+| SOURCE_STALE | `Source is stale` | `来源已陈旧` |
+| NO_EVIDENCE | `No evidence on file` | `暂无证据` |
+
+### D.13 First-vertical state chips (coverage.first_vertical.state)
+
+| enum | EN | ZH |
+|---|---|---|
+| NOT_BUILT | `Not built yet` | `尚未构建` |
+| SYNTHETIC | `Synthetic construction` | `合成构建` |
+| RESEARCH_RECORDS | `Research records only` | `仅研究记录` |
+| PRODUCTION_PROVEN | `Production-proven` | `已生产验证` |
+
+### D.14 Outer-dossier state chips (outer_dossier_ref.state)
+
+| enum | EN | ZH |
+|---|---|---|
+| AVAILABLE | `Outer dossier accepted` | `外部报告已接入` |
+| OUTER_CONTRACT_NOT_ACCEPTED | `Outer dossier not accepted` | `外部报告尚未接入` |
+| UNAVAILABLE | `Outer dossier unavailable` | `外部报告暂不可用` |
+
+### D.15 Material-changes freshness state chips
+
+| enum | EN | ZH |
+|---|---|---|
+| FRESH | `Fresh` | `新鲜` |
+| AGING | `Aging` | `趋于陈旧` |
+| SOURCE_STALE | `Source is stale` | `来源已陈旧` |
+| NO_EVIDENCE | `No evidence on file` | `暂无证据` |
+
+### D.16 Expectations history state chips (D.11 binding)
+
+| enum | EN | ZH |
+|---|---|---|
+| DATED_CONSENSUS_AVAILABLE | `Dated consensus on file` | `已存可追溯的市场预期` |
+| NO_HISTORICAL_CONSENSUS | `No dated consensus on file` | `暂无可追溯的市场预期` |
+| MANAGEMENT_GUIDANCE_ONLY | `Management guidance only` | `仅管理层指引` |
+
+### D.17 Valuation anchor label map (inside the valuation node)
+
+| enum | EN | ZH |
+|---|---|---|
+| EPS | `Earnings per share` | `每股收益` |
+| CORE_EPS | `Core earnings per share` | `核心每股收益` |
+| TBVPS | `Tangible book per share` | `每股有形账面` |
+| BVPS | `Book per share` | `每股账面` |
+| FCF_PER_SHARE | `Free cash flow per share` | `每股自由现金流` |
+| DPS | `Dividend per share` | `每股股息` |
+| EMBEDDED_VALUE_PER_SHARE | `Embedded value per share` | `每股内含价值` |
+| NAV_PER_SHARE | `Net asset value per share` | `每股净资产` |
+| NOT_APPLICABLE | `Per-share anchor not applicable` | `每股锚点不适用` |
+
+| enum | EN | ZH |
+|---|---|---|
+| P_E | `P/E multiple` | `市盈率` |
+| P_TBV | `P/TBV multiple` | `市净率（有形）` |
+| P_B | `P/B multiple` | `市净率` |
+| EV_EBITDA | `EV/EBITDA` | `企业价值倍数` |
+| FCF_YIELD | `Free cash flow yield` | `自由现金流收益率` |
+| DIVIDEND_YIELD | `Dividend yield` | `股息率` |
+| P_EV | `P/EV multiple` | `P/EV 倍数` |
+| P_NAV | `P/NAV multiple` | `P/NAV 倍数` |
+| P_AUM | `P/AUM multiple` | `P/AUM 倍数` |
+| NOT_APPLICABLE | `Multiple not applicable` | `倍数不适用` |
+
+| enum | EN | ZH |
+|---|---|---|
+| TRAILING_12M | `Trailing 12 months` | `过去 12 个月` |
+| FORWARD_12M | `Forward 12 months` | `未来 12 个月` |
+| FORWARD_24M | `Forward 24 months` | `未来 24 个月` |
+| CURRENT_BOOK | `Current book` | `当前账面` |
+| NOT_APPLICABLE | `Horizon not applicable` | `时不适用` |
+
+`valuation_anchor.state`:
+
+| enum | EN | ZH |
+|---|---|---|
+| AVAILABLE | `Anchor available` | `锚点可用` |
+| VALUATION_ANCHOR_UNAVAILABLE | `No valuation anchor available` | `暂无估值锚点` |
+
+### D.18 Falsifier state chips
+
+| enum | EN | ZH |
+|---|---|---|
+| WATCHING | `Watching` | `观察中` |
+| NOT_YET_EVALUABLE | `Not yet evaluable` | `暂无法评估` |
+
+### D.19 Price-basis state chips (basket_state.price_basis_state)
+
+| enum | EN | ZH |
+|---|---|---|
+| PRICE_BASIS_UNQUALIFIED | `Price basis not qualified` | `价格口径未达合格` |
+| TOTAL_RETURN_QUALIFIED | `Total-return basis qualified` | `总回报口径合格` |
+| PRICE_RETURN_QUALIFIED | `Price-return basis qualified` | `价格回报口径合格` |
+
+### D.20 Weighting family chips (basket_state.weighting_family)
+
+| enum | EN | ZH |
+|---|---|---|
+| EQUAL_WEIGHT | `Equal weight` | `等权重` |
+| FLOAT_CAP_CONTEXT | `Float-cap context` | `流通上限背景` |
+| EXPOSURE_WEIGHT | `Exposure weight` | `敞口权重` |
+| EXPOSURE_CAPPED_WEIGHT | `Exposure-capped weight` | `敞口封顶权重` |
+| STRATIFIED_EQUAL_WEIGHT | `Stratified equal weight` | `分层等权重` |
+
+### D.21 Identity state chips (company_exposures[].identity.state, source_records[].identity_state)
+
+| enum | EN | ZH |
+|---|---|---|
+| IDENTITY_VALIDATED | `Identity validated` | `身份已确认` |
+| IDENTITY_UNRESOLVED | `Identity unresolved` | `身份尚未确认` |
+| RESEARCH_HINT_UNVALIDATED | `Research hint, not validated` | `研究线索，尚未确认` |
+
+### D.22 Company-route state chips (company_exposures[].company_route.state)
+
+| enum | EN | ZH |
+|---|---|---|
+| AVAILABLE | `Route available` | `路由可用` |
+| IDENTITY_UNRESOLVED | `Route unavailable — identity unresolved` | `路由暂不可用 — 身份尚未确认` |
+
+### D.23 Source rights state chips (source_records[].rights_state) — DRAWER SUPPRESSION
+
+| enum | EN | ZH |
+|---|---|---|
+| DIRECT_DISPLAY_OK | `Direct display OK` | `可直接展示` |
+| DERIVED_DISPLAY_OK | `Derived display OK` | `可展示派生内容` |
+| SOURCE_RIGHTS_HELD | `Source rights restrict display` | `来源权利限制展示` |
+| INTERNAL_ONLY | `Internal only` | `仅供内部使用` |
+
+**Suppression rule (binding, R-F):** when `rights_state` is `SOURCE_RIGHTS_HELD` or `INTERNAL_ONLY`, the drawer shows `publisher`, `source_family`, `locator` words and the five `limitations` fields but NEVER `value` / `excerpt` / `native_digest`. A plain-word notice renders: "Private evidence — source rights restrict display." / "私有证据 — 来源权利限制展示。"
+
+### D.24 Source statement-mode chips (source_records[].statement_mode)
+
+| enum | EN | ZH |
+|---|---|---|
+| REPORTED_FACT | `Reported fact` | `报告事实` |
+| CATALOG_DESCRIPTION | `Catalog description` | `目录描述` |
+| ANNOUNCED_ARRANGEMENT | `Announced arrangement` | `已公告安排` |
+| FORWARD_TARGET | `Forward target` | `前瞻目标` |
+| ATTRIBUTED_INTERPRETATION | `Attributed interpretation` | `归因解读` |
+
+### D.25 Source published-at grain words (source.published_at_grain)
+
+| enum | EN | ZH |
+|---|---|---|
+| DAY | `day` | `日` |
+| MONTH | `month` | `月` |
+| QUARTER | `quarter` | `季` |
+| YEAR | `year` | `年` |
+| UNKNOWN | `grain not stated` | `未说明粒度` |
+
+### D.26 Metric measurement-class words (metric.measurement_class)
+
+| enum | EN | ZH |
+|---|---|---|
+| VOLUME_VALUE | `volume` | `量值` |
+| VOLUME_COUNT | `count` | `计数` |
+| REVENUE | `revenue` | `收入` |
+| EXPENSE | `expense` | `支出` |
+| BALANCE | `balance` | `余额` |
+| RATIO | `ratio` | `比率` |
+| RATE | `rate` | `费率` |
+| PER_SHARE | `per share` | `每股` |
+| QUALITATIVE | `qualitative` | `定性` |
+
+### D.27 Metric gross/net basis words (metric.gross_net_basis)
+
+| enum | EN | ZH |
+|---|---|---|
+| GROSS | `gross` | `总额` |
+| NET | `net` | `净额` |
+| NOTIONAL | `notional` | `名义` |
+| NOT_APPLICABLE | `not applicable` | `不适用` |
+
+### D.28 Metric average/end words (metric.average_end)
+
+| enum | EN | ZH |
+|---|---|---|
+| AVERAGE | `average` | `平均` |
+| END | `end` | `期末` |
+| NOT_APPLICABLE | `not applicable` | `不适用` |
+
+### D.29 Metric reported/derived/estimated words (metric.reported_derived_estimated)
+
+| enum | EN | ZH |
+|---|---|---|
+| REPORTED | `reported` | `原始报告` |
+| DERIVED | `derived` | `推算` |
+| ESTIMATED | `estimated` | `估计` |
+
+### D.30 Indicator direction words (indicator.direction)
+
+| enum | EN | ZH |
+|---|---|---|
+| LEADING | `leading` | `领先` |
+| COINCIDENT | `coincident` | `同步` |
+| LAGGING | `lagging` | `滞后` |
+
+### D.31 Indicator state words (indicator.state)
+
+| enum | EN | ZH |
+|---|---|---|
+| OBSERVED | `observed` | `已观察` |
+| MISSING | `missing` | `缺失` |
+| STALE | `stale` | `已陈旧` |
+
+### D.32 Plane word map (conflicts[].{left,right}.plane)
+
+| enum | EN | ZH |
+|---|---|---|
+| operating | `Operating` | `经营` |
+| expectations | `Expectations` | `市场预期` |
+| valuation | `Valuation` | `估值` |
+| price | `Price` | `价格` |
+| regime | `Regime` | `制度环境` |
+| policy | `Policy` | `政策` |
+
+### D.33 System-view edge relationship words (per view)
+
+| view | enum | EN | ZH |
+|---|---|---|---|
+| contractual_flow | PAYS | `pays` | `支付` |
+| contractual_flow | SETTLES | `settles` | `结算` |
+| contractual_flow | CLEARS | `clears` | `清算` |
+| contractual_flow | GUARANTEES | `guarantees` | `担保` |
+| contractual_flow | FUNDS | `funds` | `融资` |
+| contractual_flow | INSURES | `insures` | `承保` |
+| contractual_flow | LENDS | `lends` | `放贷` |
+| contractual_flow | HOLDS_CUSTODY | `holds custody` | `托管` |
+| infrastructure_access | LICENSES | `licenses` | `许可` |
+| infrastructure_access | SUPERVISES | `supervises` | `监管` |
+| infrastructure_access | GRANTS_ACCESS | `grants access` | `授予接入` |
+| infrastructure_access | PUBLISHES_BENCHMARK | `publishes benchmark` | `发布基准` |
+| infrastructure_access | RATES | `rates` | `评级` |
+| infrastructure_access | PROVIDES_DATA | `provides data` | `提供数据` |
+| infrastructure_access | REQUIRES_MEMBERSHIP | `requires membership` | `要求成员资格` |
+| public_equity_economics | EARNS_FEE_FROM | `earns fee from` | `向…收取费用` |
+| public_equity_economics | BEARS_CREDIT_RISK_OF | `bears credit risk of` | `承担…信用风险` |
+| public_equity_economics | CAPTURES_SPREAD_ON | `captures spread on` | `赚取…价差` |
+| public_equity_economics | RECOGNISES_REVENUE_FROM | `recognises revenue from` | `确认…收入` |
+| public_equity_economics | DEPENDS_ON_VOLUME_OF | `depends on volume of` | `依赖…数量` |
+
+### D.34 Input-receipt owner + state word maps (provenance footer)
+
+`input_receipts[].owner`:
+
+| enum | EN | ZH |
+|---|---|---|
+| sector_intelligence | `Sector intelligence` | `子行业情报` |
+| theme_graph | `Theme graph` | `主题图谱` |
+| financial_intelligence | `Financial intelligence` | `金融情报` |
+| expectations_revisions | `Expectations revisions` | `预期修订` |
+| market_data | `Market data` | `市场数据` |
+| baskets | `Baskets` | `组合` |
+| macro_rates_credit | `Macro rates and credit` | `宏观利率与信贷` |
+| identity | `Identity` | `身份` |
+| private_publication | `Private publication` | `私有发布` |
+
+`input_receipts[].state`:
+
+| enum | EN | ZH |
+|---|---|---|
+| READ | `ready` | `就绪` |
+| UNAVAILABLE | `unavailable` | `暂不可用` |
+| NOT_ACCEPTED | `not accepted` | `未接入` |
+| DEGRADED | `degraded` | `已降级` |
+
+Provenance footer line shape (per non-`READ` entry): `"<owner words> — <state words> · <note if present>"` EN / `"<owner words> — <state words> · <note 字段如有>"` ZH.
+
+### D.35 Degraded-section section enum + state word maps
+
+`degraded_sections[].section`:
+
+| enum | section id | EN | ZH |
+|---|---|---|---|
+| what_changed | `what-changed` | `What changed` | `近期变化` |
+| rerating_map | `rerating-map` | `Rerating map` | `重估链路` |
+| system_map | `system-map` | `System map` | `系统图` |
+| subtheme_atlas | `subtheme-atlas` | `Subtheme atlas` | `子主题图谱` |
+| company_exposure | `company-exposure` | `Company exposure` | `公司敞口` |
+| macro_matrix | `macro-matrix` | `Macro matrix` | `宏观矩阵` |
+| constraint_map | `constraint-map` | `Constraint map` | `约束图` |
+| evidence_drawer | (aside; degraded path hides trigger chip) | `Evidence drawer` | `证据抽屉` |
+
+`degraded_sections[].state`:
+
+| enum | EN | ZH |
+|---|---|---|
+| AVAILABLE | `available` | `可用` |
+| UNAVAILABLE | `unavailable` | `不可用` |
+| PARTIAL | `partial` | `部分可用` |
+
+A `degraded_sections[]` entry with `state ∈ {UNAVAILABLE, PARTIAL}` renders a plain-word notice (`mx-empty` + `mx-empty-why`) at the named section's mount.
+
+### D.36 The eleven mandatory missing states (D.11 binding, plain-word chips at named DOM locations)
+
+This is the canonical table the audit pinned D.11 to. Every row is one schema token; the chip binds to the named DOM location and reads as a visible, plain-word chip with a text companion (never colour-only).
+
+| # | Token | Contract path (live schema, line reference) | DOM location | EN chip | ZH chip |
+|---|---|---|---|---|---|
+| 1 | NO_HISTORICAL_CONSENSUS | `$defs.expectations_plane[0].history.state` enum (`schema.json` line 1186) | `rerating-map` expectations node chip | `No dated consensus on file` | `暂无可追溯的市场预期` |
+| 2 | VALUATION_ANCHOR_UNAVAILABLE | `$defs.valuation_anchor[0].state` enum + `$defs.plane_state` VALUATION_ANCHOR_UNAVAILABLE (schema.json line 1630) | `rerating-map` valuation node chip + anchor chip | `No valuation anchor available` | `暂无估值锚点` |
+| 3 | PRICE_BASIS_UNQUALIFIED | `$defs.plane_state` PRICE_BASIS_UNQUALIFIED (schema.json plane_state enum) | `rerating-map` price node chip | `No qualified price basis` | `价格口径未达合格` |
+| 4 | REGIME_BREAK_NOT_COMPARABLE | `$defs.plane[0].comparability_state[0]` enum (schema.json line 1062) | any `rerating-map` node chip + `system-map` edge chip | `Regime break — not comparable` | `制度断裂 — 不可比` |
+| 5 | CURRENT_MEMBERSHIP_ONLY | `$defs.basket_state[0].membership_state` enum (schema.json line 1456) | `subtheme-atlas` per-slice membership chip (visible) | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
+| 6 | PIT_MEMBERSHIP_INCOMPLETE | `$defs.basket_state[0].membership_state` enum (same path) | `subtheme-atlas` per-slice membership chip (visible) | `Point-in-time membership incomplete` | `时点成员数据不完整` |
+| 7 | CAUSAL_EFFECT_UNMEASURED | `macro_matrix[].state` enum (schema.json line 345) | `macro-matrix` cell chip (visible) | `Causal effect not measured` | `因果效应尚未测算` |
+| 8 | EXPOSURE_NOT_SEPARATELY_DISCLOSED | `exposure.state` enum (schema.json line 2254) | `company-exposure` cell chip (visible text — never a `focus` handler on a `<td>`) | `Exposure not separately disclosed` | `敞口未单独披露` |
+| 9 | IDENTITY_UNRESOLVED | `company_exposures[].identity.state` + `source_records[].identity_state` enum (schema.json lines 2428 / 1985) | `company-exposure` row chip + `evidence-drawer` chip (visible, bilingual) | `Identity unresolved` | `身份尚未确认` |
+| 10 | SOURCE_STALE | `freshness.state` + `material_changes[].freshness_state` + `slices[].freshness.state` enum (schema.json line 578 / coverage line 149) | `what-changed` header chip + `rerating-map` node chip | `Source is stale` | `来源已陈旧` |
+| 11 | SOURCE_RIGHTS_HELD | `source_records[].rights_state` enum (schema.json line 1985) | `evidence-drawer` chip + suppression rule (D.23) | `Source rights restrict display` | `来源权利限制展示` |
+
+Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`data-*` binding so the CSS / hydration can render the chip (check #12 — `awk '/^## B\./,/^## C\./' $F | grep -c <TOKEN>` ≥ 1 per token).
+
+### D.37 The ten conflict labels (cards inside `.fi-conflicts`)
+
+| enum (`conflict_id`) | EN label | ZH label |
+|---|---|---|
+| EARNINGS_UP_P_E_DOWN | `Earnings up, multiple down` | `盈利上升，倍数下降` |
+| BOOK_UP_P_B_DOWN | `Book value up, multiple down` | `账面价值上升，倍数下降` |
+| NII_UP_CREDIT_WORSE | `Net interest income up, credit worsening` | `净利息收入上升，信贷恶化` |
+| POLICY_SUPPORT_NIM_PRESSURE | `Policy supports demand, margins under pressure` | `政策支撑需求，息差承压` |
+| REGULATORY_RATIO_DOWN_REGIME_BREAK | `Regulatory ratio down, regime break` | `监管比率下降，制度断裂` |
+| PLAN_DISCLOSED_EXECUTION_PENDING | `Plan disclosed, execution pending` | `计划已披露，执行待落地` |
+| TAIL_RISK_DOWN_CURRENT_EARNINGS_WEAK | `Tail risk down, current earnings weak` | `尾部风险下降，当期盈利偏弱` |
+| PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN | `Price up, causal effect not proven` | `价格上升，因果效应未证实` |
+| CAPITAL_COST_UP_GROWTH_STILL_STRONG | `Cost of capital up, growth still strong` | `资本成本上升，增长仍然强劲` |
+| VOLUME_UP_REVENUE_MATERIALITY_UNPROVEN | `Volume up, revenue materiality not proven` | `交易量上升，收入重要性未证实` |
+
+### D.38 Action labels and footer copy
+
+| Surface | EN | ZH |
+|---|---|---|
+| Theme Tracker card action (§F.1) | `Open Finance Intelligence` | `打开金融情报` |
+| Financials launch action (§F.2) | `Open Finance Intelligence` | `打开金融情报` |
+| Slice selector label (§B.2) | `Slice` | `切片` |
+| Slice "open" button (B.4) | `Open this slice` | `打开该切片` |
+| Evidence button (per node / per row) | `Open evidence` | `打开证据` |
+| Drawer close | `Close evidence drawer` | `关闭证据抽屉` |
+| System view: expand | `Expand` | `展开` |
+| System view: collapse | `Collapse` | `收起` |
+| Section foot (generic) | `Read the underlying receipts before acting on any line.` | `请先查阅原始凭据再行判断。` |
+| Conflict card footer | `Unresolved by design — both statements stand.` | `设计上不予调和 — 两种陈述同时成立。` |
+| Falsifier list heading | `What we're watching` | `我们正在观察` |
+| Atlas footer chip | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
 ```
 ```
