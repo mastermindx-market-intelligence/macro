@@ -1,99 +1,99 @@
 ---
 key: MARKET-TOPOLOGY-PILOT-20260923
-claim: "The breadth study has two unsupported incremental industry forecasting experiments, a disqualified raw stock input, and verified distinctions between persistent participation, recovery trajectories, mechanical overlap and expired-history improvement."
-falsifier: "Reproduce the exact recorded inputs/scripts and obtain materially different results, or identify a computation, chronology, source or protocol error. A later successful different model does not erase the recorded negative tests."
-so_what: "Do not commission an efficiency-alpha or analogue-probability engine from these results. Preserve the experiments, obtain a qualified historical stock input, and keep population measurement, trajectory attribution, historical context and accepted forecasting separate."
+claim: "The topology study has preserved negative industry experiments, a held stock trial, source-qualified current named-security divergence, and executable population/context semantics that prevent several false breadth and forecast conclusions."
+falsifier: "Reproduce the recorded inputs/scripts or inspect the cited primary sources and identify materially different computations, an invalid source/date/basis, or a violated test invariant. Later success of another model does not erase earlier negative results."
+so_what: "Use the tested measurement/context distinctions; do not promote price persistence or analogue matches into forecasts. Obtain the qualified historical stock extraction through existing owners and retain all unresolved data, timing and terminal-outcome gates."
 kind: data
 verified_at: 2026-09-23
-verified_by: "Macro PR #7812 research reports and committed scripts; industry analogue and separate audit completed exit 0 on the original Studio archive, recomputed saved errors, and checked 12440 neighbour references. Earlier stock audit and overlap-null receipts remain in their cited reports."
+verified_by: "Macro draft PR #7812 reports and exact source blobs; 47 local reference tests passed, 51 independent Decimal arithmetic comparisons passed, four published code/test blobs matched locally executed files, and the current-case input was written/read back in the existing Studio research archive."
 scope:
   - research/market_topology
   - data/breadth
   - data/massive_stock_day
   - data/reference
   - engine/neuralweb/brain_analogues.py
+  - engine/group_earnings.py
 confidence: verified
 ---
 
 # Market topology: cumulative research checkpoint
 
-## Mission, authority and custody
+## Mission, authority and carrier
 
-Complete the multidimensional breadth, leadership, loser/bottoming and historical-analogue research and implementation planning here. Hand Fable a build-only orchestration package only after the empirical and design decisions are settled. Current Chairman continuation authorizes this research scope and asks for more substantive work per turn. It is not a production, trading or automatic worker-spawn mandate. Principal research judgment remains here; no Fable or other worker has been commissioned.
+Complete the breadth, persistent/emerging leadership, loser/bottoming and historical-analogue research and implementation planning here; reserve Fable for a build-only orchestration handoff when the research decisions are settled. Current Chairman continuation asks for substantive progress beyond the first milestone, not a time quota. No production/trading mandate or model-mode attestation is inferred.
 
 Operation: `market-topology-research-20260923-astra-001`.
-Procedure: Mastermind protected master `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, fresh branch/INDEX read unchanged this phase; compatible Skillpack 1.0.1. Same-commit COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT govern. No model/mode or hidden runtime attestation is invented.
+Procedure pin: Mastermind protected master `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, freshly checked unchanged in this turn; compatible Skillpack 1.0.1. Same-commit INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT govern.
 
-Publication carrier: GitHub connector -> Macro branch `sol/market-topology-research-20260923-astra-001`, draft PR #7812. Research/design files are published draft source, not merged acceptance. Last report/design source head before this checkpoint: `f39faf7e7872ac090d96c1d70e2da25ef9656ed5`. Prior cumulative checkpoint was `a164557951dc5e563b322b63e938e2550286f2cb`; this file replaces its continuation frontier while retaining earlier evidence by exact references. No new WS/program parent or duplicate control/data/identity/research store was invented.
+Research publication carrier remains GitHub connector -> Macro branch `sol/market-topology-research-20260923-astra-001`, draft PR #7812. Last research source head before this checkpoint: `cd9e6977ad627119621e2b66cba69bbe8104c633`. Prior cumulative checkpoint: `562ed8afb9e26c4784424a57b7aebbf6a8774e7b`. This is draft evidence, not merged research acceptance. No new workstream/program parent, identity, data, queue or control plane is created.
 
-## Findings that must survive
+## Earlier results that must not be redone
 
-1. The original synthetic 100-security/60-session example proves daily-marginal breadth can hide different identity-linked outcomes. It does NOT defeat all conventional breadth: multi-horizon positive-return participation is a mandatory baseline.
-2. Original 49-industry ridge pilot: 191 monthly OOS anchors in 2010-2025; four added path-quality fields did not demonstrate incremental 20-session rank forecasting. Paired IC gain -0.0022956512, nominal block interval [-0.0083610562,+0.0035437547]. Efficiency versus volatility-normalized momentum mean rank correlation 0.9959888877. Not a Frog in the Pan replication.
-3. Original order construction: identical order-blind return features can conceal different drawdowns; more frequent sign reversals need not mean a worse holding experience.
-4. Stock input audit: 30578/30706 nominal member-anchor closes (99.5831%) across 61 anchors does NOT qualify the raw local panel. Unadjusted splits, time-dependent ticker identities, terminal outcomes and unavailable controls remain material. NVDA and TSLA split fixtures reverse raw loser classifications; META/FB histories contain unrelated security segments. SIVB/FRC/ATVI last prices are not complete shareholder outcomes. All 858 inspected price hashes were rechecked unchanged in that phase.
-5. Synthetic leader-survival null: 300 IID episodes x 500 securities; 63-session formation and 20-session forward window. Overlapping trailing top-quintile retention 54.7233%, future-only winner overlap 19.7267% (20% chance). Shared 43/63 returns create mechanical persistence. Never present trailing-label retention alone as forward alpha.
-6. NEW analogue experiment: 311 monthly tests from 2000-01-31 to 2025-11-28, 551 usable anchors from 1980; all 49 industry portfolios. Historical candidates end before the query's 252-session lookback; K=20 candidates separated >=126 sessions. Primary future-20-session positive-industry-share RMSE: historical mean 30.9049pp, conventional analogue 32.5333pp, augmented analogue 32.3085pp. Paired conventional-minus-augmented MSE +0.0014570764, nominal 95% block interval [-0.0033736800,+0.0066914964]. No demonstrated increment; both lose to the unconditional mean. All secondary targets and eras are reported; no cherry-picked positive model is promoted.
-7. Separate post-result audit recomputed every RMSE/MAE and validated 12440 neighbour date/outcome references, spacing, chronology and source digests. No zero-variance training feature occurred. Both analogue variants also lose to the mean in diagnostic nominal paired intervals. Their uncalibrated 10th-90th neighbour ranges cover only 73.95%/74.92%, not a demonstrated 80% guarantee. Forced K matches do not prove adequate historical support.
-8. Selected real-history contrast: 1992-01-31 has 46/49 industries positive over 63 sessions but only 2/49 positive in every 21-session block; 30/49 follow -++. In 2013-11-29, 48/49 are positive over 63 sessions and 41/49 follow +++. Low persistence can describe broad recovery, not just chop. This pair maximizes a declared contrast, is not random or matched on every conventional feature, and supplies no prospective alpha evidence.
-9. Fresh versus expired history: delta M63 over 21 sessions equals newest21 minus expired21. Of 7656 improving relative-momentum industry-month observations, 1985 (25.9274%) have nonpositive fresh relative returns; absolute counterpart is 1293/7307 (17.6954%). This is trailing-momentum attribution, NOT relative-rank improvement, capital flow or an anomaly. The relative proportion is near the 25% independent symmetric zero-drift reference.
-10. Design now explicitly separates market census, tradable opportunity set and fixed-cohort follow-through; keeps unknowns, eligibility changes and issuer/share-class policies visible; preserves trajectory order and fresh-versus-expired attribution; and separates descriptive measurement/context from accepted forecasts. No universal breadth-quality score or validated leader-runway label is asserted.
+The exact studies and hashes remain in INITIAL_FINDINGS_20260923.md, STOCK_PANEL_QUALIFICATION_20260923.md and ANALOGUE_AND_FRESH_PROGRESS_FINDINGS_20260923.md under research/market_topology/.
 
-## Existing owner recovery
+- Synthetic daily-marginal counterexample: identical one-day breadth can hide different identity-linked terminal populations. Multi-horizon conventional breadth remains a required baseline; no alpha follows.
+- 49-industry ridge pilot: 191 monthly tests, no demonstrated incremental 20-session rank IC from four path features. Gain -0.0022956512, nominal interval [-0.0083610562,+0.0035437547]; efficiency/volatility-normalized momentum rank correlation 0.9959888877. Not a Frog in the Pan replication.
+- Synthetic path ordering: more sign changes can coexist with a smaller drawdown; one monotonic bad-churn score is not justified.
+- Raw stock census: 30578/30706 nominal member-anchor closes (99.5831%) across 61 anchors, but economic/identity admission failed. Unadjusted splits, ticker reuse, incomplete terminal economics and missing historical controls matter. The 858 inspected raw-price hashes were unchanged. No new stock forecast was fitted.
+- Synthetic overlapping-window survival: 54.7233% trailing leader retention despite no predictive information, versus 19.7267% genuinely future overlap near 20% chance. Shared 43/63 returns are a mechanical explanation.
+- 311-date industry analogue test: historical-mean RMSE 30.9049pp; conventional 32.5333pp; augmented 32.3085pp for future positive-industry share. Increment interval spans zero; both matchers lose to the mean. All secondary outcomes and eras remain reported.
+- Audit checked 12440 neighbour references and recomputed errors. Forced matches did not establish support; uncalibrated neighbour ranges did not establish 80% forecast coverage.
+- 1992/2013 selected industry paths distinguish broad recovery from established persistent advance; low all-positive-block share is not automatically chop.
+- Improving relative momentum without fresh positive relative returns was 1985/7656 (25.9274%), near the 25% IID reference. This is attribution, not an anomaly or capital-flow measurement.
 
-Older source base `88a3f1cfd18f391d2802e9086dc00f6fe5545607` and actual local data checkout `0f62daf545719e641036be9e5b88101c3af7ab5f` remain distinct from current inspected source.
+Do not repeat any unchanged experiment or census to fill a turn. Independent reproduction requires a named verification question or material invalidator. Preserve failures instead of tuning the viewed sample and calling it untouched evidence.
 
-At Macro `cde1e7e5e0cd7134f88a7f78dbeec614976c5090`, `data/reference/_receipt.json` actually exists: generated 2026-09-21, producer code `b7289166c9a4fcae67c7a41228a465ea6f96962f`, 708/718 of its target resolved with exceptions. This is not coverage of all historical US securities or proof of all required identity fixtures. Prior absence from a local checkout must not become a claim that no identity output exists anywhere. The registry distinguishes raw/dual/total-return stores. `lib/dataos/price.py` explicitly supplies V1 vocabulary; its V2 raw-plus-factor design is not proof of a fully qualified research extraction.
+## New current-case findings
 
-At Macro `8bff771709df31aa7c5be723b71f89516c7bae01`, `engine/neuralweb/brain_analogues.py` already owns `brain.analogues.v1`, context-only retrieval with no forecast/probability authority. Its full-window retrieval normalization must not be silently reused as a causal historical forecast. Mastermind `brain/regime_frame.py` at the procedure pin is the existing regime reader/rotation-evidence seam. Earlier rotation tensor design overlaps this study. Reuse owners; no live browser/production acceptance was obtained here.
+`CURRENT_CASE_AND_MECHANISM_FINDINGS_20260923.md`, first commit `7287824ef4654a40ef40cccdc15bb53cd48f1945`, records the selected BROS/KRUS/MCD/SMH/SPY case. Cutoff September 22, start August 24, 21 dated displayed adjusted closes per instrument. The input is publisher-displayed history from StockAnalysis, attributed there to S&P Global; no independently reconstructed return basis or second-feed verification is claimed. It is not the canonical R2 input or a market-wide census.
 
-## Artifacts and immutable references
+20-session returns: BROS -25.39%, KRUS -24.73%, MCD -7.49%, SMH +11.09%, SPY +1.55%. Two of the three chosen restaurant names were positive on the last session while all three were negative over 20 sessions. The named divergence is now source-qualified/descriptively measured; annual lows, overall market breadth and future outcomes remain unverified.
 
-Earlier evidence remains in:
-- `research/market_topology/INITIAL_FINDINGS_20260923.md`.
-- `research/market_topology/STOCK_PANEL_QUALIFICATION_20260923.md`, first commit `2a245ccc497a6f7f5874a020c1a8ec6afc282489`.
-- `research/market_topology/ORDER_TRANSITION_TRIAL_V1.md`, first commit `697d55259e682872065d94e1c050fb29105dbb1f`; STILL UNEXECUTED AND HELD.
+`CURRENT_CASE_AUDIT_AND_PATHS_20260923.md`, first commit `cd9e6977ad627119621e2b66cba69bbe8104c633`, records 51 Decimal arithmetic checks passing (max difference about 4.91e-14, tolerance 1e-9), not an independent data-feed check. Four 5-session blocks are BROS ----, MCD ----, KRUS ---+, SMH ++-+, SPY +--+. SMH's first 15 sessions returned -0.86%, then +12.05% in the final five; do not equate this selected month with uninterrupted long-term leadership.
 
-New phase:
-- `INDUSTRY_ANALOGUE_TRIAL_V1.md`: pre-result protocol commit `e1c3122f8260e8b3a3e00dfaebec0bbdbf226379`.
-- `industry_analogue_v1.py`: source commit `fa741cddb525071b1ed796641013b564e8a192b2`.
-- `ANALOGUE_AUDIT_PATH_ATTRIBUTION_V1.md`: explicitly post-result diagnostic protocol `3cbcf5a103fc5475bfb70d2cfcdf30fb751e48b6`.
-- `analogue_audit_path_v1.py`: source commit `eeb35b95e4018a023508d37f3d46cf3243fb03e7`.
-- `ANALOGUE_AND_FRESH_PROGRESS_FINDINGS_20260923.md`: report commit `339be6e34f58f6f2c4a01b38b2d565bfeeaa5fcc`.
-- `MEASUREMENT_AND_INTEGRATION_DRAFT_V1.md`: design commit `f39faf7e7872ac090d96c1d70e2da25ef9656ed5`. Concrete research design, not a production contract or Fable commission.
+Primary operating releases show materially different business observations behind the negative restaurant price paths: BROS reports positive transaction/growth measures and raised guidance; KRUS reports negative traffic despite aggregate sales growth; MCD reports positive comparable sales but negative US guest counts. Periods and business models differ. Positive growth is not proof of a consensus beat, intrinsic value or a buying opportunity. The BROS event-adjacent decline is measured, but simultaneous announcements prevent a claimed single causal attribution.
 
-All new paths above are under `research/market_topology/`. Original Studio artifact home: `/Volumes/Mastermind/research/market-topology-research-20260923-astra-001/`.
+New research context: price trajectory, operating trajectory, expectations/valuation evidence, macro exposures and economic links must remain distinct; earnings/industry/network/momentum-crash literature motivates tests, not imported alpha acceptance. The ECB information-shock paper's method uses narrow announcement windows, not a daily-yield-sign causal classifier. NBER full PDFs were not accessible; their abstract-level evidence is labelled accordingly.
 
-New SHA256 receipts:
-- Official archived French ZIP: `13be85084196424aa85f29136af47f147a443275f90eb0955dbcdc6d6d25f448`.
-- Analogue script: `7113dbb88a27532444174517c63fb9890535aaf1c202f843b469041b984af9e9`.
-- `analogue_v1_summary.json`: `f0aaec4538bec2bc8a14cb1b2a7c30898a84679de7db8e090a13bf7ab0222285`.
-- `analogue_v1_panel.json`: `4bcde563d722e962dc04b8beb30108b047ff598051b2924b37bddcc8df285015`.
-- `analogue_v1_predictions.json`: `a88aec19a8cfbc554e682885a37e7a92f23c09fa2b6d4a36cb03760f61cc0fcc`.
-- Audit/path script: `23ec5e4fc5d2a0006bca49d650ce53f86e553896a43187bc8d6e647ce4449de3`.
-- `analogue_audit_path_v1_results.json`: `a4c337d0815d93fdc52b4cf15d0e4244cbdaf171fc424d3fe94744df5b9f9599`.
-- `analogue_audit_path_v1_monthly.json`: `a8a5a9ca03022c628b0cd9fb096ad1042f5a67a5a5cbe0b5513dfdcd8d3a8454`.
+## Executable research design
 
-Earlier industry/audit/null hashes remain in the prior reports; do not replay them to recreate a status narrative. New remote PIDs 7562 and 10287 completed exit 0; nothing is still running. Local synthetic feature perturbation passed declared numerical tolerances after an exact-equality check exposed <=1.39e-17 rounding differences; the report preserves that correction. Self-audits are not independent external review or full Agent OS/repository CI. Original scripts are committed; raw vendor data are not published. ChatGPT scratch paths are not durable authority.
+`MEASUREMENT_CONTRACT_V2.md`, first commit `ec84aa0091ef725b1556566bfe0ddbcc88d3429a`, refines the earlier draft without granting production authority.
 
-## Holds, safety and effects
+Four committed reference files at `866837c0048c8598ce8052109ef497345353218e` matched the locally executed Git blobs:
+- measurement_semantics_v2.py: b1732bcea9700d2a8411d349f6cb3db63e33be67
+- test_measurement_semantics_v2.py: 9e3e5190af31a6c2e2dc37d75b68fbf60fc2c97a
+- context_semantics_v1.py: 06904ed96698eed51a6489b4529d77fe3e28d22b
+- test_context_semantics_v1.py: cc2929c6fd696150df660dc85f1dc061db7a710c
 
-The fully controlled stock trial has NOT been fitted; its historical identity, economic-return, control, terminal-outcome and information-time input gates remain unsatisfied. Current September market observations remain unverified by local prices ending July 2 or French data ending July 31. Neural prediction, no-match/calibrated analogue probabilities and trade decisions are not accepted.
+47 tests passed: missingness bounds, count and weight attribution, overlapping-cohort limits, source-as-of versus served clocks, future/equal-clock revision conflicts, fiscal/analyst composition, common-benchmark rank invariance and observed-zero versus unresolved terminal outcomes. Three random-test families used 1000 cases each. These are mathematical/semantic specifications, not fitted classifier thresholds, stock-data admission, global CI or production proof.
 
-The prior corrected-interpreter canonical R2 read was platform-blocked. It was NOT retried this phase by changing tool, account, mode, credentials or actor. No canonical R2 read/refresh succeeded. This is not proof R2 is down. A material permitted capability change is required before reconsidering that exact operation. Independent source-contract reads and original archived industry research continued.
+A pre-execution clarification preserves known total losses as -100% simple-return rank outcomes even though log(0) is unavailable. It does not infer zero from bankruptcy or missing data, change the frozen model, or waive terminal evidence. A common market benchmark cannot create a different stock-return ranking by itself. An analyst cohort or fiscal-target change cannot masquerade as a matched estimate revision.
 
-Public ZIP transfer into the ChatGPT container failed. The new computation used the original source on its original Studio host; no foreign data mirror or substituted vintage was used. No production source data were modified. The earlier stock audit's initial serialization failure was explicitly repaired in v1r1; no unresolved effect remains from it.
+## Existing owners and exact stock-input request
 
-No active child, worker, watcher, runtime job, deployment, trade, automatic wake or background execution exists for this study. No known EFFECT_UNKNOWN modification remains. Continue research-source writes on the same branch, reconciling there before any ambiguous retry. Draft publication does not imply merged research acceptance.
+The existing Data OS receipt, price vocabulary, context-only brain analogue reader and single regime reader remain the owners previously cited. New source reading at Macro `1177cf84ffa46fa3e049ebe785aa1b391e42102d` confirms `engine/group_earnings.py` / `group_earnings_pulse.v1` is context-only, separates earnings/guidance/revisions/drift/sympathy and refuses actual-only EPS as a consensus surprise. It is not proof of a complete historical panel or fresh live consumption.
 
-## DO_NOT_REDO and exact next research unit
+Created Macro issue #7858: `[RESEARCH INPUT / NO DISPATCH] Qualify existing formation-time equity extraction for topology study`. It requests an exact existing extraction/receipt and named missing outputs from existing Data OS/reference/economic-return owners. It is NOT worker dispatch, R2 retry authority, a production rebuild, owner ACK or START. No assignee or runtime execution is claimed.
 
-Do not rerun the completed industry ridge pilot, stock census, synthetic identifiability/order/overlap tests, analogue comparison or its audit simply to generate activity. Independent reproduction is legitimate only as a named validation task or after a material invalidator. Do not tune a viewed failed experiment and claim untouched OOS evidence. Preserve primary/secondary distinctions and the recorded failures.
+The original ORDER_TRANSITION_TRIAL_V1.md remains unexecuted and held. Needed inputs remain stable historical IDs, correct return economics, historical eligibility/industry/size/liquidity, terminal outcomes, source and readiness clocks, and rights. A 708/718 current identity receipt is not this extraction.
 
-Next: obtain the existing Data OS/reference/economic-return owners' actual formation-time stock extraction and receipt, without retrying the blocked R2 request. Qualify it against the already specified split, identity-reuse, membership, historical industry/size, terminal-outcome and availability fixtures, then execute the frozen ORDER_TRANSITION_TRIAL_V1 only if admitted. A registry label or identity count is not that extraction. Keep data collection/qualification within existing owners, not a new production rebuild.
+## Artifact custody and effects
 
-Independent research lane if stock inputs remain held: specify and evaluate vintage-correct macro conditioning and analogue abstention/shrinkage with an explicitly new evaluation plan. The now-viewed 2000-2025 analogue sample is not untouched holdout. Resolve market-universe/short-history/materiality and signal-onset tradeoffs; convert the current measurement/integration draft into exact accepted consumer contracts and required user-path proof. Do not mistake a well-specified display slice for completion of leadership/loser forecasting research.
+Existing Studio archive: `/Volumes/Mastermind/research/market-topology-research-20260923-astra-001/`.
+New `phase4_current_case_inputs.json` was written successfully there and fully read back (202 lines). This is a research-evidence copy, not a canonical data store or public raw-data redistribution. Original local input SHA256: 0b2a1a6b9e25a6f26fe696dff0406e99805a43d82a1c03f9a20769fdd9b7aa83. Remote content readback, not a separate remote hash command, verified the copy.
 
-## Continuation disposition
+Current case result SHA256: 2e4e8f3790589918f24cb745f526473851d8031dd54162c6741e1ca990a009e2.
+Arithmetic audit result: f73d7ef0008acb22bef22411f9a78f7644ff48b9aeb8732e5862708d24244228.
+Path diagnostic result: a55a32c2bebbaee0544f63236ca9afd3c75ee7e261b47c603ec498ed5a9e2c0f.
 
-CHECKPOINTED_CONTINUATION after exact committed readback. MISSION_COMPLETE: false. FABLE_HANDOFF_READY: false. Justified phase boundary: completed new historical analogue experiment, numerical/chronology audit, actual sequence/roll-off attribution, recovered existing-owner receipts and concrete integration draft; substantial accumulated context before the separate stock-input/macro-conditioning research unit. Intended resume surface: this study's research-lead conversation or a fresh continuation using this exact current checkpoint and minimum fresh canonical state. No automatic continuation, source-custody transfer or Fable pickup is asserted.
+Working sandbox `/mnt/data/market_topology_phase4/` contains the remaining scripts/results/test output. Exact aggregate findings and methods are published in the branch; do not invent permanent sandbox availability. The first current-case script had an explicitly repaired serialization error; the first arithmetic audit had an explicitly repaired key-name error; neither leaves an unresolved modification.
+
+The prior platform-blocked R2 request was not retried through another mode/tool/account/actor. Independent public selected-case research is a different input/scope, not a claim that the canonical-store request succeeded. No production data refresh, deployment, trade, Fable/worker, watcher, automatic wake or background process exists. No known EFFECT_UNKNOWN operation remains. All GitHub research writes continue on the same branch.
+
+## Active frontier before continuing this turn
+
+This is an in-progress checkpoint, not a finalization or transfer. MISSION_COMPLETE: false. FABLE_HANDOFF_READY: false.
+
+Next local work: freeze a mechanism-grounded context-conditioned study and a separate past-only analogue-support/shrinkage evaluation plan, with explicit data requirements and already-viewed-sample limits. The selected September 2026 cases are now exposed and cannot be called pristine holdout. Preserve the original stock trial and avoid replacing its failed/unexecuted targets with a newly favourable one. Then record the final research boundary after all resulting evidence is durable.
+
+On a later continuation, inspect issue #7858 only for material new input evidence, not repeated polling. Qualify any returned extraction against the existing fixtures before the frozen stock trial. If absent, continue independent research from the new context-study frontier; do not restart the raw-stock census or source inventory.
