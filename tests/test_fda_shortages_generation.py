@@ -75,7 +75,7 @@ def test_late_page_failure_is_not_a_current_sweep():
             raise OSError("synthetic second page failure")
         return {"meta": {"last_updated": "2026-09-23", "results": {"total": 2}},
                 "results": [{"package_ndc": "TEST-A", "generic_name": "Synthetic A",
-                             "status": "Current"}]}
+                             "status": "Current", "initial_posting_date": "2026-03-02"}]}
 
     result = collect_shortage_sweep(
         fetch_page,
@@ -150,15 +150,15 @@ def test_first_page_outage_has_no_rows():
         ),
         (
             [
-                _page("2026-09-23", [_record()], 1),
-                _page("2026-09-24", [], 1),
+                _page("2026-09-23", [_record()], 2),
+                _page("2026-09-24", [_record(ndc="TEST-B", name="Synthetic B")], 2),
             ],
             "GENERATION_DRIFT",
         ),
         (
             [
-                _page("2026-09-23", [_record()], 1),
-                _page("2026-09-23", [_record()], 1),
+                _page("2026-09-23", [_record()], 2),
+                _page("2026-09-23", [_record()], 2),
             ],
             "REPEATED_PAGE",
         ),
@@ -196,8 +196,13 @@ def test_non_dict_row_is_malformed():
 def test_cap_before_total_uses_live_reported_total():
     from collectors.fda_shortages import collect_shortage_sweep
 
+    rows = [
+        _record(), _record(ndc="TEST-B", name="Synthetic B"),
+        _record(ndc="TEST-C", name="Synthetic C"),
+    ]
+
     def fetch_page(skip, limit):
-        return _page("2026-09-23", [_record()], 3)
+        return _page("2026-09-23", rows[skip:skip + limit], 3)
 
     result = collect_shortage_sweep(
         fetch_page, clock=_clock(datetime(2026, 9, 23, 12, tzinfo=UTC)),
@@ -306,9 +311,7 @@ def test_legacy_cache_has_unknown_capture_and_starts_forward_history(tmp_path):
     assert coverage["earliest_qualified_generation"] == "2026-09-23"
     assert coverage["legacy_rows_capture_unknown"] is True
     rows = state["rows"].set_index("package_ndc")
-    assert rows.loc["TEST-L", "capture_known"] is False or pd.isna(
-        rows.loc["TEST-L", "capture_known"]
-    )
+    assert not bool(rows.loc["TEST-L", "capture_known"])
     assert rows.loc["TEST-L", "absent_since_generation"] == "2026-09-23"
 
 
@@ -326,7 +329,7 @@ def test_failed_metadata_write_is_not_advertised_as_current(tmp_path, monkeypatc
     def fail_json_dump(*args, **kwargs):
         raise OSError("synthetic metadata write failure")
 
-    monkeypatch.setattr("collectors.fda_shortages.json.dumps", fail_json_dump)
+    monkeypatch.setattr("collectors.fda_shortages._json_dumps", fail_json_dump)
     outcome = save_shortage_observation(
         second, path=path, expected_predecessor=_sidecar_digest(path),
     )
