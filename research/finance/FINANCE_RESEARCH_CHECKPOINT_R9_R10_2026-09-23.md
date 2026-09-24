@@ -91,3 +91,26 @@ This is the boundary between the four-witness measurement/denominator qualificat
 Next: R10C, the original CRR3 implementation and Korea Corporate Value-up cases. Before measuring their return endpoints, fix the corrected information/effective clocks, pre-event issuer scope, public accounting/capital denominators and available expectation evidence; then apply the qualified R10B price-basis method and preserve missing controls explicitly. Continue resolving exact historical-consensus entitlements where genuinely available, not by recreating an archive from current numbers.
 
 Do not redo R1–R9, recreate these four return calculations merely for status, or republish the refused R10A report. R11 candidate basket/visualization freeze, R12 current-interface/collision review and the final Fable implementation handoff remain downstream. Intended surface: principal Pro research, same operation/carrier, minimum fresh canonical read. No automatic wake or custody transfer is implied.
+
+
+## R10C capital-regulation / value-up continuation
+
+Verified same-carrier effects after the prior checkpoint:
+
+- structured packet: `FINANCE_R10C_CAPITAL_AND_VALUE_UP_MEASUREMENTS_V0_1_2026-09-23.json`, commit `457cfd0eaa431e9f4e622da67b1e0369947dddaf`;
+- synthesis: `FINANCE_R10C_CAPITAL_AND_VALUE_UP_RERATING_2026-09-23.md`, commit `c9ff016d08db35bcb9a11c223d4a6571ece325d5`;
+- protected procedure repinned for this tranche to `Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1/bootstrap 1;
+- nine structured semantic/arithmetic checks passed; no formal R10 outcome was promoted beyond `UNMEASURED`.
+
+Material results:
+
+1. CRR3 is modeled as an anticipated bank-specific capital/RWA regime transition, not a clean 1 January shock. EBA full-implementation burden, Deutsche Bank pro-forma/guided effects and ING realized components show heterogeneous transmission.
+2. Four European banks returned about 88.05% equal-weight over the fixed +252-session adjusted-return window versus about 87.32% for the EURO STOXX Banks proxy. This is a broad bank-rerating observation, not CRR3 causal proof.
+3. Korea's 26 February framework is voluntary and distinct from issuer participation/execution. The preselected four-group cohort was negative on day 0 and later outperformed broad KOSPI, but tracked bank-sector context more closely.
+4. Woori's initial issuer-plan clock is corrected to 25 July 2024, not the later 3 December English posting.
+5. Woori, Shinhan, KB and Hana show materially different plan formulas and later paths. Near-term book-per-share improvement did not guarantee multiple expansion; issuer +252 returns also varied materially versus the bank-sector proxy.
+6. The reusable research object is a non-scoring `Value-Up Execution State`: policy clock, participation clock, pre-plan baseline, plan specificity, capital headroom, return execution, per-share execution, profitability, risk cost, valuation recognition, price recognition, expectations, conflict and falsifier.
+
+DO NOT REDO absent invalidation: the CRR3 implementation-clock ruling, Woori July 25 correction, Korea policy/issuer-plan/execution clock separation, or the non-scoring Value-Up Execution State.
+
+R10 remains incomplete. The next independent principal research pair is RBI's 16 Nov 2023 consumer-credit/NBFC risk-weight change and APRA's 6 Oct 2021 serviceability-buffer increase. Their purpose is to test credit-supply/underwriting regulation rather than payout/valuation communication.
