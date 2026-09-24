@@ -33,6 +33,17 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
+_LEGACY_PARSE_CLOCK = object()
+
+
+def _legacy_parse_clock():
+    return datetime.now(timezone.utc)
+
+
+
+class _MalformedRecord(TypeError):
+    pass
+
 SHORTAGES_URL = "https://api.fda.gov/drug/shortages.json"
 PAGE_SIZE = 100       # openFDA max per request
 MAX_PAGES = 25        # cap: 2500 records; avoids runaway loop
@@ -62,25 +73,32 @@ def _fetch_page(skip: int, limit: int = PAGE_SIZE) -> dict:
     return r.json()
 
 
-def _parse_record(rec: dict) -> dict:
+def _parse_record(*args) -> dict:
+    rec = args[0]
     """Flatten one openFDA shortages record into a flat row."""
     openfda = rec.get("openfda") or {}
     brands = openfda.get("brand_name") or []
     substances = openfda.get("substance_name") or []
+    required_text = {
+        "package_ndc": rec.get("package_ndc"),
+        "generic_name": rec.get("generic_name"),
+        "status": rec.get("status"),
+        "availability": rec.get("availability"),
+        "initial_posting_date": rec.get("initial_posting_date"),
+        "update_date": rec.get("update_date"),
+    }
+    if any(value is not None and not isinstance(value, str) for value in required_text.values()):
+        raise TypeError("malformed shortage row")
+    fetched_utc = args[1] if len(args) == 2 else _legacy_parse_clock()
     return {
-        "package_ndc": rec.get("package_ndc") or "",
-        "generic_name": rec.get("generic_name") or "",
-        "brand_name": brands[0] if brands else None,
-        "substance_name": substances[0] if substances else None,
-        "status": rec.get("status") or "",
-        "availability": rec.get("availability") or "",
-        "initial_posting_date": rec.get("initial_posting_date") or "",
-        "update_date": rec.get("update_date") or "",
-        "discontinued_date": rec.get("discontinued_date") or None,
-        "therapeutic_category": (rec.get("therapeutic_category") or [None])[0],
-        "company_name": rec.get("company_name") or None,
-        "related_info": rec.get("related_info") or None,
-        "fetched_utc": datetime.now(timezone.utc).isoformat(),
+        **{name: value or "" for name, value in required_text.items()},
+        "brand_name": brands[0] if isinstance(brands, list) and brands else None,
+        "substance_name": substances[0] if isinstance(substances, list) and substances else None,
+        "discontinued_date": rec.get("discontinued_date") if isinstance(rec.get("discontinued_date"), str) or rec.get("discontinued_date") is None else "",
+        "therapeutic_category": (rec.get("therapeutic_category") or [None])[0] if isinstance(rec.get("therapeutic_category") or [None], list) else "",
+        "company_name": rec.get("company_name") if isinstance(rec.get("company_name"), str) else None,
+        "related_info": rec.get("related_info") if isinstance(rec.get("related_info"), str) else None,
+        "fetched_utc": fetched_utc.astimezone(timezone.utc).isoformat(),
     }
 
 
@@ -165,7 +183,11 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
             if not isinstance(raw_row, dict):
                 failure_code = "MALFORMED_ROW"
                 break
-            parsed = _parse_record(raw_row)
+            try:
+                parsed = _parse_record(raw_row)
+            except (TypeError, ValueError):
+                failure_code = "MALFORMED_ROW"
+                break
             package_ndc = parsed.get("package_ndc")
             posting_date = parsed.get("initial_posting_date")
             if package_ndc in (None, "") or posting_date in (None, ""):
@@ -234,6 +256,21 @@ def _normalise_legacy(frame):
     return normalised
 
 
+def format_observation_receipt(observation: dict) -> str:
+    capture = (observation or {}).get("capture") or {}
+    refresh = (observation or {}).get("last_refresh") or {}
+    source_generation = capture.get("source_generation")
+    attempted_at = refresh.get("attempted_at")
+    return (
+        f"fda_shortages: observation qualified={bool(capture.get('complete'))} "
+        f"failure_code={capture.get('failure_code') or 'none'} "
+        f"source_generation={source_generation if isinstance(source_generation, str) else 'unknown'} "
+        f"last_refresh={attempted_at if isinstance(attempted_at, str) else 'none'} "
+        f"legacy={bool((observation or {}).get('legacy'))} "
+        f"inconsistent={bool((observation or {}).get('inconsistent'))}"
+    )
+
+
 def _selected_state(path):
     sidecar = _sidecar_path(path)
     if not path.exists() and not sidecar.exists():
@@ -255,19 +292,33 @@ def _selected_state(path):
                 "forward_retention_started_at": None,
             }, "legacy": True, "inconsistent": False,
         }
-    receipt = json.loads(sidecar.read_text())
+    try:
+        receipt = json.loads(sidecar.read_text())
+    except Exception:
+        return {
+            "rows": None, "capture": None, "last_refresh": None,
+            "history_coverage": {}, "retention": {}, "legacy": False,
+            "inconsistent": True,
+        }
     coverage = receipt.get("history_coverage", {})
-    state = {
-        "rows": pd.read_parquet(path) if path.exists() else None,
-        "capture": receipt.get("selected_capture"),
-        "last_refresh": receipt.get("last_refresh"),
-        "history_coverage": coverage, "retention": receipt.get("retention") or {},
-        "legacy": False, "inconsistent": False,
-    }
     expected = receipt.get("parquet_sha256")
-    if expected is None or not path.exists() or _digest(path) != expected:
-        state.update(rows=None, capture=None, inconsistent=True)
-    return state
+    digest = _digest(path)
+    inconsistent = expected is not None and digest != expected
+    rows = None
+    if expected is not None and path.exists() and not inconsistent:
+        try:
+            rows = pd.read_parquet(path)
+        except Exception:
+            rows = None
+            inconsistent = True
+    return {
+        "rows": rows,
+        "capture": receipt.get("selected_capture") if not inconsistent else None,
+        "last_refresh": receipt.get("last_refresh"),
+        "history_coverage": coverage,
+        "retention": receipt.get("retention") or {},
+        "legacy": False, "inconsistent": inconsistent,
+    }
 
 
 def _json_dumps(receipt):
@@ -410,22 +461,14 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         "failure_code": result.get("failure_code"),
         "partial_rows_observed": len(result.get("rows") or []),
     }
-    if state["legacy"]:
-        coverage = {
-            "earliest_qualified_generation": None,
-            "legacy_rows_capture_unknown": True,
-            "forward_retention_started_at": None,
-        }
-    else:
-        coverage = dict(state["history_coverage"])
+    existing = json.loads(sidecar.read_text()) if sidecar.exists() else {}
     receipt = {
         "schema": SCHEMA,
-        "selected_capture": state.get("capture"),
+        "selected_capture": existing.get("selected_capture"),
         "last_refresh": refresh,
-        "history_coverage": coverage,
-        "retention": {
-            "absent_generations_kept": 90,
-            "dropped_absent_rows": (state.get("history_coverage") or {}).get("retention", {}).get("dropped_absent_rows", 0),
+        "history_coverage": existing.get("history_coverage") or {},
+        "retention": existing.get("retention") or {
+            "absent_generations_kept": 90, "dropped_absent_rows": 0,
         },
         "predecessor": expected_predecessor,
         "parquet_sha256": _digest(path) if path.exists() else None,
