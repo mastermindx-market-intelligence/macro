@@ -1120,6 +1120,16 @@ lanes:
           trading, publication, training, Neural Web, and Prophet authority remains
           false. The normal nightly lane is the sole advancer; non-nightly invocation
           fails closed.
+      - id: build_options_catalyst_links
+        module: scripts.build_options_catalyst_links
+        note: >
+          A-F03-W3-1a (2026-09-23, #7774): first production caller of
+          engine/options_catalyst_link.bind_events. Reads only the date-keyed
+          live_flow/events/{DATE}.jsonl stage the episode step already consumes,
+          binds each event to earnings (earnings_blackout) and FOMC (event_calendar)
+          catalysts, and writes site/options_catalyst_links/ (envelope + JSONL) with
+          the binding-state histogram. Context-only: every authority field false,
+          no rank/size/gate, no data/ writes. Non-fatal (continue-on-error).
       - id: build_us_sector_rotation
         module: scripts.build_us_sector_rotation
         note: >
@@ -2813,6 +2823,13 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_ontology_explorer
+        module: scripts.build_ontology_explorer
+        note: >
+          F04-X1 WTI Live Path public shell (site/ontology.html + the paired
+          ontology.css/js copies). A nav-only static shell with zero current
+          values; it sits in the render lane so a shared-nav change re-bakes it
+          with every other committed page. Not in daily.yml: no data input.
       - id: build_research_screener
         module: scripts.build_research_screener
         note: >

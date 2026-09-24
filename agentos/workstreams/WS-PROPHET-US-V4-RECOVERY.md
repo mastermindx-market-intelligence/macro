@@ -57,6 +57,11 @@ decisions:
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
   - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
+  - DEC:PROPHET-US-D01-CONFLUENCE-VALIDITY-CONTRACT
+  - DEC:PROPHET-US-D02-EPISODE-ADMISSION-GATED
+  - DEC:PROPHET-US-D05-ENTRY-WATCH-PERSISTENCE
+  - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
+  - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
   - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
     to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
@@ -670,16 +675,19 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Chairman 2026-09-18 assigns Sol Meta-CEO accountability for the existing rotation
-  participation outcome; DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE records
-  the scope without transferring incumbent source writers or runtime assignments.
-  Resume from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-18-meta-ceo-rotation.md.
-  First close the current availability recovery's actual review/CI/publication gates
-  through its existing carriers and integration owner, not another recovery branch.
-  Then advance the already-frozen B3/B4/B5, GMI and Fusion dependency graph to a real
-  leadership-to-entry-to-thesis-management journey. Current-price publication alone
-  is not completion. Retain historical D5 evidence and independent owner boundaries;
-  do not replay its old next action without reconciling newer implementation/evidence.
+  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
+  #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions
+  DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA,
+  DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION).
+  Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the
+  B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the
+  pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence,
+  never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and
+  DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer
+  (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21
+  wave graph remain in force beneath this program; never replay an old next action without
+  reconciling the R6 records.
 ---
 
 ## Context
