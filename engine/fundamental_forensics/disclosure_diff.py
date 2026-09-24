@@ -68,16 +68,32 @@ class Applicability(str, Enum):
     NOT_EVALUABLE = "not_evaluable"
 
 
-def _span_attribute(value: str | None) -> int:
-    """A ``colspan``/``rowspan`` attribute as HTML's rules for parsing non-negative integers read it: leading
+_SPAN_VALUE = re.compile(r"[ \t\n\f\r]*\+?([0-9]+)")
+
+
+def _span_value(value: str | None) -> int | None:
+    """A ``colspan``/``rowspan`` attribute as HTML's rules for parsing non-negative integers read it: ASCII
     whitespace and an optional "+" are skipped, the leading run of ASCII digits is the value and anything after
-    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit is an error).  Absent,
-    unparseable, zero or absurd (above 64) means 1."""
-    match = re.match(r"\s*\+?([0-9]+)", str(value or ""))
-    if match is None:
+    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit or blank is an error)."""
+    match = _SPAN_VALUE.match(str(value or ""))
+    return int(match.group(1)) if match else None
+
+
+def _span_attribute(value: str | None, *, rowspan: bool = False) -> int:
+    """The span a consumer lays cells out by: 1 when absent or unparseable; a ``rowspan`` of 0 stays 0 (HTML:
+    to the end of the row group); a span above 64 is absurd for a release table and reads 1 -- the overflow is
+    reported separately (``_span_overflow``) so a consumer can refuse the table instead of misaligning it."""
+    span = _span_value(value)
+    if span is None:
         return 1
-    span = int(match.group(1))
-    return span if 1 <= span <= 64 else 1
+    if span == 0:
+        return 0 if rowspan else 1
+    return span if span <= 64 else 1
+
+
+def _span_overflow(value: str | None) -> bool:
+    span = _span_value(value)
+    return span is not None and span > 64
 
 
 def _heading_level(tag: str) -> int:
@@ -275,6 +291,7 @@ class TableCell:
     rowspan: int = 1
     row_ordinal: int = -1
     row_group: int = 0
+    span_overflow: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -292,6 +309,9 @@ class NormalizedTable:
     rows: tuple[tuple[TableCell, ...], ...]
     # The table's own ``<caption>`` text (empty when none); not part of ``text()`` or ``to_dict``.
     caption: str = ""
+    # Every HTML row in source order, including rows that emitted no cell: (row ordinal, row-group ordinal,
+    # row-group kind "thead" / "tbody" / "tfoot").  A layout fact; not part of ``text()`` or ``to_dict``.
+    row_layout: tuple[tuple[int, int, str], ...] = ()
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -596,6 +616,8 @@ class _RawCell:
     row_ordinal: int = -1
     # Ordinal of the row group (``thead`` / ``tbody`` / ``tfoot``, explicit or implied) the row belongs to.
     row_group: int = 0
+    # True when a declared colspan/rowspan exceeded 64 and was read as 1.
+    span_overflow: bool = False
 
 
 @dataclass
@@ -609,6 +631,10 @@ class _RawTable:
     in_caption: bool = False
     row_ordinal: int = -1
     row_group: int = 0
+    open_group: str | None = None
+    group_kind: str = "tbody"
+    # Every HTML row in source order, including rows that emit no cell: (ordinal, group ordinal, group kind).
+    row_layout: list[tuple[int, int, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -620,6 +646,7 @@ class _RawBlock:
     table_rows: tuple[tuple[_RawCell, ...], ...] = ()
     table_caption: str = ""
     heading_level: int = 0
+    table_layout: tuple[tuple[int, int, str], ...] = ()
 
 
 @dataclass
@@ -729,26 +756,31 @@ class _HtmlBlockExtractor(HTMLParser):
                     table.rows.append(table.current_row)
                 table.current_row = []
                 table.row_ordinal += 1
+                table.row_layout.append((table.row_ordinal, table.row_group, table.group_kind))
             elif tag in {"thead", "tbody", "tfoot"}:
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
                 table.current_row = None
                 table.row_group += 1
+                table.open_group = tag
+                table.group_kind = tag
             elif tag == "caption":
                 table.in_caption = True
             elif tag in {"td", "th"}:
                 if table.current_row is None:
                     table.current_row = []
                     table.row_ordinal += 1
+                    table.row_layout.append((table.row_ordinal, table.row_group, table.group_kind))
                 attr_map = _attribute_map(attrs)
                 cell = _RawCell(
                     start=start,
                     end=start,
                     text_parts=[],
                     colspan=_span_attribute(attr_map.get("colspan")),
-                    rowspan=_span_attribute(attr_map.get("rowspan")),
+                    rowspan=_span_attribute(attr_map.get("rowspan"), rowspan=True),
                     row_ordinal=table.row_ordinal,
                     row_group=table.row_group,
+                    span_overflow=_span_overflow(attr_map.get("colspan")) or _span_overflow(attr_map.get("rowspan")),
                 )
                 table.current_row.append(cell)
                 table.current_cell = cell
@@ -793,10 +825,15 @@ class _HtmlBlockExtractor(HTMLParser):
                 table.current_row = None
                 return
             if tag in {"thead", "tbody", "tfoot"}:
-                if table.current_row is not None and table.current_row:
-                    table.rows.append(table.current_row)
-                table.current_row = None
-                table.row_group += 1
+                # A stray end tag with no open group is ignored, as HTML ignores it; a real one closes the group
+                # and the rows after it sit in an implied tbody.
+                if table.open_group == tag:
+                    if table.current_row is not None and table.current_row:
+                        table.rows.append(table.current_row)
+                    table.current_row = None
+                    table.row_group += 1
+                    table.open_group = None
+                    table.group_kind = "tbody"
                 return
             if tag == "table":
                 if table.current_row is not None and table.current_row:
@@ -808,7 +845,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts))))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout)))
                 return
             return
         matching_index = next(
@@ -837,7 +874,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts))))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout)))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
@@ -914,7 +951,7 @@ def _plain_table_block(lines: Sequence[tuple[int, str]], source: str) -> _RawBlo
     start = lines[0][0]
     end = lines[-1][0] + len(lines[-1][1])
     text = "\n".join(" | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows)
-    return _RawBlock(BlockKind.TABLE, start, end, text, tuple(rows))
+    return _RawBlock(BlockKind.TABLE, start, end, text, tuple(rows), table_layout=tuple((index, 0, "tbody") for index in range(len(rows))))
 
 
 def _plain_text_blocks(source: str, registry: DisclosureDiffRegistry, form: str | None) -> tuple[_RawBlock, ...]:
@@ -1118,11 +1155,14 @@ def normalize_filing(
                             rowspan=raw_cell.rowspan,
                             row_ordinal=raw_cell.row_ordinal if raw_cell.row_ordinal >= 0 else row_index,
                             row_group=raw_cell.row_group,
+                            span_overflow=raw_cell.span_overflow,
                         )
                     )
                 if cells:
                     rows.append(tuple(cells))
-            table = NormalizedTable(table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption)
+            table = NormalizedTable(
+                table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout
+            )
             text = table.text()
         block_id = stable_id(
             "disclosure_block",
