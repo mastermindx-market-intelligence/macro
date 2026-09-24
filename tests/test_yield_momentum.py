@@ -447,4 +447,44 @@ def test_expected_absent_grid_is_pure_and_bounded():
     flags = yield_momentum.expected_absent_grid(idx)
     assert len(flags) == len(idx)
     assert sum(flags) == 2  # MLK Day (Jan 20) + Presidents' Day (Feb 17).
+    # Pin identities (not just count) so any calendar drift fails loudly.
+    flagged = [idx[i] for i, f in enumerate(flags) if f]
+    assert flagged == [pd.Timestamp('2025-01-20'), pd.Timestamp('2025-02-17')]
     assert yield_momentum.HOLIDAY_BASIS == 'us_federal_holidays_v1'
+
+
+def test_turn_watch_percentile_excludes_carried_holiday_nans():
+    # Regression: on a 1260-row weekday grid ~53 holidays fall inside and the
+    # old `measured` (NaN at carried holidays) dragged the percentile denominator
+    # — a true 0.9198 was scored 0.8810, suppressing extreme_high_watch on the
+    # rising regime this packet exists to unblock. `_turn_watch` is now called
+    # over `measured.dropna()` so the observed sample is the denominator.
+    idx = pd.bdate_range(end='2026-09-23', periods=1260)
+    holiday_flags = yield_momentum.expected_absent_grid(idx)
+    holiday_rows = [idx[i] for i, f in enumerate(holiday_flags) if f]
+    assert len(holiday_rows) == 53  # Production-scale pattern.
+
+    # Construct values so 97 measured samples are above the last measured sample
+    # and the remaining 1110 are below — true percentile 1110/1207 = 0.9198
+    # (above the 0.90 extreme_high_watch threshold) which the old `measured`
+    # denominator scored as 1110/1260 = 0.8810 (below 0.90, returned None).
+    n = 1260
+    holiday_positions = {idx.get_loc(d) for d in holiday_rows}
+    measured_positions = [i for i in range(n) if i not in holiday_positions]
+    assert len(measured_positions) == 1207
+    last_position = measured_positions[-1]  # Last grid point is a Wednesday.
+    high_positions = measured_positions[:97]  # 97 measured samples above last.
+    values = np.full(n, 4.0)
+    for pos in high_positions:
+        values[pos] = 5.0
+    values[last_position] = 4.5
+
+    f = pd.DataFrame({'us10y': values}, index=idx)
+    raw = f.us10y.drop(holiday_rows)
+    out = _origin_read(_attach_origin(f.copy(), raw))
+    assert out['path_qualified'] is True
+    assert out['expected_absent_grid_rows'] == 53
+    assert out['unexpected_carried_grid_rows'] == 0
+    # Post-fix (measured.dropna()): observed percentile is 1110/1207 = 0.9198 →
+    # extreme_high_watch. Pre-fix (measured): 1110/1260 = 0.8810 → None.
+    assert out['turn_watch'] == 'extreme_high_watch'

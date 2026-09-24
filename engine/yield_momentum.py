@@ -225,7 +225,14 @@ def _series_read(frame: pd.DataFrame, column: str,
     elif not out['path_qualified']:
         out['null_reason'] = 'endpoint comparisons only; complete observed path not qualified'
     if enough and out['path_qualified']:
-        out['turn_watch'] = _turn_watch(measured, out['velocity_bp']['22d'])
+        # Drop NaN at carried holiday rows so the percentile denominator is the
+        # observed sample, not the grid length; a 1260-grid with 53 holiday rows
+        # otherwise scores NaN as False and drags a true 0.9198 → 0.8810, which
+        # silently withholds extreme_high_watch on the rising regime this packet
+        # exists to unblock. Documented in
+        # research/RIC_F3_W1_EXPECTED_ABSENCE_QUALIFICATION_2026-09-24.md §Turn-watch
+        # percentile bias.
+        out['turn_watch'] = _turn_watch(measured.dropna(), out['velocity_bp']['22d'])
     return out
 
 
