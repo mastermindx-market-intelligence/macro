@@ -5535,6 +5535,8 @@ jobs:
       - "engine/sector_intelligence/finance_overlap.py"
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "tests/test_finance_intelligence_projection.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5573,7 +5575,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
