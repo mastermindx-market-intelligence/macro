@@ -998,3 +998,14 @@ Latest fresh reads in this session:
    actionless-canary dependency.
 
 Parent mission remains incomplete; no browser/provider/production canary exists.
+
+
+## 2026-09-24 continuation — provenance + R1-P0 repair
+
+- Protected Mastermind pin: `294b4c00ed668b497edb834be8108f14bc1bee8a`; Skillpack 1.0.1 / bootstrap 1 reloaded from that exact revision. Movement from the prior pin has zero direct overlap with #836/#651/#933/#936.
+- #651 current head: `8c7b639b155e1f5dde11ab820af2c1e87158bbcb`. RED `5c41ec9f...` + GREEN `8c7b639b...` add a path-scoped pre/post cleanliness fence for `agentos/`, `scripts/agentos.py`, `scripts/audit_stranded_work.py`, and `config/mastermind_programs.yml`. Unrelated Macro dirt remains allowed. New typed refusals: `AGENTOS_SOURCE_WORKTREE_DIRTY` and `AGENTOS_SOURCE_WORKTREE_STATUS_UNAVAILABLE`. Existing full-sequence SHA-movement refusal remains. CI `35970960611` is RUNNING; exact-head re-review requested from `mastermindx-2`.
+- #953 current head: `7d49877488976a88eff85c194b12e472e4d5b81a`. Prior red was one bad negative discriminator: content mutation made byte length stale before the intended digest test. `7d498774...` fixes only the test by refreshing byte length while leaving digest stale. Contract semantics are unchanged. CI `35970360768` is RUNNING.
+- #936 prior green is now dependency-historical because #651 moved. Do not call #936 dependency-current until the accepted #651 head is integrated.
+- Review carriers remain unconsumed: #836 Claude6 `D0BT2125KHQ/1790231581.990109`; #651 ChatGPT2 `D0BRLGE0BBN/1790155189.800099`; #933 ChatGPT1 `D0BSB763FRN/1790226451.766309`. None has PICKUP_ACK/START/RESULT.
+- DO NOT REDO: no whole-worktree-clean rule; no second Agent OS compiler/store; no conversation fingerprint inside the R1-P0 inner payload; outer #836 transport owns exact conversation targeting.
+- Next: consume #651/#953 exact-head CI. If #651 green + independently accepted, re-integrate #936. If #953 green, independently review the inert contract. Live R1 wiring remains gated on #836 independent acceptance.
