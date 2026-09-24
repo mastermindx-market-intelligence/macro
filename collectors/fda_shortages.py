@@ -159,6 +159,9 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
         if reported_total is None:
             reported_total = total
             source_generation = generation
+            if not isinstance(generation, str) or not generation:
+                failure_code = "NO_SOURCE_GENERATION"
+                break
         elif total != reported_total:
             failure_code = "COUNT_DRIFT"
             break
