@@ -10,7 +10,7 @@ finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_handoff_state: NOT_ISSUED
 ---
 
-# GMI Energy — R5A durable continuation
+# GMI Energy — R5B historical-expectations continuation
 
 ## Mission, authority and carrier
 
@@ -94,11 +94,44 @@ Fresh subset verification before publication: **29 passed / 0 failed**, includin
 
 The orphan Git object created during an aborted partial transfer was never attached to the branch and grants no state/effect authority. The final published additive blob was independently matched before ref update.
 
-## Exact next action — R5B, then R6
+## R5B first historical expectations-event case now durable
 
-Recover one genuine historical estimate snapshot through the issuer archive/download path, starting with Equinor's historical area; establish exact content, forecast period, contributor/method scope and first-known/publication evidence. Reconcile it with actuals and a corporate-action-correct security/claim reference. Alternatively qualify a distinct licensed historical provider without fabricating admission or accepting new paid terms without authority. Continue selected independent local-contract/CCUS/regional-storage gaps where useful, not a new broad ticker census.
+The first historical expectations-event qualification is now published as one four-file bounded research package:
 
-Only after this bounded evidence exists may the research label a historical surprise, revision or matched return comparison. Price targets, a current cheap/expensive verdict, alpha and predictive-return claims remain unestablished. Build the fixed-horizon evaluation specification before using the same events to judge its performance.
+1. `research/energy/ENERGY_R5B_HISTORICAL_EXPECTATIONS_MODEL_2026-09-23.json`
+   - content commit `eed5cb117d2614b215ba3b6a409ec1b9332f29c1`
+   - blob `a03d032cb5b7583c0c829d11d5c551aa34333eeb`
+   - SHA256 `a78534a524edca7aedf871fe2bdaf99aaa1ee54cbc29a13b82ece791a61a7945`
+2. `research/energy/ENERGY_R5B_HISTORICAL_EXPECTATIONS_EVENT_CASE_2026-09-23.md`
+   - blob `8c55384108908ddb95e44c86c768608fa39bd08a`
+   - SHA256 `090977e3d2e56f69ea0a6ee031af6fbae205cfa8537c641c22fbc7595994ea86`
+3. `research/energy/verify_energy_r5b.py`
+   - blob `65bbb1d6cd37e2709da6dc4972e938f86d0eaaca`
+   - SHA256 `ed9130f6d687571132cadd9258dda82775156d92a4bbbb40544d05dbc8b8941f`
+4. `research/energy/ENERGY_R5B_VERIFICATION_2026-09-23.json`
+   - blob `c999130a34bb349b1674f713eebff81befc09c8c`
+   - SHA256 `71aedd59eb65c24503181f14b4473c8a34c97ff77532f0a1d79bf75b1562f913`
+
+Exact transfer was staged on the authorized Mac Studio, decompressed, and verified against all four SHA256/Git-blob identities before the branch ref was updated. A fenced low-level Git operation re-read the branch at `129e9911b530be84964b4909289cd4816e8677b3` immediately before ref movement. Native GitHub readback after publication matches all four expected blobs. Fresh verifier execution on the same staged bytes: **17 passed / 0 failed; application tests 0; predictive backtests 0.** Research checks do not establish predictive edge or product behavior.
+
+### Equinor Q4 2024 evidence state
+
+- Issuer invitation dated **2025-01-13** states Q4 2024 results would be published **2025-02-05** and that collected analyst consensus is published one week before the actual release.
+- Independently timestamped Finansavisen / Infront TDN Direkt material from **2025-01-29 08:07** records company-collected consensus from **24 analysts** for adjusted operating income before tax (USD7.709bn), adjusted operating income after tax (USD2.061bn) and equity production (2.093m boe/day). These three metrics therefore have strong pre-event first-known support.
+- Equinor's current historical-consensus archive independently reproduces those values and additionally reports adjusted EPS USD0.68/share and the trimmed aggregation method. Because no independently preserved 29-January byte/timestamp for that exact EPS cell was recovered, EPS retains a weaker historical-availability grade rather than inheriting the other metrics' timestamp by adjacency.
+- Issuer actuals on 2025-02-05 were adjusted operating income before tax USD7.896bn, adjusted operating income after tax USD2.292bn, adjusted EPS USD0.63/share and equity production 2.072m boe/day.
+- Matched descriptive differences: **+2.43% pre-tax, +11.21% adjusted operating income after tax, -7.35% adjusted EPS, -1.00% production.** The mixed vector is preserved; no generic beat/miss bit is permitted.
+- Same-day third-party reporting maps USD1.733bn to an after-tax operating label, while the issuer defines USD2.292bn as adjusted operating income after tax and USD1.733bn as adjusted net income. Preserve this conflict and bind issuer actuals to issuer definitions rather than choosing the label that creates a stronger surprise.
+- Nasdaq Stockholm's February 2025 Nordic Derivatives report records EQNR NO earnings-related implied move **4.5%** and actual earnings move **-4.1%** for 2025-02-05. This is an external provider event-move observation, not a Mastermind-reproduced return window; the visible methodology defines implied-move magnitude but does not fully specify a reproducible actual-return window.
+- The same event day included Equinor's **Capital Markets Update 2025** with new FCF, capex, production, renewable-spending and capital-distribution information. Therefore the -4.1% move is deliberately marked **causally confounded** and may not train a clean earnings-surprise rule.
+
+Evidence state for Q4 2024 is `PRE_EVENT_AGGREGATE_SUPPORTED / EXACT_HISTORICAL_BYTE_NOT_ARCHIVED`, not a stronger claim. This case is strong for information-clock, metric-definition, source-conflict and event-confound acceptance; it is not a clean causal alpha case.
+
+## Exact next action — R5B clean case, then R6
+
+Qualify one **cleaner ordinary-quarter historical case** without a simultaneous capital-markets/strategy update. Preferred candidates are Equinor Q1 or Q2 2025, with Fortum Q2 2026 only if pre-result first-known consensus can be independently established. Require: pre-event first-known estimate evidence, issuer definition-matched actuals, declared return window, benchmark/commodity controls, corporate-action check and same-day confound inventory. Do not reuse Q4 2024's -4.1% move as earnings-only evidence.
+
+After at least one cleaner case fixes the event-study grammar, freeze the R5 historical-evaluation specification: evidence grades, metric matching, horizon and panel-turnover rules, return conventions, confound handling, benchmark/commodity controls and out-of-sample acceptance. Price targets, current cheap/expensive verdicts, alpha and predictive-return claims remain unestablished until that evaluation passes.
 
 R6 remains final shared-template compatibility, owner/rights mapping, user journey, concrete build sequence and real-path acceptance design. Do not issue Fable's handoff before the core research/design is mature. Fable is the later build principal, not a substitute for this unfinished research.
 
