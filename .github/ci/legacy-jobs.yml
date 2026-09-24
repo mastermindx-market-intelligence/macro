@@ -312,6 +312,7 @@ jobs:
     scope: exclusive
     paths:
       - "config.yml"
+      - "config/market_reference.yml"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -323,6 +324,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/build_market_reference.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
@@ -332,6 +334,14 @@ jobs:
       - "site/regime.json"
       - "site/release_forecast.json"
       - "templates/am_edition.html.j2"
+      - "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py"
+      - "tests/fixtures/am_edition_fixture/data/market_state/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/neuralweb/market_plane.json"
+      - "tests/fixtures/am_edition_fixture/data/regime/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/release_forecast/latest.json"
+      - "tests/fixtures/am_edition_fixture/site/live/quotes.json"
+      - "tests/fixtures/am_edition_fixture/site/master_brief.json"
+      - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct

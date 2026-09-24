@@ -8,6 +8,8 @@ marker.
 from __future__ import annotations
 
 import json
+import re
+import subprocess
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -187,8 +189,9 @@ def test_missing_source_prints_a_null_it_does_not_drop_the_block(tmp_path):
                 assert not b.get("state_reason_zh")
                 continue
             assert b["state"] == "NOT_COVERED"
-            assert b["state_reason_en"]
-            assert b["state_reason_zh"]
+            # R7 exact plain-word disclosure (round-3 MINOR 4 pin).
+            assert b["state_reason_en"] == "No owner pages could be linked this morning."
+            assert b["state_reason_zh"] == "今晨无法链接到相关页面。"
             continue
         assert b["state"] in ("UNAVAILABLE", "NOT_COVERED")
         assert b["state_reason_en"]
@@ -620,11 +623,6 @@ def test_weekday_session_clock_unchanged_on_a_normal_session_day(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-_A7_FORBIDDEN = (
-    "buy", "sell", "long", "short", "target", "size",
-    "做多", "做空", "买入", "卖出",
-)
-
 _LEGACY_BLOCK_KEYS = {
     "session_clock", "tape_since_prior_close", "market_state", "regime",
     "cross_asset_plane", "todays_calendar", "prior_close_brief_ref",
@@ -898,7 +896,11 @@ def test_context_planes_states(tmp_path):
     assert cp["state"] == "STALE_WITH_LAST_KNOWN"
     rates_row = next(row for row in cp["rows"] if row["plane"] == "rates")
     assert rates_row["state"] == "STALE_WITH_LAST_KNOWN"
-    assert "Last updated" in rates_row["state_reason_en"]
+    # Row-level stale reason keeps the plain "Last updated <age|date>." shape.
+    assert re.fullmatch(
+        r"Last updated (\d+ (day|days|hour|hours|minute|minutes) ago|\d{4}-\d{2}-\d{2})\.",
+        rates_row["state_reason_en"],
+    ), rates_row["state_reason_en"]
 
     # UNAVAILABLE — no transmission file at all (and no commodity / intl).
     # With no transmission artifact, every rates/dollar/credit row degrades
@@ -998,7 +1000,13 @@ def test_research_watch_states(tmp_path):
     p = build_payload(site, data, now=now)
     rw = _new_block(p, "research_watch")
     assert rw["state"] == "STALE_WITH_LAST_KNOWN"
-    assert "last updated" in rw["state_reason_en"].lower()
+    # R2 exact reason strings (round-3 MINOR 5 pin).
+    assert re.fullmatch(
+        r"Last updated \d{4}-\d{2}-\d{2} — showing the last known conditions\.", rw["state_reason_en"]
+    ), rw["state_reason_en"]
+    assert re.fullmatch(
+        r"最近更新于 \d{4}-\d{2}-\d{2}，显示最近已知的观察条件。", rw["state_reason_zh"]
+    ), rw["state_reason_zh"]
 
     # UNAVAILABLE — no theses.jsonl at all. The research_watch pipeline
     # exists; the file just isn't there. This is UNAVAILABLE, NOT
@@ -1050,16 +1058,11 @@ def test_owner_links_states_and_resolution(tmp_path):
     at china.html (hk.html is not emitted — the international context
     plane row already carries the CN/HK attribution).
 
-    MINOR 4 (round 3): every href is asserted by TEMPLATE PATH, not by
-    the producer's own `_resolve_owner_page` whitelist — the test is
-    now independent of the producer's internal resolver. The resolved
-    hrefs are mapped to their concrete template paths:
-      macro.html -> _KNOWN_GENERATED_PAGES (scripts/build_site.py)
-      bonds.html -> templates/bonds.html.j2
-      commodities.html -> templates/commodities.html.j2
-      china.html -> templates/china.html.j2
-    A bogus entry in the producer's whitelist cannot pass this test
-    because the producer's own whitelist is not consulted."""
+    Seat round (round-3 MAJOR 5): every href is asserted INDEPENDENTLY of
+    the producer -- either `templates/<href>.j2` exists on disk or
+    `site/<href>` is a git-tracked generated page (index read, sparse-safe).
+    The producer's `_KNOWN_GENERATED_PAGES` / `_resolve_owner_page` are not
+    consulted, so a bogus whitelist entry cannot pass this test."""
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     site, data = _full_tree(
         tmp_path / "ok", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
@@ -1083,19 +1086,19 @@ def test_owner_links_states_and_resolution(tmp_path):
     for row in ol["rows"]:
         if row["kind"] == "owner":
             href = row["href"]
-            if href in mod._KNOWN_GENERATED_PAGES:
-                # Known generated page — the script name is in the
-                # whitelist entry. Verify the named script exists.
-                script_rel = mod._KNOWN_GENERATED_PAGES[href]
-                assert (repo_root / script_rel).exists(), (
-                    f"KNOWN_GENERATED_PAGES entry {href!r} -> {script_rel!r} "
-                    f"but that script does not exist"
+            # Independent of the producer: a template route exists on disk,
+            # OR the generated page is TRACKED in git under site/ (read from
+            # the index, so this holds in a sparse worktree too). The
+            # producer's own whitelist is never consulted (round-3 MAJOR 5).
+            tmpl_path = repo_root / "templates" / f"{href}.j2"
+            if not tmpl_path.exists():
+                tracked = subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", f"site/{href}"],
+                    cwd=str(repo_root), capture_output=True, text=True,
                 )
-            else:
-                # Resolved through the .j2 template path.
-                tmpl_path = repo_root / "templates" / f"{href}.j2"
-                assert tmpl_path.exists(), (
-                    f"href {href!r} resolves to a non-existent template: {tmpl_path}"
+                assert tracked.returncode == 0, (
+                    f"href {href!r}: no templates/{href}.j2 and site/{href} is not a "
+                    f"tracked generated page ({tracked.stderr.strip()})"
                 )
         elif row["kind"] == "reference":
             assert row["href"].startswith("reference.html#")
@@ -2150,10 +2153,24 @@ def test_research_watch_loader_does_not_read_a7_keys(tmp_path):
     # of a forbidden key raises a sentinel exception. We wrap the dict
     # subclass so the patch is scoped to the test row only.
     class _SentinelDict(dict):
-        def __getitem__(self, k):
+        # The loader reads through ``dict.get`` (C-level, never dispatches
+        # to ``__getitem__``), so the guard MUST intercept ``get`` too --
+        # a ``__getitem__``-only guard was vacuous (round-3 MAJOR 1).
+        def _check(self, k):
             if k not in mod._THESIS_ROW_KEYS:
                 raise AssertionError(f"forbidden key read: {k!r}")
+
+        def __getitem__(self, k):
+            self._check(k)
             return super().__getitem__(k)
+
+        def get(self, k, default=None):
+            self._check(k)
+            return super().get(k, default)
+
+        def __contains__(self, k):
+            self._check(k)
+            return super().__contains__(k)
 
     guarded = _SentinelDict(real_row)
     out = mod._load_theses_row(guarded)
@@ -2225,7 +2242,7 @@ def test_zh_strings_have_no_ascii_letters_except_whitelisted_tokens(tmp_path):
     # may carry alongside a number ("320bp") — translating it to 基点
     # would silently rewrite owner-transferred copy, which the
     # producer must never do.
-    whitelist = ("WTI", "OAS", "HY", "CPI", "FOMC", "bp")
+    whitelist = ("WTI", "OAS", "HY", "CPI", "FOMC", "bp")  # seat ruling: R9 five tokens + owner-supplied unit `bp` (owner label text is transferred verbatim, never rewritten)
     for blk_key in _NEW_BLOCK_KEYS:
         blk = _new_block(payload, blk_key)
         candidates: list[tuple[str, str]] = []
@@ -2548,11 +2565,10 @@ def test_byte_identity_full_legacy_payload_uses_real_origin_fixture(tmp_path):
     if not site.exists():
         pytest.skip("site/ omitted by sparse worktree — skipping real-artifact byte-identity test")
     fixture_path = Path(__file__).resolve().parent / "fixtures" / "am_edition_legacy_snapshot_dd20710c.json"
-    if not fixture_path.exists():
-        pytest.skip(
-            "real-artifact byte-identity fixture not yet committed; "
-            "run scripts/capture_legacy_snapshot.py to regenerate."
-        )
+    assert fixture_path.exists(), (
+        "byte-identity fixture missing -- regenerate with "
+        "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py (round-3 BLOCKER 1: a skip here hid a deletion)"
+    )
     snapshot = json.loads(fixture_path.read_text(encoding="utf-8"))
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     payload = build_payload(site, data_root, now=now)

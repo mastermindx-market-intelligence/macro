@@ -35,7 +35,6 @@ calendar clock to gate them).
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import sys
@@ -169,6 +168,35 @@ _RESEARCH_WATCH_MAX_AGE = 1440 * 10  # 10 US sessions; older -> STALE block
 # international) — `_owner_links_block` collapses the resolved hrefs
 # via the seen_hrefs set so two logical planes mapping to the same
 # href never produce duplicate rows.
+
+def _breadth_words(n_up: int, n_members: int) -> tuple[str, str]:
+    """Plain-word breadth band for the commodity plane (no counts on the
+    glance tier). Bands: >=3/4 most, >=1/2 more than half, >=1/4 fewer
+    than half, else few."""
+    share = n_up / n_members
+    if share >= 0.75:
+        return "Most members trending up.", "多数品种趋势向上。"
+    if share >= 0.5:
+        return "More than half of members trending up.", "过半品种趋势向上。"
+    if share >= 0.25:
+        return "Fewer than half of members trending up.", "不足半数品种趋势向上。"
+    return "Few members trending up.", "少数品种趋势向上。"
+
+
+def _join_zh_sentences(*parts: str | None) -> str | None:
+    """Join ZH sentence halves as FULL sentences: each part ends with exactly
+    one 「。」 and the parts are concatenated with no separator (the full stop
+    is the ZH sentence separator) -- never "。；", never a doubled stop
+    (round-3 MINOR 6). Owner text inside a part is not otherwise touched."""
+    clean = []
+    for x in parts:
+        if not x:
+            continue
+        s = str(x).strip().rstrip("；;").rstrip("。")
+        if s:
+            clean.append(s + "。")
+    return "".join(clean) or None
+
 _OWNER_PAGE_BY_PLANE = {
     "rates": "macro.html",
     "dollar": "bonds.html",
@@ -1297,9 +1325,11 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         c_breadth_up = c_breadth.get("n_up_trend")
         breadth_en = None
         breadth_zh = None
-        if isinstance(c_breadth_n, int) and isinstance(c_breadth_up, int):
-            breadth_en = f"{c_breadth_up}/{c_breadth_n} members trending up."
-            breadth_zh = f"{c_breadth_up}/{c_breadth_n} 个品种趋势向上。"
+        if isinstance(c_breadth_n, int) and isinstance(c_breadth_up, int) and c_breadth_n > 0:
+            # Seat ruling (round-3 MINOR 11): §A2 keeps breadth, R8 keeps
+            # counts off the glance tier -- so breadth is a plain-word band,
+            # never a fraction. Bands are fixed so the copy is testable.
+            breadth_en, breadth_zh = _breadth_words(c_breadth_up, c_breadth_n)
         favored_en_list = [str(x) for x in c_favored if x]
         # MINOR 9 round 3: EN copy uses an ASCII comma + space separator
         # (e.g. "Copper, Oil · WTI, Silver"), NOT the CJK enumeration
@@ -1487,10 +1517,10 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         # sentence boundary, not a pipe.
         if missing_en is not None:
             read_en = " — ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
-            read_zh = "；".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
+            read_zh = _join_zh_sentences(cn_headline_zh, hk_headline_zh)
         else:
             read_en = " — ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
-            read_zh = "；".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
+            read_zh = _join_zh_sentences(cn_headline_zh, hk_headline_zh)
         intl_row = _context_planes_row(
             "international",
             label_en=present_label_en,
