@@ -698,18 +698,50 @@ def test_ownership_side_is_served_only_from_the_closed_template_grammar():
         ("an announced sale to Skild AI of the Robotics Automation business", "announced_seller"),
         ("an announced divestiture of the Robotics Automation business to Skild AI, for cash",
          "announced_seller"),
-        ("an announced acquisition of the Twinny perception unit from Orbbec",
-         "announced_acquirer"),
-        ("an announced acquisition from Orbbec of the Twinny perception unit",
-         "announced_acquirer"),
     )
     for sentence, role in anchored:
         assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
     # the conjoined-object fixture shape ("the ThingWorx and Kepware businesses")
     assert _ptc_role("the announced change of the ThingWorx and Kepware businesses to TPG") \
         == "announced_seller"
+    assert _ptc_role("The announced change of the ThingWorx and Kepware businesses to TPG") \
+        == "announced_seller"
     assert _ptc_role("PTC divests the ThingWorx and Kepware businesses to TPG") \
         == "announced_seller"
+    # typographic apostrophes / quotes and a capitalised article are normalised
+    for sentence, role in (
+        ("Zebra Technologies\u2019 sale of the Robotics Automation business to Skild AI",
+         "announced_seller"),
+        ("\u201cZebra Technologies sells the unit to Skild AI\u201d", "announced_seller"),
+        ("An announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
+        ("Zebra Technologies (advised by Goldman Sachs) sells the unit to Skild AI",
+         "announced_seller"),
+        ("The perception unit was purchased by Zebra Technologies, effective 15 April 2026",
+         "announced_acquirer"),
+        ("Zebra Technologies sells the unit to Skild AI for cash", "announced_seller"),
+    ):
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
+    # T5 is bound to the assertion's own curated object label: the slot
+    # (preposition + party) must equal the parenthetical "(sale to Skild AI)"
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced acquisition of the Twinny perception unit from Orbbec"],
+                          "object.source_product_label":
+                          "Twinny perception unit (acquisition from Orbbec)"}) \
+        == "announced_acquirer"
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced acquisition from Orbbec of the Twinny perception unit"],
+                          "object.source_product_label":
+                          "Twinny perception unit (acquisition from Orbbec)"}) \
+        == "announced_acquirer"
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced acquisition of the Twinny perception unit from Orbbec"],
+                          "object.source_product_label": "Twinny perception unit"}) \
+        == "announced_party"
+    # the fixture's own label says "(sale to Skild AI)", so an acquisition
+    # sentence cannot borrow it
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced acquisition of the Twinny perception unit from Orbbec"]}) \
+        == "announced_party"
 
 
 def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
@@ -781,6 +813,31 @@ def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
         "Zebra Technologies's buyer acquires the remaining stake",
         "Zebra Technologies Robotics Unit acquires the perception business",
         "Zebra Technologies' partner Skild AI acquires the business",
+        # review 5 B1: the same family in the passive voice (the mention needs a
+        # right boundary: end, comma or a lowercase function word)
+        "the remaining stake was acquired by Zebra Technologies's buyer",
+        "the perception business was acquired by Zebra Technologies Robotics Unit",
+        "the business was acquired by Zebra Technologies' partner Skild AI",
+        "the perception unit was acquired by Zebra Technologies\u2019 adviser",
+        "the unit was acquired by Zebra Technologies competitor Fanuc",
+        "the perception unit was purchased by Zebra Robotics GmbH",
+        "the unit was acquired by ZebraCorp",
+        # review 5 B2/B3: an implicit noun whose slot holds a date, a place or
+        # a second party, or that names no curated counterparty at all
+        "the announced acquisition of the Robotics Automation business from Q2 2026",
+        "an announced sale of the Robotics Automation business to April 2026 closing",
+        "an announced sale of the unit to Delaware",
+        "an announced sale of the unit to European regulators",
+        "an announced acquisition of the Robotics Automation business from Skild AI to Fanuc",
+        "an announced transfer of the unit to Skild AI from Fanuc",
+        "an announced sale of the unit to Skild AI benefit",
+        # review 5 B4: the subject acting for another principal
+        "Zebra Technologies transferred the unit on behalf of Skild AI",
+        "Zebra Technologies sells the unit as agent for Skild AI",
+        "Zebra Technologies acquires the unit for Skild AI",
+        # review 5 nit 3: "change of" something that is not a business
+        "an announced change of the distribution agreement to Skild AI",
+        "an announced change of the reporting segment to Robotics Automation",
         # ambiguity inside one sentence: two markers, a second clause with its own
         # ownership verb, negation / substitution
         "an announced sale to X and the acquisition of Y",
@@ -803,6 +860,12 @@ def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
     assert _ptc_role("the announced acquisition of the ThingWorx and Kepware businesses") \
         == "announced_party"
     assert _role_for("TPG", "the announced change of the ThingWorx and Kepware businesses to TPG") \
+        == "announced_party"
+    assert _role_for("Fortive",
+                     "the Skild AI perception unit was acquired by Fortive Industrial Technologies") \
+        == "announced_party"
+    assert _role_for("PTC", "the ThingWorx business was acquired by PTCTech") == "announced_party"
+    assert _role_for("PTC Inc.", "the ThingWorx business was acquired by PTC Inc.'s adviser") \
         == "announced_party"
 
 
