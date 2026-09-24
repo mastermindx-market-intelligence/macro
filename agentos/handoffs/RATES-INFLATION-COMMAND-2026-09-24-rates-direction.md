@@ -133,3 +133,16 @@ remains: a transient audit-call connection failure was reconciled on the same ho
 before the no-fit arithmetic audit completed. Resume within existing program
 scope on the same reconciled source carrier; no fresh session inherits custody
 merely by reading this file.
+
+## Continuation: RD1 CI repair
+
+The final-head pack-10 failure was a genuine missing root pin in the new research
+entry script, not infrastructure starvation. The direct-entry root pin and a
+foreign-PYTHONPATH regression were added; 27 targeted tests passed. See
+research/rates_direction/RD1_ENTRYPOINT_REPAIR_2026-09-24.md. No fitting, outcome
+reading, ledger mutation or result replacement occurred. Replay remains bound
+to the original freeze commit, not this post-outcome maintenance head.
+
+Next independent source slice remains RD2 constituent preservation and roll
+attribution in the incumbent collector and RIC consumer. It must keep separate
+source custody from this frozen research carrier and preserve held sibling PRs.

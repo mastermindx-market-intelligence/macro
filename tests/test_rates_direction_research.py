@@ -174,3 +174,19 @@ def test_spec_settings_survive_into_score_consumer():
                                        flat_band_bp=500))
     report = summarize(result, start='2018-01-01', end='2020-12-31')
     assert report['models']['no_change']['direction_log_loss'] < 0.1
+
+
+def test_direct_entrypoint_pins_this_checkout_before_foreign_packages(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    foreign = tmp_path / 'engine'
+    foreign.mkdir()
+    (foreign / '__init__.py').write_text("raise RuntimeError('FOREIGN_CHECKOUT')\n")
+    env = dict(os.environ, PYTHONPATH=str(tmp_path))
+    done = subprocess.run([sys.executable, str(root / 'scripts/research/ric_rates_direction.py'),
+                           '--help'], cwd=tmp_path, env=env, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+    assert '--register-and-run' in done.stdout

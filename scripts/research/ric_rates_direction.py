@@ -13,6 +13,11 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
+
+# Direct file invocation must resolve this checkout before any repository import.
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 from engine.inputs import flatten_fred_aliases
 from engine.rates_direction_research import (
