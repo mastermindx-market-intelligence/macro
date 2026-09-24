@@ -11,7 +11,7 @@ author:
   role: designer
 reference_files:
 - path: mockups/refs/institutionalize/intl/reference-r3.html
-  frozen_sha: 980e035a451e1f16925b6e3418a64d3dd8a0b026
+  frozen_sha: bdeb338372bf4ef29cb8d683e07ea840acdb4681
 files:
   baseline: baseline.yml
   proposal: proposal.yml

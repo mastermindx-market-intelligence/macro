@@ -1,7 +1,7 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
 proposed_artifact:
-  frozen_sha: 980e035a451e1f16925b6e3418a64d3dd8a0b026
+  frozen_sha: bdeb338372bf4ef29cb8d683e07ea840acdb4681
   paths:
   - mockups/refs/institutionalize/intl/reference-r3.html
   screenshots:
@@ -87,6 +87,31 @@ proposed_artifact:
     theme: light
     locale: zh
     state: country-gb
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-kr-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-kr
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-tw-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-tw
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-in-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-in
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-au-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-au
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-ez-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-ez
   - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-loading-dark-en.png
     viewport: desktop
     theme: dark

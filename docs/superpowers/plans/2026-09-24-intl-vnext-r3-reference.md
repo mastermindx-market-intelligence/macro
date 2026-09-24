@@ -99,9 +99,9 @@ Run: `git add mockups/refs/institutionalize/intl/reference-r3.html && git commit
 
 Use Playwright to capture desktop 1440×900 and mobile 390×844 across dark/light × EN/ZH. Assert `document.scrollWidth == viewport width` and zero console errors for every cell.
 
-- [x] **Step 2: Capture hidden inspector panels and horizon states**
+- [x] **Step 2: Capture every inspector panel and horizon states**
 
-Capture Japan and United Kingdom inspector states in dark/light and EN/ZH, plus at least two non-default horizon selections. Assert the selected tab/button state is visible and keyboard reachable.
+Capture an explicit inspector state for Japan, South Korea, Taiwan, India, Australia, the United Kingdom, and the Eurozone. Preserve the existing Japan/United Kingdom dark/light × EN/ZH adjudication set, add a dark-English capture for every remaining inspector, and retain at least two non-default horizon selections. Assert the selected tab/button state is visible and keyboard reachable.
 
 - [x] **Step 3: Capture organ-local loading, empty, stale, and error states**
 
