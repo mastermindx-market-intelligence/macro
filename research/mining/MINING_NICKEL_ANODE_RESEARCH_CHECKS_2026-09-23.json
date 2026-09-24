@@ -1,0 +1,306 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "LOCAL_RESEARCH_ARITHMETIC_INDEXING_AND_PEDAGOGICAL_EXAMPLES_ONLY",
+  "run_utc": "2026-09-24T05:12:11.997318+00:00",
+  "research_cutoff": "2026-09-23",
+  "command": "python check_nickel_anode_research.py",
+  "documents": {
+    "MINING_NICKEL_COBALT_ANODE_ECONOMICS_2026-09-23.md": {
+      "bytes": 43777,
+      "words": 5967,
+      "sha256": "9029eeef007616948f78643cc4cca50d341f81f2f29aa8d25d5fe3a0ee5b6b1a",
+      "git_blob_sha1": "7f1c1e5e46e19b6501970b9a98b52e65c2ee4b1c"
+    },
+    "MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md": {
+      "bytes": 23319,
+      "words": 3031,
+      "sha256": "dd9dd7c01e90f75a5e4bd60ba23225703e50293892d5e96b4ff2425b38d252ca",
+      "git_blob_sha1": "f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29"
+    }
+  },
+  "script_git_blob_sha1": "e3e85f2eeefa44c6c832918a661e14f216056231",
+  "total": 53,
+  "passed": 53,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "ten_dossiers",
+      "passed": true,
+      "evidence": "NC-01..10"
+    },
+    {
+      "check": "fourteen_sources",
+      "passed": true,
+      "evidence": "S01..14"
+    },
+    {
+      "check": "source_references_resolve",
+      "passed": true,
+      "evidence": "No orphan source identifier"
+    },
+    {
+      "check": "source_urls_unique",
+      "passed": true,
+      "evidence": "Fourteen distinct source URLs, not corpus-wide uniqueness"
+    },
+    {
+      "check": "twenty_eight_requirements",
+      "passed": true,
+      "evidence": "Prospective, not implemented"
+    },
+    {
+      "check": "six_hypothetical_cases",
+      "passed": true,
+      "evidence": "H01..06"
+    },
+    {
+      "check": "four_personas",
+      "passed": true,
+      "evidence": "U01..04"
+    },
+    {
+      "check": "held_mission_boundary",
+      "passed": true,
+      "evidence": "Research only"
+    },
+    {
+      "check": "protected_revision_present",
+      "passed": true,
+      "evidence": "Same compatible Skillpack pin"
+    },
+    {
+      "check": "eight_canonical_pass_rows",
+      "passed": true,
+      "evidence": "P01..P08 only"
+    },
+    {
+      "check": "duplicate_p05_stays_excluded",
+      "passed": true,
+      "evidence": "Canonical and excluded identities preserved"
+    },
+    {
+      "check": "coverage_moves_to_native_design",
+      "passed": true,
+      "evidence": "No indefinite new company-note cycle"
+    },
+    {
+      "check": "inaccessible_numeric_sources_excluded",
+      "passed": true,
+      "evidence": "No substitution of unverified numerics"
+    },
+    {
+      "check": "H01_initial_nickel",
+      "passed": true,
+      "evidence": "35.000"
+    },
+    {
+      "check": "H01_new_nickel",
+      "passed": true,
+      "evidence": "31.850"
+    },
+    {
+      "check": "H01_change",
+      "passed": true,
+      "evidence": "Modelled branch -9%; GWh +30%"
+    },
+    {
+      "check": "H01_capacity_growth",
+      "passed": true,
+      "evidence": "30%"
+    },
+    {
+      "check": "H01_graphite_growth_with_substitution",
+      "passed": true,
+      "evidence": "104 kt vs hypothetical 100 kt"
+    },
+    {
+      "check": "H01_count_share_rejected",
+      "passed": true,
+      "evidence": "Incompatible share basis or year"
+    },
+    {
+      "check": "H01_wrong_year_rejected",
+      "passed": true,
+      "evidence": "Incompatible share basis or year"
+    },
+    {
+      "check": "H01_bad_fraction_rejected",
+      "passed": true,
+      "evidence": "Invalid nonnegative demand input"
+    },
+    {
+      "check": "H02_sell_instead_of_convert",
+      "passed": true,
+      "evidence": "-500 incremental dollars per stipulated unit"
+    },
+    {
+      "check": "H02_convert_when_spread_improves",
+      "passed": true,
+      "evidence": "+1000 incremental dollars"
+    },
+    {
+      "check": "H02_threshold",
+      "passed": true,
+      "evidence": "19000 final realization before other burdens"
+    },
+    {
+      "check": "H03_shaping_quantity",
+      "passed": true,
+      "evidence": "70.0"
+    },
+    {
+      "check": "H03_second_stage",
+      "passed": true,
+      "evidence": "66.500"
+    },
+    {
+      "check": "H03_saleable_quantity",
+      "passed": true,
+      "evidence": "59.85000"
+    },
+    {
+      "check": "H03_feed_cost_per_saleable",
+      "passed": true,
+      "evidence": "1002.506265664160401002506266"
+    },
+    {
+      "check": "H03_simplified_contribution",
+      "passed": true,
+      "evidence": "14775; not issuer or full cash flow"
+    },
+    {
+      "check": "H03_addition_is_not_final_output",
+      "passed": true,
+      "evidence": "Serial intermediate stages are not extra tonnes"
+    },
+    {
+      "check": "H04_unknown_criterion",
+      "passed": true,
+      "evidence": "Not 75% accepted"
+    },
+    {
+      "check": "H04_failed_criterion",
+      "passed": true,
+      "evidence": "No compensating mean score"
+    },
+    {
+      "check": "H04_all_technical_criteria_met",
+      "passed": true,
+      "evidence": "Technical set only, not commercial readiness"
+    },
+    {
+      "check": "H04_empty_criteria_rejected",
+      "passed": true,
+      "evidence": "Explicit nonempty criterion states required"
+    },
+    {
+      "check": "H04_numeric_score_rejected",
+      "passed": true,
+      "evidence": "Explicit nonempty criterion states required"
+    },
+    {
+      "check": "H05_funds_after_stipulated_obligations",
+      "passed": true,
+      "evidence": "USDm hypothetical only"
+    },
+    {
+      "check": "H05_base_shortfall",
+      "passed": true,
+      "evidence": "USD1m"
+    },
+    {
+      "check": "H05_delay_increment",
+      "passed": true,
+      "evidence": "USD8m"
+    },
+    {
+      "check": "H05_delayed_shortfall",
+      "passed": true,
+      "evidence": "USD9m"
+    },
+    {
+      "check": "H06_gross_less_credit",
+      "passed": true,
+      "evidence": "80 net cost"
+    },
+    {
+      "check": "H06_repeated_credit_is_wrong",
+      "passed": true,
+      "evidence": "60 is not 80"
+    },
+    {
+      "check": "Eramet_indirect_interest",
+      "passed": true,
+      "evidence": "38.7%; not a new entitlement estimate"
+    },
+    {
+      "check": "Eramet_ownership_differs_offtake",
+      "passed": true,
+      "evidence": "Separate scopes"
+    },
+    {
+      "check": "Terrafame_revenue_categories_sum",
+      "passed": true,
+      "evidence": "EURm H1 reported categories"
+    },
+    {
+      "check": "Terrafame_EBITDA_growth",
+      "passed": true,
+      "evidence": "Not a cash-flow or causal reconciliation"
+    },
+    {
+      "check": "Glencore_copper_change",
+      "passed": true,
+      "evidence": "100%-basis except source exceptions"
+    },
+    {
+      "check": "Glencore_cobalt_change",
+      "passed": true,
+      "evidence": "Different process-stage implications"
+    },
+    {
+      "check": "Sherritt_cash_geographic_sum",
+      "passed": true,
+      "evidence": "Canadian + Cuban + other cash; not all unrestricted"
+    },
+    {
+      "check": "NOVONIX_announced_first_payment",
+      "passed": true,
+      "evidence": "US$7m required; no payment proof"
+    },
+    {
+      "check": "NOVONIX_conditional_remaining_balance",
+      "passed": true,
+      "evidence": "Only upon payment; not observed settlement"
+    },
+    {
+      "check": "unrelated_project_capacities_not_yield",
+      "passed": true,
+      "evidence": "An explicit measured batch transformation is required"
+    },
+    {
+      "check": "nominal_capacity_not_measured_yield",
+      "passed": true,
+      "evidence": "An explicit measured batch transformation is required"
+    },
+    {
+      "check": "explicit_measured_batch_yield",
+      "passed": true,
+      "evidence": "Hypothetical measured batch only"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "CI",
+    "independent research review",
+    "issuer-accounting audit",
+    "contract settlement",
+    "customer confirmation",
+    "native historical retention",
+    "source rights",
+    "Agent OS validation",
+    "browser proof",
+    "investment validation",
+    "earlier-suite rerun"
+  ]
+}
