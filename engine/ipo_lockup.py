@@ -104,6 +104,7 @@ def summary(rows: list[dict]) -> dict:
         "approaching": len(appr),
         "just_expired": len(recent),
         "next_ticker": (nxt["ticker"] if nxt else None),
+        "next_company": (nxt.get("company") if nxt else None),
         "next_date": (nxt["expiry_date"] if nxt else None),
         "next_days": (nxt["days_to"] if nxt else None),
         "next_size_usd": (nxt.get("size_usd") if nxt else None),

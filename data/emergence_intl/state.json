@@ -1,32 +1,32 @@
 {
-  "235a4e3753ac": {
-    "name_en": "Emerging Financials cluster",
-    "name_zh": "\u65b0\u5174 Financials \u96c6\u7fa4",
-    "score": 68.2
+  "17d18d3a5333": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Real Estate",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Real Estate",
+    "score": 50.5
   },
-  "6e513dc7d9cf": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Staples",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Staples",
-    "score": 52.8
+  "24a59f17a681": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Utilities",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Utilities",
+    "score": 48.7
   },
-  "6fe4c6d357b6": {
-    "name_en": "Cross-sector cluster \u00b7 Health Care + Consumer Discretionary",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Consumer Discretionary",
-    "score": 52.9
+  "2c85fe224982": {
+    "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
+    "score": 53.5
   },
-  "b33264ebcd3a": {
-    "name_en": "Emerging Consumer Staples cluster",
-    "name_zh": "\u65b0\u5174 Consumer Staples \u96c6\u7fa4",
-    "score": 44.6
+  "aeb0eb3df3e7": {
+    "name_en": "Emerging Consumer Discretionary cluster",
+    "name_zh": "\u65b0\u5174 Consumer Discretionary \u96c6\u7fa4",
+    "score": 41.6
   },
   "c22064e27349": {
     "name_en": "Emerging Industrials cluster",
     "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 44.1
+    "score": 50.6
   },
-  "d7085c868000": {
-    "name_en": "Emerging Health Care cluster",
-    "name_zh": "\u65b0\u5174 Health Care \u96c6\u7fa4",
-    "score": 43.6
+  "c99d68747be1": {
+    "name_en": "Cross-sector cluster \u00b7 Information Technology + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Consumer Discretionary",
+    "score": 52.5
   }
 }

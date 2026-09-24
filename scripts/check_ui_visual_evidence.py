@@ -1,10 +1,12 @@
 """scripts/check_ui_visual_evidence.py — TP-0 Task 3: theme-parity evidence gate.
 
-A material user-facing UI change (new lines in `templates/*.css`, a new inline
-`<style` in a template, or a new runtime-style-injection signature in a
-user-facing JS file under `templates/` or `site/`) must carry committed
-dark/light visual evidence in both languages, desktop and mobile, so a human or
-Opus reviewer can judge the design — not merely confirm the page opens.
+A material user-facing UI change (new lines in `templates/*.css`, changed CSS
+inside an existing template `<style>` block, a new inline `<style>`, or a new
+runtime-style-injection signature in a user-facing JS file under `templates/`
+or `site/`) must carry committed dark/light visual evidence in both languages,
+desktop and mobile, so a human or Opus reviewer can judge the design — not merely
+confirm the page opens. Added `:hover` or `:focus*` interaction selectors also
+require real browser interaction captures in both themes.
 
 THIS SCRIPT DOES NOT JUDGE TASTE. It checks two mechanical things only:
 
@@ -17,7 +19,23 @@ THIS SCRIPT DOES NOT JUDGE TASTE. It checks two mechanical things only:
      and every page in it carries all eight REST cells this gate requires:
      desktop/mobile x en/zh x dark/light, each genuinely captured with the
      requested theme/locale/viewport actually applied and its screenshot PNG
-     present on disk.
+     present on disk. A page may ALSO carry `force_state` cells (an
+     additional interaction state beyond the eight, e.g. sanctions_map's
+     `theme_toggle_dark_to_light`) — those are outside the required matrix
+     (never counted toward the eight), but each one still gets its own
+     integrity floor: captured, PNG present on disk, sha256/byte-length match
+     the recorded values, and pixel dimensions are sane. This is the same
+     "is this evidence real" check as the rest cells get, not a taste
+     judgment (MINOR-3).
+  3. A manifest whose cells disagree on which tool captured them (a cell-level
+     `capture_tool_module_sha256` differing from the manifest's top-level
+     `tool.module_sha256`) must disclose every tool sha it used at the top
+     level — the top-level field becomes a list once more than one tool
+     revision is present (NIT-1). A page may optionally carry a
+     `page_tree_sha` — the git tree/blob content address of the captured page
+     bytes, which (unlike a commit sha) survives a squash merge; when present
+     its shape is validated (NIT-B). This is a forward-compat field: no
+     existing manifest is required to carry one.
 
 NO SECOND EVIDENCE PLANE. This module never defines a screenshot cell, a page
 identity, a capture lifecycle, or a manifest schema of its own. The ONLY new
@@ -48,6 +66,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -84,12 +103,32 @@ REQUIRED_VIEWPORTS: tuple[str, ...] = ("desktop", "mobile")
 REQUIRED_LOCALES: tuple[str, ...] = ("en", "zh")
 REQUIRED_THEMES: tuple[str, ...] = ("dark", "light")
 
+# A git object sha: 40 hex chars (sha1, the default) or 64 hex chars (a sha256
+# object-format repo). Used by the optional `page_tree_sha` forward-compat
+# field (NIT-B).
+_GIT_SHA_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+
+# A cell-level `capture_tool_module_sha256` (MINOR-5): always a sha256
+# hexdigest of the capture tool module, so exactly 64 lowercase hex chars —
+# unlike `_GIT_SHA_RE` above, never a 40-char sha1.
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
+
 # --- material-change detection -------------------------------------------
 # Deliberately narrow. Three shapes only, matching the frozen spec exactly:
 #   1. any added line in a templates/*.css file
 #   2. an added inline <style in a template
 #   3. an added runtime-style-injection signature in a user-facing .js file
 STYLE_TAG_RE = re.compile(r"<style(?:\s|>)", re.IGNORECASE)
+STYLE_BLOCK_RE = re.compile(r"<style\b[^>]*>(.*?)</style>", re.DOTALL | re.IGNORECASE)
+TEMPLATE_STYLE_SUFFIXES: tuple[str, ...] = (".j2", ".html", ".htm")
+INTERACTION_SELECTOR_PATTERNS: dict[str, re.Pattern[str]] = {
+    "hover": re.compile(r":hover\b"),
+    "focus": re.compile(r":focus(?:-visible|-within)?\b"),
+}
+CSS_RULE_RE = re.compile(r"([^{}]+)\{([^{}]*)\}", re.DOTALL)
+CSS_SELECTOR_TOKEN_RE = re.compile(r"([.#][A-Za-z_][A-Za-z0-9_-]*)")
+CUSTOM_PROP_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:")
+CUSTOM_PROP_USE_RE = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)")
 # Duplicates scripts/check_runtime_style_injection.py's own PATTERNS (own copy
 # — this module owns no other file's constants, matching its self-contained
 # convention). tests/test_check_ui_visual_evidence.py pins the two in
@@ -222,8 +261,16 @@ def parse_added_lines(diff_text: str) -> dict[str, list[str]]:
     return out
 
 
-def material_paths(added_lines: dict[str, list[str]]) -> set[str]:
-    """Which touched paths carry a mechanically material UI change."""
+def material_paths(
+    added_lines: dict[str, list[str]], repo_root: Path | None = None
+) -> set[str]:
+    """Which touched paths carry a mechanically material UI change.
+
+    `repo_root` lets the guard recognize an added declaration inside an EXISTING
+    inline <style> block. The old diff-only rule saw only a newly-added <style>
+    tag, so editing a live template rule such as Forex's .tip-pop could bypass
+    evidence entirely.
+    """
 
     material: set[str] = set()
     for path, lines in added_lines.items():
@@ -231,7 +278,7 @@ def material_paths(added_lines: dict[str, list[str]]) -> set[str]:
             continue
         if _is_material_css(path, lines):
             material.add(path)
-        elif _is_material_inline_style(path, lines):
+        elif _is_material_inline_style(path, lines, repo_root):
             material.add(path)
         elif _is_material_runtime_js(path, lines):
             material.add(path)
@@ -316,10 +363,162 @@ def _is_material_css(path: str, lines: list[str]) -> bool:
     return _css_added_lines_have_substance(lines)
 
 
-def _is_material_inline_style(path: str, lines: list[str]) -> bool:
+def _candidate_css_text(path: str, repo_root: Path | None) -> str:
+    """CSS governed by one candidate path, without inventing an HTML parser."""
+
+    if repo_root is None or not path.startswith("templates/"):
+        return ""
+    candidate = repo_root / path
+    try:
+        source = candidate.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    if path.endswith(".css"):
+        return source
+    if path.endswith(TEMPLATE_STYLE_SUFFIXES):
+        return "\n".join(STYLE_BLOCK_RE.findall(source))
+    return ""
+
+
+def _template_inline_style_added_lines(
+    path: str, lines: list[str], repo_root: Path | None
+) -> list[str]:
+    """Return added lines that now live inside a template's inline <style>.
+
+    Unified diffs do not carry enough context to know whether a changed CSS
+    declaration sits inside a <style> opened hundreds of lines earlier. Reading
+    the candidate file is deterministic and avoids treating arbitrary Jinja/HTML
+    additions as CSS. Exact stripped-line membership is intentionally narrow.
+    """
+
+    if not path.startswith("templates/") or not path.endswith(TEMPLATE_STYLE_SUFFIXES):
+        return []
+    css = _candidate_css_text(path, repo_root)
+    if not css:
+        return []
+    style_lines = {line.strip() for line in css.splitlines() if line.strip()}
+    return [line for line in lines if line.strip() and line.strip() in style_lines]
+
+
+def _is_material_inline_style(
+    path: str, lines: list[str], repo_root: Path | None = None
+) -> bool:
     if not path.startswith("templates/"):
         return False
-    return any(STYLE_TAG_RE.search(line) for line in lines)
+    if any(STYLE_TAG_RE.search(line) for line in lines):
+        return True
+    inside = _template_inline_style_added_lines(path, lines, repo_root)
+    return _css_added_lines_have_substance(inside)
+
+
+def _interaction_kinds_in_css_lines(lines: list[str]) -> set[str]:
+    """Interaction pseudo-selectors in live CSS text, ignoring block comments."""
+
+    in_comment = False
+    live_parts: list[str] = []
+    for raw_line in lines:
+        text = raw_line
+        pos = 0
+        while pos < len(text):
+            if in_comment:
+                end = text.find("*/", pos)
+                if end == -1:
+                    pos = len(text)
+                else:
+                    in_comment = False
+                    pos = end + 2
+                continue
+            start = text.find("/*", pos)
+            if start == -1:
+                live_parts.append(text[pos:])
+                pos = len(text)
+            else:
+                live_parts.append(text[pos:start])
+                end = text.find("*/", start + 2)
+                if end == -1:
+                    in_comment = True
+                    pos = len(text)
+                else:
+                    pos = end + 2
+    live = "\n".join(live_parts)
+    return {kind for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items() if pattern.search(live)}
+
+
+def _interaction_dependency_kinds(
+    path: str, changed_css_lines: list[str], repo_root: Path
+) -> set[str]:
+    """Interaction states transitively affected by a changed rule or token.
+
+    The Forex incident was not a direct edit to its :hover selector. A theme
+    token changed, the hidden .tip-pop surface consumed that token, and a
+    separate :hover rule merely revealed the surface. Looking only for
+    ":hover" on the ADDED line would therefore repeat the same blind spot.
+
+    This bounded closure follows only two CSS relationships inside the same
+    governed file:
+      changed selector token -> interactive selector target
+      changed custom-property definition -> var() used by that target's rules
+    It is evidence routing, not a CSS cascade engine or a taste judgement.
+    """
+
+    css = _candidate_css_text(path, repo_root)
+    if not css or not changed_css_lines:
+        return set()
+
+    live_css = re.sub(r"/\*.*?\*/", " ", css, flags=re.DOTALL)
+    rules = CSS_RULE_RE.findall(live_css)
+    changed = "\n".join(changed_css_lines)
+    changed_selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(changed))
+    changed_defs = set(CUSTOM_PROP_DEF_RE.findall(changed))
+    affected: set[str] = set()
+
+    for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items():
+        targets: set[str] = set()
+        relevant_vars: set[str] = set()
+
+        for selector, body in rules:
+            if pattern.search(selector):
+                targets.update(CSS_SELECTOR_TOKEN_RE.findall(selector))
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if not targets:
+            continue
+
+        # Base-state rules for an element often own the material/token values,
+        # while a separate :hover/:focus rule only changes opacity/display.
+        for selector, body in rules:
+            selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(selector))
+            if selector_tokens & targets:
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if changed_selector_tokens & targets or changed_defs & relevant_vars:
+            affected.add(kind)
+
+    return affected
+
+
+def interaction_requirements(
+    added_lines: dict[str, list[str]], repo_root: Path
+) -> dict[str, set[str]]:
+    """Map material paths to real interaction states their CSS changes."""
+
+    out: dict[str, set[str]] = {}
+    for path, lines in added_lines.items():
+        relevant: list[str] = []
+        if _is_material_css(path, lines):
+            relevant = lines
+        elif _is_material_inline_style(path, lines, repo_root):
+            relevant = _template_inline_style_added_lines(path, lines, repo_root)
+            # A newly-added one-line <style> can contain the selector inside the
+            # tag itself rather than as a body line.
+            if any(STYLE_TAG_RE.search(line) for line in lines):
+                relevant = [*relevant, *lines]
+
+        kinds = _interaction_kinds_in_css_lines(relevant)
+        kinds.update(_interaction_dependency_kinds(path, relevant, repo_root))
+        if kinds:
+            out[path] = kinds
+    return out
 
 
 def _is_material_runtime_js(path: str, lines: list[str]) -> bool:
@@ -478,8 +677,117 @@ def validate_manifest_evidence(record: ReceiptRecord, repo_root: Path) -> list[s
         return [f"{record.path}: manifest '{manifest_rel}' carries no pages"]
 
     findings: list[str] = []
+    findings.extend(_validate_tool_hash_coverage(record.path, manifest_rel, manifest))
     for page in pages:
         findings.extend(_validate_page_cells(record.path, manifest_path, manifest_rel, page))
+    return findings
+
+
+def _validate_tool_hash_coverage(receipt_path: Path, manifest_rel: str,
+                                  manifest: dict[str, Any]) -> list[str]:
+    """NIT-1: a manifest whose cells were captured by more than one tool
+    revision must disclose EVERY tool sha at the top level, not just the one
+    recorded when the manifest was first created.
+
+    A capture row may carry its own ``capture_tool_module_sha256`` (the tool
+    that actually produced THAT screenshot) alongside the manifest-level
+    ``tool.module_sha256`` (the tool as of the manifest's own header). When a
+    manifest is re-captured incrementally — some cells refreshed under a
+    newer tool revision, others left from an earlier capture — those two can
+    silently disagree: the top-level field reads as one tool, but the truth
+    is split cell-by-cell. That is a MIXED-TOOL manifest, and the disagreement
+    must be visible at the top level (where a human skims first), not only by
+    reading every cell. The fix is not to demand a single tool — repeated
+    incremental capture is normal — but to require the top-level field become
+    a LIST that covers every cell-level value once more than one is present.
+
+    MINOR-4: list-form ``tool.module_sha256`` attribution is one-directional
+    by design — element 0 is the CONTRACTUAL header/default tool (the tool
+    every cell was captured under before any per-cell override existed), and
+    a cell that carries no ``capture_tool_module_sha256`` attribute of its own
+    is understood to attribute to element 0. A cell only needs an explicit
+    per-cell sha when it disagrees with element 0 (a later, mixed-tool
+    re-capture of just that cell). This is why the coverage check below only
+    ever reconciles cells that DO carry an explicit value — an unstamped cell
+    is not an omission to flag, it is the default case. The real
+    sanctions_map manifest satisfies this: its top-level list is
+    ``["97b44358...", "3301a5f9..."]`` (97b44358 first, the original/default
+    tool every unstamped cell implicitly used) and only its one
+    ``theme_toggle_dark_to_light`` force_state cell — the sole cell actually
+    re-captured under the newer tool — carries the explicit
+    ``capture_tool_module_sha256`` "3301a5f9...".
+
+    MINOR-5: a cell that DOES carry ``capture_tool_module_sha256`` must carry
+    a well-formed one — a non-string or empty value hid a real mixed-tool
+    disagreement by being silently skipped instead of validated. Shape
+    validation mirrors ``_validate_optional_page_tree_sha``'s approach (regex
+    over the raw value), narrowed to exactly 64 lowercase hex characters
+    because this field is always a sha256 hexdigest, never a 40-char sha1.
+    """
+    pages = manifest.get("pages")
+    if not isinstance(pages, list):
+        return []
+    findings: list[str] = []
+    cell_shas: set[str] = set()
+    for page in pages:
+        if not isinstance(page, dict):
+            continue
+        page_id = page.get("page_id", "<unknown-page>")
+        states = page.get("states")
+        if not isinstance(states, list):
+            continue
+        for state in states:
+            if not isinstance(state, dict):
+                continue
+            sha = state.get("capture_tool_module_sha256")
+            if sha is None:
+                continue  # unstamped cell — attributes to element 0 (MINOR-4); not a finding
+            cell_label = (
+                f"{page_id} {state.get('viewport')}/{state.get('locale')}/{state.get('theme')}"
+            )
+            if state.get("force_state") is not None:
+                cell_label += f" force_state={state.get('force_state')!r}"
+            if not isinstance(sha, str) or not sha or not _SHA256_HEX_RE.match(sha):
+                findings.append(
+                    f"{receipt_path}: manifest '{manifest_rel}' {cell_label} carries a malformed "
+                    f"cell capture_tool_module_sha256 {sha!r} (expected a 64-char lowercase hex "
+                    "sha256)"
+                )
+                continue
+            cell_shas.add(sha)
+    if not cell_shas:
+        return findings  # no valid per-cell tool identity recorded; nothing further to reconcile
+
+    tool = manifest.get("tool")
+    top_sha = tool.get("module_sha256") if isinstance(tool, dict) else None
+
+    if isinstance(top_sha, list):
+        top_set = {s for s in top_sha if isinstance(s, str)}
+        missing = sorted(cell_shas - top_set)
+        if missing:
+            findings.append(
+                f"{receipt_path}: manifest '{manifest_rel}' top-level tool.module_sha256 list "
+                f"does not cover cell-level capture_tool_module_sha256 value(s) {missing} "
+                "(a mixed-tool manifest's top-level field must list every tool sha used by any cell)"
+            )
+        return findings
+
+    if isinstance(top_sha, str) and top_sha:
+        extra = sorted(cell_shas - {top_sha})
+        if extra:
+            findings.append(
+                f"{receipt_path}: manifest '{manifest_rel}' is a mixed-tool manifest — cell-level "
+                f"capture_tool_module_sha256 value(s) {extra} disagree with the single top-level "
+                f"tool.module_sha256 {top_sha!r}; top-level tool.module_sha256 must be a list "
+                "covering every cell-level value"
+            )
+        return findings
+
+    findings.append(
+        f"{receipt_path}: manifest '{manifest_rel}' carries cell-level capture_tool_module_sha256 "
+        f"value(s) {sorted(cell_shas)} but top-level tool.module_sha256 is missing/invalid "
+        f"({top_sha!r})"
+    )
     return findings
 
 
@@ -502,10 +810,15 @@ def _validate_page_cells(receipt_path: Path, manifest_path: Path, manifest_rel: 
         return [f"{receipt_path}: page '{page_id}' in '{manifest_rel}' has no states list"]
 
     rest_cells: dict[tuple[Any, Any, Any], dict[str, Any]] = {}
+    force_state_cells: list[dict[str, Any]] = []
     for state in states:
+        if not isinstance(state, dict):
+            continue
         key = _rest_cell_key(state)
         if key is not None:
             rest_cells[key] = state
+        elif state.get("force_state") is not None:
+            force_state_cells.append(state)
 
     findings: list[str] = []
     for viewport in REQUIRED_VIEWPORTS:
@@ -515,7 +828,134 @@ def _validate_page_cells(receipt_path: Path, manifest_path: Path, manifest_rel: 
                     _validate_one_cell(receipt_path, manifest_path, manifest_rel, page_id,
                                         viewport, locale, theme, rest_cells.get((viewport, locale, theme)))
                 )
+    for state in force_state_cells:
+        findings.extend(
+            _validate_force_state_cell(receipt_path, manifest_path, manifest_rel, page_id, state)
+        )
+    findings.extend(
+        _validate_optional_page_tree_sha(receipt_path, manifest_rel, page_id, page.get("page_tree_sha"))
+    )
     return findings
+
+
+def _validate_force_state_cell(receipt_path: Path, manifest_path: Path, manifest_rel: str,
+                                page_id: Any, state: dict[str, Any]) -> list[str]:
+    """MINOR-3: `_rest_cell_key` deliberately excludes a `force_state` cell
+    (e.g. sanctions_map's `theme_toggle_dark_to_light`) from the REQUIRED
+    viewport x locale x theme matrix — a force_state cell documents an
+    additional, non-required interaction state, not one of the eight rest
+    cells the gate demands on every page. That exclusion was previously total:
+    a force_state cell received NO validation at all, so a corrupted or
+    hand-edited force_state row (wrong sha, truncated PNG, deleted file)
+    passed silently. This checks the same integrity floor a rest cell gets:
+    captured, the PNG actually exists, its bytes match the recorded sha256
+    (when a sha256 is recorded at all — r2 BLOCKER-1: some capture schemas,
+    e.g. the clipped-element cells in freshness-chip-invariant/manifest.json,
+    record bytes/width/height/css_width/clip_target but no sha256 key at
+    all; an ABSENT sha256 means "this schema does not capture one", never a
+    mismatch, while a PRESENT-but-wrong sha256 still reds) and byte length,
+    and its recorded pixel dimensions are sane (present, positive integers)
+    — not a taste judgment, just "is this evidence real".
+
+    MINOR-6 (no behavior change — this paragraph states the existing
+    contract): a force_state cell is an OPTIONAL, additional interaction
+    state, but ``captured != True`` on one that IS present in the manifest is
+    still a hard red below, deliberately — a manifest that names a
+    force_state cell is asserting that state was captured. A genuinely failed
+    capture must be either recaptured, or the cell removed from the manifest
+    entirely with the failure disclosed in the receipt's EVIDENCE.yml prose
+    (a human-readable acknowledgement, not a silently-failing row this gate
+    would otherwise treat as evidence). Leaving a `captured: false` row in
+    place is never itself the disclosure.
+    """
+    label = f"{page_id} force_state={state.get('force_state')!r}"
+    findings: list[str] = []
+
+    if state.get("captured") is not True:
+        reason = state.get("reason", "not captured")
+        findings.append(f"{receipt_path}: {label} was not captured ({reason})")
+        return findings
+
+    file_rel = state.get("file")
+    if not file_rel:
+        findings.append(f"{receipt_path}: {label} has no screenshot file recorded")
+        return findings
+
+    png_path = manifest_path.parent / file_rel
+    if not png_path.exists():
+        findings.append(
+            f"{receipt_path}: {label} references screenshot '{file_rel}' which does not "
+            f"exist at {png_path}"
+        )
+        return findings
+
+    try:
+        actual_bytes = png_path.read_bytes()
+    except OSError as exc:
+        findings.append(f"{receipt_path}: {label} screenshot '{file_rel}' could not be read: {exc}")
+        return findings
+
+    # r2 BLOCKER-1: an ABSENT `sha256` key (missing, or explicitly None) means
+    # this capture schema does not record one for this cell — e.g. the
+    # freshness-chip-invariant clipped-element cells (bytes/width/height/
+    # css_width/clip_target, no sha256 key at all). That is a different
+    # capture schema, not corrupted evidence, and must never be reported as
+    # a mismatch against a None-vs-actual comparison (44 false findings on
+    # the real committed freshness-chip-invariant/EVIDENCE.yml before this
+    # fix). Whenever a sha256 IS present, it stays fully binding.
+    recorded_sha256 = state.get("sha256")
+    if recorded_sha256 is not None:
+        actual_sha256 = hashlib.sha256(actual_bytes).hexdigest()
+        if recorded_sha256 != actual_sha256:
+            findings.append(
+                f"{receipt_path}: {label} sha256={recorded_sha256!r} does not match the "
+                f"screenshot's actual sha256 {actual_sha256!r}"
+            )
+
+    recorded_bytes = state.get("bytes")
+    actual_byte_length = len(actual_bytes)
+    if recorded_bytes != actual_byte_length:
+        findings.append(
+            f"{receipt_path}: {label} bytes={recorded_bytes!r} does not match the "
+            f"screenshot's actual byte length {actual_byte_length}"
+        )
+
+    width = state.get("width")
+    height = state.get("height")
+    if not isinstance(width, int) or isinstance(width, bool) or width <= 0 \
+            or not isinstance(height, int) or isinstance(height, bool) or height <= 0:
+        findings.append(
+            f"{receipt_path}: {label} has non-sane captured PNG pixel dimensions "
+            f"(width={width!r}, height={height!r})"
+        )
+
+    return findings
+
+
+def _validate_optional_page_tree_sha(receipt_path: Path, manifest_rel: str, page_id: Any,
+                                      page_tree_sha: Any) -> list[str]:
+    """NIT-B: capture manifests currently record only commit shas
+    (``updated_sha`` / ``captured_sha``), which go unreachable once the
+    branch that produced them is squash-merged — the manifest still names a
+    sha, but `git show <sha>` can no longer resolve it. A git TREE/BLOB sha
+    (the content address of the page bytes at capture time) stays reachable
+    as long as the blob is referenced by ANY commit, squashed or not.
+
+    This is forward-compat only: no existing manifest carries `page_tree_sha`
+    yet (NIT-B explicitly forbids rewriting historical manifests beyond the
+    NIT-1 metadata fix), so absence is never a finding. When a future capture
+    DOES record one, this validates only its SHAPE — a 40- or 64-char
+    lowercase hex git object id — catching a malformed value instead of
+    silently accepting whatever a writer puts there.
+    """
+    if page_tree_sha is None:
+        return []
+    if not isinstance(page_tree_sha, str) or not _GIT_SHA_RE.match(page_tree_sha):
+        return [
+            f"{receipt_path}: manifest '{manifest_rel}' page '{page_id}' carries a malformed "
+            f"page_tree_sha {page_tree_sha!r} (expected a 40- or 64-char lowercase hex git object sha)"
+        ]
+    return []
 
 
 def _validate_one_cell(receipt_path: Path, manifest_path: Path, manifest_rel: str, page_id: Any,
@@ -573,6 +1013,92 @@ def _validate_one_cell(receipt_path: Path, manifest_path: Path, manifest_rel: st
     return findings
 
 
+def validate_interaction_evidence(
+    record: ReceiptRecord, repo_root: Path, required_kinds: set[str]
+) -> list[str]:
+    """Require real hover/focus screenshots when the diff changes those states.
+
+    REST screenshots cannot reveal an overlay or focus treatment that only
+    exists after interaction. For each changed interaction kind, one owning
+    manifest must declare a canonical force-state of that kind and prove it
+    actually applied on desktop/en in BOTH dark and light.
+    """
+
+    if not required_kinds:
+        return []
+    assert record.data is not None
+    manifest_rel = record.data.get("manifest")
+    if not isinstance(manifest_rel, str):
+        return [f"{record.path}: interaction evidence has no usable manifest path"]
+    manifest_path = (repo_root / manifest_rel).resolve()
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{record.path}: interaction evidence manifest could not be read: {exc}"]
+    if not isinstance(manifest, dict):
+        return [f"{record.path}: interaction evidence manifest must be an object"]
+
+    axes = manifest.get("axes")
+    force_defs = axes.get("force_states") if isinstance(axes, dict) else None
+    if not isinstance(force_defs, list):
+        force_defs = []
+
+    names_by_kind: dict[str, set[str]] = {}
+    for item in force_defs:
+        if not isinstance(item, dict):
+            continue
+        kind = item.get("kind")
+        name = item.get("name")
+        if isinstance(kind, str) and isinstance(name, str) and name:
+            names_by_kind.setdefault(kind, set()).add(name)
+
+    pages = manifest.get("pages")
+    if not isinstance(pages, list):
+        pages = []
+
+    findings: list[str] = []
+    for kind in sorted(required_kinds):
+        names = names_by_kind.get(kind, set())
+        if not names:
+            syntax = "hover(.selector)" if kind == "hover" else "focus(.selector)"
+            findings.append(
+                f"{record.path}: material {kind} CSS changed, but manifest '{manifest_rel}' "
+                f"declares no --force-state NAME:{syntax}; REST screenshots cannot prove "
+                f"the {kind} presentation"
+            )
+            continue
+
+        themes_seen: set[str] = set()
+        for page in pages:
+            if not isinstance(page, dict):
+                continue
+            states = page.get("states")
+            if not isinstance(states, list):
+                continue
+            for state in states:
+                if not isinstance(state, dict):
+                    continue
+                name = state.get("force_state")
+                if name not in names:
+                    continue
+                if state.get("captured") is not True or state.get("applied_force_state") != name:
+                    continue
+                if state.get("viewport") != "desktop" or state.get("locale") != "en":
+                    continue
+                theme = state.get("theme")
+                if theme in REQUIRED_THEMES:
+                    themes_seen.add(theme)
+
+        missing = set(REQUIRED_THEMES) - themes_seen
+        if missing:
+            findings.append(
+                f"{record.path}: manifest '{manifest_rel}' does not prove applied {kind} "
+                f"interaction evidence on desktop/en for theme(s) {sorted(missing)}; "
+                "capture the real interaction in both dark and light"
+            )
+    return findings
+
+
 # ---------------------------------------------------------------------------
 # top-level evaluation
 # ---------------------------------------------------------------------------
@@ -582,9 +1108,10 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
     """Return the (deduped, order-preserving) list of red findings. Empty = pass."""
 
     added = parse_added_lines(diff_text)
-    material = material_paths(added)
+    material = material_paths(added, repo_root)
     if not material:
         return []
+    interactions = interaction_requirements(added, repo_root)
 
     # R9: refuse rather than false-red when this checkout cannot see
     # mockups/ at all (a sparse worktree). Scoped to the material-change
@@ -605,12 +1132,25 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
                 f"owning it in changed_paths (searched {', '.join(RECEIPT_DIRS)})"
             )
             continue
+
+        required_interactions = interactions.get(changed_path, set())
+        interaction_attempts: list[list[str]] = []
         for record in owners:
             shape_errors = validate_receipt_shape(record)
             if shape_errors:
                 findings.extend(shape_errors)
                 continue
             findings.extend(validate_manifest_evidence(record, repo_root))
+            if required_interactions:
+                interaction_attempts.append(
+                    validate_interaction_evidence(record, repo_root, required_interactions)
+                )
+
+        # A path may have multiple historical receipts. One valid owning manifest
+        # with the required interaction proof is sufficient; stale parallel
+        # receipts must not manufacture a false red merely by also naming the path.
+        if required_interactions and interaction_attempts and all(interaction_attempts):
+            findings.extend(interaction_attempts[0])
 
     seen: set[str] = set()
     deduped: list[str] = []
@@ -664,22 +1204,64 @@ def _selftest_full_states() -> list[dict[str, Any]]:
     ]
 
 
-def _selftest_write(root: Path, states: list[dict[str, Any]]) -> None:
-    manifest = {
-        "schema": MANIFEST_SCHEMA,
-        "pages": [{
-            "page_id": "macro:selftest_page",
-            "route": "/selftest.html",
-            "states": states,
-            "gaps": [],
-        }],
+# The fixed byte content `_selftest_write` plants for every captured file
+# (below). MINOR-3's force_state fixtures need to assert a REAL sha256 that
+# actually matches (or is deliberately corrupted against) what lands on disk.
+_SELFTEST_PNG_BYTES = b"\x89PNG\r\n\x1a\nselftest"
+
+
+def _selftest_force_state_cell(*, force_state: str = "selftest_toggle",
+                                file: str = "force_state_shot.png",
+                                sha256: str | None = None,
+                                capture_tool_module_sha256: str | None = None,
+                                captured: bool = True) -> dict[str, Any]:
+    """MINOR-3: a force_state cell (e.g. sanctions_map's
+    `theme_toggle_dark_to_light`) — previously never exercised by
+    `--selftest` at all, since every state `_selftest_state`/the failed-row
+    fixture builds is a required REST cell with `force_state: None`. Defaults
+    to a correct sha256 (matching `_SELFTEST_PNG_BYTES`, what `_selftest_write`
+    actually writes to disk); pass `sha256=` to plant a deliberately corrupted
+    one.
+    """
+    if not captured:
+        return {
+            "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+            "viewport_width": VIEWPORT_WIDTHS["desktop"], "viewport_height": 900,
+            "force_state": force_state, "captured": False, "reason": "selftest failure",
+        }
+    entry: dict[str, Any] = {
+        "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+        "viewport_width": VIEWPORT_WIDTHS["desktop"], "viewport_height": 900,
+        "force_state": force_state, "captured": True, "file": file,
+        "sha256": hashlib.sha256(_SELFTEST_PNG_BYTES).hexdigest() if sha256 is None else sha256,
+        "bytes": len(_SELFTEST_PNG_BYTES), "width": 1440, "height": 900,
+        "applied_theme": "light", "applied_locale": "en",
     }
+    if capture_tool_module_sha256 is not None:
+        entry["capture_tool_module_sha256"] = capture_tool_module_sha256
+    return entry
+
+
+def _selftest_write(root: Path, states: list[dict[str, Any]], *,
+                     tool: dict[str, Any] | None = None,
+                     page_tree_sha: str | None = None) -> None:
+    page: dict[str, Any] = {
+        "page_id": "macro:selftest_page",
+        "route": "/selftest.html",
+        "states": states,
+        "gaps": [],
+    }
+    if page_tree_sha is not None:
+        page["page_tree_sha"] = page_tree_sha
+    manifest: dict[str, Any] = {"schema": MANIFEST_SCHEMA, "pages": [page]}
+    if tool is not None:
+        manifest["tool"] = tool
     manifest_dir = root / "mockups" / "evidence" / "selftest"
     manifest_dir.mkdir(parents=True, exist_ok=True)
     (manifest_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     for state in states:
         if state.get("captured") and state.get("file"):
-            (manifest_dir / state["file"]).write_bytes(b"\x89PNG\r\n\x1a\nselftest")
+            (manifest_dir / state["file"]).write_bytes(_SELFTEST_PNG_BYTES)
     receipt = (
         f"schema: {RECEIPT_SCHEMA}\n"
         "changed_paths:\n"
@@ -779,6 +1361,74 @@ def run_selftest() -> int:
         else:
             if not result:
                 failures.append("failed-capture row unexpectedly passed")
+
+    # 8. A force_state cell with a correct sha256 must pass alongside the
+    # required 8 cells (MINOR-3 — force_state cells were never exercised by
+    # this selftest at all before this fix).
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        states = _selftest_full_states() + [_selftest_force_state_cell()]
+        _selftest_write(root, states)
+        result = evaluate(_selftest_diff(), root)
+        if result:
+            failures.append(f"valid force_state cell unexpectedly red: {result}")
+
+    # 9. A force_state cell with a corrupted sha256 must red.
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        states = _selftest_full_states() + [_selftest_force_state_cell(sha256="f" * 64)]
+        _selftest_write(root, states)
+        result = evaluate(_selftest_diff(), root)
+        if not result:
+            failures.append("force_state cell with corrupted sha256 unexpectedly passed")
+
+    # 10. A mixed-tool manifest — a cell-level capture_tool_module_sha256
+    # disagreeing with a single top-level tool.module_sha256 string — must
+    # red (NIT-1, exactly the sanctions_map defect this fixed before the
+    # manifest itself was repaired).
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        states = _selftest_full_states() + [
+            _selftest_force_state_cell(capture_tool_module_sha256="3" * 64)
+        ]
+        _selftest_write(root, states, tool={
+            "module_ref": "scripts/capture_page_evidence.py", "module_sha256": "9" * 64,
+            "user_agent": "selftest-agent/1.0", "version": "1.0.0",
+        })
+        result = evaluate(_selftest_diff(), root)
+        if not result:
+            failures.append("mixed-tool manifest with single top-level string unexpectedly passed")
+
+    # 11. The same mixed-tool cell, but the top-level tool.module_sha256 is a
+    # LIST covering every cell-level value — must pass.
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        states = _selftest_full_states() + [
+            _selftest_force_state_cell(capture_tool_module_sha256="3" * 64)
+        ]
+        _selftest_write(root, states, tool={
+            "module_ref": "scripts/capture_page_evidence.py", "module_sha256": ["9" * 64, "3" * 64],
+            "user_agent": "selftest-agent/1.0", "version": "1.0.0",
+        })
+        result = evaluate(_selftest_diff(), root)
+        if result:
+            failures.append(f"mixed-tool manifest with covering list unexpectedly red: {result}")
+
+    # 12. A malformed page_tree_sha (NIT-B forward-compat field) must red.
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        _selftest_write(root, _selftest_full_states(), page_tree_sha="not-a-real-sha")
+        result = evaluate(_selftest_diff(), root)
+        if not result:
+            failures.append("malformed page_tree_sha unexpectedly passed")
+
+    # 13. A well-formed page_tree_sha must pass.
+    with tempfile.TemporaryDirectory(prefix="ui_visual_evidence_selftest_") as tmp:
+        root = Path(tmp)
+        _selftest_write(root, _selftest_full_states(), page_tree_sha="a" * 40)
+        result = evaluate(_selftest_diff(), root)
+        if result:
+            failures.append(f"well-formed page_tree_sha unexpectedly red: {result}")
 
     if failures:
         for failure in failures:

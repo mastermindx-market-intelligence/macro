@@ -1,29 +1,14 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-08-30T07:07:52+00:00",
-  "summary": "Context-only committee read: measured market conditions remain risk-on and calm, but the confirmed US Q2/Reflation label is weakly supported and currently disagrees with its own raw axes, which read Q3 after 2 of 7 required confirmation sessions. Breadth and credit remain healthy, volatility is normalizing, and the risk radar's measured 21-day pullback rate is below its base rate, so the evidence does not support originating or escalating a defensive claim. Liquidity is contracting in an orderly, non-stress-confirmed drain. Factor intelligence is immature: only 10 panel dates, no Pair G ledger, no factor-attention history, and no tradeable composite. This memo changes no ranking, sizing, signal, or trade surface.",
-  "what_fired": [
-    "US regime label-axis mismatch: confirmed Q2 versus raw/pending Q3, 2 of 7 sessions.",
-    "Briefing contradiction: 34 ticker-level demand-versus-supply directional oppositions.",
-    "ADB-W3 thesis conflict: the still-open China-equities overweight thesis conflicts with current China Q4 growth-scare, contracting liquidity, and weak-side HK peg context."
-  ],
-  "contradictions_review": "Two current graph contradictions were reviewed. The broad briefing-divergence tension spans 34 names and deserves persistence testing rather than interpretation as a signal. The options contradiction is limited to KDP with rising five-day OTM-put skew; prior evidence says bullish skew deceleration is unsupported, so this is de-escalation context only. Pair G factor contradictions are absent because the factor panel has not reached its 60-date activation floor. Among open master-brain theses, the July 9 China-equities overweight thesis conflicts with current China/HK regime context. Semiconductor-underweight theses are not contradicted by the current thematic deterioration and broken semiconductor leadership context. Several theses are past their check-by dates but remain open, which weakens ledger hygiene and should be resolved by the authorized scorer.",
-  "decaying_families": [
-    "Radar directional claims: negative signed excess across 5-, 21-, and 63-day kernel rows; all remain unarmed.",
-    "US-board claims in Q2: negative five- and ten-day signed excess and held out of sample; unarmed.",
-    "Policy claims: negative signed excess across available horizons with small samples; unarmed.",
-    "AI, stock, and thematic desk 63-day claims: negative signed excess; unarmed.",
-    "Factor composite: survivorship-biased scorecard, negative composite IC, and explicitly non-tradeable."
-  ],
-  "deserves_operator": [
-    "Watch the Q2-versus-Q3 regime mismatch only through its pre-existing 7-session confirmation rule; it is not an escalation.",
-    "Resolve or formally score the overdue China-equities overweight thesis, which conflicts with current Q4/contracting/weak-peg context.",
-    "Check whether the 34 briefing divergences persist across two committed builds; persistence below 10 names clears the flag.",
-    "Repair overdue open-thesis ledger states, including check-by dates already passed, without changing any ranked surface."
-  ],
+  "as_of": "2026-09-23T22:57:48+00:00",
+  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
+  "what_fired": [],
+  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
+  "decaying_families": [],
+  "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-08-29",
+    "as_of": "2026-09-23",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -35,74 +20,72 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 24,
-      "total_rows": 32
+      "ungradeable": 88,
+      "total_rows": 96
     },
     "is_context_only": true
   },
-  "tool_call_census": {
-    "read_world_state": 1,
-    "read_factor_state": 1,
-    "query_spine": 1,
-    "read_contradictions": 1,
-    "list_factor_contradictions": 1,
-    "read_kernel": 1,
-    "read_master_brain_theses": 1,
-    "flag_attention": 1,
-    "write_memo": 1
-  },
+  "tool_call_census": {},
   "is_context_only": true,
   "run_status": {
-    "status": "ok",
-    "degraded": false,
-    "degradation_reason": null,
-    "model_used": "claude-opus-4-8",
+    "status": "degraded",
+    "degraded": true,
+    "degradation_reason": "model_unavailable",
+    "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCV5y9ieVGXBYS9acAr'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCWN8XgZpVYKJEXWyYa'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCayEmCmVR9VFfpqoEf'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCpRyxVdzABCgg2RpFy'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 9,
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-08-30T06:06:49Z"
+    "context_as_of": "2026-09-23T21:21:56Z"
   }
 }

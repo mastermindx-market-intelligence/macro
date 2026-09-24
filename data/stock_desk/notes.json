@@ -1,171 +1,165 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-08-28",
-  "generated_at": "2026-08-30T07:07:03.190946+00:00",
+  "as_of": "2026-09-22",
+  "generated_at": "2026-09-23T21:46:04.271020+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-08-28-LAUR-20260830070703-1",
-      "ticker": "LAUR",
-      "name": null,
+      "id": "2026-09-22-FIX-20260923214604-1",
+      "ticker": "FIX",
+      "name": "Comfort Systems USA",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The deterministic verdict finds no clear edge: entry is open and momentum context is positive, but negative SUE and revisions leave the selection evidence conflicted. With no validated forward edge in the displayed rank, the risk-aware judgment is to await clearer relative direction.",
+      "horizon_d": 21,
+      "thesis": "Leader verdict with an accounting warning and a basket below trend; the engine flags a BUY SETUP at half size, but the accounting flag and macro headwind leave no validated edge to chase.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; percentile 64",
-        "SUE z -0.39 and revisions z -0.40",
-        "Quality percentile 64; accounting clean"
+        "verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "entry_tag: HALF SIZE / swing low printed, back above 10dma",
+        "accounting: warn; industrials basket below trend (caution)"
       ],
-      "dissent": "The uptrend, turn signal and momentum z 1.47 could persist and produce S&P 500 outperformance despite weak event context.",
+      "dissent": "SUE z=2.04 (validated tier) and insider buying could mark a genuine post-earnings drift that extends despite the accounting flag.",
       "falsifier": {
-        "text": "A sustained relative breakout versus the S&P 500 accompanied by continued price-trend strength.",
+        "text": "Price sustains above the 50dma and the accounting flag is resolved clean on the next filing",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-10-21",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     },
     {
-      "id": "2026-08-28-URBN-20260830070703-2",
-      "ticker": "URBN",
-      "name": null,
-      "lean": "constructive",
+      "id": "2026-09-22-VTRS-20260923214604-2",
+      "ticker": "VTRS",
+      "name": "Viatris",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by an unblocked entry and a fresh-buy, rising-price state; positive revisions add context but are not treated as validated alpha. Conviction stays low because the mixed regime and the track record's 32.7% directional accuracy on constructive calls warrant restraint.",
+      "horizon_d": 21,
+      "thesis": "Constructive base-building verdict with positive technicals (above 50/200dma) but weak SUE (z=-0.45) and an accounting watch; support is real but the edge is modest.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Board state: FRESH BUY; direction up",
-        "Entry unblocked; percentile 64",
-        "Revisions z 0.66",
-        "Constructive track-record directional accuracy 0.327 over 98 observations"
+        "verdict: Constructive \u2014 building a base",
+        "above 50dma and 200dma; off 52w high only -3.5%",
+        "SUE z=-0.45, revisions z=-0.38 (no earnings tailwind)",
+        "accounting: watch"
       ],
-      "dissent": "Momentum is nearly flat, SUE is neutral and quality is only middling, so the apparent base may fail to generate relative outperformance.",
+      "dissent": "Health Care basket is deteriorating and macro liquidity is contracting, could stall the base.",
       "falsifier": {
-        "text": "The fresh-buy structure fails and URBN enters a sustained downtrend relative to the S&P 500.",
+        "text": "Price breaks below the 200dma",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "URBN",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
+      "check_by": "2026-10-21",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-08-28-ECL-20260830070703-3",
-      "ticker": "ECL",
-      "name": null,
+      "id": "2026-09-22-TRLV-20260923214604-3",
+      "ticker": "TRLV",
+      "name": "Trulieve Cannabis",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The unblocked entry and upward turn are offset by caution-level urgency, slightly negative selection and essentially neutral quality. The deterministic no-clear-edge verdict therefore supports waiting for stronger relative confirmation.",
+      "horizon_d": 21,
+      "thesis": "Verdict is wait-for-pullback with cycle_blocked=true and entry_blocked; extended 48% above trend with left-translated prior cycle argues against new money, but no bearish signal to short.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: TURN SIGNALED; urgency caution",
-        "Selection percentile 48",
-        "Momentum z -0.36",
-        "Accounting clean"
+        "verdict: Extended \u2014 wait for a pullback",
+        "entry_blocked: true; cycle_blocked: true",
+        "left translation (prior cycle topped early)",
+        "48% above 200dma"
       ],
-      "dissent": "The turn signal and favorable entry percentile could develop into persistent upside before the slower selection inputs improve.",
+      "dissent": "Momentum can persist; extreme off-high -3.8% means it hasn't broken down and prior cycle failure may not repeat.",
       "falsifier": {
-        "text": "ECL sustains a relative uptrend versus the S&P 500 while the turn signal remains intact.",
+        "text": "Price pulls back to the 10dma and holds with RSI resetting below 55",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-08-28-EPC-20260830070703-4",
-      "ticker": "EPC",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 20,
-      "thesis": "The risk controls supply genuine bearish evidence beyond simple extension: entry is blocked, the cycle remains bottoming, and accounting quality is flagged weak while SUE and revisions are negative. The upward price trend argues against an avoid call, but the combined cycle and quality risks support a cautious relative lean.",
-      "evidence": [
-        "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked; percentile 31",
-        "Cycle blocked: bottoming",
-        "Accounting quality warn",
-        "SUE z -0.97 and revisions z -0.96"
-      ],
-      "dissent": "The price direction remains up and sits only 2.1% below its high, so momentum persistence could overwhelm the cycle, accounting and extension warnings.",
-      "falsifier": {
-        "text": "EPC maintains its uptrend and continues outperforming the S&P 500 without a pullback or cycle deterioration.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "EPC",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-09-25",
+      "check_by": "2026-10-21",
       "engine_verdict": "Extended \u2014 wait for a pullback"
     },
     {
-      "id": "2026-08-28-AEO-20260830070703-5",
-      "ticker": "AEO",
-      "name": null,
+      "id": "2026-09-22-MEDP-20260923214604-4",
+      "ticker": "MEDP",
+      "name": "Medpace",
+      "lean": "constructive",
+      "conviction": "medium",
+      "horizon_d": 21,
+      "thesis": "FRESH BUY with bullish regime and weekly agreement; clean accounting, high quality (z=1.88), SUE z=3.0 validated \u2014 a rare genuine edge.",
+      "evidence": [
+        "ladder_state: FRESH BUY / BUY ZONE",
+        "regime_label: BULLISH; weekly timeframe agrees",
+        "accounting: clean; quality z=1.88",
+        "SUE z=3.0 (validated)"
+      ],
+      "dissent": "Investor phase late and at 52w high, so any macro shock hits hardest.",
+      "falsifier": {
+        "text": "Price closes below the 10dma",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "MEDP",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-21",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-22-VKTX-20260923214604-5",
+      "ticker": "VKTX",
+      "name": "Viking Therapeutics",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "AEO has an open entry, clean accounting and above-median quality, but it remains 39.5% below its high and the deterministic verdict identifies no clear edge. The high board score is not predictive evidence, so the turn signal needs relative confirmation.",
+      "horizon_d": 21,
+      "thesis": "FRESH BUY signal with daily momentum crossed up but verdict is neutral \u2014 no clear edge; residual momentum z=0.06 is nil and the basket is deteriorating.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; percentile 59",
-        "Quality percentile 66; accounting clean",
-        "39.5% below high",
-        "Revisions z -0.48"
+        "verdict: Neutral \u2014 no clear edge",
+        "ladder_state: FRESH BUY / BUY ZONE",
+        "basket caution: GLP-1 & Obesity deteriorating",
+        "momentum z=0.06 (context only)"
       ],
-      "dissent": "The upward turn, momentum z 0.81 and clean quality profile could mark an early recovery with substantial relative upside.",
+      "dissent": "Vol-squeeze entry and early cycle low could compound a short squeeze.",
       "falsifier": {
-        "text": "AEO converts the turn signal into a sustained relative uptrend versus the S&P 500.",
+        "text": "Price falls back below the 10dma",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-09-25",
+      "check_by": "2026-10-21",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-08-28-PIPR-20260830070703-6",
-      "ticker": "PIPR",
-      "name": null,
-      "lean": "neutral",
+      "id": "2026-09-22-USPH-20260923214604-6",
+      "ticker": "USPH",
+      "name": "U.S. Physical Therapy, Inc.",
+      "lean": "cautious",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh-buy state and open entry are counterbalanced by weak selection context, negative momentum and an accounting-watch flag. With a neutral verdict and no validated forward edge in the displayed rank, neither relative direction is sufficiently supported.",
+      "horizon_d": 21,
+      "thesis": "Verdict is Lagging \u2014 relative weakness; SUE z=-1.28 with accounting watch and small cap risk makes this the weakest name on the board, despite the turn signal.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: FRESH BUY; direction up",
-        "Entry unblocked; percentile 61",
-        "Selection percentile 42",
-        "Momentum z -0.85"
+        "verdict: Lagging \u2014 relative weakness",
+        "SUE z=-1.28 (validated, negative)",
+        "accounting: watch; short_interest z=-0.699 (crowded short)",
+        "board state: HOLD \u2014 EXTENDED"
       ],
-      "dissent": "The fresh-buy signal could represent an early reversal, with the favorable entry setup producing outperformance before selection measures recover.",
+      "dissent": "The swing low and bottoming label could mean the bad news is priced and this is the value low.",
       "falsifier": {
-        "text": "PIPR sustains its fresh-buy advance and establishes a persistent relative uptrend versus the S&P 500.",
+        "text": "Price closes above the 50dma and stays above it for 5 sessions",
         "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
+          "kind": "rel_return",
+          "subject_ticker": "USPH",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-09-25",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-10-21",
+      "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

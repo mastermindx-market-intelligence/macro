@@ -184,6 +184,7 @@ def compute_policy_calendar(
             "reg_stage": row["reg_stage"],
             "title": str(row["title"])[:120],
             "event_type": "comment_close",
+            "document_number": _document_number(row),
         })
 
     # ------------------------------------------------------------------
@@ -280,6 +281,17 @@ def _load_documents() -> pd.DataFrame | None:
         return None
 
 
+def _document_number(row) -> str:
+    """Federal Register document number, or empty when the field is missing."""
+    raw = row.get("document_number") if hasattr(row, "get") else None
+    if raw is None:
+        return ""
+    text = str(raw).strip()
+    if not text or text.lower() in {"nan", "none"}:
+        return ""
+    return text
+
+
 def _days_from_today(today: date, date_str: str) -> int | None:
     """Return (date_str - today).days. Returns None on parse failure."""
     if not date_str:
@@ -332,6 +344,7 @@ def _compute_entity_list_events(
             "event_type": "entity_list",
             "is_upcoming": bool(is_upcoming),
             "is_recent_60d": bool(is_recent),
+            "document_number": _document_number(row),
         })
 
     # Sort: upcoming first (by date asc), then recent

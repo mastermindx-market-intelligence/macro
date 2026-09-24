@@ -1486,6 +1486,145 @@ def test_h13_digest_change_in_seal_not_eligible() -> None:
     assert "differing" in state.reason
 
 
+# D1 — causal diagnostics on the native stdout/journal receipt.
+_D1_SESSION = date(2026, 8, 21)
+_D1_OPEN = datetime(2026, 8, 22, 4, tzinfo=timezone.utc)
+_D1_CLOSE = _D1_OPEN + timedelta(minutes=5)
+_D1_SECRET = "secret-fixture-credential-do-not-retain"
+
+
+@pytest.mark.parametrize(
+    ("case", "status", "reason"),
+    [
+        ("transport", "transport_error", "transport_error"),
+        ("no_bar", "no_bar", "no_bar"),
+        ("malformed_envelope", "malformed", "malformed_response"),
+        ("malformed_results", "malformed", "malformed_response"),
+        ("malformed_bar", "malformed", "malformed_bar"),
+        ("unstable", "valid_bar", None),
+        ("stable", "valid_bar", None),
+    ],
+)
+def test_d1_native_cli_preserves_causal_receipt(
+    case, status, reason, monkeypatch, tmp_path, capsys, caplog
+):
+    """Exercise real CLI -> poller -> predicate -> stdout/journal JSON."""
+    from scripts import ingest_market_memory_sources_spy as ingest
+    from types import SimpleNamespace
+    elapsed = [0.0]
+    calls = [0]
+
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return _D1_OPEN + timedelta(seconds=elapsed[0])
+
+    def sleep(seconds):
+        elapsed[0] += seconds
+
+    def fetcher(endpoint, params):
+        assert endpoint.endswith(f"/{_D1_SESSION}/{_D1_SESSION}")
+        assert params == {"adjusted": "false"}
+        calls[0] += 1
+        if case == "transport":
+            raise RuntimeError(f"Authorization: Bearer {_D1_SECRET}")
+        if case == "no_bar":
+            return {"status": "OK", "results": []}
+        if case == "malformed_envelope":
+            return [_D1_SECRET]
+        if case == "malformed_results":
+            return {"status": "OK", "results": {"body": _D1_SECRET}}
+        if case == "malformed_bar":
+            return {"status": "OK", "results": [{"body": _D1_SECRET}]}
+        bar = {
+            "T": "SPY", "o": 588, "h": 592, "l": 587,
+            "c": 591 if case == "unstable" and calls[0] > 1 else 590,
+            "v": 10000000, "n": 150000,
+            "t": int(datetime(2026, 8, 21, tzinfo=timezone.utc).timestamp() * 1000),
+        }
+        return {"status": "OK", "results": [bar], "request_id": _D1_SECRET}
+
+    monkeypatch.setattr(ingest, "datetime", Clock)
+    monkeypatch.setattr(ingest, "time_module", SimpleNamespace(sleep=sleep))
+    monkeypatch.setattr(ingest, "_build_fetcher", lambda: fetcher)
+    monkeypatch.setattr(ingest, "_fetch_lookback_closes_from_rest", lambda *a, **k: [])
+    # Deliberately keep the real revision resolver in this end-to-end test.
+    assert ingest._main(["--store-root", str(tmp_path / "sources-spy-rest-v1")]) == 0
+    captured = capsys.readouterr()
+    receipt = json.loads(captured.out)
+    assert receipt["status"] == ("created" if case == "stable" else "not_eligible")
+    assert calls[0] == 30
+    diagnostic = receipt["diagnostics"]
+    assert _D1_SECRET not in captured.out + captured.err + caplog.text
+    assert diagnostic["implementation_revision"]
+    assert diagnostic["implementation_revision"] != "unresolved"
+    assert diagnostic["request"]["session"] == _D1_SESSION.isoformat()
+    assert diagnostic["request"]["observed_at"] == "2026-08-22T04:00:00Z"
+    assert diagnostic["predicate"]["result"] == ("eligible" if case == "stable" else "not_eligible")
+    assert diagnostic["completeness"]["complete"] is True
+    assert diagnostic["completeness"]["observation_count"] == 30
+    assert {row["result"] for row in diagnostic["observations"]} == {status}
+    assert {row["failure_reason"] for row in diagnostic["observations"]} == {reason}
+    if case == "unstable":
+        assert diagnostic["predicate"]["result_identity"]["valid_digest_count"] == 2
+        assert "differing" in diagnostic["predicate"]["reason"]
+    if case != "stable":
+        assert receipt["generation_id"] is None
+        assert not (tmp_path / "sources-spy-rest-v1").exists()
+
+
+def test_d1_revision_lookup_and_fallback(monkeypatch):
+    from scripts import ingest_market_memory_sources_spy as ingest
+    from types import SimpleNamespace
+    revision = "a" * 40
+
+    def git(args, **kwargs):
+        assert args[:3] == ["git", "-C", str(ingest._REPO)]
+        assert kwargs["timeout"] <= 0.25
+        return SimpleNamespace(stdout=revision + "\n")
+
+    monkeypatch.setattr(ingest.subprocess, "run", git)
+    assert ingest._implementation_revision() == revision
+    monkeypatch.setattr(ingest.subprocess, "run", lambda *a, **k: SimpleNamespace(stdout="bad"))
+    assert ingest._implementation_revision().startswith("source-sha256:")
+
+    def unavailable(*args, **kwargs):
+        raise ingest.subprocess.TimeoutExpired(args[0], kwargs["timeout"])
+
+    monkeypatch.setattr(ingest.subprocess, "run", unavailable)
+    assert ingest._implementation_revision().startswith("source-sha256:")
+
+
+def test_d1_diagnostic_bounds_preserve_full_predicate_input():
+    from scripts import ingest_market_memory_sources_spy as ingest
+    from engine.neuralweb.market_memory_sources_spy import SealObservation, evaluate_seal_predicate
+
+    # The differing final digest is deliberately beyond the retained prefix.
+    observations = [
+        SealObservation(_D1_OPEN + timedelta(seconds=i / 2), "valid_bar", "b" * 64 if i == 598 else "a" * 64)
+        for i in range(599)
+    ]
+    state = evaluate_seal_predicate(observations, session=_D1_SESSION, seal_open=_D1_OPEN, seal_close=_D1_CLOSE)
+    assert not state.opportunity_eligible
+    args = dict(
+        session=_D1_SESSION, seal_open=_D1_OPEN, seal_close=_D1_CLOSE, run_started_at=_D1_OPEN,
+        sealed_at=_D1_CLOSE.isoformat(), seal_state=state, observations=observations,
+        run_status="not_eligible", implementation_revision="a" * 40,
+    )
+    receipt = ingest._build_run_diagnostics(**args)
+    assert receipt == ingest._build_run_diagnostics(**args)
+    assert len(ingest._diagnostic_bytes(receipt)) <= ingest._MAX_DIAGNOSTIC_BYTES
+    assert len(receipt["observations"]) <= ingest._MAX_DIAGNOSTIC_OBSERVATIONS
+    assert receipt["completeness"]["complete"] is False
+    assert receipt["completeness"]["truncated"] is True
+    assert receipt["completeness"]["observation_count"] == 599
+    assert receipt["predicate"]["result_identity"]["valid_digest_count"] == 2
+    assert {row["result_identity"]["digest"] for row in receipt["observations"]} == {"a" * 64}
+    assert len(observations) == len(state.transcript) == 599
+    later_run = ingest._build_run_diagnostics(**{**args, "run_started_at": _D1_OPEN + timedelta(seconds=1)})
+    assert later_run["request"]["request_id"] != receipt["request"]["request_id"]
+
+
 # ============================================================================
 # N1–N4 / B3 HOSTILE TESTS (third repair, 2026-08-21)
 # ============================================================================

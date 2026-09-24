@@ -868,6 +868,15 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 — additive
             log.error("intl stock library failed (%s)", e)
 
+        # Per-candidate Added / 入榜 date (engine/prophet_board_since.py): NOT
+        # re-stamped here (S5, 2026-09-01 repair round — dead code removed).
+        # build_intl_library.main() is the artifact's single owner: it already
+        # reads the prior committed site/factordata/intl_setups.json and stamps
+        # `setups` BEFORE writing that same file and returning it, so `setups`
+        # above already carries `added_date`. A second call here always read
+        # back the file build_intl_library.main() had just written with this
+        # exact `setups` content — a provable no-op, never doing real work.
+
         for r in latest["records"]:
             r["quad_meaning"] = QUAD_MEANING.get(r.get("quad_name"))
 
@@ -905,6 +914,10 @@ def main() -> int:
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
         from engine import i18n
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+
+        # Consume the existing Macro producer's snapshot; never rerun its engines.
+        from lib.global_regime_fragment import read_global_regime_fragment
+        vm["global_regime_html"] = read_global_regime_fragment(site)
 
         tmpl = env.get_template("intl.html.j2")
         write_page(site / "intl.html", tmpl.render(**vm, mode="macro"))
