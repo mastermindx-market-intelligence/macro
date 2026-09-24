@@ -726,206 +726,126 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
 # Companies
 # ---------------------------------------------------------------------------
 
-# Verb and noun markers; a noun marker (``sale``, ``acquisition``) carries no
-# agent of its own, so the slot rules in ``_subject_is_agent`` decide whose it is.
-_ACQUIRER_MARKER = re.compile(r"\bacqui(?:res?|red|sition)\b|\bpurchas|\bbuys?\b|\bbuying\b")
-_SELLER_MARKER = re.compile(r"\bsale\b|\bsells?\b|\bselling\b|\bsold\b|\bdivest|\btransfer|\bchange of\b")
-_ANY_MARKER = re.compile(_ACQUIRER_MARKER.pattern + "|" + _SELLER_MARKER.pattern)
-_PARTY_RUN = re.compile(r"\b[A-Z][A-Za-z0-9&.-]*(?:\s+[A-Z][A-Za-z0-9&.-]*)*")
-_RUN_STOPWORDS = frozenset({
-    "the", "a", "an", "its", "in", "on", "at", "by", "with", "as", "from", "to", "of",
-    "and", "or", "but", "this", "that", "these", "those", "it", "i", "there", "here",
-    "when", "while", "whereas", "if", "since", "because", "under", "following", "after",
-    "before", "pursuant", "per", "according", "subject", "upon", "during", "both",
-    "each", "all", "any", "whose", "which", "who",
-    # corporate suffixes are part of a name, never a party on their own
-    "inc", "ltd", "corp", "co", "se", "ag", "plc", "llc", "gmbh", "sa", "nv", "ab",
-    "kk", "limited", "corporation", "company", "holdings", "group"})
-_BREAK_WORDS = frozenset({
-    # clause resets, relative binders and passive auxiliaries: any of these
-    # between the subject and the verb means the verb is not plainly the
-    # subject's own
-    "and", "while", "whereas", "plus", "also", "whose", "which", "who", "that",
-    "was", "were", "is", "are", "been", "being"})
-_SEGMENT_END = re.compile(r"[;.]|\b(?:whose|which|that|and|while|whereas)\b")
-_COUNTERPARTY_SLOT = re.compile(
-    r"\b(?:of|from|to)\s+(?:(?:the|a|an|its|their|all|any|certain)\s+)?")
-_BY_AGENT = re.compile(r"\bby\s+")
+# Ownership side = a CLOSED TEMPLATE GRAMMAR over ``limitations.establishes``.
+# Four rounds of independent review rejected an open agent/patient resolver
+# (each round found a sentence where the served side named the WRONG party as
+# agent). The side is therefore served only when the sentence matches one of
+# five exact shapes in which the assertion subject is textually the agent, the
+# matched head is followed by a clean tail (no second ownership marker, no
+# ``by``, no clause word, no passive auxiliary, no second subject mention) and,
+# for the implicit-subject noun shape, the subject is named nowhere at all.
+# Everything else is ``announced_party``. A structured direction belongs in the
+# shared assertion contract (v1.1 additive request to the #7870 owner), not in
+# a parser.
+_ACTIVE_ACQUIRE = (r"(?:acquires|acquired|has acquired|will acquire|agreed to acquire|"
+                   r"has agreed to acquire|purchases|purchased|has purchased|buys|bought|"
+                   r"has bought)")
+_ACTIVE_SELL = (r"(?:sells|sold|has sold|will sell|agreed to sell|has agreed to sell|divests|"
+                r"divested|has divested|transfers|transferred|has transferred)")
+_PASSIVE_AUX = r"(?:was|were|is|are|has been|have been|had been|will be|to be|being)"
+_PP_ACQUIRE = r"(?:acquired|purchased|bought)"
+_PP_SELL = r"(?:sold|divested|transferred)"
+_NOUN_ACQUIRE = r"(?:acquisition|purchase)"
+_NOUN_SELL = r"(?:sale|divestiture|transfer|ownership change|change of control|change of ownership|change)"
+_PAREN = r"(?:\s*\([^()]*\))?"
+_NAMED_PARTY = r"[A-Z][A-Za-z0-9&.'-]*(?:\s+[A-Z&][A-Za-z0-9&.'-]*)*"
+_ANY_MARKER = re.compile(
+    r"\bacqui(?:res?|red|sition)\b|\bpurchas|\bbuys?\b|\bbuying\b|\bbought\b|\bsale\b|"
+    r"\bsells?\b|\bselling\b|\bsold\b|\bdivest|\btransfer|\bchange of\b|\bownership change\b")
+# ``and``/``or`` are NOT dirty on their own (a conjoined object such as "the
+# ThingWorx and Kepware businesses" is ordinary); a coordinated second clause
+# is caught by its own ownership marker or passive auxiliary.
+_TAIL_DIRTY = re.compile(
+    r"\bby\b|;|\b(?:while|whereas|which|whose|who|whom|that|be|was|were|is|are|"
+    r"been|being|not|rather|instead)\b")
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
+    """How the subject may be written inside its own prose: the label, the
+    label without a corporate suffix after a comma, and its first word (only
+    when it is a real word: 3+ letters, not an article). A mention only ever
+    counts when a template requires it to be IMMEDIATELY followed by the
+    template's next token, so a longer name that merely starts with the same
+    word ("Fortive Industrial Technologies" for "Fortive") never matches."""
     text = str(label or "").strip()
     if not text:
         return frozenset()
     mentions = {text.lower(), text.split(",")[0].strip().lower()}
     first = text.split()[0].strip(",.").lower()
-    if len(first) >= 3 and first not in _RUN_STOPWORDS:
+    if len(first) >= 3 and first not in {"the", "and", "inc", "ltd", "group"}:
         mentions.add(first)
     return frozenset(m for m in mentions if m)
 
 
-def _party_runs(sentence: str, mentions: frozenset[str]) -> list[tuple[int, int, bool]]:
-    """Named parties in ``sentence`` as (start, end, is_subject): every
-    case-insensitive subject mention (longest first, so ``Zebra Technologies,
-    Inc.`` and ``Smith & Nephew`` stay one run) plus the capitalised runs
-    (minus stop/suffix words) that do not overlap a mention."""
-    runs: list[tuple[int, int, bool]] = []
-    low_sentence = sentence.lower()
-
-    def overlaps(start: int, end: int) -> bool:
-        return any(a < end and start < b for a, b, _ in runs)
-
-    for mention in sorted(mentions, key=len, reverse=True):
-        for match in re.finditer(r"(?<![a-z0-9])" + re.escape(mention) + r"(?![a-z0-9])",
-                                 low_sentence):
-            if not overlaps(match.start(), match.end()):
-                runs.append((match.start(), match.end(), True))
-    for match in _PARTY_RUN.finditer(sentence):
-        text = match.group(0)
-        words = [w.strip(".,").lower() for w in text.split()]
-        if all(w in _RUN_STOPWORDS for w in words):
-            continue
-        start, end = match.start(), match.start() + len(text)
-        if overlaps(start, end):
-            continue
-        runs.append((start, end, False))
-    return sorted(runs)
+def _mention_pattern(mentions: frozenset[str]) -> str:
+    return "(?:" + "|".join(re.escape(m) for m in sorted(mentions, key=len, reverse=True)) + ")"
 
 
-def _blank_parentheticals(text: str) -> str:
-    return re.sub(r"\([^)]*\)", lambda m: " " * len(m.group(0)), text)
-
-
-_ASIDE_PAIR = re.compile(r",[^,;.]*,")
-_ASIDE_TAIL = re.compile(r",\s*(?:whose|which|who|where|under which|in which)\b[^,;.]*")
-
-
-def _aside_spans(sentence: str) -> list[tuple[int, int]]:
-    """Comma-delimited asides: a comma pair (appositive, relative clause,
-    participle phrase) or a relative clause running to the end of its
-    clause. An agent phrase (``, by <party>,``) is not an aside."""
-    spans: list[tuple[int, int]] = []
-    for pattern in (_ASIDE_PAIR, _ASIDE_TAIL):
-        for match in pattern.finditer(sentence):
-            inner = sentence[match.start() + 1:match.end()].strip(", ").lower()
-            if inner.startswith("by ") or not inner:
-                continue
-            if any(a < match.end() and match.start() < b for a, b in spans):
-                continue
-            spans.append((match.start(), match.end()))
-    return sorted(spans)
-
-
-_ASIDE_OPENER = re.compile(r",\s*(?:under which|in which|whose|which|who|where|that)?")
-
-
-def _scope_for_marker(sentence: str, marker_start: int,
-                      mentions: frozenset[str]) -> str:
-    """The text the marker is judged in, positions preserved.
-
-    Outside every aside: the sentence with each aside blanked (an aside
-    never lends its parties to the main clause). Inside an aside: the
-    aside's own text with its opening comma and relative binder blanked,
-    plus the party named just before the aside — the antecedent a relative
-    clause or appositive is about — so that ``Fortive, which acquired X,``
-    reads as Fortive's verb and never as the implicit subject's."""
-    spans = _aside_spans(sentence)
-    chars = list(sentence)
-    inside = next((span for span in spans if span[0] <= marker_start < span[1]), None)
-    if inside is None:
-        for a, b in spans:
-            for i in range(a, b):
-                chars[i] = " "
-        return "".join(chars)
-    keep: set[int] = set(range(inside[0], inside[1] - 1))
-    opener = _ASIDE_OPENER.match(sentence, inside[0])
-    if opener:
-        keep -= set(range(opener.start(), opener.end()))
-    antecedent = [run for run in _party_runs(sentence, mentions) if run[1] <= inside[0]]
-    if antecedent:
-        keep |= set(range(antecedent[-1][0], antecedent[-1][1]))
-    return "".join(c if i in keep else " " for i, c in enumerate(chars))
-
-
-def _subject_is_agent(sentence: str, marker_start: int, marker_end: int,
-                      mentions: frozenset[str]) -> bool:
-    """Whether the verb at ``sentence[marker_start:marker_end]`` is plainly the
-    assertion SUBJECT's own — the subject as its agent, not its patient.
-
-    Closed rules; every unknown resolves to *not anchored* (neutral role):
-    (1) an explicit agent phrase ``by <party>`` in the verb's segment decides;
-    (2) the subject in a counterparty slot (``of/from/to <subject>``) is the
-    patient, never the agent;
-    (3) with no party named before the verb (parties in counterparty slots
-    do not count), the verb belongs to the clause's implicit subject —
-    accepted only when the clause names at least one party at all;
-    (4) otherwise the ONLY parties named before the verb must be the subject,
-    and the text between the subject and the verb must be plain words: no
-    other party, no comma or semicolon, no relative binder, no clause reset,
-    no passive auxiliary, no other ownership marker (parentheticals are
-    ignored). A counterparty that is named first, or that carries the
-    subject inside an aside about itself, can therefore never lend the
-    subject its verb; after a clause reset the verb belongs to the party
-    before the reset, never to the assertion subject by default.
-    Comma asides are judged on their own text (``_scope_for_marker``).
-    """
-    sentence = _scope_for_marker(sentence, marker_start, mentions)
-    runs = _party_runs(sentence, mentions)
-
-    def run_at(position: int) -> tuple[int, int, bool] | None:
-        for run in runs:
-            if run[0] <= position < run[1]:
-                return run
-        return None
-
-    low = sentence.lower()
-    seg_end = len(sentence)
-    boundary = _SEGMENT_END.search(low, marker_end)
-    if boundary:
-        seg_end = boundary.start()
-    nxt = _ANY_MARKER.search(low, marker_end)
-    if nxt:
-        seg_end = min(seg_end, nxt.start())
-    # (1) explicit agent phrase
-    for by in _BY_AGENT.finditer(low, marker_end, seg_end):
-        run = run_at(by.end())
-        return run is not None and run[2]
-    # (2) subject in a counterparty slot = patient
-    for slot in _COUNTERPARTY_SLOT.finditer(low, marker_start, seg_end):
-        run = run_at(slot.end())
-        if run is not None and run[2]:
-            return False
-    blanked = _blank_parentheticals(sentence)
-    slotted = {run_at(slot.end()) for slot in _COUNTERPARTY_SLOT.finditer(low)}
-    before = [run for run in runs if run[1] <= marker_start
-              and blanked[run[0]:run[1]].strip() and run not in slotted]
-    # (3) implicit subject
-    if not before:
-        return bool(runs)
-    # (4) the subject, and only the subject, precedes the verb plainly
-    if any(not run[2] for run in before):
-        return False
-    last_end = max(run[1] for run in before)
-    between = blanked[last_end:marker_start]
-    if re.search(r"[,;]", between):
-        return False
-    if _ANY_MARKER.search(between.lower()):
-        return False
-    words = [w.strip(",;:'\"()").lower() for w in between.split()]
-    return not any(word in _BREAK_WORDS for word in words)
+def _clean(text: str, mention_re: re.Pattern[str]) -> bool:
+    """A head or tail is clean when it carries no ownership marker, no ``by``,
+    no clause word / passive auxiliary and no mention of the subject."""
+    return not (_ANY_MARKER.search(text) or _TAIL_DIRTY.search(text) or mention_re.search(text))
 
 
 def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
     limits = assertion.get("limitations") or {}
     mentions = _subject_mentions((assertion.get("subject") or {}).get("source_business_label"))
     sides: set[str] = set()
+    if not mentions:
+        return sides
+    m_pat = _mention_pattern(mentions)
+    mention_re = re.compile(r"(?<![A-Za-z0-9])" + m_pat + r"(?![A-Za-z0-9])", re.IGNORECASE)
+    flags = re.IGNORECASE
+    templates = (
+        # T1  <SUBJECT> [(...)] <active verb group> <clean tail>
+        (re.compile(r"^" + m_pat + _PAREN + r"\s+" + _ACTIVE_ACQUIRE + r"\b(?P<tail>.*)$", flags),
+         "acquirer", ("tail",)),
+        (re.compile(r"^" + m_pat + _PAREN + r"\s+" + _ACTIVE_SELL + r"\b(?P<tail>.*)$", flags),
+         "seller", ("tail",)),
+        # T2  an announced <noun> by <SUBJECT> [(...)] [of] <clean tail>
+        (re.compile(r"^(?:an|the) announced " + _NOUN_ACQUIRE + r" by " + m_pat + _PAREN
+                    + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "acquirer", ("tail",)),
+        (re.compile(r"^(?:an|the) announced " + _NOUN_SELL + r" by " + m_pat + _PAREN
+                    + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "seller", ("tail",)),
+        # T3  <clean head> <passive aux> <participle> by <SUBJECT> <clean tail>
+        (re.compile(r"^(?P<head>.*?)\s" + _PASSIVE_AUX + r"\s+" + _PP_ACQUIRE + r"\s+by\s+"
+                    + m_pat + _PAREN + r"(?P<tail>.*)$", flags), "acquirer", ("head", "tail")),
+        (re.compile(r"^(?P<head>.*?)\s" + _PASSIVE_AUX + r"\s+" + _PP_SELL + r"\s+by\s+"
+                    + m_pat + _PAREN + r"(?P<tail>.*)$", flags), "seller", ("head", "tail")),
+        # T4  <SUBJECT>'s <noun> of <clean tail>
+        (re.compile(r"^" + m_pat + r"(?:'s|')\s+" + _NOUN_ACQUIRE + r"\s+of\b(?P<tail>.*)$",
+                    flags), "acquirer", ("tail",)),
+        (re.compile(r"^" + m_pat + r"(?:'s|')\s+" + _NOUN_SELL + r"\s+of\b(?P<tail>.*)$",
+                    flags), "seller", ("tail",)),
+    )
+    # T5  implicit subject: an announced <noun> of <X> to|from <Named Party> — the
+    # subject is named NOWHERE in the sentence, the noun and the preposition agree
+    # (sale/transfer/… → to = seller; acquisition/purchase → from = acquirer)
+    implicit = (
+        (re.compile(r"^(?:an|the) announced (?:" + _NOUN_SELL + r")(?: of| transferring)\s+"
+                    r"(?P<x>(?:(?!\bto\b|\bfrom\b).)+?)\s+to\s+" + _NAMED_PARTY
+                    + r"(?P<tail>.*)$"), "seller"),
+        (re.compile(r"^(?:an|the) announced (?:sale|transfer) to\s+" + _NAMED_PARTY
+                    + r"\s+of\s+(?P<x>.+?)(?P<tail>)$"), "seller"),
+        (re.compile(r"^(?:an|the) announced " + _NOUN_ACQUIRE + r" of\s+"
+                    r"(?P<x>(?:(?!\bto\b|\bfrom\b).)+?)\s+from\s+" + _NAMED_PARTY
+                    + r"(?P<tail>.*)$"), "acquirer"),
+        (re.compile(r"^(?:an|the) announced " + _NOUN_ACQUIRE + r" from\s+" + _NAMED_PARTY
+                    + r"\s+of\s+(?P<x>.+?)(?P<tail>)$"), "acquirer"),
+    )
     for piece in limits.get("establishes") or []:
         if not isinstance(piece, str):
             continue
-        low = piece.lower()
-        for side, marker in (("acquirer", _ACQUIRER_MARKER), ("seller", _SELLER_MARKER)):
-            for match in marker.finditer(low):
-                if _subject_is_agent(piece, match.start(), match.end(), mentions):
+        sentence = piece.strip().rstrip(".").strip()
+        for pattern, side, groups in templates:
+            match = pattern.match(sentence)
+            if match and all(_clean(match.group(g) or "", mention_re) for g in groups):
+                sides.add(side)
+        if not mention_re.search(sentence):
+            for pattern, side in implicit:
+                match = pattern.match(sentence)
+                if match and _clean(match.group("x"), mention_re) \
+                        and _clean(match.group("tail") or "", mention_re):
                     sides.add(side)
     return sides
 
@@ -941,10 +861,10 @@ def _ownership_role(assertion: Mapping[str, Any]) -> str:
         return "owner_reported_effective_date_unknown"
     if mode == "ANNOUNCED_ARRANGEMENT":
         # The side is read ONLY from what the assertion ESTABLISHES about its
-        # own subject, and only from verbs anchored to that subject: a
-        # denial (``does_not_establish``), the coverage prose, or the
-        # counterparty's verb inside ``establishes`` never decides a side
-        # (R2 review nit 1, R2b review blocker 2). Ambiguous = neutral.
+        # own subject, through the closed template grammar above: a denial
+        # (``does_not_establish``), the coverage prose, or any sentence outside
+        # the five shapes never decides a side (R2 nit 1; R2b reviews 1-4).
+        # Ambiguous = neutral.
         sides = _anchored_sides(assertion)
         if sides == {"acquirer"}:
             return "announced_acquirer"
