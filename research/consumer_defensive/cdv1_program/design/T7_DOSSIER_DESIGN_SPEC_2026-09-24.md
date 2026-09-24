@@ -437,16 +437,254 @@ At **390 px**, the dossier displays without horizontal page scroll. The inner ta
 
 ## 5. Copy
 
-TODO
+All source-derived labels are server-owned bilingual strings. Fixed UI strings are paired EN/ZH below and must not be paraphrased. ZH is native-shaped, not word-for-word; fiscal dates, units, “EPS”, “FX”, and established company segment names remain intact. No translated text is emitted in `title=` attributes.
+
+### 5.1 Fixed shell and actions
+
+| Token | EN | ZH |
+|---|---|---|
+| eyebrow | Consumer research | 消费研究 |
+| title | Demand and earnings evidence | 需求与盈利证据 |
+| compact toggle | Open P&G demand and earnings evidence | 打开宝洁需求与盈利证据 |
+| compact expanded suffix | Close P&G demand and earnings evidence | 关闭宝洁需求与盈利证据 |
+| default stance | Watch the evidence — do not chase it. | 看证据，勿追。 |
+| loading | Loading the latest accepted evidence. | 正在加载最新已采纳证据。 |
+| demand | Demand | 需求 |
+| earnings | Earnings | 盈利 |
+| item | Item | 项目 |
+| period | Period | 期间 |
+| basis | Basis | 口径 |
+| value | Value | 数值 |
+| evidence | Evidence | 证据 |
+| evidence action | Open source evidence | 打开源证据 |
+| segments | Segment detail | 分部明细 |
+| findings | What the numbers say | 数字说明了什么 |
+| missing title | Context not available | 缺失的背景 |
+| drawer title | Source evidence | 来源证据 |
+| header | Header | 表头 |
+| generation | Generation | 生成版本 |
+| manifest | Manifest | 清单 |
+| record | Record | 记录 |
+| digest | Digest | 摘要 |
+| precision | Precision note | 精度说明 |
+| close | Close | 关闭 |
+| fiscal period | Fiscal period | 财务期间 |
+| source accepted | Source accepted | 来源采纳时间 |
+| accepted generation | Accepted generation | 已采纳生成版本 |
+| currentness | Currentness | 时效性 |
+| company link | Open the company page | 打开公司页面 |
+| GMI link | Open the related research | 打开相关研究 |
+| return | Return to where you were | 返回原位置 |
+
+### 5.2 Basis chips
+
+| Machine value | EN | ZH |
+|---|---|---|
+| reported | Reported | 报告口径 |
+| organic | Organic | 有机口径 |
+| core | Core | 核心口径 |
+
+### 5.3 Fact labels
+
+| Owner metric family | EN | ZH |
+|---|---|---|
+| reported sales growth | Reported sales growth | 报告销售额增长 |
+| organic sales growth | Organic sales growth | 有机销售额增长 |
+| total volume growth | Total volume growth | 总销量增长 |
+| organic volume growth | Organic volume growth | 有机销量增长 |
+| combined volume/mix | Volume and mix combined | 销量与结构合计 |
+| price contribution | Price contribution | 价格贡献 |
+| mix contribution | Mix contribution | 结构贡献 |
+| FX contribution | FX contribution | 汇率贡献 |
+| other contribution | Other contribution | 其他贡献 |
+| reported diluted EPS | Reported diluted EPS | 报告稀释每股收益 |
+| prior reported diluted EPS | Prior reported diluted EPS | 上期报告稀释每股收益 |
+| reported EPS growth | Reported EPS growth | 报告每股收益增长 |
+| core EPS | Core EPS | 核心每股收益 |
+| prior core EPS | Prior core EPS | 上期核心每股收益 |
+| core EPS growth | Core EPS growth | 核心每股收益增长 |
+| core reconciliation context | Core EPS reconciliation | 核心每股收益调节说明 |
+| admitted segment | Use the owner-supplied segment display name in both languages | 使用所有者提供的双语分部名称 |
+
+### 5.4 States and currentness
+
+| State | EN | ZH |
+|---|---|---|
+| up_to_date | Up to date | 已更新 |
+| newer_source_pending | Newer source pending | 新来源待处理 |
+| currentness_unverified | Currentness unverified | 时效性未核实 |
+| unavailable | This evidence is unavailable. | 此证据暂不可用。 |
+| unavailable why | The accepted private record is not available to this page. | 本页无法读取已采纳的私有记录。 |
+| unentitled | Full membership is required. | 需要完整会员权限。 |
+| unentitled why | Sign in with an account that includes this research. | 请使用包含此研究的账户登录。 |
+| unsupported schema | This evidence needs a newer page version. | 此证据需要更新版本页面。 |
+| error | This evidence could not be loaded. | 此证据未能加载。 |
+| error why | The request failed before any evidence was shown. | 请求在显示任何证据前失败。 |
+
+### 5.5 Findings, exact by rule ID
+
+The wording below is the display wording; the machine rule ID is never shown.
+
+| Rule ID | EN | ZH |
+|---|---|---|
+| reported_vs_organic_difference | Reported sales rose, but the company-defined organic measure did not. | 报告销售额增长，但公司定义的有机口径未增长。 |
+| positive_organic_nonpositive_pure_volume | Organic revenue rose while pure volume did not; price or mix contributed. | 有机收入增长而纯销量未增长，价格或结构做出贡献。 |
+| reported_vs_core_earnings_disagreement | Reported and core EPS moved differently because they use different definitions. | 报告与核心每股收益走势不同，因为二者定义不同。 |
+| incomplete_margin_to_cash_bridge | Margin information is not enough to show operating profit or cash improvement. | 利润率信息不足以说明经营利润或现金改善。 |
+| segment_scope_limitation | Segment detail describes those segments, not the whole sector. | 分部明细只描述这些分部，不代表整个行业。 |
+| missing_consensus | Consensus is unavailable, so this is not a beat or a miss. | 共识数据不可用，因此这不是优于或低于预期。 |
+
+### 5.6 Missing context
+
+| Owner value | EN | ZH |
+|---|---|---|
+| consensus | Consensus is unavailable. | 共识数据不可用。 |
+| segments | Segment detail is unavailable. | 分部明细不可用。 |
+| reconciliation | The company’s core EPS reconciliation is unavailable. | 公司核心每股收益调节说明不可用。 |
+| margin_to_cash | The margin-to-cash bridge is unavailable. | 利润率到现金的桥接不可用。 |
+| empty list | Nothing required is missing. | 必需信息没有缺失。 |
+
+### 5.7 Mandatory definition lines
+
+These lines appear once in their group headers and are not repeated per row:
+
+- “Organic sales are a company-defined revenue measure, not household consumption.” / “有机销售额是公司定义的收入口径，不等于家庭消费。”
+- “Reported and core EPS use different definitions.” / “报告口径与核心每股收益采用不同定义。”
+- “Volume and mix combined is not pure volume.” / “销量与结构合计不等于纯销量。”
+- “Read the evidence in its source context.” / “请结合来源语境阅读证据。”
+
+The combined volume/mix sentence appears only when that row exists. The source-context sentence appears in the evidence dialog. These distinctions implement the review clarifications (`2026-09-23 R5 design review:25–30`).
+
+### 5.8 Clock templates
+
+Templates use server-provided localized values and never calculate dates in the browser:
+
+- Fiscal period: `Fiscal period: {period}` / `财务期间：{period}`
+- Source accepted: `Source accepted: {date}` / `来源采纳时间：{date}`
+- Generation: `Accepted generation: {pin}` / `已采纳生成版本：{pin}`
+- Up to date: `Currentness: up to date as of {source clock}` / `时效性：截至{source clock}已更新`
+- Pending: `Currentness: newer source pending since {source clock}` / `时效性：自{source clock}起新来源待处理`
+- Unverified: `Currentness: latest accepted, currentness unverified` / `时效性：最新已采纳，时效性未核实`
+
+### 5.9 Copy bans and interpretation rules
+
+The glance stance and compact labels use no internal state, study name, machine slug, or falsifier/refutation language. “Validated” is forbidden. No front-facing string says demand is proven, core is cleaner/recurring, combined mix is pure volume, or consensus was beaten. The UI never says “buy,” “sell,” “size,” “rank,” “originate,” “entry,” or “Prophet.”
 
 ## 6. Behavior
 
-TODO
+### 6.1 Rendering-only rules
+
+- Render source-derived text exclusively with `textContent`, `createElement`, `setAttribute`, `classList`, `hidden`, and `replaceChildren`. Never call `innerHTML`, `insertAdjacentHTML`, `eval`, `Function`, `srcdoc`, or `outerHTML` with source data.
+- No browser arithmetic, rounding, aggregation, sorting beyond the fixed server order, inference, modeling, scoring, or trading-label creation.
+- Reject any response whose top-level keys are not exactly `schema interpretation_id issuer event_id build selection observations comparisons findings missing_context next_evidence quality clocks authority`, whose `schema` is unsupported, or whose six `authority` booleans are missing, extra, or not all literal `false` (`2026-09-23 CDV-1 implementation plan:139–156`).
+- Render only server-provided display fields. Digests and pins are opaque strings displayed verbatim; the browser does not derive a receipt.
+- Unknown optional source fields are ignored only when the closed top-level contract passes; unknown fields inside closed sections render unavailable rather than being interpreted.
+- Language follows the page’s existing `data-lang` and `langchange` mechanism. Both language nodes may exist server-side, but dynamic source strings use one `textContent` selected from the server’s matching language field.
+
+### 6.2 Fetch and request lifetime
+
+`fetchAuthenticated` is called exactly once per mounted load with:
+
+```javascript
+fetchAuthenticated('/api/earnings/v1/economic/PG', {
+  credentials: 'same-origin',
+  cache: 'no-store',
+  headers: {Accept: 'application/json'}
+})
+```
+
+The wrapper adds the current Bearer header. The component adds no other API call. AbortController, internal epoch, and auth epoch govern every response:
+
+- Capture `requestEpoch` before the fetch; discard if it no longer equals the current internal epoch.
+- Store the controller in exactly one `pending` reference.
+- On a second load while one is pending, abort the first; there is never parallel private loading.
+- On logout/auth epoch change or destroy, increment internal epoch, abort, clear children, and show the unentitled/unavailable state.
+- A late earlier response is always discarded even if it resolves successfully.
+- No automatic retry, polling, refresh timer, or page reload.
+
+### 6.3 Evidence navigation
+
+An evidence click does no financial fetch. It opens the existing dialog with the evidence object referenced by that displayed observation, and pins `event_id`, the fact’s native handle, selected generation, manifest digest, and record digest from the **displayed** response. If evidence content was not supplied by the owner, the button is disabled with the fixed unavailable wording rather than fabricating a source URL.
+
+A subsequent evidence request uses the pinned values with the exact generation/manifest/record/fact bindings to `/api/earnings/v1/records/{slug}/economic-evidence/{fact_id}` only when the pinned owner binding is present. It is sent through `fetchAuthenticated`, uses `cache:'no-store'`, is abortable, and replaces only the currently open dialog. A failure closes the dialog and returns focus to the invoking button. The component never constructs this route from mutable current state.
+
+### 6.4 Privacy, storage, and telemetry
+
+- Write no source-derived value, response, token, digest, URL, or user state to `localStorage`, `sessionStorage`, `IndexedDB`, cookies, service-worker caches, `console`, screenshots initiated by code, analytics, or telemetry.
+- Never expose a private value in a DOM attribute not required by the fixed contract. `data-economic-*` contains only state, period, basis, rule ID, fact ID, and mount/control semantics.
+- Use no web worker, iframe, canvas rendering, copy-to-clipboard, print hook, or transport beyond the injected wrapper.
+- Browser test fixtures use synthetic values and a synthetic private sentinel to prove none of these sinks receives private data.
+
+### 6.5 Links
+
+Render the company link only when the response provides a valid existing validated native issuer/listing bridge. Render the GMI link only when the response provides an admitted relationship. Both bindings must include a nonempty same-site path and owner-valid label. Set `rel="noopener"` and the fixed accessible label; do not infer a URL from ticker, company name, or GMI identity. When absent, render the fixed unresolved line: “Related company and research links are unavailable.” / “相关公司与研究链接不可用。” This implements the design’s owner-binding law (`2026-09-23 economic dossier design:141–147`).
 
 ## 7. Evidence matrix
 
-TODO
+The build lane must produce the exact browser proof below with mocked server responses and synthetic private values. It must not claim visual acceptance from syntax-only checks. Each row is a separate Playwright case or a parameterized case with an independently captured artifact; run at most one Playwright process at a time.
+
+### 7.1 Twelve visual combinations
+
+Use `tests/test_earnings_economic_browser.py` and the accepted real generated `templates/sector.html.j2` plus `_economic_dossier.html.j2`; no substitute page.
+
+| # | Theme | Language | Width | Required screenshot/check |
+|---|---|---|---|---|
+| E01 | dark | en | 1440 | full dossier; no horizontal page scroll |
+| E02 | dark | en | 820 | section reduction; no clipped labels |
+| E03 | dark | en | 390 | declared density budget; inner-table scroll only |
+| E04 | dark | zh | 1440 | ZH parity; fiscal/unit values intact |
+| E05 | dark | zh | 820 | no EN fallback in fixed ZH strings |
+| E06 | dark | zh | 390 | ≤20-character stance; no clipped basis chips |
+| E07 | light | en | 1440 | judged as research-workspace design, not token swap |
+| E08 | light | en | 820 | hairline hierarchy and airy depth remain distinct |
+| E09 | light | en | 390 | page never scrolls horizontally |
+| E10 | light | zh | 1440 | native-shaped ZH and light ink rungs |
+| E11 | light | zh | 820 | evidence drawer light material |
+| E12 | light | zh | 390 | mobile reduction and dialog retain meaning |
+
+Each artifact asserts: at least one `data-economic-period`; a `reported` basis row; an `organic` basis row; a `core` basis row; reported/core rows remain visually separate; findings/missing context are plain sentences; no visible rule ID or raw slug; currentness once.
+
+### 7.2 Behavioral and adversarial checks
+
+| ID | Test/check | Required proof |
+|---|---|---|
+| B01 | Keyboard open/close | Tab reaches first evidence button; Enter opens dialog; Escape closes; focus returns exactly to invoking button |
+| B02 | Dialog focus trap | Tab/Shift+Tab remains in dialog; close is first focus; scrim click closes |
+| B03 | Hostile markup | Synthetic span/header contains markup, quotes, and script-like text; DOM is inert and contains no executable descendants |
+| B04 | Logout during fetch | Synthetic sentinel request is aborted; response discards; private sinks remain empty |
+| B05 | Late earlier response | First older response resolves after second; displayed epoch belongs to second only |
+| B06 | Missing context | consensus/segments render fixed absence lines; no beat/miss text |
+| B07 | Newer source pending | accepted tables remain; warning once; no row tint |
+| B08 | Currentness unverified | exact footer wording; never “up to date” |
+| B09 | Unsupported schema | unavailable state; private fields never rendered |
+| B10 | Unentitled | sign-in/action state; no teaser/blur/private text |
+| B11 | Error | exact error/reason; no object path or credential |
+| B12 | Loading | true geometry skeleton; no stale private values |
+| B13 | Grayscale | reported/organic/core distinguishable by text and position in both languages |
+| B14 | Evidence pinning | route uses displayed slug/fact/generation/manifest/record; changed pointer cannot redirect |
+| B15 | Company/GMI unresolved | fixed unavailable line; no fabricated link |
+| B16 | Theme Tracker lifecycle | mount on expand; destroy on collapse; one root; no duplicate fetch |
+| B17 | XLP-only mount | root exists on XLP; absent on XLK and XLY |
+| B18 | Storage/console/network | no private sentinel in storage, console, analytics, service worker, or unintended route |
+| B19 | Reduced motion | evidence from browser emulation; no mandatory movement |
+| B20 | Asset parity | actual template/site registration and repository asset-copy guard pass |
+
+### 7.3 Command and evidence receipt
+
+The build lane’s required browser project is exactly:
+
+```bash
+python3 -m pytest tests/test_earnings_economic_browser.py -q
+```
+
+It must report the twelve visual combinations and B01–B20 in its test IDs/artifact names. Additional release proof with an authorized actual source is separate and must name the native event/source revision; it never substitutes for the mocked privacy/hostile tests. Visual/UI acceptance is not claimed by this docs-only lane.
 
 ## 8. Open questions for the seat
 
-TODO
+1. **Theme Tracker membership.** The current `site/neuralwebdata/theme_state.json` has no `us_sector_staples` row, although the stable theme vocabulary/crosswalk does. Should Task 7 add the row through the ThemeState owner before this mount, or should the compact cell remain conditionally absent until that owner admits it? **Recommendation:** require the owner admission first; the template condition is lawful but will never paint without that row, and inventing a display row would violate ThemeState authority.
+2. **Entitlement action on Theme Tracker.** Should unentitled readers be sent to the existing plans/sign-in route, or remain in place with a sign-in action only? **Recommendation:** use the existing site sign-in action and return focus to the dossier toggle; do not deep-link directly to marketing plans.
+3. **Dialog placement.** The dossier uses a bottom sheet at ≤899 px and a right sheet at ≥900 px. Confirm this is acceptable for the Staples route. **Recommendation:** keep it; it preserves source context beside wide tables and avoids covering the full mobile journey.
+4. **DS-PR-0 timing.** This packet deliberately uses the established fallback idiom for spacing/radius/motion. If DS-PR-0 has landed before build, may the builder remove the fallback values mechanically? **Recommendation:** no — leave them inert unless a separate migration packet owns that sweep; this avoids unrequested repaint.
+5. **Clock granularity.** The server supplies localized date/time strings, but no display rule says whether unknown time granularity should print “date unknown”. **Recommendation:** use the server’s exact phrase and never manufacture time; if the seat wants a fixed unknown-state chip, add it before build.
+6. **Segment naming.** Owner-supplied bilingual segment labels are assumed but not yet frozen by the API packet. **Recommendation:** render unavailable until both labels are present; never machine-translate an admitted segment name.
+7. **Actual release proof threshold.** Task 7 can prove all mocked behavior without live data. Should release additionally require one authentic accepted P&G generation, or defer that to Task 8 qualification? **Recommendation:** require it at release because the user journey explicitly needs exact evidence navigation, but keep synthetic values for CI.
