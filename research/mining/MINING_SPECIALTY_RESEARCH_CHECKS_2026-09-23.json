@@ -1,0 +1,416 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_EXAMPLES_ONLY",
+  "run_utc": "2026-09-24T02:30:09.921797+00:00",
+  "research_cutoff": "2026-09-23",
+  "command": "python check_specialty_research.py",
+  "documents": {
+    "MINING_SPECIALTY_ENABLER_ECONOMICS_2026-09-23.md": {
+      "bytes": 44847,
+      "words": 5998,
+      "sha256": "a8a7700c0e02858773651c3e5d1035bc570719d061d88d6b3c7390018650ea1b",
+      "git_blob_sha1": "835fda608cf0d68af42969c602b119546866873d"
+    },
+    "MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md": {
+      "bytes": 15967,
+      "words": 2110,
+      "sha256": "447fea0605b3c2b99ca5293171f0e0da2e42dd2f4fdf1dba8fd250d42012af13",
+      "git_blob_sha1": "8362465637263cefad4dce2abaa45ab834351823"
+    }
+  },
+  "script_git_blob_sha1": "f4b3af56fb54b0ef00967aef55e3081dec21ea77",
+  "total": 58,
+  "passed": 58,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "eleven_dossiers",
+      "passed": true,
+      "evidence": [
+        "SE-C01",
+        "SE-C02",
+        "SE-C03",
+        "SE-C04",
+        "SE-C05",
+        "SE-C06",
+        "SE-C07",
+        "SE-C08",
+        "SE-C09",
+        "SE-C10",
+        "SE-C11"
+      ]
+    },
+    {
+      "check": "sixteen_source_records",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16"
+      ]
+    },
+    {
+      "check": "five_hypotheticals",
+      "passed": true,
+      "evidence": [
+        "SE-H01",
+        "SE-H02",
+        "SE-H03",
+        "SE-H04",
+        "SE-H05"
+      ]
+    },
+    {
+      "check": "four_persona_workflows",
+      "passed": true,
+      "evidence": [
+        "SE-P01",
+        "SE-P02",
+        "SE-P03",
+        "SE-P04"
+      ]
+    },
+    {
+      "check": "twenty_eight_proposals",
+      "passed": true,
+      "evidence": [
+        "MS-01",
+        "MS-02",
+        "MS-03",
+        "MS-04",
+        "MS-05",
+        "MS-06",
+        "MS-07",
+        "MS-08",
+        "MS-09",
+        "MS-10",
+        "MS-11",
+        "MS-12",
+        "MS-13",
+        "MS-14",
+        "MS-15",
+        "MS-16",
+        "MS-17",
+        "MS-18",
+        "MS-19",
+        "MS-20",
+        "MS-21",
+        "MS-22",
+        "MS-23",
+        "MS-24",
+        "MS-25",
+        "MS-26",
+        "MS-27",
+        "MS-28"
+      ]
+    },
+    {
+      "check": "all_source_ids_resolve",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16"
+      ]
+    },
+    {
+      "check": "unique_primary_urls",
+      "passed": true,
+      "evidence": 16
+    },
+    {
+      "check": "report_held_mission",
+      "passed": true,
+      "evidence": "Explicit scope"
+    },
+    {
+      "check": "report_current_pin",
+      "passed": true,
+      "evidence": "Pinned procedure"
+    },
+    {
+      "check": "coverage_held_mission",
+      "passed": true,
+      "evidence": "Explicit scope"
+    },
+    {
+      "check": "coverage_current_pin",
+      "passed": true,
+      "evidence": "Pinned procedure"
+    },
+    {
+      "check": "canonical_p05_reference",
+      "passed": true,
+      "evidence": "Canonical commit/blob"
+    },
+    {
+      "check": "parallel_p05_excluded",
+      "passed": true,
+      "evidence": "No duplicate publication"
+    },
+    {
+      "check": "six_pass_references",
+      "passed": true,
+      "evidence": "P01-P06"
+    },
+    {
+      "check": "three_gap_classes",
+      "passed": true,
+      "evidence": "Local claim, regime, release"
+    },
+    {
+      "check": "no_global_completeness_score",
+      "passed": true,
+      "evidence": "No invented denominator"
+    },
+    {
+      "check": "historical_checks_not_rerun",
+      "passed": true,
+      "evidence": "Current suite only"
+    },
+    {
+      "check": "Kipushi_output_percent",
+      "passed": true,
+      "evidence": "7.891581083574195928909661200"
+    },
+    {
+      "check": "Kipushi_payable_sales_percent",
+      "passed": true,
+      "evidence": "-20.96104841645431379686931198"
+    },
+    {
+      "check": "FCX_primary_moly_output_percent",
+      "passed": true,
+      "evidence": "-11.11111111111111111111111111"
+    },
+    {
+      "check": "FCX_primary_moly_unit_cost_percent",
+      "passed": true,
+      "evidence": "35.21126760563380281690140850"
+    },
+    {
+      "check": "Sibanye_composite_ounces_percent",
+      "passed": true,
+      "evidence": "142.0268054534454668473255740"
+    },
+    {
+      "check": "Sibanye_PGM_ounces_percent",
+      "passed": true,
+      "evidence": "25.45518905872888173773129530"
+    },
+    {
+      "check": "Sibanye_silver_physical_share_percent",
+      "passed": true,
+      "evidence": "89.59545822962766377127609976"
+    },
+    {
+      "check": "Weir_ESCO_constant_currency_percent",
+      "passed": true,
+      "evidence": "9.422492401215805471124620100"
+    },
+    {
+      "check": "Weir_group_aftermarket_share_percent",
+      "passed": true,
+      "evidence": "82.50591016548463356973995272"
+    },
+    {
+      "check": "Metso_represented_growth_percent",
+      "passed": true,
+      "evidence": "6.125696101829753381066030200"
+    },
+    {
+      "check": "Metso_incompatible_old_base_percent",
+      "passed": true,
+      "evidence": "9.975267930750206100577081600"
+    },
+    {
+      "check": "Metso_order_to_sales",
+      "passed": true,
+      "evidence": "1.095952023988005997001499250"
+    },
+    {
+      "check": "Metso_Q2_cash_percent",
+      "passed": true,
+      "evidence": "40.13605442176870748299319730"
+    },
+    {
+      "check": "Metso_H1_cash_percent",
+      "passed": true,
+      "evidence": "-16.90962099125364431486880466"
+    },
+    {
+      "check": "Orica_H1_operating_cash_percent",
+      "passed": true,
+      "evidence": "-5.839118007349938750510412410"
+    },
+    {
+      "check": "Almonty_revaluation_components",
+      "passed": true,
+      "evidence": "CAD million; not normalized earnings"
+    },
+    {
+      "check": "Sibanye_component_sum",
+      "passed": true,
+      "evidence": "Physical ounces only; separate copper pounds excluded"
+    },
+    {
+      "check": "H01_host_output_initial",
+      "passed": true,
+      "evidence": "40.00"
+    },
+    {
+      "check": "H01_host_output_later",
+      "passed": true,
+      "evidence": "38.40"
+    },
+    {
+      "check": "H01_higher_recovery_lower_output",
+      "passed": true,
+      "evidence": "Hypothetical host availability falls 20%"
+    },
+    {
+      "check": "H02_feed_contribution_vs_volume",
+      "passed": true,
+      "evidence": "Invented feasible feed alternatives"
+    },
+    {
+      "check": "H03_same_work_parts",
+      "passed": true,
+      "evidence": "8E+1"
+    },
+    {
+      "check": "H03_buyer_spend",
+      "passed": true,
+      "evidence": "vs 10000 before, hypothetical"
+    },
+    {
+      "check": "H03_supplier_capture",
+      "passed": true,
+      "evidence": "vs 3000 before"
+    },
+    {
+      "check": "H03_supplier_cost_countercase",
+      "passed": true,
+      "evidence": "Below original 3000"
+    },
+    {
+      "check": "H04_inventory_funding_delta",
+      "passed": true,
+      "evidence": "No quantity or industrial-margin inference"
+    },
+    {
+      "check": "H05_accrual_not_cash_or_volume",
+      "passed": true,
+      "evidence": "Stipulated accrual 12; paid cash and incremental shipments both 0"
+    },
+    {
+      "check": "matched_labels_permitted",
+      "passed": true,
+      "evidence": "Positive compatibility example"
+    },
+    {
+      "check": "reject_wrong_element_recovery",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_ounces_pounds_join",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_business_area_issuer_join",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_lifetime_annual_join",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_production_payable_sales_join",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_old_vs_represented_perimeter",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_aftermarket_as_ARR",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_conditional_payment_as_cash",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_accrual_as_delivery",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "reject_certificate_as_achieved_runrate",
+      "passed": true,
+      "evidence": "Expected incompatible-label refusal"
+    },
+    {
+      "check": "recognize_later_supported_milestone",
+      "passed": true,
+      "evidence": "Positive progression, not nameplate assertion or native historical receipt"
+    },
+    {
+      "check": "report_preserves_access_limits",
+      "passed": true,
+      "evidence": "Exact evidence limitations"
+    },
+    {
+      "check": "report_numeric_examples_present",
+      "passed": true,
+      "evidence": "Selected report values agree with independently computed rounding"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "CI",
+    "independent research review",
+    "accounting audit",
+    "contract settlement",
+    "native source rights or historical retention",
+    "canonical Agent OS validator",
+    "customer confirmation",
+    "browser proof",
+    "investment validation",
+    "rerun of earlier research checks"
+  ]
+}
