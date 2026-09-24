@@ -19,13 +19,15 @@ from .documents import TypedAbsence, text_span
 from .event_workspace import IssuerRegistry
 from .identity import IssuerIdentity, ListingAlias, company_id_for_cik
 from .issuer_profiles import IssuerProfile, _no_guidance
-from .qa_exchange import RIGHTS_PROFILES
+from .qa_exchange import RIGHTS_PROFILE, RIGHTS_PROFILES
 from ..earnings_release.binding import BoundRelease
 from ..earnings_release.receipts import ReceiptError, SpanReceipt, receipt_for_literal
 
 
 PG_CIK = "0000080424"
-PG_PRIVATE_RIGHTS_PROFILE = next(iter(RIGHTS_PROFILES - {"rp_public_primary_v1"}))
+PG_PRIVATE_RIGHTS_PROFILE = min(
+    profile for profile in RIGHTS_PROFILES if profile != RIGHTS_PROFILE
+)
 
 
 @dataclass(frozen=True)
@@ -68,7 +70,8 @@ PG_DEFINITIONS: tuple[PGDefinition, ...] = (
 )
 
 PG_METRIC_KEYS = tuple(item.metric for item in PG_DEFINITIONS)
-_PG_FISCAL_QUARTERS = {4: 4, 5: 4, 6: 4, 7: 1, 8: 1, 9: 1, 10: 2, 11: 2, 12: 2, 1: 3, 2: 3, 3: 3}
+_FISCAL_YEAR_END_MONTH = 6
+_QUARTER_ORDINALS = {1: "First", 2: "Second", 3: "Third", 4: "Fourth"}
 
 
 def pg_issuer() -> IssuerIdentity:
@@ -118,6 +121,73 @@ _NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
 _PERCENT_PATTERN = rf"^(?:\+?({_NUMBER})%|\(\+?({_NUMBER})\)%|\(\+?({_NUMBER})%\))$"
 _CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
 _NEUTRAL_ZERO = re.compile(r"\bdash(?:es)?\s+(?:means|represent[sd]?)\s+zero\b", re.IGNORECASE)
+_TABLE_CELLS = re.compile(rb"<t[dh][^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTALL)
+
+
+def _cell_text(fragment: bytes) -> str:
+    text = re.sub(rb"<[^>]+>", b"", fragment)
+    return text.decode("utf-8", errors="strict").strip().replace("&amp;", "&")
+
+
+def replay_table_layout(
+    source: str, *, start: int, end: int, header_forms: Sequence[str] = ()
+) -> tuple[str, str, int]:
+    source_bytes = source.encode("utf-8")
+    table_start = source_bytes.rfind(b"<table", 0, start)
+    table_end = source_bytes.find(b"</table>", end)
+    if table_start < 0 or table_end < 0:
+        raise ValueError("cell has no enclosing table")
+    rows: list[tuple[int, list[tuple[int, int, bytes]]]] = []
+    for row_match in re.finditer(rb"<tr[^>]*>", source_bytes[table_start:table_end], re.IGNORECASE):
+        rows.append((row_match.start() + table_start, []))
+    for cell_match in _TABLE_CELLS.finditer(source_bytes, table_start, table_end):
+        cell_start = cell_match.start(1)
+        eligible = [row for row in rows if row[0] <= cell_start]
+        if not eligible:
+            raise ValueError("table cell has no row")
+        eligible[-1][1].append((cell_start, cell_match.end(1), cell_match.group(1)))
+    target_row_index = next(
+        (
+            row_index
+            for row_index, (_row_open, cells) in enumerate(rows)
+            if any(cell_start <= start and end <= cell_end for cell_start, cell_end, _fragment in cells)
+        ),
+        None,
+    )
+    if target_row_index is None:
+        raise ValueError("location is not a table cell")
+    try:
+        row_cells = [
+            (cell_start, cell_end, _cell_text(fragment))
+            for cell_start, cell_end, fragment in rows[target_row_index][1]
+        ]
+        prior_rows = [
+            [_cell_text(fragment) for _start, _end, fragment in cells]
+            for _row_open, cells in rows[:target_row_index]
+            if cells
+        ]
+    except UnicodeDecodeError as exc:
+        raise ValueError("table bytes are not UTF-8 aligned") from exc
+    target_index = next(
+        index for index, (cell_start, cell_end, _text) in enumerate(row_cells)
+        if cell_start <= start and end <= cell_end
+    )
+    column = target_index
+    if column < 1:
+        raise ValueError("cell has no matching header")
+    accepted_headers = {_normal(form) for form in header_forms if form}
+    for prior_row in reversed(prior_rows):
+        if column >= len(prior_row):
+            continue
+        header = prior_row[column]
+        if not header and column + 1 < len(prior_row):
+            header = next((item for item in reversed(prior_row[column + 1:]) if item), "")
+        if not header or _normal(header) in {"segment", "diluted net earnings per common share"}:
+            continue
+        if accepted_headers and _normal(header) not in accepted_headers:
+            continue
+        return row_cells[0][2], header, column
+    raise ValueError("cell has no matching header")
 
 
 def parse_pg_literal(value: str, *, unit: str) -> float | None:
@@ -143,17 +213,107 @@ def _normal(value: str) -> str:
     return " ".join(value.casefold().split())
 
 
+def _fiscal_identity(current_start: date, current_end: date) -> tuple[int, int]:
+    fiscal_year = (
+        current_end.year + 1
+        if current_start.month > _FISCAL_YEAR_END_MONTH
+        else current_end.year
+    )
+    quarter = (
+        (current_start.month - (_FISCAL_YEAR_END_MONTH + 1)) % 12 // 3 + 1
+    )
+    return fiscal_year, quarter
+
+
+def _long_date(value: date) -> str:
+    return f"{value:%B} {value.day}, {value.year}"
+
+
+def _scope_period_forms(
+    current_start: date, current_end: date, prior_end: date
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    fiscal_year, quarter = _fiscal_identity(current_start, current_end)
+    ordinal = _QUARTER_ORDINALS[quarter]
+    current_date = _long_date(current_end)
+    prior_date = _long_date(prior_end)
+    quarterly_headings = (
+        f"{ordinal} Quarter Fiscal Year {fiscal_year}",
+        f"{ordinal} Quarter {fiscal_year}",
+        f"Fiscal Year {fiscal_year} {ordinal} Quarter",
+        f"{ordinal} Quarter Fiscal {fiscal_year}",
+        f"Q{quarter} FY{fiscal_year}",
+        f"Three Months Ended {current_date}",
+    )
+    driver_headings = (
+        f"Net Sales Change Drivers {fiscal_year} vs. {fiscal_year - 1}",
+        *quarterly_headings,
+    )
+    current_forms = (
+        current_end.isoformat(),
+        str(current_end.year),
+        f"Q{quarter} FY{fiscal_year}",
+        current_date,
+        f"Three Months Ended {current_date}",
+    )
+    prior_forms = (
+        prior_end.isoformat(),
+        str(prior_end.year),
+        f"Q{quarter} FY{fiscal_year - 1}",
+        prior_date,
+        f"Three Months Ended {prior_date}",
+    )
+    return quarterly_headings, driver_headings, current_forms, prior_forms
+
+
+def _heading_matches(value: str, forms: Sequence[str]) -> bool:
+    normal = _normal(value)
+    return any(
+        normal == _normal(form) or normal.startswith(f"{_normal(form)} ")
+        for form in forms
+    )
+
+
+def _keyword_tables(blocks: Sequence[Any], *, keywords: Sequence[str]) -> list[Any]:
+    active = False
+    tables: list[Any] = []
+    for block in blocks:
+        is_heading = getattr(block, "kind", None) is not None and block.kind.value == "heading"
+        if is_heading:
+            normal = _normal(getattr(block, "text", ""))
+            active = all(_normal(keyword) in normal for keyword in keywords)
+        elif active and getattr(block, "table", None) is not None:
+            tables.append(block)
+            active = False
+    return tables
+
+
+def _drivers_table(blocks: Sequence[Any], heading: str) -> Any | None:
+    tables = _keyword_tables(blocks, keywords=(_normal(heading),))
+    if tables:
+        return tables[0]
+    period_tables = [
+        block
+        for block in blocks
+        if getattr(block, "table", None) is not None
+        and any(
+            _column(block, "Total P&G", definition.column_label or "") is not None
+            for definition in PG_DEFINITIONS
+            if definition.row_label == "Total P&G" and definition.column_label
+        )
+    ]
+    return period_tables[0] if len(period_tables) == 1 else None
+
+
 def _table(blocks: Sequence[Any], headings: Sequence[str], *, exclusive: bool = True) -> Any | None:
-    wanted = {_normal(heading) for heading in headings}
     saw_heading = False
     saw_table = False
     matches = []
     for block in blocks:
         is_heading = getattr(block, "kind", None) is not None and block.kind.value == "heading"
-        if saw_table and is_heading:
+        if is_heading:
             saw_heading = False
             saw_table = False
-        if not saw_table and _normal(getattr(block, "text", "")) in wanted and is_heading:
+        if not saw_table and is_heading and _heading_matches(getattr(block, "text", ""), headings):
             saw_heading = True
         elif not saw_table and saw_heading and getattr(block, "table", None) is not None:
             matches.append(block)
@@ -189,8 +349,6 @@ def _column(table: Any, row_label: str, header: str) -> tuple[Any, int] | None:
     if rows.index(header_row) >= rows.index(row) or column >= len(row):
         return None
     return row, column
-
-
 
 
 def _receipt(source: BoundRelease, start: int, end: int, literal: str) -> SpanReceipt | None:
@@ -263,7 +421,13 @@ def _absent(
 
 
 def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequence[str], header_forms: Sequence[str], document_id: str, bound: BoundRelease, event_id: str, periods: dict[str, str], preferred_period: str) -> dict[str, Any]:
-    table = _quarterly_table(blocks, headings) if len(headings) > 1 else _table(blocks, headings, exclusive=False)
+    if len(headings) == 1 and len(_normal(headings[0]).split()) == 1:
+        tables = _keyword_tables(blocks, keywords=(_normal(headings[0]),))
+        table = tables[0] if len(tables) == 1 else None
+    elif _normal(headings[0]).startswith("net sales change drivers"):
+        table = _drivers_table(blocks, headings[0])
+    else:
+        table = _quarterly_table(blocks, headings)
     located = None
     matched_header = None
     row_label = definition.row_label or header_forms[0]
@@ -273,8 +437,12 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
         if located is not None:
             matched_header = header
             break
+    combined = (
+        table is not None
+        and definition.metric in {"pg_total_volume_growth_pct", "pg_organic_volume_growth_pct", "pg_mix_contribution_pp"}
+        and any(_normal(cell.text).startswith("volume/mix") for row in table.table.rows for cell in row)
+    )
     if located is None:
-        combined = definition.metric in {"pg_total_volume_growth_pct", "pg_organic_volume_growth_pct", "pg_mix_contribution_pp"}
         return _absent(
             definition=definition,
             document_id=document_id,
@@ -308,14 +476,39 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
         receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
     if value is None or not math.isfinite(value) or receipt is None:
         return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
+    if definition.metric == "pg_total_volume_growth_pct" and not _volume_cross_check(blocks, value=value):
+        return _absent(
+            definition=definition,
+            document_id=document_id,
+            event_id=event_id,
+            detail="The document carries conflicting statements of total volume growth.",
+            reason="cross_check_conflict",
+        )
     return _present(definition=definition, value=value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
+
+
+def _volume_cross_check(blocks: Sequence[Any], *, value: float) -> bool:
+    statements = [
+        parse_pg_literal(row[index].text, unit="percent")
+        for table in (getattr(block, "table", None) for block in blocks)
+        if table is not None
+        for row in table.rows
+        if row and _normal(row[0].text) == "total p&g"
+        for index, cell in enumerate(row[1:], start=1)
+        if table.rows
+        and any(
+            _normal(header[index].text) in {"volume", "volume with acquisitions & divestitures"}
+            for header in table.rows[:2]
+            if index < len(header)
+        )
+    ]
+    return len(statements) <= 1 or all(statement == value for statement in statements)
 
 
 def _text_fact(
     *,
     definition: PGDefinition,
     blocks: Sequence[Any],
-    headings: Sequence[str],
     document_id: str,
     bound: BoundRelease,
     event_id: str,
@@ -324,11 +517,13 @@ def _text_fact(
     active = False
     paragraphs = []
     for block in blocks:
-        if not active and any(_normal(block.text) == _normal(heading) for heading in headings) or active and any(_normal(block.text) == _normal(heading) for heading in headings):
-            active = _normal(block.text) in {_normal(item) for item in headings}
+        if getattr(block, "kind", None) is not None and block.kind.value == "heading":
+            normal = _normal(getattr(block, "text", ""))
+            metric_name = _normal(definition.row_label or "")
+            active = "reconciliation" in normal and metric_name in normal or "non-gaap" in normal
         elif active and block.kind.value == BlockKind.PARAGRAPH.value:
             normal = _normal(block.text)
-            if _normal(definition.row_label or "") in normal and "incremental charge" in normal and "dilution" in normal:
+            if _normal(definition.row_label or "") in normal:
                 paragraphs.append(block)
     if len(paragraphs) != 1:
         return _absent(
@@ -369,17 +564,9 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     blocks = bound.document.blocks
-    ordinal = {1: "First", 2: "Second", 3: "Third", 4: "Fourth"}[_PG_FISCAL_QUARTERS[_current_start.month]]
-    fiscal_year = current_end.year + (_PG_FISCAL_QUARTERS[_current_start.month] != 4 and _current_start.month >= 7)
-    date_header = f"{current_end:%B} {current_end.day}, {current_end.year}"
-    quarterly_headings = (
-        f"{ordinal} Quarter Fiscal Year {fiscal_year}",
-        f"Three Months Ended {date_header}",
-        f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}",
+    quarterly_headings, driver_headings, current_forms, prior_forms = _scope_period_forms(
+        _current_start, current_end, prior_end
     )
-    driver_headings = (f"Net Sales Change Drivers {fiscal_year} vs. {fiscal_year - 1}", *quarterly_headings)
-    current_forms = (current_end.isoformat(), str(current_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}", date_header)
-    prior_forms = (prior_end.isoformat(), str(prior_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year - 1}", f"{prior_end:%B} {prior_end.day}, {prior_end.year}")
     periods = {form: endpoint.isoformat() for forms, endpoint in ((current_forms, current_end), (prior_forms, prior_end)) for form in forms}
     facts = []
     for definition in PG_DEFINITIONS:
@@ -393,9 +580,9 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
         elif definition.row_label is not None and definition.column_label is not None:
             facts.append(_row_fact(definition=definition, blocks=blocks, headings=(driver_headings[0],), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
         elif definition.metric.endswith("_organic_sales_growth_pct") and definition.row_label is not None:
-            facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Organic Sales Change by Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
         elif definition.metric == "pg_core_reconciliation_context":
-            facts.append(_text_fact(definition=definition, blocks=blocks, headings=("Non-GAAP Measures", "Core EPS Reconciliation"), document_id=document_id, bound=bound, event_id=event_id, period=current_end.isoformat()))
+            facts.append(_text_fact(definition=definition, blocks=blocks, document_id=document_id, bound=bound, event_id=event_id, period=current_end.isoformat()))
         else:
             facts.append(_absent(definition=definition, document_id=document_id, event_id=event_id, detail="This literal growth fact is not separately disclosed by the selected source."))
     return facts
