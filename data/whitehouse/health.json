@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-15T21:26:06.763135+00:00",
-  "posts_seen": 6,
-  "seen_total": 189,
-  "evaluated": 1,
+  "as_of": "2026-09-23T23:51:14.111267+00:00",
+  "posts_seen": 12,
+  "seen_total": 224,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-15-first-lady-melania-trumps-special-visit-to-ashe-county-north-carolina-bearing-wi",
-      "importance": 25,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

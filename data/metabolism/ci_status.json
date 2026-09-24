@@ -1,85 +1,61 @@
 {
-  "ts": "2026-09-15T17:19:59+00:00",
-  "main_sha": "d9a56888ee33f868eda2669b7c6ab75b159be168",
+  "ts": "2026-09-23T14:00:19+00:00",
+  "main_sha": "7208fab850952d011dd16c28cee8d5b12325df30",
   "red_required": [
     {
-      "name": "health",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34999248413/job/104483231026"
-    },
-    {
-      "name": "publish",
+      "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34999115385/job/104482782802"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35870454723/job/107212853561"
     },
     {
-      "name": "tier-gate",
+      "name": "integration-baseline",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380510"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380497"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855926987/job/107170487696"
     },
     {
       "name": "free-content-estate",
-      "conclusion": "cancelled",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380438"
-    },
-    {
-      "name": "workflow-yaml",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380345"
-    },
-    {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34998695110/job/104481380308"
-    },
-    {
-      "name": "audit",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34966709580/job/104372888752"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486521"
     },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34965184211/job/104367843815"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486327"
     },
     {
-      "name": "sweep",
+      "name": "tier-gate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486205"
+    },
+    {
+      "name": "font-ui-defined",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958807854/job/104347196834"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486193"
     },
     {
-      "name": "engine-render",
+      "name": "template-site-sync",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958660110/job/104346719630"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486138"
     },
     {
-      "name": "render",
+      "name": "contract-drift",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34958660062/job/104346719261"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35855998056/job/107164486108"
     }
   ],
   "green": false,
-  "consecutive_failures": 141,
+  "consecutive_failures": 172,
   "sensed_shas": [
-    "d9a56888ee33f868eda2669b7c6ab75b159be168",
-    "06403b0ab3e7e6409325535ab9d41b1908a259fc"
+    "7208fab850952d011dd16c28cee8d5b12325df30",
+    "fc6db6c1f9a76cadc180c44e386ae928c1a9ccbc"
   ],
   "heartbeat_degraded": false
 }

@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/subsector_detail.html.j2
+manifest: mockups/evidence/unified-subsector-detail/manifest.json

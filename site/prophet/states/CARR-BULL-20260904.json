@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CARR-BULL-20260904",
-  "asof": "2026-09-15",
+  "asof": "2026-09-23",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.6,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.614,
+    "dist_to_stop_r": -2.008,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 24.4,
-    "p1": -1.076,
-    "p2": -0.538,
+    "horizon_pct_used": 42.2,
+    "p1": -2.0055,
+    "p2": -1.0028,
     "p3": null,
-    "move_r": -1.614,
+    "move_r": -3.008,
     "mfe_r": 0.456,
-    "mae_r": -2.138
+    "mae_r": -4.47
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.5399990844726545,
-  "_mae": -2.530000610351564,
+  "_mae": -5.289998931884767,
   "_max_p1": 0.30420769786077184,
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444
+  "days_elapsed": 19,
+  "tau": 0.4222
 }

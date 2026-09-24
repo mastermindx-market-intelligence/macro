@@ -983,6 +983,247 @@ def test_pr_dispatch_requires_fetched_merge_sha_and_head_to_match_api(monkeypatc
         raise AssertionError("mismatched merge/API parents must fail closed")
 
 
+REPO = "mastermindx-market-intelligence/macro"
+MERGE_SHA = "a" * 40
+PR_HEAD_SHA = "c" * 40
+PRE_MERGE_MAIN = "b" * 40
+
+
+def _merged_pr(**overrides: object) -> dict[str, object]:
+    """PR #7203's shape after its mid-run merge (2026-09-16, run 35073695150)."""
+    payload: dict[str, object] = {
+        "state": "closed",
+        "merged_at": "2026-09-16T08:27:45Z",
+        "merge_commit_sha": MERGE_SHA,
+        "commits": 3,
+        "base": {"ref": "main", "sha": "d" * 40},
+        "head": {
+            "ref": "claude/astra-fabric-packet-2026-09-16",
+            "sha": PR_HEAD_SHA,
+            "repo": {"full_name": REPO},
+        },
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _merged_git(
+    calls: list[tuple[str, ...]],
+    *,
+    parents: tuple[str, ...],
+    shallow: str = "true",
+    walked_base: str = PRE_MERGE_MAIN,
+    fetched: str = MERGE_SHA,
+):
+    def fake_git(*args: str) -> str:
+        calls.append(args)
+        if args[0] == "fetch":
+            return ""
+        if args[0] == "check-ref-format":
+            return args[2]
+        if args == ("rev-parse", "--is-shallow-repository"):
+            return shallow
+        if args[0] == "rev-list":
+            assert args[1:4] == ("--parents", "-n", "1")
+            return " ".join([args[4], *parents])
+        if args[0] == "rev-parse" and args[1] == "refs/ci-canary/pull/7/merged^{commit}":
+            return fetched
+        if args[0] == "rev-parse" and args[1] == f"{MERGE_SHA}~3":
+            return walked_base
+        raise AssertionError(f"unexpected git call {args!r}")
+
+    return fake_git
+
+
+def _on_main(*_: object) -> dict[str, object]:
+    return {"status": "ahead", "ahead_by": 12, "behind_by": 0}
+
+
+def test_open_pr_keeps_the_synthetic_merge_ref_and_never_consults_compare(
+    monkeypatch,
+) -> None:
+    merge = "a" * 40
+    monkeypatch.setattr(
+        RESOLVE,
+        "pull_request",
+        lambda *_: {
+            "state": "open",
+            "merged_at": None,
+            "merge_commit_sha": merge,
+            "base": {"ref": "main", "sha": "d" * 40},
+            "head": {"ref": "claude/open", "sha": PR_HEAD_SHA, "repo": {"full_name": REPO}},
+        },
+    )
+
+    def refuse_compare(*_: object) -> dict[str, object]:
+        raise AssertionError("an open PR must never consult the compare endpoint")
+
+    monkeypatch.setattr(RESOLVE, "compare_commits", refuse_compare)
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str) -> str:
+        calls.append(args)
+        if args[0] == "fetch":
+            return ""
+        if args[0] == "check-ref-format":
+            return args[2]
+        return {
+            "refs/ci-canary/pull/7/merge^{commit}": merge,
+            f"{merge}^1": PRE_MERGE_MAIN,
+            f"{merge}^2": PR_HEAD_SHA,
+        }[args[1]]
+
+    monkeypatch.setattr(RESOLVE, "git", fake_git)
+    result = RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert result["source_kind"] == "same-repository-pr-merge"
+    assert result["tested_ref"] == "refs/pull/7/merge"
+    assert result["tested_sha"] == merge
+    assert result["base_sha"] == result["contamination_sha"] == PRE_MERGE_MAIN
+    assert ("fetch", "--no-tags", "origin", "+refs/pull/7/merge:refs/ci-canary/pull/7/merge") in calls
+    assert not any(args[0] == "rev-list" for args in calls)
+
+
+def test_merged_pr_resolves_to_its_merge_commit_on_main(monkeypatch) -> None:
+    """A PR merged after its run began is tested at the exact commit that landed.
+
+    Squash and rebase both leave a single-parent merge commit; the base walks
+    back the PR's frozen commit count so a rebase lands on the pre-merge main
+    tip exactly and a squash over-reaches, never under-reaches.
+    """
+    monkeypatch.setattr(RESOLVE, "pull_request", lambda *_: _merged_pr())
+    compared: list[tuple[str, ...]] = []
+
+    def compare(*args: str) -> dict[str, object]:
+        compared.append(args)
+        return _on_main()
+
+    monkeypatch.setattr(RESOLVE, "compare_commits", compare)
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(RESOLVE, "git", _merged_git(calls, parents=(PRE_MERGE_MAIN[:20] + "f" * 20,)))
+    result = RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert result == {
+        "source_kind": "same-repository-pr-merged",
+        "tested_ref": MERGE_SHA,
+        "tested_sha": MERGE_SHA,
+        "base_sha": PRE_MERGE_MAIN,
+        "head_sha": PR_HEAD_SHA,
+        "head_ref": "claude/astra-fabric-packet-2026-09-16",
+        "contamination_sha": PRE_MERGE_MAIN,
+    }
+    assert compared == [(REPO, MERGE_SHA, "main", "token")]
+    fetch = next(args for args in calls if args[0] == "fetch")
+    assert fetch == (
+        "fetch", "--no-tags", "--depth=4", "origin",
+        f"+{MERGE_SHA}:refs/ci-canary/pull/7/merged",
+    )
+    assert calls.index(fetch) > calls.index(("check-ref-format", "--branch", "claude/astra-fabric-packet-2026-09-16"))
+    assert ("rev-parse", f"{MERGE_SHA}~3") in calls
+    assert not any("refs/pull/7/merge" in " ".join(args) for args in calls)
+
+
+def test_merged_single_commit_pr_uses_the_merge_commit_parent_without_deepening_a_full_clone(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(RESOLVE, "pull_request", lambda *_: _merged_pr(commits=1))
+    monkeypatch.setattr(RESOLVE, "compare_commits", _on_main)
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        RESOLVE, "git", _merged_git(calls, parents=(PRE_MERGE_MAIN,), shallow="false")
+    )
+    result = RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert result["source_kind"] == "same-repository-pr-merged"
+    assert result["base_sha"] == PRE_MERGE_MAIN
+    fetch = next(args for args in calls if args[0] == "fetch")
+    assert "--depth=2" not in fetch and not any(arg.startswith("--depth") for arg in fetch)
+    assert not any(args[0] == "rev-parse" and "~" in args[1] for args in calls)
+
+
+def test_merged_pr_merge_commit_binds_its_second_parent_to_the_frozen_head(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(RESOLVE, "pull_request", lambda *_: _merged_pr())
+    monkeypatch.setattr(RESOLVE, "compare_commits", _on_main)
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        RESOLVE, "git", _merged_git(calls, parents=(PRE_MERGE_MAIN, PR_HEAD_SHA))
+    )
+    result = RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert result["base_sha"] == PRE_MERGE_MAIN
+    assert not any(args[0] == "rev-parse" and "~" in args[1] for args in calls)
+
+    monkeypatch.setattr(
+        RESOLVE, "git", _merged_git([], parents=(PRE_MERGE_MAIN, "9" * 40))
+    )
+    with pytest.raises(RESOLVE.ResolutionError, match="second parent"):
+        RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+
+
+def test_closed_unmerged_pr_is_refused_before_any_network_or_git_work(monkeypatch) -> None:
+    monkeypatch.setattr(
+        RESOLVE,
+        "pull_request",
+        lambda *_: _merged_pr(merged_at=None, merge_commit_sha="a" * 40),
+    )
+
+    def refuse(*_: object) -> object:
+        raise AssertionError("a closed-unmerged PR must be refused before compare/git")
+
+    monkeypatch.setattr(RESOLVE, "compare_commits", refuse)
+    monkeypatch.setattr(RESOLVE, "git", refuse)
+    with pytest.raises(RESOLVE.ResolutionError, match=r"#7 is not open \(state=closed, not merged\)"):
+        RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+
+
+def test_merged_pr_whose_merge_commit_is_not_on_main_is_refused_before_fetching(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(RESOLVE, "pull_request", lambda *_: _merged_pr())
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(RESOLVE, "git", _merged_git(calls, parents=(PRE_MERGE_MAIN,)))
+    for relation in (
+        {"status": "diverged", "ahead_by": 3, "behind_by": 1},
+        {"status": "behind", "ahead_by": 0, "behind_by": 1},
+        {"status": "ahead", "ahead_by": 3},
+        {},
+    ):
+        monkeypatch.setattr(RESOLVE, "compare_commits", lambda *_, r=relation: r)
+        with pytest.raises(RESOLVE.ResolutionError, match="not reachable on main"):
+            RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert not any(args[0] in {"fetch", "rev-list"} for args in calls)
+
+
+def test_merged_pr_keeps_every_existing_refusal(monkeypatch) -> None:
+    monkeypatch.setattr(RESOLVE, "compare_commits", _on_main)
+    monkeypatch.setattr(RESOLVE, "git", _merged_git([], parents=(PRE_MERGE_MAIN,)))
+    cases = [
+        (
+            _merged_pr(head={"ref": "x", "sha": PR_HEAD_SHA, "repo": {"full_name": "fork/macro"}}),
+            "not same-repository",
+        ),
+        (_merged_pr(base={"ref": "release", "sha": "d" * 40}), "does not target main"),
+        (_merged_pr(merge_commit_sha=""), "no 40-character merge commit SHA"),
+        (_merged_pr(merge_commit_sha=None), "no 40-character merge commit SHA"),
+        (_merged_pr(commits=0), "invalid commit count"),
+        (_merged_pr(commits="3"), "invalid commit count"),
+    ]
+    for payload, message in cases:
+        monkeypatch.setattr(RESOLVE, "pull_request", lambda *_, p=payload: p)
+        with pytest.raises(RESOLVE.ResolutionError, match=message):
+            RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+
+
+def test_merged_pr_fetched_commit_must_be_the_api_merge_commit(monkeypatch) -> None:
+    monkeypatch.setattr(RESOLVE, "pull_request", lambda *_: _merged_pr())
+    monkeypatch.setattr(RESOLVE, "compare_commits", _on_main)
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        RESOLVE, "git", _merged_git(calls, parents=(PRE_MERGE_MAIN,), fetched="f" * 40)
+    )
+    with pytest.raises(RESOLVE.ResolutionError, match="does not match the API merge commit"):
+        RESOLVE.resolve(REPO, "e" * 40, 7, "token")
+    assert not any(args[0] == "rev-list" for args in calls)
+
+
 def test_host_admission_accepts_only_the_main_dispatch_canary() -> None:
     allowed = {
         "MASTERMIND_CI_PROFILE": "pc-ci",
@@ -1161,6 +1402,109 @@ def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
     assert '"GITHUB_EVENT_PATH"' in hook
     assert "process.env.PATH" not in hook
     assert "process.env.MASTERMIND_CI_PROFILE" not in hook
+
+
+def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
+    recovery = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Start-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+
+    # Windows owns only WSL residency. Microsoft documents that systemd services
+    # do not keep a WSL instance alive, so a one-shot `/bin/true` wake is a false
+    # recovery: it can briefly revive listeners and then strand them again. The
+    # scheduled task must hold one inert foreground keepalive while GitHub/systemd
+    # retain runner registration, labels, routing, and listener restart authority.
+    assert "--exec /bin/sh -c $keepalive" in recovery
+    assert "while :; do sleep 3600; done" in recovery
+    assert "/bin/true" not in recovery
+    assert "exit 0" not in recovery
+    assert "Register-ScheduledTask" in installer
+    assert "New-ScheduledTaskTrigger -AtStartup" in installer
+    assert "New-ScheduledTaskTrigger -AtLogOn" in installer
+    assert "-ExecutionTimeLimit (New-TimeSpan -Seconds 0)" in installer
+    assert "-MultipleInstances IgnoreNew" in installer
+    assert "-LogonType S4U" in installer
+    assert "-RestartCount 999" in installer
+    assert "while ($true)" in recovery
+    assert "$failureCount++" in recovery
+    assert "$MaxRetrySeconds" in recovery
+    assert "failed attempts=" not in recovery
+    assert "[int]$Attempts" not in recovery
+    assert "exit 1" not in recovery
+    for forbidden in ("pc-ci-4", "ci-linux", "config.sh", "Runner.Listener"):
+        assert forbidden not in recovery
+        assert forbidden not in installer
+
+
+def test_pc_windows_boot_recovery_pins_highest_task_run_level() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "-RunLevel Highest" in installer
+
+
+def test_pc_windows_boot_recovery_rejects_unsafe_distribution_names() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "$Distribution -notmatch '^[A-Za-z0-9._ -]+$'" in installer
+    assert ".Replace('\"', '\"\"')" not in installer
+
+
+def test_pc_windows_boot_recovery_seals_privileged_action_path() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "SetAccessRuleProtection($true, $false)" in installer
+    assert "S-1-5-18" in installer
+    assert "S-1-5-32-544" in installer
+    assert "AreAccessRulesProtected" in installer
+    assert "Get-FileHash" in installer
+    assert "[System.IO.FileAttributes]::ReparsePoint" in installer
+
+
+def test_pc_windows_boot_recovery_whatif_is_non_mutating() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    should_process = installer.index("if ($PSCmdlet.ShouldProcess")
+    assert installer.find("New-Item", 0, should_process) == -1
+    assert installer.find("Copy-Item", 0, should_process) == -1
+    assert installer.index("New-Item", should_process) > should_process
+    assert installer.index("Copy-Item", should_process) > should_process
 
 
 def test_resource_refusal_backoff_only_delays_an_unsafe_retry() -> None:
