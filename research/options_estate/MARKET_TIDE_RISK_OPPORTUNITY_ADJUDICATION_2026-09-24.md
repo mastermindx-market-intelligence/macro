@@ -94,7 +94,7 @@ All three earlier explicit tool refusals remain held and EFFECT_NONE: R0 acquisi
 
 ## Primary references and inspection scope
 
-S1. Savor & Wilson, *How Much Do Investors Care About Macroeconomic Risk?*, JFQA (2013), publisher abstract: https://doi.org/10.1017/S0022109013000028 . Abstract-level inspection only.
+S1. Savor & Wilson, *How Much Do Investors Care About Macroeconomic Risk?*, JFQA (2013), publisher abstract: https://doi.org/10.1017/S002210901300015X . Abstract-level inspection only.
 
 S2. Ghaderi & Seo, *Is There a Macro-Announcement Premium?*, Management Science, online 2026-05-15: https://pubsonline.informs.org/doi/abs/10.1287/mnsc.2024.06960 . Publisher abstract/date verified; full-method replication not performed.
 
