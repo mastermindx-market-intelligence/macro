@@ -1,0 +1,435 @@
+{
+  "schema": "mastermind.research.finance_r11_slice_atlas.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "e9e75bbe9cd8f7c05830c4e3b1c86266f14a4a11"
+  },
+  "slice_count": 52,
+  "existing_basket_owners_preserved": [
+    "regional_banks",
+    "payments_fintech",
+    "insurance",
+    "intl_banks",
+    "intl_insurers",
+    "xlf:megabanks",
+    "xlf:brokers_asset"
+  ],
+  "role_vocabulary": [
+    "DIRECT_PURE_OR_HIGH_EXPOSURE",
+    "DIRECT_DIVERSIFIED",
+    "ENABLER_OR_TOLL_COLLECTOR",
+    "SECOND_ORDER_BENEFICIARY",
+    "PROXY_OR_ADJACENCY",
+    "AT_RISK_OR_DISRUPTED",
+    "HEDGE_OR_OFFSET"
+  ],
+  "membership_states": [
+    "RESEARCH_CANDIDATE",
+    "EXPOSURE_MEASURED",
+    "IDENTITY_VALIDATED",
+    "PIT_MEMBERSHIP_VALIDATED",
+    "PRICE_ELIGIBILITY_VALIDATED",
+    "CANDIDATE_READY_FOR_OWNER_REVIEW",
+    "ADMITTED",
+    "HELD_MISSING_EXPOSURE",
+    "HELD_MISSING_IDENTITY",
+    "HELD_MISSING_PIT",
+    "REJECTED_WEAK_RELATIONSHIP",
+    "REMOVED_SUPERSEDED"
+  ],
+  "approved_new_baskets": 0,
+  "slices": [
+    {
+      "slice_id": "deposit_franchise_quality",
+      "domain": "banking_funding",
+      "name": "Deposit Franchise Quality",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "universal_money_center_banks",
+      "domain": "banking_funding",
+      "name": "Universal / Money-Center Banks",
+      "price_basket_posture": "REUSE_EXISTING_CONTEXT",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "regional_superregional_banks",
+      "domain": "banking_funding",
+      "name": "Regional / Super-Regional Banks",
+      "price_basket_posture": "REUSE_EXISTING_CONTEXT",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "community_local_banks",
+      "domain": "banking_funding",
+      "name": "Community / Local Banks",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "nim_curve_normalization",
+      "domain": "banking_funding",
+      "name": "Yield-Curve / NIM Normalization",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "cre_credit_cycle",
+      "domain": "banking_funding",
+      "name": "Commercial Real-Estate Credit",
+      "price_basket_posture": "CANDIDATE_AFTER_EXPOSURE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "cards_consumer_credit",
+      "domain": "banking_funding",
+      "name": "Cards & Consumer Credit",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "specialty_auto_equipment_finance",
+      "domain": "banking_funding",
+      "name": "Auto / Equipment / Specialty Finance",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "digital_banks_neobanks",
+      "domain": "banking_funding",
+      "name": "Digital Banks / Neobanks",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "mortgage_originators",
+      "domain": "banking_funding",
+      "name": "Mortgage Originators",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "mortgage_servicers_msr",
+      "domain": "banking_funding",
+      "name": "Mortgage Servicers / MSR",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "equity_debt_capital_markets",
+      "domain": "capital_markets",
+      "name": "Equity & Debt Capital Markets",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "mna_advisory",
+      "domain": "capital_markets",
+      "name": "M&A / Advisory",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "electronic_market_makers",
+      "domain": "capital_markets",
+      "name": "Electronic Market Makers",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "options_derivatives_ecosystem",
+      "domain": "capital_markets",
+      "name": "Options & Derivatives Ecosystem",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "exchanges_trading_venues",
+      "domain": "capital_markets",
+      "name": "Exchanges & Trading Venues",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "clearing_ccp_csd",
+      "domain": "capital_markets",
+      "name": "Clearing / CCP / CSD",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "custody_asset_servicing",
+      "domain": "capital_markets",
+      "name": "Custody & Asset Servicing",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "prime_brokerage_securities_lending",
+      "domain": "capital_markets",
+      "name": "Prime Brokerage / Securities Lending",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "market_reference_data",
+      "domain": "capital_markets",
+      "name": "Market / Reference Data",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "ratings_credit_information",
+      "domain": "capital_markets",
+      "name": "Ratings / Credit Information",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "indices_benchmarks_etf_plumbing",
+      "domain": "capital_markets",
+      "name": "Indices / Benchmarks / ETF Plumbing",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "card_networks",
+      "domain": "payments",
+      "name": "Card Networks",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "merchant_acquiring_processing",
+      "domain": "payments",
+      "name": "Merchant Acquiring / Processing",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "issuer_processing",
+      "domain": "payments",
+      "name": "Issuer Processing",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "gateways_orchestration",
+      "domain": "payments",
+      "name": "Gateways / Orchestration",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "ach_instant_b2b",
+      "domain": "payments",
+      "name": "ACH / Instant / B2B Payments",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "cross_border_remittance",
+      "domain": "payments",
+      "name": "Cross-Border / Remittance",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "embedded_finance_baas",
+      "domain": "payments",
+      "name": "Embedded Finance / BaaS",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "fraud_identity_tokenization",
+      "domain": "payments",
+      "name": "Fraud / Identity / Tokenization",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "passive_etf_asset_managers",
+      "domain": "asset_wealth",
+      "name": "Passive / ETF Asset Managers",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "active_asset_managers",
+      "domain": "asset_wealth",
+      "name": "Active Asset Managers",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "wealth_platforms_rias",
+      "domain": "asset_wealth",
+      "name": "Wealth Platforms / RIAs",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "retirement_recordkeeping",
+      "domain": "asset_wealth",
+      "name": "Retirement / Recordkeeping",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "alternative_asset_managers",
+      "domain": "asset_wealth",
+      "name": "Alternative Asset Managers",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "private_credit_managers",
+      "domain": "asset_wealth",
+      "name": "Private Credit Managers",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "bdc_direct_lending_vehicles",
+      "domain": "asset_wealth",
+      "name": "BDC / Direct-Lending Vehicles",
+      "price_basket_posture": "CANDIDATE_SEPARATE_VEHICLE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "fund_admin_middle_backoffice",
+      "domain": "asset_wealth",
+      "name": "Fund Administration / Middle-Back Office",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "personal_pc_insurance",
+      "domain": "insurance",
+      "name": "Personal P&C",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "commercial_specialty_pc",
+      "domain": "insurance",
+      "name": "Commercial / Specialty P&C",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "reinsurance",
+      "domain": "insurance",
+      "name": "Reinsurance",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "insurance_brokers",
+      "domain": "insurance",
+      "name": "Insurance Brokers",
+      "price_basket_posture": "TIER1_CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "mga_delegated_underwriting",
+      "domain": "insurance",
+      "name": "MGAs / Delegated Underwriting",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "life_annuity_spread",
+      "domain": "insurance",
+      "name": "Life / Annuity Spread Businesses",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "claims_insurance_data_workflow",
+      "domain": "insurance",
+      "name": "Claims / Insurance Data / Workflow",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "regtech_kyc_aml",
+      "domain": "software_trust",
+      "name": "RegTech / KYC / AML",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "financial_cybersecurity",
+      "domain": "software_trust",
+      "name": "Financial Cybersecurity",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "core_banking_financial_software",
+      "domain": "software_trust",
+      "name": "Core Banking / Financial Software",
+      "price_basket_posture": "CANDIDATE",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "stablecoin_infrastructure",
+      "domain": "structural_disruption",
+      "name": "Stablecoin Infrastructure",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "digital_custody_tokenized_securities",
+      "domain": "structural_disruption",
+      "name": "Digital Custody / Tokenized Securities",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "open_banking_api_finance",
+      "domain": "structural_disruption",
+      "name": "Open Banking / API Finance",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    },
+    {
+      "slice_id": "agentic_ai_finance_workflow",
+      "domain": "structural_disruption",
+      "name": "Agentic / AI Finance Workflow",
+      "price_basket_posture": "SEMANTIC_ONLY",
+      "authority": "research_only"
+    }
+  ],
+  "weighting_families": [
+    "EQUAL_WEIGHT",
+    "FLOAT_CAP_CONTEXT",
+    "EXPOSURE_WEIGHT",
+    "EXPOSURE_CAPPED_WEIGHT",
+    "STRATIFIED_EQUAL_WEIGHT"
+  ],
+  "overlap_dimensions": [
+    "SECURITY",
+    "BUSINESS_LINE",
+    "MACRO_DRIVER",
+    "MARKET_FACTOR",
+    "OWNERSHIP_HIERARCHY"
+  ],
+  "authority": {
+    "may_mutate_existing_basket": false,
+    "may_admit_new_basket": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "next_action": "Freeze Finance visualization/product grammar; then current-main architecture/collision review."
+}
