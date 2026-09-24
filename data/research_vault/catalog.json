@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T05:01:22.067965+00:00",
-  "count": 2756,
+  "generated_at": "2026-09-24T05:57:14.572773+00:00",
+  "count": 2759,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -262,6 +262,42 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-aqph1cyfnk6-a8ba64",
+      "title": "Barings real estate summit 22 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-24T00:36:26Z",
+      "summary_points": [
+        "Structural Demand Shift: High-tech industries (computers/semiconductors) lead industrial production, signaling a permanent shift toward \"asset-heavy\" systems post-pandemic, driving demand beyond traditional e-commerce/trade.",
+        "Policy-Driven Capital Spending: Government prioritization of security/resilience over efficiency fuels $700B hyperscaler capex (2026, 75% AI), with domestic manufacturing/tech infrastructure spending reaching railroad-era scale by 2026.",
+        "Supply Constraints Stabilize Fundamentals: Industrial availability declined 10 bps to 9.2% (Q2 2023), first drop in 3 years, amid supply limits from power scarcity, tariffs, and construction costs straining reshoring (tech/pharma) and AI infrastructure demand.",
+        "Defense-Driven Resource Strain: US military spending up $230B YoY (2027), NATO 5% GDP pledge, driving long-term demand that strains resources (copper +120%, power transformers +75%, construction wages +30%).",
+        "Data Center & Manufacturing Spending Surge: Data center spending hit $50B (April 2026), exceeding public transit infrastructure; manufacturing construction at $186B (2026), tripling 2016 levels, with 500k+ sq ft leases rising to 26% of H1 2024 signings."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oszef22hgjz-c87256",
+      "title": "GS Prime Insights The Efficient Frontier The Evolution of the SMA Landscape",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:02:27Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-f8nhnxlth6e-84709a",
       "title": "TPL Sept 23 26",
       "institution": "The PunchLine",
@@ -419,6 +455,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uqbltcgcpzz-23fd36",
+      "title": "LATAM Today September 23, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:45Z",
+      "summary_points": [
+        "Argentina: Economic Activity Index Forecast: Primary sector driving 2.2% real growth (Jul), secondary/tertiary lagging - Brazil: Consumer Confidence Decline: FGV index down 3.6pt to 84.7 (Aug), extending May-Jul decline trend - LA-IT5 Headline Inflation Trend: Sharp disinflation from 10.2% (Jun-22) to 4.3% (Dec-26), aligning with Goldman Sachs forecast - LA-IT5 Policy Rate Shift: Rate fallen from peak 11.45% (Apr-23) to 8.25% (Dec-26), decoupling from prior inflation peaks"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
