@@ -481,6 +481,37 @@
      names this chain on the overview — `path.sequence[0]` is the chain's
      first node slug, NOT a chain identifier. `rev` is the source revision the
      snapshot was read at. */
+  /* Arriving back from a continuation page: `#ox-leg-<node>` names the step the
+     reader was on (the transmission page writes it from the `focus=` we sent).
+     The hash is the only carrier — nothing here prints the identifier. */
+  function focusFromHash() {
+    var h = window.location.hash || "";
+    if (h.indexOf("#ox-leg-") !== 0) return false;
+    var nodeId;
+    try { nodeId = decodeURIComponent(h.slice("#ox-leg-".length)); }
+    catch (e) { return false; }
+    return nodeId ? focusLeg(nodeId) : false;
+  }
+
+  /* `?rev=<n>` is the path revision the reader left at. When the served
+     revision differs, say so in plain words before the reading — a reader
+     returning to a re-drawn path should not mistake it for the one they left. */
+  function continuationNotice(snapshot) {
+    var left;
+    try { left = new URLSearchParams(window.location.search).get("rev"); }
+    catch (e) { return null; }
+    if (!left) return null;
+    var now = snapshot && snapshot.source ? snapshot.source.rev : null;
+    if (now == null || String(now) === String(left)) return null;
+    var p = el("p", "ox-note ox-revised");
+    p.appendChild(say(
+      "This path has been revised since you left it (you read revision " + left
+      + "; this is revision " + String(now) + "). What follows is the current reading.",
+      "您离开后该路径已修订（您阅读的是版本 " + left + "，当前为版本 " + String(now)
+      + "）。以下为当前读数。"));
+    return p;
+  }
+
   function continuationHref(snapshot) {
     var src = snapshot && snapshot.source;
     var chain = src && src.chain;
@@ -1014,6 +1045,8 @@
     var conditions = conditionsLine(snapshot);
     if (conditions) hero.appendChild(conditions);
     hero.appendChild(renderMeta(snapshot));
+    var revised = continuationNotice(snapshot);
+    if (revised) hero.appendChild(revised);
     root.appendChild(hero);
 
     root.appendChild(renderRail(snapshot));
@@ -1070,7 +1103,7 @@
         }
         return response.json();
       })
-      .then(function (snapshot) { if (snapshot) render(snapshot); })
+      .then(function (snapshot) { if (snapshot) { render(snapshot); focusFromHash(); } })
       .catch(function () {
         gate("The current reading is unavailable", "当前读数不可用",
           "The request for the current reading did not complete.",

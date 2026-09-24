@@ -11237,6 +11237,10 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # F04-X1 closure widening 2026-09-24 (contract-delta): app/main.py mounts the
+      # ontology explorer router, so this curated job's app import closure now
+      # reaches the F04 engine module.
+      - "engine/ontology_explorer.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)

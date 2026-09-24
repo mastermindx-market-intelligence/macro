@@ -385,3 +385,32 @@ def test_receipts_and_watched_render_as_bilingual_sentences_without_undefined():
     assert "function _present(field)" in client
     assert "_present(receipt.value)" in client
     assert "_present(receipt.threshold)" in client
+
+
+def test_the_continuation_context_is_consumed_on_both_ends():
+    """M1 acceptance item 5, the reader-visible half. Writing `from/focus/rev`
+    into the transmission.html href preserves nothing unless the landing page
+    reads it back. Pin (a) the transmission template consumes the query string
+    and offers a return link that carries the step as a `#ox-leg-` hash and the
+    revision as `?rev=`, without ever printing the step identifier; (b) the
+    explorer client focuses that step from the hash and says, in plain words,
+    when the served revision differs from the one the reader left at."""
+    landing = (ROOT / "templates" / "transmission.html.j2").read_text(encoding="utf-8")
+    consumer = landing[landing.index('id="tx-from"'):]
+    consumer = consumer[:consumer.index("</script>")]
+    for needle in ('q.get("focus")', 'q.get("from")', 'q.get("rev")',
+                   '"#ox-leg-" + encodeURIComponent(focus)',
+                   '"?rev=" + encodeURIComponent(rev)', "box.hidden = false"):
+        assert needle in consumer, needle
+    # The identifier travels in the href only: no textContent/innerText write
+    # in the consumer, and the visible copy is a fixed bilingual sentence.
+    assert "textContent" not in consumer and "innerText" not in consumer
+    assert "go back to that step" in consumer and "返回该步骤" in consumer
+
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    assert 'h.indexOf("#ox-leg-") !== 0' in client
+    assert "render(snapshot); focusFromHash();" in client
+    notice = client[client.index("function continuationNotice"):]
+    notice = notice[:notice.index("function continuationHref")]
+    assert 'get("rev")' in notice and "String(now) === String(left)" in notice
+    assert "revised since you left" in notice and "已修订" in notice
