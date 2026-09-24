@@ -109,6 +109,8 @@ Reader functions in `scripts/build_aibrief.py`: `_gather_context_strip` `:101` (
 
 `templates/aibrief.html.j2`: bilingual macro `l-en`/`l-zh` `:2`, `:5`; `.panel` `:97`; h1 "AI Daily Brief / AI每日简报" `:99`; h2 "Right now / 当前状态" `:111` over `.ctx-strip` `:120` with four `.ctx-row` `:122`, `:131`, `:140`, `:149`; h2 "What's ahead / 近期日程" `:165`, `.fwd-list` `:178`; `.brief-tabs` `:194` with `.brief-tab-btn` Macro / China & Hong Kong / Bitcoin `:195-197`; `.panel.ai-brief.brief-tab` bodies `:206`, `:217`, `:228` with h2 "Macro · cross-asset synthesis" `:207`, "China & Hong Kong synthesis" `:218`, "Bitcoin synthesis" `:229`; h2 "The brief's own record / 简报自身记录" `:243`, `.record-cal` `:252`, `.open-lean` `:266`; h2 "Overnight deliberation / 隔夜AI复盘" `:286`. No `mq-`/`mx-` family and no inline `?v=` stamps in the template (stamps come from `scripts.optimize_assets` in the sweeps). `templates/aibrief.js:3` — lens bodies are server-rendered; `:23` is the only fetch (`neuralweb/cortex_memo.json`). Build step `daily.yml:4048-4052`. Nav: `templates/_navlinks.html.j2` has NO aibrief entry (the "Daily Brief" at `:103` is the options workspace); `reference.html` is at `:276`. MOR-2b must anchor the morning edition off an existing nav-reachable surface or add the entry in the shared family (`templates/_navlinks.html.j2` only).
 
+**A standalone Morning Edition page already ships.** `templates/am_edition.html.j2` (323 lines; h1 "Morning Edition / 早间版" `:72`, session-state badge `:73-80`, blocks session_clock `:109`, tape_since_prior_close `:168`, market_state `:203`, cross_asset_plane `:236`, todays_calendar `:269`, prior_close_brief_ref `:297` linking to aibrief.html; `theme.css` tokens with its own `<style>` `:19-63`) was built under **Meta-CEO B** (`[MO-B F01-1]` 8526fb07 2026-09-18, seat round dd20710c 2026-09-19) on top of A's producer (`[MO-A2] A-MO-W2-3` 8e2986c8 2026-09-09). It is in the PUBLIC nav (`templates/_public_nav.html.j2:37`) but not in the product nav (`templates/_navlinks.html.j2` has no am_edition entry) and aibrief.html does not link back; guards `tests/test_am_edition_page.py` (7 tests) and `tests/test_am_edition_producer.py` (27). Live 2026-09-24 08:3xZ: `am_edition.html` 200 / 59,542 B (server-rendered), `am_edition.json` 401. The DEC places the edition *inside* `aibrief.html` (`agentos/decisions/DEC-MARKET-ONTOLOGY-MARKET-ORIENTATION-PROJECTION-2026-08-30.md:135`); the shipped page is standalone — MOR-2b must rule placement explicitly (one producer, one JSON, no rival plane), never rebuild it.
+
 ## §4 Reference continuation
 
 `config/market_reference.yml:1` `schema: mastermind.market_reference/v1`; `:9` `entries:` — 46 entries (24 `indicator`, 22 `glossary`); `:1813` `coverage_exceptions` (four rows for `us_stocks.html`: see_ids alpha-chip/buy-readiness/entry-timing/insider-buy; sector-heat/leadership-rotation; market-regime; posture-dial); file ends `:1843`. Anchors: `templates/reference.html.j2:468` `<article class="rf-e" id="{{ e.id }}">`, deep link `:474` `href="#{{ e.id }}"`; nav `templates/_navlinks.html.j2:276`.
@@ -119,9 +121,10 @@ DEC §3.1 block → existing ids (all verified in the 46): 1 clock — `market-r
 
 ```
 SCHEDULE OWNER: NO-LAWFUL-OWNER for a guaranteed premarket slot (§0). Two lawful shapes, both inside existing owners:
-  (A) producer stays .github/workflows/daily.yml:4053-4056 (post-close); aibrief.html renders the "Morning Orientation /
-      盘前导读" edition from site/am_edition.json with EVERY block's own clock + typed state (scripts/build_am_edition.py:201,
-      :233, :328). Honest by construction; tape is STALE_WITH_LAST_KNOWN until a premarket refresh exists.
+  (A) producer stays .github/workflows/daily.yml:4053-4056 (post-close). The standalone public page templates/am_edition.html.j2
+      (MO-B F01-1, §3) already renders the blocks with typed states (scripts/build_am_edition.py:201, :233, :328); MOR-2b extends it
+      (DEC blocks 3/5/6/8) and adds the "Morning Orientation / 盘前导读" continuation inside aibrief.html (DEC :135) over the SAME
+      site/am_edition.json — never a rebuild. Honest by construction; tape is STALE_WITH_LAST_KNOWN until a premarket refresh exists.
   (B) premarket refresh = workflow_dispatch of .github/workflows/render.yml:35 (builders already at :823-824; narrow scope :37)
       fired by a host clock outside GitHub's scheduler — the BOUNDED DEPENDENCY; seat/operator decision, not this packet.
   REJECTED as premarket host: asia-close.yml:190 (publishes 13:03–15:28Z, after the open); sector-intelligence.yml:12 (runner
