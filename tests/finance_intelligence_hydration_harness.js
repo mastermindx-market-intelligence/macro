@@ -357,14 +357,10 @@ global.history = windowObj.history;
 global.HTMLElement = function () {};
 global.Node = function () {};
 
-// runtime JS is shipped with __FI_READ_URL__ literal; patch it so the
-// boot path reaches fetchJson with the stub URL the harness's fetch table
-// can resolve.
-runtimeJs = runtimeJs.replace("'__FI_READ_URL__'", "'/__fi_stub__'");
-runtimeJs = runtimeJs.replace(
-  "if (!FI_READ_URL || FI_READ_URL.indexOf('__FI_READ_URL__') === 0) return; // placeholder until integration",
-  "if (!FI_READ_URL) return;"
-);
+// runtime JS resolves FI_READ_URL from <main data-fi-read-url>; bind the
+// stub URL the harness's fetch table can resolve (the shipped page binds nothing
+// until integration and renders the not-connected notice instead).
+(function () { var m = document.getElementById('fi-main'); if (m) m.setAttribute('data-fi-read-url', '/__fi_stub__'); })();
 eval(runtimeJs);
 
 function snapshot() {

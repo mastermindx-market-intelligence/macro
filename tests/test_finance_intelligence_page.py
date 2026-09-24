@@ -451,3 +451,21 @@ def test_public_access_policy_lists_finance_intelligence_shell():
     assert "/finance_intelligence.html" in public
     assert "/finance_intelligence.css" in public
     assert "/finance_intelligence.js" in public
+
+
+def test_shell_ships_the_not_connected_binding_until_integration():
+    """T8 seat ruling: the read-model endpoint is bound only through
+    ``<main data-fi-read-url>``; an empty value must render the bilingual
+    not-connected notice and never fetch (Chairman directive 2026-09-24)."""
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    tpl = (root / "templates" / "finance_intelligence.html.j2").read_text(encoding="utf-8")
+    js = (root / "templates" / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "data-fi-read-url=\"{{ fi_read_url | default('') }}\"" in tpl
+    assert "'__FI_READ_URL__'" not in js
+    assert "getAttribute('data-fi-read-url')" in js
+    assert "setAttribute('data-state', 'not-connected')" in js
+    assert "not_connected: ['Not yet connected to the evidence service.', '尚未接入证据服务。']" in js
+    rendered = (root / "site" / "finance_intelligence.html").read_text(encoding="utf-8")
+    assert 'data-fi-read-url=""' in rendered

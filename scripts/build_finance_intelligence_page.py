@@ -46,6 +46,9 @@ def _atomic_copy(source: Path, destination: Path) -> None:
         temp.unlink(missing_ok=True)
 
 
+FI_READ_URL = ""  # the read-model endpoint constant; set when the foundation route is accepted
+
+
 def render_shell(root: Path) -> Path:
     """Atomically render the static shell and its paired client assets only."""
     root = Path(root)
@@ -56,6 +59,9 @@ def render_shell(root: Path) -> Path:
         generated_utc="runtime-api",
         active_section="research",
         active_page="finance_intelligence",
+        # Bound at integration only (Chairman directive 2026-09-24): an empty
+        # value renders the shell in its "not connected" state with no fetch.
+        fi_read_url=FI_READ_URL,
     )
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 

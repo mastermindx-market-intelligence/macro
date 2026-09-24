@@ -14,7 +14,7 @@
   // Read URL — placeholder is bound at integration into the shared foundation
   // route. The spec names no path.
   // ──────────────────────────────────────────────────────────────────────────
-  var FI_READ_URL = '__FI_READ_URL__';
+  var FI_READ_URL = ''; // resolved in boot() from <main data-fi-read-url>; empty = not connected (bound at integration)
 
   // ──────────────────────────────────────────────────────────────────────────
   // Planestate enum → plain-word label map (closed; one EN/ZH pair per enum).
@@ -1287,6 +1287,7 @@
     var zh = document.querySelector('[data-fi-mount="notice-zh"]');
     if (!notice) return;
     var map = {
+      not_connected: ['Not yet connected to the evidence service.', '尚未接入证据服务。'],
       locked: ['Sign in to read current research', '请登录以查阅当前研究'],
       not_entitled: ['This dossier is part of the research tier', '此报告为研究层内容'],
       private_store_unavailable: ['Private evidence store unavailable', '私有证据库暂不可用'],
@@ -1415,7 +1416,13 @@
   // Boot — single read
   // ──────────────────────────────────────────────────────────────────────────
   function boot() {
-    if (!FI_READ_URL || FI_READ_URL.indexOf('__FI_READ_URL__') === 0) return; // placeholder until integration
+    var mainEl = document.getElementById('fi-main');
+    FI_READ_URL = mainEl ? (mainEl.getAttribute('data-fi-read-url') || '').trim() : '';
+    if (!FI_READ_URL) {
+      if (mainEl) mainEl.setAttribute('data-state', 'not-connected');
+      renderNotice('not_connected');
+      return; // no endpoint bound yet — the shell stays data-free and says so
+    }
     fetchJson(FI_READ_URL).then(function (doc) {
       if (!doc || doc.contract_id !== 'finance_intelligence_read_model.v1') {
         renderNotice('contract_invalid');

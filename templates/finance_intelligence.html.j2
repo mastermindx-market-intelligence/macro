@@ -20,7 +20,7 @@
 {% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
 {% include "_site_nav.html.j2" %}
 
-<main id="fi-main" class="fi-shell" data-fi-mount="shell">
+<main id="fi-main" class="fi-shell" data-fi-mount="shell" data-fi-read-url="{{ fi_read_url | default('') }}">
   <header class="fi-hero" aria-labelledby="fi-hero-title">
     <p class="fi-kicker">{{ t('Finance Intelligence', '金融情报') }}</p>
     <h1 id="fi-hero-title">{{ t('Finance Intelligence', '金融情报') }}</h1>
