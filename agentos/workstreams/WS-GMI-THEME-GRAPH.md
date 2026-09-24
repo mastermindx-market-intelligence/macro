@@ -97,6 +97,19 @@ waves:
       TXI/incorporation/dislocation stay with native owners; downstream Transmission Gap,
       second-order/opportunity and explanation product composition stays with canonical
       MarketOntology F04 operation marketontology-f04-ontology-transmission-20260826-fable-001.
+  - id: ENE-1
+    title: "Energy — Nuclear Value Capture first vertical (gmi-energy-fable-ceo-e2e-20260923-chairman-001)"
+    status: in_progress
+    pr: 7881
+    next_action: >
+      RE-SCOPED 2026-09-24 by Chairman ruling R-ENE-09 (relayed from Astra CEO): Semiconductors (#7870)
+      builds the base — shared assertion, contracts/market_ontology/*, private binding, route, mount —
+      and Energy integrates into it later. Carrier #7881 withdrew the T3 shared-dossier registration,
+      holds T4, keeps the T9 nuclear non-regression freeze (wired into unrun-subsector-themes). Next:
+      T9 slice ACCEPTED (four Opus READ_ONLY rounds) and shipping on #7881 (ready + merge-on-green); wait for B's base on main; then the Energy integration wave
+      (adapter on B's contract, nuclear witness profiles, dossier composition, consumed private
+      role/route/mount, browser proof). Working checkpoint:
+      agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
 landmines:
   - >-
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.

@@ -76,9 +76,18 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Dispatch Wave 1 fabric lanes fin_t1_contract and fin_t3_overlap on mini2, then
-  fin_t2_projection and fin_t4_private once the frozen schema lands; seat consumes
-  returns, reviews seams, merges on concluded green.
+  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902/#7913/#7939 merged); T2
+  composer #7920 MERGED 11:53Z (e4ac3730). D1 CLOSED: spec FROZEN at 2e5c3df6 after five read-only
+  Opus audits + the seat freeze repair, mockup accepted at ce7fc986 after browser proof at 1440/390 ×
+  dark/light × EN/ZH + keyboard; #7903 MERGED 2026-09-24T14:58:16Z (0293b9cfd76f)
+  (DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION,
+  DSC:EXTERNAL-REPAIR-LANES-OVER-EDIT-LONG-SPECS-EVEN-WHEN-SURGICAL-CAP-THE-AUDITS-AND-LET-THE-SEAT-CLOSE).
+  Chairman directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and
+  never rebuilds base layers — T4/T5/T6/T7 HELD (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE).
+  Next: T8 shell + hydration behind the FI_READ_URL constant (lane fin_t8_ui_shell; residual appendix
+  binds) → seat browser acceptance of the shell in its not-connected state → T9 entry points → integration
+  once #7870 lands (adapter to the foundation's source_record.v1 / evidence_claim.v1 /
+  sector_intelligence_packet.v1 as recorded in the handoff; three open questions for the shared owner).
 ---
 
 # Finance Intelligence workstream

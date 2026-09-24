@@ -1,6 +1,6 @@
 {
  "schema": "prophet_miss_audit/v1",
- "price_through": "2026-09-22",
+ "price_through": "2026-09-23",
  "tier": "ops_telemetry",
  "authority": "none — measurement only; no rank/gate/size consumer",
  "bases": {
@@ -13,24 +13,24 @@
  },
  "summary": {
   "universe_n": 1494,
-  "eligible_today_n": 18,
+  "eligible_today_n": 21,
   "top63_n": 4,
   "top63_eligible_today_n": 0,
-  "top63_never_eligible_n": 2,
-  "top63_never_eligible_pct": 0.5,
+  "top63_never_eligible_n": 3,
+  "top63_never_eligible_pct": 0.75,
   "top63_eligible_days": {
    "n": 4,
-   "mean": 3.5,
+   "mean": 3.0,
    "p25": 0.0,
-   "median": 0.5,
-   "p75": 4.0,
+   "median": 0.0,
+   "p75": 3.0,
    "min": 0.0,
-   "max": 13.0
+   "max": 12.0
   },
   "top21_n": 4,
   "top21_eligible_today_n": 0,
   "conversion_rate": 0.0,
-  "conversion_n": "0/2",
+  "conversion_n": "0/1",
   "basket_misses_n": 0,
   "basket_scored_n": 49
  },
@@ -56,9 +56,9 @@
   "Information Technology": 1
  },
  "eligible_today_sector_hist": {
-  "Information Technology": 6,
+  "Information Technology": 8,
   "Health Care": 4,
-  "Industrials": 2,
+  "Industrials": 3,
   "Real Estate": 2,
   "Communication Services": 1,
   "Consumer Discretionary": 1,
@@ -66,31 +66,30 @@
   "Financials": 1
  },
  "conversion": {
-  "sighted_n": 2,
+  "sighted_n": 1,
   "converted_n": 0,
   "rate": 0.0,
   "converted": [],
-  "never_sighted_n": 2,
+  "never_sighted_n": 3,
   "unconverted_top": [
-   "HUBB",
-   "UA"
+   "HUBB"
   ],
   "plan_universe_n": 418
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-09-23",
-  "standouts_asof": "2026-09-22",
+  "rotation_asof": "2026-09-24",
+  "standouts_asof": "2026-09-23",
   "available": true,
   "themes": [
    {
     "rank": 1,
     "theme": "Semiconductors",
-    "emerging_score": 5.189,
-    "n_members": 43,
+    "emerging_score": 5.366,
+    "n_members": 42,
     "present_counts": {
-     "buy": 3,
+     "buy": 4,
      "ran": 0,
      "leaders": 0
     },
@@ -98,36 +97,39 @@
      "buy": [
       "ADI",
       "AMKR",
-      "FORM"
+      "FORM",
+      "NVDA"
      ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 3,
+    "represented_n": 4,
     "days_since_top5_entry": null
    },
    {
     "rank": 2,
     "theme": "Quantum Computing",
-    "emerging_score": 2.236,
+    "emerging_score": 2.061,
     "n_members": 16,
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "ran": 0,
      "leaders": 0
     },
     "present": {
-     "buy": [],
+     "buy": [
+      "NVDA"
+     ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 0,
+    "represented_n": 1,
     "days_since_top5_entry": null
    },
    {
     "rank": 3,
     "theme": "Crypto & Blockchain",
-    "emerging_score": 1.962,
+    "emerging_score": 1.558,
     "n_members": 26,
     "present_counts": {
      "buy": 1,
@@ -148,9 +150,31 @@
    },
    {
     "rank": 4,
-    "theme": "Space Tech",
-    "emerging_score": 1.396,
-    "n_members": 22,
+    "theme": "Nanotechnology",
+    "emerging_score": 1.528,
+    "n_members": 38,
+    "present_counts": {
+     "buy": 1,
+     "ran": 0,
+     "leaders": 1
+    },
+    "present": {
+     "buy": [
+      "NVDA"
+     ],
+     "ran": [],
+     "leaders": [
+      "MRNA"
+     ]
+    },
+    "represented_n": 2,
+    "days_since_top5_entry": null
+   },
+   {
+    "rank": 5,
+    "theme": "Electric Vehicles",
+    "emerging_score": 1.255,
+    "n_members": 45,
     "present_counts": {
      "buy": 1,
      "ran": 0,
@@ -158,30 +182,12 @@
     },
     "present": {
      "buy": [
-      "RKLB"
+      "NVDA"
      ],
      "ran": [],
      "leaders": []
     },
     "represented_n": 1,
-    "days_since_top5_entry": null
-   },
-   {
-    "rank": 5,
-    "theme": "Nanotechnology",
-    "emerging_score": 1.384,
-    "n_members": 37,
-    "present_counts": {
-     "buy": 0,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 0,
     "days_since_top5_entry": null
    }
   ]
@@ -191,7 +197,7 @@
   "authority": "none — measurement only; no rank/gate/size/membership consumer",
   "available": true,
   "as_of": "2026-09-23",
-  "standouts_asof": "2026-09-22",
+  "standouts_asof": "2026-09-23",
   "basis": "equal-weight member returns over data/baskets/ohlcv with point-in-time dated membership (engine.baskets._ew_level construction); the 10d return ranked inside the basket's OWN trailing 252-session history of the same measure. Overlapping windows — the percentile is a description, not a test.",
   "miss_rule": "pctile >= 0.9 AND zero live members on any of ['buy', 'watch', 'leaders', 'ran'] (featured is a flag inside buy)",
   "lanes": [
@@ -204,7 +210,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 9,
+  "n_unrepresented": 8,
   "misses": [],
   "baskets": [
    {
@@ -227,11 +233,35 @@
      "leaders": 2,
      "ran": 1
     },
-    "pctile": 0.9504,
+    "pctile": 0.9583,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.051774,
-    "ew_10d": 0.176355
+    "ew_5d": 0.061776,
+    "ew_10d": 0.187541
+   },
+   {
+    "basket_id": "ai_semiconductors",
+    "name": "AI Semiconductors",
+    "category": "Semiconductors",
+    "as_of": "2026-09-23",
+    "n_members": 12,
+    "n_members_live": 12,
+    "n_members_read": 12,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "NVDA"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.8393,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.14921,
+    "ew_10d": 0.108818
    },
    {
     "basket_id": "crypto_rails",
@@ -251,35 +281,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.8671,
+    "pctile": 0.8353,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.123131,
-    "ew_10d": 0.074103
-   },
-   {
-    "basket_id": "ai_semiconductors",
-    "name": "AI Semiconductors",
-    "category": "Semiconductors",
-    "as_of": "2026-09-23",
-    "n_members": 12,
-    "n_members_live": 12,
-    "n_members_read": 12,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "NVDA"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.8313,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.145357,
-    "ew_10d": 0.1051
+    "ew_5d": 0.110915,
+    "ew_10d": 0.06242
    },
    {
     "basket_id": "mag7",
@@ -294,16 +300,41 @@
      "NVDA"
     ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.8115,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.03663,
+    "ew_10d": 0.040083
+   },
+   {
+    "basket_id": "ai_software",
+    "name": "AI Software & Platforms",
+    "category": "AI & Technology",
+    "as_of": "2026-09-23",
+    "n_members": 17,
+    "n_members_live": 17,
+    "n_members_read": 17,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "APP",
+     "PLTR"
+    ],
+    "present_counts": {
+     "buy": 1,
      "watch": 1,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.8155,
+    "pctile": 0.752,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.040059,
-    "ew_10d": 0.043523
+    "ew_5d": 0.019297,
+    "ew_10d": 0.047543
    },
    {
     "basket_id": "crypto",
@@ -323,59 +354,93 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.7837,
+    "pctile": 0.7361,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.198875,
-    "ew_10d": 0.116426
+    "ew_5d": 0.177385,
+    "ew_10d": 0.096414
    },
    {
-    "basket_id": "ai_software",
-    "name": "AI Software & Platforms",
-    "category": "AI & Technology",
+    "basket_id": "ai_agents",
+    "name": "AI Agents & Applications",
+    "category": "Artificial Intelligence",
     "as_of": "2026-09-23",
-    "n_members": 17,
-    "n_members_live": 17,
-    "n_members_read": 17,
-    "n_members_on_board": 1,
+    "n_members": 8,
+    "n_members_live": 8,
+    "n_members_read": 8,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "APP"
+     "APP",
+     "PLTR"
     ],
     "present_counts": {
      "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.7599,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.020716,
-    "ew_10d": 0.049002
-   },
-   {
-    "basket_id": "quantum_computing",
-    "name": "Quantum Computing",
-    "category": "AI & Technology",
-    "as_of": "2026-09-23",
-    "n_members": 11,
-    "n_members_live": 11,
-    "n_members_read": 11,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "NVDA"
-    ],
-    "present_counts": {
-     "buy": 0,
      "watch": 1,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.7401,
+    "pctile": 0.7163,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.06628,
-    "ew_10d": 0.057688
+    "ew_5d": 0.009573,
+    "ew_10d": 0.049504
+   },
+   {
+    "basket_id": "us_sector_tech",
+    "name": "Technology (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-23",
+    "n_members": 74,
+    "n_members_live": 74,
+    "n_members_read": 74,
+    "n_members_on_board": 12,
+    "members_on_board": [
+     "ADI",
+     "AKAM",
+     "APP",
+     "CIEN",
+     "KEYS",
+     "MU",
+     "NVDA",
+     "PLTR",
+     "SNDK",
+     "TDY",
+     "TEL",
+     "WDC"
+    ],
+    "present_counts": {
+     "buy": 5,
+     "watch": 7,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.7163,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.048382,
+    "ew_10d": 0.039077
+   },
+   {
+    "basket_id": "robotics_automation",
+    "name": "Robotics & Automation",
+    "category": "Industrials",
+    "as_of": "2026-09-23",
+    "n_members": 12,
+    "n_members_live": 12,
+    "n_members_read": 12,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.7083,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.053876,
+    "ew_10d": 0.033959
    },
    {
     "basket_id": "reshoring",
@@ -397,56 +462,23 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.7401,
+    "pctile": 0.7004,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.053546,
-    "ew_10d": 0.032819
+    "ew_5d": 0.051291,
+    "ew_10d": 0.030609
    },
    {
-    "basket_id": "us_sector_tech",
-    "name": "Technology (Equal-Weight)",
-    "category": "US Sectors (EW)",
+    "basket_id": "quantum_computing",
+    "name": "Quantum Computing",
+    "category": "AI & Technology",
     "as_of": "2026-09-23",
-    "n_members": 74,
-    "n_members_live": 74,
-    "n_members_read": 74,
-    "n_members_on_board": 10,
-    "members_on_board": [
-     "ADI",
-     "AKAM",
-     "APP",
-     "CIEN",
-     "KEYS",
-     "NVDA",
-     "SNDK",
-     "TDY",
-     "TEL",
-     "WDC"
-    ],
-    "present_counts": {
-     "buy": 5,
-     "watch": 5,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.7123,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.048123,
-    "ew_10d": 0.03882
-   },
-   {
-    "basket_id": "ai_agents",
-    "name": "AI Agents & Applications",
-    "category": "Artificial Intelligence",
-    "as_of": "2026-09-23",
-    "n_members": 8,
-    "n_members_live": 8,
-    "n_members_read": 8,
+    "n_members": 11,
+    "n_members_live": 11,
+    "n_members_read": 11,
     "n_members_on_board": 1,
     "members_on_board": [
-     "APP"
+     "NVDA"
     ],
     "present_counts": {
      "buy": 1,
@@ -454,33 +486,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.7083,
+    "pctile": 0.6964,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.007887,
-    "ew_10d": 0.047752
-   },
-   {
-    "basket_id": "robotics_automation",
-    "name": "Robotics & Automation",
-    "category": "Industrials",
-    "as_of": "2026-09-23",
-    "n_members": 12,
-    "n_members_live": 12,
-    "n_members_read": 12,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.7083,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.055428,
-    "ew_10d": 0.035483
+    "ew_5d": 0.046605,
+    "ew_10d": 0.038171
    },
    {
     "basket_id": "non_ai_software",
@@ -504,8 +514,8 @@
     "pctile": 0.6845,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.005215,
-    "ew_10d": 0.032188
+    "ew_5d": 0.004776,
+    "ew_10d": 0.031737
    },
    {
     "basket_id": "industrial_distribution",
@@ -526,59 +536,58 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.6567,
+    "pctile": 0.6369,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.036258,
-    "ew_10d": 0.015966
+    "ew_5d": 0.035303,
+    "ew_10d": 0.015029
    },
    {
-    "basket_id": "us_sector_health",
-    "name": "Health Care (Equal-Weight)",
-    "category": "US Sectors (EW)",
+    "basket_id": "big_pharma",
+    "name": "Big Pharma",
+    "category": "Healthcare",
     "as_of": "2026-09-23",
-    "n_members": 59,
-    "n_members_live": 59,
-    "n_members_read": 59,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "VTRS"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.621,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.009125,
-    "ew_10d": 0.020529
-   },
-   {
-    "basket_id": "ai_neoclouds",
-    "name": "AI Neoclouds & HPC Hosting",
-    "category": "Artificial Intelligence",
-    "as_of": "2026-09-23",
-    "n_members": 13,
-    "n_members_live": 10,
-    "n_members_read": 13,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "IREN"
-    ],
+    "n_members": 10,
+    "n_members_live": 9,
+    "n_members_read": 10,
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
      "watch": 0,
      "leaders": 0,
-     "ran": 1
+     "ran": 0
     },
-    "pctile": 0.5933,
+    "pctile": 0.5615,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.150932,
-    "ew_10d": 0.054877
+    "ew_5d": 0.016157,
+    "ew_10d": 0.015997
+   },
+   {
+    "basket_id": "non_ai_tech",
+    "name": "Non-AI Tech & Hardware",
+    "category": "Semiconductors & Hardware",
+    "as_of": "2026-09-23",
+    "n_members": 14,
+    "n_members_live": 13,
+    "n_members_read": 14,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "ADI",
+     "TEL"
+    ],
+    "present_counts": {
+     "buy": 2,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.5536,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.055835,
+    "ew_10d": 0.023998
    },
    {
     "basket_id": "obesity_glp1",
@@ -598,11 +607,36 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5853,
+    "pctile": 0.5456,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.037165,
-    "ew_10d": 0.020111
+    "ew_5d": 0.031685,
+    "ew_10d": 0.01472
+   },
+   {
+    "basket_id": "us_sector_health",
+    "name": "Health Care (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-23",
+    "n_members": 59,
+    "n_members_live": 59,
+    "n_members_read": 59,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "MRNA",
+     "VTRS"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 1,
+     "ran": 0
+    },
+    "pctile": 0.5337,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.002978,
+    "ew_10d": 0.014313
    },
    {
     "basket_id": "retail",
@@ -621,38 +655,65 @@
      "TJX"
     ],
     "present_counts": {
-     "buy": 4,
-     "watch": 1,
+     "buy": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5774,
+    "pctile": 0.5099,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.022424,
-    "ew_10d": 0.007336
+    "ew_5d": 0.017491,
+    "ew_10d": 0.002476
    },
    {
-    "basket_id": "housing",
-    "name": "Housing Chain",
-    "category": "Consumer Cyclical",
+    "basket_id": "ai_neoclouds",
+    "name": "AI Neoclouds & HPC Hosting",
+    "category": "Artificial Intelligence",
     "as_of": "2026-09-23",
-    "n_members": 19,
-    "n_members_live": 18,
-    "n_members_read": 19,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members": 13,
+    "n_members_live": 10,
+    "n_members_read": 13,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "IREN"
+    ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
-    "pctile": 0.5655,
+    "pctile": 0.506,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.013093,
-    "ew_10d": -0.007252
+    "ew_5d": 0.105656,
+    "ew_10d": 0.01338
+   },
+   {
+    "basket_id": "semicap_equipment",
+    "name": "Semiconductor Equipment (WFE)",
+    "category": "Semiconductors",
+    "as_of": "2026-09-23",
+    "n_members": 16,
+    "n_members_live": 16,
+    "n_members_read": 16,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "FORM",
+     "NVMI"
+    ],
+    "present_counts": {
+     "buy": 2,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.498,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.143956,
+    "ew_10d": 0.029575
    },
    {
     "basket_id": "defense",
@@ -675,11 +736,35 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5496,
+    "pctile": 0.494,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.003089,
-    "ew_10d": 0.009684
+    "ew_5d": -0.008152,
+    "ew_10d": -0.00163
+   },
+   {
+    "basket_id": "housing",
+    "name": "Housing Chain",
+    "category": "Consumer Cyclical",
+    "as_of": "2026-09-23",
+    "n_members": 19,
+    "n_members_live": 18,
+    "n_members_read": 19,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "KBH"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.4901,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.000392,
+    "ew_10d": -0.020467
    },
    {
     "basket_id": "space_economy",
@@ -699,58 +784,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5417,
+    "pctile": 0.4821,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.049171,
-    "ew_10d": 0.040756
-   },
-   {
-    "basket_id": "big_pharma",
-    "name": "Big Pharma",
-    "category": "Healthcare",
-    "as_of": "2026-09-23",
-    "n_members": 10,
-    "n_members_live": 9,
-    "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.5377,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.014239,
-    "ew_10d": 0.01408
-   },
-   {
-    "basket_id": "non_ai_tech",
-    "name": "Non-AI Tech & Hardware",
-    "category": "Semiconductors & Hardware",
-    "as_of": "2026-09-23",
-    "n_members": 14,
-    "n_members_live": 13,
-    "n_members_read": 14,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "ADI",
-     "TEL"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.5298,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.053061,
-    "ew_10d": 0.021308
+    "ew_5d": 0.027299,
+    "ew_10d": 0.01906
    },
    {
     "basket_id": "ai_infra",
@@ -760,22 +798,23 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
      "CIEN",
+     "MU",
      "NVDA"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 1,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.4782,
+    "pctile": 0.4544,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.101285,
-    "ew_10d": 0.035517
+    "ew_5d": 0.097828,
+    "ew_10d": 0.032266
    },
    {
     "basket_id": "data_center_power",
@@ -795,59 +834,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.4663,
+    "pctile": 0.4544,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.077436,
-    "ew_10d": 0.017944
-   },
-   {
-    "basket_id": "semicap_equipment",
-    "name": "Semiconductor Equipment (WFE)",
-    "category": "Semiconductors",
-    "as_of": "2026-09-23",
-    "n_members": 16,
-    "n_members_live": 16,
-    "n_members_read": 16,
-    "n_members_on_board": 3,
-    "members_on_board": [
-     "FORM",
-     "KLIC",
-     "NVMI"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4583,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.133116,
-    "ew_10d": 0.019819
-   },
-   {
-    "basket_id": "us_sector_comm",
-    "name": "Communication Services (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-23",
-    "n_members": 23,
-    "n_members_live": 23,
-    "n_members_read": 23,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.3631,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.031455,
-    "ew_10d": -0.012128
+    "ew_5d": 0.071706,
+    "ew_10d": 0.01253
    },
    {
     "basket_id": "defensives",
@@ -870,8 +861,8 @@
     "pctile": 0.3591,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.005014,
-    "ew_10d": -0.005307
+    "ew_5d": -0.005121,
+    "ew_10d": -0.005413
    },
    {
     "basket_id": "memory_storage",
@@ -881,46 +872,45 @@
     "n_members": 5,
     "n_members_live": 4,
     "n_members_read": 5,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "MU",
      "SNDK",
      "WDC"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 2,
+     "watch": 3,
      "leaders": 0,
      "ran": 0
     },
     "pctile": 0.3512,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.166513,
-    "ew_10d": 0.024344
+    "ew_5d": 0.167974,
+    "ew_10d": 0.025627
    },
    {
-    "basket_id": "travel",
-    "name": "Travel & Experiences",
-    "category": "Consumer Cyclical",
+    "basket_id": "us_sector_comm",
+    "name": "Communication Services (Equal-Weight)",
+    "category": "US Sectors (EW)",
     "as_of": "2026-09-23",
-    "n_members": 24,
-    "n_members_live": 24,
-    "n_members_read": 24,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "ABNB"
-    ],
+    "n_members": 23,
+    "n_members_live": 23,
+    "n_members_read": 23,
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
-     "watch": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.3512,
+    "pctile": 0.2956,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.015645,
-    "ew_10d": -0.023189
+    "ew_5d": -0.036679,
+    "ew_10d": -0.017457
    },
    {
     "basket_id": "us_sector_industrials",
@@ -947,35 +937,35 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.3353,
+    "pctile": 0.2956,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.009744,
-    "ew_10d": -0.005848
+    "ew_5d": 0.00544,
+    "ew_10d": -0.010085
    },
    {
-    "basket_id": "payments_fintech",
-    "name": "Payments & Fintech",
-    "category": "Financials",
+    "basket_id": "travel",
+    "name": "Travel & Experiences",
+    "category": "Consumer Cyclical",
     "as_of": "2026-09-23",
-    "n_members": 22,
-    "n_members_live": 21,
-    "n_members_read": 22,
+    "n_members": 24,
+    "n_members_live": 24,
+    "n_members_read": 24,
     "n_members_on_board": 1,
     "members_on_board": [
-     "AXP"
+     "ABNB"
     ],
     "present_counts": {
-     "buy": 1,
-     "watch": 0,
+     "buy": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.3155,
+    "pctile": 0.2917,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.013991,
-    "ew_10d": -0.032783
+    "ew_5d": -0.022968,
+    "ew_10d": -0.030455
    },
    {
     "basket_id": "critical_minerals",
@@ -995,11 +985,35 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.2956,
+    "pctile": 0.2599,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.059515,
-    "ew_10d": -0.088134
+    "ew_5d": 0.049035,
+    "ew_10d": -0.097154
+   },
+   {
+    "basket_id": "payments_fintech",
+    "name": "Payments & Fintech",
+    "category": "Financials",
+    "as_of": "2026-09-23",
+    "n_members": 22,
+    "n_members_live": 21,
+    "n_members_read": 22,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "AXP"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.256,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.020922,
+    "ew_10d": -0.039582
    },
    {
     "basket_id": "us_sector_discretionary",
@@ -1009,10 +1023,11 @@
     "n_members": 47,
     "n_members_live": 47,
     "n_members_read": 47,
-    "n_members_on_board": 6,
+    "n_members_on_board": 7,
     "members_on_board": [
      "ABNB",
      "GRMN",
+     "LULU",
      "RL",
      "ROST",
      "TJX",
@@ -1020,40 +1035,15 @@
     ],
     "present_counts": {
      "buy": 3,
-     "watch": 3,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.2758,
+    "pctile": 0.252,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.003579,
-    "ew_10d": -0.021516
-   },
-   {
-    "basket_id": "us_sector_materials",
-    "name": "Materials (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-23",
-    "n_members": 26,
-    "n_members_live": 26,
-    "n_members_read": 26,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "MLM",
-     "VMC"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.256,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.004647,
-    "ew_10d": -0.011907
+    "ew_5d": -0.006319,
+    "ew_10d": -0.024207
    },
    {
     "basket_id": "gold_miners",
@@ -1077,8 +1067,33 @@
     "pctile": 0.2321,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.008512,
-    "ew_10d": -0.06153
+    "ew_5d": 0.00866,
+    "ew_10d": -0.061393
+   },
+   {
+    "basket_id": "us_sector_materials",
+    "name": "Materials (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-23",
+    "n_members": 26,
+    "n_members_live": 26,
+    "n_members_read": 26,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "MLM",
+     "VMC"
+    ],
+    "present_counts": {
+     "buy": 2,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2282,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.000471,
+    "ew_10d": -0.01694
    },
    {
     "basket_id": "us_sector_staples",
@@ -1101,8 +1116,32 @@
     "pctile": 0.2044,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.01282,
-    "ew_10d": -0.016785
+    "ew_5d": -0.012863,
+    "ew_10d": -0.016827
+   },
+   {
+    "basket_id": "silver_miners",
+    "name": "Silver Miners",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-23",
+    "n_members": 10,
+    "n_members_live": 8,
+    "n_members_read": 8,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "SVM"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 1,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1647,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.016863,
+    "ew_10d": -0.091996
    },
    {
     "basket_id": "insurance",
@@ -1122,11 +1161,35 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.2004,
+    "pctile": 0.1488,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.034075,
-    "ew_10d": -0.027793
+    "ew_5d": -0.040196,
+    "ew_10d": -0.033955
+   },
+   {
+    "basket_id": "nuclear_power",
+    "name": "Nuclear & SMR Power",
+    "category": "Energy & Power",
+    "as_of": "2026-09-23",
+    "n_members": 9,
+    "n_members_live": 9,
+    "n_members_read": 9,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "OKLO"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1488,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.0242,
+    "ew_10d": -0.087986
    },
    {
     "basket_id": "power_grid",
@@ -1150,11 +1213,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.1885,
+    "pctile": 0.1488,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.026861,
-    "ew_10d": -0.042003
+    "ew_5d": 0.01845,
+    "ew_10d": -0.049849
    },
    {
     "basket_id": "us_sector_realestate",
@@ -1174,103 +1237,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.1845,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.008838,
-    "ew_10d": -0.022792
-   },
-   {
-    "basket_id": "nuclear_power",
-    "name": "Nuclear & SMR Power",
-    "category": "Energy & Power",
-    "as_of": "2026-09-23",
-    "n_members": 9,
-    "n_members_live": 9,
-    "n_members_read": 9,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "OKLO"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1806,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.03578,
-    "ew_10d": -0.077675
-   },
-   {
-    "basket_id": "silver_miners",
-    "name": "Silver Miners",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-23",
-    "n_members": 10,
-    "n_members_live": 8,
-    "n_members_read": 8,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "SVM"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1726,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.022839,
-    "ew_10d": -0.086659
-   },
-   {
-    "basket_id": "regional_banks",
-    "name": "Regional Banks",
-    "category": "Financials",
-    "as_of": "2026-09-23",
-    "n_members": 20,
-    "n_members_live": 20,
-    "n_members_read": 20,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1369,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.010763,
-    "ew_10d": -0.039864
-   },
-   {
-    "basket_id": "uranium_miners",
-    "name": "Uranium & Nuclear Fuel",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-23",
-    "n_members": 10,
-    "n_members_live": 10,
-    "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
     "pctile": 0.125,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.044469,
-    "ew_10d": -0.122849
+    "ew_5d": -0.01689,
+    "ew_10d": -0.03073
    },
    {
     "basket_id": "pgm_miners",
@@ -1291,8 +1262,52 @@
     "pctile": 0.1131,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.043609,
-    "ew_10d": -0.142887
+    "ew_5d": -0.045381,
+    "ew_10d": -0.144475
+   },
+   {
+    "basket_id": "uranium_miners",
+    "name": "Uranium & Nuclear Fuel",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-23",
+    "n_members": 10,
+    "n_members_live": 10,
+    "n_members_read": 10,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1131,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.037913,
+    "ew_10d": -0.128355
+   },
+   {
+    "basket_id": "regional_banks",
+    "name": "Regional Banks",
+    "category": "Financials",
+    "as_of": "2026-09-23",
+    "n_members": 20,
+    "n_members_live": 20,
+    "n_members_read": 20,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0893,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.024987,
+    "ew_10d": -0.053669
    },
    {
     "basket_id": "energy_complex",
@@ -1302,23 +1317,22 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
      "DINO",
-     "MPC",
-     "VLO"
+     "MPC"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 3,
+     "leaders": 2,
      "ran": 0
     },
-    "pctile": 0.1012,
+    "pctile": 0.0813,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.017739,
-    "ew_10d": -0.041355
+    "ew_5d": -0.022624,
+    "ew_10d": -0.046124
    },
    {
     "basket_id": "us_sector_energy",
@@ -1328,22 +1342,43 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "MPC",
-     "VLO"
+     "MPC"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
-    "pctile": 0.0972,
+    "pctile": 0.0615,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.014611,
-    "ew_10d": -0.045842
+    "ew_5d": -0.020588,
+    "ew_10d": -0.05163
+   },
+   {
+    "basket_id": "managed_care",
+    "name": "Managed Care & Insurers",
+    "category": "Healthcare",
+    "as_of": "2026-09-23",
+    "n_members": 9,
+    "n_members_live": 9,
+    "n_members_read": 9,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0575,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.050401,
+    "ew_10d": -0.086489
    },
    {
     "basket_id": "us_sector_financials",
@@ -1367,33 +1402,11 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0853,
+    "pctile": 0.0496,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.012235,
-    "ew_10d": -0.033722
-   },
-   {
-    "basket_id": "managed_care",
-    "name": "Managed Care & Insurers",
-    "category": "Healthcare",
-    "as_of": "2026-09-23",
-    "n_members": 9,
-    "n_members_live": 9,
-    "n_members_read": 9,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0734,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.045041,
-    "ew_10d": -0.081333
+    "ew_5d": -0.01904,
+    "ew_10d": -0.04038
    },
    {
     "basket_id": "us_sector_utilities",
@@ -1414,8 +1427,8 @@
     "pctile": 0.002,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.027882,
-    "ew_10d": -0.061314
+    "ew_5d": -0.032191,
+    "ew_10d": -0.065474
    }
   ]
  },
@@ -1427,12 +1440,12 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 153597,
+  "n_calls": 156506,
   "n_frozen_echoes_excluded": 232,
-  "n_stamp_dates": 64,
+  "n_stamp_dates": 65,
   "stamp_dates": {
    "first": "2026-06-29",
-   "last": "2026-09-22"
+   "last": "2026-09-23"
   },
   "forward_store": {
    "group": "stocks",
@@ -1444,72 +1457,72 @@
   "by_horizon": {
    "21d": {
     "horizon_d": 21,
-    "n_graded": 10588,
-    "rank_ic": -0.0387,
-    "n_ic_dates": 44,
+    "n_graded": 10629,
+    "rank_ic": -0.0409,
+    "n_ic_dates": 45,
     "ic_cross_section": {
-     "min": 238,
+     "min": 41,
      "median": 240,
      "max": 244
     },
-    "buy_tier_hit_rate": 0.512,
-    "buy_tier_n": 1513,
+    "buy_tier_hit_rate": 0.511,
+    "buy_tier_n": 1517,
     "by_tier": {
      "no_setup": {
-      "n": 6194,
-      "mean_fwd": 0.0115,
+      "n": 6221,
+      "mean_fwd": 0.0116,
       "pos_rate": 0.508
      },
      "primed": {
-      "n": 162,
-      "mean_fwd": 0.0443,
-      "pos_rate": 0.586
+      "n": 163,
+      "mean_fwd": 0.0435,
+      "pos_rate": 0.583
      },
      "setting_up": {
-      "n": 1351,
-      "mean_fwd": 0.0068,
-      "pos_rate": 0.503
+      "n": 1354,
+      "mean_fwd": 0.0067,
+      "pos_rate": 0.502
      },
      "watch": {
-      "n": 2881,
-      "mean_fwd": 0.0061,
+      "n": 2891,
+      "mean_fwd": 0.006,
       "pos_rate": 0.484
      }
     },
     "precision_at_k": {
      "definition": "hit = forward return > that stamp date's median graded forward return; dates with a graded cross-section < 20 are excluded from P@k (the exclusion is stated and counted below, not silent)",
      "min_cross_section": 20,
-     "n_dates_eligible": 44,
+     "n_dates_eligible": 45,
      "n_dates_excluded_thin": 0,
      "cross_section": {
-      "min": 238,
+      "min": 41,
       "median": 240,
       "max": 244
      },
      "by_k": {
       "p_at_1": {
-       "value": 0.659,
-       "lift_vs_base": 0.16,
-       "n_dates": 44,
-       "n_picks": 44
+       "value": 0.644,
+       "lift_vs_base": 0.145,
+       "n_dates": 45,
+       "n_picks": 45
       },
       "p_at_3": {
-       "value": 0.576,
-       "lift_vs_base": 0.077,
-       "n_dates": 44,
-       "n_picks": 132
+       "value": 0.57,
+       "lift_vs_base": 0.071,
+       "n_dates": 45,
+       "n_picks": 135
       },
       "p_at_5": {
-       "value": 0.586,
-       "lift_vs_base": 0.087,
-       "n_dates": 44,
-       "n_picks": 220
+       "value": 0.582,
+       "lift_vs_base": 0.083,
+       "n_dates": 45,
+       "n_picks": 225
       },
       "p_at_10": {
-       "value": 0.548,
-       "lift_vs_base": 0.048,
-       "n_dates": 44,
-       "n_picks": 440
+       "value": 0.544,
+       "lift_vs_base": 0.045,
+       "n_dates": 45,
+       "n_picks": 450
       }
      },
      "base_rate": 0.499
@@ -1557,23 +1570,23 @@
   "population": "EVERY stamped candidate row is graded, not only the ~12 that become plans (operator order 2026-08-05). Two populations are carried separately and never pooled: CURATED (board-admissible) and SCAN (seen and stamped, never admitted). Within each, basing and momentum picks are reported separately at every horizon in the ladder",
   "store": {
    "available": true,
-   "n_rows": 27501,
-   "n_stamp_dates": 15,
+   "n_rows": 27673,
+   "n_stamp_dates": 16,
    "by_horizon": {
     "10d": {
-     "n_rows": 20269,
-     "n_stamp_dates": 15,
+     "n_rows": 20355,
+     "n_stamp_dates": 16,
      "n_excess_null": 0
     },
     "21d": {
-     "n_rows": 7232,
-     "n_stamp_dates": 6,
+     "n_rows": 7318,
+     "n_stamp_dates": 7,
      "n_excess_null": 0
     }
    },
    "by_cohort": {},
    "by_signal_class": {
-    "other": 27501
+    "other": 27673
    },
    "horizon_ladder": [
     10,
@@ -1597,10 +1610,10 @@
    },
    "stamp_dates": {
     "first": "2026-07-31",
-    "last": "2026-09-04"
+    "last": "2026-09-08"
    },
-   "n_cohort_null": 27501,
-   "cohort_null_note": "27501 row(s) carry no curated/scan cohort — they were graded before the scan-tier discriminator landed in the candidates store. They are reported as one unsplit population, never folded into 'curated'"
+   "n_cohort_null": 27673,
+   "cohort_null_note": "27673 row(s) carry no curated/scan cohort — they were graded before the scan-tier discriminator landed in the candidates store. They are reported as one unsplit population, never folded into 'curated'"
   },
   "horizon_ladder": [
    10,
@@ -1624,8 +1637,8 @@
   },
   "chartered_horizon_note": "PRE-REGISTERED before any H=42/63 data matured (operator ruling 2026-08-05). Every class is graded and reported at EVERY horizon below, so nothing is hidden; this map only fixes which horizon is each class's HEADLINE read, so that 'grade each class at the horizon that flatters it, chosen after seeing the results' is impossible. PROPOSED pending commissioner adjudication",
   "score_coverage": {
-   "n_rows": 27501,
-   "n_scored": 1026,
+   "n_rows": 27673,
+   "n_scored": 1031,
    "coverage_pct": 3.73,
    "note": "the US builder runs us_board_rank.score_rows on the BUY LANE only, so a row off the board carries no priority score. That is a MEASURED coverage fact, never a zero score — the ranking legs below are computed on the scored subset and the population leg on everything"
   },
@@ -1633,64 +1646,64 @@
    "available": false,
    "column": "universe_tier",
    "n_by_cohort": {},
-   "n_unsplit": 27501,
+   "n_unsplit": 27673,
    "note": "the scan-tier discriminator has not landed in the candidates store yet, so every graded row is one UNSPLIT population. It is labelled 'unsplit' rather than 'curated' because calling it curated would assert a split that has not been measured"
   },
   "by_cohort": {
    "unsplit": {
     "10d": {
      "horizon_d": 10,
-     "n_graded": 20269,
-     "n_scored": 750,
-     "n_dates": 15,
+     "n_graded": 20355,
+     "n_scored": 752,
+     "n_dates": 16,
      "population": {
-      "n": 20269,
-      "n_excess": 20269,
-      "n_dates": 15,
-      "mean_excess": -0.01678,
-      "median_excess": -0.01705,
-      "pos_rate": 0.3559,
+      "n": 20355,
+      "n_excess": 20355,
+      "n_dates": 16,
+      "mean_excess": -0.01681,
+      "median_excess": -0.0171,
+      "pos_rate": 0.3558,
       "by_lane": {
        "buy": {
-        "n": 747,
-        "mean_excess": -0.01732,
-        "median_excess": -0.02009,
-        "pos_rate": 0.3414
+        "n": 749,
+        "mean_excess": -0.01742,
+        "median_excess": -0.02023,
+        "pos_rate": 0.3405
        },
        "laggards": {
-        "n": 155,
-        "mean_excess": -0.02635,
-        "median_excess": -0.03645,
-        "pos_rate": 0.3097
+        "n": 156,
+        "mean_excess": -0.02547,
+        "median_excess": -0.03614,
+        "pos_rate": 0.3141
        },
        "leaders": {
-        "n": 186,
-        "mean_excess": -0.03667,
-        "median_excess": -0.04311,
-        "pos_rate": 0.2849
+        "n": 187,
+        "mean_excess": -0.03622,
+        "median_excess": -0.04309,
+        "pos_rate": 0.2888
        },
        "not_on_board": {
-        "n": 18516,
-        "mean_excess": -0.01627,
-        "median_excess": -0.01641,
-        "pos_rate": 0.358
+        "n": 18595,
+        "mean_excess": -0.01632,
+        "median_excess": -0.01645,
+        "pos_rate": 0.3578
        },
        "watch": {
-        "n": 665,
-        "mean_excess": -0.02254,
-        "median_excess": -0.02212,
-        "pos_rate": 0.3444
+        "n": 668,
+        "mean_excess": -0.02252,
+        "median_excess": -0.02209,
+        "pos_rate": 0.3443
        }
       }
      },
      "by_signal_class": {
       "other": {
-       "n": 20269,
-       "n_excess": 20269,
-       "mean_excess": -0.01678,
-       "median_excess": -0.01705,
-       "pos_rate": 0.3559,
-       "loser_rate": 0.6441
+       "n": 20355,
+       "n_excess": 20355,
+       "mean_excess": -0.01681,
+       "median_excess": -0.0171,
+       "pos_rate": 0.3558,
+       "loser_rate": 0.6442
       }
      },
      "rank_ic": 0.0256,
@@ -1705,7 +1718,7 @@
       "definition": "hit = excess vs SPY above that stamp date's FULL-population median excess WITHIN THIS COHORT (every graded name in it, not just the ranked ones); dates whose scored cross-section is < 20 are excluded and counted",
       "min_cross_section": 20,
       "n_dates_eligible": 14,
-      "n_dates_excluded_thin": 1,
+      "n_dates_excluded_thin": 2,
       "cross_section": {
        "min": 39,
        "median": 54,
@@ -1743,7 +1756,7 @@
       "definition": "deciles cut within each stamp date (10 = highest priority score); hit = excess vs SPY above that date's median excess across the FULL graded population (every stamped name); loser = excess < 0; dates with fewer than 20 scored names are excluded and counted",
       "min_cross_section": 20,
       "n_dates_eligible": 14,
-      "n_dates_excluded_thin": 1,
+      "n_dates_excluded_thin": 2,
       "by_decile": {
        "d1": {
         "n": 81,
@@ -1822,28 +1835,28 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_graded": 7232,
-     "n_scored": 276,
-     "n_dates": 6,
+     "n_graded": 7318,
+     "n_scored": 279,
+     "n_dates": 7,
      "population": {
-      "n": 7232,
-      "n_excess": 7232,
-      "n_dates": 6,
-      "mean_excess": -0.03482,
-      "median_excess": -0.04033,
-      "pos_rate": 0.2851,
+      "n": 7318,
+      "n_excess": 7318,
+      "n_dates": 7,
+      "mean_excess": -0.03479,
+      "median_excess": -0.0404,
+      "pos_rate": 0.286,
       "by_lane": {
        "buy": {
-        "n": 276,
-        "mean_excess": -0.03745,
-        "median_excess": -0.04433,
-        "pos_rate": 0.2428
+        "n": 279,
+        "mean_excess": -0.03828,
+        "median_excess": -0.04441,
+        "pos_rate": 0.2437
        },
        "laggards": {
-        "n": 56,
-        "mean_excess": -0.02882,
-        "median_excess": -0.03519,
-        "pos_rate": 0.3929
+        "n": 57,
+        "mean_excess": -0.02391,
+        "median_excess": -0.03127,
+        "pos_rate": 0.4035
        },
        "leaders": {
         "n": 68,
@@ -1852,27 +1865,27 @@
         "pos_rate": 0.3382
        },
        "not_on_board": {
-        "n": 6599,
-        "mean_excess": -0.03414,
-        "median_excess": -0.03982,
-        "pos_rate": 0.2872
+        "n": 6679,
+        "mean_excess": -0.03415,
+        "median_excess": -0.03986,
+        "pos_rate": 0.2879
        },
        "watch": {
-        "n": 233,
-        "mean_excess": -0.05539,
+        "n": 235,
+        "mean_excess": -0.05442,
         "median_excess": -0.04694,
-        "pos_rate": 0.2361
+        "pos_rate": 0.2383
        }
       }
      },
      "by_signal_class": {
       "other": {
-       "n": 7232,
-       "n_excess": 7232,
-       "mean_excess": -0.03482,
-       "median_excess": -0.04033,
-       "pos_rate": 0.2851,
-       "loser_rate": 0.7149
+       "n": 7318,
+       "n_excess": 7318,
+       "mean_excess": -0.03479,
+       "median_excess": -0.0404,
+       "pos_rate": 0.286,
+       "loser_rate": 0.714
       }
      },
      "rank_ic": 0.1541,
@@ -1887,7 +1900,7 @@
       "definition": "hit = excess vs SPY above that stamp date's FULL-population median excess WITHIN THIS COHORT (every graded name in it, not just the ranked ones); dates whose scored cross-section is < 20 are excluded and counted",
       "min_cross_section": 20,
       "n_dates_eligible": 5,
-      "n_dates_excluded_thin": 1,
+      "n_dates_excluded_thin": 2,
       "cross_section": {
        "min": 50,
        "median": 55,
@@ -1925,7 +1938,7 @@
       "definition": "deciles cut within each stamp date (10 = highest priority score); hit = excess vs SPY above that date's median excess across the FULL graded population (every stamped name); loser = excess < 0; dates with fewer than 20 scored names are excluded and counted",
       "min_cross_section": 20,
       "n_dates_eligible": 5,
-      "n_dates_excluded_thin": 1,
+      "n_dates_excluded_thin": 2,
       "by_decile": {
        "d1": {
         "n": 30,
@@ -4212,7 +4225,7 @@
  "top63_runners": [
   {
    "ticker": "WLY",
-   "r63_pct": 7.7,
+   "r63_pct": 8.6,
    "sector": "Communication Services",
    "eligible_today": false,
    "tier_today": NaN,
@@ -4224,9 +4237,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 7.9,
-   "d3": 7.5,
-   "rsi3d": 47.3,
+   "k3": 9.9,
+   "d3": 8.1,
+   "rsi3d": 49.0,
    "t1_ticks": 24,
    "t2_ticks": 74,
    "t2raw_ticks": 28,
@@ -4242,13 +4255,13 @@
   },
   {
    "ticker": "HUBB",
-   "r63_pct": -10.0,
+   "r63_pct": -10.5,
    "sector": "Industrials",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 13,
-   "first_eligible": "2026-06-24",
-   "fwd_ret_from_first_pct": -11.45,
+   "days_eligible": 12,
+   "first_eligible": "2026-06-25",
+   "fwd_ret_from_first_pct": -13.5,
    "tiers_seen": [
     "T1"
    ],
@@ -4256,9 +4269,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 25.1,
-   "d3": 21.3,
-   "rsi3d": 44.5,
+   "k3": 28.1,
+   "d3": 22.3,
+   "rsi3d": 45.9,
    "t1_ticks": 12,
    "t2_ticks": 0,
    "t2raw_ticks": 0,
@@ -4274,7 +4287,7 @@
   },
   {
    "ticker": "ADEA",
-   "r63_pct": -14.9,
+   "r63_pct": -16.7,
    "sector": "Information Technology",
    "eligible_today": false,
    "tier_today": NaN,
@@ -4286,9 +4299,9 @@
    "stoch_bear": true,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 13.4,
-   "d3": 18.9,
-   "rsi3d": 46.8,
+   "k3": 8.3,
+   "d3": 17.2,
+   "rsi3d": 45.0,
    "t1_ticks": 49,
    "t2_ticks": 1,
    "t2raw_ticks": 1,
@@ -4305,23 +4318,21 @@
   },
   {
    "ticker": "UA",
-   "r63_pct": -17.5,
+   "r63_pct": -24.3,
    "sector": "Consumer Discretionary",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 1,
-   "first_eligible": "2026-06-24",
-   "fwd_ret_from_first_pct": -21.26,
-   "tiers_seen": [
-    "T1"
-   ],
+   "days_eligible": 0,
+   "first_eligible": null,
+   "fwd_ret_from_first_pct": null,
+   "tiers_seen": [],
    "stoch_ob": false,
    "stoch_bear": true,
    "macd_bear": true,
    "rsi_block": false,
    "k3": 0.0,
    "d3": 1.4,
-   "rsi3d": 33.9,
+   "rsi3d": 31.9,
    "t1_ticks": 24,
    "t2_ticks": 40,
    "t2raw_ticks": 40,
@@ -4339,8 +4350,37 @@
  ],
  "top21_runners": [
   {
+   "ticker": "HUBB",
+   "r21_pct": -0.3,
+   "sector": "Industrials",
+   "eligible_today": false,
+   "tier_today": NaN,
+   "days_eligible": 12,
+   "first_eligible": "2026-06-25",
+   "fwd_ret_from_first_pct": -13.5,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": true,
+   "rsi_block": false,
+   "k3": 28.1,
+   "d3": 22.3,
+   "rsi3d": 45.9,
+   "t1_ticks": 12,
+   "t2_ticks": 0,
+   "t2raw_ticks": 0,
+   "recent3": true,
+   "veto_legs": [
+    "macd_bear"
+   ],
+   "excluder": "not_topped_veto(macd_bear)",
+   "excluder_family": "not_topped_veto"
+  },
+  {
    "ticker": "ADEA",
-   "r21_pct": -1.3,
+   "r21_pct": -4.7,
    "sector": "Information Technology",
    "eligible_today": false,
    "tier_today": NaN,
@@ -4352,9 +4392,9 @@
    "stoch_bear": true,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 13.4,
-   "d3": 18.9,
-   "rsi3d": 46.8,
+   "k3": 8.3,
+   "d3": 17.2,
+   "rsi3d": 45.0,
    "t1_ticks": 49,
    "t2_ticks": 1,
    "t2raw_ticks": 1,
@@ -4367,37 +4407,8 @@
    "excluder_family": "not_topped_veto"
   },
   {
-   "ticker": "HUBB",
-   "r21_pct": -2.1,
-   "sector": "Industrials",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 13,
-   "first_eligible": "2026-06-24",
-   "fwd_ret_from_first_pct": -11.45,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": false,
-   "macd_bear": true,
-   "rsi_block": false,
-   "k3": 25.1,
-   "d3": 21.3,
-   "rsi3d": 44.5,
-   "t1_ticks": 12,
-   "t2_ticks": 0,
-   "t2raw_ticks": 0,
-   "recent3": true,
-   "veto_legs": [
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(macd_bear)",
-   "excluder_family": "not_topped_veto"
-  },
-  {
    "ticker": "WLY",
-   "r21_pct": -8.8,
+   "r21_pct": -10.2,
    "sector": "Communication Services",
    "eligible_today": false,
    "tier_today": NaN,
@@ -4409,9 +4420,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 7.9,
-   "d3": 7.5,
-   "rsi3d": 47.3,
+   "k3": 9.9,
+   "d3": 8.1,
+   "rsi3d": 49.0,
    "t1_ticks": 24,
    "t2_ticks": 74,
    "t2raw_ticks": 28,
@@ -4424,23 +4435,21 @@
   },
   {
    "ticker": "UA",
-   "r21_pct": -11.6,
+   "r21_pct": -14.9,
    "sector": "Consumer Discretionary",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 1,
-   "first_eligible": "2026-06-24",
-   "fwd_ret_from_first_pct": -21.26,
-   "tiers_seen": [
-    "T1"
-   ],
+   "days_eligible": 0,
+   "first_eligible": null,
+   "fwd_ret_from_first_pct": null,
+   "tiers_seen": [],
    "stoch_ob": false,
    "stoch_bear": true,
    "macd_bear": true,
    "rsi_block": false,
    "k3": 0.0,
    "d3": 1.4,
-   "rsi3d": 33.9,
+   "rsi3d": 31.9,
    "t1_ticks": 24,
    "t2_ticks": 40,
    "t2raw_ticks": 40,
@@ -4478,6 +4487,16 @@
    "ticker": "GNRC",
    "tier": "T2",
    "sector": "Industrials"
+  },
+  {
+   "ticker": "NVDA",
+   "tier": "T2",
+   "sector": "Information Technology"
+  },
+  {
+   "ticker": "PLTR",
+   "tier": "T4",
+   "sector": "Information Technology"
   },
   {
    "ticker": "Q",
@@ -4530,6 +4549,11 @@
    "sector": "Information Technology"
   },
   {
+   "ticker": "RUN",
+   "tier": "T2",
+   "sector": "Industrials"
+  },
+  {
    "ticker": "USPH",
    "tier": "T2",
    "sector": "Health Care"
@@ -4555,11 +4579,6 @@
    "input": "data/baskets/ohlcv",
    "severity": "structural",
    "reason": "1 basket(s) missing at least one member close while still reading at or above 60%: silver_miners — EW read over the members present, per-basket counts on each row's n_members_read. Disclosed rather than paged: a single unfetched member is a standing fact, and an annotation that fires every night is noise"
-  },
-  {
-   "input": "data/baskets/ohlcv",
-   "severity": "unexpected",
-   "reason": "basket store last bar 2026-09-23 != breadth-cache price_through 2026-09-22 — the basket block is keyed to its OWN store's last bar, never the other cache's clock"
   }
  ]
 }
