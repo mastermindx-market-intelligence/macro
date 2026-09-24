@@ -1,0 +1,1 @@
+{'note': 'derived scopes for 1/1 jobs', 'concrete_paths': 18, 'uncovered': [], 'weight': 6, 'declared_paths': 18}

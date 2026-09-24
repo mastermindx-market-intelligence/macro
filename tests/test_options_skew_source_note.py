@@ -237,3 +237,24 @@ def test_load_stores_source_text_is_byte_identical_to_origin_main():
         "in tests/test_render_options_workspace_scope.py forbids new keys; "
         "add the new store via a SEPARATE loader (load_skew_source)."
     )
+
+def test_source_note_full_suite_has_a_reachable_pr_code_owner():
+    """A named test is not executable if its exclusive owner omits that path."""
+    import fnmatch
+    import shlex
+    import yaml
+
+    manifest = REPO / ".github" / "ci" / "legacy-jobs.yml"
+    jobs = yaml.safe_load(manifest.read_text(encoding="utf-8"))["jobs"]
+    owner = jobs["options-payoff-lab-consumer"]
+    suite = "tests/test_options_skew_source_note.py"
+    assert owner["gate"] == "code"
+    assert owner["scope"] == "exclusive"
+    commands = [shlex.split(str(step.get("run", ""))) for step in owner["steps"]]
+    runs = [command for command in commands if suite in command]
+    assert len(runs) == 1
+    assert runs[0][:3] == ["python", "-m", "pytest"]
+    assert not {"-k", "-m", "--deselect", "--ignore"}.intersection(runs[0][3:])
+    assert any(fnmatch.fnmatchcase(suite, pattern) for pattern in owner["paths"]), (
+        "source-note suite is named but unreachable under its exclusive scope"
+    )

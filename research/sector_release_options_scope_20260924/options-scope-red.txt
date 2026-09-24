@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_source_note_full_suite_has_a_reachable_pr_code_owner ___________
+
+    def test_source_note_full_suite_has_a_reachable_pr_code_owner():
+        """A named test is not executable if its exclusive owner omits that path."""
+        import fnmatch
+        import shlex
+        import yaml
+
+        manifest = REPO / ".github" / "ci" / "legacy-jobs.yml"
+        jobs = yaml.safe_load(manifest.read_text(encoding="utf-8"))["jobs"]
+        owner = jobs["options-payoff-lab-consumer"]
+        suite = "tests/test_options_skew_source_note.py"
+        assert owner["gate"] == "code"
+        assert owner["scope"] == "exclusive"
+        commands = [shlex.split(str(step.get("run", ""))) for step in owner["steps"]]
+        runs = [command for command in commands if suite in command]
+        assert len(runs) == 1
+        assert runs[0][:3] == ["python", "-m", "pytest"]
+        assert not {"-k", "-m", "--deselect", "--ignore"}.intersection(runs[0][3:])
+>       assert any(fnmatch.fnmatchcase(suite, pattern) for pattern in owner["paths"]), (
+            "source-note suite is named but unreachable under its exclusive scope"
+        )
+E       AssertionError: source-note suite is named but unreachable under its exclusive scope
+E       assert False
+E        +  where False = any(<generator object test_source_note_full_suite_has_a_reachable_pr_code_owner.<locals>.<genexpr> at 0x10eea4400>)
+
+tests/test_options_skew_source_note.py:258: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_options_skew_source_note.py::test_source_note_full_suite_has_a_reachable_pr_code_owner
+1 failed in 1.86s

@@ -1,0 +1,8 @@
+{
+  "job_count": 227,
+  "only_changed_job": "options-payoff-lab-consumer",
+  "all_execution_commands_dependencies_and_timeouts_identical": true,
+  "scope_only_addition": "tests/test_options_skew_source_note.py",
+  "no_scope_removal": true,
+  "native_manifest_load_success": true
+}
