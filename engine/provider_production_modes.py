@@ -998,7 +998,11 @@ def _minimax_transport(
         # the caller handed the transport an empty value.
         return TransportOutcome(reason="unconfigured", error_class="unconfigured")
     try:
-        client = anthropic.Anthropic(api_key=credential, base_url=mode.base_url)
+        client = anthropic.Anthropic(
+            api_key=credential,
+            base_url=mode.base_url,
+            max_retries=0,
+        )
         message = client.messages.create(
             model=mode.default_model,
             max_tokens=int(max_tokens),
@@ -1248,3 +1252,137 @@ def call_mode(
         latency_ms=latency_ms,
         price_state=price_state,
     )
+
+# --------------------------------------------------------------------------- #
+# Shadow-only MiniMax PAYG qualification canary
+# --------------------------------------------------------------------------- #
+CANARY_SCHEMA = "mastermind.provider_production_canary.v1"
+CANARY_MODE_ID = "minimax_payg_api"
+CANARY_ARM_ENV = "MM_PROVIDER_CANARY_MODE"
+CANARY_EXPECTED_TEXT = "CANARY_OK"
+CANARY_MAX_TOKENS = 32
+_CANARY_SYSTEM = "You are a transport canary. Return exactly CANARY_OK."
+_CANARY_USER = "Return exactly CANARY_OK and nothing else."
+
+
+class ProductionCanaryRefusal(RuntimeError):
+    """The bounded canary is not safely armed against shadow-off source."""
+
+
+def _canary_source_candidate(path: Path) -> tuple[dict[str, Any], str]:
+    """Validate source config and build one process-local MiniMax-enabled copy."""
+    import hashlib  # noqa: PLC0415
+
+    path = Path(path)
+    load_modes(path)
+    raw_bytes = path.read_bytes()
+    raw = json.loads(raw_bytes.decode("utf-8"))
+    modes = raw.get("modes") or {}
+    if set(modes) != {"minimax_payg_api", "glm_general_api"}:
+        raise ProductionCanaryRefusal("CANARY_MODE_SET_DRIFT")
+    if any(row.get("enabled") is not False for row in modes.values()):
+        raise ProductionCanaryRefusal("CANARY_REQUIRES_ALL_PRODUCTION_MODES_SHADOW_OFF")
+    raw["modes"][CANARY_MODE_ID]["enabled"] = True
+    return raw, hashlib.sha256(raw_bytes).hexdigest()
+
+
+def run_minimax_canary(
+    *,
+    armed_mode: str | None,
+    env: Mapping[str, str] | None = None,
+    transport: Transport | None = None,
+    source_path: Path | None = None,
+) -> dict[str, Any]:
+    """Run at most one MiniMax PAYG request and return a secret-free receipt."""
+    global DEFAULT_PATH
+    import tempfile  # noqa: PLC0415
+
+    if armed_mode != CANARY_MODE_ID:
+        raise ProductionCanaryRefusal("CANARY_NOT_ARMED")
+    source = Path(source_path) if source_path is not None else Path(DEFAULT_PATH)
+    candidate, source_sha = _canary_source_candidate(source)
+    with tempfile.TemporaryDirectory(prefix="mmx-provider-canary-") as tmp:
+        canary_path = Path(tmp) / "provider_production_modes.canary.json"
+        canary_path.write_text(json.dumps(candidate, sort_keys=True), encoding="utf-8")
+        os.chmod(canary_path, 0o600)
+        original_path = DEFAULT_PATH
+        DEFAULT_PATH = canary_path
+        try:
+            receipt = call_mode(
+                CANARY_MODE_ID, _CANARY_SYSTEM, _CANARY_USER,
+                max_tokens=CANARY_MAX_TOKENS, env=env, transport=transport,
+            )
+        finally:
+            DEFAULT_PATH = original_path
+
+    response_match = (
+        isinstance(receipt.text, str)
+        and receipt.text.strip() == CANARY_EXPECTED_TEXT
+    )
+    identity_ok = (
+        receipt.mode_id == CANARY_MODE_ID
+        and receipt.provider_id == "minimax"
+        and receipt.model == MINIMAX_PINNED_MODEL
+        and receipt.cap_id == "prod_api:minimax"
+    )
+    fallback_ok = receipt.fallback == "none"
+    accepted = bool(receipt.ok and response_match and identity_ok and fallback_ok)
+    if not receipt.ok:
+        reason = "provider_refused"
+    elif not identity_ok:
+        reason = "identity_mismatch"
+    elif not fallback_ok:
+        reason = "fallback_observed"
+    elif not response_match:
+        reason = "response_mismatch"
+    else:
+        reason = "accepted"
+    return {
+        "schema": CANARY_SCHEMA,
+        "accepted": accepted,
+        "acceptance_reason": reason,
+        "mode_id": receipt.mode_id,
+        "provider_id": receipt.provider_id,
+        "model": receipt.model,
+        "cap_id": receipt.cap_id,
+        "provider_ok": bool(receipt.ok),
+        "provider_error_class": receipt.error_class,
+        "fallback": receipt.fallback,
+        "response_match": response_match,
+        "input_tokens": receipt.input_tokens,
+        "output_tokens": receipt.output_tokens,
+        "latency_ms": receipt.latency_ms,
+        "price_state": receipt.price_state,
+        "max_tokens": CANARY_MAX_TOKENS,
+        "request_count_ceiling": 1,
+        "source_config_sha256": source_sha,
+        "source_mode_enabled": False,
+        "production_activation": False,
+    }
+
+
+def _main(argv: list[str] | None = None) -> int:
+    import argparse  # noqa: PLC0415
+
+    parser = argparse.ArgumentParser(description="Bounded production-provider canary")
+    parser.add_argument("--canary", action="store_true")
+    parser.add_argument("--execute", action="store_true")
+    args = parser.parse_args(argv)
+    if not args.canary:
+        parser.error("only --canary is supported")
+    if not args.execute:
+        print(json.dumps({"schema": CANARY_SCHEMA, "accepted": False,
+                          "acceptance_reason": "execute_flag_required"}, sort_keys=True))
+        return 64
+    try:
+        result = run_minimax_canary(armed_mode=os.environ.get(CANARY_ARM_ENV))
+    except ProductionCanaryRefusal as exc:
+        print(json.dumps({"schema": CANARY_SCHEMA, "accepted": False,
+                          "acceptance_reason": str(exc)}, sort_keys=True))
+        return 65
+    print(json.dumps(result, sort_keys=True))
+    return 0 if result["accepted"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())

@@ -1146,7 +1146,7 @@ def test_minimax_default_path_uses_the_anthropic_sdk_at_the_mode_base_url(receip
     assert receipt.ok is True
     assert receipt.text == "mm answer"
     assert (receipt.input_tokens, receipt.output_tokens) == (3, 4)
-    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic"}
+    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic", "max_retries": 0}
     assert captured["create"]["model"] == "MiniMax-M3"
     assert captured["create"]["max_tokens"] == 9
     assert captured["create"]["system"] == "SYS"
@@ -1478,3 +1478,57 @@ def test_legacy_helper_still_resolves_api_key_env_from_the_environment(monkeypat
 def test_the_merge_gate_step_still_names_this_suite():
     ci = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     assert "tests/test_provider_production_modes.py" in ci
+
+def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts):
+    transport = FakeTransport({
+        "content": [{"type": "text", "text": ppm.CANARY_EXPECTED_TEXT}],
+        "usage": {"input_tokens": 3, "output_tokens": 2},
+    })
+    result = ppm.run_minimax_canary(
+        armed_mode=ppm.CANARY_MODE_ID,
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+        source_path=CONFIG_PATH,
+    )
+    assert result["accepted"] is True
+    assert result["request_count_ceiling"] == 1
+    assert result["source_mode_enabled"] is False
+    assert result["production_activation"] is False
+    assert result["fallback"] == "none"
+    assert len(transport.calls) == 1
+    assert transport.calls[0]["max_tokens"] == ppm.CANARY_MAX_TOKENS
+    assert json.loads(CONFIG_PATH.read_text(encoding="utf-8"))["modes"]["minimax_payg_api"]["enabled"] is False
+    assert SECRET_VALUE not in json.dumps(result, sort_keys=True)
+    assert "text" not in result
+
+
+def test_minimax_shadow_canary_refuses_without_arm_and_if_source_is_enabled(tmp_path):
+    transport = FakeTransport("must not run")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="CANARY_NOT_ARMED"):
+        ppm.run_minimax_canary(armed_mode=None, env={"MINIMAX_API_KEY": SECRET_VALUE}, transport=transport)
+    assert transport.calls == []
+    raw = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    raw["modes"]["minimax_payg_api"]["enabled"] = True
+    enabled = tmp_path / "enabled.json"
+    enabled.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="SHADOW_OFF"):
+        ppm.run_minimax_canary(
+            armed_mode=ppm.CANARY_MODE_ID,
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=transport,
+            source_path=enabled,
+        )
+    assert transport.calls == []
+
+
+def test_production_api_keys_use_existing_macro_api_secret_owner_only():
+    workflow = (ROOT / ".github" / "workflows" / "deploy-api-secrets.yml").read_text(encoding="utf-8")
+    marker = "push OAuth pool + ADMIN_GH_TOKEN + private owner scope to VPS admin env + restart"
+    api, admin = workflow.split(marker, 1)
+    assert "MINIMAX_KEY: ${{ secrets.MINIMAX_API_KEY }}" in api
+    assert "ZAI_KEY: ${{ secrets.ZAI_API_KEY }}" in api
+    assert '_add MINIMAX_API_KEY "$MINIMAX_KEY"' in api
+    assert '_add ZAI_API_KEY "$ZAI_KEY"' in api
+    assert 'grep -vE "^(MINIMAX_API_KEY|ZAI_API_KEY)="' in api
+    assert "MINIMAX_API_KEY" not in admin
+    assert "ZAI_API_KEY" not in admin
