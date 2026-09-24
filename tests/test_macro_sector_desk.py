@@ -1,4 +1,4 @@
-"""The Macro card separates descriptive desk leadership from entry suitability."""
+"""The Macro card separates descriptive desk leadership from recommendation context."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -179,10 +179,9 @@ def test_macro_renders_exact_desk_with_source_date_and_real_destination():
     assert "Up 25 places over 5 sessions" in card.get_text()
     assert "Current rating: Hold" in card.get_text()
     assert card["data-desk-rating"] == "hold"
-    assert card["data-entry-actionable"] == "false"
+    assert not card.has_attr("data-entry-actionable")
     assert card.select_one("time")["datetime"] == "2026-09-18"
     assert "Running hot right now" not in card.get_text()
-    assert "Hottest desk" not in card.get_text()
     assert "Opportunity watch" not in card.get_text()
     assert "wrong" not in card.get_text().lower()
 
@@ -237,6 +236,7 @@ def test_recommendation_state_is_secondary_metadata_not_leadership_filter(reco, 
         assert out["positive_rating_leader"]["id"] == "leader"
     else:
         assert out["positive_rating_leader"] is None
+    assert "entry_actionable" not in out["leader"]
 
 
 @pytest.mark.parametrize("history", [None, {}, {"basis": "archive_rows"},
@@ -244,7 +244,7 @@ def test_recommendation_state_is_secondary_metadata_not_leadership_filter(reco, 
      "comparison_as_of": {"5d": "2026-09-09"}},
     {"basis": "nyse_sessions", "expected_comparison_as_of": {"5d": "2026-09-11"},
      "comparison_as_of": {"5d": None}}])
-def test_old_or_unproven_comparison_clock_cannot_advertise_an_opportunity(history):
+def test_old_or_unproven_comparison_clock_cannot_advertise_a_leader(history):
     from lib.sector_desk_view import opportunity_desk
     out = opportunity_desk(_pulse()["themes"], "2026-09-18", history=history, now=NOW)
     assert out["leader"] is None
