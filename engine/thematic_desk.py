@@ -40,6 +40,7 @@ import pandas as pd
 from engine import ai_desk as _ad           # reuse _check_by / _extract_json / _cfg
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends
 from engine import master_brain as _mb      # the LLM client (_call_model)
+from engine import thematic_event_context as _event_context
 from lib import config, store
 
 log = logging.getLogger(__name__)
@@ -133,13 +134,15 @@ def _event_meta(state: dict) -> dict:
                 continue
             known_items.add(item_id)
             bound = {"event_key": event_key}
-            for key in ("source", "body_sha256", "source_date_value", "publisher_stated_at",
-                        "context_available_at", "timestamp_quality"):
+            for key in ("source", "source_url", "url", "body_sha256", "source_date_value",
+                        "publisher_stated_at", "context_available_at", "timestamp_quality",
+                        "evidence_level", "ticker", "cik", "accession", "form", "items"):
                 value = _text(report.get(key))
                 if value is not None:
                     bound[key] = value
             reports_by_item[item_id] = bound
     return {
+        "status": _text(ctx.get("status")),
         "knowledge_cutoff": knowledge_cutoff,
         "source_snapshot_ref": source_snapshot_ref,
         "coverage": dict(coverage) if coverage is not None else None,
@@ -191,8 +194,9 @@ def _normalize_evidence_refs(value, event_meta: dict) -> tuple[list[dict], int, 
             bound = reports_by_item[item_id]
             if not event_key and bound.get("event_key"):
                 out["event_key"] = bound["event_key"]
-            for key in ("source", "body_sha256", "source_date_value", "publisher_stated_at",
-                        "context_available_at", "timestamp_quality"):
+            for key in ("source", "source_url", "url", "body_sha256", "source_date_value",
+                        "publisher_stated_at", "context_available_at", "timestamp_quality",
+                        "evidence_level", "ticker", "cik", "accession", "form", "items"):
                 if bound.get(key) is not None:
                     out[key] = bound[key]
         kept.append(out)
@@ -300,9 +304,15 @@ def gather_thematic_state(region: str, root=None) -> dict | None:
     tr = None
     if isinstance(track, dict):
         tr = (track.get("by_market") or {}).get(region) or track.get("overall")
+    event_context = None
+    if region == "us":
+        event_context = _event_context.build_sec_event_context(
+            root=root,
+            theme_ids=[str(r.get("id")) for r in nr.get("ranks", []) if r.get("id")],
+        )
     return {"as_of": nr.get("as_of"), "region": region, "market": nr.get("market"),
             "narrative_rotation": nr, "track_record": tr, "macro_narrative": _macro_narrative(root),
-            "theme_candidates": _theme_candidates(region, root)}
+            "theme_candidates": _theme_candidates(region, root), "event_context": event_context}
 
 
 def _theme_candidates(region: str, root) -> dict | None:
@@ -394,10 +404,7 @@ def _build_thesis(t: dict, i: int, asof, region: str, ranks: list, cfg: dict,
     counterevidence, counter_omitted = _bounded_texts(t.get("counterevidence"))
     refs, refs_rejected, refs_omitted = _normalize_evidence_refs(t.get("evidence_refs"), meta)
     event_ref_attempted = bool(t.get("evidence_refs"))
-    has_event_context = bool(
-        meta.get("knowledge_cutoff") or meta.get("source_snapshot_ref") or meta.get("coverage")
-        or meta.get("_known_item_ids") or meta.get("_known_event_keys")
-    )
+    has_event_context = bool(meta.get("_known_item_ids") or meta.get("_known_event_keys"))
     # A hallucinated ref on a legacy detector-only run must not silently change the incumbent
     # grading contract. Once caller-owned event context exists, however, the whole synthesis
     # may have reasoned over later-known evidence even when the model omits refs. Fail closed:
