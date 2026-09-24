@@ -906,3 +906,38 @@ def test_rd2_incomplete_family_does_not_erase_other_family(tmp_path):
     out = _rd2_read(tmp_path)
     assert out['families']['zq']['horizons']['m12']['status'] == 'available'
     assert out['families']['sofr']['status'] == 'unavailable'
+
+
+def test_rd2_incomplete_latest_preserves_separately_dated_completed_context(tmp_path, monkeypatch):
+    from engine.rate_futures_repricing import build_policy_repricing
+    path, evidence = _rd2_frames()
+    extra_path, extra_evidence = path.iloc[-1:].copy(), evidence.iloc[-1:].copy()
+    extra_path.index = extra_evidence.index = pd.DatetimeIndex(['2026-10-02'])
+    pair = pd.concat([path, extra_path]), pd.concat([evidence, extra_evidence])
+    pair = _rd2_reseal(pair, lambda p: p.update(
+        observation_date='2026-10-02', prior_calendar_day_at_capture=False))
+    _rd2_store(tmp_path, pair)
+    calls, original = [], pd.read_parquet
+    def read_once(file, *args, **kwargs):
+        calls.append(str(file))
+        return original(file, *args, **kwargs)
+    monkeypatch.setattr(pd, 'read_parquet', read_once)
+    out = build_policy_repricing(tmp_path, asof='2026-10-02',
+                                evaluated_at='2026-10-02T10:00:00Z')['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out['reason'] == 'capture_may_include_incomplete_bar'
+    context = out['last_completed_observation_context']
+    assert context['context_only'] is True
+    assert context['observation_dates'] == ['2026-09-30', '2026-10-01']
+    assert context['horizons']['m12']['roll_change_bp'] == pytest.approx(10)
+    assert context['historical_availability_qualified'] is False
+    assert len(calls) == len(set(calls)) == 2
+
+
+def test_rd2_corrupt_latest_never_launders_prior_context(tmp_path):
+    path, evidence = _rd2_frames()
+    evidence.loc[evidence.index[-1], 'snapshot_json'] = '{}'
+    _rd2_store(tmp_path, (path, evidence))
+    out = _rd2_read(tmp_path)['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out.get('last_completed_observation_context') is None

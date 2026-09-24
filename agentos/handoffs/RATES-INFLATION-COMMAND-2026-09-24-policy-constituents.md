@@ -24,7 +24,7 @@ changed:
 verified:
   - claim: Targeted regression suite passes after discriminating RED cases.
     command: python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short
-    result: 137 passed, 301 warnings; synthetic/no-network source and consumer proof.
+    result: 139 passed, 301 warnings; synthetic/no-network source and consumer proof, including explicit prior-date context.
   - claim: Existing numeric curve values and legacy reader remain compatible.
     command: test_rd2_native_collector_and_store_roundtrip in tests/test_rates_command.py
     result: Original m1/m3/m6/m12 columns equal exactly; native validate/upsert/read and attribution pass.

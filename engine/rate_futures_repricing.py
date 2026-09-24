@@ -205,17 +205,10 @@ def _horizon_change(previous, current, horizon):
                 causal_policy_shock=False)
 
 
-def _read_family(data_dir, key, root, asof, evaluated_at):
+def _from_frames(path, evidence, root, asof, evaluated_at):
     out = {'status': 'unavailable', 'reason': None, 'rate_family': FAMILIES[root][0],
            'horizons': {}, 'historical_availability_qualified': False, **AUTHORITY}
     try:
-        folder = Path(data_dir) / 'rate_futures'
-        path_file = folder / f'{key}_path.parquet'
-        companion_file = folder / f'{key}_constituents.parquet'
-        if not path_file.is_file() or not companion_file.is_file():
-            return dict(out, reason='missing_source')
-        path = _daily_frame(pd.read_parquet(path_file))
-        evidence = _daily_frame(pd.read_parquet(companion_file))
         cut = pd.Timestamp(asof)
         if pd.isna(cut) or cut.tz is not None or cut != cut.normalize():
             return dict(out, reason='invalid_daily_cut')
@@ -266,6 +259,33 @@ def _read_family(data_dir, key, root, asof, evaluated_at):
     except (ValueError, KeyError, TypeError, AttributeError, OverflowError, OSError) as exc:
         reason = str(exc) if type(exc) is ValueError else 'invalid_source'
         return dict(out, reason=reason[:120])
+
+
+def _read_family(data_dir, key, root, asof, evaluated_at):
+    unavailable = {'status': 'unavailable', 'rate_family': FAMILIES[root][0],
+        'horizons': {}, 'historical_availability_qualified': False, **AUTHORITY}
+    try:
+        folder = Path(data_dir) / 'rate_futures'
+        path_file, companion = folder / f'{key}_path.parquet', folder / f'{key}_constituents.parquet'
+        if not path_file.is_file() or not companion.is_file():
+            return dict(unavailable, reason='missing_source')
+        path = _daily_frame(pd.read_parquet(path_file))
+        evidence = _daily_frame(pd.read_parquet(companion))
+        current = _from_frames(path, evidence, root, asof, evaluated_at)
+        if current.get('reason') == 'capture_may_include_incomplete_bar':
+            # Explicit dated context only, from the SAME read. Never promote it
+            # to the current result or conceal a corrupt/future/stale latest row.
+            selected = path.loc[:pd.Timestamp(asof)]
+            completed_cut = selected.index[-1] - pd.Timedelta(days=1)
+            context = _from_frames(path, evidence, root, completed_cut, evaluated_at)
+            if context['status'] in ('available', 'partial'):
+                current['last_completed_observation_context'] = dict(context,
+                    context_only=True, source_cut=str(completed_cut.date()),
+                    current_observation_qualified=False)
+        return current
+    except (ValueError, KeyError, TypeError, AttributeError, OverflowError, OSError) as exc:
+        reason = str(exc) if type(exc) is ValueError else 'invalid_source'
+        return dict(unavailable, reason=reason[:120])
 
 
 def build_policy_repricing(data_dir, *, asof=None, evaluated_at=None):

@@ -50,3 +50,42 @@ or treat Yahoo daily Close as authenticated exchange settlement.
 
 Held #7521/#7593 remain unchanged and unaccepted. The new RIC field is additive,
 outside their policy normalization and all existing scoring/stance calculations.
+
+## Executed qualification and latest-date behavior
+
+The selected rates/RIC/yield suites now pass 139 tests (301 warnings). New tests
+proved and repaired two concrete source defects: stale inputs cannot become fresh
+through an older board date, and flat batch responses without contract identity
+cannot be copied into many apparently distinct futures instruments.
+
+The exact held #7521 fed_path/RIC source at
+8da98209ad4a34450745780666c48b6999f2bfb2 was privately composed with the additive
+RIC field. Qualified policy evidence exercised its normalizer; ALL legacy RIC
+fields stayed exactly equal. This is same-author synthetic compatibility proof,
+not a non-author review, permission to merge, or mutation of that held carrier.
+
+A native fetch at 2026-09-24T09:54Z returned 65 ZQ dated rows and one SR3 dated row.
+The Yahoo client was installed only in this operation's isolated evidence venv,
+as already declared by requirements.txt (yfinance>=0.2.50); no shared interpreter
+or production source was changed. Exact observed versions: Python 3.14.7,
+yfinance 1.7.0, pandas 3.0.5. The earlier system-Python attempt failed at import,
+before a market-data request, and its receipt is preserved separately.
+
+Current-day ZQ attribution correctly refused the incomplete daily bar. SR3
+refused insufficient endpoints. That is NOT a successful current market call.
+The producer, native validate/upsert path and real RIC consumer ran only against
+an isolated evidence store; natural deployed production is still unproven.
+
+The reader now preserves a separately labelled last_completed_observation_context
+only when current refusal is the explicit incomplete-bar condition. It uses the
+same two captured tables without rereading them, keeps current status unavailable,
+and exposes the older observation dates plus false historical/trading authority.
+Corrupt, stale or future-source failures do NOT silently fall back to older data.
+Completion here means the observation date preceded the capture's New York
+calendar date; exchange settlement remains unverified. This gives useful dated
+context without presenting yesterday's observation as a fresh current quote.
+
+Evidence root: /Volumes/Mastermind/evidence/rates-policy-constituents-20260924-sol-002/.
+Initial native receipt: native-564f86e8/receipt.json (missing dependency, no fetch).
+Native source receipt: native-564f86e8-env1/receipt.json (isolated real-input path).
+Compatibility: held_7521_composition.json; scripts and environment freeze retained.
