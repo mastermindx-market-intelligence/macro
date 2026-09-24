@@ -47,6 +47,15 @@ TSM_FS_ACCESSION = "0001046179-26-000541"            # Q2-2026 consolidated fina
 TSM_JUNE_REVENUE_ACCESSION = "0001046179-26-000447"  # June-2026 monthly revenue 6-K (quarter-end reportDate)
 TSM_MONTHEND_ACCESSION = "0001046179-26-000459"      # month-end 6-K (quarter-end reportDate)
 
+# real results 6-Ks filed BEFORE the TSMC identity's attested listing (valid_from 2026-04-16)
+TSM_PRE_IDENTITY_ACCESSIONS = ("0001046179-26-000008", "0001046179-25-000035")
+TSM_PRE_IDENTITY_ROWS = [
+    {"form": "6-K", "accessionNumber": "0001046179-26-000008", "filingDate": "2026-01-15", "reportDate": "2025-12-31",
+     "acceptanceDateTime": "2026-01-15T11:58:24.000Z", "primaryDocument": "tsm-20260115x6k.htm", "items": ""},  # Q4-2025 results
+    {"form": "6-K", "accessionNumber": "0001046179-25-000035", "filingDate": "2025-04-17", "reportDate": "2025-03-31",
+     "acceptanceDateTime": "2025-04-17T11:00:49.000Z", "primaryDocument": "tsm-20250417x6k.htm", "items": ""},  # Q1-2025 results
+]
+
 TSM_ROWS = [  # every 6-K TSMC filed 2026-07-01 .. 2026-08-31, newest first, as data.sec.gov lists them
     {"form": "6-K", "accessionNumber": "0001046179-26-000545", "filingDate": "2026-08-25", "reportDate": "2026-07-31",
      "acceptanceDateTime": "2026-08-25T10:17:27.000Z", "primaryDocument": "tsm-monthend6kx20260825.htm", "items": ""},
@@ -93,6 +102,13 @@ ON_ROWS = [  # every 8-K onsemi filed 2026-05-01 .. 2026-05-31, newest first
     {"form": "8-K", "accessionNumber": ON_RESULTS_ACCESSION, "filingDate": "2026-05-04", "reportDate": "2026-05-04",
      "acceptanceDateTime": "2026-05-04T20:10:34.000Z", "primaryDocument": "ef20072220_8k.htm", "items": "2.02,9.01"},
 ]
+
+# real Item 2.02 8-K filed BEFORE the onsemi identity's attested listing (valid_from 2026-05-04)
+ON_PRE_IDENTITY_ACCESSION = "0001140361-26-004405"
+ON_PRE_IDENTITY_ROW = {
+    "form": "8-K", "accessionNumber": ON_PRE_IDENTITY_ACCESSION, "filingDate": "2026-02-09", "reportDate": "2026-02-09",
+    "acceptanceDateTime": "2026-02-09T21:21:26.000Z", "primaryDocument": "ef20065070_8k.htm", "items": "2.02,9.01",
+}
 
 ON_MANIFESTS = {
     ON_RESULTS_ACCESSION: [("8-K", "ef20072220_8k.htm", "8-K"), ("EX-99.1", "ef20072220_ex99-1.htm", "EXHIBIT 99.1")],
@@ -243,3 +259,35 @@ def test_on_bare_ex99_manifest_of_the_real_q2_results_eight_k_is_admitted() -> N
     assert [e["type"] for e in entries] == ["8-K", "EX-99"]
     selected = refresh_mod._select_exhibit_99_1(refresh_mod._parse_sgml_manifest(_index_headers(ON_Q2_BARE_EX99_MANIFEST)))
     assert selected is not None and "ef20079200_ex99-1.htm" in str(selected)
+
+
+# ── filings before the attested identity ──
+
+def test_tsm_results_filed_before_the_attested_listing_are_skipped_never_built(monkeypatch, capsys) -> None:
+    """First-ever discovery scans the prior fiscal year too; the live-EDGAR proof run
+    reached TSMC's real Q1-2025 results 6-K and the workspace builder raised
+    ``maps to no issuer at 2025-04-17``. Such rows are skipped on the raw row,
+    before any per-accession fetch, and the 2026 results are still admitted."""
+    revisions, fetched = _discover(
+        monkeypatch, ticker="TSM", cik=TSM_CIK, rows=TSM_ROWS + TSM_PRE_IDENTITY_ROWS, manifests=TSM_MANIFESTS,
+        bodies={TSM_RESULTS_ACCESSION: TSM_SYNTHETIC_EXHIBIT},
+    )
+    assert [payload["sources"][0]["filing_key"]["accession"] for _eid, payload in revisions] == [TSM_RESULTS_ACCESSION]
+    out = capsys.readouterr().out
+    for acc in TSM_PRE_IDENTITY_ACCESSIONS:
+        assert f"accession {acc} filed" in out and "precedes the issuer identity's attested listing" in out
+        assert acc not in json.dumps([p for _e, p in revisions])
+    assert _resolved_accessions(fetched) == {
+        TSM_RESULTS_ACCESSION, TSM_JUNE_REVENUE_ACCESSION, TSM_MONTHEND_ACCESSION, TSM_FS_ACCESSION,
+    }
+
+
+def test_on_item_202_eight_k_filed_before_the_attested_listing_is_skipped_never_built(monkeypatch, capsys) -> None:
+    revisions, fetched = _discover(
+        monkeypatch, ticker="ON", cik=ON_CIK, rows=ON_ROWS + [ON_PRE_IDENTITY_ROW], manifests=ON_MANIFESTS,
+        bodies={ON_RESULTS_ACCESSION: ON_SYNTHETIC_EXHIBIT},
+    )
+    assert [payload["sources"][0]["filing_key"]["accession"] for _eid, payload in revisions] == [ON_RESULTS_ACCESSION]
+    out = capsys.readouterr().out
+    assert f"accession {ON_PRE_IDENTITY_ACCESSION} filed 2026-02-09 precedes the issuer identity's attested listing" in out
+    assert _resolved_accessions(fetched) == {ON_RESULTS_ACCESSION}

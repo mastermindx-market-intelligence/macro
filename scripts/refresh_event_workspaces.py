@@ -1265,6 +1265,24 @@ def discover_new_homebuilder_revisions(
             # deploy). Not a "skip" either -- outside the bound by law.
             continue
 
+        # Semiconductor B (T05a∘T05b live-EDGAR proof, 2026-09-24): a filing
+        # dated before the issuer's attested listing (``ListingAlias.valid_from``)
+        # belongs to history the current identity does not claim (Data OS law:
+        # current identity is not historical lineage). build_event_workspace
+        # would raise ``maps to no issuer at <asof>`` for it and kill the whole
+        # refresh — TSMC's first-ever discovery reached its Q1-2025 results 6-K
+        # this way. Skip it here, on the raw row, before any per-accession
+        # fetch. A listing without valid_from covers every date, so the
+        # homebuilders' path is byte-identical.
+        row_filing_date = str(row.get("filingDate") or "")
+        if row_filing_date and not issuer.listings_at(date.fromisoformat(row_filing_date)):
+            print(
+                "::warning title=event-workspaces-discovery-skip::"
+                f"{ticker}: accession {row_accession} filed {row_filing_date} precedes the "
+                f"issuer identity's attested listing; skipped rather than minting a guessed identity",
+                flush=True,
+            )
+            continue
         event_id = canonical_event_id(issuer.company_id, fiscal_period)
 
         if event_id not in timelines:
