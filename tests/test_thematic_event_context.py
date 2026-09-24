@@ -203,3 +203,64 @@ def test_loader_binds_real_file_bytes_and_never_hides_source_absence(tmp_path):
     assert missing["status"] == "unavailable"
     assert missing["reason"] == "source_files_unavailable"
     assert missing["events"] == []
+
+
+def test_us_gather_wires_existing_event_adapter_without_changing_rank_state(monkeypatch, tmp_path):
+    from engine import thematic_desk as td
+
+    site = tmp_path / "site" / "allocationdata"
+    site.mkdir(parents=True)
+    (site / "allocation.json").write_text(json.dumps({
+        "as_of": "2026-09-23",
+        "market_en": "US",
+        "ranks": [
+            {"name": "CPU Compute", "id": "cpu_compute", "rank": 1,
+             "durability": {}, "crowding": {}, "etf_proxy": None},
+            {"name": "Memory", "id": "memory_storage", "rank": 2,
+             "durability": {}, "crowding": {}, "etf_proxy": "SMH"},
+        ],
+        "ai_handoff": {},
+    }))
+    seen = {}
+    expected = {
+        "schema": tec.SCHEMA,
+        "status": "ready",
+        "knowledge_cutoff": "2026-09-24T01:00:00Z",
+        "events": [],
+        "coverage": {"eligible_events": 0},
+    }
+
+    def fake(**kwargs):
+        seen.update(kwargs)
+        return expected
+
+    monkeypatch.setattr(td._event_context, "build_sec_event_context", fake)
+    state = td.gather_thematic_state("us", root=tmp_path)
+
+    assert state["event_context"] is expected
+    assert seen["root"] == tmp_path
+    assert seen["theme_ids"] == ["cpu_compute", "memory_storage"]
+    assert [r["id"] for r in state["narrative_rotation"]["ranks"]] == [
+        "cpu_compute", "memory_storage",
+    ]
+
+
+def test_non_us_gather_does_not_invent_us_sec_context(monkeypatch, tmp_path):
+    from engine import thematic_desk as td
+
+    site = tmp_path / "site" / "allocationdata"
+    site.mkdir(parents=True)
+    (site / "allocation_china.json").write_text(json.dumps({
+        "as_of": "2026-09-23",
+        "market_en": "China",
+        "ranks": [{"name": "Semiconductors", "id": "cn_semis", "rank": 1,
+                   "durability": {}, "crowding": {}, "etf_proxy": None}],
+        "ai_handoff": {},
+    }))
+
+    def forbidden(**kwargs):
+        raise AssertionError("US SEC adapter must not run for non-US desks")
+
+    monkeypatch.setattr(td._event_context, "build_sec_event_context", forbidden)
+    state = td.gather_thematic_state("china", root=tmp_path)
+    assert state["event_context"] is None
