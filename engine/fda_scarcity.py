@@ -127,8 +127,12 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows, cap
     english_parts = [english.format(**counts)]
     chinese_parts = [chinese.format(**counts)]
     if status == _UNAVAILABLE:
-        english_parts[0] = f"FDA source unavailable — last qualified {generation}, refresh failed"
-        chinese_parts[0] = f"FDA来源不可用——上次合格为{generation}，刷新失败"
+        if generation:
+            english_parts[0] = f"FDA source unavailable — last qualified {generation}, refresh failed"
+            chinese_parts[0] = f"FDA来源不可用——上次合格为{generation}，刷新失败"
+        else:
+            english_parts[0] = "FDA source unavailable — no qualified generation on file, refresh failed"
+            chinese_parts[0] = "FDA来源不可用——无合格来源生成日期，刷新失败"
     elif generation:
         english_parts.append(f"source generation {generation}")
         chinese_parts.append(f"来源生成日期{generation}")
