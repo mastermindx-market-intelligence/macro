@@ -226,3 +226,42 @@ Next:resolve the original normalization/browser gate, then execute the exact obs
 rebuilt source. Respect separate NBS/weight holds and P2 review/authority custody. Keep CI
 and release deferred. Intended resume: fresh conversation reading this single checkpoint,
 minimum fresh protected law and same-carrier state. A fresh chat does not clear refusals.
+
+## Active independent continuation — risk-publication boundary
+Protected Mastermind pin0497e28864752e3ab70fa5aa2f1567bc3c9c6aca, compatible1.0.1/bootstrap1;
+required companions fetched at that pin and match the previously consumed a7d2 sources.
+Same PR7622/branch/Studio device and worktree; pickup f6f55658bace7cc0e340319b4c4444e945bc8e04.
+New bounded source finding: build_china.main still invokes risk_radar_scorecard.write
+unconditionally, checks only CHINA_FAST_RENDER before market_state.persist, and
+allows an inherited nightly flag to activate snapshot_and_grade/tune during no-drip
+rendering. The earlier eight-file preservation proof did not cover these effects.
+Scope: fail closed on these three risk-publication blocks in either existing page-only
+mode; preserve the normal analytical/nightly path and read-only scorecard projection.
+No new publisher, ledger, data collector, calendar, weight refresh, browser or CI action.
+Direct rationale: LOWER_TOTAL_OVERHEAD for three local guards with exact unit tests
+and a real-main in-memory effects probe; no delegated worker or overlapping effect.
+Desktop Commander preflight reports a new backend PID77120 and allowed worktree paths,
+but does not certify recovery of the earlier platform safety denials. Do not retry them.
+Next: RED tests against the exact blocks, minimal guard repair, owning regressions and
+real-main proof with all filesystem/network effects intercepted. Parent mission incomplete.
+
+## Current verified return — research and integration review only
+Procedure:0497e28864752e3ab70fa5aa2f1567bc3c9c6aca; original source/PR7622 remains unchanged.
+New receipts: research/grey_deer/CHINA_RENDER_RISK_WRITE_QUALIFICATION_20260924.json
+and research/grey_deer/CHINA_P0_P4_INTEGRATION_REVIEW_20260924.json.
+Executable probe:research/grey_deer/probe_china_render_effects.py.
+Pending tests:research/grey_deer/china_render_risk_writes_pending_tests.py;
+54 cases,21 failures,33 controls pass. Registered test file restored to exact pickup bytes.
+Three real-main scenarios reached the actual page template with risk effects intercepted;
+all13 protected path states stayed unchanged. No published page, collection or model change.
+P0 integration repair request persisted on original PR7875 comment5809052741.
+P4 evidence consumed only for its display-authority limit, not numerical-study acceptance.
+Source guard edit was safety-status refused and verified unapplied. A separate research
+Markdown write was refused and its target is absent. Neither action was retried.
+Earlier NBS/weight/browser refusals,48 prior pending cases and24+4 excluded artifacts persist.
+No active process/server/worker, unresolved source effect, CI change or custody transfer.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION; MISSION_COMPLETE:false.
+Boundary:complete source-effect diagnosis and cross-commission review after two explicit
+write gates; existing machine receipts and tests preserve the result, not a claimed repair.
+Next:consume the original P0 correction against P4; risk-write guards and prior source/browser
+work require their own permitted recovery. Resume from these receipts and same-carrier state.

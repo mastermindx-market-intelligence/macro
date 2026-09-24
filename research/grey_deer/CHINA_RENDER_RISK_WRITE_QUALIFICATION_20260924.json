@@ -1,0 +1,116 @@
+{
+  "scope": "actual main with intercepted effect sinks; no source repair",
+  "head": "f6f55658bace7cc0e340319b4c4444e945bc8e04",
+  "source_sha256": "b2c1f50e2b4f15c5ec3aa8b0776f53acc4161cba2b30a1e823a409a0c56df8bb",
+  "cases": [
+    {
+      "render_flag": "RENDER_NO_DRIP",
+      "collect_lane": "unset",
+      "builder_exit": 0,
+      "risk_effect_calls_intercepted": [
+        "scorecard_write",
+        "state_write"
+      ],
+      "generated_pages_intercepted": 22,
+      "other_output_calls_intercepted": 21,
+      "network_calls": 0,
+      "protected_sha256": {
+        "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+        "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+        "data/china_market_state/latest.json": "f06dcf492700c5f64027056b33033fb563a403583ecf4d204d04123bc787417d",
+        "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+        "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+        "data/risk_radar_intl/cn_calibration.json": null,
+        "data/risk_radar/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "site/riskdata/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "data/risk_radar/recovery_log.jsonl": "335c377b16e8ac9532650c706f839988f2bd4ce8f7fcd85121e94f0986a4852d",
+        "data/neuralweb/governance.jsonl": "6fc841aa32c2d558114a9241935c6121be1e726fb48fe1d2b7e99d94b83c6f31",
+        "data/china_regime/china_alloc_latest.json": "9ede3d364e997f06365947a7c9331ca329b16370684c9642ccbfb60a7e62c3b9",
+        "data/china_stocks/latest.json": "cc5f0016d999d8075783127b1f0d5bde4791277e04b0f4423548abfae163a1ea",
+        "site/china.html": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d"
+      },
+      "html_sha256": "5e16f69ddf67494f6b8d067811b731ed117c5e0aa3389f68e6bf898deb73b2f7",
+      "complete_main_to_template": true,
+      "risk_publication_is_read_only": false
+    },
+    {
+      "render_flag": "RENDER_NO_DRIP",
+      "collect_lane": "nightly",
+      "builder_exit": 0,
+      "risk_effect_calls_intercepted": [
+        "grade",
+        "tune",
+        "scorecard_write",
+        "state_write"
+      ],
+      "generated_pages_intercepted": 21,
+      "other_output_calls_intercepted": 21,
+      "network_calls": 0,
+      "protected_sha256": {
+        "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+        "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+        "data/china_market_state/latest.json": "f06dcf492700c5f64027056b33033fb563a403583ecf4d204d04123bc787417d",
+        "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+        "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+        "data/risk_radar_intl/cn_calibration.json": null,
+        "data/risk_radar/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "site/riskdata/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "data/risk_radar/recovery_log.jsonl": "335c377b16e8ac9532650c706f839988f2bd4ce8f7fcd85121e94f0986a4852d",
+        "data/neuralweb/governance.jsonl": "6fc841aa32c2d558114a9241935c6121be1e726fb48fe1d2b7e99d94b83c6f31",
+        "data/china_regime/china_alloc_latest.json": "9ede3d364e997f06365947a7c9331ca329b16370684c9642ccbfb60a7e62c3b9",
+        "data/china_stocks/latest.json": "cc5f0016d999d8075783127b1f0d5bde4791277e04b0f4423548abfae163a1ea",
+        "site/china.html": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d"
+      },
+      "html_sha256": "bbce0aa08fe592973e9afd4871a8f8547e1cb0c0044e5c091be4754d2ddbbedb",
+      "complete_main_to_template": true,
+      "risk_publication_is_read_only": false
+    },
+    {
+      "render_flag": "CHINA_FAST_RENDER",
+      "collect_lane": "nightly",
+      "builder_exit": 0,
+      "risk_effect_calls_intercepted": [
+        "grade",
+        "tune",
+        "scorecard_write"
+      ],
+      "generated_pages_intercepted": 21,
+      "other_output_calls_intercepted": 21,
+      "network_calls": 0,
+      "protected_sha256": {
+        "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+        "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+        "data/china_market_state/latest.json": "f06dcf492700c5f64027056b33033fb563a403583ecf4d204d04123bc787417d",
+        "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+        "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+        "data/risk_radar_intl/cn_calibration.json": null,
+        "data/risk_radar/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "site/riskdata/scorecard.json": "fbb2ea993ee62b4ee861441535c80472fbd0d8e44bf9e0ed9d3583d751086ffb",
+        "data/risk_radar/recovery_log.jsonl": "335c377b16e8ac9532650c706f839988f2bd4ce8f7fcd85121e94f0986a4852d",
+        "data/neuralweb/governance.jsonl": "6fc841aa32c2d558114a9241935c6121be1e726fb48fe1d2b7e99d94b83c6f31",
+        "data/china_regime/china_alloc_latest.json": "9ede3d364e997f06365947a7c9331ca329b16370684c9642ccbfb60a7e62c3b9",
+        "data/china_stocks/latest.json": "cc5f0016d999d8075783127b1f0d5bde4791277e04b0f4423548abfae163a1ea",
+        "site/china.html": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d"
+      },
+      "html_sha256": "d69f39b990306b7b8b9243492478b1aa0c8906c9cc6de4867a55581b7e5647b1",
+      "complete_main_to_template": true,
+      "risk_publication_is_read_only": false
+    }
+  ],
+  "production": false,
+  "fresh_collection": false,
+  "browser_proof": false,
+  "risk_source_modified": false,
+  "all_risk_writes_intercepted": true,
+  "procedure": "0497e28864752e3ab70fa5aa2f1567bc3c9c6aca",
+  "acceptance_tests": {
+    "cases": 54,
+    "failed": 21,
+    "passed_controls": 33,
+    "fixed": false
+  },
+  "source_edit": "safety-status refusal; same-carrier source readback unchanged; no retry",
+  "pending_tests_sha256": "04b4b4aa6970dbcf35871afb22b36b78715b79a37e1ad337b57ccf871de82483",
+  "test_log_sha256": "8980f9caf98e456cafea8d7a0d250478521d8dbccdf73d9f8f42e7d479b783d5",
+  "probe_sha256": "2cc4471837d968c90c384adae76f20525b5cec835bc1e86118441b4cfa401cc5"
+}

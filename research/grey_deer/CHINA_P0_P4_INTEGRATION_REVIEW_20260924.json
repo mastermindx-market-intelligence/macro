@@ -1,0 +1,15 @@
+{
+  "p0_head": "cd0bcb0f257fc92e7f42b1fb8c90c7307475d0b6",
+  "p0_template_blob": "caa48d336c687516db046a7258622799ae19a826",
+  "template_sha256": "794104d665f50a313aebed81ee88051706821f397ef355815816b3ed51bba783",
+  "p4_head": "67c528c346221e451506387d03a1c97b6043376d",
+  "fixture": "synthetic CN gross .62, binding false; exact P0 macro rendered in memory",
+  "visible_sizing_text": "×0.62 advisory risk-budget reference 提示性风险预算参考",
+  "tooltip_en": "Advisory risk-budget context only, ×0.62 of normal gross. This is sizing context and never selects stocks.",
+  "tooltip_zh": "仅作提示的风险预算背景：常规总敞口的 ×0.62。这只是仓位背景，不用于选股。",
+  "finding": "P0 consumer retains risk-budget reference despite P4 DISPLAY_CONTEXT_ONLY/insufficient independent episodes",
+  "p4_numerical_study_replayed": false,
+  "source_imported": false,
+  "source_changed": false,
+  "production": false
+}
