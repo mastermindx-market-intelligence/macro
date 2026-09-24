@@ -53,8 +53,10 @@ def test_every_fixture_is_synthetic_and_all_authority_flags_are_false(name):
     assert case.query.expected_generation == case.account_generation
     assert set(case.expected) == {"signed_native_blocks", "reported_only_economics"}
     assert case.bundle.native_refs[0]["url"].startswith("https://example.invalid/")
-    assert "0000831259" not in fixture["issuer"].get("cik", "")
-    assert "0001801368" not in fixture["issuer"].get("cik", "")
+    issuer = fixture.get("issuer") or {}
+    assert issuer.get("fictional", True) is True
+    assert "0000831259" not in issuer.get("cik", "")
+    assert "0001801368" not in issuer.get("cik", "")
 
 
 def test_loader_refuses_a_fixture_that_is_not_synthetic(tmp_path, monkeypatch):
