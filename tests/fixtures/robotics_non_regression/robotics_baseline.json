@@ -305,7 +305,7 @@
     "evidence_parquet": "28f7795eb665822d740ffd0831dd50e299042ccbadec2ffe7e7e105b181a4150",
     "prophet_presence": "1bb09a9117090a69e007c142986301d520ce58cc105f223ca079512dcdab483b",
     "public_pages": "9323f803ced57785108eaa34f1f4ff17dceeed32db60ee9fc14e4c01545df012",
-    "theme_state": "aa8e26862f8381346d71f4e37d22e08ad3ea9333f5fc236973d61302ee5713e2",
+    "theme_state": "d1539cf8cdc677c3a0f5173fb1c629d0a49954f3556c5d1238b252f3de61f259",
     "theme_tracker": "4f321a0e872ef2234046bbca9f40d71a4b7fc32930ab585cd5395d1dc0943a81"
   },
   "theme_state": {
@@ -320,6 +320,14 @@
         "stage": "WATCH",
         "tier": "P"
       },
+      "foresight_keys": [
+        "bottleneck_band",
+        "entry_ready",
+        "score",
+        "source",
+        "stage",
+        "tier"
+      ],
       "name_en": "Robotics & Automation",
       "name_zh": "机器人与自动化",
       "narrative": null,

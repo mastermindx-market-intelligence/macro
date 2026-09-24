@@ -49,12 +49,18 @@ MEMBERSHIP_FIELDS = ("ticker", "added", "removed", "curated_added")
 # (``foresight_score``). Across the month before the freeze the foresight object
 # changed 8 times on main, every time score-only (review of R3, blocker 1).
 FORESIGHT_DECISION_FIELDS = ("stage", "entry_ready", "tier", "bottleneck_band", "source")
+# The foresight KEY SET is frozen too (``foresight_keys``): a Robotics lane writing a
+# new field (a curation tier, a research flag) into the incumbent foresight object is
+# exactly the leak RBV-28 forbids, and the projection to five named sub-fields alone
+# would not see it (R3 re-review, nit 1). The key set had zero transitions across the
+# 28 theme_state checkpoints before the freeze, so freezing it costs no false reds.
 THEME_STATE_FROZEN = (
     "theme_id",
     "name_en",
     "name_zh",
     "basket_ids",
     "foresight_decision",
+    "foresight_keys",
     "narrative",
 )
 THEME_STATE_SHAPE = (
@@ -258,6 +264,7 @@ def _robotics_theme_state() -> dict[str, Any]:
         {field: foresight.get(field) for field in FORESIGHT_DECISION_FIELDS}
         if isinstance(foresight, dict) else None)
     view["foresight_score"] = foresight.get("score") if isinstance(foresight, dict) else None
+    view["foresight_keys"] = sorted(foresight) if isinstance(foresight, dict) else None
     return _projected_section(view, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
 
 
