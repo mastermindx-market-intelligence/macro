@@ -1,0 +1,12 @@
+{
+  "html_sha256": "e073aa99b1458cb1b12822205a411ec6e06093b4180916e3655272c2994d290d",
+  "rows": 372,
+  "participation_rows": 372,
+  "max_participation": 0.8675,
+  "impossible_rows": [],
+  "passed": true,
+  "pane_impossible": 0,
+  "context_impossible": 0,
+  "invalid_current": 0,
+  "invalid_history_filtered": 971
+}
