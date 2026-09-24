@@ -3524,6 +3524,8 @@ CURATED_EXCLUSIVE = {
     # this manifest as text. Closure-coverage audit: zero misses.
     "market-os-macro-workspaces",
     "uk-policy-desk",
+    # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
+    "finance-intelligence",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is

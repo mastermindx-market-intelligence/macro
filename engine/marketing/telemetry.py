@@ -811,6 +811,259 @@ def write_rollup(
         return {"error": str(exc)}
 
 
+# Stable operator-facing delivery states. These are projections over the
+# canonical outbox receipt plus additive provider observations; they are NOT a
+# second queue or status ledger.
+_DELIVERY_ACCEPTED_UNCONFIRMED = "accepted_unconfirmed"
+_DELIVERY_PROVIDER_SENT = "provider_sent"
+_DELIVERY_PROVIDER_FAILED = "provider_failed"
+_DELIVERY_UNKNOWN_DEGRADED = "unknown_degraded"
+
+
+def _delivery_observation_history(
+    root: "Path | str | None" = None,
+) -> dict[str, dict[str, Any]]:
+    """Fold additive provider observations without losing monotonic send proof.
+
+    Each remote id retains the newest attempt, newest valid observation, and
+    newest valid ``provider_sent`` observation independently. That separation is
+    what lets a later timeout be reported as stale without erasing an already
+    observed send. Rows without the additive ``delivery`` object are legacy
+    metrics rows and contribute no lifecycle claim.
+    """
+    path = _post_metrics_path(root)
+    if not path.exists():
+        return {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("telemetry delivery read failed for %s: %s", path, exc)
+        return {}
+
+    out: dict[str, dict[str, Any]] = {}
+
+    def _key(value: object, fallback_index: int) -> tuple[float, int]:
+        text = str(value or "").strip()
+        if text:
+            try:
+                dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+                if dt.tzinfo is not None:
+                    return (dt.timestamp(), fallback_index)
+            except (TypeError, ValueError, OverflowError):
+                pass
+        # Append order is the fail-soft tiebreaker for malformed/missing time.
+        return (float("-inf"), fallback_index)
+
+    for index, line in enumerate(lines):
+        try:
+            row = json.loads(line)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(row, dict):
+            continue
+        remote_id = str(row.get("remote_id") or "").strip()
+        delivery = row.get("delivery")
+        if not remote_id or not isinstance(delivery, dict):
+            continue
+
+        obs = dict(delivery)
+        observed_at = obs.get("observed_at") or row.get("polled_at")
+        obs["observed_at"] = str(observed_at or "").strip() or None
+        key = _key(observed_at, index)
+
+        reasons: list[str] = []
+        if obs.get("schema") != "marketing.provider_delivery/v1":
+            reasons.append("unknown_delivery_schema")
+        if str(obs.get("provider_id") or "").strip() != remote_id:
+            reasons.append("stored_provider_id_mismatch")
+        state = str(obs.get("state") or "").strip()
+        if state not in {
+            _DELIVERY_ACCEPTED_UNCONFIRMED, _DELIVERY_PROVIDER_SENT,
+            _DELIVERY_PROVIDER_FAILED, _DELIVERY_UNKNOWN_DEGRADED,
+        }:
+            reasons.append("unknown_delivery_state")
+        read_ok = obs.get("read_ok") is True and not reasons
+        if state == _DELIVERY_PROVIDER_SENT:
+            sent_at = str(obs.get("provider_sent_at") or "").strip()
+            try:
+                parsed = datetime.fromisoformat(sent_at.replace("Z", "+00:00"))
+                sent_time_ok = parsed.tzinfo is not None
+            except (TypeError, ValueError):
+                sent_time_ok = False
+            if obs.get("provider_sent") is not True or not sent_time_ok:
+                reasons.append("invalid_stored_send_evidence")
+                read_ok = False
+        elif read_ok and obs.get("provider_sent") is True:
+            reasons.append("sent_flag_state_contradiction")
+            read_ok = False
+
+        if reasons:
+            prior = str(obs.get("error") or "").strip()
+            obs["error"] = ";".join([*(reasons), *([prior] if prior else [])])
+            obs["read_ok"] = False
+            obs["state"] = _DELIVERY_UNKNOWN_DEGRADED
+            obs["provider_sent"] = None
+            obs["provider_sent_at"] = None
+        else:
+            obs["read_ok"] = bool(read_ok)
+
+        bucket = out.setdefault(remote_id, {
+            "latest_attempt": None, "latest_attempt_key": None,
+            "latest_valid": None, "latest_valid_key": None,
+            "latest_sent": None, "latest_sent_key": None,
+        })
+        if bucket["latest_attempt_key"] is None or key >= bucket["latest_attempt_key"]:
+            bucket["latest_attempt"] = obs
+            bucket["latest_attempt_key"] = key
+        if obs.get("read_ok") is True:
+            if bucket["latest_valid_key"] is None or key >= bucket["latest_valid_key"]:
+                bucket["latest_valid"] = obs
+                bucket["latest_valid_key"] = key
+            if (obs.get("state") == _DELIVERY_PROVIDER_SENT
+                    and obs.get("provider_sent") is True
+                    and (bucket["latest_sent_key"] is None
+                         or key >= bucket["latest_sent_key"])):
+                bucket["latest_sent"] = obs
+                bucket["latest_sent_key"] = key
+    return out
+
+
+def delivery_projection(root: "Path | str | None" = None) -> dict[str, Any]:
+    """Project accepted, provider-sent and X-visible evidence independently.
+
+    The canonical outbox fold supplies acceptance identity. Additive provider
+    observations come from the existing metrics ledger. A provider-sent
+    observation is monotonic: a later failed/degraded lookup is shown as stale
+    lookup evidence but cannot erase the historical send. Public X visibility
+    remains a distinct nullable rung and is never inferred from a permalink or
+    metrics.
+    """
+    out: dict[str, Any] = {
+        "accepted": 0,
+        "provider_sent": 0,
+        "accepted_unconfirmed": 0,
+        "provider_failed": 0,
+        "unknown_degraded": 0,
+        "items": [],
+    }
+    try:
+        from engine.marketing import outbox as _outbox  # noqa: PLC0415
+
+        canonical_root = _repo_root(root)
+        canonical = _outbox.fold_state(canonical_root)
+        histories = _delivery_observation_history(canonical_root)
+    except Exception as exc:  # noqa: BLE001 — telemetry is never-raise
+        out["error"] = str(exc)[:200]
+        return out
+
+    items = canonical.get("items") or {}
+    statuses = canonical.get("status") or {}
+    last = canonical.get("last") or {}
+    for item_id in canonical.get("order") or []:
+        if statuses.get(item_id) != "posted":
+            continue
+        row = last.get(item_id) or {}
+        receipt = row.get("receipt")
+        receipt = receipt if isinstance(receipt, dict) else {}
+        provider_id = str(receipt.get("external_id") or "").strip() or None
+        accepted_at = str(
+            receipt.get("at") or row.get("at") or ""
+        ).strip() or None
+        booked_at = str(receipt.get("booked_at") or "").strip() or None
+        accepted = provider_id is not None
+        if accepted:
+            out["accepted"] += 1
+
+        history = histories.get(provider_id or "") or {}
+        latest_attempt = history.get("latest_attempt")
+        latest_attempt_key = history.get("latest_attempt_key")
+        sent_obs = history.get("latest_sent")
+        sent_key = history.get("latest_sent_key")
+        latest_valid = history.get("latest_valid")
+        latest_valid_key = history.get("latest_valid_key")
+
+        selected: dict[str, Any] | None = None
+        state_name: str
+        provider_sent: bool | None
+        observation_stale = False
+        latest_lookup_error: str | None = None
+
+        if sent_obs is not None:
+            # Sent evidence is monotonic. A later timeout or state regression is
+            # surfaced, not allowed to rewrite the historical fact.
+            selected = sent_obs
+            state_name = _DELIVERY_PROVIDER_SENT
+            provider_sent = True
+            if (latest_attempt is not None and latest_attempt_key is not None
+                    and sent_key is not None and latest_attempt_key > sent_key
+                    and latest_attempt is not sent_obs):
+                observation_stale = True
+                latest_lookup_error = _clean_lookup_error(latest_attempt)
+                if latest_attempt.get("read_ok") is True:
+                    latest_lookup_error = (
+                        latest_lookup_error or "provider_state_regressed_after_sent")
+        elif latest_attempt is not None and latest_attempt.get("read_ok") is not True:
+            selected = latest_attempt
+            state_name = _DELIVERY_UNKNOWN_DEGRADED
+            provider_sent = None
+            latest_lookup_error = _clean_lookup_error(latest_attempt)
+            observation_stale = latest_valid is not None
+        elif latest_valid is not None:
+            selected = latest_valid
+            state_name = str(latest_valid.get("state") or _DELIVERY_UNKNOWN_DEGRADED)
+            provider_sent = latest_valid.get("provider_sent")
+        elif accepted:
+            state_name = _DELIVERY_ACCEPTED_UNCONFIRMED
+            provider_sent = None
+        else:
+            state_name = _DELIVERY_UNKNOWN_DEGRADED
+            provider_sent = None
+
+        if state_name == _DELIVERY_PROVIDER_SENT:
+            out["provider_sent"] += 1
+        elif state_name == _DELIVERY_PROVIDER_FAILED:
+            out["provider_failed"] += 1
+        elif state_name == _DELIVERY_ACCEPTED_UNCONFIRMED:
+            out["accepted_unconfirmed"] += 1
+        else:
+            out["unknown_degraded"] += 1
+
+        evidence = selected or {}
+        item = items.get(item_id) or {}
+        out["items"].append({
+            "id": item_id,
+            "account": item.get("account") or None,
+            "backend": receipt.get("backend") or None,
+            "provider_id": provider_id,
+            "accepted_at": accepted_at,
+            "booked_at": booked_at,
+            "state": state_name,
+            "provider_status": evidence.get("provider_status"),
+            "scheduling_type": evidence.get("scheduling_type"),
+            "notification_status": evidence.get("notification_status"),
+            "due_at": evidence.get("due_at"),
+            "provider_sent": provider_sent,
+            "provider_sent_at": (
+                evidence.get("provider_sent_at") if provider_sent is True else None),
+            "external_url": (evidence.get("external_url")
+                             or receipt.get("external_url") or None),
+            "x_visible": evidence.get("x_visible"),
+            "x_visible_at": evidence.get("x_visible_at"),
+            "observed_at": evidence.get("observed_at"),
+            "observation_stale": observation_stale,
+            "latest_lookup_error": latest_lookup_error,
+            "channel_ready": evidence.get("channel_ready"),
+            "channel": evidence.get("channel"),
+            "publishing_error": evidence.get("publishing_error"),
+        })
+    return out
+
+
+def _clean_lookup_error(observation: dict[str, Any]) -> str | None:
+    text = " ".join(str(observation.get("error") or "").split()).strip()
+    return text[:700] or None
+
+
 #: How long after its booked send time a `posted` item may stay unconfirmed
 #: before we say so. Buffer's analytics lag is hours, not days; a post still
 #: showing nothing after this is more likely never to have gone out.
