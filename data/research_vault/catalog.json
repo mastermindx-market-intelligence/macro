@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T02:56:26.672781+00:00",
-  "count": 2750,
+  "generated_at": "2026-09-24T03:26:31.303226+00:00",
+  "count": 2752,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -118,6 +118,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-68wyvesrh4q-cc2fc0",
+      "title": "GS Equities Color US EQUITIES COLOR INCREASING RATES PRESSURE 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:20:51Z",
+      "summary_points": [
+        "Yield Surge & Equity Pressure: 2yr yield at 4.90% (2+ yr high), 10yr at 5.10% (post-2007 high), driving S&P -75bps, Dow -68bps amid hot September PMI and input cost inflation.",
+        "Rate Hike Pricing: Markets price 71% chance of October rate hike, reflecting heightened inflation concerns from recent data.",
+        "Technical Yield Threat: 10yr yield moving ~25bps in 2 weeks (2-std dev), exceeding historical equity resilience thresholds (S&P at 19x).",
+        "Resilience Risk: Current yield trajectory (50bps/month) already pressuring equities, with S&P trading near 2-std dev yield stress levels."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
@@ -479,6 +499,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bnuzdilqlwf-75f370",
+      "title": "Global Energy Oil Refining Deep dive into the LatAm Refining Markets + Equities Implications",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:14Z",
+      "summary_points": [
+        "LatAm Diesel Shortage: Structural diesel deficit (20% of demand met by imports, 430 kbpd net imports in key markets) driven by 60-70% refining utilization vs global 83%, with Mexico/Venezuela as major importers.",
+        "Petrobras Expansion Impact: 320 kbpd capacity growth (2025-2030) adds $1.5bn EBITDA/year; Buy-rated with 25% FCY target (2027) at USD70/bbl oil/diesel cracks.",
+        "Mexico PEMEX Turnaround: Utilization to rise from ~60% to ~80% by 2030 (vs global avg), reducing diesel net imports from 40% to 30% by 2030 via Dos Bocas ramp-up.",
+        "Venezuela Refinery Mismatch: Production growth (700k bpd to 1.9m bpd by 2030) but refinery utilization stuck at ~30% (demand collapsed from 140kbpd to 40kbpd), creating underutilized capacity risk.",
+        "Geopolitical Supply Shift: Brazil’s diesel imports shifted from Russia to U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
