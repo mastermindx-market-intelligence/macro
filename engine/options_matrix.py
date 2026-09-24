@@ -802,6 +802,9 @@ def build_matrix(
     # computed by re-pricing the book on a spot grid (gex_engine.gamma_profile)
     # instead of the retired cumulative-by-strike walk — see _compute_levels.
     chain_rows: list[tuple[float, float, float, float, bool]] = []
+    # Normalize and index this immutable root/session frame once. Re-scanning it
+    # per contract made the restored SPY path quadratic (5,056 Greek rows).
+    contract_ivs = _contract_iv_lookup(greeks_w)
     for _, row in oi_t1_w.iterrows():
         k   = float(row["strike"])
         exp = _to_iso_date(row.get("expiration", ""))
@@ -812,7 +815,7 @@ def build_matrix(
             continue
 
         # IV for this contract: prefer greeks, else median_iv
-        iv_contract = _lookup_iv(greeks_w, k, exp, right)
+        iv_contract = _lookup_iv(greeks_w, k, exp, right, lookup=contract_ivs)
         dte_days    = _dte(exp, asof)
         T_years     = dte_days / 365.0
         gamma       = _bs_gamma_scalar(spot, k, T_years, iv_contract, median_iv)
@@ -1161,17 +1164,27 @@ def _extract_spot(greeks_df: pd.DataFrame, eod_df: pd.DataFrame) -> float | None
     return float(values.iloc[0]) if not values.empty else None
 
 
-def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry: str, right: str) -> float:
-    """Return IV for (strike, expiry, right) from greeks, or 0.0 if not found.
+def _contract_iv_lookup(greeks_df: pd.DataFrame) -> dict[tuple[float, str, str], object]:
+    """First nonmissing IV per exact contract, matching the scalar reader.
 
-    Both sides normalized to plain ISO date to match regardless of parquet storage type.
+    This is a per-build index of the already loaded frame, not another cache or
+    source reader. Keep numeric conversion at lookup time: an invalid IV in an
+    unused contract must not change the behavior of a valid contract's query.
     """
     if greeks_df.empty or "implied_vol" not in greeks_df.columns:
-        return 0.0
-    mask = (
-        (greeks_df["strike"].astype(float) == strike) &
-        (greeks_df["expiration"].apply(_to_iso_date) == expiry) &
-        (greeks_df["right"].astype(str).str.upper().str[:1] == right[:1])
-    )
-    sub = greeks_df[mask]["implied_vol"].dropna()
-    return float(sub.iloc[0]) if not sub.empty else 0.0
+        return {}
+    strikes = greeks_df["strike"].astype(float)
+    expiries = greeks_df["expiration"].apply(_to_iso_date)
+    rights = greeks_df["right"].astype(str).str.upper().str[:1]
+    result: dict[tuple[float, str, str], object] = {}
+    for strike, expiry, right, iv in zip(strikes, expiries, rights, greeks_df["implied_vol"]):
+        if pd.notna(iv):
+            result.setdefault((strike, expiry, right), iv)
+    return result
+
+
+def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry_str: str, right: str,
+               *, lookup: dict[tuple[float, str, str], object] | None = None) -> float:
+    """IV for (strike, expiry, right), or zero when absent; duplicates keep the first nonmissing value."""
+    values = _contract_iv_lookup(greeks_df) if lookup is None else lookup
+    return float(values.get((strike, expiry_str, right[:1]), 0.0))

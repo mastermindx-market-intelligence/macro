@@ -101,3 +101,21 @@ Material-source comparison1177cf84→2b2cae6a found no change to AGENTS/CLAUDE,
 the matrix producer/validator, ThetaData reader, Greeks helper, publisher,
 matrix tests or runner. Current integration still has its own CI gate.
 Agent OS validation after this discovery:1228 records,0errors,89 existing warnings.
+
+### Index-root performance finding
+
+The original three-evaluation SPY proof hit its180-second read-only ceiling;
+it is not counted as a successful SPY qualification. A bounded source-host
+profile then stopped after25 actual IV lookups:5,056 Greek rows,0.465seconds
+in those lookups,26.089seconds total including source loading. Installed code
+was unchanged. Each scalar lookup re-normalized and scanned the entire frame.
+
+The candidate now indexes exact contract IV once per loaded root/session and
+uses the same first-nonmissing value, right/expiry/strike identity and delayed
+numeric conversion. This is a local index over the existing frame, not a new
+cache owner. No GEX/VEX formula or source-date choice changes. Discriminating
+tests pin duplicate/null/zero/malformed-unused IV behavior, one index per real
+builder call, and200 date conversions rather than200×200 for200 queries.
+Focused matrix/structure regression now passes120 tests. Fresh real-source
+qualification is required for this changed implementation before acceptance;
+the earlier MU/ARM receipts remain evidence of their exact earlier candidate.

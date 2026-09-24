@@ -1553,3 +1553,55 @@ def test_matrix_publisher_all_healthy_roots_distinguishes_delivery_success(tmp_p
         assert error.value.code == 1
     assert uploads == ["options_structure/matrix/MU.json"]
     assert json.loads((tmp_path / "MU.json").read_text()) == doc
+
+
+def test_indexed_contract_iv_matches_original_scalar_semantics():
+    from engine.options_matrix import _contract_iv_lookup, _lookup_iv
+    frame = pd.DataFrame([
+        {"strike": "100.0", "expiration": pd.Timestamp("2026-10-16"), "right": "call", "implied_vol": None},
+        {"strike": 100, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.21},
+        {"strike": 100, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.99},
+        {"strike": 100, "expiration": "2026-10-16", "right": "put", "implied_vol": 0.32},
+        {"strike": 100, "expiration": "2026-11-20", "right": "C", "implied_vol": 0.44},
+        {"strike": 105, "expiration": "2026-10-16", "right": "C", "implied_vol": 0.0},
+        {"strike": 110, "expiration": "2026-10-16", "right": "C", "implied_vol": "unused-invalid"},
+    ])
+    lookup = _contract_iv_lookup(frame)
+    # The original reader masks exact strike/expiry/right, then takes first nonmissing IV.
+    for strike, expiry, right, expected in [
+        (100, "2026-10-16", "C", 0.21), (100, "2026-10-16", "P", 0.32),
+        (100, "2026-11-20", "C", 0.44), (105, "2026-10-16", "C", 0.0),
+        (999, "2026-10-16", "C", 0.0), (100, "2026-10-16", "p", 0.0),
+    ]:
+        assert _lookup_iv(frame, strike, expiry, right, lookup=lookup) == expected
+        assert _lookup_iv(frame, strike, expiry, right) == expected
+    with pytest.raises(ValueError):
+        _lookup_iv(frame, 110, "2026-10-16", "C", lookup=lookup)
+
+
+def test_matrix_build_indexes_iv_once_not_once_per_contract(tmp_path, monkeypatch):
+    import engine.options_matrix as matrix
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path)
+    indexed = []
+    original = matrix._contract_iv_lookup
+    def build_index(frame):
+        indexed.append(len(frame))
+        return original(frame)
+    monkeypatch.setattr(matrix, "_contract_iv_lookup", build_index)
+    doc = matrix.build_matrix("SPY", store)
+    assert doc["cells"]
+    assert indexed == [6]
+
+
+def test_prebuilt_iv_queries_do_not_renormalize_the_frame(monkeypatch):
+    import engine.options_matrix as matrix
+    frame = pd.DataFrame([{"strike": float(k), "expiration": "2026-10-16", "right": "C", "implied_vol": 0.25} for k in range(100, 300)])
+    normalized = []
+    original = matrix._to_iso_date
+    monkeypatch.setattr(matrix, "_to_iso_date", lambda value: normalized.append(value) or original(value))
+    lookup = matrix._contract_iv_lookup(frame)
+    for k in range(100, 300):
+        assert matrix._lookup_iv(frame, float(k), "2026-10-16", "C", lookup=lookup) == 0.25
+    assert len(normalized) == 200  # one pass, not200×200 date conversions
