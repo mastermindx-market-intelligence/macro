@@ -10,112 +10,88 @@ implementation_authority: none
 
 # Basic Materials Economics — Fable integration packet
 
-**Packet date:** 2026-09-24  
-**Readiness:** Prepared for principal integration review. Not a fully unblocked production build.  
-**Preferred avenue:** Fable.  
+**Updated:** 2026-09-24, R11 Semiconductor-foundation adoption.  
+**Readiness:** Prepared Materials consumer plan with shared amendments pending. Not an unblocked production build.  
+**Preferred avenue:** Fable, for bounded cross-owner integration and acceptance; routine engineering uses the least-scarce capable avenue.  
 **Receiver binding mode:** CAPACITY_SELECTABLE.  
-**Placement:** WAITING_CAPACITY / needs_placement; no concrete receiver verified.  
-**Assignment, ACK and START:** none asserted. Discovering this file is not assignment.
+**Materials placement:** WAITING_CAPACITY / needs_placement; no Materials receiver, ACK or START established.  
+**Upstream:** The Semiconductor Fable operation has its own posted START and implementation carrier #7870. That assignment does not assign Materials to the same provider session.
 
-## 1. The job, not another research commission
+## 1. Mission and preserved outcome
 
-The Chairman commissioned deep principal-led Basic Materials research and planning followed by Fable-led integration. The first useful product is paid, read-only Materials Economics inside the existing Themes workflow. An investor must understand a source-backed change, identify which business or contractual right captures it, inspect its operating/cash meaning, reach the right company page and return to the existing stock workflow.
+The Chairman commissioned deep Basic Materials research and masterplanning, followed by Fable-led build integration, and now directs Materials to build on the Semiconductors GMI sector/theme foundation. Deliver paid, read-only Materials Economics in the existing Themes workflow: what changed, which business or financial right captures it, what reaches retained cash/per-share economics, what was expected, and what evidence matters next. Preserve the existing stock/Prophet owners and all decision boundaries.
 
-Do not restart the family surveys or ask a worker to discover the company architecture from scratch. R1–R7 provide the industry reasoning; R8 provides the integrated product; R9 provides the eight-task implementation plan and all44 acceptance requirements. R10 supplies the bounded shared-profile decisions still needed for safe integration.
+The first release requires five original document cases across four company subjects, correct economic explanations, original evidence/definitions, actual company navigation and return to the existing stock workflow. Source-only degradation is useful but not full acceptance. Ten navigation families, eight economic lenses and V0–V4 ambition remain: explanations; comparable changes; conditional economics; evaluated proactive discovery; broader global coverage and learning.
 
-Sol retains the Materials research/design responsibility and source custody until an actual accepted transition. A future admitted Fable receiver owns its expressly assigned integration work, not unrelated programs or unbounded policy changes. This packet creates no Executive operation, Attempt, provider session, source lease, account choice or autonomous return path.
+Sol retains Materials principal responsibility and this research carrier until a lawful bounded handoff. This packet creates no worker, Executive Attempt, source lease, account choice or automatic wake. Why Fable: the remaining decisions couple shared evidence semantics, private publication, current rights, identity and an independently owned UI. Fable should adjudicate those interfaces and the final real outcome, not repeat R1–R7 or perform every routine coding task.
 
-**Why Fable:** the next decision couples GMI evidence semantics, an existing private publisher, current rights, identity and a concurrently owned shared page. It is principal-level integration rather than routine coding. Fable should resolve those cross-owner decisions and adjudicate the real outcome; well-specified engineering and test work should use Terra or, when the frozen implementation is unusually difficult, CTO Sol. No blanket premium-model budget or provider admission is conveyed.
+## 2. Mandatory reading order and exact references
 
-## 2. Read only this frontier first
+1. **Read R11 first:** `research/basic_materials/BASIC_MATERIALS_R11_SEMICONDUCTOR_FOUNDATION_ADOPTION_2026-09-24.md`, plus `R11_FOUNDATION_ADOPTION_MATRIX_2026-09-24.json` beside it. These amend only the explicitly named R9 task mechanics and add the continuous-quantity domain requirement.
+2. **Saved implementation plan:** `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, unchanged blob `dbd993f57fc636ab2675a2ebba3e1e2296064778`. Read its eight tasks and tests through the R11 amendments; do not follow its superseded standalone API/client creation instructions.
+3. **R9 requirements:** `research/basic_materials/R9_CONTRACT_AND_TASK_MATRIX_2026-09-23.json`, unchanged blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`. All32 BM-R8 plus12 R9 requirements and seven open holds survive.
+4. **R8 integrated specification:** `research/basic_materials/BASIC_MATERIALS_R8_INTEGRATED_PRODUCT_AND_OWNER_SPECIFICATION_2026-09-23.md`, blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736`. Its manifest blob `7aabc80d34278609e717fcbdfef56c080bfc9dce` retains the prior family studies and selected source cases.
+5. Read only the relevant issuer/industry annex for a disputed economic interpretation. R10's decision blob `5662b104d16858dc5a37ab6bedc76bfcc630316d` remains valid except where R11 identifies a narrower execution mechanism.
 
-Repository: `mastermindx-market-intelligence/macro`. Research carrier: #7796, branch `sol/basic-materials-research-20260923`, entry head `5b1503a01ba25051c2297e08debc9e6fda4ea123`.
+Canonical continuity remains `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md` on #7796, not this packet or a ZIP. This updates the existing packet in place; its R10 version remains at `da365a4df941068c8e64ee752c4b880be678139a`, blob `392e297490484901750764d57acca03dd9f7f40a`.
 
-| Read | Exact reference | Purpose |
+Preparation procedure: Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`, Skillpack1.0.1/bootstrap1. Refresh protected procedure and exact source/effect state before later mutations. No hidden model/mode or runtime admission is inferred.
+
+## 3. Actual shared implementation and consumed response
+
+The base is **#7870**, branch `claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9`, inspected at `45eb37bbf832e007e67ce2594674d6bfeeb3b880`. It is Draft/HOLD, unmerged and not production-proven. Its reference design/plan remains on #7780 at `b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb`. Posted pickup5807221991 and START5807391383 identify its existing operation `gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001`; these are not a fresh runtime liveness query.
+
+Our R10 request #7773/comment5808157680 has an actual shared-owner response **5808307684**. Consume it; do not issue the same discovery request again. The response identifies the one curation implementation and rights-snapshot API, confirms the signed/exact-measure gap, keeps private publication unimplemented pending #7780/R4 comment5807772681, and asks amendments to remain on the same #7773 discussion. #7870 is the code carrier. No source writer is transferred.
+
+Implemented candidate interfaces include `validate_assertion`, `curation_revision`, `encode_assertion`, `decode_assertion`, `source_ref_for`, `load_registry_snapshot` and `assert_current_emission_allowed`. Shared local objects already admit materials, processes, facilities and businesses. Shared API/client names are planned, not established as committed/deployed by the inspected change list. Do not treat a generic filename as a compatible Materials request/response contract.
+
+## 4. Four bounded compatibility requests
+
+**AM1:** Add one compatible signed/exact measurement representation to the shared assertion, preserving legacy absent-extension bytes and hashes. Distinguish integer physical counts from fractional nonnegative physical quantities and signed financial values/changes/spreads. Exact text cannot pass through a binary float. Prevent dual populated exact/legacy numeric values. Reuse generic absolute/per-period/per-unit bases with explicit material/denominator units; no per-material global enum explosion or new schema owner.
+
+**AM2:** Bind every original input and permitted representation to the existing current rights owner. The plan names `source.rights_family`, but the inspected closed source schema has no such property. An accepted additive field or validated external owner receipt may resolve it. An empty dependency list must not disguise unresolved rights; house curation cannot erase upstream restrictions.
+
+**AM3:** Materials extends the accepted shared `app/theme_research.py` routes and `theme-research.js`/`.css` through a closed Materials profile/presentational adapter. The Semiconductor two-slice query and response are not Materials. Preserve prior defaults and signatures. No second Materials auth/fetch client, runtime plugin registry, arbitrary import or duplicate mount.
+
+**AM4:** Source-scoped financial rights do not become ownership edges or added physical supply. Preserve the Wheaton contractual interpretation and NOVONIX proposition-specific qualification/MOU distinction without inventing new global relation types.
+
+For Materials, the proposed existing-Research-Vault direction is architecturally consistent. This is not a final shared R4 ruling, a bucket/ACL proof, permission to change global entitlement grace, live source admission or a source-custody release. Require the actual accepted shared reader/publisher/namespace/generation and export/rights proof.
+
+## 5. Saved tasks after the amendment
+
+| Task | Revised action | Still required |
 |---|---|---|
-| Integrated specification | `research/basic_materials/BASIC_MATERIALS_R8_INTEGRATED_PRODUCT_AND_OWNER_SPECIFICATION_2026-09-23.md`, blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` | User job, eight economic lenses, ten families, five documents/four companies, V0–V4 |
-| Saved implementation plan | `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, creation `8239d16d9d3566cf4f369f477afbdaa21f41189c`, blob `dbd993f57fc636ab2675a2ebba3e1e2296064778` | Eight tasks, exact planned paths, discriminating tests, no weakened acceptance |
-| Task/dependency matrix | `research/basic_materials/R9_CONTRACT_AND_TASK_MATRIX_2026-09-23.json`, blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9` | Seven holds and all32 R8 plus12 R9 requirements |
-| Shared-profile decision | `research/basic_materials/BASIC_MATERIALS_R10_SHARED_PROFILE_DECISION_2026-09-24.md`, blob `5662b104d16858dc5a37ab6bedc76bfcc630316d` | Six principal decisions and precise upstream acceptance request |
+| T1 | Consume #7870 shared contract; submit AM1/AM2 to its writer | Compatible shared signatures, signed/exact/fractional regression and real admission evidence |
+| T2 | Consume shared rights snapshot and eventual private binding | Fresh final-response policy, complete dependency families, strict error states and real private proof |
+| T3 | Consume the one K1 native subtype when accepted | Lossless clocks, native subjects and no forged unified security recipe |
+| T4 | Build only the Materials F04 explanation/comparison consumer after assignment | Economic scope, source attribution, actual identity and published company routes |
+| T5 | Extend the accepted shared POST research query/evidence routes | Paid-auth-before-read, generation consistency, safe errors and Materials-profile tests |
+| T6 | Extend shared client and accepted generic mounts | Bilingual/accessible display, missingness, no-store, logout/request races and emitted-page parity |
+| T7 | Admit and rehearse all five sources/four company journeys | Actual source rights, retention, review, native inputs, routes and private generations |
+| T8 | Independent current-head release and browser acceptance | Unchanged frozen stock decisions, public-alternate-path denial and complete real-path proof |
 
-For a particular company or mechanism, follow the R8 integration manifest to the relevant immutable annex and casebook. Do not read the whole chat or repeat old source retrieval. The current cumulative owner remains `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`; this packet is not a second latest-state ledger.
+The old `app/materials_economics.py`, GET `/api/themes/materials/economics/v1`, standalone `materials-economics.js`/`.css` and second Materials mount are no longer the selected execution path. T1–T3 are consume-and-qualify dependencies, not parallel foundation jobs. Materials composer paths in R9 remain proposed; #7796 receives no product code.
 
-Procedure at preparation: protected Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, compatible1.0.1/bootstrap1. New selected interface pin: Macro `33c73dd9f5e65936f0052cb28f4ece4880b51a43`. These are not execution-base or deployment receipts. Re-pin current procedure and only the material current interfaces before any future effects.
+All H1–H7 stay open: Materials-compatible shared contract acceptance; store custody; actual private profile/proof; four-company identity/routes; detail-template custody; independent release; real source rights/retention/admission. Discovering a foundation writer does not close them. #7462 store and #7669 detail hunks remain frozen under their existing operations.
 
-## 3. Decisions already selected within the Materials plan
+## 6. Selected proof and interpretation requirements
 
-1. One shared GMI curation extension, not a Materials fork. Preserve signed exact financial measurements and nonnegative physical-count semantics independently.
-2. A protected curation subtype remains inside the existing GMI evidence responsibility and existing private infrastructure. No global data-directory relocation, disguised Earnings/RIO object, per-sector current pointer or public fallback.
-3. Evidence generation and current permission version are separate. Permission is checked against the actual parsed policy bytes and again at the final authorization boundary; historical observation dates do not restore expired rights.
-4. A source correction, an unrelated new proposition, a rights withdrawal and a failed store read have different consequences. None is silently converted to zero.
-5. Real source attribution, GMI/Data OS identity and a real published page route are separate proofs. Valid source-only blocks do not satisfy the selected four-company navigation requirement or a unified K1 security recipe.
-6. Freeze shared signatures before assigning synthetic consumer development; hold real-data admission until the actual shared profile and receipts exist. Deliver a useful source-to-page vertical, not just infrastructure.
+Nutrien must preserve comparable product/period/price/cost and a possibly negative margin. NOVONIX's two documents remain distinct source propositions; a new collaboration cannot complete qualification. Wheaton/Antamina must preserve contractual participation, thresholds and payment terms rather than mine ownership or extra physical supply. Weyerhaeuser must distinguish actual investment cash from an issuer-adjusted distribution metric. The source register supplies the original locators; no new native IDs or financial weights are invented here.
 
-These decisions select the intended integration direction. They do not enroll a native schema, grant another writer's custody or establish a live private profile. Fable's first bounded decision is to accept/amend them with the existing shared owners, not to invent receipt values that make the matrix green.
+Each positive subject must reach the actual source and a lawfully resolved company page inside the existing Themes-to-stock workflow. AMS and China unavailable cases remain explicit. Semiconductor TSMC/onsemi acceptance is valuable upstream proof but does not substitute for these four subjects or imply a full global Materials census.
 
-## 4. Exact first return required from shared integration
+## 7. Proof and security boundary
 
-The shared owner must return the actual accepted object class/version; native reader callable and strict error semantics; actual existing private writer/publisher and namespace; authoritative content-generation identity and promotion rule; current source/representation rights mechanism; public-export exclusions; source-retention/admission requirements; and source-custody reconciliation.
+Real completion requires original source through actual retention/review/native ownership, current source/representation rights, paid transport, actual emitted existing pages, working company/source navigation and desktop/mobile, EN/ZH, dark/light and keyboard proof. Record the code revision and exact source, identity, composition and rights generations. No public Git/site, source map, persistent browser storage or public object path may contain current full-fidelity paid payloads.
 
-A source-level decision is distinct from an implemented binding, and both are distinct from real production proof. If no binding exists yet, identify the single existing-owner implementation action and keep live values null. Do not claim a profile is approved because this packet contains a proposed name.
+Rights snapshots must be created by the native owner and rechecked at the final response boundary. An old snapshot is not a revocation oracle. Policy withdrawal is not a source correction; missing data differs from failed storage. Source text or payload review fields never grant authority. An old delayed response must not restore private content after logout. No promise is made to recall previously delivered user copies.
 
-Place the decision on existing #7773/shared GMI discussion and link it from #7796. Do not alter #7773's research source or take over #7462/#7669 by inference. The source-owning workstream is WS:GMI-THEME-GRAPH; F04 remains downstream composition, not a competing graph or propagation engine.
+No ranking, entry, sizing, basket, alert or trade behavior changes. Compare frozen outputs through the existing owners, not a new score proxy. Independent review and required exact-head release gates remain necessary; CI green, merge, deployment or a screenshot alone do not complete the product.
 
-## 5. Ready and held work
+## 8. Verification scope and next action
 
-| Work | Prepared now | Condition before actual execution |
-|---|---|---|
-| T1 shared assertion | R9 exact measurement, admission and correction tests | Shared contract acceptance, actual assignment and source custody |
-| T2 private binding/rights | Exact required semantics and retained native revocation probe | Actual private profile and owner path; no guessed storage adapter |
-| T3 K1 subtype | Native-subject and clock requirements | Accepted T1 shape and owner reader; no fabricated cross-type bridge |
-| T4 Materials composer | Case meanings, proposed signatures and comparison tests | Shared signatures frozen; live version later needs genuine identity/route receipts |
-| T5 API | Existing paid-auth/header pattern and no-preauth-read tests | T4 for fixture work; T2 for real source use |
-| T6 page consumer | One public shell/shared private client; logout/request-race tests | Current shared-page custody and accepted template integration |
-| T7 real rehearsal | Five document cases, four subjects and negative cases selected | Actual source rights, retention, admission, identity and private-generation proof |
-| T8 release | Exact-head review/CI plus browser/access/unchanged-policy contract | Implemented and accepted T7 output; no automatic merge |
+The R11 selected-function probe uses five transcribed computational excerpts from the inspected source, synthetic data only. Its 25 observed outcomes match expectations, with two explicitly unmet Materials requirements (negative financial values and exact decimal text). Fresh snapshot rereads observe revocation without cache clearing. Complete source-module/schema, storage, API, production and browser qualification were not run. The optional whole-native-file/AST verification mode was not run because raw transfer was unavailable. Do not call the probe a complete native test suite or production repair.
 
-Product implementation belongs on the lawful shared dependency carrier and one Materials consumer carrier from then-current main after reconciliation. #7796 remains the research/design carrier. The task names above are not jobs and no worker is claimed to be executing.
+Consume the shared-owner answer, then request acceptance/amendment of AM1–AM3 and confirmation of AM4 on #7773, referencing code carrier #7870 and the R11 artifact. Do not duplicate the old R10 request, recreate shared work, assign the upstream receiver another mission or poll unchanged state. After exact shared amendments/profile are accepted, update only affected R9 signatures and tests and arrange a lawful bounded Materials implementation assignment. Until then preserve live admission/custody holds and advance only independently useful scoped design/evaluation work.
 
-## 6. The five-document, four-company acceptance contract
-
-**Nutrien:** preserve the specified product, price, cost, margin and comparison period. Show why higher prices are not necessarily improved retained economics; do not generalize one segment to every phosphate producer.
-
-**NOVONIX, two documents:** show the customer-test statement and later nonbinding MOU as separate propositions. A newer collaboration cannot mark customer qualification complete. An internal test is not a customer acceptance receipt.
-
-**Wheaton / Antamina:** distinguish the source-described contractual metal/cash entitlement from mine ownership, operating control and additional physical supply. Do not silently extrapolate a contract across thresholds or unknown terms.
-
-**Weyerhaeuser:** distinguish cash after total stated investment from an issuer-adjusted distribution measure. An adjustment does not erase an actual cash payment or make growth spending recurring distributable cash.
-
-The actual source URLs/locators and prior economic calculations remain in R8's manifest and their relevant annexes. They must become properly retained and reviewed native records; a web citation is not that admission receipt. Each positive subject requires the correct actual company route. AMS and the held China comparison render honest unavailable states. A missing-data card alone cannot complete the product.
-
-## 7. Required real proof
-
-At the implemented head, show accepted original source through the native owner into the entitled API and the real compiled existing page. Record code revision, source generation, actual rights version and company-route receipts. Exercise desktop/mobile, English/Chinese and dark/light plus keyboard interactions and the existing source-return journey.
-
-Negative access tests must prove authentication and entitlement happen before private reads, including malformed URLs, errors and alternate paths. No current premium body in public Git/site artifacts, source maps, browser persistent storage or public object URLs. Old in-flight responses cannot restore content after logout. Already lawfully delivered user copies cannot be promised retroactively recalled.
-
-Frozen-input comparison must show existing baskets, recommendation verbs, ranking, entry gates, sizing and trade behavior unchanged. A schema test, code commit, CI success, merge, deployment or screenshot in isolation is insufficient. Independent review stays independent. Do not waive the four-company navigation contract when one identity is hard to resolve.
-
-## 8. No-redo and known limits
-
-Preserve R1–R9 research. Do not repeat accepted arithmetic or the rights-cache diagnosis unless the source or test boundary materially changes. R9's probe remains11 matching observations plus one unmet revocation requirement, not a fixed defect or a live-leak allegation.
-
-The prior #7669 body/head disagreement remains historical evidence until fresh execution reconciliation. The old #7462 branch/head is not proof of live or expired custody. A failed runtime lookup would leave liveness unknown, not license a replacement writer.
-
-All geographic, source-contract, commercial-series, customer, reserve/resource and predictive-evaluation limitations remain in the annexes. V0 is a useful first release, not complete global coverage. Pure hypotheses and scenarios never become unlabelled actuals or calibrated probabilities.
-
-No current private source, guessed retention hash, synthetic identity masquerading as real, new provider credentials, unapproved spending or automatic trade effect is permitted. No duplicate evidence, identity, lifecycle, correction, publication, queue or watcher authority.
-
-## 9. Placement and continuity
-
-Current connector discovery did not establish an Executive placement tool. The exact existing Robotics Fable operation had no match in the bounded Slack search. These facts do not prove that the runtime is down or that no worker exists. No replacement receiver is selected on that basis.
-
-Preserve this packet in the current Agent OS/GitHub program with unbound placement. Do not broadcast it as OPEN_PICKUP, request routine Chairman account allocation or arm a watcher for a nonexistent receiver. When the existing placement owner or current deliberate live delivery selects a concrete eligible session, that assignment is recorded separately; the receiver re-pins, reconciles its carrier and source custody, acknowledges pickup and starts only its permitted work.
-
-An actual assigned receiver uses the existing lawful return path. A GitHub dependency comment is not receiver ACK. This packet alone implies no continued background execution.
-
-## 10. Completion and residual program
-
-The bounded integration outcome is accepted only when the selected V0 user journey and its negative-access/unchanged-policy proof are real. Preserve subsequent V1 comparable changes, V2 conditional economics, V3 evaluated proactive discovery and V4 broader regional/company learning with their existing owners.
-
-Sol's research responsibility does not vanish on packet publication. Full parent completion, receiver handoff acceptance and release acceptance must each be recorded truthfully. The next action is the specific shared-profile response and compatible execution binding, not another general sector survey or another handoff rewrite.
+No Materials receiver, ACK, START or autonomous continuation is asserted by publication of this packet. Mission complete remains false.
