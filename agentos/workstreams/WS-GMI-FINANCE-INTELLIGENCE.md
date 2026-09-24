@@ -76,9 +76,14 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Dispatch Wave 1 fabric lanes fin_t1_contract and fin_t3_overlap on mini2, then
-  fin_t2_projection and fin_t4_private once the frozen schema lands; seat consumes
-  returns, reviews seams, merges on concluded green.
+  Chairman directive 2026-09-24 (Astra CEO): Finance integrates into the Semiconductor-built
+  shared foundation and never rebuilds base layers — T4/T5/T6/T7 HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). Continue the
+  Finance-only layers: merge T3 (#7900), dispatch T2 projection, land D1a/D1b design
+  (#7903) after the Opus audit, build T8 shell + hydration behind FI_READ_URL and T9 entry
+  points; then integrate (assertion→source_records adapter, packet transcription into the
+  shared admission path, composed-dossier serving on the foundation's route) once #7870's
+  foundation is accepted on main.
 ---
 
 # Finance Intelligence workstream
