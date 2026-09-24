@@ -1,0 +1,62 @@
+{
+  "schema": "mastermind.ship_loop_wait.v1",
+  "branch": "claude/finance-t8-dossier-page-shell",
+  "head_sha": "febb53c9730a3f9bbd5c0df3efd1b6c9b1a84c1d",
+  "head_subject": "feat(finance-intelligence): dossier page shell + client hydration from the frozen design spec (Finance T8)",
+  "upstream": "origin/claude/finance-t8-dossier-page-shell",
+  "stop_reason": "unmerged",
+  "stop_hook_blocks_observed_against_this_branch": 4,
+  "durable_watcher": {
+    "command": "gh pr view --repo mastermindx-market-intelligence/macro --head claude/finance-t8-dossier-page-shell --json number,state,mergeStateStatus,statusCheckRollup,url",
+    "cadence_seconds": 900
+  },
+  "lane_constraints": {
+    "LANE_PR_BRANCH": "main",
+    "lane_git_shim_refuses": [
+      "git push with refspec (lane branch != main)",
+      "git rebase",
+      "git filter-branch/filter-repo/replace",
+      "git commit --amend",
+      "git branch -m/-M"
+    ],
+    "lane_gh_shim_refuses_executor": [
+      "gh pr create|close|reopen|merge|ready|review|lock",
+      "gh pr edit --add-label|--remove-label|--title|-t|--base|-B|...",
+      "gh api -X|--method|-f|-F|--raw-field|--field|--input",
+      "gh workflow run|enable|disable",
+      "gh run cancel|rerun|delete",
+      "gh repo delete|create",
+      "gh release create|delete",
+      "gh secret set",
+      "gh variable set",
+      "gh issue create|close",
+      "gh label create|delete"
+    ],
+    "bypass_authority": "LANE_GUARD_OFF=1 — seat-only, not executor"
+  },
+  "seat_action_required": [
+    "Set LANE_GUARD_OFF=1 (or use lane automation) to bypass executor shims.",
+    "Open DRAFT PR: gh pr create --repo mastermindx-market-intelligence/macro --draft --base main --head claude/finance-t8-dossier-page-shell --title 'feat(finance-intelligence): dossier page shell + client hydration from the frozen design spec (Finance T8)' --body <verbatim body in this session's prior STATUS report>.",
+    "Arm merge-on-green: gh pr edit <NUMBER> --add-label merge-on-green.",
+    "Wait ci.yml/fences.yml to conclude on the head.",
+    "Squash-merge the PR.",
+    "Verify live (render asset pair, finance_intelligence.* byte parity)."
+  ],
+  "exit_ladder_status": {
+    "consecutive_blocks": 4,
+    "total_blocks": 4,
+    "threshold_any_code_consecutive": 10,
+    "threshold_any_code_total": 15,
+    "qualifies_for_SKIP_BLOCKED_exit": false,
+    "rationale": "standing rule: WAIT on external machinery does not qualify for ladder exit; one-line hold note is the lawful response; polling banned beyond the armed watcher."
+  },
+  "evidence_already_landed_locally": {
+    "tests_pass": "python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q -> 24 passed in 2.31s",
+    "js_validates": "node --check templates/finance_intelligence.js -> JS OK",
+    "byte_parity": "diff -q templates/finance_intelligence.{js,css} site/finance_intelligence.{js,css} -> identical",
+    "render": "python -m scripts.build_finance_intelligence_page -> wrote site/finance_intelligence.html",
+    "branch_pushed": "git ls-remote --heads origin claude/finance-t8-dossier-page-shell -> febb53c9730a3f9bbd5c0df3efd1b6c9b1a84c1d refs/heads/claude/finance-t8-dossier-page-shell",
+    "upstream_attached": "git push -u origin claude/finance-t8-dossier-page-shell -> Everything up-to-date; branch set up to track origin/claude/finance-t8-dossier-page-shell",
+    "evidence_dir": "mockups/evidence/finance-t8-shell/ (23 shots + manifest.json + EVIDENCE.yml + this SHIP_LOOP_WAIT.json)"
+  }
+}
