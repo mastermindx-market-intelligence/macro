@@ -135,3 +135,42 @@ intentionally refuse duplicate registration. Native qualification and independen
 review remain owed. The next new candidate needs a distinct hypothesis/freeze/
 TrialLedger entry, not a rewrite of negative results. Intended resume: current
 program or fresh Chairman-assigned session after same-source reconciliation.
+
+
+## Continuation: phase/reset technical hypothesis evaluated and not promoted
+
+Fresh protected procedure for this continuation: Mastermind
+819abc8c23609cdded2b33f6e1bfc7854bd5c847, Skillpack1.0.1/bootstrap1.
+Current source carrier remained PR7909 / claude/rates-direction-20260924-sol-001;
+unexpected branch movement was reconciled before new effects and was the prior
+completed swing work, not an unresolved modifier.
+
+A distinct seen-history phase/reset study was frozen before opening outcomes at
+8e6936cfa4218188cb366c848b1fa83005af5b07, 2026-09-24T15:01:12.467332Z.
+It used the already-preserved two-year ^TNX capture
+1dc7e9121fd6aa36c5019beba303b629257eb1cab752ae937e4cef1aa8161b76 and
+registered exactly7 new configs in family ric_swing_phase_reset_v1. History was
+explicitly marked seen by the prior program; no prospective or holdout claim.
+
+Primary discovery partition:1597 scored origins /401 source dates. Incumbent
+five-bar trend/vol Brier0.665530. EMA20 broad-trend/vol Brier0.669350,0.574%
+worse. SHALLOW_MPR primary had3 active origins,1 resolved non-overlap episode,
+0 directional successes and exactly zero Brier improvement versus the weaker EMA20
+baseline. None of seven candidates reached50 resolved episodes. P_RESET +0.049%
+and PR_RESET +0.036% versus the weaker phase baseline were tiny, underpowered and
+non-significant; neither beats the incumbent baseline. Same-author audit recomputed
+all partition/model Briers, normalized probabilities, purged clocks, unique origins,
+ledger prefix and seven-row suffix. Independent review remains absent.
+
+Do not tune these technical phase/reset thresholds on the same seen source or promote
+a post-result directional subset. Preserve DEC:RIC-PHASE-RESET-NO-PROMOTION and the
+prior crossover no-promotion ruling. Oscillator phase remains eligible only as
+context/incremental timing in a materially different hypothesis.
+
+New scientific frontier: macro-driver-conditioned rates direction. Build on incumbent
+RIC sources/owners for policy-path repricing, real-yield/breakeven decomposition,
+growth/inflation surprise state, event density, Treasury auction/supply context and
+cross-asset response. The next model must compare those driver states against the
+existing trend/vol baseline and only then test oscillator phase as incremental.
+Preserve RD1, crossover and phase/reset null results; no live forecast, equity-risk
+switch, alert, rank, size, gate or trade authority exists. Parent mission incomplete.
