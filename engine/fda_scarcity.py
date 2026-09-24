@@ -120,7 +120,10 @@ def _duration_text(seconds):
     return (f"{days} d ago", f"{days}天前")
 
 
-def _label(status, counts, generation, capture_qualified, unclassified_rows, capture_age_s=None, refresh_failed_at=None):
+def _label(
+    status, counts, generation, capture_qualified, unclassified_rows,
+    capture_age_s=None, refresh_failed_at=None, observation_state=None,
+):
     labels = {
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
         _RESOLVED_REPORTED: ("FDA shortage: resolved ({resolved}) — supply status only", "FDA短缺：已解决（{resolved}）——仅供给状态"),
@@ -137,7 +140,13 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows, cap
     english_parts = [english.format(**counts)]
     chinese_parts = [chinese.format(**counts)]
     if status == _UNAVAILABLE:
-        if generation:
+        if observation_state == "NOT_OBSERVED":
+            english_parts[0] = "FDA source not yet observed — no qualified generation on file"
+            chinese_parts[0] = "FDA来源尚未观测——无合格来源生成日期"
+        elif observation_state == "UNREADABLE":
+            english_parts[0] = "FDA source unavailable — last observation unreadable"
+            chinese_parts[0] = "FDA来源不可用——上次观测无法读取"
+        elif generation:
             english_parts[0] = f"FDA source unavailable — last qualified {generation}, refresh failed"
             chinese_parts[0] = f"FDA来源不可用——上次合格为{generation}，刷新失败"
         else:
@@ -238,6 +247,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     label, label_zh = _label(
         source_status, counts, generation, qualified, unclassified_rows,
         capture_age_s=capture_age_s, refresh_failed_at=refresh_failed_at,
+        observation_state=observation.get("observation_state"),
     )
     return {
         "source_status": source_status,
@@ -417,7 +427,7 @@ def _chip_rationale(status, counts):
         _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
         _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
         _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
-        _UNAVAILABLE: "The FDA source is unavailable after a failed refresh.",
+        _UNAVAILABLE: "The FDA source is unavailable.",
     }
     return rationales[status]
 
