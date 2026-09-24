@@ -14,7 +14,7 @@ from pathlib import Path
 CSV_PATH = Path("research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv")
 MANIFEST_PATH = Path("research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json")
 INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
-OUTSIDE_UNION_SHA256 = "b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d"
+OUTSIDE_UNION_SHA256 = "a4fdb5812267ae203faa009ea97dd8c9da3e203c3676d8b4abd33fd95b6355ab"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -55,6 +55,7 @@ UNION_ROWS = set([
   "MO-PAID-007",
   "MO-PAID-008",
   "MO-PAID-010",
+  "MO-PAID-011",
   "MO-PAID-012",
   "MO-PAID-013",
   "MO-PAID-014",
@@ -195,6 +196,10 @@ EXPECTED = {
   "MO-PAID-015": [
     "UPGRADE_EXISTING_OWNER",
     "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-011": [
+    "PROJECTION_ONLY",
+    "PARTIAL"
   ],
   "MO-PAID-070": [
     "NEW_BOUNDED_BUILD",
@@ -454,7 +459,7 @@ def _outside_digest():
 def test_row_shape_vocabulary_and_union_size():
     rows = _rows()
     assert len(rows) == 130
-    assert len(UNION_ROWS) == 80
+    assert len(UNION_ROWS) == 81
     assert set(rows) >= UNION_ROWS
     assert all(r["capability_state_c2"] in CAPABILITY_STATES for r in rows.values())
     assert all(r["capability_state_c2"] != "DONE" for r in rows.values())
@@ -641,8 +646,15 @@ def test_manifest_names_the_single_writer_sources_and_union():
     receipt = data["single_writer_convergence_2026_09_19"]
     assert receipt["operation"] == "marketontology-f00c-single-writer-convergence-20260919-sol-001"
     assert receipt["integration_base_sha"] == INTEGRATION_BASE_SHA
-    assert receipt["union_row_count"] == 80
-    assert set(receipt["union_row_ids"]) == UNION_ROWS
+    # MO-PAID-011 was moved INTO the union by the A seat in 2026-09-24 pass B;
+    # the 2026-09-19 Sol convergence receipt freezes the pre-pass-B 80-row union
+    # (historical block — per spec, "never edit older blocks" in the manifest).
+    historical_union_ids = set(receipt["union_row_ids"])
+    assert historical_union_ids == UNION_ROWS - {"MO-PAID-011"}
+    assert receipt["union_row_count"] == 80  # pre-pass-B
+    # The historical receipt's outside_union_sha256 was computed over the
+    # pre-pass-B outside set (CSV line `MO-PAID-011,...` excluded by spec ruling).
+    HISTORICAL_OUTSIDE_UNION_SHA256 = "b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d"
+    assert receipt["outside_union_sha256"] == HISTORICAL_OUTSIDE_UNION_SHA256
     assert receipt["source_pr_heads"] == SOURCE_HEADS
-    assert receipt["outside_union_sha256"] == OUTSIDE_UNION_SHA256
     assert receipt["csv_commit"] == "e6ea08107305a95b4eda41782c304206b1cb8439"
