@@ -1,0 +1,43 @@
+{
+  "files": {
+    "REPORT.md": {
+      "bytes": 7688,
+      "sha256": "3bd6ee48b4f2b90f3f10e29801f9db3a830aa7bd93c13616118a2096f63f2138"
+    },
+    "bootstrap.json": {
+      "bytes": 1834,
+      "sha256": "665d347ff0da486599a48aefd9fccefc70897ba43a87f8fde680051e80f9cdf6"
+    },
+    "crisis_results.csv": {
+      "bytes": 25536,
+      "sha256": "354f4dba73cd335f184ed58ed8ae79e42cfd5c64032e0bce362d1b12d363ae24"
+    },
+    "episode_results.csv": {
+      "bytes": 49555,
+      "sha256": "214014fe87044fff33bd2615f0ad2aa6d0f095ca692ce30906ee60f65b57b80a"
+    },
+    "era_results.csv": {
+      "bytes": 4508,
+      "sha256": "facd80ef71c8b6432dcc82f455db6f41e775ed11c3c06d622f1e2bf297c1e1c3"
+    },
+    "input_manifest.json": {
+      "bytes": 1976,
+      "sha256": "e6cb25abaa98834cec883dfa56ab5027a164c7161f3a369b950045bd96f0d9f3"
+    },
+    "loco_results.csv": {
+      "bytes": 19246,
+      "sha256": "639c7e7a643e40fda2a77e0512aa8170177fc330431cfdbbcd6b31c4d5aca1b6"
+    },
+    "metrics.csv": {
+      "bytes": 16623,
+      "sha256": "c8fbeff8f5da871e5ab6435502a6fe790aef824f089249a8a652f6fc0a6030b7"
+    },
+    "summary.json": {
+      "bytes": 25910,
+      "sha256": "d81ff90a9dfee48f0a7cb9bb77d20bb35c93ad6ce295a5370222fee8509e22d5"
+    }
+  },
+  "operation_key": "cn-risk-p4-capital-policy-20260923-solpro-001",
+  "prereg_sha": "6caaf30b68b6b327dd7255f8610f8ea613a363ed",
+  "schema": "cn_risk_capital_policy_artifacts.v1"
+}
