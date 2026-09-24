@@ -26,6 +26,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import functools
 import subprocess
 import sys
 import tempfile
@@ -37,6 +38,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 JS_PATH = REPO_ROOT / "site" / "assets" / "js" / "theme-research.js"
+SCHEMA_PATH = (REPO_ROOT / "contracts" / "market_ontology"
+               / "semiconductor_theme_research.v1.schema.json")
 CSS_PATH = REPO_ROOT / "site" / "assets" / "css" / "theme-research.css"
 TPL_PATH = REPO_ROOT / "templates" / "state_of_themes.html.j2"
 
@@ -71,58 +74,27 @@ def css_text() -> str:
 # Synthetic envelope (FROZEN contract — every closed top-level key present)
 # ---------------------------------------------------------------------------
 
+@functools.lru_cache(maxsize=1)
+def _composed_envelope_text() -> str:
+    """The REAL composer's envelope for the synthetic ``witness_hbm_packaging``
+    fixture (economics ready, industrial rows, evidence refs). Cached as text
+    so every test gets a fresh deep copy."""
+    from engine.market_ontology.semiconductor_theme_research import (
+        compose_semiconductor_research,
+    )
+    from tests.semiconductor_research_helpers import load_bundle_case
+    query, bundle = load_bundle_case("witness_hbm_packaging")
+    return json.dumps(compose_semiconductor_research(query, bundle), sort_keys=True)
+
+
 def _envelope(**over) -> dict:
-    body = {
-        "schema": "semiconductor_theme_research.v1",
-        "definition_version": "dv-2026-09-24",
-        "generation": "g1",
-        "request": {
-            "anchor_theme_id": "ai_semiconductors",
-            "slice_key": "hbm_packaging",
-            "view": "composition",
-            "time_mode": "latest",
-            "offset": 0,
-            "limit": 20,
-        },
-        "native_subjects": {"status": "ready", "subjects": []},
-        "summary": {
-            "status": "ready",
-            "what_changed": "Advanced-packaging capacity quotes revised up",
-            "why_it_matters": "Packaging, not wafer capacity, stays the bottleneck",
-            "offset": 0,
-            "next_evidence": "Quarterly capex filings",
-        },
-        "companies": {"status": "ready", "rows": []},
-        "industrial_views": {
-            "status": "ready",
-            "composition": {
-                "status": "ready",
-                "rows": [{
-                    "label": "Packaging share of bill of materials",
-                    "value": "rising",
-                    "note": "coWoS-style capacity sold out",
-                    "label_kind": "fact",
-                }],
-            },
-        },
-        "economics": {"status": "ready", "rows": []},
-        "expectations": {
-            "management": {"status": "ready"},
-            "external_consensus": {"status": "ready"},
-            "house_forecast": {"status": "degraded"},
-            "market_incorporation": {"status": "unavailable"},
-        },
-        "evidence_refs": ["hbm_capex_2026q3", "packaging_supply_note"],
-        "authorized_coverage": {"status": "ready"},
-        "limitations": {"status": "ready"},
-        "authority": {
-            "can_rank": False,
-            "can_gate": False,
-            "can_size": False,
-            "can_originate": False,
-            "can_open_entry": False,
-        },
-    }
+    """The frozen-schema envelope the client must accept — produced by the
+    composer itself. The T10 client was first accepted against a hand-written
+    look-alike that had drifted from the schema (``limitations`` and
+    ``native_subjects`` as status objects, a top-level ``industrial_views``
+    status, string evidence refs); under node the production client refused
+    every real response. The valid case is therefore never hand-written."""
+    body = json.loads(_composed_envelope_text())
     body.update(over)
     return body
 
@@ -162,6 +134,48 @@ def _bad_payloads() -> list[dict]:
     bad.append({"name": "expectation_status_bad", "payload": body})
 
     bad.append({"name": "empty_generation", "payload": _envelope(generation="")})
+
+    # The shapes the first client accepted and the schema forbids: each must
+    # now be refused as invalid_envelope.
+    body = _envelope()
+    body["native_subjects"] = {"status": "ready", "subjects": []}
+    bad.append({"name": "native_subjects_object_not_array", "payload": body})
+
+    body = _envelope()
+    body["limitations"] = {"status": "ready", "entries": ["drifted shape"]}
+    bad.append({"name": "limitations_object_not_array", "payload": body})
+
+    body = _envelope()
+    body["limitations"] = ["ok_token", 7]
+    bad.append({"name": "limitations_non_string_entry", "payload": body})
+
+    body = _envelope()
+    body["limitations"] = [""]
+    bad.append({"name": "limitations_empty_string_entry", "payload": body})
+
+    body = _envelope()
+    body["industrial_views"].pop("economics")
+    bad.append({"name": "industrial_views_missing_view", "payload": body})
+
+    body = _envelope()
+    body["industrial_views"]["status"] = "ready"
+    bad.append({"name": "industrial_views_top_level_status", "payload": body})
+
+    body = _envelope()
+    body["industrial_views"]["composition"]["status"] = "ok"
+    bad.append({"name": "industrial_view_status_bad", "payload": body})
+
+    body = _envelope()
+    body["economics"].pop("witness_gate")
+    bad.append({"name": "economics_missing_witness_gate", "payload": body})
+
+    body = _envelope()
+    body["economics"]["management"] = "ready"
+    bad.append({"name": "economics_management_not_object", "payload": body})
+
+    body = _envelope()
+    body["evidence_refs"] = {"status": "ready"}
+    bad.append({"name": "evidence_refs_object_not_array", "payload": body})
     return bad
 
 
@@ -201,7 +215,7 @@ results.drop_epoch =
 var sC = {epoch: 7, principalKey: 'user-A', payload: null, error: null, generation: null, selection: null};
 results.accept = (applyResearchResponse(sC, 7, 'user-A', cases.valid) === true);
 results.accept_state =
-  (sC.payload === cases.valid && sC.generation === 'g1' && sC.error === null);
+  (sC.payload === cases.valid && sC.generation === cases.valid.generation && sC.error === null);
 
 /* every mutation → invalid_envelope, payload stays null */
 results.rejects = {};
@@ -607,15 +621,16 @@ def test_limitations_model_unavailable_yields_status_word(js_text):
     word instead of an empty region. Coverage status is reported
     independently so the caveat line is never blank."""
     out = _run_review_battery(js_text)
-    for label, model in (
-        ("lim_unavailable", out["lim_unavailable"]),
-        ("lim_empty", out["lim_empty"]),
-    ):
+    unavailable = out["lim_unavailable"]
+    assert unavailable["limitations"] is None and unavailable["limitationsStatus"] == "unavailable", (
+        f"the drifted object shape must yield null entries + 'unavailable'; got: {unavailable}"
+    )
+    empty = out["lim_empty"]
+    assert empty["limitations"] == [] and empty["limitationsStatus"] == "ready", (
+        f"an empty limitations array is a valid, empty read; got: {empty}"
+    )
+    for label, model in (("lim_unavailable", unavailable), ("lim_empty", empty)):
         assert model is not None, f"{label}: limitationsModel not executed under node"
-        assert model["limitations"] is None, (
-            f"{label}: non-success / empty envelope must yield null entries; "
-            f"got: {model['limitations']!r}"
-        )
         # Coverage status is whatever the payload carried (the caveat line
         # is always rendered, never an empty region).
         assert model["coverageStatus"] in ("ready", "degraded", "unavailable", "refused"), (
@@ -900,18 +915,40 @@ results.opt_zh = optionLabelsFor('zh');
 
 /* limitationsModel under node */
 results.lim_ready = limitationsModel({
-  limitations: { status: 'ready', entries: ['paid data ends at fiscal Q3'] },
+  limitations: ['omitted:private_assertions_unbound', 'witness_economics_missing'],
   authorized_coverage: { status: 'ready' }
 });
 results.lim_unavailable = limitationsModel({
-  limitations: { status: 'unavailable' },
+  limitations: { status: 'ready', entries: ['the drifted object shape'] },
   authorized_coverage: { status: 'ready' }
 });
 results.lim_empty = limitationsModel({
-  limitations: { status: 'ready', entries: [] },
+  limitations: [],
   authorized_coverage: { status: 'degraded' }
 });
 results.lim_null = limitationsModel(null);
+results.lim_real = limitationsModel(cases.valid);
+
+/* economicsModel: the management triple as rows (real composer envelope) */
+results.econ = economicsModel(cases.valid);
+results.econ_null = economicsModel(null);
+results.econ_unavailable = economicsModel({economics: {status: 'unavailable', reason: 'management_sequence_missing',
+  input_refs: [], management: null, witness_gate: 'missing'}});
+results.econ_unmapped = economicsModel({economics: {status: 'ready', input_refs: ['e1'], witness_gate: 'positive',
+  management: {roles: {prior_outlook: {metric: 'constructor', low: 1, high: 2, unit: 'toString', horizon: '2026Q2', status: 'invented'},
+                       actual: {metric: 'revenue', value: '<b>3</b>', unit: 'usd_billions', fiscal_period: '2026Q2', basis: 'hasOwnProperty'},
+                       new_outlook: null},
+               comparisons: {prior_vs_actual: {status: 'refused', reason: 'range_missing', position: null}}}}});
+
+/* viewRowModel on the real composition rows + evidenceRefsModel */
+results.view_rows = cases.valid.industrial_views.composition.rows.map(viewRowModel);
+results.view_row_scalar = viewRowModel('<i>plain</i>');
+results.evidence = evidenceRefsModel(cases.valid);
+results.evidence_mixed = evidenceRefsModel({evidence_refs: [
+  {kind: 'assertion', assertion_ref: 'gmi-curation://ai_semiconductors/gmirca_' + 'a'.repeat(32), curation_revision: 'gmirca_' + 'a'.repeat(32)},
+  {kind: 'native', owner_store: 'earnings', native_identity: {}, reference_id: 'evt_x'},
+  'a bare string is not a ref', {kind: 'assertion'}, null
+]});
 
 /* classifyFetchStatus under node */
 results.cls_401 = classifyFetchStatus(401);
@@ -1085,3 +1122,155 @@ def test_chip_class_token_is_whitelisted_against_the_label_map(js_text):
 
 def test_pager_never_prints_rows_one_to_zero(js_text):
     assert "var from = rowCount === 0 ? 0 : offset + 1;" in _fn_body(js_text, "renderPager")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# T10g — the client contract is the FROZEN v1 schema, and the economics pane
+# renders the management triple. Discovered at the seat (2026-09-24): under
+# node the production client refused the real composer envelope
+# ("section native_subjects is missing or not an object") because the suite's
+# hand-written valid case had drifted from the schema.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_valid_case_is_the_real_composer_output_and_validates_against_the_frozen_schema():
+    import jsonschema  # noqa: PLC0415
+    payload = _envelope()
+    jsonschema.validate(payload, json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
+    assert isinstance(payload["limitations"], list)
+    assert isinstance(payload["native_subjects"], list)
+    assert set(payload["industrial_views"]) == {"composition", "manufacturing", "commercial", "capacity", "economics"}
+    assert payload["economics"]["status"] == "ready" and payload["economics"]["management"] is not None
+    assert all(isinstance(ref, dict) for ref in payload["evidence_refs"])
+
+
+@needs_node
+def test_drifted_shapes_are_rejected_and_the_real_envelope_is_accepted(js_text):
+    out = _run_battery(js_text)
+    assert out["validate_ok"] is True and out["accept"] is True
+    for name in ("native_subjects_object_not_array", "limitations_object_not_array",
+                 "limitations_non_string_entry", "limitations_empty_string_entry",
+                 "industrial_views_missing_view", "industrial_views_top_level_status",
+                 "industrial_view_status_bad", "economics_missing_witness_gate",
+                 "economics_management_not_object", "evidence_refs_object_not_array"):
+        assert out["rejects"][name] is True, name
+
+
+@needs_node
+def test_limitations_model_reads_the_real_string_array(js_text):
+    out = _run_review_battery(js_text)
+    real = out["lim_real"]
+    assert real["limitationsStatus"] == "ready" and isinstance(real["limitations"], list)
+    assert real["coverageStatus"] in ("ready", "degraded", "unavailable", "refused")
+
+
+def _js_num(value) -> str:
+    """How node's ``String(n)`` spells a JSON number the composer emitted as a
+    Python float (``15.0`` → ``"15"``): the client never reformats figures, so
+    the test must not expect Python's spelling."""
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
+
+
+@needs_node
+def test_economics_model_yields_the_management_triple_rows_bilingually(js_text):
+    """W-A/W-B visible result: prior outlook, reported actual, new outlook,
+    the prior-vs-actual comparison and the witness gate, each with an EN and
+    a ZH reading; figures pass through as text (no arithmetic)."""
+    out = _run_review_battery(js_text)
+    econ = out["econ"]
+    assert econ["status"] == "ready" and econ["witnessGate"] == "positive"
+    roles = [row["role"] for row in econ["rows"]]
+    assert roles == ["prior_outlook", "actual", "new_outlook", "prior_vs_actual", "witness_gate"]
+    payload = _envelope()
+    mgmt = payload["economics"]["management"]
+    actual_row = next(row for row in econ["rows"] if row["role"] == "actual")
+    assert _js_num(mgmt["roles"]["actual"]["value"]) in actual_row["value"][0]
+    assert _js_num(mgmt["roles"]["actual"]["value"]) in actual_row["value"][1]
+    prior_row = econ["rows"][0]
+    assert _js_num(mgmt["roles"]["prior_outlook"]["low"]) in prior_row["value"][0]
+    assert _js_num(mgmt["roles"]["prior_outlook"]["high"]) in prior_row["value"][0]
+    assert mgmt["roles"]["prior_outlook"]["horizon"] in prior_row["note"][0]
+    # The synthetic fixture's metric/unit slugs (``revenue_usd_bn`` /
+    # ``USD_bn``) are NOT the owner vocabulary the client maps (``revenue`` /
+    # ``usd_billions``, the reader's guidance-history grammar): they render the
+    # typed 'Unmapped label' pair, never the raw slug. The served W-A/W-B
+    # payload (real vocabulary) is rendered under node by the served proof.
+    for slug in (mgmt["roles"]["prior_outlook"]["metric"], mgmt["roles"]["prior_outlook"]["unit"]):
+        if slug not in ("revenue", "usd_billions", "usd_millions"):
+            assert slug not in prior_row["value"][0] and "Unmapped label" in prior_row["value"][0]
+    for row in econ["rows"]:
+        assert isinstance(row["value"], list) and len(row["value"]) == 2
+        assert isinstance(row["note"], list) and len(row["note"]) == 2
+        assert row["value"][0] and row["value"][1], row
+        assert re.search(r"[一-鿿]", row["value"][1]) or row["value"][0] == row["value"][1], row
+        for text in row["value"] + row["note"]:
+            for token in ("can_rank", "can_gate", "can_size", "can_originate", "can_open_entry",
+                          "rank", "entry", "size"):
+                assert token not in text.lower().split(), (token, text)
+    assert econ["inputRefs"] == payload["economics"]["input_refs"]
+    assert out["econ_null"]["rows"] is None
+    assert out["econ_unavailable"]["rows"] is None and out["econ_unavailable"]["status"] == "unavailable"
+
+
+@needs_node
+def test_economics_model_never_renders_raw_slugs_or_prototype_keys(js_text):
+    """Unknown metric/unit/basis/status tokens (including prototype-key names
+    and markup) render the typed 'Unmapped label' pair; a null role is
+    skipped; the actual figure is literal text."""
+    out = _run_review_battery(js_text)
+    econ = out["econ_unmapped"]
+    roles = [row["role"] for row in econ["rows"]]
+    assert roles == ["prior_outlook", "actual", "prior_vs_actual", "witness_gate"]
+    prior = econ["rows"][0]
+    assert "Unmapped label" in prior["value"][0] and "constructor" not in prior["value"][0]
+    assert "toString" not in prior["value"][0] and "invented" not in prior["note"][0]
+    actual = econ["rows"][1]
+    assert "<b>3</b>" in actual["value"][0] and "hasOwnProperty" not in actual["note"][0]
+    cmp = econ["rows"][2]
+    assert cmp["value"][0].startswith("Comparison refused") and "range missing" in cmp["note"][0]
+
+
+@needs_node
+def test_view_row_model_maps_frozen_industrial_rows_to_cells(js_text):
+    out = _run_review_battery(js_text)
+    rows = out["view_rows"]
+    assert rows, "the fixture composition view has rows"
+    source_rows = _envelope()["industrial_views"]["composition"]["rows"]
+    for cell, raw in zip(rows, source_rows):
+        assert set(cell) == {"label_kind", "label", "value", "note"}
+        assert cell["label"], raw
+        assert cell["label_kind"] in (None, "fact", "target")
+        if raw["statement_mode"] == "REPORTED_FACT":
+            assert cell["label_kind"] == "fact"
+        assert raw["assertion_ref"] not in cell["label"]  # refs are receipts, not labels
+        if raw["source_business_label"]:
+            assert raw["source_business_label"] in cell["note"]
+    scalar = out["view_row_scalar"]
+    assert scalar["label"] == "<i>plain</i>" and scalar["label_kind"] is None
+
+
+@needs_node
+def test_evidence_refs_model_separates_assertion_and_native_refs(js_text):
+    out = _run_review_battery(js_text)
+    real = out["evidence"]
+    source = _envelope()["evidence_refs"]
+    assert len(real) == len(source)
+    for entry, raw in zip(real, source):
+        if raw["kind"] == "assertion":
+            assert entry["ref"] == raw["assertion_ref"] and entry["label"] == raw["curation_revision"]
+        else:
+            assert entry["ref"] is None and entry["label"] == raw["reference_id"]
+    mixed = out["evidence_mixed"]
+    assert [e["kind"] for e in mixed] == ["assertion", "native"]
+    assert mixed[1]["ref"] is None and mixed[1]["label"] == "evt_x"
+
+
+def test_render_table_prefers_the_management_triple_for_the_economics_view(js_text):
+    body = js_text[js_text.index("function renderTable()"):js_text.index("function appendStatusRow(")]
+    assert "economicsModel(state.payload)" in body
+    assert "appendEconomicsRow" in body and "appendIndustrialRow" in body
+    assert "viewRowModel(" in js_text[js_text.index("function appendIndustrialRow"):js_text.index("function renderTable()")]
+    evidence = js_text[js_text.index("function renderEvidence()"):js_text.index("function renderPager()")]
+    assert "evidenceRefsModel(state.payload)" in evidence
+    assert "String(ref)" not in evidence

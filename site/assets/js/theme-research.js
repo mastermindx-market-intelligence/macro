@@ -43,10 +43,14 @@
     'summary', 'companies', 'industrial_views', 'economics', 'expectations',
     'evidence_refs', 'authorized_coverage', 'limitations', 'authority'
   ];
-  var TR_SECTION_KEYS = [
-    'native_subjects', 'summary', 'companies', 'industrial_views', 'economics',
-    'authorized_coverage', 'limitations'
-  ];
+  /* Frozen v1 shapes (contracts/market_ontology/semiconductor_theme_research.v1.schema.json):
+   * these four sections are objects carrying a closed status word;
+   * `industrial_views` is an object with exactly the five view keys, each a
+   * status-bearing view; `native_subjects`, `evidence_refs` and `limitations`
+   * are ARRAYS (limitations: non-empty strings). An envelope that models any
+   * of them differently is not the contract and is refused. */
+  var TR_SECTION_KEYS = ['summary', 'companies', 'economics', 'authorized_coverage'];
+  var TR_ARRAY_KEYS = ['native_subjects', 'evidence_refs', 'limitations'];
   var TR_EXPECTATION_KEYS = [
     'management', 'external_consensus', 'house_forecast', 'market_incorporation'
   ];
@@ -85,13 +89,16 @@
     }
     var lim = payload.limitations;
     var cov = payload.authorized_coverage;
-    var limStatus = (lim && typeof lim === 'object' && !Array.isArray(lim))
-      ? lim.status : undefined;
     var covStatus = (cov && typeof cov === 'object' && !Array.isArray(cov))
       ? cov.status : undefined;
+    /* v1: `limitations` is an array of non-empty strings (possibly empty).
+     * Anything else is not the contract → null entries + 'unavailable' so the
+     * renderer prints a status word, never an empty region. */
     var entries = null;
-    if (limStatus === 'ready' && lim && Array.isArray(lim.entries) && lim.entries.length) {
-      entries = lim.entries;
+    var limStatus = 'unavailable';
+    if (Array.isArray(lim) && lim.every(function (e) { return typeof e === 'string' && e.length > 0; })) {
+      entries = lim.slice();
+      limStatus = 'ready';
     }
     return { limitations: entries, limitationsStatus: limStatus, coverageStatus: covStatus };
   }
@@ -247,22 +254,38 @@
       if (!_validStatus(section.status)) {
         return { ok: false, reason: 'section ' + key + ' has an invalid status' };
       }
-      /* industrial_views carries a closed status word PLUS per-view entries;
-       * every entry's own status must also be one of the closed words. */
-      if (key === 'industrial_views') {
-        var ivKeys = Object.keys(section);
-        for (var iv = 0; iv < ivKeys.length; iv++) {
-          var ivk = ivKeys[iv];
-          if (ivk === 'status') continue;
-          var sub = section[ivk];
-          if (!sub || typeof sub !== 'object' || Array.isArray(sub)) {
-            return { ok: false, reason: 'industrial_views.' + ivk + ' is not an object' };
-          }
-          if (!_validStatus(sub.status)) {
-            return { ok: false, reason: 'industrial_views.' + ivk + ' has an invalid status' };
-          }
-        }
+    }
+    for (var r = 0; r < TR_ARRAY_KEYS.length; r++) {
+      var arrKey = TR_ARRAY_KEYS[r];
+      if (!Array.isArray(payload[arrKey])) {
+        return { ok: false, reason: 'section ' + arrKey + ' must be an array' };
       }
+    }
+    if (!payload.limitations.every(function (e) { return typeof e === 'string' && e.length > 0; })) {
+      return { ok: false, reason: 'limitations entries must be non-empty strings' };
+    }
+    /* industrial_views: exactly the five closed views, each status-bearing */
+    var views = payload.industrial_views;
+    if (!views || typeof views !== 'object' || Array.isArray(views) || !_sameKeySet(views, TR_VIEW_KEYS)) {
+      return { ok: false, reason: 'industrial_views is not the closed view set' };
+    }
+    for (var iv = 0; iv < TR_VIEW_KEYS.length; iv++) {
+      var ivk = TR_VIEW_KEYS[iv];
+      var sub = views[ivk];
+      if (!sub || typeof sub !== 'object' || Array.isArray(sub)) {
+        return { ok: false, reason: 'industrial_views.' + ivk + ' is not an object' };
+      }
+      if (!_validStatus(sub.status)) {
+        return { ok: false, reason: 'industrial_views.' + ivk + ' has an invalid status' };
+      }
+    }
+    /* economics carries the management triple (or null) and a witness gate word */
+    var econ = payload.economics;
+    if (typeof econ.witness_gate !== 'string' || !econ.witness_gate) {
+      return { ok: false, reason: 'economics.witness_gate must be a non-empty string' };
+    }
+    if (econ.management !== null && (!econ.management || typeof econ.management !== 'object' || Array.isArray(econ.management))) {
+      return { ok: false, reason: 'economics.management must be null or an object' };
     }
     var expectations = payload.expectations;
     if (!expectations || typeof expectations !== 'object' || Array.isArray(expectations)) {
@@ -337,6 +360,174 @@
       try { return JSON.stringify(value); } catch (e) { return String(value); }
     }
     return String(value);
+  }
+
+  /* ---- economics: the management sequence triple, rendered as rows ------ */
+
+  /* Closed bilingual maps for the tokens the composer's economics pane may
+   * carry (engine/company_intelligence/guidance_history.py vocab). Unknown
+   * tokens render the typed 'Unmapped label' pair — a raw internal slug never
+   * reaches the screen. Figures are never parsed or computed: they pass
+   * through textSafe as text. */
+  var TR_ECON_ROLES = ['prior_outlook', 'actual', 'new_outlook'];
+  var TR_ECON_LABELS = {
+    role: {
+      prior_outlook: ['Prior outlook', '此前展望'],
+      actual: ['Reported actual', '实际报告值'],
+      new_outlook: ['New outlook', '最新展望'],
+      prior_vs_actual: ['Prior outlook vs actual', '此前展望对比实际'],
+      witness_gate: ['Witness gate', '见证门槛']
+    },
+    metric: { revenue: ['Revenue', '营收'] },
+    unit: { usd_billions: ['US$ bn', '十亿美元'], usd_millions: ['US$ m', '百万美元'] },
+    basis: { reported_ifrs: ['reported, IFRS', '报告值（IFRS）'], reported_gaap: ['reported, GAAP', '报告值（GAAP）'] },
+    outlook_status: {
+      introduced: ['introduced', '首次给出'], reiterated: ['reiterated', '重申'],
+      raised: ['raised', '上调'], lowered: ['lowered', '下调'], withdrawn: ['withdrawn', '撤回']
+    },
+    comparison: {
+      comparable: ['Comparable', '可比'], not_comparable: ['Not comparable', '不可比'],
+      refused: ['Comparison refused', '拒绝比较']
+    },
+    position: {
+      below_range: ['below the prior range', '低于此前区间'],
+      within_range: ['within the prior range', '处于此前区间内'],
+      above_range: ['above the prior range', '高于此前区间']
+    },
+    reason: {
+      fiscal_period_mismatch: ['fiscal period mismatch', '财季不一致'],
+      metric_mismatch: ['metric mismatch', '指标不一致'],
+      unit_mismatch: ['unit mismatch', '单位不一致'],
+      basis_change: ['basis changed', '口径变化'],
+      currency_mismatch: ['currency mismatch', '货币不一致'],
+      perimeter_change: ['perimeter changed', '合并范围变化'],
+      definition_change: ['definition changed', '定义变化'],
+      range_missing: ['range missing', '缺少区间'],
+      different_period: ['different period', '不同期间']
+    },
+    gate: { positive: ['Positive', '成立'], missing: ['Missing', '缺失'] }
+  };
+  var TR_UNMAPPED = ['Unmapped label', '未映射标签'];
+
+  function _bi(map, key) {
+    if (typeof key === 'string' && Object.prototype.hasOwnProperty.call(map, key)) {
+      var e = map[key];
+      if (e && typeof e[0] === 'string' && typeof e[1] === 'string') return [e[0], e[1]];
+    }
+    if (key === null || key === undefined) return ['', ''];
+    return TR_UNMAPPED;
+  }
+  function _same(text) { return [text, text]; }
+  function _joinBi(parts, sep) {
+    var en = [], zh = [];
+    parts.forEach(function (p) {
+      if (p && p[0]) en.push(p[0]);
+      if (p && p[1]) zh.push(p[1]);
+    });
+    return [en.join(sep), zh.join(sep)];
+  }
+  function _rangeText(low, high) {
+    var lo = textSafe(low), hi = textSafe(high);
+    if (lo && hi) return [lo, hi].join(' – ');
+    return lo || hi;
+  }
+
+  /* economicsModel(payload) → { status, rows, witnessGate, inputRefs }.
+   * rows are [{ role, value: [en, zh], note: [en, zh] }] for the three
+   * management roles, the prior-vs-actual comparison and the witness gate;
+   * null rows when economics is not ready or carries no management triple
+   * (the renderer prints the section's own status word instead). */
+  function economicsModel(payload) {
+    var empty = { status: null, rows: null, witnessGate: null, inputRefs: [] };
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return empty;
+    var econ = payload.economics;
+    if (!econ || typeof econ !== 'object' || Array.isArray(econ)) return empty;
+    var status = _validStatus(econ.status) ? econ.status : null;
+    var refs = Array.isArray(econ.input_refs)
+      ? econ.input_refs.filter(function (r) { return typeof r === 'string' && r.length > 0; })
+      : [];
+    var gate = typeof econ.witness_gate === 'string' ? econ.witness_gate : null;
+    var mgmt = econ.management;
+    var out = { status: status, rows: null, witnessGate: gate, inputRefs: refs };
+    if (status !== 'ready' || !mgmt || typeof mgmt !== 'object' || Array.isArray(mgmt)) return out;
+    var roles = mgmt.roles;
+    if (!roles || typeof roles !== 'object' || Array.isArray(roles)) return out;
+    var rows = [];
+    TR_ECON_ROLES.forEach(function (roleKey) {
+      var role = roles[roleKey];
+      if (!role || typeof role !== 'object' || Array.isArray(role)) return;
+      var isActual = roleKey === 'actual';
+      var figure = isActual ? textSafe(role.value) : _rangeText(role.low, role.high);
+      var value = _joinBi([_bi(TR_ECON_LABELS.metric, role.metric), _same(figure),
+                           _bi(TR_ECON_LABELS.unit, role.unit)], ' ');
+      var period = _same(textSafe(isActual ? role.fiscal_period : role.horizon));
+      var noteParts = [period, _bi(TR_ECON_LABELS.basis, role.basis)];
+      if (!isActual && role.status !== null && role.status !== undefined) {
+        noteParts.push(_bi(TR_ECON_LABELS.outlook_status, role.status));
+      }
+      rows.push({ role: roleKey, value: value, note: _joinBi(noteParts, ' · ') });
+    });
+    var comparisons = mgmt.comparisons;
+    var cmp = (comparisons && typeof comparisons === 'object') ? comparisons.prior_vs_actual : null;
+    if (cmp && typeof cmp === 'object' && !Array.isArray(cmp)) {
+      var cmpValue = _joinBi([_bi(TR_ECON_LABELS.comparison, cmp.status),
+                              _bi(TR_ECON_LABELS.position, cmp.position)], ' · ');
+      var cmpNote = (cmp.reason === null || cmp.reason === undefined) ? ['', ''] : _bi(TR_ECON_LABELS.reason, cmp.reason);
+      rows.push({ role: 'prior_vs_actual', value: cmpValue, note: cmpNote });
+    }
+    if (gate) {
+      rows.push({ role: 'witness_gate', value: _bi(TR_ECON_LABELS.gate, gate), note: _same(refs.join(' · ')) });
+    }
+    out.rows = rows;
+    return out;
+  }
+
+  /* ---- industrial rows: frozen `industrial_row` → table cells ------------ */
+
+  var TR_STATEMENT_CHIP = { REPORTED_FACT: 'fact', FORWARD_TARGET: 'target' };
+
+  /* viewRowModel(row) → { label_kind, label, value, note } — plain text cells
+   * (source-derived text is not translated). The product/object label leads;
+   * the observation (value[–value_high] unit) or, absent a figure, the stage
+   * in the source's own language is the reading; the business label and
+   * configuration are the note. Never a global product id: selectors are
+   * source-local by contract. */
+  function viewRowModel(row) {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) {
+      return { label_kind: null, label: textSafe(row), value: '', note: '' };
+    }
+    var chipKind = Object.prototype.hasOwnProperty.call(TR_STATEMENT_CHIP, row.statement_mode)
+      ? TR_STATEMENT_CHIP[row.statement_mode] : null;
+    var label = row.source_product_label || row.object_selector || row.selector || row.predicate;
+    var obs = (row.observation && typeof row.observation === 'object') ? row.observation : null;
+    var value = '';
+    if (obs && obs.value !== null && obs.value !== undefined) {
+      value = [_rangeText(obs.value, obs.value_high), textSafe(obs.unit)].filter(Boolean).join(' ');
+    } else if (row.stage_source_language || row.stage) {
+      value = textSafe(row.stage_source_language || row.stage);
+    } else if (row.relation_kind) {
+      value = textSafe(row.relation_kind);
+    }
+    var note = [row.source_business_label, row.configuration, row.model]
+      .filter(function (x) { return typeof x === 'string' && x.length > 0; })
+      .map(textSafe).join(' · ');
+    return { label_kind: chipKind, label: textSafe(label), value: value, note: note };
+  }
+
+  /* ---- evidence refs: assertion refs open the receipt drawer; native refs
+   * are listed by reference id only (no evidence route serves them) ------- */
+  function evidenceRefsModel(payload) {
+    if (!payload || typeof payload !== 'object' || !Array.isArray(payload.evidence_refs)) return [];
+    var out = [];
+    payload.evidence_refs.forEach(function (ref) {
+      if (!ref || typeof ref !== 'object' || Array.isArray(ref)) return;
+      if (ref.kind === 'assertion' && typeof ref.assertion_ref === 'string' && ref.assertion_ref) {
+        out.push({ ref: ref.assertion_ref, label: textSafe(ref.curation_revision || ref.assertion_ref), kind: 'assertion' });
+      } else if (ref.kind === 'native' && typeof ref.reference_id === 'string' && ref.reference_id) {
+        out.push({ ref: null, label: textSafe(ref.reference_id), kind: 'native' });
+      }
+    });
+    return out;
   }
   /* THEME-RESEARCH-CONTRACT-END */
 
@@ -1044,14 +1235,10 @@
     var limLine = el('p', 'tr-line');
     if (model.limitations && model.limitations.length) {
       var span = el('span');
-      span.textContent = textSafe(
-        model.limitations.map(function (entry) {
-          return typeof entry === 'object'
-            ? textSafe(entry.text !== undefined ? entry.text : (entry.value !== undefined ? entry.value : ''))
-            : textSafe(entry);
-        }).join(' · ')
-      );
+      span.textContent = model.limitations.map(textSafe).join(' · ');
       limLine.appendChild(span);
+    } else if (model.limitations) {
+      limLine.appendChild(t('No limitations recorded for this read.', '本次读取未记录限制。'));
     } else {
       var w = pair(L.status, model.limitationsStatus || 'unavailable');
       limLine.appendChild(t(w[0], w[1]));
@@ -1072,6 +1259,39 @@
     limitationsBox.appendChild(covLine);
   }
 
+  function appendEconomicsRow(tbody, row) {
+    var tr = el('tr', 'tr-row-economics');
+    var labelCell = el('td', 'tr-cell-label');
+    var w = pair(TR_ECON_LABELS.role, row.role);
+    labelCell.appendChild(t(w[0], w[1]));
+    var valueCell = el('td');
+    valueCell.appendChild(t(row.value[0], row.value[1]));
+    var noteCell = el('td', 'tr-muted');
+    noteCell.appendChild(t(row.note[0], row.note[1]));
+    tr.appendChild(labelCell);
+    tr.appendChild(valueCell);
+    tr.appendChild(noteCell);
+    tbody.appendChild(tr);
+  }
+
+  function appendIndustrialRow(tbody, raw) {
+    var row = viewRowModel(raw);
+    var tr = el('tr');
+    var labelCell = el('td', 'tr-cell-label');
+    if (row.label_kind) labelCell.appendChild(chip(row.label_kind));
+    var labelSpan = el('span');
+    labelSpan.textContent = row.label;
+    labelCell.appendChild(labelSpan);
+    var valueCell = el('td');
+    valueCell.textContent = row.value;
+    var noteCell = el('td', 'tr-muted');
+    noteCell.textContent = row.note;
+    tr.appendChild(labelCell);
+    tr.appendChild(valueCell);
+    tr.appendChild(noteCell);
+    tbody.appendChild(tr);
+  }
+
   function renderTable() {
     clear(tableWrap);
     if (ui.gate) { tableWrap.hidden = true; return; }
@@ -1090,8 +1310,18 @@
 
     var tbody = el('tbody');
     var section = sectionForView();
+    /* Economics: the management sequence triple (economics.management) is
+     * the pane's content; the assertion-derived industrial economics rows,
+     * when any, follow it. */
+    var econ = currentView === 'economics' ? economicsModel(state.payload) : null;
+    var econRows = (econ && econ.rows && econ.rows.length) ? econ.rows : null;
     if (!state.payload) {
       appendStatusRow(tbody, t('Nothing loaded yet.', '尚未加载内容。'));
+    } else if (econRows) {
+      econRows.forEach(function (row) { appendEconomicsRow(tbody, row); });
+      if (section && section.status === 'ready' && Array.isArray(section.rows)) {
+        section.rows.forEach(function (row) { appendIndustrialRow(tbody, row); });
+      }
     } else if (!section) {
       appendStatusRow(tbody, statusWord('unavailable'));
     } else if (section.status !== 'ready') {
@@ -1102,29 +1332,7 @@
       if (!rows.length) {
         appendStatusRow(tbody, t('No rows in this view yet.', '该视图暂无条目。'));
       }
-      rows.forEach(function (row) {
-        var tr = el('tr');
-        var labelCell = el('td', 'tr-cell-label');
-        if (row && typeof row === 'object') {
-          if (row.label_kind) labelCell.appendChild(chip(row.label_kind));
-          var labelSpan = el('span');
-          labelSpan.textContent = textSafe(row.label);
-          labelCell.appendChild(labelSpan);
-          var valueCell = el('td');
-          valueCell.textContent = textSafe(row.value);
-          var noteCell = el('td', 'tr-muted');
-          noteCell.textContent = textSafe(row.note);
-          tr.appendChild(labelCell);
-          tr.appendChild(valueCell);
-          tr.appendChild(noteCell);
-        } else {
-          labelCell.textContent = textSafe(row);
-          tr.appendChild(labelCell);
-          tr.appendChild(el('td'));
-          tr.appendChild(el('td'));
-        }
-        tbody.appendChild(tr);
-      });
+      rows.forEach(function (row) { appendIndustrialRow(tbody, row); });
     }
     table.appendChild(tbody);
     tableWrap.appendChild(table);
@@ -1171,19 +1379,27 @@
     clear(evidenceList);
     if (ui.gate) { evidenceBox.hidden = true; return; }
     evidenceBox.hidden = false;
-    var refs = (state.payload && Array.isArray(state.payload.evidence_refs))
-      ? state.payload.evidence_refs : [];
+    var refs = evidenceRefsModel(state.payload);
     if (!refs.length) {
       evidenceList.appendChild(mutedLine(t('No evidence receipts in this read.', '本次读取没有证据凭据。')));
       return;
     }
-    refs.forEach(function (ref) {
-      var btn = button('tr-evidence-btn', 'Receipt', '凭据');
-      var label = el('span');
-      label.textContent = ' ' + textSafe(ref);
-      btn.appendChild(label);
-      btn.addEventListener('click', function () { openEvidence(ref, btn); });
-      evidenceList.appendChild(btn);
+    refs.forEach(function (entry) {
+      if (entry.ref) {
+        var btn = button('tr-evidence-btn', 'Receipt', '凭据');
+        var label = el('span');
+        label.textContent = ' ' + entry.label;
+        btn.appendChild(label);
+        btn.addEventListener('click', function () { openEvidence(entry.ref, btn); });
+        evidenceList.appendChild(btn);
+      } else {
+        var line = el('p', 'tr-line tr-muted');
+        line.appendChild(t('Native reference ', '原生引用 '));
+        var span = el('span');
+        span.textContent = entry.label;
+        line.appendChild(span);
+        evidenceList.appendChild(line);
+      }
     });
   }
 
