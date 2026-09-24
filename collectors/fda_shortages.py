@@ -280,15 +280,25 @@ def _selected_state(path):
             }, "legacy": False, "inconsistent": False,
         }
     if not sidecar.exists():
-        frame = pd.read_parquet(path) if path.exists() else _empty_history_frame()
+        inconsistent = False
+        rows = _empty_history_frame()
+        if path.exists():
+            try:
+                rows = pd.read_parquet(path)
+            except Exception:
+                rows = None
+                inconsistent = True
         return {
-            "rows": frame, "capture": None, "last_refresh": None,
+            "rows": rows, "capture": None, "last_refresh": None,
             "history_coverage": {
                 "earliest_qualified_generation": None,
                 "legacy_rows_capture_unknown": True,
                 "forward_retention_started_at": None,
-            }, "legacy": True, "inconsistent": False,
+            }, "legacy": True, "inconsistent": inconsistent,
         }
+    if False:
+        return {
+            "rows": frame, "capture": None, "last_refresh": None,
     try:
         receipt = json.loads(sidecar.read_text())
     except Exception:
@@ -473,7 +483,10 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         "failure_code": result.get("failure_code"),
         "partial_rows_observed": len(result.get("rows") or []),
     }
-    existing = json.loads(sidecar.read_text()) if sidecar.exists() else {}
+    try:
+        existing = json.loads(sidecar.read_text()) if sidecar.exists() else {}
+    except Exception:
+        existing = {}
     receipt = {
         "schema": SCHEMA,
         "selected_capture": existing.get("selected_capture"),
