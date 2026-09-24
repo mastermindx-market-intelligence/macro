@@ -22,7 +22,6 @@ from engine.earnings_narrative.private_publication import (
     validate_private_pointer,
 )
 from engine.company_intelligence.documents import ABSENCE_REASONS
-from engine.research_vault.r2_store import LocalStore
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "industrials_result_cash"
@@ -137,14 +136,36 @@ def shared_identity() -> dict[str, Any]:
     }
 
 
-class _MemoryPublicationStore(LocalStore):
+class _MemoryPublicationStore:
+    """Dict-backed store mirroring only the surfaces _put_verified touches.
+
+    Built from the local Store protocol: ``get_bytes_strict_bounded`` and
+    ``put_bytes``.  No filesystem, no parent class — the harness must never
+    create side-effect bytes on disk in a sparse worktree.
+    """
+
     def __init__(self) -> None:
-        super().__init__(Path(__file__).resolve().parent / ".industrials_publication_memory")
+        self._blobs: dict[str, bytes] = {}
         self.read_count = 0
 
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
         self.read_count += 1
-        return super().get_bytes_strict_bounded(key, maximum_bytes)
+        body = self._blobs.get(key)
+        if body is None:
+            return None
+        if maximum_bytes is not None and len(body) > maximum_bytes:
+            raise ValueError(f"object exceeds maximum_bytes: {key!r}")
+        return body
+
+    def put_bytes(
+        self,
+        key: str,
+        data: bytes,
+        content_type: str = "application/octet-stream",
+    ) -> bool:
+        del content_type
+        self._blobs[key] = data
+        return True
 
 
 class _SyntheticClient:
