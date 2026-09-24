@@ -1,0 +1,414 @@
+{
+  "schema": "cybersecurity_basket_browser_proof.v1",
+  "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+  "expected_core": [
+    "CHKP",
+    "CRWD",
+    "FTNT",
+    "NET",
+    "NTSK",
+    "OKTA",
+    "PANW",
+    "QLYS",
+    "RBRK",
+    "S",
+    "SAIL",
+    "TENB",
+    "VRNS",
+    "ZS"
+  ],
+  "forbidden_adjacent_platforms": [
+    "AMZN",
+    "AVGO",
+    "CSCO",
+    "GOOGL",
+    "IBM",
+    "MSFT"
+  ],
+  "cases": [
+    {
+      "case": "desktop-dark-en",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "en",
+        "theme": "dark",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 1440,
+        "root_scroll_width": 1440,
+        "body_client_width": 1440,
+        "body_scroll_width": 1440,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/desktop-dark-en.jpg",
+      "holdings_screenshot": "browser/desktop-dark-en-holdings.jpg"
+    },
+    {
+      "case": "desktop-light-en",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "en",
+        "theme": "light",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 1440,
+        "root_scroll_width": 1440,
+        "body_client_width": 1440,
+        "body_scroll_width": 1440,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/desktop-light-en.jpg",
+      "holdings_screenshot": null
+    },
+    {
+      "case": "desktop-dark-zh",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "zh",
+        "theme": "dark",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 1440,
+        "root_scroll_width": 1440,
+        "body_client_width": 1440,
+        "body_scroll_width": 1440,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/desktop-dark-zh.jpg",
+      "holdings_screenshot": null
+    },
+    {
+      "case": "desktop-light-zh",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "zh",
+        "theme": "light",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 1440,
+        "root_scroll_width": 1440,
+        "body_client_width": 1440,
+        "body_scroll_width": 1440,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/desktop-light-zh.jpg",
+      "holdings_screenshot": null
+    },
+    {
+      "case": "mobile-dark-en",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "en",
+        "theme": "dark",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 390,
+        "root_scroll_width": 390,
+        "body_client_width": 390,
+        "body_scroll_width": 390,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/mobile-dark-en.jpg",
+      "holdings_screenshot": "browser/mobile-dark-en-holdings.jpg"
+    },
+    {
+      "case": "mobile-light-en",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "en",
+        "theme": "light",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 390,
+        "root_scroll_width": 390,
+        "body_client_width": 390,
+        "body_scroll_width": 390,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/mobile-light-en.jpg",
+      "holdings_screenshot": null
+    },
+    {
+      "case": "mobile-dark-zh",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "zh",
+        "theme": "dark",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 390,
+        "root_scroll_width": 390,
+        "body_client_width": 390,
+        "body_scroll_width": 390,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/mobile-dark-zh.jpg",
+      "holdings_screenshot": null
+    },
+    {
+      "case": "mobile-light-zh",
+      "url": "http://127.0.0.1:18873/basket/cybersecurity.html",
+      "http_status": 200,
+      "state": {
+        "title": "Cybersecurity \u2014 Theme detail",
+        "lang": "zh",
+        "theme": "light",
+        "row_count": 14,
+        "tickers": [
+          "CHKP",
+          "ZS",
+          "VRNS",
+          "CRWD",
+          "RBRK",
+          "S",
+          "NET",
+          "NTSK",
+          "SAIL",
+          "PANW",
+          "TENB",
+          "FTNT",
+          "QLYS",
+          "OKTA"
+        ],
+        "uncovered_tickers": [
+          "NTSK",
+          "SAIL"
+        ],
+        "root_client_width": 390,
+        "root_scroll_width": 390,
+        "body_client_width": 390,
+        "body_scroll_width": 390,
+        "heading": "Cybersecurity\u7f51\u7edc\u5b89\u5168",
+        "holdings_heading": "04Holdings \u2014 own-it conviction + entry timing\u6210\u5206\u80a1 \u2014 \u6301\u6709\u4fe1\u5ff5 + \u5165\u573a\u62e9\u65f6 14 names\u53ea"
+      },
+      "missing_expected": [],
+      "forbidden_present": [],
+      "uncovered_tickers": [
+        "NTSK",
+        "SAIL"
+      ],
+      "horizontal_overflow": false,
+      "console_errors": [],
+      "request_failures": [],
+      "screenshot": "browser/mobile-light-zh.jpg",
+      "holdings_screenshot": null
+    }
+  ]
+}

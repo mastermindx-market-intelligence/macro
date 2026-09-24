@@ -1,0 +1,18 @@
+{
+  "schema": "cybersecurity_basket_store_freshness.v1",
+  "checked_at": "2026-09-24T04:53:59.367657+00:00",
+  "store_max": "2026-09-23",
+  "cybersecurity_additions": [
+    "CHKP",
+    "SAIL",
+    "VRNS",
+    "NTSK"
+  ],
+  "membership_n": 706,
+  "missing_primary_store": [],
+  "absent_all_rungs": [],
+  "sponsored_without_file_count": 0,
+  "estate_status": "stale",
+  "estate_stale_count": 2,
+  "estate_note": "The estate remains stale because of pre-existing unrelated active-member tapes; none of the four cybersecurity additions is missing or stale."
+}

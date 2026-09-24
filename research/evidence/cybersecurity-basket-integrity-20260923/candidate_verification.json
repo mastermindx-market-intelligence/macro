@@ -1,0 +1,90 @@
+{
+  "schema": "basket_addition_verification_receipt.v1",
+  "as_of": "2026-09-23",
+  "baseline_core_members": [
+    "CRWD",
+    "PANW",
+    "FTNT",
+    "OKTA",
+    "QLYS",
+    "ZS",
+    "S",
+    "NET",
+    "RBRK",
+    "TENB"
+  ],
+  "command": "python -m scripts.verify_basket_additions /private/tmp/cyber_basket_proposals.json",
+  "note": "Frozen pre-admission receipt. Run before the four accepted candidates were written into membership.json.",
+  "results": [
+    {
+      "bid": "cybersecurity",
+      "ticker": "CHKP",
+      "status": "pass",
+      "partial_history": false,
+      "corr_y1": 0.521,
+      "corr_wk_y1": 0.575,
+      "corr_dn_y1": 0.305,
+      "corr_full": 0.47,
+      "n_full": 3198,
+      "bar": 0.512,
+      "cohort_med": 0.632,
+      "cohort_worst": 0.104
+    },
+    {
+      "bid": "cybersecurity",
+      "ticker": "SAIL",
+      "status": "pass",
+      "partial_history": false,
+      "corr_y1": 0.746,
+      "corr_wk_y1": 0.771,
+      "corr_dn_y1": 0.592,
+      "corr_full": 0.701,
+      "n_full": 403,
+      "bar": 0.512,
+      "cohort_med": 0.632,
+      "cohort_worst": 0.104
+    },
+    {
+      "bid": "cybersecurity",
+      "ticker": "VRNS",
+      "status": "pass",
+      "partial_history": false,
+      "corr_y1": 0.529,
+      "corr_wk_y1": 0.531,
+      "corr_dn_y1": 0.305,
+      "corr_full": 0.57,
+      "n_full": 3160,
+      "bar": 0.512,
+      "cohort_med": 0.632,
+      "cohort_worst": 0.104
+    },
+    {
+      "bid": "cybersecurity",
+      "ticker": "NTSK",
+      "status": "pass",
+      "partial_history": false,
+      "corr_y1": 0.664,
+      "corr_wk_y1": 0.793,
+      "corr_dn_y1": 0.374,
+      "corr_full": 0.66,
+      "n_full": 254,
+      "bar": 0.512,
+      "cohort_med": 0.632,
+      "cohort_worst": 0.104
+    },
+    {
+      "bid": "cybersecurity",
+      "ticker": "RPD",
+      "status": "pass",
+      "partial_history": false,
+      "corr_y1": 0.65,
+      "corr_wk_y1": 0.697,
+      "corr_dn_y1": 0.371,
+      "corr_full": 0.639,
+      "n_full": 2812,
+      "bar": 0.512,
+      "cohort_med": 0.632,
+      "cohort_worst": 0.104
+    }
+  ]
+}
