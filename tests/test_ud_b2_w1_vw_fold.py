@@ -380,6 +380,17 @@ class TestUDB2W1VwFold:
         assert 'class="mx5-sc-vw"' not in macro_html
         assert 'data-sx-vw-host="mx5-sc-left"' not in macro_html
 
+    def test_risk_detail_layout_is_compact_desktop_and_stacked_mobile(self, macro_html):
+        projection = _shipping_projection(macro_html)
+        assert "body.page-macro .riskdlg-vw .sx-vw-strip{" in projection
+        assert "grid-template-columns:repeat(2,minmax(0,1fr));" in projection
+        assert "@media(max-width:640px)" in projection
+        mobile = projection[projection.index("@media(max-width:640px)"):]
+        assert "body.page-macro .riskdlg-vw .sx-vw-strip" in mobile
+        assert "grid-template-columns:minmax(0,1fr);" in mobile
+        assert "body.page-macro .mx5-sc-vw" not in projection
+
+
     def test_glance_cor1m_and_cor3m_labels_are_distinct(self, macro_html):
         """Glance rows 6/7 (cor1m / cor3m) must not share one label.
         Labels come from the engine's own names, not invented copy.
