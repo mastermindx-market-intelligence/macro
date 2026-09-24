@@ -2,8 +2,8 @@
 
 **Status:** PROPOSED BINDING RULING — independent review required before merge  
 **Decision owner:** Sol / design-system architecture  
-**Observed Macro source:** `fc6db6c1f9a76cadc180c44e386ae928c1a9ccbc`  
-**Protected Sol procedure:** Mastermind@`4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`  
+**Observed Macro source:** `6db3af31f12259acd0ea8d6286c0bbbcff6c99ef`  
+**Protected Sol procedure:** Mastermind@`a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`  
 **Primary live consumer:** `macro:confluence_screener`  
 **Related RIG carrier:** PR #7727 / `confluence-screener-paper-r1`
 
@@ -94,7 +94,7 @@ Its governed reference MUST preserve:
 - the primary user question: “Which names line up across the signal stack today?”;
 - rank 1 public identity/evidence;
 - rank 2–3 public count/evidence with protected identities omitted until entitled hydration;
-- the D/W/confirming-leg depth actually supported by the deterministic builder;
+- the builder-owned variable-length D/W leg stack, including three-leg cases, without minting a special third-leg semantic;
 - recent-vs-older validation truth and runtime-owned values;
 - Dark/Light, EN/ZH, desktop/390 mobile;
 - loading, empty, stale, error, disabled, filter, hover/focus, and applicable interaction states;
