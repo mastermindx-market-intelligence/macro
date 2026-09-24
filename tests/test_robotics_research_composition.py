@@ -719,8 +719,15 @@ def test_ownership_side_is_served_only_from_the_closed_template_grammar():
         ("The perception unit was purchased by Zebra Technologies, effective 15 April 2026",
          "announced_acquirer"),
         ("Zebra Technologies sells the unit to Skild AI for cash", "announced_seller"),
+        ("Zebra Technologies sells the unit to Skild AI for USD 1.2 billion", "announced_seller"),
+        ("Zebra Technologies sells the unit to Skild AI for an undisclosed sum",
+         "announced_seller"),
+        ("Zebra Technologies sells the unit as part of a restructuring", "announced_seller"),
     ):
         assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
+    # a label ending in a period survives the sentence's stripped period
+    assert _role_for("PTC Inc.", "the ThingWorx business was acquired by PTC Inc.") \
+        == "announced_acquirer"
     # T5 is bound to the assertion's own curated object label: the slot
     # (preposition + party) must equal the parenthetical "(sale to Skild AI)"
     assert _zebra_role(**{"limitations.establishes":
@@ -838,6 +845,28 @@ def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
         # review 5 nit 3: "change of" something that is not a business
         "an announced change of the distribution agreement to Skild AI",
         "an announced change of the reporting segment to Robotics Automation",
+        # review 6 B1: agency (or any dirt) inside the parenthetical after the subject
+        "an announced sale by Zebra Technologies (on behalf of its joint venture partner)",
+        "Zebra Technologies (on behalf of Skild AI) sells the unit",
+        "Zebra Technologies (as agent for Skild AI) acquires the unit",
+        "the unit was acquired by Zebra Technologies (on behalf of Skild AI)",
+        "the unit was sold by Zebra Technologies (in the name of Skild AI)",
+        "Zebra Technologies (which sold the unit to Fanuc) acquires the perception business",
+        "Zebra Technologies (the buyer is Skild AI) sells the unit",
+        "Zebra Technologies (not the acquirer) sells the unit",
+        # review 6 B2: agency with a fiduciary noun, "for <non-consideration>",
+        # "as <role> of", "on account of", "under a mandate from", joint agents
+        "Zebra Technologies acquires the unit for its client Skild AI",
+        "Zebra Technologies acquires the unit for the account of Skild AI",
+        "the unit was acquired by Zebra Technologies, agent of Skild AI",
+        "Zebra Technologies sells the unit as broker of Skild AI",
+        "Zebra Technologies acquires the unit as nominee of Skild AI",
+        "the unit was acquired by Zebra Technologies, as trustee of the Skild AI trust",
+        "Zebra Technologies sells the unit under a mandate from Skild AI",
+        "Zebra Technologies sells the unit at the direction of Skild AI",
+        "the unit was acquired by Zebra Technologies or Skild AI",
+        "the unit was acquired by Zebra Technologies and Skild AI",
+        "an announced change of control by Zebra Technologies",
         # ambiguity inside one sentence: two markers, a second clause with its own
         # ownership verb, negation / substitution
         "an announced sale to X and the acquisition of Y",

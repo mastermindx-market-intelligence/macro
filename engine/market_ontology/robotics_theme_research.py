@@ -747,16 +747,19 @@ _PP_ACQUIRE = r"(?:acquired|purchased|bought)"
 _PP_SELL = r"(?:sold|divested|transferred)"
 _NOUN_ACQUIRE = r"(?:acquisition|purchase)"
 _NOUN_SELL = r"(?:sale|divestiture|transfer|ownership change|change of control|change of ownership)"
+# with an explicit agent ("by <subject>", "<subject>'s") only the nouns that
+# have one: "a change of control by X" reads as X being the TARGET
+_NOUN_SELL_AGENT = r"(?:sale|divestiture|transfer)"
 # the bare noun ``change`` counts only as "change of <a business noun phrase>"
 _BUSINESS_NOUN = (r"(?:business|businesses|unit|units|division|divisions|subsidiary|subsidiaries|"
-                  r"operations|segment|segments|stake|interest|assets|line|lines)")
-_PAREN = r"(?:\s*\([^()]*\))?"
+                  r"operations|stake|interest|assets|line|lines)")
+_PAREN = r"(?P<paren>(?:\s*\([^()]*\))?)"
 _ARTICLE = r"(?:[Aa]n|[Tt]he)"
 _NAMED_PARTY = r"[A-Z][A-Za-z0-9&.-]*(?:\s+[A-Z&][A-Za-z0-9&.-]*)*"
 # after a subject mention or a named party the sentence may only end, pause,
 # or continue with a lowercase function word — never with more name
 _AFTER_NAME = (r"(?P<tail>$|,.*|\s+(?:on|to|from|for|in|at|as|under|with|following|after|"
-               r"before|during|effective|per|pursuant|subject|upon|of|via|through|and|or)\b.*)")
+               r"before|during|effective|per|pursuant|subject|upon|via|through)\b.*)")
 _ANY_MARKER = re.compile(
     r"\bacqui(?:res?|red|sition)\b|\bpurchas|\bbuys?\b|\bbuying\b|\bbought\b|\bsale\b|"
     r"\bsells?\b|\bselling\b|\bsold\b|\bdivest|\btransfer|\bchange of\b|\bownership change\b")
@@ -765,14 +768,32 @@ _ANY_MARKER = re.compile(
 # is caught by its own ownership marker or passive auxiliary. Agency phrases
 # (acting for another principal) are dirty: ``on behalf of``, ``as agent``,
 # ``acting for``, ``in the name of``, and ``for <Capitalised party>``.
+# AGENCY (the subject acting for another principal) is a closed lexicon: the
+# fiduciary nouns, "behalf", "acting", "in the name / favour of", "on account
+# of", "at the direction / instruction / request of", "as <role> of|for", and
+# every ``for`` that is not followed by a consideration (cash, an undisclosed
+# sum, a currency amount). Anything on the list makes the sentence neutral.
+_AGENCY = (r"\b(?:behalf|agents?|brokers?|nominees?|trustees?|custodians?|representatives?|"
+           r"intermediar(?:y|ies)|prox(?:y|ies)|mandates?|mandatar(?:y|ies)|fiduciar(?:y|ies)|"
+           r"acting|instruct(?:ed|ions?)|direction of|request of|account of)\b|"
+           r"\bin the name of\b|\bin favou?r of\b|"
+           r"\bas\s+(?:an?\s+|the\s+)?(?!part\b|result\b|well\b|of\b)[a-z-]+\s+(?:of|for)\b|"
+           r"\bfor\b(?!\s+(?:cash|consideration|approximately|about|around|roughly|up to|an?\s|"
+           r"(?:the\s+)?(?:aggregate|total|nominal|undisclosed|net|gross)\b|"
+           r"\$|\u20ac|\u00a3|\u00a5|USD|EUR|GBP|JPY|CNY|RMB|HKD|SGD|KRW|TWD|CHF|[0-9]))")
 _TAIL_DIRTY = re.compile(
     r"\bby\b|;|\b(?:while|whereas|which|whose|who|whom|that|be|was|were|is|are|"
-    r"been|being|not|rather|instead)\b|\bon behalf of\b|\bas agents?\b|\bacting\b|"
-    r"\bin the name of\b|\bin favou?r of\b|\bfor\s+[A-Z]")
+    r"been|being|not|rather|instead)\b|" + _AGENCY)
+# a parenthetical right after the subject may say "(advised by Goldman Sachs)"
+# or "(Nasdaq: ZBRA)", never anything the tail could not say — minus the
+# bare ``by``
+_PAREN_DIRTY = re.compile(
+    r";|\b(?:while|whereas|which|whose|who|whom|that|be|was|were|is|are|been|being|not|"
+    r"rather|instead)\b|" + _AGENCY)
 _TEMPORAL_PARTY = re.compile(
     r"^(?:January|February|March|April|May|June|July|August|September|October|November|"
-    r"December|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Q[1-4]|H[12]|FY|"
-    r"[0-9]{4})\b")
+    r"December|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Q[1-4]|H[12]|FY|CY|"
+    r"[0-9])")
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
@@ -790,6 +811,8 @@ def _subject_mentions(label: object) -> frozenset[str]:
     first = text.split()[0].strip(",.").lower()
     if len(first) >= 3 and first not in {"the", "and", "inc", "ltd", "group"}:
         mentions.add(first)
+    # the sentence's trailing period is stripped, so "PTC Inc." may end as "PTC Inc"
+    mentions |= {m.rstrip(".") for m in mentions}
     return frozenset(m for m in mentions if m)
 
 
@@ -801,8 +824,14 @@ def _mention_pattern(mentions: frozenset[str]) -> str:
 def _clean(text: str, mention_re: re.Pattern[str]) -> bool:
     """A head, tail or object phrase is clean when it carries no ownership
     marker, no ``by``, no clause word / passive auxiliary / agency phrase and
-    no mention of the subject."""
+    no mention of the subject (``and``/``or`` stay clean: a conjoined object
+    is ordinary, a second clause is caught by its own marker or auxiliary,
+    and a joint agent after ``by`` is refused by ``_AFTER_NAME``)."""
     return not (_ANY_MARKER.search(text) or _TAIL_DIRTY.search(text) or mention_re.search(text))
+
+
+def _paren_clean(text: str, mention_re: re.Pattern[str]) -> bool:
+    return not (_ANY_MARKER.search(text) or _PAREN_DIRTY.search(text) or mention_re.search(text))
 
 
 def _normalised_sentence(piece: str) -> str:
@@ -829,7 +858,7 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
         # T2  an announced <noun> by <SUBJECT> [(...)] [of <clean tail>]
         (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_ACQUIRE + r" by " + m_pat + _PAREN
                     + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "acquirer", ("tail",)),
-        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_SELL + r" by " + m_pat + _PAREN
+        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_SELL_AGENT + r" by " + m_pat + _PAREN
                     + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "seller", ("tail",)),
         # T3  <clean head> <passive aux> <participle> by <SUBJECT> [(...)] <end | , | function word ...>
         (re.compile(r"^(?P<head>.*?)\s" + _PASSIVE_AUX + r"\s+" + _PP_ACQUIRE + r"\s+by\s+"
@@ -840,7 +869,7 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
         (re.compile(r"^" + m_pat.replace(r"(?![A-Za-z0-9'\u2019])", "") + r"(?:'s|')\s+"
                     + _NOUN_ACQUIRE + r"\s+of\b(?P<tail>.*)$", flags), "acquirer", ("tail",)),
         (re.compile(r"^" + m_pat.replace(r"(?![A-Za-z0-9'\u2019])", "") + r"(?:'s|')\s+"
-                    + _NOUN_SELL + r"\s+of\b(?P<tail>.*)$", flags), "seller", ("tail",)),
+                    + _NOUN_SELL_AGENT + r"\s+of\b(?P<tail>.*)$", flags), "seller", ("tail",)),
     )
     # T5  implicit subject: the subject is named NOWHERE; "an announced <noun>
     # of X to|from <Named Party>" with exactly ONE party slot, X and the tail
@@ -876,8 +905,12 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
         sentence = _normalised_sentence(piece)
         for pattern, side, groups in templates:
             match = pattern.match(sentence)
-            if match and all(_clean(match.group(g) or "", mention_re) for g in groups):
-                sides.add(side)
+            if not match or not all(_clean(match.group(g) or "", mention_re) for g in groups):
+                continue
+            paren = match.groupdict().get("paren") or ""
+            if paren and not _paren_clean(paren, mention_re):
+                continue
+            sides.add(side)
         if mention_re.search(sentence):
             continue
         for pattern, side in implicit:
@@ -888,6 +921,8 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
             if not (_clean(x, mention_re) and _clean(tail, mention_re)):
                 continue
             if slot_re.search(x) or slot_re.search(tail) or _TEMPORAL_PARTY.match(party):
+                continue
+            if party.lower() in x.lower():
                 continue
             prep = "to" if side == "seller" else "from"
             if curated_slot != (prep, party.lower()):
