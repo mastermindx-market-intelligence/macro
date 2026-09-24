@@ -26,13 +26,17 @@ from typing import Any, Iterable
 
 import pandas as pd
 
+from engine.theme_graph import rights as _theme_rights
 from lib import config
 
 
 SCHEMA = "thematic_event_context.v1"
 SOURCE_PATH = "data/edgar/material_8k_events.parquet"
 MEMBERSHIP_PATH = "data/baskets/membership.json"
-RIGHTS_REF = "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md#SEC-EDGAR"
+RIGHTS_FAMILY = "sec_edgar"
+RIGHTS_REF = "config/theme_sources.yml#families.sec_edgar"
+MODEL_USE_RIGHTS_PATH = "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+MODEL_USE_RIGHTS_REF = MODEL_USE_RIGHTS_PATH + "#SEC-EDGAR"
 PRESS_RIGHTS_REF = (
     "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
     "#press-narrative-search"
@@ -87,6 +91,57 @@ def _source_ref(path: str, digest: str) -> str:
     return f"{path}#sha256:{digest}"
 
 
+def _model_use_admitted(repo_root: Path) -> bool:
+    """Read the existing D03 rights register; never invent model-use permission.
+
+    The register is Markdown today, so this narrow adapter reads only the SEC EDGAR
+    section and its Model use row. Missing/changed/unreadable text fails closed.
+    """
+    path = repo_root / MODEL_USE_RIGHTS_PATH
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        return False
+    start = text.find("## SEC EDGAR")
+    if start < 0:
+        return False
+    end = text.find("\n## ", start + len("## SEC EDGAR"))
+    section = text[start:] if end < 0 else text[start:end]
+    for line in section.splitlines():
+        if line.startswith("| Model use |"):
+            return "Posture: **user-facing**" in line
+    return False
+
+
+def _sec_rights_posture(repo_root: Path) -> dict:
+    """Consume existing source-rights owners at call time; missing admission fails closed."""
+    registry_path = repo_root / _theme_rights.REGISTRY_FILE
+    try:
+        cls = _theme_rights.rights_class(RIGHTS_FAMILY, path=registry_path)
+    except _theme_rights.RightsRefusal:
+        cls = None
+    internal_ok, display_ok, redistribution_ok = _theme_rights.licensing_for_family(
+        RIGHTS_FAMILY, path=registry_path)
+    model_use_ok = _model_use_admitted(repo_root)
+    admitted = bool(display_ok and model_use_ok)
+    return {
+        "family": RIGHTS_FAMILY,
+        "status": "admitted" if admitted else "not_admitted",
+        "rights_class": cls,
+        "internal_ok": bool(internal_ok),
+        "display_ok": bool(display_ok),
+        "model_use_ok": bool(model_use_ok),
+        "redistribution_ok": bool(redistribution_ok),
+        "rights_ref": RIGHTS_REF,
+        "model_use_rights_ref": MODEL_USE_RIGHTS_REF,
+        "representation_scope": (
+            "SEC filing metadata and incumbent extracted factual fields only; no filing/exhibit "
+            "body, whole expressive document, third-party attachment, logo/branding, or dataset "
+            "redistribution"
+        ),
+    }
+
+
 def _blocked_sources() -> dict[str, dict]:
     return {
         "press_narrative_search": {
@@ -106,6 +161,7 @@ def _base(
     window_days: int,
     source_snapshot_ref: str | None,
     membership_snapshot_ref: str | None,
+    rights_posture: dict | None = None,
 ) -> dict:
     return {
         "schema": SCHEMA,
@@ -122,12 +178,18 @@ def _base(
         "source_path": SOURCE_PATH,
         "source_snapshot_ref": source_snapshot_ref,
         "rights_ref": RIGHTS_REF,
-        "rights_posture": {
-            "acquisition": "user_facing",
-            "processing": "user_facing",
-            "storage": "user_facing",
-            "model_use": "user_facing",
-            "user_redistribution": "citation_and_trademark_limited",
+        "model_use_rights_ref": MODEL_USE_RIGHTS_REF,
+        "rights_posture": rights_posture or {
+            "family": RIGHTS_FAMILY,
+            "status": "not_admitted",
+            "rights_class": None,
+            "internal_ok": True,
+            "display_ok": False,
+            "model_use_ok": False,
+            "redistribution_ok": False,
+            "rights_ref": RIGHTS_REF,
+            "model_use_rights_ref": MODEL_USE_RIGHTS_REF,
+            "representation_scope": "projection only; no activation rights were supplied",
         },
         "membership_path": MEMBERSHIP_PATH,
         "membership_snapshot_ref": membership_snapshot_ref,
@@ -346,8 +408,13 @@ def project_sec_event_context(
     max_events: int = DEFAULT_MAX_EVENTS,
     source_snapshot_ref: str | None = None,
     membership_snapshot_ref: str | None = None,
+    rights_posture: dict | None = None,
 ) -> dict:
-    """Project SEC event metadata into a bounded, clock-honest thematic context."""
+    """Project SEC event metadata into a bounded, clock-honest thematic context.
+
+    This low-level projector also fails closed unless the caller supplies an admitted posture
+    from the existing rights owners. Product code obtains that posture via build_sec_event_context.
+    """
     cutoff = _aware(knowledge_cutoff)
     if cutoff is None:
         fallback = pd.Timestamp(datetime.now(timezone.utc))
@@ -380,7 +447,11 @@ def project_sec_event_context(
         cutoff=cutoff, window_days=window_days,
         source_snapshot_ref=source_snapshot_ref,
         membership_snapshot_ref=membership_snapshot_ref,
+        rights_posture=rights_posture,
     )
+    if not isinstance(rights_posture, dict) or rights_posture.get("status") != "admitted":
+        out["reason"] = "source_rights_not_admitted"
+        return out
     ticker_themes, membership_cov = _membership_map(membership, theme_ids)
     coverage = {
         **membership_cov,
@@ -513,6 +584,16 @@ def build_sec_event_context(
         out["reason"] = "source_files_unavailable"
         return out
 
+    rights_posture = _sec_rights_posture(repo_root)
+    if rights_posture.get("status") != "admitted":
+        out = _base(
+            cutoff=cutoff,
+            window_days=window_days if isinstance(window_days, int) else DEFAULT_WINDOW_DAYS,
+            source_snapshot_ref=None, membership_snapshot_ref=None,
+            rights_posture=rights_posture)
+        out["reason"] = "source_rights_not_admitted"
+        return out
+
     try:
         source_digest = _sha256_file(source)
         membership_bytes = membership_path.read_bytes()
@@ -532,4 +613,5 @@ def build_sec_event_context(
         window_days=window_days, max_events=max_events,
         source_snapshot_ref=_source_ref(SOURCE_PATH, source_digest),
         membership_snapshot_ref=_source_ref(MEMBERSHIP_PATH, membership_digest),
+        rights_posture=rights_posture,
     )
