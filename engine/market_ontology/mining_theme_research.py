@@ -440,13 +440,14 @@ def compose_mining_research(
 
     # MGD-09 — a missing issuer axis blocks any financial join. The native-block list is
     # suppressed in this case so the response cannot fabricate an issuer-bound block.
-    # Limitations that withdraw the block content (a missing basis, missing threshold,
-    # source-only, changed source, denied source, missing issuer) all collapse the
-    # native-block list to []; the contract explanation survives as a limitation.
+    # EVERY closed T04 limitation that is mapped from an omission code withdraws the
+    # reported-economics channel: a missing basis, missing threshold, source-only, changed
+    # source, denied source, missing issuer, missing_derivation (same-horizon revision),
+    # and page_generation_change all collapse the native-block list to []; the contract
+    # explanation survives as a limitation. The signed_loss case has no omission and keeps
+    # its retained block (IR-02).
     _suppress_native_blocks = bool(
-        {"missing_issuer", "stream_threshold_unknown", "source_only", "missing_basis",
-         "changed_source", "denied_source"}
-        & set(limitations)
+        set(limitations) & set(OMISSION_TO_LIMITATION.values())
     )
 
     # Build the closed native-blocks list. Unknown data is None, never zero; signed
