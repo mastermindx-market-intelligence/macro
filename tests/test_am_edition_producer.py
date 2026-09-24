@@ -1702,9 +1702,23 @@ def test_owner_links_plane_owner_by_plane_actually_used(tmp_path):
     )
     payload = build_payload(site, data, now=now)
     ol = _new_block(payload, "owner_links")
-    owner_planes = {r["plane"] for r in ol["rows"] if r["kind"] == "owner"}
-    # The five planes from context_planes must all be represented.
-    assert {"rates", "dollar", "credit", "commodity", "international"} <= owner_planes
+    # R10 (2026-09-24): rows merge by destination — bonds.html covers
+    # rates/dollar/credit, china.html covers international. Each row
+    # carries a `planes` list naming every plane it covers; the test
+    # checks the union across all owner rows.
+    covered_planes: set[str] = set()
+    for r in ol["rows"]:
+        if r["kind"] != "owner":
+            continue
+        # Back-compat: `plane` is still set (the first plane in the
+        # merge). `planes` carries the full list when R10 merged rows.
+        covered_planes.add(r["plane"])
+        for p in r.get("planes", []):
+            covered_planes.add(p)
+    assert {"rates", "dollar", "credit", "commodity", "international"} <= covered_planes
+    # No row points to a duplicate destination (R10: ONE row per page).
+    hrefs = [r["href"] for r in ol["rows"] if r["kind"] == "owner"]
+    assert len(hrefs) == len(set(hrefs)), f"duplicate owner hrefs: {hrefs}"
 
 
 def test_a7_word_boundary_does_not_match_benign_substrings(tmp_path):

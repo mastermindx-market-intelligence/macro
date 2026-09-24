@@ -1790,44 +1790,53 @@ def _owner_links_block(site: Path, data_dir: Path) -> dict:
     china.html with hk.html surfaced as a sub-link because the product nav
     shows both (templates/_navlinks.html.j2:112, :155)."""
     repo_root = Path(__file__).resolve().parent.parent
-    # §A4 mandates one owner page per plane. We surface every plane that
-    # `context_planes` renders — rates, dollar, credit, commodity,
-    # international — using _OWNER_PAGE_BY_PLANE (MAJOR 7: the prior code
-    # defined the map but never used it; only the rates, commodity and
-    # international planes got owner rows, and dollar/credit got NONE).
-    # Display labels live in _PLANE_OWNER_LABELS (kept next to the map so
-    # the contract — one row per plane, label pair, target page — is
-    # reviewable in one place).
-    _PLANE_OWNER_LABELS: dict[str, tuple[str, str]] = {
-        "rates": ("Macro dashboard", "宏观仪表盘"),
-        "dollar": ("Rates & credit dashboard", "利率与信用仪表盘"),
-        "credit": ("Rates & credit dashboard", "利率与信用仪表盘"),
-        "commodity": ("Commodity dashboard", "商品仪表盘"),
-        "international": ("China & Hong Kong dashboard", "中国与香港宏观仪表盘"),
-    }
+    # §A4 mandates one owner page per UNIQUE destination. R10
+    # (2026-09-24): the prior code emitted three separate rows that all
+    # pointed to bonds.html (rates / dollar / credit) plus a fourth
+    # duplicate pointing at hk.html alongside china.html — a consumer
+    # rendering the rows saw the same link four times. We collapse to
+    # one row per destination, with the label naming every plane the
+    # destination covers. Display labels live in _PLANE_OWNER_LABELS
+    # (kept next to the map so the contract — one row per unique
+    # destination, label pair, target page — is reviewable in one
+    # place).
     rows: list[dict] = []
-    for plane, page in _OWNER_PAGE_BY_PLANE.items():
+    page_to_planes: dict[str, list[str]] = {}
+    page_to_labels: dict[str, tuple[str, str]] = {}
+    # The order here is the render order in owner_links. Rates & credit
+    # merge into one row (bonds.html covers all three). International
+    # merges into one row (china.html — hk.html is dropped per R10).
+    # Note: commodity page is `commodities.html` (plural — matches the
+    # templates directory and the producer's prior code).
+    for plane, page in (
+        ("rates", "bonds.html"),
+        ("dollar", "bonds.html"),
+        ("credit", "bonds.html"),
+        ("commodity", "commodities.html"),
+        ("international", "china.html"),
+    ):
+        page_to_planes.setdefault(page, []).append(plane)
+        if page == "bonds.html":
+            page_to_labels[page] = ("Rates & credit dashboard", "利率与信用仪表盘")
+        elif page == "commodities.html":
+            page_to_labels[page] = ("Commodity dashboard", "商品仪表盘")
+        elif page == "china.html":
+            page_to_labels[page] = ("China & Hong Kong dashboard", "中国与香港宏观仪表盘")
+        else:
+            page_to_labels[page] = (plane, plane)
+    # Emit one row per unique destination (R10). Each row carries the
+    # list of planes the destination covers so consumers can render
+    # `rates / dollar / credit` underneath the bonds.html label.
+    for page, planes in page_to_planes.items():
         if not _resolve_owner_page(page, repo_root):
             continue
-        label_en, label_zh = _PLANE_OWNER_LABELS.get(plane, (plane, plane))
+        label_en, label_zh = page_to_labels[page]
         rows.append({
-            "plane": plane,
+            "plane": planes[0],  # back-compat: first plane in the merge
+            "planes": list(planes),
             "label_en": label_en,
             "label_zh": label_zh,
             "href": page,
-            "kind": "owner",
-        })
-    # The international row also gets hk.html as a second sub-link (the
-    # product nav lists both China and Hong Kong under one menu — see
-    # templates/_navlinks.html.j2:112, :155). We surface it as a separate
-    # row so the consumer can render two distinct links under the
-    # international heading.
-    if _resolve_owner_page("hk.html", repo_root):
-        rows.append({
-            "plane": "international",
-            "label_en": "Hong Kong dashboard",
-            "label_zh": "香港宏观仪表盘",
-            "href": "hk.html",
             "kind": "owner",
         })
     # Reference registry — load once; a missing/invalid registry means every
