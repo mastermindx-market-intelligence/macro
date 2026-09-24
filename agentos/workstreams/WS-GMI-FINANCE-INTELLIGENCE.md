@@ -76,14 +76,16 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Chairman directive 2026-09-24 (Astra CEO): Finance integrates into the Semiconductor-built
-  shared foundation and never rebuilds base layers — T4/T5/T6/T7 HELD
-  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). Continue the
-  Finance-only layers: merge T3 (#7900), dispatch T2 projection, land D1a/D1b design
-  (#7903) after the Opus audit, build T8 shell + hydration behind FI_READ_URL and T9 entry
-  points; then integrate (assertion→source_records adapter, packet transcription into the
-  shared admission path, composed-dossier serving on the foundation's route) once #7870's
-  foundation is accepted on main.
+  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902 merged). Chairman
+  directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and
+  never rebuilds base layers — T4/T5/T6/T7 HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). In flight: T2 projection
+  composer (lane fin_t2_projection, m1) and the D1a spec repair on #7903 (lane fin_d1a_repair,
+  mb) after the read-only audit FAIL (DEC:FINANCE-RERATING-STEPPER-BINDS-FOUR-CONTRACT-PLANES,
+  DSC:DESIGN-SPEC-LANES-BIND-INVENTED-FIELDS-AUDIT-AGAINST-THE-LIVE-SCHEMA-FIRST). Then: second
+  audit → D1b mockup → T8 shell + hydration behind FI_READ_URL → T9 entry points → integration
+  (assertion→source_records adapter, packet transcription into the shared admission path,
+  profile:finance composed-dossier kind on the foundation's route) once #7870 is accepted on main.
 ---
 
 # Finance Intelligence workstream

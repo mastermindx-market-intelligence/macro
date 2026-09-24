@@ -203,3 +203,11 @@ Open the DRAFT carrier PR, emit START on #7786, dispatch `fin_t1_contract` and
 
 ### Chairman directive consumed (07:46Z) — integrate, never rebuild the base
 - Relayed from Astra CEO via the Chairman: the Semiconductor session builds the shared foundation; Finance integrates later. T4 (private evidence path), T5 (private staging), T6 (publish workflow), T7 (serving route) HELD; the T4 lane that had started on m1 was killed at 07:47Z before any commit; their args are quarantined (`*.HELD-foundation-integration-20260924`). Ruling R-FIN-8 supersedes R-FIN-7 (no Finance route; `FI_READ_URL` bound at integration). Continuing: T3 merge, T2, D1a/D1b, T8, T9. Integration items listed in DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.
+
+### Wave 1 closed (08:29Z) — merges, audit, lanes
+- T3 #7900 MERGED 08:12:42Z (3ca9c303) after the seat wired `finance_overlap.py` + suite into the `finance-intelligence` job (0fc4be532d13). Wave 1 records #7902 MERGED 08:29:11Z (b558ba6bc17d) by seat squash on concluded green (`mergeStateStatus: UNSTABLE` is the non-binding pilot context; the sweeper leaves such PRs — merge by hand).
+- D1a spec #7903 (469e932e) FAILED the read-only Opus audit (comment 5810133462): private payload in static Jinja, invented contract fields, hex light palette, raw missing-state tokens, wrong macro/conflict shapes, ARIA gaps. The seven-step stepper was the SEAT's D1 packet error → `DEC:FINANCE-RERATING-STEPPER-BINDS-FOUR-CONTRACT-PLANES` (R-FIN-9). D1b mockup withdrawn before admission. Repair lane `fin_d1a_repair` (MiniMax, mb, admitted 08:19Z) applies rulings R-A..R-K + 14 greppable self-checks; a SECOND audit gates the mockup (`DSC:DESIGN-SPEC-LANES-BIND-INVENTED-FIELDS-AUDIT-AGAINST-THE-LIVE-SCHEMA-FIRST`).
+- T2 lane `fin_t2_projection` admitted on m1 08:16Z (new PR `claude/finance-t2-owner-projection`).
+- R11 freeze docs live on the research pin 615f1050 under `research/finance/FINANCE_R11_*` (not on main); read them with `git show <pin>:<path>`.
+- verified: `git ls-tree origin/main engine/sector_intelligence/finance_overlap.py tests/test_finance_overlap.py`; `gh pr view 7902 --json state,mergedAt,mergeCommit`.
+- do_not_redo: never re-dispatch the D1b mockup or T8 before the second audit PASSes; never bind stepper nodes beyond the four contract planes.
