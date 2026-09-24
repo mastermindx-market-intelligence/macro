@@ -46,7 +46,11 @@ def _state(*, event_context=True):
                     "item_id": "item-launch",
                     "source": "Primary",
                     "title": "Launch",
+                    "body_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "source_date_value": "2026-09-08T20:53:00+00:00",
+                    "publisher_stated_at": "2026-09-08T20:53:00+00:00",
                     "context_available_at": "2026-09-23T14:20:00+00:00",
+                    "timestamp_quality": "PUBLISHER_STATED",
                 }],
             }],
         }
@@ -110,7 +114,16 @@ def test_event_thesis_preserves_full_evidence_and_source_binding():
         "event_key": "ev-launch",
         "role": "support",
         "source_snapshot_ref": "qbus@fixture",
+        "source": "Primary",
+        "body_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_date_value": "2026-09-08T20:53:00+00:00",
+        "publisher_stated_at": "2026-09-08T20:53:00+00:00",
+        "context_available_at": "2026-09-23T14:20:00+00:00",
+        "timestamp_quality": "PUBLISHER_STATED",
     }]
+    assert thesis["event_coverage"]["eligible_events"] == 2
+    assert thesis["event_coverage"]["examined_events"] == 2
+    assert thesis["event_coverage"]["failed_events"] == 0
     assert thesis["evidence_refs_rejected_n"] == 0
 
 
