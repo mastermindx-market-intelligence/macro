@@ -403,15 +403,17 @@
       "sources": [
         "HEALTH4 blob 9029a022... §1-3",
         "ROBOT1 Intuitive role",
-        "COVERAGE.md §6"
+        "COVERAGE.md §6",
+        "GMI B final COVERAGE at 537e29b42fdeed1658cd6f29c690f43e87fe9fff, healthcaredevices assessment"
       ],
-      "supported": "Placement, nested lease categories, procedures, instruments/service and retained-economics questions are explicitly separated.",
+      "supported": "Placement, nested lease categories, procedures, instruments/service and retained-economics questions are explicitly separated. Lane B independently preserves that use, benefit eligibility, supply billing and manufacturer revenue can concern different populations.",
       "missing": [
         "comparable active-system cohort",
         "physical readiness/uptime where material",
         "procedure-family utilization",
         "service/training/replacement burden",
-        "contract/cash timing"
+        "contract/cash timing",
+        "matched care/access/use population must be consumed from B rather than reconstructed by C"
       ],
       "owner_seams": [
         "Lane B/Healthcare owns clinical, patient, access and payer interpretation; C owns complementary physical/commercial deployment"
@@ -677,5 +679,19 @@
         "Lane A retains grower/customer economics for agricultural autonomy; quarry case avoids duplicating that lane"
       ]
     }
-  ]
+  ],
+  "live_dependency_updates": {
+    "lane_b": {
+      "pr": 7892,
+      "return_commit": "537e29b42fdeed1658cd6f29c690f43e87fe9fff",
+      "coverage_blob": "79e4297d77f02be6286dc74bf80349e08d79ec18",
+      "relevant_reuse": "Healthcare devices preserve version/access/use/payment distinctions; use, benefit eligibility, supply billing and manufacturer revenue can have different populations. C retains physical deployment."
+    },
+    "pro_mode_ruling": {
+      "parent_pr": 7886,
+      "observed_through_comment": 5809487359,
+      "state": "UNRESOLVED",
+      "note": "No controlling Meta-CEO ruling/source-law change observed; Extra High research remains unblocked and no Pro receipt is fabricated."
+    }
+  }
 }
