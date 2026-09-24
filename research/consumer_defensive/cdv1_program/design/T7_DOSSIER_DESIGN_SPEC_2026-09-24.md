@@ -6,7 +6,7 @@ Operation: `gmi-consumer-defensive-research-20260923-sol-001`
 
 Commissioned by: Fable Meta-CEO seat
 
-**Addressed to:** the foundation host slot on PR #7870's lineage and `contracts/sector_intelligence/*.v1.schema.json`. The Earnings owner's clock remains authoritative. Clock-word mappings at that foundation are: fiscal period → `world_valid`; source published → `source_published`; source accepted/knowable time → `knowable`; source currentness observation → `observed`; workspace generation → `belief_or_build`; task-system recording → `system_recorded`. No foundation class yet exists for review freshness, so that clock word remains “no foundation class yet” rather than an invented class.
+**Addressed to:** the foundation host slot on PR #7870's lineage and `contracts/sector_intelligence/*.v1.schema.json`. The Earnings owner's clock remains authoritative. Clock-word mappings at that foundation are: fiscal period → `world_valid`; source published → `source_published`; source accepted/knowable time → `knowable`; source currentness observation → `observed`; workspace generation → `belief_or_build`; task-system recording → `system_recorded`; governance recording → `system_recorded`. No foundation class yet exists for review freshness, so that clock word remains “no foundation class yet” rather than an invented class.
 
 This document owns the dossier content, copy, DOM contract, adapter behavior, privacy rules, and tests. It does not own a mount, host wiring, an asset path, or any CSS material treatment. Those are foundation-owner obligations. R1A supersedes the original mount, asset, and host-wiring rulings; the original R3-R6 and R8-R10 remain binding where they concern content, contract, copy, accessibility, and density.
 
