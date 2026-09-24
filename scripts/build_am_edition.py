@@ -54,55 +54,14 @@ CLASSIFICATIONS = (
     "owner_link_registry",
 )
 
-# A7 guard — words that would make a row look like a buy/sell/size call.
-# Block text MUST NOT contain any of these words as standalone tokens (any
-# locale). The matching rule is a per-locale word boundary for EN (so
-# "along"/"longer"/"short-term"/"sized" never trigger) and a literal substring
-# for ZH (Chinese is unsegmented so substring is the only defensible test).
-import re as _re_for_a7
-_A7_FORBIDDEN_SUBSTRINGS = (
-    "buy", "sell", "long", "short", "target", "size",
-    "做多", "做空", "买入", "卖出",
-)
-_A7_FORBIDDEN_ZH = (
-    "做多", "做空", "买入", "卖出",
-)
-_A7_EN_WORDS = ("buy", "sell", "long", "short", "target", "size")
-_A7_EN_PATTERN = _re_for_a7.compile(
-    r"\b(?:" + "|".join(_A7_EN_WORDS) + r")\b", _re_for_a7.IGNORECASE
-)
-
-
-def _has_a7_substring(text: str | None) -> bool:
-    """Runtime A7 guard for transferred owner text. Returns True iff any
-    A7-forbidden EN word appears as a standalone token in `text` (word-boundary
-    regex — so "along"/"longer"/"short-term"/"sized" never trigger), OR any
-    A7-forbidden ZH phrase appears as a literal substring (Chinese is
-    unsegmented so substring is the only defensible test). The producer
-    applies this to every owner-rendered string before it reaches a row, so
-    a leaked buy/sell/long/short/target/size — whether from a transferred
-    source OR a runtime bug — surfaces as a `(withheld)` placeholder rather
-    than a directional user-visible string (MAJOR 8 — A7 is now a runtime
-    guard, not a test-only guard; MAJOR 10 — word-boundary EN match)."""
-    if not text or not isinstance(text, str):
-        return False
-    if _A7_EN_PATTERN.search(text):
-        return True
-    for forbidden in _A7_FORBIDDEN_ZH:
-        if forbidden in text:
-            return True
-    return False
-
-
-# Plain-language placeholder for the A7 runtime redaction. No internal
-# jargon, no "TBD", no "watch-direction bookkeeping"; just one plain
-# sentence that names the gap (the word "withheld" is intentional — the
-# runtime guard test surfaces it so an A7 leak is auditable). The text
-# itself is A7-clean (no buy/sell/long/short/target/size substring) so a
-# redaction that lands in a glance field never triggers the A7 guard a
-# second time (MAJOR 11).
-_A7_WITHHELD_EN = "This watch item is withheld and is being restated in plain words."
-_A7_WITHHELD_ZH = "该观察项已暂时隐去，正以平实措辞重新表述。"
+# A7 guard (R6, 2026-09-24): the producer never reads `lean`/`entry_levels`/
+# `conviction`/`outcome`/`realized` from any owner artifact, so the runtime
+# regex redaction was deleted — there is no transferred source string
+# capable of carrying a directional leak. The guard survives as a single
+# static test (R6 test surface: no producer string contains
+# `buy`/`sell`/`买入`/`卖出`). The placeholder copy and the `_A7_*`
+# constants were removed with the runtime guard; the production code path
+# no longer rewrites owner text.
 
 
 # Plain-language ZH mirror for an OPEN-condition row. The condition text is
@@ -963,39 +922,22 @@ def _context_planes_row(
     `precision` is the caller's _norm_clock result for `as_of` — the row
     function never recomputes precision from the already-normalised string
     (the legacy _block() docstring warns this reads "minute"/"second" because
-    the ...T00:00:00+00:00 padding looks second-exact).
-
-    A7 runtime filter: every owner-transferred EN/ZH string is checked; if it
-    carries a buy/sell/long/short/target/size word (or its ZH twin), the
-    field is replaced by the plain-language `_A7_WITHHELD_EN/ZH` sentence so
-    a directional leak in an upstream artifact never reaches a glance-tier
-    row (BLOCKER 2)."""
+    the ...T00:00:00+00:00 padding looks second-exact)."""
     state, age = _row_state(as_of, generated_at, covered=covered, precision=precision)
     if precision is None:
         _, precision = _norm_clock(as_of) if as_of else (None, "day")
-    # A7 guard on the OWNER-TRANSFERRED strings (label/read EN/ZH).
-    # State reasons are produced by THIS producer (plain-word templates) so
-    # they never need filtering.
-    def _scrub(text):
-        if text is None or not isinstance(text, str):
-            return text
-        if _has_a7_substring(text):
-            return _A7_WITHHELD_EN
-        return text
-
-    def _scrub_zh(text):
-        if text is None or not isinstance(text, str):
-            return text
-        if _has_a7_substring(text):
-            return _A7_WITHHELD_ZH
-        return text
-
+    # R6 (2026-09-24): no A7 runtime redaction — the producer never reads
+    # `lean`/`entry_levels`/`conviction`/`outcome`/`realized` from any
+    # owner artifact (A7 contract), so the rewritten label/read fields are
+    # already scope-bounded. The static test in
+    # `test_a7_no_buy_sell_in_producer_strings` guards the resulting
+    # surface.
     row_dict = {
         "plane": plane,
-        "label_en": _scrub(label_en),
-        "label_zh": _scrub_zh(label_zh),
-        "read_en": _scrub(read_en),
-        "read_zh": _scrub_zh(read_zh),
+        "label_en": label_en,
+        "label_zh": label_zh,
+        "read_en": read_en,
+        "read_zh": read_zh,
         "as_of": as_of if state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
         "source_as_of_precision": precision if state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
         "source_ref": source_ref,
@@ -1229,16 +1171,28 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             not_covered_reason_zh="商品状态文件暂不可用。",
         ))
 
-    # international — China then HK market_state summaries. Each contributes
-    # one row keyed under plane="international" with both markets folded in.
-    intl_rows: list[dict] = []
-    for path in ("china_market_state.json", "hk_market_state.json"):
-        label = "china" if "china" in path else "hk"
+    # international — China then HK market_state summaries. R5 (MAJOR 2,
+    # 2026-09-24): the previous code combined cn + hk into a single row
+    # whose state was decided by worst-of, then OVERRODE the row's state
+    # post-hoc so HK staleness could downgrade a CURRENT CN row. When one
+    # of the two files was missing, the override could silently ship an
+    # UNAVAILABLE row that still carried a clock and content, with no
+    # state_reason_en/zh — a missing owner file with no disclosure.
+    #
+    # The new branch builds the row from WHATEVER is present. State comes
+    # from THAT file's clock (no synthetic "missing" downgrade); every
+    # non-CURRENT row carries both reason keys; the missing half is named
+    # in plain words.
+    intl_present: dict[str, dict] = {}
+    intl_missing: list[str] = []
+    for path, market in (
+        ("china_market_state.json", "china"),
+        ("hk_market_state.json", "hk"),
+    ):
         d = _load_committed(site, data_dir, path, path.replace(".json", "/latest.json"))
         if isinstance(d, dict):
             d_asof, d_precision = _norm_clock(d.get("asof"))
-            intl_rows.append({
-                "label": label,
+            intl_present[market] = {
                 "asof": d_asof,
                 "asof_precision": d_precision,
                 "label_en": d.get("label_en"),
@@ -1247,25 +1201,101 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 "posture_zh": d.get("posture_zh"),
                 "headline_en": d.get("headline_en"),
                 "headline_zh": d.get("headline_zh"),
-            })
+            }
         else:
-            intl_rows.append({"label": label, "asof": None, "asof_precision": "day"})
-    if intl_rows:
-        cn = intl_rows[0]
-        hk = intl_rows[1] if len(intl_rows) > 1 else {"label": "hk", "asof": None, "asof_precision": "day"}
-        # Worst asof wins: if either is missing or stale past the budget the
-        # row state degrades; never reads CURRENT if either market is stale.
-        # A None asof resolves to UNAVAILABLE via the covered=True path —
-        # passing covered=False would silently downgrade missing-file to
-        # NOT_COVERED and conflate the two failure modes (MAJOR 3).
-        cn_state, cn_age = _row_state(cn.get("asof"), generated_at, precision=cn.get("asof_precision"))
-        hk_state, hk_age = _row_state(hk.get("asof"), generated_at, precision=hk.get("asof_precision"))
-        worst = _WorstOf([cn_state, hk_state])
-        # Per-market attribution: china then HK, each prefixed with its market
-        # name so the reader can tell which sentence is which (BLOCKER 4:
-        # the previous code concatenated two byte-identical headlines into
-        # one sentence with no attribution — measured the committed artifact
-        # ships identical headline_en for both markets).
+            intl_missing.append(market)
+    intl_source_ref = "data/china_market_state/latest.json + data/hk_market_state/latest.json"
+    if not intl_present:
+        # Both missing — single UNAVAILABLE row, plain-word reason naming
+        # both halves (R5 + R8 plain-language law).
+        rows.append(_context_planes_row(
+            "international",
+            label_en=None, label_zh=None,
+            read_en=None, read_zh=None,
+            as_of=None,
+            source_ref=intl_source_ref,
+            generated_at=generated_at,
+            covered=True,
+            not_covered_reason_en="Not available this morning.",
+            not_covered_reason_zh="今晨暂不可用。",
+        ))
+    elif len(intl_present) == 1:
+        # One market missing — the present market's clock drives the row
+        # state, and the missing half is named in the reason. State comes
+        # from _row_state on the present as_of; the row's reason names the
+        # gap in plain words (R5). No post-hoc override.
+        market = next(iter(intl_present))
+        present = intl_present[market]
+        present_asof = present.get("asof")
+        present_precision = present.get("asof_precision") or "day"
+        # The "missing half" plain-word pair (R5 literal copy) — names the
+        # side that is ABSENT (the other market), not the present one.
+        if market == "china":
+            # China is present, so HK is the missing half.
+            missing_pair = ("Hong Kong read not available this morning.",
+                            "今晨暂无港股读数。")
+        else:
+            # HK is present, so China is the missing half.
+            missing_pair = ("Mainland read not available this morning.",
+                            "今晨暂无A股读数。")
+        # Build a single-market headline sentence so the row reads sensibly
+        # when one half is absent.
+        prefix_en = "China" if market == "china" else "Hong Kong"
+        prefix_zh = "中国" if market == "china" else "香港"
+        headline_en = present.get("headline_en")
+        headline_zh = present.get("headline_zh")
+        if headline_en:
+            read_en = f"{prefix_en} — {headline_en}"
+        else:
+            label_en = present.get("label_en")
+            posture_en = present.get("posture_en")
+            read_en = (
+                f"{prefix_en} — {label_en or '—'}; posture {posture_en or '—'}."
+                if label_en else None
+            )
+        if headline_zh:
+            read_zh = f"{prefix_zh}——{headline_zh}"
+        else:
+            label_zh = present.get("label_zh")
+            posture_zh = present.get("posture_zh")
+            read_zh = (
+                f"{prefix_zh}——{label_zh or '—'}；姿态 {posture_zh or '—'}。"
+                if label_zh else None
+            )
+        # Decide state from the present clock (no synthetic downgrade).
+        state, age = _row_state(present_asof, generated_at, precision=present_precision)
+        # Every non-CURRENT row carries both reason keys (R5). For a CURRENT
+        # row the reason names the missing half; for STALE/UNAVAILABLE the
+        # age-based reason wins and we still want the missing-half to
+        # surface — both keys are required.
+        row = {
+            "plane": "international",
+            "label_en": present.get("label_en"),
+            "label_zh": present.get("label_zh"),
+            "read_en": read_en,
+            "read_zh": read_zh,
+            "as_of": present_asof if state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
+            "source_as_of_precision": present_precision if state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
+            "source_ref": intl_source_ref,
+            "state": state,
+        }
+        if state == "CURRENT":
+            row["state_reason_en"] = missing_pair[0]
+            row["state_reason_zh"] = missing_pair[1]
+        elif state == "STALE_WITH_LAST_KNOWN":
+            row["state_reason_en"], row["state_reason_zh"] = _row_age_phrase_en_zh(age)
+        elif state == "UNAVAILABLE":
+            row["state_reason_en"] = missing_pair[0]
+            row["state_reason_zh"] = missing_pair[1]
+        rows.append(row)
+    else:
+        # Both markets present — combined row. State comes from the
+        # present files' worst-of (no post-hoc override; _context_planes_row
+        # decides state and we trust it). No reason keys on a CURRENT row;
+        # STALE/UNAVAILABLE rows get the same per-row age reason the helper
+        # already produces.
+        cn = intl_present["china"]
+        hk = intl_present["hk"]
         cn_phrase_en = (
             f"China — {cn.get('label_en') or '—'}; posture {cn.get('posture_en') or '—'}."
             if cn.get("label_en") else None
@@ -1282,20 +1312,6 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             f"香港——{hk.get('label_zh') or '—'}；姿态 {hk.get('posture_zh') or '—'}。"
             if hk.get("label_zh") else None
         )
-        # Headline is the OWNER's full sentence — never the truncated label
-        # + posture pair (which duplicated each other in the real artifact:
-        # the committed china_market_state ships label = "Risk-off" and
-        # posture = "Risk-off" verbatim, making the row redundant). Each
-        # market's headline is prefixed with its market name so the reader
-        # can attribute the prose (BLOCKER 4).
-        def _prefix(en_headline: str | None, market_en: str, market_zh: str) -> tuple[str | None, str | None]:
-            if not en_headline:
-                return None, None
-            return (
-                f"{market_en} — {en_headline}",
-                None,  # caller picks the ZH pair separately
-            )
-
         cn_headline_en = (
             f"China — {cn.get('headline_en')}" if cn.get("headline_en") else cn_phrase_en
         )
@@ -1308,37 +1324,32 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         hk_headline_zh = (
             f"香港——{hk.get('headline_zh')}" if hk.get("headline_zh") else hk_phrase_zh
         )
-        # Two sentences joined with a hard separator; the row carries both
-        # markets' attribution, so the reader can tell which is which even
-        # when the underlying headlines are byte-identical.
         read_en = " | ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
         read_zh = " | ".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
-        # Worst-of drives the row's as_of. We pick whichever of cn/hk has the
-        # older asof (or whichever is missing); that becomes the row's clock.
-        if cn.get("asof") and hk.get("asof"):
-            worst_iso = cn.get("asof") if cn.get("asof") <= hk.get("asof") else hk.get("asof")
-            worst_precision = cn.get("asof_precision") if cn.get("asof") <= hk.get("asof") else hk.get("asof_precision")
+        # Worst-of drives the row's as_of — pick whichever is older.
+        cn_asof = cn.get("asof")
+        hk_asof = hk.get("asof")
+        if cn_asof and hk_asof:
+            if cn_asof <= hk_asof:
+                worst_iso, worst_precision = cn_asof, cn.get("asof_precision") or "day"
+            else:
+                worst_iso, worst_precision = hk_asof, hk.get("asof_precision") or "day"
         else:
-            worst_iso = cn.get("asof") or hk.get("asof")
-            worst_precision = cn.get("asof_precision") if cn.get("asof") else (hk.get("asof_precision") or "day")
-        # Block state (row + block) uses the worst; rows are written as-is.
-        intl_row = _context_planes_row(
+            worst_iso = cn_asof or hk_asof
+            worst_precision = (cn.get("asof_precision") if cn_asof else (hk.get("asof_precision") or "day"))
+        # Use the helper for state decision + reason copy; NO post-hoc override.
+        rows.append(_context_planes_row(
             "international",
             label_en=(cn.get("label_en") if cn.get("label_en") else None),
             label_zh=(cn.get("label_zh") if cn.get("label_zh") else None),
             read_en=read_en,
             read_zh=read_zh,
             as_of=worst_iso,
-            source_ref="data/china_market_state/latest.json + data/hk_market_state/latest.json",
+            source_ref=intl_source_ref,
             generated_at=generated_at,
-            covered=bool(cn.get("asof") or hk.get("asof")),
+            covered=bool(cn_asof or hk_asof),
             precision=worst_precision,
-        )
-        # Override the auto-decided state with the worst-of, so HK staleness
-        # can downgrade a CURRENT CN row.
-        if intl_row["state"] != worst:
-            intl_row["state"] = worst
-        rows.append(intl_row)
+        ))
 
     # Block state: worst row state across all rows.
     block_state = _WorstOf([r["state"] for r in rows]) if rows else "UNAVAILABLE"
@@ -1488,19 +1499,14 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 logged_raw = obj.get("logged_at")
                 since_iso, _ = _norm_clock(since_raw)
                 as_of_iso, _ = _norm_clock(logged_raw or since_raw)
-                # A7 runtime filter: drop the row entirely if its condition
-                # text carries a forbidden word. We surface a plain
-                # placeholder row so the producer never invents content and
-                # never leaks a directional word (MAJOR 8 / BLOCKER 2).
-                if _has_a7_substring(cond_text):
-                    cond_text_safe = _A7_WITHHELD_EN
-                    cond_zh_safe = _A7_WITHHELD_ZH
-                else:
-                    cond_text_safe = cond_text
-                    cond_zh_safe = _safe_zh_mirror(cond_text)
+                # R6 (2026-09-24): no A7 runtime redaction. The producer
+                # never reads lean/entry_levels/conviction/outcome/realized
+                # from theses.jsonl (A7 contract), so the condition text is
+                # already scope-bounded. Surface the EN condition verbatim
+                # and pair it with a ZH mirror via `_safe_zh_mirror`.
                 rows.append({
-                    "condition_en": cond_text_safe,
-                    "condition_zh": cond_zh_safe,
+                    "condition_en": cond_text,
+                    "condition_zh": _safe_zh_mirror(cond_text),
                     "since": since_iso,
                     "as_of": as_of_iso,
                     "source_ref": "data/master_brain/theses.jsonl",
