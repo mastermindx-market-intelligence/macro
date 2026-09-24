@@ -274,7 +274,7 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
             detail="The combined volume/mix presentation does not separately disclose this observation." if combined else "No unique heading, row label, and column header identifies this observation.",
         )
     row, column = located
-    period = periods[matched_header]
+    period = periods.get(matched_header, preferred_period)
     cell = row[column]
     literal = cell.text.strip()
     value: float | None = None
