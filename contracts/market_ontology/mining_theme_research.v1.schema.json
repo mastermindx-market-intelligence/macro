@@ -220,6 +220,7 @@
     "limitations": {
       "type": "array",
       "items": {
+        "type": "string",
         "anyOf": [
           {"enum": [
             "missing_derivation",
@@ -232,7 +233,7 @@
             "page_generation_change",
             "industry_total_unknown"
           ]},
-          {"pattern": "^(definition_unqualified|assertion_invalid|omitted):[A-Za-z0-9_.-]+$"}
+          {"type": "string", "pattern": "^(definition_unqualified|assertion_invalid|omitted):[A-Za-z0-9_.-]+$"}
         ]
       }
     },
