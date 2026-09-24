@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T23:41:05.397381+00:00",
-  "count": 2741,
+  "generated_at": "2026-09-24T00:11:02.115792+00:00",
+  "count": 2742,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -641,6 +641,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 43,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0ows1rkwgz6-1d9feb",
+      "title": "Shennan Circuits (002916.SZ) mSAP PCB and IC substrate capacity expansion, riding on strong AI demand; TP up to Rmb511; Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:09Z",
+      "summary_points": [
+        "AI-driven revenue beat: Q2 2026 revenue Rmb8.7bn (32% QoQ, 53% YoY, 15% above estimates) fueled by rising AI demand, with capacity expansions in Wuxi/Nantong (mSAP Phase 4) and Guangzhou (IC substrate Phase 2 starting Q4 2026).",
+        "Capacity expansion catalysts: mSAP PCB to scale to 1.6T+ via optical modules (2027/28), IC substrate Phase 2 (Q4 2026) with high utilization, strong client demand, and ABF production upgrades driving growth.",
+        "Earnings revisions: 2026-28E earnings revised up 2%/4%/3% due to higher optical module PCB revenues (capacity expansion + 1.6T+ demand) and gross margin expansion (0.2-0.9ppts) from product mix.",
+        "Valuation re-rating: 12m target price raised to Rmb511 (vs.",
+        "Rmb494) on updated earnings, target multiple, and AI-driven PCB/optical demand growth momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
