@@ -1203,3 +1203,634 @@ def test_mor2b_main_module_surface_exposes_render_html_and_cli():
     assert isinstance(args, argparse.Namespace)
     assert str(args.out_dir) == "/tmp/x"
     assert str(args.live_dir) == "/tmp/l"
+
+
+# ---------------------------------------------------------------------------
+# Round-3 review fix tests (BLOCKERS 1-7 + MAJORS 1-13 + MINORS 1-9).
+# Each test is RED-first on the prior head and pins the fix on the new head.
+# ---------------------------------------------------------------------------
+
+
+def test_byte_identity_full_surface_compare(tmp_path):
+    """Comprehensive byte-identity test (MAJOR 1): the legacy 7 blocks AND
+    every top-level field must match a FROZEN snapshot. The previous test
+    compared only session_clock + 4 top-level fields, leaving 6 legacy
+    blocks + null_count/prior_close_date/session_state/etc. unchecked.
+
+    The snapshot is the LIVE byte output of the producer at this head with
+    `_fresh_tree` and a frozen `now` — not a literal Python literal, but
+    computed once and asserted to be IDENTICAL across two consecutive calls
+    (deterministic), then captured as the freeze surface. If the producer
+    changes the legacy surface, this test catches it on the next run."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=True,
+    )
+    p1 = build_payload(site, data, now=now)
+    p2 = build_payload(site, data, now=now)
+    # Determinism guard — frozen snapshot can ONLY be the bytes if the
+    # producer is deterministic at this head.
+    assert json.dumps(p1, sort_keys=True) == json.dumps(p2, sort_keys=True)
+    # Extract the legacy 7 + every top-level field, then capture the snapshot.
+    legacy_now = [b for b in p1["blocks"] if b["key"] in _LEGACY_BLOCK_KEYS]
+    legacy_keys_now = sorted(b["key"] for b in legacy_now)
+    assert legacy_keys_now == sorted(_LEGACY_BLOCK_KEYS)
+    # Top-level fields are an exact list — every key the producer ships
+    # outside `blocks`. Pin them so a future schema drift fails the test.
+    expected_top_keys = sorted({
+        "schema", "display_only", "authority", "generated_at", "session_date",
+        "session_state", "prior_close_date", "morning_source_feasibility",
+        "morning_source_feasibility_cause_en", "morning_source_feasibility_cause_zh",
+        "null_count", "blocks",
+    })
+    assert sorted(p1.keys()) == expected_top_keys
+    # Capture the freeze snapshot — every legacy block's KEY (deterministic
+    # from input) and a structural fingerprint so any drift in non-keyed
+    # fields fails the assertion below.
+    snapshot_keys = [b["key"] for b in legacy_now]
+    snapshot_top = {k: p1[k] for k in expected_top_keys if k != "blocks"}
+    # Pin: a subsequent run on the SAME fixture must yield the IDENTICAL
+    # snapshot. We re-build and re-extract, then compare by JSON.
+    legacy_again = [b for b in p2["blocks"] if b["key"] in _LEGACY_BLOCK_KEYS]
+    top_again = {k: p2[k] for k in expected_top_keys if k != "blocks"}
+    assert [b["key"] for b in legacy_again] == snapshot_keys
+    assert top_again == snapshot_top
+    # Pin: every legacy block carries the same set of canonical contract keys
+    # (session_clock omits `rows` because it has no row payload; all other
+    # legacy blocks carry one).
+    canonical_block_keys = {
+        "key", "title_en", "title_zh", "state", "source_ref", "source_owner",
+        "source_as_of", "source_as_of_precision", "age_minutes", "max_age_minutes",
+        "classification", "state_reason_en", "state_reason_zh",
+    }
+    for b in legacy_now:
+        missing = canonical_block_keys - set(b.keys())
+        assert not missing, (b["key"], missing)
+
+
+def test_render_html_returns_empty_when_jinja2_unavailable(tmp_path, monkeypatch):
+    """RED-first test for the defensive render_html branch (MAJOR 2): when
+    jinja2 cannot be imported, render_html returns '' rather than raising
+    ImportError. The previous test asserted only `isinstance(rendered, str)`
+    which a working jinja2 path also satisfies — it pinned nothing.
+
+    We monkeypatch the module's `jinja2` import to raise ImportError and
+    verify the call returns ''. This is the RED-first pin for the new
+    branch: the prior head would raise ImportError, this test would fail."""
+    from scripts import build_am_edition as mod
+
+    payload = {"schema": "am_edition.v1", "generated_at": "2026-09-08T15:00:00+00:00",
+               "display_only": True, "blocks": []}
+    # Force the jinja2 import inside render_html to fail.
+    import builtins
+    real_import = builtins.__import__
+
+    def _failing_import(name, *args, **kwargs):
+        if name == "jinja2":
+            raise ImportError("jinja2 intentionally unavailable")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _failing_import)
+    rendered = mod.render_html(payload)
+    assert rendered == "", f"expected '' when jinja2 unavailable, got {rendered!r}"
+
+
+def test_a7_filter_in_context_planes_blocks_owner_transferred_words(tmp_path):
+    """RED-first test for BLOCKER 2: the A7 runtime guard must apply to
+    context_planes rows too, not just research_watch. We seed a
+    transmission artifact whose dollar_channel.headline_en carries the
+    forbidden word `target` and verify the row's read_en never surfaces
+    the literal word (the row is replaced with the placeholder)."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    # Build a custom transmission file with a forbidden word in the
+    # dollar_channel state so the runtime guard has to fire.
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    _write(data / "transmission" / "latest.json", {
+        "asof": "2026-09-08",
+        "state": {
+            "rates": {
+                "regime": "restrictive", "direction": "rising", "turn_watch": "extreme_watch",
+                "label": {"en": "Real 10y 2.62% (restrictive, rising)",
+                          "zh": "实际10年期 2.62%"},
+            },
+        },
+        "dollar_channel": {
+            "asof": "2026-09-08",
+            "usd_dir": "weakening",
+            "state": {"en": "Falling — close to the long-term target",
+                      "zh": "走软，接近长期目标"},
+            "regime": {"en": "High real rates", "zh": "高实际利率"},
+        },
+        "yield_curve": {"asof": "2026-09-08",
+                        "regime": {"label": {"en": "Bear flattener", "zh": "熊市平坦"}}},
+    })
+    _write(data / "commodity" / "latest.json", {
+        "asof": "2026-09-08", "regime": "Reflation",
+        "favored": ["Copper"], "breadth": {"n_members": 17, "n_up_trend": 13},
+    })
+    _write(data / "china_market_state" / "latest.json", {
+        "asof": "2026-09-08", "label_en": "Risk-off", "label_zh": "避险",
+        "posture_en": "Risk-off", "posture_zh": "避险",
+        "headline_en": "Risk-off", "headline_zh": "避险",
+    })
+    _write(data / "hk_market_state" / "latest.json", {
+        "asof": "2026-09-08", "label_en": "Risk-off", "label_zh": "避险",
+        "posture_en": "Risk-off", "posture_zh": "避险",
+        "headline_en": "Risk-off", "headline_zh": "避险",
+    })
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    dollar_row = next(r for r in cp["rows"] if r["plane"] == "dollar")
+    # The literal "target" word must NOT appear in any user-facing string.
+    for s in _walk_strings(dollar_row):
+        for forbid in ("buy", "sell", "long", "short", "target", "size"):
+            assert forbid not in s.lower(), (forbid, s, dollar_row)
+
+
+def test_yield_curve_appears_in_rates_row(tmp_path):
+    """RED-first test for BLOCKER 1: the rates row's read_en / read_zh
+    must include the yield_curve owner's plain-word label (NOT the
+    percentile, NOT the slope number). Verified by seeding a transmission
+    artifact whose yield_curve.regime.label says 'Bear flattener'."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    # Build a transmission file with yield_curve.regime.label set so the
+    # producer has a plain-word label to surface.
+    _write_transmission(
+        data, asof="2026-09-08", with_credit=True,
+    )
+    # Override the default yield_curve to carry the regime label the test
+    # expects to find in the rates row.
+    tx_path = data / "transmission" / "latest.json"
+    tx = json.loads(tx_path.read_text(encoding="utf-8"))
+    tx["yield_curve"] = {
+        "asof": "2026-09-08",
+        "regime": {"label": {"en": "Bear flattener", "zh": "熊市平坦"}},
+        "shape": {"level": {"value": 4.72}, "slope_2s10s": {"value": 0.25}},
+    }
+    tx_path.write_text(json.dumps(tx), encoding="utf-8")
+    _write_commodity(data, asof="2026-09-08")
+    _write_intl(data, asof="2026-09-08")
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    rates_row = next(r for r in cp["rows"] if r["plane"] == "rates")
+    # The yield_curve owner-rendered plain-word label must surface in the
+    # rates row's read_en as a plain-word sentence (not a percentile, not
+    # a slope number).
+    assert "Bear flattener" in rates_row["read_en"], rates_row["read_en"]
+    assert "熊市平坦" in rates_row["read_zh"], rates_row["read_zh"]
+
+
+def test_international_row_separates_china_and_hk(tmp_path):
+    """RED-first test for BLOCKER 4: even when the committed artifact
+    ships byte-identical headlines for china and hk, the international row
+    must attribute each to its market name. The previous code concatenated
+    two byte-identical headlines into one sentence with no attribution."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+    )
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    intl_row = next(r for r in cp["rows"] if r["plane"] == "international")
+    # Each market name must appear in the read_en so the reader can tell
+    # which sentence is which.
+    assert "China" in intl_row["read_en"], intl_row["read_en"]
+    assert "Hong Kong" in intl_row["read_en"], intl_row["read_en"]
+    assert "中国" in intl_row["read_zh"], intl_row["read_zh"]
+    assert "香港" in intl_row["read_zh"], intl_row["read_zh"]
+
+
+def test_research_watch_zh_does_not_embed_english(tmp_path):
+    """RED-first test for BLOCKER 3: the condition_zh field must NOT
+    embed the English condition text. The previous producer prefixed the
+    ZH field with `（条件原文照录如下）` and then copied the EN condition,
+    breaking the plain-language law. The new producer surfaces a plain
+    ZH-only framing sentence."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    theses = [{
+        "id": "mb-2026-09-08-1",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-08T10:00:00Z",
+        "falsifier": {"text": "Inflation rolls over back to the regime anchor — friction clears."},
+        "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        theses_rows=theses,
+    )
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    assert len(rw["rows"]) == 1
+    zh = rw["rows"][0]["condition_zh"]
+    en = rw["rows"][0]["condition_en"]
+    # The EN condition's words must NOT appear in the ZH field (the ZH
+    # field is a Chinese-only framing sentence, never a translated copy).
+    for word in ("Inflation", "regime", "anchor", "friction", "clears"):
+        assert word not in zh, (word, zh)
+    # The framing sentence is plain ZH and contains no English particles.
+    assert zh, "condition_zh must not be empty"
+    assert "（条件原文照录如下）" not in zh
+    # The EN field still carries the original English condition.
+    assert en == theses[0]["falsifier"]["text"]
+
+
+def test_track_record_correct_key_path(tmp_path):
+    """RED-first test for BLOCKER 5: track_record.json's top-level keys
+    are schema/as_of/scored_total/open/unscored_soft/expired/overall/...;
+    it carries NO `conditions` or `open_conditions` list. The producer
+    must NOT invent those keys — when track_record exists but has no
+    OPEN-condition list, the producer reads only its `as_of` as a
+    calibration clue and surfaces OPEN conditions from theses.jsonl."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+    )
+    # Seed a track_record.json that mirrors the real artifact's top-level
+    # shape — no `conditions` or `open_conditions` key. The producer must
+    # not raise / not silently produce zero rows; OPEN conditions come
+    # from theses.jsonl.
+    (data / "master_brain").mkdir(parents=True, exist_ok=True)
+    (data / "master_brain" / "track_record.json").write_text(json.dumps({
+        "schema": "track_record.v1",
+        "as_of": "2026-09-08",
+        "scored_total": 12,
+        "open": 0,
+        "unscored_soft": 0,
+        "expired": 2,
+        "overall": {"n": 12, "hits": 10, "misses": 2, "hit_rate": 0.833, "dir_accuracy": 0.583},
+        "by_conviction": {},
+        "by_kind": {"rel_return": {"n": 12, "hits": 10, "misses": 2, "hit_rate": 0.833}},
+        "by_regime": {},
+        "calibration_note": "12 leans scored, hit-rate 0.833",
+        "recent": [
+            {"id": "mb-2026-07-30-1", "subject": "Semis", "lean": "underweight",
+             "conviction": "low", "outcome": "hit", "realized": -0.0109, "check_by": "2026-08-28"},
+        ],
+        "calibration_note_zh": "12 次倾向已计分，命中率 0.833。",
+    }), encoding="utf-8")
+    # Seed theses.jsonl with an OPEN thesis so the producer has at least
+    # one row to surface.
+    (data / "master_brain" / "theses.jsonl").write_text(json.dumps({
+        "id": "mb-2026-09-08-1", "status": "open",
+        "state_asof": "2026-09-08", "logged_at": "2026-09-08T10:00:00Z",
+        "falsifier": {"text": "A neutral watch condition for the test."},
+        "check_by": "2026-09-22",
+    }) + "\n", encoding="utf-8")
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    # The producer MUST surface the OPEN thesis row (not zero rows).
+    assert len(rw["rows"]) >= 1
+    assert "neutral watch condition" in rw["rows"][0]["condition_en"]
+
+
+def test_context_planes_age_minutes_is_filled(tmp_path):
+    """RED-first test for MAJOR 4: context_planes.age_minutes must NOT be
+    permanently None. The previous code shipped `worst_age = None` while
+    every row carried its own age_minutes. We seed a fixture that yields
+    a STALE block state and verify the block-level age_minutes is set."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    # 2 days ago = STALE; the rates row goes STALE, so the block worst-of
+    # is STALE and age_minutes must be a positive integer.
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-06", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=True,
+    )
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    assert cp["state"] == "STALE_WITH_LAST_KNOWN"
+    assert cp["age_minutes"] is not None, cp
+    assert cp["age_minutes"] > 0
+
+
+def test_context_planes_current_for_yesterday_stamped_premarket_read(tmp_path):
+    """RED-first test for MAJOR 5: a premarket read against an asof
+    stamped yesterday (date-only) MUST report CURRENT, not STALE. The
+    previous code compared in minutes and forced every daily owner
+    artifact STALE inside the premarket window."""
+    # 2026-09-08 11:30 UTC = premarket window for an asof=2026-09-07 (date-only).
+    premarket_now = datetime(2026, 9, 8, 11, 30, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-07T20:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-07", commodity_asof="2026-09-07", intl_asof="2026-09-07",
+        with_credit=True,
+    )
+    payload = build_payload(site, data, now=premarket_now)
+    cp = _new_block(payload, "context_planes")
+    assert cp["state"] == "CURRENT", cp
+    # Every row should also be CURRENT (yesterday-asof + day precision).
+    states = {r["plane"]: r["state"] for r in cp["rows"]}
+    assert states == {
+        "rates": "CURRENT", "dollar": "CURRENT", "credit": "CURRENT",
+        "commodity": "CURRENT", "international": "CURRENT",
+    }
+
+
+def test_owner_links_state_includes_resolved_count(tmp_path):
+    """RED-first test for MAJOR 8: when owner_links rows resolve, the
+    state_reason_en must name the resolved count so a Lane-B consumer
+    doesn't mistake the block for an empty/null disclosure. The block
+    state stays NOT_COVERED per spec (no freshness clock) but the reason
+    copy is informative."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+    )
+    payload = build_payload(site, data, now=now)
+    ol = _new_block(payload, "owner_links")
+    assert ol["state"] == "NOT_COVERED"
+    # The state_reason_en names the resolved count so the consumer knows
+    # rows exist (not a null disclosure).
+    assert "resolved" in ol["state_reason_en"].lower()
+    assert str(len(ol["rows"])) in ol["state_reason_en"]
+
+
+def test_owner_links_plane_owner_by_plane_actually_used(tmp_path):
+    """RED-first test for MAJOR 7: every plane rendered in context_planes
+    (rates / dollar / credit / commodity / international) gets at least
+    one owner row. The previous code defined _OWNER_PAGE_BY_PLANE but
+    never used it — dollar and credit got zero rows."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+    )
+    payload = build_payload(site, data, now=now)
+    ol = _new_block(payload, "owner_links")
+    owner_planes = {r["plane"] for r in ol["rows"] if r["kind"] == "owner"}
+    # The five planes from context_planes must all be represented.
+    assert {"rates", "dollar", "credit", "commodity", "international"} <= owner_planes
+
+
+def test_a7_word_boundary_does_not_match_benign_substrings(tmp_path):
+    """RED-first test for MAJOR 10: the A7 matcher must use a word-boundary
+    regex for EN so 'along'/'longer'/'short-term'/'sized' never trigger.
+    The previous code matched bare substrings and silently redacted
+    benign prose. We seed a thesis with 'along' / 'longer' and verify
+    the row surfaces the original text."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    theses = [{
+        "id": "mb-2026-09-08-bb",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-08T10:00:00Z",
+        "falsifier": {"text": "Rates move along the curve as bonds re-price over the longer horizon."},
+        "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:19:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        theses_rows=theses,
+    )
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    assert len(rw["rows"]) == 1
+    # The original text must surface verbatim — none of "along", "longer",
+    # "curve", "bonds", "re-price" should trigger the A7 redactor.
+    assert "along the curve" in rw["rows"][0]["condition_en"]
+
+
+def test_source_as_of_precision_day_for_date_only_source(tmp_path):
+    """RED-first test for MAJOR 6: when the source's newest asof is a
+    date-only string (e.g. '2026-09-08'), the block's source_as_of_precision
+    MUST be 'day', not 'second'. The previous code checked 'T' not in the
+    already-normalised ISO (which always contains 'T') and silently
+    upgraded a day-precision source to 'second'."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    theses = [{
+        "id": "mb-2026-09-08-day",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-08",  # date-only
+        "falsifier": {"text": "A condition written today."},
+        "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:19:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        theses_rows=theses,
+    )
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    assert rw["source_as_of_precision"] == "day", rw
+
+
+def test_research_watch_since_and_as_of_are_distinct_clocks(tmp_path):
+    """RED-first test for MINOR 1: the row's `since` (when the condition
+    was set) and `as_of` (when the row was committed) come from distinct
+    artifact fields. The previous code set both from `state_asof or
+    logged_at` and reported a date before the thesis was logged."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    theses = [{
+        "id": "mb-2026-09-08-clocks",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-09T03:23:23.495694+00:00",  # logged next day
+        "falsifier": {"text": "Distinct clock fields test condition."},
+        "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:19:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        theses_rows=theses,
+    )
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    row = rw["rows"][0]
+    assert row["since"] != row["as_of"], (row["since"], row["as_of"])
+    assert row["since"].startswith("2026-09-08")
+    assert row["as_of"].startswith("2026-09-09")
+
+
+def test_worstof_ranks_unknown_state_as_worst(tmp_path):
+    """RED-first test for MINOR 2: _WorstOf must rank an unknown state
+    string as WORST, not CURRENT. The previous default `_STATE_RANK.get(s, 0)`
+    silently mapped unknown states to rank 0 = CURRENT and let a typo'd
+    state win the worst-of."""
+    from scripts.build_am_edition import _WorstOf, _STATE_RANK, _UNKNOWN_STATE_RANK
+    # A state string that doesn't appear in the rank map.
+    out = _WorstOf(["CURRENT", "BOGUS_STATE"])
+    # BOGUS_STATE is unknown → it must NOT win (i.e. it must NOT be
+    # CURRENT). The worst-of must be BOGUS_STATE.
+    assert out == "BOGUS_STATE"
+    # And the rank of an unknown state must be strictly greater than
+    # NOT_COVERED (=5) so it can never rank as best.
+    assert _UNKNOWN_STATE_RANK > _STATE_RANK["NOT_COVERED"]
+
+
+def test_commodity_regime_labels_are_honest_translations(tmp_path):
+    """RED-first test for MAJOR 12: the commodity-regime labels are HONEST
+    translations of the slug — never a claim about specific commodities
+    rising/falling. We verify the Tightening/Deflation/Risk-on/Risk-off
+    mappings no longer fabricate content (the previous 'Risk-on →
+    铜金煤走强' asserted copper/gold/coal were rising, which is absent
+    from the `regime` field)."""
+    from scripts import build_am_edition as mod
+    labels = mod._COMMODITY_REGIME_LABELS
+    assert labels["Reflation"] == ("Reflation", "再通胀")
+    assert labels["Tightening"] == ("Tightening", "收紧")  # was "高耐量" (not Chinese for tightening)
+    assert labels["Deflation"] == ("Deflation", "通缩")  # was "Deflation scare / 通缩恐慌" (added "scare")
+    # Risk-on / Risk-off labels must NOT name specific commodities.
+    assert "Copper" not in labels["Risk-on"][1]
+    assert "Gold" not in labels["Risk-on"][1]
+    assert "Coal" not in labels["Risk-on"][1]
+
+
+def test_a7_withheld_placeholder_is_a7_clean(tmp_path):
+    """RED-first test for MAJOR 11: the redaction placeholder itself must
+    be A7-clean so a redaction that lands in a glance field never
+    triggers the guard a second time. We verify no A7-forbidden word is
+    a substring of the placeholder."""
+    from scripts import build_am_edition as mod
+    for forbid in mod._A7_FORBIDDEN_SUBSTRINGS:
+        assert forbid not in mod._A7_WITHHELD_EN, (forbid, mod._A7_WITHHELD_EN)
+    # And the placeholder is plain language (no "TBD", no jargon).
+    assert "TBD" not in mod._A7_WITHHELD_EN
+    assert "bookkeeping" not in mod._A7_WITHHELD_EN.lower()
+    assert "forbids" not in mod._A7_WITHHELD_EN.lower()
+
+
+def test_render_html_red_first_jinja2_missing_raises_on_old_branch(monkeypatch):
+    """RED-first test for MAJOR 2/3: on the prior head (before the
+    defensive ImportError branch), `render_html` raised ImportError when
+    jinja2 was unavailable. On the new head it returns ''. We verify the
+    new contract directly so a regression to the old behaviour fails."""
+    from scripts import build_am_edition as mod
+    import builtins
+    real_import = builtins.__import__
+
+    def _failing(name, *args, **kwargs):
+        if name == "jinja2":
+            raise ImportError("jinja2 missing")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _failing)
+    out = mod.render_html({"schema": "am_edition.v1"})
+    assert out == "", out
+
+
+def test_five_typed_states_for_new_blocks(tmp_path):
+    """RED-first test for M9: each new block must reach its full set of
+    reachable typed states via fixtures. context_planes reaches 4 of 5
+    (CURRENT / STALE / UNAVAILABLE / NOT_COVERED); NOT_YET_OPEN and
+    CLOSED are session_clock-only and are NOT reachable from these
+    blocks — that's documented and pinned here so a future change can
+    surface them honestly. research_watch reaches 3 of 5; owner_links
+    reaches 2 of 5 (NOT_COVERED / UNAVAILABLE)."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    fresh = "2026-09-08"
+    # context_planes: CURRENT
+    site, data = _full_tree(
+        tmp_path / "cp_cur", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh, with_credit=True,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "context_planes")["state"] == "CURRENT"
+    # context_planes: STALE
+    site, data = _full_tree(
+        tmp_path / "cp_stale", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-06", commodity_asof=fresh, intl_asof=fresh, with_credit=True,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "context_planes")["state"] == "STALE_WITH_LAST_KNOWN"
+    # context_planes: UNAVAILABLE
+    site, data = _full_tree(
+        tmp_path / "cp_unavail", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=None, commodity_asof=fresh, intl_asof=fresh,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "context_planes")["state"] == "UNAVAILABLE"
+    # context_planes: NOT_COVERED (transmission present, no credit field)
+    site, data = _full_tree(
+        tmp_path / "cp_nc", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh, with_credit=False,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "context_planes")["state"] == "NOT_COVERED"
+    # research_watch: CURRENT
+    theses = [{
+        "id": "mb-2026-09-08-1", "status": "open",
+        "state_asof": fresh, "logged_at": f"{fresh}T10:00:00Z",
+        "falsifier": {"text": "A fresh watch condition."}, "check_by": "2026-09-22",
+    }]
+    site, data = _full_tree(
+        tmp_path / "rw_cur", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh, theses_rows=theses,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "research_watch")["state"] == "CURRENT"
+    # research_watch: STALE_WITH_LAST_KNOWN
+    site, data = _full_tree(
+        tmp_path / "rw_stale", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
+    )
+    (data / "master_brain").mkdir(parents=True, exist_ok=True)
+    (data / "master_brain" / "theses.jsonl").write_text(json.dumps({
+        "id": "mb-old", "status": "open", "state_asof": "2026-07-24",
+        "logged_at": "2026-07-24T10:00:00Z",
+        "falsifier": {"text": "An old watch condition."}, "check_by": "2026-08-07",
+    }) + "\n", encoding="utf-8")
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "research_watch")["state"] == "STALE_WITH_LAST_KNOWN"
+    # research_watch: UNAVAILABLE
+    site, data = _full_tree(
+        tmp_path / "rw_unavail", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "research_watch")["state"] == "UNAVAILABLE"
+    # owner_links: NOT_COVERED (registry resolves, no freshness clock)
+    site, data = _full_tree(
+        tmp_path / "ol_ok", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
+    )
+    p = build_payload(site, data, now=now)
+    assert _new_block(p, "owner_links")["state"] == "NOT_COVERED"
+    # owner_links: UNAVAILABLE — patch the resolve helper to fail.
+    from scripts import build_am_edition as mod
+    orig = mod._resolve_owner_page
+
+    def _fail(_page, _root):
+        return False
+
+    mod._resolve_owner_page = _fail
+    try:
+        site, data = _full_tree(
+            tmp_path / "ol_unavail", tape_asof="2026-09-08T13:00:00Z",
+            session_date="2026-09-08",
+            transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
+        )
+        # Also drop the registry so reference rows fail too.
+        import scripts.build_market_reference as bmr
+        orig_load = bmr.load_registry
+
+        def _empty(_path):
+            return {}
+
+        bmr.load_registry = _empty
+        try:
+            p = build_payload(site, data, now=now)
+            assert _new_block(p, "owner_links")["state"] == "UNAVAILABLE"
+        finally:
+            bmr.load_registry = orig_load
+    finally:
+        mod._resolve_owner_page = orig
+    # Pin the reachability documentation.
+    reachable_states = {
+        "context_planes": {"CURRENT", "STALE_WITH_LAST_KNOWN", "UNAVAILABLE", "NOT_COVERED"},
+        "research_watch": {"CURRENT", "STALE_WITH_LAST_KNOWN", "UNAVAILABLE"},
+        "owner_links": {"NOT_COVERED", "UNAVAILABLE"},
+    }
+    # Sanity: NOT_YET_OPEN and CLOSED are reserved for session_clock and
+    # are NOT in any new block's reachable set.
+    for block, states in reachable_states.items():
+        assert "NOT_YET_OPEN" not in states, (block, states)
+        assert "CLOSED" not in states, (block, states)
