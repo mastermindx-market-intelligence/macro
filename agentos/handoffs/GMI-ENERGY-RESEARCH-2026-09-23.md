@@ -371,3 +371,46 @@ On concrete delivery, the receiver follows the packet pickup contract: PICKUP_AC
 Do not create another placement root, choose a numbered Claude/Fable account by guess, or treat Slack user-name similarity as receiver eligibility. Do not implement product code on PR #7791.
 
 Research/design phase status: **READY_FOR_FABLE_PLACEMENT**. Overall product mission remains incomplete.
+
+
+## 12. Placement watch and current-main compatibility refresh
+
+A bounded host-native condition watch is armed for the exact placement root `C0BSBM78V1N / 1790224206.039539`. Its only job is to surface a material reply for `gmi-energy-fable-ceo-e2e-20260923-chairman-001` — concrete receiver assignment/delivery, PICKUP_ACK, START, typed capacity/addressability blocker or another material semantic edge. Watcher state is attention/return-path only; it owns no lifecycle, placement, retry, execution or acceptance truth.
+
+A fresh read of the placement thread after arming found no replies. Current truth remains:
+- placement request delivered;
+- concrete Fable receiver absent;
+- PICKUP_ACK absent;
+- START absent;
+- implementation effects absent.
+
+Current Macro `main` then advanced to `da092e5d4a64dbb7c3958826f8cd60d7cbd02cc5`, four commits beyond packet-creation main `07b0eeb44317b5bb104da46abef5f233cbe77703`. The changed paths are Research Vault catalog/evidence and Options/Market-Ontology work; no current R6 interface path moved.
+
+Exact current-main blob recheck shows all twelve R6 interface pins remain byte-identical:
+- `config/theme_crosswalk.yml` `782dbc519b7bb2d446af91c66c6fb9248722a8b9`
+- `data/baskets/membership.json` `c5b838d59fad8115d40cd369410846e9aaf5ec11`
+- `templates/state_of_themes.html.j2` `05017554bb9e64951d195b52583cfbd462bd2f05`
+- `templates/basket_detail.html.j2` `a3d8846bd27961db2c7877d693e8fd43bf399baa`
+- `templates/ticker.html.j2` `14276ab2d09a6402e62a8f2fbb86f7c62689e3ec`
+- `contracts/theme_graph/evidence.v1.schema.json` `83dece15e98b9c8775a584afcd6ee09811dad220`
+- `engine/theme_graph/store.py` `63b58860d35bd183c947c85088f83bd53359bb9f`
+- `contracts/evidence_foundation/vocabulary.v1.json` `441c573dff1f04fca42ffe3d3170eb035e1b17a2`
+- `engine/earnings_narrative/private_publication.py` `0ee93909693893f419f0109f9eba1994d94e2b46`
+- `scripts/publish_earnings_private_store.py` `fe46b31f80a5891e5cc453bfd3f29f6d65e4f4ea`
+- `app/earnings.py` `3b8251388c8e9ae59b933212a7384faaea61eb27`
+- `contracts/sector_intelligence/sector_intelligence_packet.v1.schema.json` `de386d5bd4796280f08601804870a9aabb458c60`.
+
+Sibling gate refresh at this point:
+- #7462 OPEN/DRAFT at `31706d7322af55696dc7b2e746ec511b08bd51d7`
+- #7664 OPEN/non-draft at `e43c769325311a06724ae211fdcc393ffcf05338`
+- #7669 OPEN/DRAFT at `2c28d950aa9448fc878bb64d92b228a8f1952bde`
+- #7777 OPEN/non-draft at `4122e3b7e1524482216fb156f201f8229c14011b`
+- #7773 OPEN/DRAFT at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`
+- #7793 OPEN/DRAFT at `6d301d092e0c1f140b23544aff45953f8adb2a99`
+- #7788 OPEN/DRAFT at `289fe80f36c0df0952f489421efec37adcb44833`.
+
+Therefore the R6 semantic design and master Fable packet remain reusable against current main; this is a compatibility observation, not shared-interface acceptance or implementation START. Fable must still refresh custody/gates at actual pickup.
+
+### Exact next action
+
+Wait for the placement owner to assign/deliver this exact operation to one eligible concrete Fable session or return a typed capacity/addressability blocker. On a qualifying return, fresh-read the exact Slack root before any substantive reply, consume that edge, and update this checkpoint. Do not create a duplicate placement root or self-select a numbered Claude account.
