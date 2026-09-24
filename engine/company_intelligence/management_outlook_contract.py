@@ -103,6 +103,7 @@ MAX_ATOMIC_PERIODS = 4
 MAX_ROLE_ROWS = 16
 MAX_NATIVE_REFS = 64
 MAX_ROLE_GENERATIONS = 16
+MAX_REFS_PER_ROLE_ROW = 8  # request-layer twin of the contract's input_roles[].refs_sha256 maxItems
 MIN_FISCAL_YEAR = 2000
 MAX_FISCAL_YEAR = 2100
 
@@ -546,6 +547,9 @@ def validate_comparison_request(payload, *, verified_context) -> ComparableReven
         if not isinstance(raw_refs, list) or not raw_refs:
             _fail("missing_source_ref", f"{where}.refs must cite at least one native source object")
         refs = tuple(_parse_native_ref(ref, f"{where}.refs[]") for ref in raw_refs)
+        distinct_row_refs = {ref.sha256 for ref in refs}
+        if len(distinct_row_refs) > MAX_REFS_PER_ROLE_ROW:
+            _fail("request_bound_exceeded", f"{where} cites {len(distinct_row_refs)} distinct native refs; the first-unit maximum per role row is {MAX_REFS_PER_ROLE_ROW}")
         definition_ref = _parse_native_ref(raw_row["definition_ref"], f"{where}.definition_ref")
         if definition_ref != context_definition:
             _fail("definition_accounting_fx_mismatch", f"{where} definition disagrees with the accepted definition receipt")
@@ -648,6 +652,17 @@ def _check_cell_coverage(rows: list, expected_keys: list, role: str) -> None:
 
 # ---------------------------------------------------------------- echo + serialization
 
+def _unique_in_order(values):
+    """First-seen order, duplicates dropped — the echo never repeats a digest."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out
+
+
 def serialize_input_echo(inputs: ComparableRevenueInput) -> dict:
     """Permitted input references echoed into the result envelope."""
     order = {role: index for index, role in enumerate(ROLE_FAMILIES)}
@@ -661,8 +676,10 @@ def serialize_input_echo(inputs: ComparableRevenueInput) -> dict:
             "low": _format_decimal(amount.low, INPUT_DECIMAL_RE, INPUT_CEILING, "invalid_amount", f"{row.role}.low"),
             "high": _format_decimal(amount.high, INPUT_DECIMAL_RE, INPUT_CEILING, "invalid_amount", f"{row.role}.high"),
             "period_keys": list(amount.period_keys),
-            "refs_sha256": [ref.sha256 for ref in
-                            sorted(amount.refs, key=lambda r: (r.owner, r.object_id, r.schema, r.generation, r.sha256, r.selector))],
+            "refs_sha256": _unique_in_order(
+                ref.sha256 for ref in
+                sorted(amount.refs, key=lambda r: (r.owner, r.object_id, r.schema, r.generation, r.sha256, r.selector))
+            ),
             "definition_sha256": amount.definition_ref.sha256,
         })
         for ref in sorted(amount.refs, key=lambda r: (r.owner, r.object_id, r.selector, r.generation)):
@@ -753,9 +770,6 @@ def serialize_comparison(result: Mapping) -> dict:
     if corrected:
         if not isinstance(predecessor_id, str) or not predecessor_id.startswith(COMPARISON_ID_PREFIX):
             _fail("correction_shape_invalid", "a corrected result names its predecessor comparison id")
-        if predecessor_id == result.get("comparison_id"):
-            _fail("correction_shape_invalid",
-                  "a corrected result cannot name itself as predecessor; a re-issue with identical content is not a correction")
         if not isinstance(correction_reason, str) or not correction_reason:
             _fail("correction_shape_invalid", "a corrected result carries a correction reason")
     elif predecessor_id is not None or correction_reason is not None:

@@ -402,3 +402,30 @@ def test_self_referential_correction_link_is_refused():
     looped["correction"] = {"corrected": True, "predecessor_id": envelope["comparison_id"], "reason": "re-issue"}
     with pytest.raises(ValueError, match="correction_shape_invalid"):
         moc.validate_comparison_result(looped)
+
+
+def test_distinct_refs_per_role_row_are_bounded_at_the_request_layer():
+    # The contract caps input_roles[].refs_sha256 at 8 items; the request layer must own
+    # that bound so an admitted request can never die at serialize with an untyped
+    # schema failure. Nine distinct refs on one row stay under the other bounds
+    # (15 role-generation tuples, well under 64 native refs) and are refused typed.
+    payload = base_payload()
+    fy_a = next(row for row in payload["input_roles"] if row["role"] == "FY_A")
+    fy_a["refs"] = [nref(object_id=f"src_FY_A_{i}") for i in range(9)]
+    with pytest.raises(ValueError, match="request_bound_exceeded"):
+        seal(payload)
+    fy_a["refs"] = [nref(object_id=f"src_FY_A_{i}") for i in range(8)]
+    envelope = compare_management_outlook(seal(payload))
+    echoed = next(row for row in envelope["input_roles"] if row["role"] == "FY_A")["refs_sha256"]
+    assert len(echoed) == 8 and len(set(echoed)) == 8
+    moc.validate_comparison_result(envelope)
+
+
+def test_duplicate_refs_on_a_role_row_are_echoed_once():
+    payload = base_payload()
+    fy_a = next(row for row in payload["input_roles"] if row["role"] == "FY_A")
+    fy_a["refs"] = [copy.deepcopy(FY_A_REF) for _ in range(3)]
+    envelope = compare_management_outlook(seal(payload))
+    echoed = next(row for row in envelope["input_roles"] if row["role"] == "FY_A")["refs_sha256"]
+    assert echoed == [FY_A_REF["sha256"]]
+    moc.validate_comparison_result(envelope)

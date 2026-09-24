@@ -332,8 +332,9 @@ def _load_shared_curation_contract() -> Any | None:
     """Import the shared ``engine.theme_graph.curation_assertion`` lazily (TR3).
 
     Returns the module, or ``None`` when it is absent (the carrier base) or does
-    not expose a callable ``validate_assertion`` — either way the composer must
-    refuse the assertion-dependent sections rather than guess at payloads.
+    not expose BOTH callables the composer relies on (``validate_assertion`` and
+    ``curation_revision``) — either way the composer must refuse the
+    assertion-dependent sections rather than guess at payloads.
     """
     try:
         from engine.theme_graph import curation_assertion as shared
@@ -790,7 +791,7 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
             f"assertion statement (curation_revision {revision})",
         )
         if statement_mode == "contrary_observation":
-            if not statement:
+            if not (statement or "").strip():
                 # A counter-observation with no statement text cannot be
                 # attributed content; counted, never rendered.
                 out.invalid += 1
@@ -811,7 +812,7 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
                 (observation_id, subject_id, revision, source_ref["object_id"])
             )
         else:
-            if not statement:
+            if not (statement or "").strip():
                 # An attributed business fact with no statement text is not a fact.
                 out.invalid += 1
                 continue
@@ -882,21 +883,29 @@ def _cards_and_relationships(out: _AssertionOutcome,
         _rel("row_backed_by_source", row["row_id"], row["source_ref"]["object_id"], revision)
 
     # Cards: one per product/kind, aggregating row ids — never a magnitude.
-    by_product: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    # The card key separates a named object from an unnamed one structurally, so an
+    # unnamed side can never share a card with a real entity whatever its id spells.
+    by_product: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
     product_names: dict[str, str] = {}
     for row in out.rows:
-        object_id = row["object"]["entity_id"] or "unnamed-counterparty"
+        object_id = row["object"]["entity_id"]
+        named = "named" if object_id else "unnamed"
+        key_id = object_id if object_id else ""
         if row["predicate"] == "product_workload_role":
-            by_product.setdefault(("product_workload_role", object_id), []).append(row)
+            by_product.setdefault(("product_workload_role", named, key_id), []).append(row)
             name = row["object"]["display_name"]
-            if name:
+            if object_id and name:
                 product_names.setdefault(object_id, name)
         else:
-            by_product.setdefault(("buyer_paid_unit", object_id), []).append(row)
-    for (kind, product_id), rows in sorted(by_product.items()):
+            by_product.setdefault(("buyer_paid_unit", named, key_id), []).append(row)
+    for (kind, named, product_id), rows in sorted(by_product.items()):
         row_ids = sorted(row["row_id"] for row in rows)
+        if named == "named":
+            label = product_names.get(product_id, product_id)
+        else:  # the null side is the product for a workload role, the counterparty for a paid unit
+            label = "Unnamed product" if kind == "product_workload_role" else "Unnamed counterparty"
         title = (
-            f"{product_names.get(product_id, product_id)} — "
+            f"{label} — "
             + ("workload role (attributed)" if kind == "product_workload_role" else "buyer / paid unit (attributed)")
         )
         if len(title) > 200:
@@ -905,9 +914,11 @@ def _cards_and_relationships(out: _AssertionOutcome,
             )
         body = _free_text(
             f"{len(row_ids)} attributed row(s): " + ", ".join(row_ids),
-            f"card body ({kind}, {product_id})",
+            f"card body ({kind}, {product_id or 'unnamed'})",
         )
-        card_id = "tecard_" + _digest_hex({"kind": kind, "product": product_id, "rows": row_ids}, 12)
+        card_id = "tecard_" + _digest_hex(
+            {"kind": kind, "product": product_id if named == "named" else None, "rows": row_ids}, 12
+        )
         cards.append({
             "card_id": card_id,
             "card_kind": kind,

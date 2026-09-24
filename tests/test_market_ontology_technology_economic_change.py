@@ -288,7 +288,7 @@ def _synthetic_validate(payload):
     for side in ("subject", "object"):
         entity_id = payload[side].get("entity_id") if isinstance(payload[side], dict) else False
         # Mirror the emitted contract: subject.entity_id is a string; object.entity_id may be null.
-        if not isinstance(payload[side], dict) or not (
+        if not isinstance(payload[side], dict) or "entity_id" not in payload[side] or not (
             isinstance(entity_id, str) or (side == "object" and entity_id is None)
         ):
             raise _SyntheticCurationError(f"synthetic_validation_failed: {side} shape")
@@ -1009,6 +1009,55 @@ def test_null_object_workload_role_emits_no_role_edge(monkeypatch):
     assert len(dossier["business"]["rows"]) == 1
     assert not [r for r in _rels(dossier) if r["rel_type"] == "product_has_workload_role"]
     assert all(r["to_id"] for r in _rels(dossier))
+
+
+def test_unnamed_side_cards_are_labelled_per_kind_and_never_merge_with_a_real_entity(monkeypatch):
+    unnamed_buyer = _assertion(
+        predicate="buyer_paid_unit",
+        object_=(None, None, "seat-month (SYNTHETIC)"),
+        text="Synthetic buyer statement: the paid unit is bought by an unnamed counterparty.",
+        seed="nullobj-buyer-2",
+    )
+    unnamed_product = _assertion(
+        predicate="product_workload_role",
+        object_=(None, None, None),
+        text="Synthetic role statement with an unnamed product side.",
+        seed="nullobj-role-2",
+    )
+    literal = _assertion(
+        predicate="buyer_paid_unit",
+        object_=("unnamed-counterparty", "Literal Sentinel Corp (SYNTHETIC)", "seat-month (SYNTHETIC)"),
+        text="Synthetic buyer statement naming a real entity whose id spells the old sentinel.",
+        seed="literal-sentinel-1",
+    )
+    dossier = _compose_happy(monkeypatch, business_assertions=[unnamed_buyer, unnamed_product, literal])
+    titles = sorted(
+        card["title"] for card in dossier["business"]["cards"]
+        if card["card_kind"] in {"buyer_paid_unit", "product_workload_role"}
+    )
+    # Buyer cards are titled by entity id (display names are recorded for product sides only);
+    # the point here is structural: the real entity keeps its own card, the unnamed sides get
+    # per-kind labels, and nothing merges however an id happens to spell.
+    assert titles == [
+        "Unnamed counterparty — buyer / paid unit (attributed)",
+        "Unnamed product — workload role (attributed)",
+        "unnamed-counterparty — buyer / paid unit (attributed)",
+    ]
+    assert len({card["card_id"] for card in dossier["business"]["cards"]}) == len(dossier["business"]["cards"])
+
+
+def test_whitespace_only_statement_is_counted_not_rendered_on_both_paths(monkeypatch):
+    blank_attributed = _assertion(predicate="buyer_paid_unit", text="   ", seed="ws-attr-1")
+    blank_contrary = _assertion(
+        predicate="workload_usage_direction", statement_mode="contrary_observation", text=" \t ",
+        seed="ws-contrary-1",
+    )
+    dossier = _compose_happy(monkeypatch, business_assertions=[blank_attributed, blank_contrary])
+    assert dossier["business"]["rows"] == []
+    assert dossier["counter_observations"] == []
+    dumped = json.dumps(dossier, sort_keys=True)
+    assert '"invalid_assertions": 2' in dumped
+    assert '"statement": "   "' not in dumped and '"statement": " \\t "' not in dumped
 
 
 def test_partially_present_shared_contract_is_typed_unavailable(monkeypatch):
