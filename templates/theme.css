@@ -60,6 +60,19 @@
   --fs-sm:12.5px;      /* secondary copy / table body */
   --fs-label:11px;     /* MONO eyebrows · caps        */
   --fs-micro:10px;     /* dense ticks · table heads   */
+  /* ── DS-PR-0a scales (master doc §2.2; specimen port) — DEFERRED to DS-PR-0c because live pages already consume the names (bare or with divergent fallbacks; see research/prophet_v4/r6_program/wave2/DSPR0A_LANDING_RECORD_2026-09-23.md §TOKEN CONSUMER CENSUS): --sp-2, --sp-3, --r-ctl, --r-btn, --r-card, --r-panel, --r-pill, --t-fast ── */
+  /* spacing = the shipped body.page-macro scale, renumbered contiguously (its
+     shipped --sp-8:32 becomes --sp-7; 44 is the shipped footer/section band) */
+  --sp-1:4px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+  --sp-7:32px; --sp-8:44px;
+  --gap-grid:18px;
+  --t-med:.2s; --t-slow:.55s;
+  --ease-std:ease; --ease-lift:cubic-bezier(.2,.7,.3,1);
+  --shadow-hover:0 14px 30px -16px color-mix(in srgb, var(--link) 40%, transparent);
+  --ser-1:#5b9bf0; --ser-2:#d4a017; --ser-3:#0ea5e9; --ser-4:#e08b45;
+  /* text-grade rung for the tier accent (raw #7c5cff measures 3.97-4.35:1 as text
+     — under the 4.5 floor in BOTH themes; rung re-measured per the ink-ceiling law) */
+  --ink-tier:color-mix(in srgb, var(--mx-tier-accent,#7c5cff) 78%, var(--text));
   --bg: #0f1115; --panel: #181b21; --panel2: #1e222a; --text: #d7dce3;
   --muted: #8b93a1;
   /* Estate contrast pass 2026-08-03: #2a2f3a measured 1.13–1.29:1 against the
@@ -201,6 +214,8 @@ html[data-theme="light"] {
   --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
   --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
   --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
+  --ser-1:#2f63c4; --ser-2:#8f6a04; --ser-3:#0284c7; --ser-4:#b06a25;
+  --ink-tier:color-mix(in srgb, var(--mx-tier-accent,#7c5cff) 72%, var(--text));
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
@@ -483,9 +498,11 @@ html[data-theme="light"][data-lang="zh"] {
    under AA, and invisible to anyone who only ever looked at the dark shot (doctrine
    §5.8: light is a design target, not a translation).
    Direction-neutral BY CONSTRUCTION so 红涨绿跌 holds: never derive it from --up/--down. */
-:root { --prov: #62a0e8; --prov-ink: var(--prov); }
+:root { --prov: #62a0e8; --prov-ink: var(--prov);
+  --ink-prov: var(--prov-ink); }
 html[data-theme="light"] { --prov: #2f6fd0;
-  --prov-ink: color-mix(in srgb, var(--prov) 82%, var(--text)); }
+  --prov-ink: color-mix(in srgb, var(--prov) 82%, var(--text));
+  --ink-prov: var(--prov-ink); }
 /* ---- Chinese mode: directional GAUGES that paint state from status tokens ----
    The status tokens --ok/--act deliberately DON'T swap (they encode health/danger, see
    above). But a few gauges are genuine market-DIRECTION reads (bullish vs bearish) that
@@ -2062,6 +2079,29 @@ html[data-theme="dark"] .public-nav a.public-nav-login:visited { color: var(--mu
 .mx-error { display:flex; align-items:flex-start; gap:10px; border:1px solid color-mix(in srgb, var(--warn) 34%, var(--line));
   border-radius:var(--r-card,12px); padding:10px 14px; font-size:var(--fs-sm); background:color-mix(in srgb, var(--warn) 6%, var(--panel)); }
 .mx-error b { color:var(--ink-warn); }
+
+/* ── DS-PR-0a primitives (master doc §2.2; specimen port, verbatim): .mx-tbl, .mx-tblbox, .mx-tabset, .mx-rail. DEFERRED to DS-PR-0c because live markup already carries the class names: .mx-vh, .mx-sec, .mx-callout, .mx-disc (page-local copies in bonds/dashboard/_unified_dashboard_hero/sanctions_map/us_stocks/risk_envelope_live.js). ── */
+.mx-tbl{ width:100%; min-width:420px; border-collapse:collapse; font-size:var(--fs-sm); }
+.mx-tbl th{ font-size:var(--fs-micro); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
+.mx-tbl td{ padding:7px 10px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); font-variant-numeric:tabular-nums; }
+.mx-tbl tr:hover td{ background:color-mix(in srgb, var(--panel2) 60%, transparent); }
+.mx-tblbox{ overflow-x:auto; }
+.mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+.mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
+  color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
+  transition:color var(--t-fast,.16s) var(--ease-std), border-color var(--t-fast,.16s) var(--ease-std); }
+.mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
+/* lifecycle rail — stage encoded by WEIGHT only (packet §0): future=hollow,
+   done=filled muted, current=larger solid + thicker segment + 700 label. No hue. */
+.mx-rail{ display:flex; align-items:flex-start; gap:0; margin:8px 0; padding:0; }
+.mx-rail li{ list-style:none; flex:1; position:relative; padding-top:16px; font-size:var(--fs-micro); color:var(--muted); text-align:center; }
+.mx-rail li::before{ content:""; position:absolute; top:5px; left:0; right:0; height:2px; background:var(--line); }
+.mx-rail li::after{ content:""; position:absolute; top:1px; left:calc(50% - 5px); width:8px; height:8px; border-radius:var(--r-pill,999px); background:var(--panel); border:2px solid var(--muted); }
+.mx-rail li.done::after{ background:var(--muted); }
+.mx-rail li.now{ color:var(--text); font-weight:700; }
+.mx-rail li.now::before{ height:3px; background:var(--text); }
+.mx-rail li.now::after{ top:-1px; left:calc(50% - 6px); width:12px; height:12px; background:var(--text); border-color:var(--text); }
 
 /* Count ladder — control form; the active cell reads as WEIGHT (solid underline
    + 800), never as hue.
