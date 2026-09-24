@@ -1,13 +1,1 @@
-{
-  "synthetic": true,
-  "semiconductor_accepted": true,
-  "industrials_witnesses": [],
-  "industrials_accepted": false,
-  "sources": [
-    {
-      "url": "https://example.invalid/foundation_only_proof.json",
-      "mode": "synthetic",
-      "rights_state": "unknown"
-    }
-  ]
-}
+{"synthetic": true, "semiconductor_accepted": true, "industrials_witnesses": [], "industrials_accepted": false}
