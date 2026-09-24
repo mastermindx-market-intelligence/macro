@@ -1,6 +1,7 @@
 """Opus R1 probes for PR #7932 — every test here FAILS at a27a7262. Freeze RED (R-MIN-04)."""
 import dataclasses
 import importlib.util
+import sys
 
 import pytest
 
@@ -56,6 +57,9 @@ def test_probe_latest_time_mode_needs_no_replay_cutoffs():
 # F2 — the degrade must be typed even when the module resolves and then fails to import.
 def test_probe_shared_contract_degrade_is_exception_safe(monkeypatch):
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    # seat amendment (R-MIN-26): the probe must stay meaningful once #7870 lands, so the import
+    # itself is forced to fail — None in sys.modules makes ``import`` raise ImportError.
+    monkeypatch.setitem(sys.modules, "engine.theme_graph.curation_assertion", None)
     with pytest.raises(MiningResearchRefusal) as raised:
         publication_harness().shared_contract()
     assert raised.value.code == "shared_contract_unavailable"

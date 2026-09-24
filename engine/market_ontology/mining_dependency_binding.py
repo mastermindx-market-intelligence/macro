@@ -10,8 +10,13 @@ profile interface:
   shared candidate's field names without importing from it (R-MIN-24);
 * ``validate_delivery_inputs`` — a pure, closed delivery-input validator that always refuses
   *live* admission (real bytes, rights, private objects are incumbent-owner acts, G2–G6) while
-  saying whether a synthetic case is research-usable, and that owns the Mining query refusals
-  the shared kernel does not perform (R-MIN-24);
+  saying whether a synthetic case is research-usable, cross-checks the case's ``expected``
+  oracle against its omission set, and owns the Mining query refusals: ``unknown_slice`` and
+  ``slice_theme_mismatch`` are Mining-invented, while ``limit_out_of_range``,
+  ``offset_negative``, ``expected_generation_required``, ``replay_cutoffs_required`` and
+  ``generation_changed`` MIRROR the shared candidate's predicates (limit 1..100, generation
+  only for a paged read, cutoffs only under ``system_replay``) so the wrapper can later
+  delegate to the kernel without a behaviour change (R-MIN-06, R-MIN-24);
 * ``publication_harness`` — a test-only harness whose ``client()`` returns a typed
   ``route_unbound`` refusal with zero reads for entitled and unentitled callers alike, because
   the shared POST route family exists on neither ``main`` nor the shared candidate (R-MIN-06),
@@ -24,8 +29,6 @@ Every authority flag stays literal ``False`` at every layer that echoes it.
 
 from __future__ import annotations
 
-import importlib
-import importlib.util
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping
 
@@ -34,6 +37,7 @@ __all__ = [
     "SLICE_ANCHORS",
     "SHARED_ROUTE_PATHS",
     "OMISSION_REASONS",
+    "OMISSION_TO_LIMITATION",
     "AUTHORITY",
     "MiningResearchRefusal",
     "MiningResearchQuery",
@@ -56,6 +60,7 @@ SLICE_ANCHORS: dict[str, str] = {
 }
 
 # Declared by the shared owner's mount template only; absent from ``app/`` on main.
+EXPECTED_KEYS = frozenset({"signed_native_blocks", "reported_only_economics"})
 SHARED_ROUTE_PATHS: tuple[str, str] = (
     "/api/themes/v1/research/query",
     "/api/themes/v1/research/evidence",
@@ -68,10 +73,23 @@ OMISSION_REASONS: dict[str, str] = {
     "economics": "The source carries no economic packet; it is source-only.",
     "stream_threshold": "The contractual stream threshold balance is unknown.",
     "source_revision": "The consumed source revision changed after the derivation was bound.",
-    "positive_witness": "The signed result is a loss; it is retained as a signed native block, not a positive witness.",
     "next_period_outlook": "The revision is a same-horizon revision, not a next-period outlook.",
     "source_rights": "The source rights disposition denies display.",
     "page_generation": "The page generation changed between request and delivery.",
+}
+
+# Frozen omission word -> T04 composition limitation code (seat ruling R-MIN-30). The two
+# vocabularies are disjoint by construction; T04 consumes this table instead of inventing one.
+# A signed loss is NOT an omission: the sign travels inside the retained native block (IR-02).
+OMISSION_TO_LIMITATION: dict[str, str] = {
+    "reporting_basis": "missing_basis",
+    "issuer": "missing_issuer",
+    "economics": "source_only",
+    "stream_threshold": "stream_threshold_unknown",
+    "source_revision": "changed_source",
+    "next_period_outlook": "missing_derivation",
+    "source_rights": "denied_source",
+    "page_generation": "page_generation_change",
 }
 
 AUTHORITY: dict[str, bool] = {
@@ -86,7 +104,7 @@ _LIVE_ADMISSION_REASON = (
     "Live admission is refused on main: native source bytes, source rights, private "
     "objects and the shared route are incumbent-owner acts that no synthetic case can grant."
 )
-_LIMIT_MAX = 500
+_LIMIT_MIN, _LIMIT_MAX = 1, 100  # mirrors the shared candidate's _MIN_LIMIT, _MAX_LIMIT (R-MIN-24)
 _SHARED_CONTRACT_MODULE = "engine.theme_graph.curation_assertion"
 
 
@@ -170,15 +188,19 @@ def validate_query(query: MiningResearchQuery, *, account_generation: str | None
             "slice_theme_mismatch",
             f"slice {query.slice_key!r} anchors to {SLICE_ANCHORS[query.slice_key]!r}, not {query.anchor_theme_id!r}",
         )
-    if not _is_int(query.limit) or query.limit < 1 or query.limit > _LIMIT_MAX:
-        raise MiningResearchRefusal("limit_out_of_range", f"limit must be an int in 1..{_LIMIT_MAX}")
+    if not _is_int(query.limit) or query.limit < _LIMIT_MIN or query.limit > _LIMIT_MAX:
+        raise MiningResearchRefusal("limit_out_of_range", f"limit must be an int in {_LIMIT_MIN}..{_LIMIT_MAX}")
     if not _is_int(query.offset) or query.offset < 0:
         raise MiningResearchRefusal("offset_negative", "offset must be a non-negative int")
-    if not query.expected_generation:
-        raise MiningResearchRefusal("expected_generation_required", "a replay needs the expected page generation")
-    if not query.source_cutoff or not query.recorded_cutoff:
-        raise MiningResearchRefusal("replay_cutoffs_required", "source and recorded cutoffs are both required and distinct fields")
-    if account_generation is not None and query.expected_generation != account_generation:
+    if query.offset > 0 and query.expected_generation is None:
+        raise MiningResearchRefusal("expected_generation_required", "a paged read (offset > 0) needs the expected page generation")
+    if query.time_mode == "system_replay" and (query.source_cutoff is None or query.recorded_cutoff is None):
+        raise MiningResearchRefusal("replay_cutoffs_required", "a system_replay read needs both the source cutoff and the recorded cutoff")
+    if (
+        account_generation is not None
+        and query.expected_generation is not None
+        and query.expected_generation != account_generation
+    ):
         raise MiningResearchRefusal(
             "generation_changed",
             f"expected {query.expected_generation!r} but the account generation is {account_generation!r}",
@@ -202,6 +224,7 @@ def validate_delivery_inputs(inputs: Mapping[str, Any]) -> dict[str, Any]:
     query = inputs["query"]
     bundle = inputs["bundle"]
     account_generation = str(inputs["account_generation"])
+    expected = inputs["expected"]
     if not isinstance(query, MiningResearchQuery) or not isinstance(bundle, MiningOwnerBundle):
         raise ValueError("query and bundle must be the locally defined Mining dataclasses")
 
@@ -212,6 +235,26 @@ def validate_delivery_inputs(inputs: Mapping[str, Any]) -> dict[str, Any]:
     if unknown:
         raise ValueError(f"unknown omission words {unknown!r}; closed set is {sorted(OMISSION_REASONS)}")
     reasons.extend(OMISSION_REASONS[o] for o in bundle.omissions)
+
+    # A revision tuple that carries a different account generation is a page-generation change
+    # and must be declared as one; an undeclared mismatch is a malformed case, not decoration.
+    for pair in bundle.revision_tuple:
+        if pair[0] == "account_generation" and str(pair[1]) != account_generation:
+            if "page_generation" not in bundle.omissions:
+                raise ValueError("revision tuple carries a different account generation without the page_generation omission")
+    # The ``expected`` oracle is read, not carried: a retained signed native block and a
+    # non-empty omission set contradict each other (a signed loss is a block, not an omission).
+    if not isinstance(expected, Mapping) or set(expected) != EXPECTED_KEYS:
+        raise ValueError(f"expected must carry exactly {sorted(EXPECTED_KEYS)}")
+    signed_blocks = list(expected["signed_native_blocks"])
+    reported_only = list(expected["reported_only_economics"])
+    if bool(signed_blocks) == bool(bundle.omissions):
+        raise ValueError(
+            "expected contradicts omissions: a retained signed native block requires an empty "
+            "omission set, and an omission requires an empty signed_native_blocks list"
+        )
+    if bool(reported_only) == bool(signed_blocks):
+        raise ValueError("expected must carry exactly one of signed_native_blocks or reported_only_economics")
 
     bindings = {
         "slice_key": query.slice_key,
@@ -240,27 +283,34 @@ class Harness:
         self.read_count = 0
 
     def client(self, *, entitled: bool = False) -> RouteUnbound:
-        """Return the typed ``route_unbound`` refusal; identical for every caller, zero reads."""
+        """Return the typed ``route_unbound`` refusal; identical for every caller.
+
+        The refusal reports the harness's OWN read counter (0: the harness never reads), so a
+        stub that answered a read would be caught by the counter, not masked by a constant.
+        """
 
         del entitled  # entitlement cannot conjure a route that does not exist on main
-        return RouteUnbound()
+        return RouteUnbound(read_count=self.read_count)
 
     def shared_contract(self) -> Callable[..., Any]:
         """Lazily probe the shared assertion contract; degrade to a typed refusal when absent."""
 
-        if importlib.util.find_spec(_SHARED_CONTRACT_MODULE) is None:
+        try:
+            from engine.theme_graph import curation_assertion as shared  # lazy by design (R-MIN-26)
+        except ImportError as exc:
             raise MiningResearchRefusal(
                 "shared_contract_unavailable",
-                f"{_SHARED_CONTRACT_MODULE} is not on this checkout; the shared owner has not delivered it to main",
-            )
-        module = importlib.import_module(_SHARED_CONTRACT_MODULE)
-        probe = getattr(module, "validate_assertion", None)
-        if not callable(probe):
+                f"{_SHARED_CONTRACT_MODULE} is not importable on this checkout ({exc.__class__.__name__}); "
+                "the shared owner has not delivered it to main",
+            ) from None
+        if not callable(getattr(shared, "validate_assertion", None)) or not callable(
+            getattr(shared, "curation_revision", None)
+        ):
             raise MiningResearchRefusal(
                 "shared_contract_unavailable",
-                f"{_SHARED_CONTRACT_MODULE} exposes no callable validate_assertion",
+                f"{_SHARED_CONTRACT_MODULE} does not expose both validate_assertion and curation_revision",
             )
-        return probe
+        return shared.validate_assertion
 
 
 def publication_harness() -> Harness:

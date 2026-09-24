@@ -6,9 +6,7 @@
   "event_workspace": {
     "fictional_issuer_only": true
   },
-  "omissions": [
-    "positive_witness"
-  ],
+  "omissions": [],
   "authority": {
     "can_rank": false,
     "can_gate": false,
