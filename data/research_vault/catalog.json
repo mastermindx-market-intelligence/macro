@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T11:57:55.220391+00:00",
-  "count": 2777,
+  "generated_at": "2026-09-24T12:12:47.072551+00:00",
+  "count": 2778,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -180,6 +180,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-o6pszie7tyj-26f51f",
+      "title": "JPM The rise of tech in Brazil",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:26:23Z",
+      "summary_points": [
+        "Brazil’s tech investment structural shift: Software services now 9.5% of investment (up from <5% in 2011), driving IAI recovery; tech-intensive sector shows R²=0.81 vs GDP (vs 0.49 without software), decoupling from industrial cycles.",
+        "Tech resilience vs oil volatility: Oil platform imports caused recent IAI volatility, but software investment remains robust (growing while construction lags), making tech tracking critical for portfolio positioning.",
+        "New monthly data release: J.P.",
+        "Morgan’s Consumption Activity Index (CAI) launches monthly as key investment proxy, complementing core CPI for portfolio management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
