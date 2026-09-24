@@ -147,23 +147,25 @@ def _table(blocks: Sequence[Any], heading: str) -> Any | None:
     return matches[0] if len(matches) == 1 else None
 
 
-def _locate(table: Any, row_label: str, header: str) -> tuple[Any, int] | None:
+def _column(table: Any, row_label: str, header: str) -> tuple[Any, int] | None:
     if table is None:
         return None
     rows = table.table.rows
-    row = [item for item in rows if item and _normal(item[0].text) == _normal(row_label)]
+    row_matches = [item for item in rows if item and _normal(item[0].text) == _normal(row_label)]
     header_cells = [
         (item, index)
         for item in rows
         for index, cell in enumerate(item)
         if _normal(cell.text) == _normal(header)
     ]
-    if len(row) != 1 or len(header_cells) != 1 or rows.index(header_cells[0][0]) >= rows.index(row[0]):
+    if len(row_matches) != 1 or len(header_cells) != 1:
         return None
-    column = header_cells[0][1]
-    if column >= len(row[0]):
+    row, (header_row, column) = row_matches[0], header_cells[0]
+    if rows.index(header_row) >= rows.index(row) or column >= len(row):
         return None
-    return row[0], column
+    return row, column
+
+
 
 
 def _receipt(source: BoundRelease, start: int, end: int, literal: str) -> SpanReceipt | None:
@@ -225,7 +227,7 @@ def _absent(*, definition: PGDefinition, document_id: str, event_id: str, detail
 
 def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, row_label: str, header: str, document_id: str, bound: BoundRelease, event_id: str, period: str) -> dict[str, Any]:
     table = _table(blocks, heading)
-    located = _locate(table, row_label, header)
+    located = _column(table, row_label, header)
     if located is None:
         return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="No unique heading, row label, and column header identifies this observation.")
     row, column = located
@@ -248,16 +250,55 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, 
     return _present(definition=definition, value=value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
 
 
-def _text_fact(*, definition: PGDefinition, blocks: Sequence[Any], sentence: str, document_id: str, bound: BoundRelease, event_id: str, period: str) -> dict[str, Any]:
-    receipts = []
+def _text_fact(
+    *,
+    definition: PGDefinition,
+    blocks: Sequence[Any],
+    heading: str,
+    document_id: str,
+    bound: BoundRelease,
+    event_id: str,
+    period: str,
+) -> dict[str, Any]:
+    active = False
+    paragraphs = []
     for block in blocks:
-        if block.kind is BlockKind.PARAGRAPH and sentence.casefold() in block.text.casefold():
-            receipt = _receipt(bound, block.source_span.char_start, block.source_span.char_end, sentence)
-            if receipt is not None:
-                receipts.append(receipt)
-    if len(receipts) != 1:
-        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The reconciliation sentence is not uniquely addressable in source paragraphs.")
-    return _present(definition=definition, value=sentence, document_id=document_id, bound=bound, receipt=receipts[0], event_id=event_id, period=period)
+        if block.kind is BlockKind.HEADING:
+            active = _normal(block.text) == _normal(heading)
+        elif active and block.kind is BlockKind.PARAGRAPH:
+            normal = _normal(block.text)
+            if all(term.casefold() in normal for term in ("core eps", "incremental charge", "dilution")):
+                paragraphs.append(block)
+    if len(paragraphs) != 1:
+        return _absent(
+            definition=definition,
+            document_id=document_id,
+            event_id=event_id,
+            detail="The reconciliation paragraph is not uniquely addressable under its heading.",
+        )
+    sentence = paragraphs[0].text.strip()
+    receipt = _receipt(
+        bound,
+        paragraphs[0].source_span.char_start,
+        paragraphs[0].source_span.char_end,
+        sentence,
+    )
+    if receipt is None:
+        return _absent(
+            definition=definition,
+            document_id=document_id,
+            event_id=event_id,
+            detail="The reconciliation paragraph is not uniquely addressable in source bytes.",
+        )
+    return _present(
+        definition=definition,
+        value=sentence,
+        document_id=document_id,
+        bound=bound,
+        receipt=receipt,
+        event_id=event_id,
+        period=period,
+    )
 
 
 def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, fiscal_period: Any, fiscal_scope: Sequence[Any] | None = None) -> list[dict[str, Any]]:
@@ -269,13 +310,21 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     blocks = bound.document.blocks
-    eps = {
-        "pg_diluted_eps": ("Diluted EPS", current),
-        "pg_prior_diluted_eps": ("Prior Diluted EPS", prior),
-        "pg_core_eps": ("Core EPS", current),
-        "pg_prior_core_eps": ("Prior Core EPS", prior),
+    current_year = current_end.year
+    prior_year = prior_end.year
+    current_quarter = f"Fourth Quarter {current_year}"
+    prior_quarter = f"Fourth Quarter {prior_year}"
+    current_date = f"{current_end:%B} {current_end.day}, {current_end.year}"
+    prior_date = prior_end.strftime("%B %#d, %Y")
+    current_header = current_end.isoformat()
+    prior_header = prior_end.isoformat()
+    eps_rows = {
+        "pg_diluted_eps": ("Diluted EPS", current_header),
+        "pg_prior_diluted_eps": ("Prior Diluted EPS", prior_header),
+        "pg_core_eps": ("Core EPS", current_header),
+        "pg_prior_core_eps": ("Prior Core EPS", prior_header),
     }
-    drivers = {
+    driver_headers = {
         "pg_reported_sales_growth_pct": "Reported sales growth percent",
         "pg_organic_sales_growth_pct": "Organic sales growth percent",
         "pg_total_volume_growth_pct": "Total volume growth percent",
@@ -292,21 +341,87 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
         "pg_fabric_home_organic_sales_growth_pct": "Fabric and Home Care",
         "pg_baby_feminine_family_organic_sales_growth_pct": "Baby, Feminine and Family Care",
     }
-    volume = set(drivers) & {"pg_total_volume_growth_pct", "pg_organic_volume_growth_pct"}
-    sentence = "Fourth quarter core EPS excludes a synthetic incremental charge of 0.20 and dilution of 0.05."
     facts = []
     for definition in PG_DEFINITIONS:
-        if definition.metric in eps:
-            header, period = eps[definition.metric]
-            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Fourth Quarter Results", row_label="Fourth Quarter 2026", header=header, document_id=document_id, bound=bound, event_id=event_id, period=period))
-        elif definition.metric in drivers:
-            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Volume Conventions" if definition.metric in volume else "Sales Drivers", row_label=drivers[definition.metric], header="Fourth Quarter 2026", document_id=document_id, bound=bound, event_id=event_id, period=current))
+        if definition.metric in eps_rows:
+            row_label, period_header = eps_rows[definition.metric]
+            facts.append(
+                _row_fact(
+                    definition=definition,
+                    blocks=blocks,
+                    heading=f"Fourth Quarter {current_year} Results",
+                    row_label=row_label,
+                    header=period_header,
+                    document_id=document_id,
+                    bound=bound,
+                    event_id=event_id,
+                    period=period_header,
+                )
+            )
+        elif definition.metric in driver_headers:
+            volume = definition.metric in {
+                "pg_total_volume_growth_pct", "pg_organic_volume_growth_pct",
+            }
+            facts.append(
+                _row_fact(
+                    definition=definition,
+                    blocks=blocks,
+                    heading=(
+                        "Volume Conventions"
+                        if volume
+                        else f"Sales Drivers for the Quarter Ended {current_date}"
+                    ),
+                    row_label=(
+                        driver_headers[definition.metric]
+                        if volume
+                        else current_header
+                    ),
+                    header=(
+                        "Neutral convention"
+                        if volume
+                        else driver_headers[definition.metric]
+                    ),
+                    document_id=document_id,
+                    bound=bound,
+                    event_id=event_id,
+                    period=current_header,
+                )
+            )
         elif definition.metric in segments:
-            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Segments", row_label=segments[definition.metric], header="Fourth Quarter 2026 organic sales growth percent", document_id=document_id, bound=bound, event_id=event_id, period=current))
+            facts.append(
+                _row_fact(
+                    definition=definition,
+                    blocks=blocks,
+                    heading="Segments",
+                    row_label=segments[definition.metric],
+                    header=current_header,
+                    document_id=document_id,
+                    bound=bound,
+                    event_id=event_id,
+                    period=current_header,
+                )
+            )
         elif definition.metric == "pg_core_reconciliation_context":
-            facts.append(_text_fact(definition=definition, blocks=blocks, sentence=sentence, document_id=document_id, bound=bound, event_id=event_id, period=current))
+            facts.append(
+                _text_fact(
+                    definition=definition,
+                    blocks=blocks,
+                    heading="Core Reconciliation",
+                    document_id=document_id,
+                    bound=bound,
+                    event_id=event_id,
+                    period=current_header,
+                )
+            )
         else:
-            facts.append(_absent(definition=definition, document_id=document_id, event_id=event_id, detail="This literal growth fact is not separately disclosed by the selected source."))
+            facts.append(
+                _absent(
+                    definition=definition,
+                    document_id=document_id,
+                    event_id=event_id,
+                    detail="This literal growth fact is not separately disclosed by the selected source.",
+                )
+            )
     return facts
 
 

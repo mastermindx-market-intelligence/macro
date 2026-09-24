@@ -27,7 +27,7 @@ def test_quarter_and_basis_are_bound(kind):
     )
     by_metric = {row["metric"]: row for row in rows if "value" in row}
     assert by_metric["pg_diluted_eps"]["value"] == 1.25
-    assert by_metric["pg_prior_diluted_eps"]["value"] == 1.50
+    assert by_metric["pg_prior_diluted_eps"]["value"] == 1.37
     assert by_metric["pg_core_eps"]["value"] == 1.45
     assert by_metric["pg_prior_diluted_eps"]["period"] == "2025-06-30"
     assert all(row["event_id"] == workspace["event_id"] for row in rows)
@@ -207,6 +207,22 @@ def test_combined_volume_mix_never_passes_pure_volume() -> None:
         assert row["metric"] != "combined_volume_mix"
     assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
     assert "pg_total_volume_growth_pct" in {row["metric"] for row in rows}
+
+
+def test_fy2027_scope_binds_current_and_prior_columns() -> None:
+    scope = ("2027-04-01", "2027-06-30", "2026-04-01", "2026-06-30")
+    workspace = pg_workspace_case("annual_first", fiscal_scope=scope)
+    rows = validate_selected_facts(
+        workspace,
+        source_texts=pg_source_texts("annual_first", fiscal_scope=scope),
+        fiscal_scope=scope,
+    )
+    by_metric = {row["metric"]: row for row in rows if "value" in row}
+    assert by_metric["pg_diluted_eps"]["value"] == 1.25
+    assert by_metric["pg_diluted_eps"]["period"] == "2027-06-30"
+    assert by_metric["pg_prior_diluted_eps"]["value"] == 1.37
+    assert by_metric["pg_prior_diluted_eps"]["period"] == "2026-06-30"
+    assert by_metric["pg_price_contribution_pp"]["value"] == 0.5
 
 
 def test_hostile_markup_is_inert() -> None:
