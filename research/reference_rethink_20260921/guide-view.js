@@ -20,7 +20,7 @@
     let route=Guide.readRoute(location.href,model), modal=null, trigger=null, closeScroll=0;
     const stateByEntry=new Map(), listeners=[];
     let restoreOnClose=true;
-    host.setAttribute('class',((host.getAttribute('class')||'')+' mx-guide').trim());
+    if(!contextOnly)host.setAttribute('class',((host.getAttribute('class')||'')+' mx-guide').trim());
     dialog.setAttribute('class',((dialog.getAttribute('class')||'')+' mx-guide-dialog').trim());
     dialog.setAttribute('aria-modal','true');
     if(contextOnly||!new URL(location.href).searchParams.has('lang'))route.lang=document.documentElement.getAttribute('data-lang')==='zh'?'zh':route.lang;
@@ -267,7 +267,7 @@
         event.preventDefault();openHelp(record.id,opener);
       },document);
     }
-    return {model,openHelp,dispose(){if(dialog.open)dialog.close();listeners.forEach(remove=>remove());host.replaceChildren();dialog.replaceChildren();if(fallback)fallback.hidden=false;}};
+    return {model,openHelp,dispose(){if(dialog.open)dialog.close();listeners.forEach(remove=>remove());if(!contextOnly)host.replaceChildren();dialog.replaceChildren();if(fallback)fallback.hidden=false;}};
   }
   root.MastermindGuideView=Object.freeze({mount});
 })(globalThis);

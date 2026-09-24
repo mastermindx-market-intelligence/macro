@@ -54,6 +54,7 @@ function harness(url='https://review.invalid/reference.html',data=fixture(),opti
   };
   context.window=context;vm.createContext(context);vm.runInContext(read('guide-client.js'),context);vm.runInContext(read('guide-view.js'),context);
   const host=doc.getElementById('app'),dialog=doc.getElementById('help');
+  if(options.seedHost){if(options.seedHost.className)host.setAttribute('class',options.seedHost.className);if(options.seedHost.text)host.textContent=options.seedHost.text;}
   const app=context.MastermindGuideView.mount({host,dialog,manifest:data,ownerOrigin:context.location.origin,...options});
   return {context,doc,host,dialog,app,history,click:e=>{assert.ok(e,'click target exists');e.fire('click');},find:(selector)=>host.querySelector(selector),all:(selector)=>host.all(selector),fire:type=>[...(handlers[type]||[])].forEach(fn=>fn())};
 }
@@ -139,6 +140,13 @@ test('context-only mounting leaves the host title, URL, language and page contro
  const url='https://review.invalid/macro.html?desk=us#regime-radar';const h=harness(url,fixture(),{mode:'context'});
  assert.equal(h.context.location.href,url);assert.equal(h.doc.title,'Macro dashboard');assert.equal(h.host.textContent,'');assert.equal(h.doc.documentElement.lang,'en');
  assert.equal(h.doc.getElementById('language').handlers.click,undefined);assert.equal(h.history.length,0);
+});
+test('context mode never mutates or clears its host container',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context',seedHost:{className:'macro-slot existing',text:'Preserve host content'}});
+ assert.equal(h.host.getAttribute('class'),'macro-slot existing');assert.equal(h.host.textContent,'Preserve host content');
+ h.app.openHelp('risk-radar',h.doc.getElementById('theme'));assert.equal(h.dialog.open,true);
+ assert.equal(h.host.getAttribute('class'),'macro-slot existing');assert.equal(h.host.textContent,'Preserve host content');
+ h.app.dispose();assert.equal(h.host.getAttribute('class'),'macro-slot existing');assert.equal(h.host.textContent,'Preserve host content');
 });
 test('context help reads the same source and links to the full guide without seizing navigation',()=>{
  const url='https://review.invalid/macro.html#regime-radar';const h=harness(url,fixture(),{mode:'context'});const opener=h.doc.getElementById('theme');
