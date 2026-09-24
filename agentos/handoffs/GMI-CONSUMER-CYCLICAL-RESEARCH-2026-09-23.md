@@ -5,67 +5,32 @@ operation_key: gmi-consumer-cyclical-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-finalization_classification: CHECKPOINTED_CONTINUATION
 ---
 
-# Consumer Cyclical — R1–R7 cumulative frontier
+# Consumer Cyclical — R8 source preparation and economic validation in progress
 
 ## Mission and authority
 
-Consumer Cyclical only. Current Chairman continuation authorizes principal research, design review and planning before a mature Fable CEO implementation/integration handoff. Direct-work rationale: PRINCIPAL_JUDGMENT. No core research delegated. Preserve granular themes/subthemes and company exposure, actual demand and retained cash, competition/capital/financing, expectations/valuation and useful existing Theme Tracker/Sector Intelligence/Prophet workflows with validation before decision authority. The three-case descriptive milestone does not replace this broader program.
+Consumer Cyclical only. Current Chairman continuation authorizes principal research/design/planning before a mature Fable CEO build/integration handoff. Direct-work rationale: PRINCIPAL_JUDGMENT. Preserve granular themes/subthemes, actual business exposure, demand/cash/capital, competition and financing, expectations/valuation and existing Theme Tracker/Sector Intelligence/Prophet integration. The three-case descriptive milestone is not the whole sector mission. Healthcare, Robotics and shared-template owners remain untouched.
 
-Carrier: Draft/HOLD Macro #7804, branch `sol/consumer-cyclical-research-20260923`. R7 recovery/pre-effect head `75a6f4e602bc92f2f1a50c48283784180ad441e2`, verified unchanged before effects. Current content head before this checkpoint: `1e7f199868399b84162c2704168c7a1ba6cbeb5f`. Only `research/consumer_cyclical/` and this cumulative record are writable here. No implementation source custody or worker commission follows from this record.
+Carrier: Draft/HOLD Macro #7804, branch `sol/consumer-cyclical-research-20260923`. R8 recovery and immediate pre-write head: `097c7e75f37219a3b1330474bd4e38340ac7ab53`. Write scope: `research/consumer_cyclical/` and this record only. R1–R7's fifteen research/design files remain unchanged. R7 plan at `5ebaca625c8d822eb755e8d12719885cc0ed5034`, blob `51c75b53b7e4912e0dd0c1e6da0f5763643b2fde`; R7 map at `1e7f199868399b84162c2704168c7a1ba6cbeb5f`, blob `58c26b787da834f92efb82363daecc631e034367`. Prior detailed checkpoint at the recovery head is navigation only when needed. All 148 prior prospective cases and ten R7 delivery requirements remain NOT_EXECUTED.
 
-Protected Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`: protected master checked; Skillpack 1.0.1/bootstrap1 compatible. INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT fetched at this SHA with complete-file blobs matching earlier full canonical reads. Native reads pinned to Macro `8db6896dab2199a4b7fc61a005c225380cac7cd6`; later search results were navigation only. GitHub principal `mastermindx-3` and repository admin permission verified. Existing GMI parent and GMI/STSI/F04/source/event/identity/evidence/publication/evaluation owners remain canonical. No new program or control plane.
+Protected Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`: protected master and full INDEX freshly read; compatible Skillpack 1.0.1/bootstrap1. Same-revision ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT fetched; full-file blobs match earlier canonical reads. Current Macro native navigation pin: `8183f865e8705e4cd854ed2f696415ece2c3e920`. Authenticated GitHub principal `mastermindx-3` and repository admin permission verified. No runtime admission, provider identity or hidden budget inferred.
 
-## Preserve R1–R6
+## Last effects and exact native boundary
 
-Thirteen prior research/design files and 148 prospective cases remain unchanged and NOT_EXECUTED. R1–R5 retain the 14-family coverage map, seven economic-model families, company studies, historical examples and source limitations. Exact source details remain in those artifacts; predecessor cumulative record is at `75a6f4e602bc92f2f1a50c48283784180ad441e2`, blob `d968bdcfa7f3055c2297e3b9e0f56957968ac725`. Retrieve individual details only when needed; no transcript replay.
+A bounded fresh #7426 comments read returned only our existing consultation `5807032650`, no decision reply. Do not repeat the request, claim ACK/START, clone the #7426 index or change its custody. Existing private-generation/source/page decisions remain unresolved; no owner acceptance inferred.
 
-R6 specification: `CONSUMER_CYCLICAL_ECONOMIC_CHANGE_DOSSIER_DESIGN_R6_2026-09-23.md`, creation `c78370dcfbdea21b2a4ce1577082c45fce67c00d`, blob `6d3159738500e45f118c288f7ebfa470daade0ec`. R6 evidence: `CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json`, creation `911252113ae4481261bfd34fe1082f8381e5947b`, blob `cdab90b867e16b36ff08fd6a678d4547308cec95`. Both live under `research/consumer_cyclical/`. R6 remains the design read with R7's narrow amendments, not approved native-owner implementation.
+On connected device `mini3.local`, device ID `ac040084-1484-46a0-b7e0-ef2910065c64`, a harmless process preflight succeeded. A separate bounded public SEC acquisition completed with HTTP200. Research scratch: `/tmp/cc7804-r8-source-probe-v6ondols/plnt-source.html`; 399564 bytes; SHA256 `66dbcf4b9bcee99536036a3872dea9348660a9ee2cd07137175f510c40318ea1`; reported retrieval `2026-09-24T04:25:38.485292+00:00`. Source: PLNT accession `0001637207-26-000042`, exhibit `plntq22026pressreleaseex991.htm`. The sibling `acquisition-probe.json` records the receipt. This is an unadmitted research download, not native archive admission, first public availability, byte-span validation or production publication. The raw file is temporary host scratch, not a durable canonical source store or conversation attachment.
 
-## R7 material result and immutable evidence
+The next Remote Desktop command, to download pinned native modules into a scratch `native/` directory, received the explicit platform response: `This tool call was blocked by OpenAI because we couldn't determine the safety status of the request.` No process receipt was returned. A same-device directory read found only the two prior files, with no native directory or staged modules. Intended staging effect is absent in that target. No retry, rephrasing, alternate carrier/account/model or request to change mode was used to obtain the blocked effect. Freeze that native-code staging/test lane; do not infer a global tool or permission outage. The connected host's default Python was 3.9.6; no runtime installation was attempted. Container shell separately returned ClientError; Python local file/arithmetic work and GitHub remain usable.
 
-Before: written design with insufficient full-publication specification, unresolved exact ticker template and bundled dependency/clock assumptions. After: a principal-reviewed implementation-plan candidate with eight tasks, four delivery slices, six review findings, exact source paths, contract proposals, test recipes and a requirement/dependency map. This is research/design progress, not a built capability or independent review.
+No product code, source-owner fixture, real pipeline extractor, source admission, API/browser proof, worker, watcher, runtime Attempt, Fable dispatch or trading change occurred. No unresolved modifying effect remains from these reconciled calls. No background process is relied upon.
 
-Plan: `research/consumer_cyclical/CONSUMER_CYCLICAL_IMPLEMENTATION_PLAN_R7_2026-09-23.md`
-- Commit `5ebaca625c8d822eb755e8d12719885cc0ed5034`; blob `51c75b53b7e4912e0dd0c1e6da0f5763643b2fde`.
-- 35,874 bytes, 4,367 words; SHA256 `feb0e7856a02e26709f9006200d517c28ef6178c7b5fbba8b389afe8ea0a849f`.
+## Independent material research in progress
 
-Map: `research/consumer_cyclical/CONSUMER_CYCLICAL_R7_REVIEW_AND_DELIVERY_MAP_2026-09-23.json`
-- Commit `1e7f199868399b84162c2704168c7a1ba6cbeb5f`; blob `58c26b787da834f92efb82363daecc631e034367`.
-- 11,914 bytes; SHA256 `0abb053d1392593b428de707a083bf53f27609c3b7085c80993e4545af2bf9e4`.
+Source-backed analysis on the same selected cases now tests PLNT adjusted-income versus adjusted-share denominators, dated management guidance versus prior actuals, and LTH quarter/H1 cash bridges plus disclosed growth/maintenance/modernization categories. The work is independent of the blocked native-code acquisition and will not impersonate native tests. Precise arithmetic uses manually curated public source inputs, not production facts. No current valuation verdict or forecast accuracy is claimed.
 
-Both immutable remote file blobs matched independent local Git hashes. The JSON was parsed locally and remote metadata readback established exact byte identity; no separate remote parse is claimed. Final local checks: 35 plan-integrity assertions and 22 hypothetical dependency scenarios passed. All32 R6 acceptance requirements map to tasks; ten additional delivery requirements remain NOT_EXECUTED. The previous148 cases also remain NOT_EXECUTED. Python examples were syntax-parsed, not run as native tests. Zero native extractors, application tests, source admission, browser proofs or investment backtests.
+Next in this active turn: finish the source-bound numerical/interpretation study, package the research-only inputs and executed arithmetic checks with their limitations, persist the R8 result and cumulative checkpoint on this same branch. Keep native owner/interface adoption and eventual Fable delivery explicitly open. Research cutoff remains September23; execution receipts can be September24 UTC and are not economic source timestamps.
 
-A local checker initially conflated start conditions with evidence generated by the task. The counterexample was reproduced and the companion/checker corrected before companion publication: `start_requires` is distinct from `acceptance_requires`. The hypothetical PLNT proof task may begin before its proof is complete, but cannot be accepted without it. This is a local planning correction, not a runtime control implementation. Earlier 30/16 check counts are superseded by the final35/22 receipt.
-
-Exact R6-to-R7-content comparison contains only the two added R7 files plus this cumulative record. PR enumeration contains fifteen research/design files plus the checkpoint. R1–R6 and product paths are unchanged.
-
-## Decisions and source consultation
-
-Keep V1 PLNT and V2 LTH single-event work independent of LULU's historical index. V3 adds LULU guidance across Q1/Q2 reporting events with a shared FY2026 target; V4 closes actual governed theme navigation. Company-first success is not full three-case or sector acceptance.
-
-R6 record-only private extension is insufficient: existing `private_publication.py` builds a complete record/context generation and inherits wire provenance/clocks. Version records and manifest together under one current publisher/pointer. Preserve old inventory and valid dossiers on later normal runs; never publish a Consumer-only partial replacement or fake a transcript context. Missing Consumer source should yield explicit unavailability/historical status without freezing unrelated earnings delivery. No new locking, auth or publication plane.
-
-Actual route sources: `scripts/build_ticker_pages.py`, `templates/ticker.html.j2`, existing `site/assets/js/company-intelligence-dossier.js`. Preserve its frozen event-workspace-first fallback semantics and existing primary task. New paid content stays out of static HTML/JSON/metadata/public workspace enrollment. API failure never becomes permission for a public-data fallback. Exact current authentication integration is still an owner binding, not an invented helper.
-
-SEC Webmaster FAQ primary read establishes acceptance is not first public availability; the usual1–3minute lag is not guaranteed, and SEC supplies no first-availability timestamp. No fixed safe offset or unstated timezone conversion was adopted. Shared acceptance-based fields require the source owner's explicit interpretation; source-event, observed-system and served clocks remain distinct.
-
-Concrete interface request was posted AND read back on #7426/comment `5807032650`, request `cc-r7-source-interface-review-20260923-sol-001`. It covers measurement context, release-guidance/cross-event comparison, clock semantics and private-only enrollment. #7426 remains Draft/HOLD at `7bc04876747d773861b47519061279ae033a148d`; #7331/comment `5758415772` is the earlier related proposal. No ACK, accepted answer, worker START or active receiver is inferred. Do not repeat the request or clone the source repair.
-
-## Effects, limits and exact next action
-
-R7 effects: one consultation comment on incumbent #7426; working checkpoint at `24e4d0bd0cfd8702a5cc2e55187f07747ca05b4c`; two R7 files on incumbent #7804; this final checkpoint; bounded PR metadata if reflected in current PR. No source writer replaced or re-homed. EFFECT_UNKNOWN: none from completed write/readback calls. No worker, watcher, runtime Attempt, autonomous wake, Fable delivery, product code, production schema/identity/facts, basket, rank/gate/entry/size/trade, auth or publisher changed.
-
-One public-source download for a local native experiment failed at DNS before bytes. It was not a safety denial or repository outage; no retry or native run was claimed. GitHub scoped writes/readbacks worked, so no Extra High switch is required for this research-write lane. Public web reads are not retained native source packages. Portable local scripts/receipts are attachments, not repository implementation.
-
-Exact next action: consume any concrete same-carrier answer to consultation5807032650 and bind the accepted measurement/release/private-selection interface into V1's source package. Independently resolve the existing private-publication owner's complete-generation contract and current page custody; complete the plan's named source/private/API acceptance bindings without another broad code census. If the guidance owner has not replied, preserve that hold and continue the independent PLNT source-package/private-generation work under its actual permissions. Do not count unresponded consultation as durable execution.
-
-Fable handoff remains NOT_ISSUED; the packet requires accepted owner contracts, source package, reviewed plan/spec and real proof criteria. Broader international/undercovered coverage, customer/site cohorts, retained cash/capital, ordinary failed recoveries, actual expectations/valuation and investment validation remain parent obligations.
-
-## Continuation boundary / DO_NOT_REDO
-
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. Boundary: completed R6 review-to-R7 plan/requirement-map phase after substantive native-source inspection, clock research, consultation, gate-counterexample repair and exact-byte publication, before source-owner interface adoption and real-source execution. Read this checkpoint back at its returned immutable revision. Resume from it plus the R7 plan/map in an active principal conversation; no automatic wake or custody transfer.
-
-HOLD: no merge/Ready/auto-merge/deployment, shared-source implementation, production enrollment or Fable dispatch from this research carrier. DO_NOT_REDO: Healthcare correction, R1–R6 reports, Robotics/shared template, #7426 index, the consultation already posted, R7 artifact publication, this branch/PR creation. Do not promote planning checks or prospective requirements into application, production or investment proof.
+HOLD: no merge/Ready/auto-merge/deploy, shared-source changes, schema/identity enrollment, baskets/ranking/entry/sizing/trading or Fable dispatch. Do not redo R1–R7, Healthcare correction, Robotics/template, the existing consultation or branch creation. Do not retry the blocked command through another route. Parent obligations include international breadth, customer/site cohorts, retained capital, ordinary failed recoveries, actual market expectations/valuation and investment validation.
