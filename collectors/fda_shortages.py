@@ -367,6 +367,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
 
         previous = state["rows"]
         if previous is None and state["inconsistent"]:
+            if not isinstance(capture.get("source_generation"), str) or not capture.get("source_generation"):
+                return {"promoted": False, "reason": "NO_SOURCE_GENERATION", "predecessor": on_disk_predecessor}
             return {"promoted": False, "reason": "METADATA_WRITE_FAILED", "predecessor": on_disk_predecessor}
         if previous is None:
             previous = _empty_history_frame()
