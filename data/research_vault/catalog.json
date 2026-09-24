@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T09:57:24.228933+00:00",
-  "count": 2771,
+  "generated_at": "2026-09-24T10:27:31.810501+00:00",
+  "count": 2772,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sjipdfd8qxk-a400d2",
+      "title": "JPM Flows Liquidity",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:27:14Z",
+      "summary_points": [
+        "Corporate Financing Surplus Expansion: US non-financial corporate financing surplus at 1.5% of GDP (Q2 2026), highest since 1958, driven by cash flows exceeding capex; G4 surplus near historical highs (~2% of US GDP).",
+        "AI Capex Crowding Effect: AI-related capex (data centers) rising, crowding out non-tech sector funding needs; tech buybacks likely to reverse as hyperscalers shift to infrastructure spending.",
+        "Bitcoin Price Above Production Cost: Bitcoin price recently exceeded $85k implied production cost after 280-day dip, reducing miner forced selling risk and supporting market stability.",
+        "Bond Futures Extreme Shorts: Elevated shorts on 10y US Treasuries (-1.7 z-score) and OATs (-2.5 z-score), signaling heightened mean reversion risk for fixed income portfolios.",
+        "US Equity/Bond Flow Divergence: Strong inflows to US equities ($6.1bn 4wk avg) and bonds ($4.0bn) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-scwhihalhqx-a9f08a",
       "title": "JPM China AI value chain",
