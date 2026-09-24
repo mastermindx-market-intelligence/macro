@@ -1,0 +1,39 @@
+{
+  "schema": "mastermind.rig_independent_reviews.v1",
+  "reviews": [
+    {
+      "review_kind": "product_regression",
+      "pass": 1,
+      "verdict": "BLOCK",
+      "reviewer_model": "claude-opus-5",
+      "session_id": "5c221ef3-b816-4535-b3ed-5828c1767e47",
+      "num_turns": 61,
+      "source_commit": "bdeb338372bf4ef29cb8d683e07ea840acdb4681",
+      "artifact_sha256": "5edb72222f7d6e96c43a5f577ee735487047c9067762c2f0033130c6262c7062",
+      "evidence_commit": "30da264c765871575819563bb30ba787d059edd7",
+      "rationale_quarantined": true,
+      "packet_read_only": true,
+      "raw_review_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-bdeb338-product-regression-pass1.raw.md",
+      "raw_review_sha256": "7c14a39f4156639ad82683cfd1466f0868f22e83ba61da3c0415a44a478f222f",
+      "session_receipt_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-bdeb338-product-regression-pass1.session.json",
+      "session_receipt_sha256": "1c551e09e661e3de4ecb6144e85c9ed5b44cdb25324df0de2cbee92d5e6a1c34"
+    },
+    {
+      "review_kind": "visual_taste",
+      "pass": 1,
+      "verdict": "BLOCK",
+      "reviewer_model": "claude-opus-5",
+      "session_id": "4fd3cab8-7c2d-490b-b3ee-3ef09847be89",
+      "num_turns": 54,
+      "source_commit": "bdeb338372bf4ef29cb8d683e07ea840acdb4681",
+      "artifact_sha256": "5edb72222f7d6e96c43a5f577ee735487047c9067762c2f0033130c6262c7062",
+      "evidence_commit": "30da264c765871575819563bb30ba787d059edd7",
+      "rationale_quarantined": true,
+      "packet_read_only": true,
+      "raw_review_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-bdeb338-visual-taste-pass1.raw.md",
+      "raw_review_sha256": "826d9184d0623e5bf4740a136718b5b23a769c383b914109eb94cc2715773c13",
+      "session_receipt_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-bdeb338-visual-taste-pass1.session.json",
+      "session_receipt_sha256": "89fe4bed5b30ce9934a219807425b0b8f44c2ec31c67ce18cfdc8dfcc977925c"
+    }
+  ]
+}
