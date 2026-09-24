@@ -22,7 +22,9 @@ changed:
   - path: agentos/handoffs/GMI-MINING-2026-09-24-m1-integration.md
     what: "Seat pickup checkpoint: state, gates, fabric/hosts, wave plan."
   - path: research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md
-    what: "R-MIN-00..09 wave-1 rulings (base ownership, carrier model, CI job, fixture law, lanes, ordering, G1 consumption, IR-01/02/05 consumer rules, records)."
+    what: "R-MIN-00..09 wave-1 rulings plus seam rulings R-MIN-10..28 consumed from the two Opus read-only seam audits (A: Company/receipts -> T02/T03/T07; B: shared-base/ontology -> T01'/T04/T06)."
+  - path: research/mining/m1_integration_program/reviews/
+    what: "OPUS_SEAM_AUDIT_A_COMPANY, OPUS_SEAM_AUDIT_B_ONTOLOGY (26 findings; 4 blockers) and OPUS_T04A_CONTENT_REVIEW_R1 (ACCEPT-WITH-FIXES on #7922)."
 verified:
   - claim: "Every packet member byte-matches the research carrier; README blobs (master packet, addendum, plan, design, canonical P05) resolve on origin/sol/mining-principal-research-20260923 @ eb6f05c0."
     command: "git hash-object <member> vs git rev-parse origin/sol/mining-principal-research-20260923:<path> for all 11 members"
@@ -43,7 +45,8 @@ unresolved:
   - "G2/G3/G4: native FCX/MP bytes, spans, identities and governed economic objects unqualified."
   - "G5/G6: private route/client/mount not on main; source custody with incumbents."
 next_actions:
-  - "Consume the Opus READ_ONLY seam audit into R-MIN-10+; finalize and dispatch min_t01_harness; post START on #7795."
+  - "Lanes: min_t01_harness queued on mini2 (T01' harness + CI job); min_t04a_content_r2 repairing #7922 per the Opus R1 review; merge #7922 after seat grep-verification of the verbatim repairs."
+  - "Shared-owner answer to the T06 mount/entry questions (#7870 comment 5811889498) gates T06; never re-ask."
   - "T02 after #7905 merges; T04a in parallel; then T03 -> T04b -> T07; hold T05/T06/T08 for the shared route/mount and G2 admission."
 do_not_redo:
   - "Never re-ACK #7795 (pickup = comment 5811520293); never repeat 5809893850 on #7870."
@@ -51,7 +54,7 @@ do_not_redo:
 danger_areas:
   - "legacy-jobs.yml / test_ci_pack.py are contested by many open PRs - append at END, rebase before push."
   - "A lane returning STATUS: PASS with tests it wrote itself is not proof; the Opus red-team + frozen probes are."
-prs: [7795]
+prs: [7795, 7921, 7922]
 decisions: []
 discoveries: []
 ---
