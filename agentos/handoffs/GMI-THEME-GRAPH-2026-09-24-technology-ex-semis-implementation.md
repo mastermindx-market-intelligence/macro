@@ -1,8 +1,8 @@
 ---
 workstream: "WS:GMI-THEME-GRAPH"
-session: fable/technology-ex-semis-implementation-20260924
+session: claude/ssd-technology-ex-semis-impl-c887181119dd2aaf
 model: fable
-ended_because: checkpoint
+ended_because: ci_handoff
 mission: >
   Integrate the approved Technology ex-Semiconductors Economic Change first vertical from the
   saved plan and verification supplement on one fresh current-main implementation carrier,
