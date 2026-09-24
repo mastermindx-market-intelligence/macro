@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 import hashlib
+import html
 import math
 from numbers import Real
 from typing import Any, Mapping
@@ -14,14 +15,16 @@ from .pg_profile import (
     PG_METRIC_KEYS,
     PG_PRIVATE_RIGHTS_PROFILE,
     _OUT_OF_SCOPE,
+    _char_span,
     _fiscal_identity,
     _normal,
-    _scope_period_forms,
     combined_volume_mix_presentation,
     document_period_verdict,
+    locate_pg_observation,
     neutral_zero_convention,
     parse_pg_literal,
     parse_release_blocks,
+    pg_reconciliation_paragraph,
     replay_table_layout,
 )
 
@@ -92,41 +95,54 @@ def _verify_pg_replay(
     current_end: date,
     prior_end: date,
 ) -> None:
-    _, _, current_forms, prior_forms = _scope_period_forms(current_start, current_end, prior_end)
+    """Replay the extractor's SELECTION, not just the cell layout (R35, R45, R46).
+
+    The document verdict, the reconciliation paragraph, the admitted tables, the unique cell and its header
+    all come from the same pg_profile functions the extractor bound with, over the caller-held source text.
+    """
     fiscal_year, quarter = _fiscal_identity(current_start, current_end)
     identity = (fiscal_year, quarter, current_end)
-    if document_period_verdict(parse_release_blocks(source), identity) in _OUT_OF_SCOPE:
+    if document_period_verdict(parse_release_blocks(source), identity, source=source) in _OUT_OF_SCOPE:
         raise EconomicObservationError("replay_mismatch: the document's period signals do not name the admitted fiscal quarter")
-    source_bytes = source.encode("utf-8")
-    if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end <= len(source_bytes):
+    if not isinstance(start, int) or not isinstance(end, int):
         raise EconomicObservationError("replay_mismatch: replay location is invalid")
-    if definition.value_kind == "bounded_text":
-        context = source[max(0, start - 240):end].casefold()
-        if definition.row_label and definition.row_label.casefold() not in context:
-            raise EconomicObservationError("replay_mismatch: replayed basis differs from the metric definition")
-        return
     try:
-        row_label, header, column = replay_table_layout(
+        char_start, char_end = _char_span(source, start, end)
+    except ValueError as exc:
+        raise EconomicObservationError(f"replay_mismatch: {exc}") from exc
+    if definition.value_kind == "bounded_text":
+        paragraph = pg_reconciliation_paragraph(source, definition, identity)
+        span = getattr(paragraph, "source_span", None)
+        if paragraph is None or span is None or not (span.char_start <= char_start and char_end <= span.char_end):
+            raise EconomicObservationError("replay_mismatch: the replayed text is not the uniquely addressable reconciliation paragraph")
+        if row.get("value") != paragraph.text.strip():
+            raise EconomicObservationError("replay_mismatch: replayed text differs from the reconciliation paragraph")
+        return
+    located = locate_pg_observation(source, definition, current_start=current_start, current_end=current_end, prior_end=prior_end)
+    if located is None:
+        raise EconomicObservationError("replay_mismatch: no unique heading, row label, and column header addresses this observation")
+    cell, header, column, period = located
+    if not (cell.char_start <= char_start and char_end <= cell.char_end):
+        raise EconomicObservationError("replay_mismatch: replay location is not the addressed cell")
+    if _normal(html.unescape(source[char_start:char_end])) != _normal(cell.text):
+        raise EconomicObservationError("replay_mismatch: replayed bytes are not the cell's visible text")
+    try:
+        row_label, replayed_header, replayed_column = replay_table_layout(
             source,
             start=int(start),
             end=int(end),
-            header_forms=(
-                (definition.column_label,)
-                if definition.column_label
-                else (*current_forms, *prior_forms)
-            ),
+            header_forms=(definition.column_label,) if definition.column_label else (header,),
             identity=identity,
         )
     except ValueError as exc:
         raise EconomicObservationError(f"replay_mismatch: {exc}") from exc
     if definition.row_label and _normal(row_label) != _normal(definition.row_label):
         raise EconomicObservationError("replay_mismatch: replayed row differs from the metric definition")
-    period_forms = {_normal(form) for form in (prior_forms if row.get("metric", "").startswith("pg_prior_") else current_forms)}
-    if definition.column_label:
-        if column < 1 or _normal(header) != _normal(definition.column_label):
-            raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
-        return
-    if column < 1 or _normal(header) not in period_forms:
+    if replayed_column != column or _normal(replayed_header) != _normal(header):
+        raise EconomicObservationError("replay_mismatch: replayed column differs from the addressed observation")
+    if definition.column_label and _normal(header) != _normal(definition.column_label):
+        raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
+    if row.get("period") != period:
         raise EconomicObservationError("replay_mismatch: replayed period differs from the stored observation")
 
 
