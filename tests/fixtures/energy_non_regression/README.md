@@ -1,6 +1,16 @@
 # Energy non-regression fixtures
 
-This fixture freezes Nuclear and uranium membership, ThemeState, and Theme Tracker fields.
+This fixture freezes Nuclear and uranium membership, curated ThemeState and Theme Tracker
+identity fields, and the JSON shapes of nightly computed fields.
+ThemeState `foresight` is shape-only because
+`engine/neuralweb/thematic_state.py:327-338` copies stage, tier, score, entry readiness,
+and bottleneck state from `site/basketdata/foresight_cascade.json`; that cascade has been
+rewritten repeatedly and changed for 9 of 18 themes across the last 29 regime updates.
+ThemeState `narrative` is shape-only because
+`engine/neuralweb/thematic_state.py:382-395` derives it from
+`site/basketdata/narrative_emergence.json`; it is `null` today only while that reader is
+dead. Nullable shape fields accept a live `null`; a baseline `null` accepts a live value
+only for the fields declared by `NULLABLE_SHAPE_FIELDS` in the test.
 Regenerate it from a full checkout with:
 
 ```bash
