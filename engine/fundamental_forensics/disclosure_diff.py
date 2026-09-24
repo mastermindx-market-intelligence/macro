@@ -68,6 +68,15 @@ class Applicability(str, Enum):
     NOT_EVALUABLE = "not_evaluable"
 
 
+def _span_attribute(value: str | None) -> int:
+    """A ``colspan``/``rowspan`` attribute as an integer span: 1 when absent, non-numeric, zero, negative or absurd."""
+    try:
+        span = int(str(value or "").strip())
+    except ValueError:
+        return 1
+    return span if 1 <= span <= 64 else 1
+
+
 def _compact_text(value: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", value).replace("\xa0", " ")).strip()
 
@@ -242,6 +251,10 @@ class TableCell:
     column_index: int
     text: str
     source_span: SourceSpan
+    # Span attributes as the markup declared them (``colspan`` / ``rowspan``, 1 when absent or invalid).
+    # They are layout facts consumers need to align columns; they do not enter ``to_dict`` or any id.
+    colspan: int = 1
+    rowspan: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -257,6 +270,8 @@ class TableCell:
 class NormalizedTable:
     table_id: str
     rows: tuple[tuple[TableCell, ...], ...]
+    # The table's own ``<caption>`` text (empty when none); not part of ``text()`` or ``to_dict``.
+    caption: str = ""
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -552,6 +567,8 @@ class _RawCell:
     start: int
     end: int
     text_parts: list[str]
+    colspan: int = 1
+    rowspan: int = 1
 
 
 @dataclass
@@ -561,6 +578,8 @@ class _RawTable:
     rows: list[list[_RawCell]] = field(default_factory=list)
     current_row: list[_RawCell] | None = None
     current_cell: _RawCell | None = None
+    caption_parts: list[str] = field(default_factory=list)
+    in_caption: bool = False
 
 
 @dataclass
@@ -570,6 +589,7 @@ class _RawBlock:
     end: int
     text: str
     table_rows: tuple[tuple[_RawCell, ...], ...] = ()
+    table_caption: str = ""
 
 
 @dataclass
@@ -648,6 +668,8 @@ class _HtmlBlockExtractor(HTMLParser):
             table = self.tables[-1]
             if table.current_cell is not None:
                 table.current_cell.text_parts.append(value)
+            elif table.in_caption:
+                table.caption_parts.append(value)
             return
         for capture in self.captures:
             capture.text_parts.append(value)
@@ -676,10 +698,19 @@ class _HtmlBlockExtractor(HTMLParser):
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
                 table.current_row = []
+            elif tag == "caption":
+                table.in_caption = True
             elif tag in {"td", "th"}:
                 if table.current_row is None:
                     table.current_row = []
-                cell = _RawCell(start=start, end=start, text_parts=[])
+                attr_map = {str(key).casefold(): (value or "") for key, value in attrs}
+                cell = _RawCell(
+                    start=start,
+                    end=start,
+                    text_parts=[],
+                    colspan=_span_attribute(attr_map.get("colspan")),
+                    rowspan=_span_attribute(attr_map.get("rowspan")),
+                )
                 table.current_row.append(cell)
                 table.current_cell = cell
             return
@@ -710,6 +741,9 @@ class _HtmlBlockExtractor(HTMLParser):
             return
         if self.tables:
             table = self.tables[-1]
+            if tag == "caption":
+                table.in_caption = False
+                return
             if tag in {"td", "th"} and table.current_cell is not None:
                 table.current_cell.end = end
                 table.current_cell = None
@@ -729,7 +763,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts))))
                 return
             return
         matching_index = next(
@@ -758,7 +792,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts))))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
@@ -1035,11 +1069,13 @@ def normalize_filing(
                             column_index=column_index,
                             text=cell_text,
                             source_span=cell_span,
+                            colspan=raw_cell.colspan,
+                            rowspan=raw_cell.rowspan,
                         )
                     )
                 if cells:
                     rows.append(tuple(cells))
-            table = NormalizedTable(table_id=table_id, rows=tuple(rows))
+            table = NormalizedTable(table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption)
             text = table.text()
         block_id = stable_id(
             "disclosure_block",
