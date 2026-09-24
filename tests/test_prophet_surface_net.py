@@ -507,6 +507,13 @@ def test_acceptance_script_annotation_is_a_bare_line_start_print(tmp_path, capsy
 def test_acceptance_script_warns_under_workflow_dispatch(tmp_path, monkeypatch, capsys):
     _healthy_tree(tmp_path)
     monkeypatch.setenv("GITHUB_EVENT_NAME", "workflow_dispatch")
+    # Pin the attempt: `main()` defaults `--run-attempt` from GITHUB_RUN_ATTEMPT
+    # and `check()` refuses any attempt >= 2 (the prior-attempt pin covered by
+    # test_acceptance_does_not_accept_a_prior_attempt_receipt). Left unpinned,
+    # this rc == 0 case failed inside every GitHub re-run of ci-pack-9 while
+    # passing on attempt 1 (#7938, 2026-09-24), so `gh run rerun --failed`
+    # could never green the pack.
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     rc = pba.main([
         "--root", str(tmp_path), "--run-id", "999",
         "--now", "2026-08-25T22:00:00+00:00",
