@@ -4,59 +4,72 @@ session: claude/communications-sector-research-20260923
 model: sol
 ended_because: context_budget
 mission: >
-  Carry the Chairman-directed Communications intelligence program into one useful first production
-  vertical, with Fable as the selected principal integrator after lawful placement and review.
-  Preserve the full sector research and subsequent family, regional and evaluation roadmap.
+  Deliver the Communications intelligence program with Fable as final principal integrator,
+  consuming the incumbent Semiconductor-led shared GMI foundation. Preserve the full research
+  roadmap and prove the four-company advertising comparison through the real company/watchlist path.
 state_before: >
-  Sol completed the initial family research, integrated business map, written design and eight-task
-  implementation plan. A focused author review found three numeric-interface gaps and qualified
-  two deployment assumptions. No concrete Fable receiver, implementation Attempt or watcher exists.
+  The Phase 9 packet was prepared but unconsumed. The Chairman then identified Semiconductor
+  foundation implementation. Native reads now locate shared source on Macro PR 7870, so the
+  old packet's foundation, separate route and client assumptions require a dependency amendment.
 changed:
-  - path: agentos/handoffs/GMI-COMMUNICATIONS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+  - path: docs/superpowers/specs/2026-09-24-communications-semiconductor-foundation-binding.md
     what: >
-      Prepared one principal integration packet with exact design precedence, bounded A1 outcome,
-      remaining review/private/identity gates, scarce-capacity routing and truthful placement state.
+      Bound Communications to the incumbent shared implementation, recorded concrete financial and
+      source-only-anchor gaps, superseded the separate default route/client, and remapped eight tasks.
+  - path: agentos/handoffs/GMI-COMMUNICATIONS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: Updated the same unassigned packet and reading order; original revision remains immutable in Git.
 prs: [7794]
 verified:
-  - claim: The review amendment was published and read back on the existing carrier.
-    command: GitHub.create_file and fetch_file at d67a312c7cd5cbf9f3b8af9a8911374e8b54e7de.
-    result: Amendment blob a87015d8faa7ad7706aeb5451e4c96ef40be7f2c matched the local checked bytes.
-  - claim: The original design and plan bytes match their immutable baseline identities.
-    command: python /mnt/data/communications_research/phase9/validate_phase9.py
-    result: Baseline hashes, ten structural checks and eight synthetic reference experiments passed.
+  - claim: The shared-foundation amendment is persisted and its bytes match the local reviewed document.
+    command: GitHub.create_file and immutable fetch_file at 890e0da179dbb92b2bf7b07ad2fec06f2adcf264.
+    result: Matching Git blob 8577b8b912023fb07b1368aa8eb401ea6babd4b4.
+  - claim: The actual Semiconductor implementation source and its ownership boundaries were read.
+    command: GitHub.get_pr_info, list_pr_changed_filenames and exact-head source reads for 7870.
+    result: >
+      Head 45eb37bbf832e007e67ce2594674d6bfeeb3b880; shared schema/codec present;
+      private admission, store and template fences remain unproved or held in the inspected record.
+  - claim: A dependency notice was posted on the incumbent shared carrier, not dispatched as a new child.
+    command: GitHub.add_comment_to_issue on 7870.
+    result: Comment 5808882039; this receipt is not receiver acknowledgment or acceptance.
 unverified:
-  - claim: This packet has been consumed by a concrete Fable receiver.
-    what_would_verify: Lawful current placement and delivery, exact receiver pickup and a separate START receipt.
-  - claim: Shared amendment acceptance, live private binding and identity qualification.
-    what_would_verify: The existing owners and independent reviewer supply the exact acceptance and real-path evidence described in this packet.
-  - claim: The first product workflow or predictive capability is complete.
-    what_would_verify: A1 real-source/browser/watchlist and negative-access proof; separate operational and investment evaluation for predictive claims.
+  - claim: The shared owner has accepted the Communications compatibility amendment.
+    what_would_verify: An exact shared-owner accepted/revised/held disposition and its accepted implementation revision.
+  - claim: A concrete Fable session has consumed this Communications packet.
+    what_would_verify: Lawful placement/delivery, operation-specific pickup and a separate START receipt.
+  - claim: A1 real input, privacy, identity and user journey are complete.
+    what_would_verify: The production and negative-access evidence in section 6; shared fixtures or CI do not suffice.
 unresolved:
-  - Independent/shared-owner acceptance of the revised numerical and native assertion contracts remains open.
-  - The private Research Vault exists in source; its approved GMI assertion binding is not established.
-  - Actual current identity and route receipts for all four first-slice companies remain unqualified.
-  - No concrete receiver or canonical implementation Attempt was established by this preparation.
+  - Signed financial values, source-local anchor/reference representation and measurement-context mapping require shared acceptance.
+  - Native persistence/K1, R4 private publication and shared transport/mount delivery remain exact dependency gates.
+  - Communications identity/source/route qualification and independent review remain owed.
+  - No Communications receiver or runtime execution is established by another sector's Fable assignment.
 next_actions:
-  - Use the existing Capacity or Operator-Continuity owner to establish one eligible Fable receiver for this packet, without broadcasting an unassigned worker commission.
-  - After lawful delivery, review the exact baseline plus amendment and reconcile shared-source custody before any affected product write.
-  - Advance A1 through the existing owners and eight-task plan, preserving independent proof gates and the wider roadmap.
+  - Consume the bounded shared dependency return on 7870 comment 5808882039 and bind its accepted immutable revision.
+  - Establish lawful Communications Fable placement without replacing or duplicating the Semiconductor operation.
+  - Advance admitted path-disjoint A1 work and integrate the shared prerequisites through the revised eight-task mapping.
 do_not_redo:
-  - Do not repeat Phases 1-8, the 94-row business map or the economic-model research.
-  - Do not copy the baseline numeric adapter unchanged; the Phase 9 amendment is part of the design bundle.
-  - Do not recreate Robotics 7773 or its shared curation/template implementation as a separate Communications system.
-  - Preserve GMI, K1, F04, Data OS, Company Theme Exposure and existing source/publication/evaluation owners.
+  - Preserve Phases 1-9, the 94-row business map, first four-company scope and CRV-01 through CRV-60.
+  - Do not re-author the shared assertion, native writer, rights, K1, guidance history, transport or common client.
+  - Do not implement the superseded separate Communications GET route or fetch/session client by default.
+  - Do not overwrite or cherry-pick active shared work merely to bypass its owner or admission gates.
 danger_areas:
-  - Reading this packet is not receiver assignment, source custody, runtime admission or permission to merge.
-  - Current detailed paid data must not enter public Git, Pages, public object storage or browser persistent storage.
-  - Do not retry, rephrase or delegate the platform-denied local inspection to evade its refusal.
-  - Fixture checks, delivery, pickup, START, CI, merge, deployment and product acceptance are distinct.
+  - The packet is not receiver assignment, shared-source custody, runtime admission or permission to merge.
+  - Protected current assertions are not public merely because source-display rights exist.
+  - No retry, rephrasing, alternate host/tool/account/model or delegated evasion of the prior denied identity read.
+  - Semiconductor START, code, tests, merge and proof do not establish the separate Communications result.
 ---
 
 # Communications — Fable Principal Integration Packet
 
-**Prepared:** 2026-09-24. **Research operation:** `gmi-communications-research-20260923-sol-001`.
+**Revision 2, 2026-09-24: consume the Semiconductor-led shared foundation.**
+**Research operation:** `gmi-communications-research-20260923-sol-001`.
 **Research carrier:** Macro PR #7794 / `claude/communications-sector-research-20260923`.
-**MISSION_COMPLETE:** false. **Product state:** SPEC_ONLY. **Packet state:** prepared, not delivered.
+**MISSION_COMPLETE:** false. **Product state:** SPEC_ONLY. **Packet:** prepared, not delivered.
+
+This replaces the unconsumed packet at `d40a825804b6e0aa1e3b536eb981c6b2951bc317` only as the
+current dependency/reading-order packet. That original revision remains historical evidence; no
+accepted research or assigned Attempt capsule is overwritten. All baseline outcome, privacy,
+authority, arithmetic and broader-program obligations continue through the exact sources below.
 
 ## 1. Placement and responsibility
 
@@ -72,51 +85,42 @@ START_RECEIPT: null
 WATCHER: none
 ```
 
-**WHY FABLE:** the remaining integration crosses the shared Robotics/GMI assertion design, financial
-measurement semantics, private publication, company identity, K1 composition restrictions and the
-shared product shell. Resolving acceptance and custody across those boundaries is principal work.
-The Chairman selected Fable for final build integration. This does not make Fable the routine coder.
+**WHY FABLE:** final integration needs principal adjudication across the incumbent shared GMI
+contract, financial semantics, K1, private publication, shared-page custody and real acceptance.
+Routine engineering and tests remain least-scarce-capable worker work through the existing fabric.
+No provider account, host, budget or quota is selected here. Do not turn placement into routine
+Chairman labor or broadcast an unassigned OPEN_PICKUP packet.
 
-Once placed, Fable retains the shared architecture ruling, dependency/custody reconciliation,
-independent-review consumption, production integration and acceptance. Bounded implementation and
-test work should use the least-scarce capable admitted workers; Terra is the default bounded avenue,
-with stronger specialist review when warranted. No provider account, host, model budget or quota is
-selected by this document. No routine placement task is assigned back to the Chairman.
+The Semiconductor Fable receiver owns its existing operation, not this Communications operation.
+Do not infer a second assignment from that seat's identity. Current Sol retains research/design
+continuity until lawful Communications consumption. The #7870 dependency notice is not a handoff,
+new child or automatic wake; an empty bounded #7794 comment read is not a global liveness census.
 
-The current Sol remains accountable for research/design continuity until an actual handoff is
-consumed. Packet publication is not that consumption. A bounded directory search did not expose a
-matching Executive integration, and a public Slack search for 7794 found no receiver receipt. Those
-observations do not prove the runtime or every dialogue is absent. Do not replace current placement
-reconciliation with either a title-based guess or another broad fleet inventory.
+## 2. Outcome and full ambition
 
-## 2. Outcome: one complete investor job, not infrastructure completion
+**A1 user job:** an entitled investor enters Communications research through the existing Themes
+workflow, compares Meta, Alphabet, The Trade Desk and Magnite by business role, understands reported
+change and delivery against genuinely dated company guidance, inspects supporting and contrary
+evidence, opens the correct existing company route and deliberately uses the existing watchlist action.
 
-**A1 user job:** an entitled investor opens the existing Theme Tracker Communications research entry,
-compares Meta, Alphabet, The Trade Desk and Magnite by business role, understands reported economic
-change and delivery against dated company guidance, inspects the source and contrary evidence, opens
-the correct existing company route, and uses the existing watchlist action deliberately.
+**Machine job:** preserve reporting population, financial definition, currency/scale, period, source
+clocks, review/correction lineage, uncertainty and decision authority throughout that journey. A
+missing company remains in the four-company coverage denominator. Company guidance is not analyst
+consensus. Current economic base, incremental sensitivity and future optionality are not one weight.
 
-**Machine job:** preserve business population, metric definition, reporting units, source clocks,
-review status, corrections, uncertainty and authority through source admission, native evidence,
-comparison and display. Missing evidence remains unavailable; it does not erase the four-company
-coverage denominator or become zero. A valid descriptive result is not a stock recommendation.
+**Full-program thesis:** explain how attention, intent, subscriptions, rights, player relationships,
+network capacity and contractual claims become retained earnings and per-share value. Phases 1-9
+and the 94-business/47-company map remain expansion inputs, not a complete census or admitted security
+universe. A1 is the first useful vertical, not abandonment of forecasting research or other families.
 
-**Full-program thesis:** understand how attention, commercial intent, subscriptions, content rights,
-player cohorts, network capacity and contractual claims become retained earnings and per-share value.
-A1 is the first useful vertical, not a replacement for the wider Communications ambition.
+## 3. Exact reading order and precedence
 
-The interface must explain a real difference rather than merely list sources. A useful result might
-state that reported monetization improved but costs prevented matching profit growth, or distinguish
-an original-guidance comparison from an unavailable consensus comparison. These examples describe
-required behavior, not newly verified current company conclusions.
-
-## 3. Exact reading order and design precedence
-
-Read these bounded artifacts, not the long source chat. Paths are relative to the Macro repository.
-The research branch holds original research/specification; it is not the implementation base.
+Read the dependency amendment first, then the baseline and numerical amendment. The older plan is
+not executable unchanged where it conflicts with either amendment. Paths are relative to Macro.
 
 | Order | Artifact | Immutable commit | Git blob |
 |---|---|---|---|
+| 0 | `docs/superpowers/specs/2026-09-24-communications-semiconductor-foundation-binding.md` | `890e0da179dbb92b2bf7b07ad2fec06f2adcf264` | `8577b8b912023fb07b1368aa8eb401ea6babd4b4` |
 | 1 | `docs/superpowers/specs/2026-09-23-communications-business-intelligence-design.md` | `d65263dc15a8dc3ddded35b1529c535c881175bd` | `2cf3918e95715cd924a5a5f402201e4053e2a036` |
 | 2 | `docs/superpowers/specs/2026-09-24-communications-review-amendment.md` | `d67a312c7cd5cbf9f3b8af9a8911374e8b54e7de` | `a87015d8faa7ad7706aeb5451e4c96ef40be7f2c` |
 | 3 | `docs/superpowers/plans/2026-09-23-communications-advertising-vertical-implementation.md` | `13b130c887353b716385552db96c8505af0efe02` | `c10e77b22e131ad39ab210d860f9a855a62be027` |
@@ -124,166 +128,128 @@ The research branch holds original research/specification; it is not the impleme
 | 5 | `research/communications/COMMUNICATIONS_BUSINESS_EXPOSURE_MAP_2026-09-23.md` | `f5810bf53da978b5afe94fd4be2d748fc29e7269` | `c146b61b43bfd7c93516ffcbdf1b892321d8e4c4` |
 | 6 | `research/communications/COMMUNICATIONS_INTEGRATION_AND_GAP_CLOSURE_2026-09-23.md` | `b3511a781b9e93260ac0d2abdb638ea9ad9890e7` | `4c77c8079cf92422801339bc734d0b6264675ded` |
 
-The amendment controls the identified numeric-adapter, explicit comparison-rule, cash-role and
-rounding changes. Everything else in the baseline remains in force as the proposed bundle.
-CRV-01 through CRV-40 plus CRV-41 through CRV-60 are required; sixty written cases are not sixty
-executed tests. The shared owner's accepted contract and any required independent review must still
-qualify the bundle before the affected implementation. Sol's author review is not independent review.
+The dependency amendment controls shared ownership, the route/client defaults, and task sequencing.
+The numerical amendment controls signed-measure meaning, source rounding, comparison-rule identity
+and cash-role/sign binding. CRV-01 through CRV-60 remain required. Author review is not independent
+review; this packet does not self-approve an extension to another owner's contract.
 
-The earlier family chapters are retained under `research/communications/`. Consult their source
-registers only for the business being implemented or a material uncertainty. The 94 rows and 47
-issuer labels are research coverage, not a resolved security universe or current membership feed.
+## 4. Shared prerequisite and exact consumption boundary
 
-## 4. Shared prerequisite: consume one curation path
+**Incumbent implementation:** #7870 at observed head `45eb37bbf832e007e67ce2594674d6bfeeb3b880`.
+Its checkpoint is `agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-semiconductor-b-implementation.md`,
+blob `5adab5f5ca6ca090b1e1d047313e14f236615272`. R1 authors the one shared assertion/codec;
+R2 preserves #7462's store-column fence; R3 preserves #7669's basket-template fence; R4 is the
+existing private-binding decision path at #7780 comment `5807772681`. Robotics #7773 is the
+originating design dependency, not a competing implementation assignment.
 
-Robotics #7773 at observed head `f10211657c6c31df3c9af73cd4b9484e2dd7690a` supplies the related
-shared assertion proposal and its own accepted design/plan context. Its implementation or liveness
-must be reconciled at execution; an old PR author or archived conversation is not a live lease.
-Never alter its research carrier or launch a competing assertion implementation.
+Source inspected at that head includes the schema/codec, rights/admission and guidance-history work.
+The complete native persistence/K1, common transport and mount, private admission and production
+witnesses are not established by source presence. The separate START receipt and integrated code
+are progress, not evidence of completed Semiconductor B or Communications A1.
 
-At Macro source pin `c52d80a1cc7a6d770e44c9f263c900b40895e930`, the inspected evidence schema still
-has no curation payload. The shared native writer/column/codec must preserve it, not drop a field that
-only exists in JSON validation. A1's amendment adds signed financial meaning and source-rounding
-meaning without permitting negative physical counts or replacing legacy evidence semantics.
+**Required shared deltas:** definition-bound signed financial values without negative physical
+counts; source-only/industry anchoring without invented canonical membership or a second reference
+allocator; and accepted financial measurement context preserving population, period, units, bounds,
+rounding, accounting and expectation meaning. Current source rejects negative values and requires
+a canonical theme string. Do not coerce Communications data into those assumptions.
 
-The comparison rule is explicit reviewed content inside the existing F04 recipe. It binds exact
-input roles and definitions; a labels dictionary is not comparability proof. Corrected input refs
-invalidate affected bound rules/results. Cash components bind meaning and sign orientation, not
-merely a set of distinct source refs. The API accepts no caller-selected source, formula or rule.
+Reuse native revision and codec functions; do not make a Communications copy. Keep comparison rules
+and cash formulas in reviewed F04 consumer recipes, not another source store. Preserve K1's actual
+clock/subject restrictions and unresolved joins. Use actual Data OS identity results for navigation;
+Alphabet counts once economically while its securities remain distinct owner-resolved choices.
 
-K1 remains pointer-only. Separately qualified native-evidence blocks may be presented together, but
-an unsupported cross-type security recipe stays refused/degraded. Actual stock navigation uses the
-existing identity owner; it must not silently promote an unbound company label to a security.
+**Transport/mount change:** the earlier default `GET /api/themes/communications/research/v1`,
+standalone router and separate fetch/session client are superseded. Consume the shared planned
+POST query/evidence family, including `POST /api/themes/v1/research/query`, through its accepted
+closed binding. Request exact route/schema/mount revisions; do not invent a discriminator or assume
+returned child code is accepted. A Communications pure composer and domain rendering may be needed;
+a second authentication, request lifecycle or publication system is not.
 
-## 5. Private binding: existing substrate, still an explicit admission gate
+## 5. Revised execution sequence and unaffected work
 
-The amendment records fresh source facts: the Research Vault has private storage primitives and the
-Earnings API has entitled, receipt-bound reads. Its earnings publisher has earnings-specific closed
-schemas and object identities. This proves an existing substrate in source, not a live GMI binding.
+| Task | Revised outcome |
+|---|---|
+| 1 | Consume the shared assertion; seek the bounded financial/source-only/context extension from its incumbent owner. |
+| 2 | Consume native storage/K1/rights bindings and add Communications-specific round-trip/clock regressions. |
+| 3 | Build reviewed Communications comparisons, interval handling and cash-role semantics with deterministic fixtures. |
+| 4 | Compose the four-company role view, useful explanations, contrary evidence and verified company routes. |
+| 5 | Bind A1 into the shared entitled query/evidence family; preserve authorization before private reads and private errors. |
+| 6 | Register A1 in the one shared page mount/client, retaining compact layout, EN/ZH, light/dark and session safety. |
+| 7 | Qualify A1's real sources, rights, identity and private publication through the shared approved binding. |
+| 8 | Obtain independent exact-candidate review and real production/browser/watchlist/non-interference proof. |
 
-The incumbent GMI/private-publication owners must identify or accept the precise private retention
-and current-publication path, writer, generation receipt, rights decision and strict-reader contract.
-Use their existing infrastructure. Do not invent a new bucket, credential path, second latest-state
-file, queue, publisher control service or fallback public dataset. Do not disguise GMI assertions as
-an earnings record or reuse an earnings prefix for unrelated semantic objects.
+Do not wait for unrelated Semiconductor features before all Communications work. Source definitions,
+reviewed examples, translations, conditional explanations and admitted path-disjoint consumer tests
+may advance while particular shared gates remain held. Never duplicate another active child's work.
+Prefer accepted-main dependencies; a stacked integration candidate requires explicit custody and
+exact-head qualification, not an assumed license to cherry-pick work in progress.
 
-Real private binding and source admission are evaluated early, in parallel with independently safe
-fixture work, so the last task does not discover an avoidable architecture gap. Absence freezes real
-admission and deployment only; it does not require a new system or block unrelated local tests.
+Product source uses one admitted current-main implementation carrier after collision/effect
+reconciliation. Do not rebase, force-push or silently convert #7794's research branch into product
+implementation. No new PR or child is created by this packet. Task boundaries do not require eight
+infrastructure-only PRs; deliver one coherent A1 workflow after its actual dependencies.
 
-All paid success/error paths retain private/no-store behavior. Entitlement is checked before private
-reads. Unknown availability is not authoritative not-found. Current source rights and identity
-changes invalidate affected cached material. Real detailed assertions and live complete API responses
-must not enter public Git, static HTML/JSON, public object mirrors, source maps, service-worker cache,
-localStorage or IndexedDB. Public code, research proposals and synthetic fixtures remain separate.
+## 6. Private admission and minimum proof
 
-## 6. Identity, source examples and the refused inspection
+R4's Research Vault path is an existing-owner reuse proposal, not Communications publication approval.
+No new bucket, prefix convention, local-root override or publisher control system. Current source
+rights are necessary but do not independently make protected current house research public. Use an
+explicit public-representation decision for deliberately public examples; keep full live bodies out
+of public Git, Pages, object mirrors, static HTML/JSON, source maps and browser persistent storage.
 
-The intended A1 issuer labels are Meta, Alphabet, The Trade Desk and Magnite. No canonical ID is
-allocated by this packet. Alphabet's economic row is one issuer; GOOG/GOOGL remain distinct eligible
-securities through the existing Data OS identity owner. The navigation and any watchlist action need
-actual current owner receipts, not a fabricated symbol mapping.
+Prove the actual registered private binding, writer/reader and access configuration before real
+admission. A local classifier result or a nonexistent key's 404 is insufficient. The existing
+entitlement owner resolves grace/revocation policy. Adding Communications must not erase another
+sector's assertions or correction history. Unknown availability must not become authoritative absence.
 
-A successful local metadata read found security/identity artifacts in a checkout. A follow-on
-read-only inspection was blocked before dispatch by the platform safety-status check. No actual
-identity rows, deployment generation or production private configuration were verified. The exact
-denied inspection was not retried or delegated and must not be rerouted to another host, tool,
-account, model or worker to evade that refusal. It requires actual platform authorization/recovery.
-This action-local boundary is not a claim that every independent identity or source workflow is down.
+The previous platform-denied local identity read remains action-scoped and unperformed. Do not retry,
+rephrase, move or delegate it to evade refusal. No current four-company identity/private generation
+has been certified by this packet. Obtain real qualification only through actually permitted paths
+and any required authorization recovery; file existence and synthetic identities cannot substitute.
 
-The source-example pack's periods, units and day-precision publication clocks are deliberate. It
-contains public research examples, not native retention or identity receipts. Before product use,
-reacquire/admit the relevant source through the approved owner and qualify its real vintage. Do not
-relabel the research download time as original publication, replay knowledge time or source review.
+Acceptance requires a real admitted source transition traced through review, native evidence, rule,
+comparison, entitled shared API and visible interpretation. Show the valid period/units, company-guide
+meaning, bounds and uncertainties; open the correct existing company route and verify one deliberate
+watchlist action. Also prove fixed coverage with a missing company, incompatible definitions,
+correction invalidation, rounded indeterminacy, signed cash, unavailable consensus, entitlement denial
+before reads, logout-delayed-response safety and relevant alternate-publication negative evidence.
 
-## 7. Eight task outcomes and efficient implementation custody
+Shared code reviews and CI may support reused dependencies. They do not qualify A1's examples, route,
+identity or investor journey. A1 may be accepted as descriptive intelligence without claiming forecast
+skill; original-vintage operating and investment studies remain separate owed evaluations.
 
-| Task | Independently reviewable outcome | Required special attention |
-|---|---|---|
-| 1 | Shared assertion and financial/rounding semantics | Amendment sections 3–5; physical and legacy guards preserved |
-| 2 | Real native round-trip and K1 subtype binding | Existing writer/reader, exact clocks, no lost optional payload |
-| 3 | Deterministic compatible calculations | Reviewed rule, uncertainty, sign orientation, exact scope and unit normalization |
-| 4 | Four-company role comparison with useful explanations | Fixed denominator, correct identity routes, affected-only correction invalidation |
-| 5 | Entitled existing-Macro API | Auth before private access, strict read errors, no user-supplied formulas or source paths |
-| 6 | Compact shared-page workflow | Existing design system, EN/ZH, light/dark, desktop/mobile, logout race and empty states |
-| 7 | Actual source and private/identity qualification | Real receipts replace fixtures; no invented binding or denied-read workaround |
-| 8 | Independent review and real-path acceptance | Exact head/release, all sixty cases, browser/watchlist and public-mirror negative proof |
+## 7. Wider roadmap and return contract
 
-Task numbers are review boundaries, not a mandate for eight infrastructure-only pull requests.
-Prefer one coherent A1 vertical after shared prerequisites; a shared prerequisite may have its own
-accepted carrier when it serves the existing template. Fold setup and fixtures into the capability
-that uses them. Follow TDD and current independent-review/release law. Do not keep Fable polling CI;
-use the existing cheap durable return path where it is admitted and proven.
+After the first acceptance, extend the same accepted framework to regional advertising, streaming,
+rights/music, agencies/publishing, gaming, terrestrial networks and satellite economics. Retain
+family-specific measures rather than force a semiconductor BOM model onto Communications. Remaining
+broadcasting/regional coverage, China Mobile source access, Telesat backlog composition, later
+transaction milestones, quantitative materiality and historical expectation studies remain explicit
+claim-scoped obligations. No current membership or trading authority is created from the research map.
 
-Immediately before product writes, reconcile then-current Macro main, affected incumbent PRs/leases,
-shared Robotics work, exact dependency revisions and pending effects. The old #7794 research branch
-must not be rebased, force-pushed, merged or silently converted into product implementation by this
-packet. Product source uses one admitted current-main carrier after the existing custody gates. An
-unresolved modifying effect remains sticky on its original carrier; this plan grants no failover.
+**Existing dependency notice:** #7870 comment `5808882039`. Consume its bounded shared-owner return,
+not an inferred acknowledgment. It seeks accepted/revised/held dispositions and exact schema,
+measurement, source-only anchor, reader, route/mount and privacy receipts. No watcher is armed and no
+unattended return is claimed. The notice does not assign Communications to the Semiconductor receiver.
 
-## 8. Minimum acceptance demonstration
+Once a lawful Communications receiver is placed and deliberately receives this exact bundle, follow
+current pickup and separate START gates without a redundant assignment ceremony. The compact return
+records consumed packet/amendment revisions, shared dependency dispositions, custody, actual private
+and identity receipts or exact gaps, implementation head, tests actually run, proof and next action.
+Runtime and source custody remain with their existing owners.
 
-Use a real admitted source transition, not a canned UI payload. Prove retained source/definition
-and review identity through native evidence, comparison result, entitled API and visible browser
-interpretation. Show the dates, units, guidance kind and uncertainty; open the correct company route
-and perform one deliberate existing watchlist action with its result verified.
+## 8. Procedure and durability
 
-The proof must also demonstrate missing-company coverage, an incompatible definition, a corrected
-source, rounded boundary indeterminacy, signed cash, unavailable consensus, entitlement denial before
-private reads, and no reappearance of a private response after logout. Inspect relevant alternate
-publication origins/mirrors without committing protected response bodies as proof artifacts.
+Protected procedure: Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`, compatible Skillpack
+1.0.1/bootstrap 1. INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and CLOSEOUT loaded
+at that revision for this dependency update. Existing routing selection is preserved, not a new
+delegation or model/admission receipt. Re-pin applicable laws at actual placement/execution.
 
-A single screenshot, passing schema, fixture-only test, green CI, merge, deployment, delivered
-message or worker ACK is insufficient. Keep these statuses separate. A1 may be accepted as a
-truthful descriptive capability without claiming a forecast or trading edge; those remain separate
-owner-governed evaluations rather than waived obligations.
+Original Macro base `c4da107fe729e46b4d4036b3e0e290390315d0fd`; entering Phase 10 head
+`0d1caa98db59632445c147a346bf748e0ae28dbe`. No rebase or replacement. Current cumulative continuity
+remains `agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md`; exact final file identity is
+established by its write/readback, not a self-referential digest here.
 
-## 9. Explicit wider-program continuation
-
-After A1 acceptance, extend the same evidence/composition pattern to the integrated business map,
-not another registry. Preserve distinct mechanisms for regional advertising, streaming and rights,
-music/agency/publishing, gaming, terrestrial connectivity and satellite service/capital economics.
-Each next slice needs named consumer, source and proof. Avoid cloning a separate renderer per family.
-
-Remaining broadcasting and regional coverage, China Mobile source access, Telesat backlog composition,
-later transaction/service milestones, quantitative materiality and original-vintage expectation
-studies remain explicit claim-scoped obligations. Do not label the 47-company map exhaustive or
-reconstruct historical membership using today's knowledge. Forecast-use and investment-selection
-claims require independent out-of-sample evaluation under existing owners, including failures and
-abstentions. The live research priority, a forecast and a trade instruction remain different objects.
-
-## 10. Return and continuity contract
-
-Until a lawful receiver exists, keep this packet in existing Agent OS continuity as
-WAITING_CAPACITY / needs_placement. Do not broadcast OPEN_PICKUP or arm a nonexistent worker watcher.
-Once deliberately delivered through a current accepted route to an eligible concrete session, that
-receiver follows the governing pickup/admission procedure without demanding a redundant assignment.
-A reciprocal dialogue, when used, needs its exact carrier and explicit continuation/terminal edges.
-
-The compact return should identify: received packet revision; accepted/rejected amendment clauses;
-source-writer/dependency result; private and identity proof or exact unresolved gate; implementation
-carrier/head; tests actually run; production/browser evidence; effect uncertainty; and the next
-material action. Store canonical effects under their existing owners, not only in chat.
-
-Current packet preparation creates no runtime Job, Attempt, worker or automatic wake. The cumulative
-continuation remains `agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md`. This packet fixes the
-input bundle; the cumulative record tracks subsequent effects without rewriting receiver facts into
-this prepared version.
-
-## 11. Procedure and source frontier
-
-Protected Mastermind at preparation: `6ffb3389635a5344df91765689acc48cf5499f60`, Skillpack 1.0.1,
-bootstrap 1. Relevant INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT, COMMISSION_WAVE,
-WORKER_AVENUE_ROUTING and routing-addendum sources were read from that same revision. Re-pin only
-material governing state at actual pickup; do not treat this recorded pin as permanent future law.
-
-Original Macro research base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Entering Phase 9 head:
-`f11f94984d08216e2b3290bf0e68498b821cc9e2`. Native-interface read pin:
-`c52d80a1cc7a6d770e44c9f263c900b40895e930`, not a product branch or release.
-An interim verified checkpoint at `dfaec4df5091b6bad45248b0869179dddc9a6eb5` preserved the amendment
-before this packet was written. The packet's exact immutable commit/blob comes from its native
-write receipt and readback; no self-referential hash is invented inside it.
-
-**Current next action:** lawful Fable placement and consumption of this exact integration bundle,
-then the shared-contract/private-binding review that unlocks the affected A1 work. Sol retains
-responsibility until that boundary is actually crossed. PR #7794 stays DRAFT/HOLD; no automatic merge.
+**Next:** consume the exact #7870 compatibility return and arrange lawful Communications Fable
+consumption of this revised bundle, advancing only independently admitted domain work meanwhile.
+Keep #7794 DRAFT/HOLD. No automatic merge, source-custody transfer or autonomous wake is implied.
