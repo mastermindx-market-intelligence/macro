@@ -5,74 +5,116 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R8_INTEGRATION_IN_PROGRESS
+research_stage: R8_INTEGRATED_DESIGN_RECORDED
+finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — cumulative principal research checkpoint
 
-## Mission and authority
+## Mission, assignment and single carrier
 
-Current Chairman instruction: continue the principal-led Basic Materials research/design/masterplanning mission. Preserve the economic ambition, granular company/subtheme understanding and eventual Prophet usefulness. Fable remains the intended eventual integration principal, not an assigned receiver. The research and owner-resolved specification precede product implementation. No dispatch, runtime admission or mode attestation is inferred from user-reported Pro mode. Direct synthesis is retained for PRINCIPAL_JUDGMENT.
+The current Chairman instruction continues principal-led Basic Materials research, economic synthesis, ontology/product design and an eventual implementation-ready Fable CEO masterplan. Preserve granular economic understanding, the existing shared sector/theme framework and eventual proactive stock/Prophet usefulness. Direct synthesis remains PRINCIPAL_JUDGMENT. Fable is the intended eventual integration principal, not an assigned receiver or routine worker. No provider or hidden-mode admission is inferred from user-reported Pro mode.
 
-One operation: `gmi-basic-materials-research-20260923-sol-001`. One carrier: Macro #7796, branch `sol/basic-materials-research-20260923`, OPEN / DRAFT / HOLD. Sol holds release. Do not merge, arm, rebase, replace or convert the research branch into a product branch by inference. Latest verified entry head: `9c23a96d4b2f14cd443fb327eeeef3f88cbbdbb8`. This checkpoint's actual new revision is the write receipt, not an invented future SHA.
+User job: understand what changed, which business or financial claim captures the change, how it reaches retained cash/per-share value, what was already expected and what evidence matters next. Research, scenarios, forecasts, research priority and trade authority remain distinct. The parent remains incomplete; this checkpoint does not authorize product edits or premature dispatch.
 
-## Current source pins and technical access
+- Operation: `gmi-basic-materials-research-20260923-sol-001`.
+- Incumbent Macro #7796: OPEN / DRAFT / HOLD; `sol/basic-materials-research-20260923`.
+- Sol holds release. Do not merge, arm, rebase, replace or turn this research carrier into implementation by inference.
+- Entry head: `9c23a96d4b2f14cd443fb327eeeef3f88cbbdbb8`.
+- R8 intermediate checkpoint: `d9c268e7aa603389a29b82e0a0fea720f29d767c`, blob `3f25d2c5350c83c4c9c43bf009af8a933db289fe`, exact-ref read back.
+- Last artifact commit before this checkpoint: `fea25140cc194d3cfc870a0276c4ce7330e7ef7d`. Obtain this checkpoint's actual revision from the write receipt and exact-ref readback; no future SHA is invented here.
+- Original research base remains `7cc3e15ea45cd45a1d192495204f07ebd43f783d`.
 
-Protected Mastermind master: `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`; Skillpack1.0.1/bootstrap1 compatible. Fresh INDEX and companion header/blob reads confirm the same revision fully read in R7: INDEX `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`; ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`; WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`; CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. Bounded reuse of unchanged content is not a fresh full reread.
+## Fresh procedure and interface pins
 
-NEW R8 implementation-interface read pin: Macro `9438880952d3375b00a042381705c2e6c85305e3`. This is not a branch rebase. Original research base remains `7cc3e15ea45cd45a1d192495204f07ebd43f783d`. Current connector get_repo confirms read/push permission, separate from organizational authority.
+Protected Mastermind master `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`; compatible Skillpack1.0.1/bootstrap1. Current bounded INDEX/companion reads confirm the same fully read R7 revision: INDEX `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`; ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`; WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`; CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. This is bounded immutable reuse, not a fresh full reread.
 
-Selected current source reads:
-- Shared STSI design blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971`: owner federation, existing hierarchy, separate dimensions and conflict grammar.
-- `engine/theme_graph/store.py` blob `63b58860d35bd183c947c85088f83bd53359bb9f`: closed evidence columns; nightly writer; separate graph identity resolution.
-- `contracts/evidence_foundation/README.md` blob `a47e898309813636cf167c517492aa569aa296ca`: K1 pointer-only; native object subjects; no validated cross-type bridge slot in recipe compilation.
-- `contracts/evidence_foundation/vocabulary.v1.json`: selected theme/FIF/earnings bindings inspected; native object IDs are not interchangeable with security IDs. Exact blob is not yet recorded.
-- `engine/fundamental_forensics/raw_ledger.py` blob `42ccf3ff0e58ed33d91d9868a5db7b01814c04f5`: immutable raw-fact kernel, not by itself a deployed storage adapter.
-- `engine/fundamental_forensics/financial_intelligence_packet.py` blob `99fb3da6920d0804dbb9a3b36609826b78a38ee4`: native query/packet owner; source and entity binding required; header/fixture path is not real live producer proof.
-- `engine/market_ontology/exposure_map.py` blob `d383419c0814ec90bb0a84335fcbaaa8ca0db39c`: existing F04 projection, research-display-only, caller-supplied shock relation, identity ordering, no inferred causal mapping or economic-magnitude ranking.
-- `scripts/build_state_of_themes.py` blob `dfdd260552e9ada447963ed42ff02ffbc88e9a89`: incumbent Theme Tracker renderer and stable route.
+NEW R8 Macro implementation-interface pin: `9438880952d3375b00a042381705c2e6c85305e3`. It is not a rebase or deployment receipt. Current connector permission preflight confirmed read/push access separately from organizational authority.
 
-Robotics #7773 specification at reference head `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, spec blob `d248fd1b4c9b48df8f5c95c3bdd742c2a8ef7007`, proposes the shared GMI curation assertion, subtype clock binding and private retention. This is reference design, not proof those extensions exist or permission to modify its carrier.
+R8 manifest records eleven exact current source paths/blobs: shared STSI; GMI store/schema/identity; K1 README; FIF raw kernel/packet; F04 exposure composer; Theme Tracker renderer; private Earnings API; existing private publication. Selected K1 vocabulary bindings were inspected at the same pin without claiming a complete vocabulary audit. Search results at a different indexed revision were navigation only.
 
-## R1–R7 durable research manifest — DO_NOT_REDO
+## R8 artifacts — verified immutable identities
 
-All paths are under `research/basic_materials/` on this same branch:
-- `BASIC_MATERIALS_RESEARCH_FOUNDATION_2026-09-23.md`: `31cfbcdae510940e09161a4989b360df0b4f6818`.
-- `BASIC_MATERIALS_R2_METALS_ECONOMICS_2026-09-23.md`: `82d11b917654565e223374736b735429591a4d9d`.
-- `R2_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `71c477134f82b114ad1720d43cdc6e800ed4f048`.
-- `BASIC_MATERIALS_R3_PRECIOUS_METALS_AND_FINANCIAL_CLAIMS_2026-09-23.md`: `d58bfb76a78efba919cb161f050bdb8c1502c872`.
-- `R3_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `eb8feaf67907b5866a9a07ab02b0f4ec98432cc1`.
-- `BASIC_MATERIALS_R4_BATTERY_AND_STRATEGIC_MATERIALS_2026-09-23.md`: `b64c5680bce8c1d9ab90ebea5c5af95e2072e6da`.
-- `R4_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `8457c3a42afdd9d87c4d2156486ceafd5994a786`.
-- `BASIC_MATERIALS_R5_FERTILIZER_AND_AGRICULTURAL_INPUTS_2026-09-23.md`: `e25267cd899671716c19fd311d4654d8a972c61e`.
-- `R5_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `f11c693ddf9d8f034306ddc2eb3d2994b49b73ed`.
-- `R5_RESEARCH_CASEBOOK_2026-09-23.json`: `c8e5eef2270ecfe3aa7c65a98a56f10f268d9c41`.
-- `BASIC_MATERIALS_R6_CHEMICALS_GASES_AND_DIFFERENTIATED_MATERIALS_2026-09-23.md`: `fafa7bbcf3185a201b02ed17d9498cdb278de323`.
-- `R6_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `e4ddf6d83ed982447c29ddfbdb78f2df5b655d71`.
-- `R6_RESEARCH_CASEBOOK_2026-09-23.json`: `aa577582129e5d0b3831399d7886812e9756c132`.
-- `BASIC_MATERIALS_R7_CONSTRUCTION_FOREST_AND_PACKAGING_2026-09-23.md`: `220c121438bddd31d873aaf379a6119e138b9171`.
-- `R7_RESEARCH_ARITHMETIC_VERIFICATION_2026-09-23.json`: `570b404722bfbb204cd9ceacbc990d6ddece854d`.
-- `R7_RESEARCH_CASEBOOK_2026-09-23.json`: `33c34d2d028dbd76cacad62b7719ae7a57fe6b08`.
+All paths are under `research/basic_materials/` on #7796.
 
-Mounted annex copies R2–R7 were found and their full Git blobs rechecked against the manifest; no re-crawl or new application-test claim. Prior arithmetic is research evidence only: R2 31 exact/4 residuals; R3 38/2; R4 41/5; R5 57/2; R6 57/6; R7 74/6. All prior source-specific limits remain in the immutable annexes.
+### Integrated design
 
-## Material R8 direction and remaining tasks
+`BASIC_MATERIALS_R8_INTEGRATED_PRODUCT_AND_OWNER_SPECIFICATION_2026-09-23.md`
 
-Select an owner-preserving, mechanism-first dossier. Separate structural sector/industry membership, accepted themes, source-local subthemes, research facets, measurement baskets, financial claims and issuer/security/listing identity. No material, product or business label becomes a global ID by this design.
+Creation `c968d446b8b30ab32488ff681b60a598d3fd15e6`; exact-ref blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736`; 47,361 bytes / 6,207 whitespace-split words; SHA256 `b7091f6c5605581e8e35dfa24b6dcd2e94466e88fafd66023ca341f48b72bc5b`.
 
-Current interfaces reveal real dependencies: detailed non-GAAP/operating claims need the accepted shared curation extension; K1 cannot silently join native IDs into a company recipe; FIF kernel/packet symbols are not proof of installed real-source producers; F04 forbids magnitude ordering and automatic causal mapping. Keep native blocks separate until the actual identity bridge is consumed. No new store cures an identity or source-admission gap.
+### Integration manifest
 
-A small cross-family proof set will test price versus margin, qualification versus sales, contractual rights, growth spending versus cash, and missing-data honesty. Nutrien Q2, NOVONIX September9 and Wheaton Antamina original pages were recovered for targeted R8 verification; Martin Marietta direct page returned an error and remains a dated R7 reference, not a freshly revalidated source. Public page access is not immutable native retention or rights approval.
+`R8_INTEGRATION_MANIFEST_2026-09-23.json`
 
-Next within R8: finish current-owner and private-delivery mapping; consolidate the taxonomy and exposure/measurement requirements; select and specify exact proof cases; write a bounded first-capability design and full-scale roadmap with evaluation and material gap acceptance. Produce artifacts on #7796 and verify local/remote identity. Do not declare implementation-ready while native dependency contracts remain unresolved.
+Creation `d69124f01512fe46c74a1ebd455abd01ec4fd3b7`; blob `7aabc80d34278609e717fcbdfef56c080bfc9dce`; 37,352 bytes; SHA256 `8e6cf269c7853c700723927bd44cc5f197c84ba3371644a76d4d673c4e12d89e`.
 
-## Preserved uncertainty and effects
+### Verification
 
-Earlier holds remain: USGS dates; ANTO image/NUE units/ICSG forecast; Kone terms and Valterra units; Syrah/Lynas images/PLS cash gap/contracts/China breadth; OCP/IFA/AMS version/K+S/ICL/FAO rights; chemicals contracts and marginal returns; Conch tables/Mondi forestry/Suzano images/West Fraser and PCA cash/global coverage. Reopen only when a chosen capability materially requires new evidence.
+`R8_INTEGRATION_VERIFICATION_2026-09-23.json`
 
-One optional container raw-source download failed DNS resolution before any file was written. Do not retry the unchanged route; GitHub connector reads remain available. `scripts/build_sectors.py` returned 404; do not treat a guessed file path as an owner or a product-wide failure. Search-derived UI navigation is not current source custody.
+Creation `fea25140cc194d3cfc870a0276c4ce7330e7ef7d`; blob `02a8e31bde30a3cb21ed078bcd69e2d6ffdb90e8`; 7,621 bytes; SHA256 `3222d2383d5c612f8ad7e30b72480357cd7292aeccd3ab68ea8af8322d1fbe61`.
 
-No product code, live graph/basket data, rights, publisher, decision or runtime configuration changed. No new graph, identity/evidence/correction store, ThemeState, queue or control plane. No raw licensed database or full-fidelity paid payload in Git. No Fable/worker/Executive operation, ACK, START or wake. EFFECT_UNKNOWN: none observed before this write. This is an intermediate checkpoint, not a finalization or completed R8 result.
+All three full local copies match the exact committed Git blobs. Portable copies exist under `/mnt/data/basic_materials_r8/` in the originating runtime; verify their actual existence before future sandbox links. They are copies, not another canonical owner.
 
-verified_by: current protected ref and immutable procedure blobs, #7796 exact head, Macro main ref, targeted current source reads, repository permission preflight, mounted research-byte checks and original-source retrieval. Read back the resulting checkpoint revision before relying on its persistence.
+The manifest preserves all sixteen R1–R7 research path/blob references. Its fifteen available mounted R2–R7 copies were byte-checked; R1 was not locally mounted. Prior source research and arithmetic were not reexecuted. Do not repeat the old issuer/Library/Robotics crawls or resolved arithmetic without a material invalidator. All R1–R7 files remain unchanged by this R8 operation.
+
+## Material R8 delta
+
+Before: substantial family studies existed, but their first common product, owner dependencies and selected production proof requirements were not integrated.
+
+After: the design combines ten research navigation families and eight economic lenses, maps eleven current interfaces, selects five original documents across four issuer subjects, defines sixteen proof/planning cases, maps all thirty-two proposed acceptance requirements to cases/dependencies and separates ten unresolved dependency questions. The explanatory product remains SPEC_ONLY, not accepted implementation readiness.
+
+Selected first capability: a paid, read-only Materials Economics section in the existing dossier grammar. The user can inspect a source-backed economic change and the relevant company/cash explanation. Full acceptance requires lawful company/source navigation and a proven private real-input path; source-only fallback is useful degradation, not substitute completion. Do not rank unlike proof-set companies.
+
+Ten families: base/industrial metals; ferrous; precious; battery/strategic; construction/industrial minerals; commodity chemicals; specialty/functional; gases; fertilizers/crop inputs; forest/packaging. Eight lenses: usable demand/supply; realized unit economics; productivity/acceptance; cash rights; funding/cash; local mix/competition; durability/reinvestment; expectations/security expression. These are research organization, not admitted graph nodes, a state machine or scores.
+
+### Verified interface implications
+
+- Current GMI evidence schema `83dece15e98b9c8775a584afcd6ee09811dad220` is closed; current store has no proposed detailed curation field. Consume the shared Robotics/GMI extension rather than create a Materials clone or hide bodies in source_ref.
+- K1 is pointer-only. Its current recipe contract has no validated cross-type bridge-object input. Independent native blocks must not masquerade as a passed security recipe. Existing identity bridge axes and actual source-to-issuer receipts are required for company links; no ticker fallback.
+- FIF kernels/parsers are not proof of actual live metric coverage. Reference real applicable native financial measures; do not invent XBRL occurrences from press releases or duplicate an existing financial owner.
+- Current F04 exposure composition is research-display-only with identity ordering. R8 does not add magnitude ordering, ranking or inferred shock-to-theme causality.
+- Existing private Earnings/Research Vault source provides a useful infrastructure pattern, but its namespace and payload do not automatically admit Materials. Require an accepted GMI/F04 private binding and current rights. No new bucket, graph, latest-state store or publisher.
+
+Historical Robotics #7773 at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, spec blob `d248fd1b4c9b48df8f5c95c3bdd742c2a8ef7007`, is a design reference, not current liveness, implementation proof or custody transfer. This operation did not modify it.
+
+### Targeted source closure and proof cases
+
+E01 Nutrien Q2: combined fertilizer/industrial/feed manufactured-product scope; higher price does not establish higher margin. E02 NOVONIX September9: customer12/14 is not final qualification or probability. E03 September16 NOVONIX/ACP: explicitly nonbinding MOU; a newer, different proposition does not supersede the customer test. E04 Wheaton April1 Antamina closing: dated payable-interest/threshold summary, not ownership or complete current legal contract. E05 Weyerhaeuser Q2: cash after all stated capex differs from issuer-adjusted FAD.
+
+Five originals were rechecked, not natively retained/admitted. No canonical issuer/security IDs, retained source hashes, acceptance timestamps or production generations were fabricated. The research manifest leaves them null. Prior AMS version mismatch and Conch image gap are negative proof plans; no current value or zero exposure is substituted. Martin Marietta R8 original-page retrieval failed and remains R7 research, not a freshly verified positive source.
+
+The V0–V4 roadmap preserves full ambition: first economic explanation; proposition-level changes and comparable cohorts; conditional economics/valuation; evaluated proactive discovery through existing consumers; broader global coverage and durable learning. Forecasts and decision integration require separate evidence, not automatic promotion from descriptive research.
+
+## Verification actually performed
+
+A full local copy of the pinned evidence schema matched its exact Git blob. Four synthetic JSON-schema tests produced expected outcomes: valid legacy receipt; rejection of unsupported curation_assertion; rejection of missing published_at; rejection of extra financial_value/unit fields. These are syntax-contract probes, NOT store roundtrip, K1 execution, source admission or product tests.
+
+Twenty-eight package integrity checks passed. They cover JSON readback, unique case/source/interface/requirement IDs, complete32-requirement case/dependency references, all-false authority/native-admission fields, null unresolved bindings, date-grain/unknown timestamp behavior, explicit missing values, ten families/eight lenses, source/blob references, placeholder scan and fifteen mounted prior-copy hashes. Formatting was compacted before publication; all checks reran. Final command reran the checks and matched all three R8 local blobs to remote exact-ref readbacks.
+
+The thirty-two acceptance requirements and broader synthetic/prospective production cases remain UNEXECUTED. No application test, Agent OS validator, independent design acceptance, native reader/source admission, CI, merge, deployment, browser proof or predictive edge is claimed.
+
+## Unresolveds and next action
+
+Required before V0 real release: accepted shared curation/schema/store/clock subtype; private retained-object/publication binding; actual admitted sources/current rights; correct source-to-company links; exact accepted shared-template placement/custody and real-path review. Unified K1 join is held only for that stronger combined recipe; honest independent blocks may be used. FIF coverage is required only where a FIF-derived metric is claimed. Global breadth and full contract valuation remain later-scoped obligations, not invented V0 completeness.
+
+Earlier source-specific limits stay in immutable registers: USGS dates; ANTO image/NUE units/ICSG body; Kone terms/Valterra units; Syrah/Lynas images/PLS gap/China qualified supply; OCP/IFA/AMS/K+S/ICL/FAO rights; chemical balances/contract and marginal returns; Conch/Mondi/Suzano images and West Fraser/PCA cash. Reopen only a gap that changes the chosen capability.
+
+One container raw-source download failed DNS before a file was written; GitHub/web lanes worked. A guessed build_sectors.py returned404 and is not an owner. No recurring failed-route probing or negative platform-wide capability inference.
+
+**Exact next action — R9 first-capability contract closure:** start from the R8 specification and manifest; resolve the shared GMI curation extension and approved private GMI/F04 publication binding on their existing carriers, establish the precise source-to-issuer/navigation contract for the four selected subjects, and reconcile only the exact shared-template paths needed. Freeze versioned native changes, executable implementation paths/tests, release proof and an explicit ready-versus-held task sequence for Fable. Update the same integrated specification where decisions change it. Do not begin another generic sector crawl, dispatch an unbound Fable session or fabricate missing admission/identity receipts.
+
+## Continuation and effects
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+
+Justified boundary: R8 has converted the family research into a coherent written integration design and executable narrow contract evidence after substantial source/interface/tool context. The next phase is native-contract and source-binding closure, not more family synthesis. This boundary preserves continuity; it is not completion, cancellation, writer release, custody transfer or Fable assignment. Resume in a fresh principal research/design conversation from this checkpoint and R8 artifacts; refresh current protected procedure and exact #7796 head before further writes.
+
+EFFECT_UNKNOWN: none observed before this checkpoint write. Active children/returns: none. Fable assignment/delivery/ACK/START: none. Watch/wake: none. No autonomous continuation is claimed. No product code, live graph/basket, source rights, publisher, rank/entry/size/trade or runtime configuration changed. No duplicate authority/store/control plane or full-fidelity paid payload in public Git.
+
+This checkpoint requires final exact-ref readback and same-PR metadata reconciliation before the originating turn claims verified continuation.
+
+verified_by: current procedure/interface/PR and permission reads; exact schema copy and four executed syntax probes; twenty-eight package integrity checks; five original-source rechecks; exact-commit three-artifact readbacks matching local Git blobs; final cumulative checkpoint readback and PR projection update.
