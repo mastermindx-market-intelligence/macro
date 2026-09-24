@@ -36,8 +36,8 @@ unresolved:
   - "T07-T09 wait for Semiconductor B's route family and aggregator on main."
   - "sec_edgar source/use qualification for verbatim filing text (A14-06) is owed by the rights owner."
 next_actions:
-  - "Consume the Opus READ_ONLY seam audit into R-IND-10+ and finalize the T01 packet."
-  - "Dispatch ind_t01_binding on m1 (admission-wait), post START on #7789, red-team the PR, merge on concluded green."
+  - "Adjudicate the T01 lane return (branch claude/ind-t01-dependency-binding): Opus READ_ONLY red-team, then merge on concluded green."
+  - "Merge #7915 (seam rulings); adjudicate the DEC records lane return."
   - "Then T02 || T04, T03 || T05, T06; hold T07-T09 for B."
 do_not_redo:
   - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen."
@@ -64,8 +64,10 @@ Procedure: Mastermind protected `docs/sol_skills/INDEX.md` re-read at `origin/ma
 | Item | State | Evidence |
 |---|---|---|
 | ACK | DONE 08:13Z | #7789 comment 5810419863 |
-| START | pending — after seam rulings + T01 admission | #7789 thread |
-| Implementation carrier | task PRs off fresh `origin/main`, merged in dependency order; continuity = this file on `main` (CDV-1 precedent, PR #7880 model) | see §4 |
+| START | DONE 08:39Z | #7789 comment 5810768684 |
+| Implementation carrier | task PRs off fresh `origin/main`, merged in dependency order; continuity = this file on `main` (CDV-1 precedent) | records #7912 merged `acbf3cf2`; #7915 (seam rulings) |
+| T01 lane | `ind_t01_binding` queued on m1 (admission-wait, both slots held by siblings at 08:38Z); args `$K/ext/args_ind_t01_binding.json`; watcher armed | seat scratchpad `lanes/dispatch_m1_ind_t01_binding.v4.log` |
+| Records lane | `ind_agentos_records` (DEC only; WS minted in #7912) queued on mini2 | `lanes/dispatch_mini2_ind_agentos_records.v4.log` |
 | G1 shared consumption | HELD for T07/T08 (B's route/mount not built); OPEN for T01–T06 synthetic + incumbent-owner work | #7870 head `70fde3c79956` has no `app/theme_research.py`, no `_basket_intelligence_mounts.html.j2` |
 | G2 real inputs | HELD — real EXPO/PNR identity, source receipts, clocks not yet bound | T02/T03 real admission |
 | G3 private role/rights | HELD — R4 mechanism selected, unproven; `sec_edgar` scope per A14-06 | T07 |
@@ -76,7 +78,7 @@ Procedure: Mastermind protected `docs/sol_skills/INDEX.md` re-read at `origin/ma
 
 Astra/Chairman ruling 2026-09-24 ~07:50Z (relayed): Semiconductor B (#7870) owns the shared base; sector verticals extend incumbent owners and integrate later. Consumed here as R-IND-00: Industrials mints NO shell, evidence, rights, route or mount vocabulary; T01–T06 extend Company Intelligence / Fundamental Forensics / Earnings owners only; T07–T09 wait for B's route family and aggregator on `main`.
 
-Seam rulings R-IND-01.. are recorded in `research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md` after the Opus READ_ONLY seam audit (`research/industrials/first_vertical_program/reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md`).
+Rulings R-IND-01..07 (carrier, CI job, fixture law, ordering, A14 consumption) and R-IND-10..22 (seam rulings from the Opus READ_ONLY audit, `reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md`) are in `research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md`. Headline seam facts: extractors live in a sibling `industrials_profiles.py` on #7905's idiom; T02 branches after #7905 merges; discovery population, `guidance_history` delegation, the shared contract, the POST route and the aggregator mount are all behind #7870 (consume by exact head sha); T06 mints a per-sector contract on #7891's precedent; T07/T08 HELD.
 
 ## 3. Fabric and hosts (as of 08:15Z)
 
