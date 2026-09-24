@@ -536,6 +536,9 @@ _PANEL_CAVEAT = (
     "COINCIDENT. If narrative_rotation.gate_helps is false the discipline did not even cut "
     "drawdown on this market (it mean-reverts) — be especially humble. Honour every item in "
     "narrative_rotation.guardrails.do_not_conclude. NEVER a position size, weight, or trade. "
+    "If state.event_context is present, it is context-only research evidence: an event-first "
+    "watch MAY exist before a price cluster, but attention is neither a buy nor a top by itself; "
+    "cite only supplied item/event ids and never invent beneficiary exposure or a causal link. "
     "Your view is a fallible, falsifiable conditional — not edge extracted from the detector.")
 
 _PANEL_SYSTEMS = {
@@ -557,8 +560,10 @@ _PANEL_SYSTEMS = {
         "on state.theme_candidates (a DISPLAY-ONLY radar of coherent NEW name-groups not yet in a "
         "basket) — but it is NOISY (only ~10% persist) and has NO forward edge, so treat any "
         "candidate as a watch-hypothesis to grade, never a buy, and let IPO-wave/hype RAISE the "
-        "bar. Remember emergence usually reads LATE and attention/inflow spikes mark TOPS. Put it "
-        "in emerging_watch; keep theses minimal." + _PANEL_CAVEAT),
+        "bar. Distinguish genuinely new operating/adoption evidence from repeated coverage or hype; "
+        "attention/inflow can be early, late, or crowded and is NEVER by itself a buy or a top call. "
+        "An event-first watch may precede a price cluster when the supplied evidence raises a concrete "
+        "economic question. Put it in emerging_watch; keep theses minimal." + _PANEL_CAVEAT),
     "macro_regime": (
         "ROLE: MACRO-REGIME analyst. Read the regime signals — breadth-of-rotation, the "
         "one-narrative/absorption gauge, gate_helps, the headline cash level — AND the "
