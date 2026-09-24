@@ -64,6 +64,7 @@ THEME_TRACKER_SHAPE = (
 )
 NULLABLE_SHAPE_FIELDS = (
     "radar",
+    "divergence_board",
     "basket_intel",
     "narrative",
     "foresight",
@@ -292,13 +293,14 @@ def _basket_membership_section() -> dict[str, Any]:
 @pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_nuclear_power_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
-    _assert_section_unchanged(_basket_membership_section(), baseline, "basket_membership")
+    assert _basket_snapshot("nuclear_power") == baseline["basket_membership"]["nuclear_power"]
 
 
 @pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_uranium_miners_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
-    _assert_section_unchanged(_basket_membership_section(), baseline, "basket_membership")
+    assert _basket_snapshot("uranium_miners") == baseline["basket_membership"]["uranium_miners"]
+    assert _basket_membership_section() == baseline["basket_membership"]
 
 
 @pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
@@ -344,6 +346,9 @@ def test_nullable_shape_law_against_committed_baseline_shapes() -> None:
     # a dead reader coming back: baseline null, live object
     assert state_shapes["narrative"] == "null"
     assert _shape_mismatches({**state_shapes, "narrative": "object"}, state_shapes, THEME_STATE_SHAPE) == []
+    # nuclear first entering the hidden-opportunity state: divergence_board null -> object
+    assert state_shapes["divergence_board"] == "null"
+    assert _shape_mismatches({**state_shapes, "divergence_board": "object"}, state_shapes, THEME_STATE_SHAPE) == []
     assert tracker_shapes["leadership_context"] == "null"
     assert _shape_mismatches({**tracker_shapes, "leadership_context": "object", "entry_context": "string"}, tracker_shapes, THEME_TRACKER_SHAPE) == []
     # a non-nullable field going null IS a change
@@ -426,7 +431,6 @@ def test_public_nuclear_pages_carry_no_private_dossier_canaries() -> None:
         content = path.read_text(encoding="utf-8")
         for canary in PRIVATE_DOSSIER_CANARIES:
             assert canary not in content
-    _assert_section_unchanged(baseline["public_pages"], baseline, "public_pages")
 
 def _baseline_document(main_sha: str) -> dict[str, Any]:
     sections = {

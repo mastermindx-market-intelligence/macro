@@ -18,8 +18,9 @@ merge commit).
 Regenerate it from a full checkout with:
 
 ```bash
-MAIN_SHA=$(git rev-parse origin/main)
-python3 tests/test_energy_economic_change_non_regression.py --regenerate-baseline "$MAIN_SHA"
+git fetch origin && git checkout --detach origin/main   # HEAD must BE the frozen main commit
+python3 scripts/worktree_sparse.py add data site         # full data/ and site/ are required
+python3 tests/test_energy_economic_change_non_regression.py --regenerate-baseline "$(git rev-parse HEAD)"
 ```
 
 Regime updates rewrite ThemeState `radar` and `basket_intel`; Theme Tracker lanes and counts also move about daily. Membership changes only through an intentional curation act. Regeneration is a seat act after an intentional accepted change.
