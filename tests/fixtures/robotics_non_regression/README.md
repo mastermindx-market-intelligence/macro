@@ -21,11 +21,11 @@ later Robotics lane is measured against.
 | section | frozen (exact value) | shape (type name only) |
 |---|---|---|
 | `basket_membership` | `robotics_automation` only: `weighting`, `weights`, members sorted by ticker projected to (ticker, added, removed, curated_added) | — |
-| `theme_state` | `theme_id`, `name_en`, `name_zh`, `basket_ids`, `foresight`, `narrative` | `radar`, `basket_intel`, `subsector_rotation`, `divergence_board`, `subsector_keys` |
+| `theme_state` | `theme_id`, `name_en`, `name_zh`, `basket_ids`, `foresight_decision` (= foresight projected to stage, entry_ready, tier, bottleneck_band, source), `narrative` | `radar`, `basket_intel`, `subsector_rotation`, `divergence_board`, `subsector_keys`, `foresight_score` |
 | `theme_tracker` (`scripts/build_state_of_themes.py::compose(REPO_ROOT)`) | `theme_id`, `name_en`, `name_zh` | the 19 tracker fields: lane, lane_rank, stance_en/zh, story_en/zh, fav_count, caut_count, present_count, stage_raw, stage_key, stage_label_en/zh, stage_sort, falsifier_any_fired, falsifier_label, filter_flags, leadership_context, entry_context |
 | `basket_confluence` (`site/marketdata/basket_confluence.json` → `baskets[]` row with `basket_id == robotics_automation`) | `key`, `kind`, `label`, `label_zh`, `sector`, `sector_zh`, `basket_id`, `chart_key`, `member_tickers_sorted` | `entry`, `regime`, `class`, `price_level`, `n_members`, `n_priced`, `n_live`, `reliability`, `coverage_pct`, `has_signals`, `start`, `as_of`, `member_order` |
-| `prophet_presence` (`site/prophet/index.json` → `plans[]` rows whose `asset` is a robotics member) | `member_tickers_present` (sorted set) | every row field of the matched rows as a type name (`row_fields`), plus `structure_checked` (top-level keys inspected, rows container, ticker field) |
-| `public_pages` | the canary list itself and the scan roots | — (the test asserts no canary appears in `site/state_of_themes.html`, `site/basket/robotics_automation.html`, and no `gmirca_` / `curation_assertion` byte-string in any `*.json` under `site/marketdata`, `site/prophet` and top-level `site/*.json`) |
+| `prophet_presence` (`site/prophet/index.json` → `plans[]` rows whose `asset` is a robotics member) | `member_tickers_present` (sorted set; name-pinned as `PROPHET_FROZEN`) | every row field of the matched rows as a type name (`row_fields`), plus `structure_checked` (the full sorted top-level key list, rows container, ticker field) |
+| `public_pages` | the canary list itself and the scan roots | — (the test asserts no canary appears in `site/state_of_themes.html`, `site/basket/robotics_automation.html`, and no `gmirca_` / `curation_assertion` byte-string in any `*.json` under `site/marketdata`, `site/prophet`, top-level `site/*.json`, plus `site/basketdata/foresight_cascade.json`, the artifact `foresight.source` names) |
 | `evidence_parquet` | the rule (`curation_assertion` column absent, or every cell null) | — |
 
 Every section also carries a canonical sha256 (`section_sha256`) computed over
@@ -45,6 +45,21 @@ Every section also carries a canonical sha256 (`section_sha256`) computed over
    `/api/themes/v1/research` URL in the page shell is allowed and is not a canary.
 4. **Theme Tracker context is deterministic** across two consecutive `compose()` runs at the
    freeze (byte-identical projection); no field had to be moved to shape for that reason.
+5. **`foresight.score` is shape, not frozen** (independent review of R3, blocker 1). Over the
+   month before the freeze the robotics `foresight` object changed 8 times across 28 nightly
+   `regime update` commits, every time `score` only (45.0→38.8→37.1→38.8→39.4→45.0→40.0→45.0→39.4)
+   while `(stage, tier, bottleneck_band, entry_ready)` never moved. The decision sub-fields are
+   frozen as `foresight_decision`; the score's type is pinned as `foresight_score`.
+6. **Null counts as a type.** A shape field that is `null` at the freeze (`entry_context`,
+   `leadership_context`, and five prophet row fields) reddens the shape assertion the first time
+   the incumbent populates it. That is a real structural event; re-freeze with the recipe below
+   and say why.
+7. **The prophet section is expected to move only on presence events.** Across 22 nightly
+   prophet checkpoints before the freeze the projection changed once — when NOVT's plan opened.
+   Closed plans persist on the board, so the set is append-mostly. `row_fields` co-moves with the
+   set (a new member adds its row's field types); both are one section sha on purpose.
+8. **The membership section skips on a sparse checkout** (it reads `data/`), unlike the Energy
+   pattern it mirrors, so the packet's "skips rather than fails" holds for every section.
 
 ## Regeneration recipe
 

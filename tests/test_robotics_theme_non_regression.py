@@ -44,12 +44,17 @@ BASELINE_SCHEMA = "robotics.theme_non_regression.v1"
 FROZEN_AT_MAIN = "3c93f8194f6c2cb19dad21c1347d8b3b8474aa31"
 
 MEMBERSHIP_FIELDS = ("ticker", "added", "removed", "curated_added")
+# theme_state: ``foresight`` is split — its DECISION sub-fields are frozen as
+# ``foresight_decision``; its nightly-moving ``score`` is a shape field
+# (``foresight_score``). Across the month before the freeze the foresight object
+# changed 8 times on main, every time score-only (review of R3, blocker 1).
+FORESIGHT_DECISION_FIELDS = ("stage", "entry_ready", "tier", "bottleneck_band", "source")
 THEME_STATE_FROZEN = (
     "theme_id",
     "name_en",
     "name_zh",
     "basket_ids",
-    "foresight",
+    "foresight_decision",
     "narrative",
 )
 THEME_STATE_SHAPE = (
@@ -58,6 +63,7 @@ THEME_STATE_SHAPE = (
     "subsector_rotation",
     "divergence_board",
     "subsector_keys",
+    "foresight_score",
 )
 THEME_TRACKER_FROZEN = (
     "theme_id",
@@ -125,6 +131,9 @@ PROPHET_TOP_LEVEL_KEYS = (
     "plans",
 )
 PROPHET_ROW_TICKER_FIELD = "asset"
+PROPHET_FROZEN = ("member_tickers_present",)
+# one artifact outside the scan roots that theme_state.foresight.source names
+EXTRA_PUBLIC_JSON = ("site/basketdata/foresight_cascade.json",)
 
 # Payload markers only. Shell markup such as a hidden mount element or an
 # /api/themes/v1/research URL is allowed and is deliberately NOT a canary.
@@ -243,7 +252,13 @@ def _member_tickers() -> list[str]:
 def _robotics_theme_state() -> dict[str, Any]:
     document = json.loads(THEME_STATE_PATH.read_text(encoding="utf-8"))
     theme = next(theme for theme in document["themes"] if theme.get("theme_id") == BASKET_ID)
-    return _projected_section(theme, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
+    foresight = theme.get("foresight") or {}
+    view = dict(theme)
+    view["foresight_decision"] = (
+        {field: foresight.get(field) for field in FORESIGHT_DECISION_FIELDS}
+        if isinstance(foresight, dict) else None)
+    view["foresight_score"] = foresight.get("score") if isinstance(foresight, dict) else None
+    return _projected_section(view, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
 
 
 def _robotics_theme_tracker() -> dict[str, Any]:
@@ -278,13 +293,16 @@ def _robotics_prophet_presence() -> dict[str, Any]:
         for key in sorted(row):
             type_name = _json_type_name(row.get(key))
             row_shape[key] = type_name if key not in row_shape or row_shape[key] == type_name else "mixed"
+    present = sorted({str(row.get(PROPHET_ROW_TICKER_FIELD)) for row in rows})
+    frozen = {"member_tickers_present": present}
     return {
         "structure_checked": {
             "top_level_keys_present": [key for key in PROPHET_TOP_LEVEL_KEYS if key in document],
+            "top_level_keys": sorted(document.keys()),
             "rows_container": "plans",
             "row_ticker_field": PROPHET_ROW_TICKER_FIELD,
         },
-        "frozen": {"member_tickers_present": sorted({str(row.get(PROPHET_ROW_TICKER_FIELD)) for row in rows})},
+        "frozen": {field: frozen[field] for field in PROPHET_FROZEN},
         "shape": {"row_fields": row_shape},
     }
 
@@ -294,6 +312,7 @@ def _public_json_files() -> list[Path]:
     for root in PUBLIC_JSON_ROOTS:
         files.extend(sorted((REPO_ROOT / root).rglob("*.json")))
     files.extend(sorted((REPO_ROOT / "site").glob("*.json")))
+    files.extend(REPO_ROOT / extra for extra in EXTRA_PUBLIC_JSON if (REPO_ROOT / extra).exists())
     return files
 
 
@@ -301,7 +320,7 @@ def _public_pages_section() -> dict[str, Any]:
     return {
         "pages": [str(path.relative_to(REPO_ROOT)) for path in PUBLIC_PAGE_PATHS],
         "canaries": list(PUBLIC_PAGE_CANARIES),
-        "json_roots": list(PUBLIC_JSON_ROOTS) + ["site/*.json"],
+        "json_roots": list(PUBLIC_JSON_ROOTS) + ["site/*.json"] + list(EXTRA_PUBLIC_JSON),
         "json_canaries": [token.decode() for token in PUBLIC_JSON_CANARIES],
     }
 
@@ -324,6 +343,7 @@ def test_baseline_frozen_at_main_sha_is_pinned() -> None:
     assert baseline["frozen_at_main"] == FROZEN_AT_MAIN
 
 
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_robotics_automation_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     assert _basket_snapshot(BASKET_ID) == baseline["basket_membership"][BASKET_ID]
@@ -354,11 +374,18 @@ def test_frozen_field_lists_exclude_nightly_volatile_fields() -> None:
         "price_level",
         "as_of",
         "member_order",
+        "foresight",
+        "foresight_score",
+        "score",
+        "row_fields",
     )
     for field in nightly_volatile_fields:
         assert field not in THEME_STATE_FROZEN
         assert field not in THEME_TRACKER_FROZEN
         assert field not in BASKET_CONFLUENCE_FROZEN
+        assert field not in PROPHET_FROZEN
+        assert field not in FORESIGHT_DECISION_FIELDS
+    assert PROPHET_FROZEN == ("member_tickers_present",)
 
 
 @pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP

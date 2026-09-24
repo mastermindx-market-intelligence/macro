@@ -223,6 +223,40 @@
     "structure_checked": {
       "row_ticker_field": "asset",
       "rows_container": "plans",
+      "top_level_keys": [
+        "active_count",
+        "active_count_by_age",
+        "asof",
+        "authority_tier",
+        "board_read_coverage",
+        "board_read_lineage",
+        "cadence",
+        "gate_go",
+        "intake",
+        "leader_observation_summary",
+        "ledger_corrections",
+        "ledger_quarantine",
+        "lifecycle_counts",
+        "lifecycle_grand_total",
+        "lifecycle_live_total",
+        "note",
+        "open_count",
+        "origination_disclosure",
+        "plan_count",
+        "plan_integrity",
+        "plans",
+        "plans_sort_key",
+        "record",
+        "recorded_at",
+        "schema",
+        "selection_era",
+        "source_asof",
+        "source_basis",
+        "source_board_asof",
+        "source_delayed",
+        "source_mixed_vintage",
+        "source_unknown"
+      ],
       "top_level_keys_present": [
         "schema",
         "asof",
@@ -256,7 +290,8 @@
     "json_roots": [
       "site/marketdata",
       "site/prophet",
-      "site/*.json"
+      "site/*.json",
+      "site/basketdata/foresight_cascade.json"
     ],
     "pages": [
       "site/state_of_themes.html",
@@ -268,9 +303,9 @@
     "basket_confluence": "1bfd53f771fbbab5f50aa2bffa92004a5827ef27b10aeaf5a5130f9d10168d62",
     "basket_membership": "0ffbf43cf2c3defacd966f513b7366747d25c3d1bf037c795002aebe285a2441",
     "evidence_parquet": "28f7795eb665822d740ffd0831dd50e299042ccbadec2ffe7e7e105b181a4150",
-    "prophet_presence": "1812c36ee4146560bc495013a4dc05ed5554b72c86d409bcf5f1c9dac2e4d7cd",
-    "public_pages": "fce3bceeb33bcfd299fc9ee2705d27243bb3133b43bf3544a58bba41ef9844c8",
-    "theme_state": "768d89995cf377403b07c3ebd05cfb9349719e1f07879cd2cc028725df3e7774",
+    "prophet_presence": "1bb09a9117090a69e007c142986301d520ce58cc105f223ca079512dcdab483b",
+    "public_pages": "9323f803ced57785108eaa34f1f4ff17dceeed32db60ee9fc14e4c01545df012",
+    "theme_state": "aa8e26862f8381346d71f4e37d22e08ad3ea9333f5fc236973d61302ee5713e2",
     "theme_tracker": "4f321a0e872ef2234046bbca9f40d71a4b7fc32930ab585cd5395d1dc0943a81"
   },
   "theme_state": {
@@ -278,10 +313,9 @@
       "basket_ids": [
         "robotics_automation"
       ],
-      "foresight": {
+      "foresight_decision": {
         "bottleneck_band": "NEUTRAL",
         "entry_ready": false,
-        "score": 39.4,
         "source": "site/basketdata/foresight_cascade.json",
         "stage": "WATCH",
         "tier": "P"
@@ -294,6 +328,7 @@
     "shape": {
       "basket_intel": "array",
       "divergence_board": "object",
+      "foresight_score": "number",
       "radar": "array",
       "subsector_keys": "array",
       "subsector_rotation": "object"
