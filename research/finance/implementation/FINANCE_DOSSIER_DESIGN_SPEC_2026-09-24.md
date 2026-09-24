@@ -433,4 +433,418 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
     <!-- Hydration appends one <li class="fi-constraint-row" data-constraint data-slice-id> per constraints[] entry. -->
   </ul>
 </section>
+
+---
+
+## C. Scoped CSS — two art directions (no token swap, no hex/rgb literals)
+
+The CSS is scoped to `templates/finance_intelligence.css`. It declares a `:root` / `html[data-theme="dark"]` block (default) and an `html[data-theme="light"]` block — the SAME selector `theme.css` uses for light tokens (see `templates/theme.css` lines 186–223). Each block is a complete material treatment — not a colour inversion. Tokens come ONLY from `templates/theme.css` (`--bg`, `--panel`, `--panel2`, `--text`, `--muted`, `--line`, `--link`, `--ok`, `--warn`, `--act`, `--info`, `--ink-link`, `--ink-ok`, `--ink-warn`, `--ink-act`, `--font-ui`, `--fs-*`) plus `--fi-*` locals for dossier-specific elevation. **No new token family is added to `theme.css`.**
+
+**Colour law (R-E):** every colour in this section is `var(--token)` or `color-mix(in srgb, var(--token) N%, transparent|var(--token))`. Zero hex literals (`#xxx`/`#xxxxxx`), zero `rgb()`/`rgba()` literals — anywhere in §C, dark block included. Font sizes ONLY via `--fs-*` tokens (no `10px`/`11px`/`font-size: 1Xpx` literals).
+
+### C.0 Material rationale — dark (command center)
+
+The dark dossier rides a near-black depth; elevation is a ~3% luminance step (`--panel` over `--bg`, `--panel2` over `--panel`), never a glow. Hairlines are 1px solid `--line`. State meaning rides on chip contrast (light-tinted fill + high-contrast ink) and on icon/text companions — colour is never the only channel (doctrine §5 + WCAG 1.4.1). Restrained glow appears only on the focused stepper dot and the focused "what changed" freshness pip (1px outer ring at `--link`). The rerating stepper is a thin horizontal spine at 2px with circular dots; the spine carries the rhythm, the dots are anchors.
+
+### C.1 Material rationale — light (research workspace)
+
+The light dossier sits on a perceptibly deeper canvas (doctrine §5: `--bg: #f7f8fa` shipped in `theme.css` light block, lines 199–223) so panels read as paper laid on a desk. White panels (`--panel: #ffffff`, from theme.css light) carry 1px hairlines (`--line`); elevation comes from a 2-stop hairline-tight shadow stack, never from saturation. Glow becomes shadow: the focused stepper dot drops a 2px ring at `--ink-link`; the "what changed" freshness pip replaces glow with a 3px left rail. Chips use a quiet tint + darkened ink pair; no chip saturates the surface.
+
+### C.2 Common tokens (always inherited from `theme.css`)
+
+```
+/* font, type ramp, spacing — all from theme.css :root. Never redeclared. */
+.fi-shell { font-family: var(--font-ui); font-feature-settings: "tnum" 1, "cv11" 1; }
+```
+
+### C.3 Dark block
+
+```css
+:root,
+html[data-theme="dark"] {
+  /* Existing theme tokens: --bg, --panel, --panel2, --line, --text, --muted,
+     --ok/--warn/--act, --link/--info, --ink-* already on theme.css.
+     The dossier adds ONLY --fi-* locals below — never new theme-wide tokens. */
+  --fi-canvas:        var(--bg);
+  --fi-panel:         var(--panel);
+  --fi-panel2:        var(--panel2);
+  --fi-line:          var(--line);
+  --fi-text:          var(--text);
+  --fi-muted:         var(--muted);
+  --fi-link:          var(--link);
+  --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
+  --fi-step-fill:     color-mix(in srgb, var(--link) 14%, var(--panel));
+  --fi-step-ring:     color-mix(in srgb, var(--link) 38%, transparent);
+  --fi-chip-observed: color-mix(in srgb, var(--ok)   18%, var(--panel));
+  --fi-chip-watch:    color-mix(in srgb, var(--warn) 18%, var(--panel));
+  --fi-chip-caution:  color-mix(in srgb, var(--info) 14%, var(--panel));
+  --fi-chip-missing:  color-mix(in srgb, var(--muted) 18%, var(--panel));
+  --fi-chip-stale:    color-mix(in srgb, var(--act)  16%, var(--panel));
+  --fi-chip-regime:   color-mix(in srgb, var(--act)  22%, var(--panel));
+}
+```
+
+### C.4 Light block
+
+```css
+html[data-theme="light"] {
+  /* Same token family; light tokens (#f7f8fa, #ffffff, etc.) already on
+     theme.css light block (lines 186–223). --fi-* locals are RECOMPUTED for
+     light's "paper on desk" reading; saturation never escapes the panel. */
+  --fi-canvas:        var(--bg);
+  --fi-panel:         var(--panel);
+  --fi-panel2:        var(--panel2);
+  --fi-line:          var(--line);
+  --fi-text:          var(--text);
+  --fi-muted:         var(--muted);
+  --fi-link:          var(--link);
+  --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
+  --fi-step-fill:     color-mix(in srgb, var(--link) 12%, var(--panel));
+  --fi-step-ring:     color-mix(in srgb, var(--ink-link) 26%, transparent);
+  --fi-chip-observed: color-mix(in srgb, var(--ok)   10%, var(--panel));
+  --fi-chip-watch:    color-mix(in srgb, var(--warn) 10%, var(--panel));
+  --fi-chip-caution:  color-mix(in srgb, var(--info)  8%, var(--panel));
+  --fi-chip-missing:  color-mix(in srgb, var(--muted)  8%, var(--panel));
+  --fi-chip-stale:    color-mix(in srgb, var(--act)   8%, var(--panel));
+  --fi-chip-regime:   color-mix(in srgb, var(--act)  12%, var(--panel));
+}
+```
+
+### C.5 Mechanisms that MUST differ — dark vs light
+
+The five mechanisms below are the load-bearing art-direction differences; each is a complete CSS rule (token-mixed). The audit found them either missing or wrongly shared.
+
+**(1) Panel elevation.** Dark: nested luminance steps + a hairline inset highlight (no shadow). Light: 1px hairline border + a 2-stop shadow stack (no inset).
+
+```css
+.fi-panel {
+  background: var(--fi-panel);
+  border: 1px solid var(--fi-line);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 7%, transparent);
+}
+.fi-panel2 { background: var(--fi-panel2); }
+html[data-theme="light"] .fi-panel {
+  background: var(--fi-panel);
+  border: 1px solid var(--fi-line);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 6px 20px color-mix(in srgb, var(--text) 5%, transparent);
+}
+html[data-theme="light"] .fi-panel2 { background: var(--fi-panel2); }
+```
+
+**(2) Freshness pip.** Dark: glow halo on the dot (focused/active state only). Light: NO glow; a 3px left rail on the section header element. The element is the section header `.fi-section-head` on `what-changed` (per B.1 markup); the rail is on that element, not on the chip.
+
+```css
+.fi-freshness[data-state-fresh="Fresh"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
+}
+html[data-theme="light"] .fi-freshness[data-state-fresh="Fresh"] {
+  box-shadow: none;
+}
+html[data-theme="light"] #what-changed .fi-section-head {
+  border-left: 3px solid var(--ok);
+  padding-left: 12px;
+}
+```
+
+**(3) Focus ring.** Dark: 1px outline + a 4px glow halo. Light: 2px outline, no halo.
+
+```css
+.fi-shell *:focus-visible,
+.fi-drawer *:focus-visible {
+  outline: 1px solid var(--fi-link);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fi-link) 30%, transparent);
+  border-radius: 6px;
+}
+html[data-theme="light"] .fi-shell *:focus-visible,
+html[data-theme="light"] .fi-drawer *:focus-visible {
+  outline: 2px solid var(--fi-link);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+```
+
+**(4) Drawer scrim.** Dark: black scrim (`--bg` mixed). Light: a higher-percentage text-tinted scrim so the panel stays readable.
+
+```css
+.fi-scrim { background: color-mix(in srgb, var(--bg) 70%, transparent); }
+html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 35%, transparent); }
+```
+
+**(5) Stepper rail/dot.** Dark: glow on the active dot. Light: solid dot + hairline rail.
+
+```css
+.fi-rerating-step[data-active="true"] .fi-step-dot {
+  box-shadow: 0 0 0 3px var(--fi-step-ring);
+}
+html[data-theme="light"] .fi-rerating-step[data-active="true"] .fi-step-dot {
+  box-shadow: none;
+  background: var(--fi-step-fill);
+  border-color: var(--fi-link);
+}
+html[data-theme="light"] .fi-rerating-steps::before {
+  background: color-mix(in srgb, var(--line) 60%, transparent);
+}
+```
+
+### C.6 Shell + layout
+
+```css
+.fi-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 36px) clamp(16px, 3vw, 28px) 80px;
+  background: var(--fi-canvas);
+  color: var(--fi-text);
+}
+.fi-hero { padding: 28px 0 22px; border-bottom: 1px solid var(--fi-line); }
+.fi-kicker { font-size: var(--fs-label); letter-spacing: .09em; text-transform: uppercase; color: var(--fi-muted); margin: 0 0 8px; font-weight: 700; }
+.fi-hero h1 { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.fi-deck { font-size: var(--fs-md); line-height: 1.55; margin: 8px 0 0; max-width: 70ch; color: var(--fi-text); }
+.fi-meta { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.fi-freshness { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-outer-dossier { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-toc { margin: 18px 0 8px; padding: 12px 14px; border: 1px solid var(--fi-line); border-radius: 12px; background: var(--fi-panel); }
+.fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.fi-toc a, .fi-toc-evidence { color: var(--fi-text); text-decoration: none; padding: 4px 8px; border-radius: 7px; background: transparent; border: 0; cursor: pointer; font: inherit; }
+.fi-toc a:hover, .fi-toc-evidence:hover { background: var(--fi-panel2); }
+.fi-section { margin-top: 40px; }
+.fi-section-title { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em; margin: 0 0 4px; }
+.fi-section-eyebrow { display: block; font-size: var(--fs-sm); color: var(--fi-muted); font-weight: 400; margin-top: 2px; }
+.fi-section-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; max-width: 75ch; }
+.fi-section-head { padding: 4px 0; }
+```
+
+### C.7 Rerating stepper — primary visual
+
+```css
+.fi-slice-picker { margin: 12px 0 14px; display: flex; gap: 10px; align-items: center; font-size: var(--fs-sm); }
+.fi-slice-select { font: inherit; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
+.fi-rerating-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  position: relative;
+}
+.fi-rerating-steps::before {
+  content: ""; position: absolute; left: 5%; right: 5%; top: 23px; height: 2px;
+  background: var(--fi-spine); border-radius: 2px; z-index: 0;
+}
+.fi-rerating-step {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 0 6px; gap: 6px; background: var(--fi-canvas);
+}
+.fi-step-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--fi-step-fill); border: 2px solid var(--fi-line);
+  margin-bottom: 4px;
+}
+.fi-step-label { font-size: var(--fs-sm); font-weight: 600; color: var(--fi-text); }
+.fi-step-metric { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; min-height: 1.4em; }
+.fi-step-chip {
+  display: inline-block; font-size: var(--fs-sm); font-weight: 600;
+  padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line);
+  background: var(--fi-panel); color: var(--fi-text); white-space: nowrap;
+}
+.fi-step-clock { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; }
+.fi-anchor-chip, .fi-history-chip {
+  display: inline-block; font-size: var(--fs-sm); font-weight: 600;
+  padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line);
+  background: var(--fi-panel); color: var(--fi-text); white-space: nowrap;
+}
+.fi-step-evidence {
+  background: transparent; border: 1px solid var(--fi-line);
+  width: 22px; height: 22px; border-radius: 6px; color: var(--fi-muted);
+  cursor: pointer; font-size: var(--fs-sm);
+}
+.fi-step-evidence:hover { color: var(--fi-text); border-color: var(--fi-muted); }
+.fi-rerating-bridge { font-size: var(--fs-md); color: var(--fi-text); margin: 14px 0 0; max-width: 75ch; }
+
+/* falsifiers list */
+.fi-falsifiers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.fi-falsifier { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel); font-size: var(--fs-sm); }
+.fi-falsifier-chip { font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-falsifier-statement { color: var(--fi-text); }
+.fi-falsifier-window { color: var(--fi-muted); font-variant-numeric: tabular-nums; }
+
+/* conflicts sub-block */
+.fi-conflicts { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--fi-line); }
+.fi-conflicts-title { font-size: var(--fs-h3); font-weight: 700; margin: 0 0 8px; }
+.fi-conflict-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.fi-conflict-card { background: var(--fi-panel); border: 1px solid var(--fi-line); border-radius: 12px; padding: 12px 14px; }
+.fi-conflict-label { font-size: var(--fs-sm); font-weight: 700; display: block; margin-bottom: 6px; }
+.fi-conflict-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fi-conflict-side { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); font-size: var(--fs-sm); }
+.fi-conflict-side-statement { display: block; }
+.fi-conflict-side-evidence { margin-top: 4px; font-size: var(--fs-sm); }
+.fi-conflict-resolution { font-size: var(--fs-sm); color: var(--fi-muted); margin: 8px 0 0; }
+
+/* chip state colours — each maps to one plane-state token and includes a plain-word
+   companion so colour is never the only channel (doctrine §5 + WCAG 1.4.1). */
+.fi-step-chip[data-state="OBSERVED"]    { background: var(--fi-chip-observed); }
+.fi-step-chip[data-state="INFERRED"]    { background: var(--fi-chip-watch); }
+.fi-step-chip[data-state="MISSING"]     { background: var(--fi-chip-missing); }
+.fi-step-chip[data-state="CONFLICTING"] { background: var(--fi-chip-caution); }
+.fi-step-chip[data-state="STALE"]       { background: var(--fi-chip-stale); }
+.fi-step-chip[data-state="REGIME_BREAK"],
+.fi-step-chip[data-state="VALUATION_ANCHOR_UNAVAILABLE"],
+.fi-step-chip[data-state="PRICE_BASIS_UNQUALIFIED"] { background: var(--fi-chip-regime); }
+.fi-step-chip[data-state="NOT_APPLICABLE"] { background: var(--fi-panel2); color: var(--fi-muted); }
+```
+
+### C.8 Atlas grid, exposure table, macro matrix, constraints, system map
+
+```css
+.fi-domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+.fi-domain { padding: 14px 14px 10px; }
+.fi-domain-title { font-size: var(--fs-h3); font-weight: 700; margin: 0 0 8px; }
+.fi-slice-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fi-slice {
+  display: grid; grid-template-columns: 1fr auto auto;
+  gap: 6px 8px; align-items: center;
+  padding: 6px 8px; border-radius: 8px; background: var(--fi-panel2);
+}
+.fi-slice-name { font-size: var(--fs-sm); font-weight: 600; color: var(--fi-text); }
+.fi-slice-chip {
+  font-size: var(--fs-sm); font-weight: 600; padding: 1px 7px; border-radius: 999px;
+  border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text);
+}
+.fi-slice[data-state-slice="SEMANTIC_ONLY"] .fi-chip-slice { background: var(--fi-chip-missing); }
+.fi-slice[data-state-slice="MEASURABLE"]   .fi-chip-slice { background: var(--fi-chip-observed); }
+.fi-slice[data-state-slice="STALE"]        .fi-chip-slice { background: var(--fi-chip-stale); }
+.fi-slice[data-state-slice="HELD_FOR_REVIEW"] .fi-chip-slice { background: var(--fi-chip-watch); }
+.fi-slice[data-state-membership="CURRENT_MEMBERSHIP_ONLY"] .fi-chip-membership,
+.fi-slice[data-state-membership="PIT_MEMBERSHIP_INCOMPLETE"] .fi-chip-membership { background: var(--fi-chip-regime); }
+.fi-slice[data-state-posture="SEMANTIC_ONLY"] .fi-chip-posture { background: var(--fi-chip-missing); }
+.fi-slice[data-state-posture="RESEARCH_CANDIDATE"] .fi-chip-posture { background: var(--fi-chip-caution); }
+.fi-slice[data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"] .fi-chip-posture { background: var(--fi-chip-watch); }
+.fi-slice[data-state-posture="ADMITTED"] .fi-chip-posture { background: var(--fi-chip-observed); }
+.fi-slice-open { background: transparent; border: 1px solid var(--fi-line); border-radius: 6px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
+.fi-atlas-gap { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; }
+
+.fi-exposure-table-wrap { overflow-x: auto; margin-top: 14px; }
+.fi-exposure-table { border-collapse: separate; border-spacing: 0; font-size: var(--fs-sm); min-width: 760px; width: 100%; }
+.fi-exposure-table th, .fi-exposure-table td {
+  border-bottom: 1px solid var(--fi-line); padding: 8px 10px; text-align: left; vertical-align: top;
+}
+.fi-exposure-table thead th { position: sticky; top: 0; background: var(--fi-panel); z-index: 2; font-weight: 600; color: var(--fi-muted); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; }
+.fi-exposure-table .fi-col-company { position: sticky; left: 0; background: var(--fi-panel); z-index: 1; min-width: 180px; font-weight: 600; }
+.fi-exposure-table thead th.fi-col-company { z-index: 3; }
+.fi-cell { min-width: 200px; }
+.fi-cell-role { display: block; font-weight: 600; }
+.fi-cell-basis { display: block; font-size: var(--fs-sm); color: var(--fi-muted); }
+.fi-cell-materiality { display: block; font-size: var(--fs-sm); }
+/* No --up/--down/--ink-up/--ink-down anywhere on the exposure surface. */
+.fi-cell[data-state-materiality="MATERIAL"]    .fi-cell-materiality { color: var(--ink-warn); }
+.fi-cell[data-state-materiality="PARTIAL"]    .fi-cell-materiality { color: var(--fi-muted); }
+.fi-cell[data-state-materiality="IMMATERIAL"]  .fi-cell-materiality { color: var(--fi-muted); }
+.fi-cell[data-state-materiality="UNMEASURED"]  .fi-cell-materiality { color: var(--fi-muted); }
+.fi-cell-risk { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; }
+.fi-cell-evidence-date { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.fi-company-unresolved, .fi-company-hint { color: var(--fi-muted); font-style: italic; }
+.fi-exposure-cards { display: none; list-style: none; margin: 14px 0 0; padding: 0; gap: 10px; }
+.fi-exposure-card { padding: 12px 14px; }
+
+.fi-macro-table-wrap { overflow-x: auto; margin-top: 14px; }
+.fi-macro-table { border-collapse: separate; border-spacing: 0; font-size: var(--fs-sm); min-width: 760px; width: 100%; }
+.fi-macro-table th, .fi-macro-table td {
+  border-bottom: 1px solid var(--fi-line); padding: 8px 10px; text-align: left; vertical-align: top;
+}
+.fi-macro-table thead th { position: sticky; top: 0; background: var(--fi-panel); z-index: 2; font-weight: 600; color: var(--fi-muted); font-size: var(--fs-sm); }
+.fi-macro-table .fi-col-company { position: sticky; left: 0; background: var(--fi-panel); z-index: 1; min-width: 180px; font-weight: 600; }
+.fi-macro-cell-state { display: inline-block; font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-macro-cell-state[data-state="CAUSAL_EFFECT_UNMEASURED"] { background: var(--fi-chip-caution); }
+.fi-macro-cell-state[data-state="NOT_APPLICABLE"] { background: var(--fi-panel2); color: var(--fi-muted); }
+.fi-macro-cell-state[data-state="DESCRIBED"] { background: var(--fi-chip-observed); }
+
+.fi-constraint-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.fi-constraint-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel); font-size: var(--fs-sm); }
+
+.fi-view-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 14px; }
+.fi-view-tab { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); cursor: pointer; }
+.fi-view-tab[aria-selected="true"] { background: var(--fi-step-fill); border-color: var(--fi-link); }
+.fi-system-svg { width: 100%; height: 280px; background: var(--fi-panel2); border-radius: 12px; border: 1px solid var(--fi-line); }
+.fi-system-edge-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: var(--fs-sm); }
+.fi-system-edge { padding: 4px 0; border-bottom: 1px dashed var(--fi-line); display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.fi-system-edge-statement { color: var(--fi-text); }
+```
+
+### C.9 Evidence drawer + scrim
+
+```css
+.fi-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 92vw);
+  background: var(--fi-panel); border-left: 1px solid var(--fi-line);
+  transform: translateX(100%);
+  transition: transform .22s cubic-bezier(.2,.7,.3,1);
+  display: flex; flex-direction: column; z-index: 80;
+}
+.fi-drawer[aria-hidden="false"] { transform: translateX(0); }
+.fi-drawer-head { padding: 14px 18px 10px; border-bottom: 1px solid var(--fi-line); display: flex; gap: 12px; align-items: flex-start; }
+.fi-drawer-head .fi-kicker { margin: 0; }
+.fi-drawer-head h2 { font-size: var(--fs-h2); margin: 4px 0 0; }
+.fi-drawer-close { margin-left: auto; background: transparent; border: 1px solid var(--fi-line); border-radius: 6px; color: var(--fi-muted); width: 28px; height: 28px; cursor: pointer; font: inherit; }
+.fi-drawer-body { padding: 12px 18px 24px; overflow-y: auto; font-size: var(--fs-sm); }
+.fi-evidence-fields { display: grid; gap: 8px; margin: 0; }
+.fi-evidence-fields > div { display: grid; grid-template-columns: 36% 64%; gap: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--fi-line); }
+.fi-evidence-fields dt { color: var(--fi-muted); font-weight: 600; }
+.fi-evidence-fields dd { margin: 0; color: var(--fi-text); }
+.fi-evidence-private-notice { font-size: var(--fs-sm); color: var(--fi-muted); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); margin: 0 0 10px; }
+.fi-scrim { position: fixed; inset: 0; z-index: 70; }
+```
+
+### C.10 Responsive — three breakpoints (R-I)
+
+One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep of `max-width|min-width` in §C shows ONLY `767px`, `768px`, `1199px`, `1200px` (check #8). The 14px gutter from the previous spec is removed; phone gutter is 16px.
+
+```css
+@media (min-width: 1200px) {
+  .fi-shell { max-width: 1200px; }
+  .fi-domain-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .fi-rerating-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .fi-rerating-steps::before { display: none; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); }
+  .fi-step-dot { margin: 0 6px 0 0; }
+}
+@media (max-width: 767px) {
+  .fi-rerating-steps { grid-template-columns: 1fr; gap: 6px; }
+  .fi-rerating-steps::before { display: none; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); }
+  .fi-step-dot { margin: 0 6px 0 0; }
+  .fi-domain-grid { grid-template-columns: 1fr; }
+  .fi-exposure-table-wrap { display: none; }
+  .fi-exposure-cards { display: grid; }
+  .fi-macro-table-wrap { overflow-x: auto; }
+  .fi-conflict-pair { grid-template-columns: 1fr; }
+  .fi-toc ol { flex-direction: column; gap: 4px; }
+  .fi-shell { padding-left: 16px; padding-right: 16px; }
+}
+@media (max-width: 390px) {
+  .fi-hero h1 { font-size: var(--fs-h2); }
+  .fi-exposure-cards { gap: 8px; }
+}
+```
+
+### C.11 Reduced motion + long-word wrapping
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .fi-drawer { transition: none; }
+  .fi-rerating-steps::before { animation: none; }
+}
+.fi-section-title, .fi-step-label, .fi-cell-role {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.fi-slice-name { overflow-wrap: anywhere; }
+```
 ```
