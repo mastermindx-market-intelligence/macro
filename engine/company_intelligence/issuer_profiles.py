@@ -39,6 +39,7 @@ uniquely locatable, the profile emits a :class:`TypedAbsence` from the closed
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 import re
 from typing import Any, Callable, Mapping, Sequence
 
@@ -69,6 +70,18 @@ DHI_CIK = "0000882184"
 PHM_CIK = "0000822416"
 KBH_CIK = "0000795266"
 TOL_CIK = "0000794170"
+
+# Semiconductor witnesses (T05a).  CIKs verified 2026-09-24 against
+# data.sec.gov submissions JSON for the named registrant.
+TSM_CIK = "0001046179"  # Taiwan Semiconductor Manufacturing Company Limited
+ON_CIK = "0001097864"  # ON Semiconductor Corporation
+
+# TSM stays OUT OF FIF (``engine.fundamental_forensics.metric_registry``):
+# ALLOWED_FORMS is 10-K/10-K/A/10-Q/10-Q/A, ALLOWED_TAXONOMIES is us-gaap/dei,
+# ALLOWED_UNITS is USD/shares/ratio — TSM's IFRS/TWD/20-F combination is
+# none of those.  This sentinel is what a later surface renders — never an
+# inferred metric, never a widened registry constant.
+TSM_FIF_GAP = "ifrs_twd_20f_outside_fif_registry"
 
 HOMEBUILDER_TICKERS: tuple[str, ...] = ("DHI", "PHM", "KBH", "TOL")
 
@@ -123,6 +136,98 @@ def tol_issuer() -> IssuerIdentity:
         ),
         external_ids={"cik": TOL_CIK},
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Semiconductor witnesses (T05a).
+#
+# TSM — Taiwan Semiconductor Manufacturing Company Limited; CIK 0001046179;
+# foreign private issuer (Form 6-K results, annual report Form 20-F);
+# entityType "other"; fiscal year end 12-31; reports NT$ (TWD) with a USD
+# restatement; guidance is in USD with an explicit FX assumption.
+# Listing attested by the FY2025 20-F cover filed 2026-04-16 (accession
+# 0001628280-26-025362).  No TWSE "2330" alias is registered — the
+# estate never sourced that venue, so a listing cannot be asserted for it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def tsm_issuer() -> IssuerIdentity:
+    """TSMC's SEC-attested identity as of the FY2025 20-F cover filing.
+
+    Listing ``valid_from = date(2026, 4, 16)`` is attested by the FY2025
+    20-F cover (accession 0001628280-26-025362, filed 2026-04-16).  No
+    earlier eligibility is asserted.
+    """
+    return IssuerIdentity(
+        company_id=company_id_for_cik(TSM_CIK),
+        display_name="Taiwan Semiconductor Manufacturing Company Limited",
+        fiscal_year_end_month=12,
+        reporting_currency="TWD",
+        listings=(
+            ListingAlias(
+                ticker="TSM",
+                mic="XNYS",
+                share_class="ADR",
+                trading_currency="USD",
+                is_primary=True,
+                valid_from=date(2026, 4, 16),
+            ),
+        ),
+        issuer_kind="foreign_private_issuer",
+        external_ids={
+            "cik": TSM_CIK,
+            "sec_entity_type": "other",
+            "annual_report_form": "20-F",
+            "results_form": "6-K",
+        },
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ON — ON Semiconductor Corporation; CIK 0001097864; domestic filer
+# (8-K/10-Q/10-K); entityType "operating"; fiscal year end 12-31 on a
+# 52/53-week calendar (Q1-2026 ended 2026-04-03, Q2-2026 ended 2026-07-03);
+# reports USD.  Listing attested by the Q1-2026 results 8-K filing date
+# 2026-05-04 (accession 0001140361-26-018868); the 10-K filing date is
+# not derivable offline.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def on_issuer() -> IssuerIdentity:
+    """onsemi's SEC-attested identity as of the Q1-2026 results 8-K filing.
+
+    Listing ``valid_from = date(2026, 5, 4)`` is attested by the Q1-2026
+    results 8-K filing date (accession 0001140361-26-018868, filed
+    2026-05-04).  The 10-K filing date is not derivable offline.
+    """
+    return IssuerIdentity(
+        company_id=company_id_for_cik(ON_CIK),
+        display_name="ON Semiconductor Corporation",
+        fiscal_year_end_month=12,
+        reporting_currency="USD",
+        listings=(
+            ListingAlias(
+                ticker="ON",
+                mic="XNAS",
+                share_class="common",
+                trading_currency="USD",
+                is_primary=True,
+                valid_from=date(2026, 5, 4),
+            ),
+        ),
+        issuer_kind="domestic_52_53_week",
+        external_ids={
+            "cik": ON_CIK,
+            "sec_entity_type": "operating",
+            "annual_report_form": "10-K",
+            "results_form": "8-K",
+            "fiscal_calendar": "52_53_week",
+        },
+    )
+
+
+_SEMICONDUCTOR_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
+    "TSM": tsm_issuer,
+    "ON": on_issuer,
+}
 
 
 _HOMEBUILDER_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
@@ -1269,6 +1374,315 @@ def tol_profile() -> IssuerProfile:
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# TSM — Taiwan Semiconductor Manufacturing Company Limited (T05a witness).
+#
+# Two release facts, both receipted against the same synthetic look-alike
+# exhibit body (no real Exhibit 99.1 committed):
+#
+# * ``fact_revenue_twd`` — the NT$ net revenue figure.  No TWD unit exists
+#   in the existing unit vocabulary (``engine.earnings_release.figures
+#   ._UNIT_BY_SCALE`` is USD-prefixed), so per the docket this is emitted
+#   as a typed absence with detail
+#   ``reporting_currency_twd_not_in_unit_vocabulary`` rather than inventing
+#   a unit or converting (C4: zero arithmetic).
+#
+# * ``fact_revenue_usd`` — the USD-restated revenue, present with unit
+#   ``usd_billions`` receipted against the literal ``US$12.34 billion``.
+#
+# extract_guidance reads the NEXT-quarter revenue range out of ``bound``
+# (the release body), emitting guidance_item.v1 dicts with explicit
+# ``currency`` ("USD"), ``basis`` ("reported_ifrs"), and ``fx_assumption``
+# (verbatim phrase from the release) — TSM reports USD guidance with an
+# explicit exchange-rate assumption.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_TSM_NT_REVENUE_RE = re.compile(r"NT\$[\d,]+(?:\.\d+)?\s*million")
+_TSM_USD_REVENUE_RE = re.compile(r"US\$[\d.,]+\s*billion")
+_TSM_GUIDANCE_RANGE_RE = re.compile(
+    r"between\s+US\$([\d.]+)\s+billion\s+and\s+US\$([\d.]+)\s+billion"
+)
+_TSM_GUIDANCE_FX_RE = re.compile(
+    r"assuming\s+an\s+exchange\s+rate\s+of\s+(\d+(?:\.\d+)?\s+NTD\s+per\s+USD)\."
+)
+
+
+def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
+    fiscal_period = kwargs.get("fiscal_period")
+    period = _period_label(fiscal_period)
+    blocks = bound.document.blocks
+    facts: list[dict[str, Any]] = []
+
+    # (i) NT$ net revenue — typed absence because the unit vocabulary has
+    # no TWD unit.  The receipt_for_literal call STILL runs first so a
+    # later widening of the unit vocabulary can flip this fact from typed
+    # absence to present without touching this function's structure; we
+    # capture the receipt existence here only to prove the literal IS in
+    # the document, not to invent a unit (C4).
+    twd_receipt = None
+    for block in blocks:
+        m = _TSM_NT_REVENUE_RE.search(block.text)
+        if m is not None:
+            twd_receipt = _literal_receipt(
+                bound,
+                search_start=block.source_span.char_start,
+                search_end=block.source_span.char_end,
+                literal=m.group(0),
+            )
+            if twd_receipt is not None:
+                break
+    if twd_receipt is None:
+        facts.append(_fact_absent(
+            fact_id="fact_revenue_twd", event_id=event_id, metric="revenue",
+            detail=(
+                "NT$ net revenue is not present or not uniquely addressable in "
+                "Exhibit 99.1"
+            ),
+            document_id=document_id,
+        ))
+    else:
+        # Receipt exists for the NT$ literal, but the unit vocabulary has
+        # no TWD scale — emit typed absence with the documented sentinel
+        # detail instead of inventing one (C4).
+        facts.append(_fact_absent(
+            fact_id="fact_revenue_twd", event_id=event_id, metric="revenue",
+            detail=(
+                "reporting_currency_twd_not_in_unit_vocabulary: NT$ net revenue "
+                "literal is present in Exhibit 99.1 but the existing unit vocabulary "
+                "is USD-prefixed and no TWD scale exists to attach"
+            ),
+            document_id=document_id,
+        ))
+
+    # (ii) USD-restated revenue — present with unit ``usd_billions``.
+    usd_receipt = None
+    usd_literal = None
+    for block in blocks:
+        m = _TSM_USD_REVENUE_RE.search(block.text)
+        if m is not None:
+            usd_literal = m.group(0)
+            usd_receipt = _literal_receipt(
+                bound,
+                search_start=block.source_span.char_start,
+                search_end=block.source_span.char_end,
+                literal=usd_literal,
+            )
+            if usd_receipt is not None:
+                break
+    if usd_receipt is not None and usd_literal is not None:
+        # Parse the dollar amount as a float from the receipted literal's
+        # number — no arithmetic conversion, the number IS what the
+        # document states.
+        amount_match = re.search(r"([\d.]+)", usd_literal)
+        if amount_match is not None:
+            facts.append(_fact_present(
+                fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
+                value=float(amount_match.group(1)), unit="usd_billions",
+                period=period,
+                basis="TSMC USD-restated revenue, as stated in Exhibit 99.1",
+                document_id=document_id, bound=bound, receipt=usd_receipt,
+            ))
+            return facts
+    facts.append(_fact_absent(
+        fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
+        detail="USD-restated revenue is not present or not uniquely addressable in Exhibit 99.1",
+        document_id=document_id,
+    ))
+    return facts
+
+
+def _tsm_extract_guidance(
+    *,
+    bound: BoundRelease,
+    release_document_id: str,
+    event_id: str,
+    **_kwargs: Any,
+) -> list[dict[str, Any]]:
+    """TSM guidance — USD revenue range with an explicit FX assumption.
+
+    Reads the NEXT-quarter revenue range out of the release body, with the
+    ``fx_assumption`` carried as a SEPARATE field (verbatim phrase from the
+    release) — TSM guidance is in USD only because the release states an
+    explicit exchange-rate assumption; the assumption itself is a primary
+    input, not a derived annotation.
+    """
+    blocks = bound.document.blocks
+    range_match: re.Match[str] | None = None
+    range_para: DisclosureBlock | None = None
+    for block in blocks:
+        m = _TSM_GUIDANCE_RANGE_RE.search(block.text)
+        if m is not None:
+            range_match = m
+            range_para = block
+            break
+    if range_match is None or range_para is None:
+        return []
+    range_literal = range_match.group(0)
+    range_receipt = _literal_receipt(
+        bound,
+        search_start=range_para.source_span.char_start,
+        search_end=range_para.source_span.char_end,
+        literal=range_literal,
+    )
+    if range_receipt is None:
+        return []
+    fx_assumption: str | None = None
+    for block in blocks:
+        fx_match = _TSM_GUIDANCE_FX_RE.search(block.text)
+        if fx_match is not None:
+            fx_receipt = _literal_receipt(
+                bound,
+                search_start=block.source_span.char_start,
+                search_end=block.source_span.char_end,
+                literal=fx_match.group(0),
+            )
+            if fx_receipt is not None:
+                fx_assumption = fx_match.group(1).strip()
+                break
+    return [{
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": float(range_match.group(1)),
+        "high": float(range_match.group(2)),
+        "unit": "usd_billions",
+        "horizon": "2026Q3",  # synthetic exhibit says "second quarter" reporting → "third quarter" guidance
+        "status": "introduced",
+        "currency": "USD",
+        "basis": "reported_ifrs",
+        "fx_assumption": fx_assumption,
+        "source_span": _release_span_payload(
+            document_id=release_document_id, bound=bound, receipt=range_receipt,
+        ),
+    }]
+
+
+def tsm_profile() -> IssuerProfile:
+    return IssuerProfile(
+        ticker="TSM",
+        extract_release_facts=_tsm_extract_release_facts,
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=_tsm_extract_guidance,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ON — ON Semiconductor Corporation (T05a witness).
+#
+# Single release fact — GAAP revenue read out of the
+# "Quarters Ended <Month D, YYYY>" paragraph/table — and a NEXT-quarter
+# revenue range emitted by extract_guidance (USD, no FX assumption).
+# ─────────────────────────────────────────────────────────────────────────────
+
+_ON_REVENUE_RE = re.compile(r"\$[\d,]+(?:\.\d+)?\s*million")
+_ON_GUIDANCE_RANGE_RE = re.compile(
+    r"range\s+of\s+\$([\d,]+)\s+million\s+to\s+\$([\d,]+)\s+million"
+)
+
+
+def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
+    fiscal_period = kwargs.get("fiscal_period")
+    period = _period_label(fiscal_period)
+    blocks = bound.document.blocks
+    # Find the "Quarters Ended ..." table — the GAAP revenue row sits in
+    # the SAME block as that header.
+    target_block: DisclosureBlock | None = None
+    for block in blocks:
+        if block.kind is BlockKind.TABLE and "Quarters Ended" in block.text:
+            target_block = block
+            break
+    if target_block is not None:
+        for row in target_block.table.rows:
+            if row and row[0].text.strip().lower() == "revenue":
+                cells = [cell for cell in row[1:] if cell.text.strip() not in ("", "$")]
+                if not cells:
+                    break
+                cell = cells[0]
+                m = _ON_REVENUE_RE.search(cell.text)
+                if m is None:
+                    break
+                literal = m.group(0)
+                receipt = _literal_receipt(
+                    bound,
+                    search_start=cell.source_span.char_start,
+                    search_end=cell.source_span.char_end,
+                    literal=literal,
+                )
+                if receipt is None:
+                    break
+                amount_match = re.search(r"([\d,]+(?:\.\d+)?)", literal)
+                if amount_match is None:
+                    break
+                value = float(amount_match.group(1).replace(",", ""))
+                return [_fact_present(
+                    fact_id="fact_revenue", event_id=event_id, metric="revenue",
+                    value=value, unit="usd_millions", period=period,
+                    basis="onsemi GAAP quarterly revenue, as stated in Exhibit 99.1",
+                    document_id=document_id, bound=bound, receipt=receipt,
+                )]
+    return [_fact_absent(
+        fact_id="fact_revenue", event_id=event_id, metric="revenue",
+        detail=(
+            "Quarters Ended table or its Revenue row is not present or not uniquely "
+            "addressable in Exhibit 99.1"
+        ),
+        document_id=document_id,
+    )]
+
+
+def _on_extract_guidance(
+    *,
+    bound: BoundRelease,
+    release_document_id: str,
+    event_id: str,
+    **_kwargs: Any,
+) -> list[dict[str, Any]]:
+    """ON guidance — USD revenue range, no FX assumption (domestic filer)."""
+    blocks = bound.document.blocks
+    range_match: re.Match[str] | None = None
+    range_para: DisclosureBlock | None = None
+    for block in blocks:
+        m = _ON_GUIDANCE_RANGE_RE.search(block.text)
+        if m is not None:
+            range_match = m
+            range_para = block
+            break
+    if range_match is None or range_para is None:
+        return []
+    range_literal = range_match.group(0)
+    range_receipt = _literal_receipt(
+        bound,
+        search_start=range_para.source_span.char_start,
+        search_end=range_para.source_span.char_end,
+        literal=range_literal,
+    )
+    if range_receipt is None:
+        return []
+    return [{
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": float(range_match.group(1).replace(",", "")),
+        "high": float(range_match.group(2).replace(",", "")),
+        "unit": "usd_millions",
+        "horizon": "2026Q3",  # synthetic exhibit says "third quarter of 2026"
+        "status": "introduced",
+        "currency": "USD",
+        "basis": "reported_gaap",
+        "fx_assumption": None,
+        "source_span": _release_span_payload(
+            document_id=release_document_id, bound=bound, receipt=range_receipt,
+        ),
+    }]
+
+
+def on_profile() -> IssuerProfile:
+    return IssuerProfile(
+        ticker="ON",
+        extract_release_facts=_on_extract_release_facts,
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=_on_extract_guidance,
+    )
+
+
 _HOMEBUILDER_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
     "DHI": dhi_profile,
     "PHM": phm_profile,
@@ -1277,8 +1691,15 @@ _HOMEBUILDER_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
 }
 
 
+_SEMICONDUCTOR_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
+    "TSM": tsm_profile,
+    "ON": on_profile,
+}
+
+
 def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
-    """The registered :class:`IssuerIdentity` for one of the four homebuilders.
+    """The registered :class:`IssuerIdentity` for one of the four homebuilders,
+    or one of the T05a semiconductor witnesses (TSM/ON).
 
     ``None`` for AAPL (use :func:`event_workspace.apple_issuer` directly) and
     for any unknown ticker.  Acquisition needs the CIK and
@@ -1286,7 +1707,11 @@ def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
     from a discovered filing's ``report_date``, which is why this is exposed
     separately from :func:`profile_for_ticker`.
     """
-    factory = _HOMEBUILDER_ISSUER_FACTORIES.get(str(ticker or "").strip().upper())
+    normalized = str(ticker or "").strip().upper()
+    factory = _HOMEBUILDER_ISSUER_FACTORIES.get(normalized)
+    if factory is not None:
+        return factory()
+    factory = _SEMICONDUCTOR_ISSUER_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1296,11 +1721,17 @@ def profile_for_ticker(ticker: str) -> IssuerProfile | None:
     ``"AAPL"`` resolves to :func:`apple_profile`; unknown tickers (including
     LEN and NVR, deliberately not added this wave) resolve to ``None`` so a
     caller can fail closed rather than silently defaulting to Apple's profile.
+    The four homebuilders and the two T05a semiconductor witnesses (TSM/ON)
+    share the same fail-closed contract: an unknown ticker never silently
+    routes through Apple's profile.
     """
     normalized = str(ticker or "").strip().upper()
     if normalized == "AAPL":
         return apple_profile()
     factory = _HOMEBUILDER_PROFILE_FACTORIES.get(normalized)
+    if factory is not None:
+        return factory()
+    factory = _SEMICONDUCTOR_PROFILE_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1309,6 +1740,9 @@ __all__ = [
     "PHM_CIK",
     "KBH_CIK",
     "TOL_CIK",
+    "TSM_CIK",
+    "ON_CIK",
+    "TSM_FIF_GAP",
     "HOMEBUILDER_TICKERS",
     "IssuerProfile",
     "apple_profile",
@@ -1316,10 +1750,14 @@ __all__ = [
     "phm_issuer",
     "kbh_issuer",
     "tol_issuer",
+    "tsm_issuer",
+    "on_issuer",
     "dhi_profile",
     "phm_profile",
     "kbh_profile",
     "tol_profile",
+    "tsm_profile",
+    "on_profile",
     "issuer_for_ticker",
     "profile_for_ticker",
 ]

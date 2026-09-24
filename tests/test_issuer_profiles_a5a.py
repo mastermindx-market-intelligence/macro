@@ -111,7 +111,7 @@ TOL_REPORT_DATE = "2026-08-18"
 
 def test_production_registry_resolves_all_five_and_apple_is_unchanged() -> None:
     registry = production_registry()
-    assert len(registry) == 5
+    assert len(registry) == 7
     for ticker, cik in (("DHI", "882184"), ("PHM", "822416"), ("KBH", "795266"), ("TOL", "794170")):
         resolved = registry.resolve_ticker(ticker, asof=date(2026, 8, 1))
         assert resolved is not None
