@@ -1,0 +1,179 @@
+# Consumer Cyclical V1 PLNT — principal boundary adjudication + frozen build spec
+
+**Operation:** `gmi-consumer-cyclical-v1-integration-20260924-fable-001`
+**Principal:** Fable integration owner (this carrier)
+**Carrier:** `claude/consumer-cyclical-v1-plnt`
+**Source packet:** R15 `FABLE_INTEGRATION_READY_R15.md` @ `3d286719686d285a64e31e3059f366885c5ab172` (PR #7804, DRAFT/HOLD)
+
+This file is the frozen boundary for V1. Workers implement against THIS file.
+It creates no authority; it records what was re-pinned and what was adjudicated.
+
+## 1. Re-pin receipt (R15 step 1 — executed 2026-09-24)
+
+Macro `main` at re-pin: `b076a4004599215ef21765c437aaade48f40388d` (R15 froze at `c99fdde7302d`).
+
+Owner heads re-pinned — **all six byte-identical to the R15 freeze pins, all OPEN/DRAFT, none merged**:
+
+| Owner | R15 pin | Re-pinned now | State |
+|---|---|---|---|
+| #7870 shared foundation | `3e3a7956d014...` | `3e3a7956d014` | OPEN draft |
+| #7780 build-out ruling | `b68069b2e129...` | `b68069b2e129` | OPEN draft |
+| #7669 template owner | `6942b2b62bad...` | `6942b2b62bad` | OPEN draft |
+| #7462 theme graph/store | `31706d7322af...` | `31706d7322af` | OPEN draft |
+| #7426 company history | `7bc04876747d...` | `7bc04876747d` | OPEN draft |
+| #7804 consumer evidence | `3d286719686d` | `3d286719686d` | OPEN draft |
+
+Affected blob re-pins against current `origin/main`:
+- `app/paywall.py` = `7e1c6861ebb7d27924865b2b8d157e6a9356405d` — **unchanged** from R15.
+- `tests/test_paywall.py` = `1d958154eed91ee08f9f7ab65b719e1910e2ccd1` — **unchanged** from R15.
+- `config/theme_sources.yml` = `e59ce0a9f98e34e45165545f21a84596c23a6de4` — **MOVED** from R15 pin `1073ca1e9841...`.
+- `app/theme_research.py` — **ABSENT FROM `main`**. The R15-pinned shared transport blob `f3c70ffd67cc...`
+  exists only on the #7870 branch.
+
+## 2. Principal adjudication — what V1 can lawfully reach today
+
+V1 PLNT decomposes into R15's nine implementation steps. Status against current custody:
+
+| # | V1 leg | Status | Evidence |
+|---|---|---|---|
+| 1 | Pickup / current-source gate | **DONE** | §1 above |
+| 2 | Resolve external gates | **BLOCKED** | all six owner heads unmoved; #7780 ruling still open |
+| 3 | One lawful V1 product carrier | **OPEN** | collision census §3 |
+| 4 | Native PLNT source/measurement qualification | **OPEN** | incumbent SEC owners on `main`, §4 |
+| 5 | Consumer deterministic composition | **OPEN** for computation; **BLOCKED** for mount/registration | R15 H2 |
+| 6 | Shared private/read transport integration | **BLOCKED** | `app/theme_research.py` absent from `main`; T09 rights veto BUILT_NOT_PROVEN |
+| 7 | Company-page consumer | **BLOCKED** | #7669 DRAFT, no custody |
+| 8 | Independent review + real proof | **PARTIAL** — provable for 4/5, not for 6/7 | — |
+| 9 | V1 `PROVEN_LIVE` | **BLOCKED** — depends on 6/7 | — |
+
+**Ruling.** The entitled, browser-visible closure of V1 is gated by external owners whose heads have not
+moved since the R15 freeze. R15 forbids the only constructions that would route around them — no Consumer-only
+private publisher or pointer, no forked discriminator grammar, no writes to #7426/#7462/#7669-owned paths, no
+second plane of any kind. Therefore legs 6–9 are frozen, **not** rebuilt.
+
+Legs 3–5 are gated by nothing. They are executed now as **V1-CORE**: the deterministic, source-bound Consumer
+economic-change composition that legs 6–7 will later publish unchanged. Building V1-CORE does not consume,
+weaken, pre-empt or duplicate any blocked owner seam.
+
+**The lawful precedent is already merged.** Finance shipped a vertical to `main` today through the incumbent
+`contracts/sector_intelligence/` family while #7870 stayed blocked:
+- T1 `#7896` `b4c6e4bdb347` — contract schema + valid fixture + contract test + CI gate job
+- T2 `#7920` `e4ac37302968` — `engine/sector_intelligence/finance_projection.py` + tests
+- T3 `#7900` `3ca9c3038061` — `engine/sector_intelligence/finance_overlap.py` + tests
+
+None of those touched `app/theme_research.py`, `app/paywall.py`, any template, or any blocked owner PR.
+Consumer Cyclical V1-CORE follows that idiom exactly. This **extends an incumbent owner**; it mints no
+shell, evidence, rights or transport vocabulary.
+
+**Explicitly preserved gate.** V1-CORE carries NO transport mount identity: no `profile`/
+`content_discriminator` registration, no route, no publisher, no pointer. The R15 H2 identity
+(`profile=consumer_cyclical`, `content_discriminator=consumer_economic_change.v1`,
+`registration_status=PENDING_SHARED_OWNER_ACCEPTANCE`) stays exactly where R15 left it — awaiting the #7780
+ruling. V1-CORE is a data shape plus a pure projection, not a mount.
+
+## 3. Collision census (R15 step 3)
+
+- **CDV-1 Consumer *Defensive* (#7792, `WS-CONSUMER-DEFENSIVE-CDV1`)** owns `engine/company_intelligence/*`,
+  `engine/earnings_narrative/*`, `templates/earnings_wire/*`. V1-CORE writes **none** of those.
+- **Finance** owns `engine/sector_intelligence/finance_*`. V1-CORE uses `consumer_cyclical_*`. No overlap.
+- No open PR claims `engine/sector_intelligence/consumer*` or
+  `contracts/sector_intelligence/consumer_cyclical_*`. Verified against all open PRs 2026-09-24.
+
+## 4. Native PLNT source (R15 step 4)
+
+PLNT is already retained by incumbent source owners on `main` — V1-CORE consumes, never re-collects:
+- `data/edgar/ticker_cik_ledger.json` → `tickers.PLNT = 1637207` (CIK `0001637207`).
+- `engine/fundamental_forensics/sec_companyfacts.py` — pure SEC Company Facts/Submissions ingestion already
+  emitting exact-decimal `FactOccurrence` bound to `SourceFiling` (`decimal_text`, `canonical_json`,
+  `stable_id`). This is the M1–M5 exact-decimal + lineage seam; do not re-implement it.
+
+R6 §4 source coordinates for the V1 case (S1):
+
+```text
+issuer_cik   = 0001637207
+accession    = 0001637207-26-000042
+exhibit      = plntq22026pressreleaseex991.htm
+event        = PLNT Q2 2026, quarter ended 2026-06-30
+sec_acceptance_raw = "2026-08-06 06:30:44"   # UNLABELED — never attach Z,
+                                             # never treat as first public availability
+```
+
+## 5. FROZEN GOLDEN ORACLE — R6 §7.1 (acceptance, not a formula service)
+
+All values USD **thousands** (`unit="USD"`, `scale_power10=3`), exact decimal text, signed.
+Comparison basis: `explicit_same_quarter_prior_year`.
+
+| key | metric | new | old | change |
+|---|---|---|---|---|
+| `total_revenue` | total revenue | `365223` | `340879` | `24344` |
+| `advertising_revenue` | advertising revenue | `32922` | `22781` | `10141` |
+| `advertising_expense` | advertising expense | `32922` | `22777` | `10145` |
+
+Derived, exact:
+- `advertising_net_change` = `10141 - 10145` = **`-4`**
+- `advertising_current_period_net` = `32922 - 32922` = **`0`**
+- `advertising_share_of_revenue_change` = `10141 / 24344` = `0.4165707...` → **`41.66%`** at 2dp
+
+**Precision law (R6 §7.1 refinement of R5):** the two advertising changes are NOT equal at displayed table
+precision. Never round both to `$10.1 million`. The `-4` residual must survive. Float arithmetic is banned —
+use `decimal.Decimal` throughout. Do not retro-edit R5 evidence.
+
+Explanation envelope (generated from selected results only):
+- **Lead:** a substantial part of the revenue increase is associated with advertising flows with nearly
+  matching expense, so it does not translate one-for-one into incremental profit.
+- **Counterevidence/context:** franchise, corporate-club and equipment economics require their own analysis.
+- **Next observation:** comparable dues and retained operating contribution, plus franchisee economics where
+  actually disclosed.
+- **Does not prove:** organic growth, a complete profit bridge, or a conclusion about franchise health.
+- **Forbidden conclusions (must be refused, not merely unsaid):** calling dues "observed visits"; subtracting
+  advertising alone and labelling the remainder organic growth.
+
+## 6. FROZEN result semantics (R15 H3 / M1–M5)
+
+1. Exact decimal reported values; preserve unit, scale and sign. `value_text` is canonical decimal **text**.
+2. Every ready derived result binds exact input refs plus period/event/clock/precision metadata.
+3. **Dependency-local** omission/degradation. Zero ready results ⇒ `unavailable`, **never** empty-ready.
+4. Period grain explicit (`quarter`/`half_year`/`year`). Real issuer fiscal calendars stay with their owner.
+5. Outlooks require timezone-aware publication clocks and strict prior-before-new order.
+6. Ratio **withheld** when the denominator is nonpositive **or** when the declared rounding envelope
+   includes zero. Percentages >100 are NOT automatically invalid.
+7. Numerical explanation is generated from selected result envelopes, carries counterevidence and next
+   observation, and never promotes a forbidden conclusion.
+8. Malformed **case shape** may refuse the whole case. Malformed/missing **values** suppress only the
+   affected dependency closures.
+9. A missing or invalid result is never bearish and never zero.
+10. No ranking, entry, gating, sizing or origination authority. Identical inputs must produce an identical
+    selection/ranking/entry/sizing outcome — the panel is explanatory only.
+
+## 7. Fact envelope (frozen, from R12 `profile_contract` worked-case shape)
+
+Required per fact: `basis, definition, display_quantum, event, evidence{document,locator,revision}, key,
+kind, metric, native_admitted, native_ref, perimeter, period_end, period_kind, period_start, published_at,
+role, scale_power10, sign_convention, target, unit, value_text`.
+
+`native_admitted`/`native_ref` carry native admission. Research values are **expected oracles, never
+substitute receipts** — a fact whose `native_admitted` is false may not be presented as a retained receipt.
+
+## 8. Build packets
+
+### T1 — contract (owned paths, exclusive)
+- `contracts/sector_intelligence/consumer_cyclical_economic_change.v1.schema.json`
+- `data/sector_intelligence/fixtures/consumer_cyclical_economic_change.v1.valid.json`
+- `tests/test_consumer_cyclical_economic_change_contract.py`
+- `.github/ci/legacy-jobs.yml` — new `consumer-cyclical-economic-change` job, mirroring `finance-intelligence`
+
+### T2 — projection (owned paths, exclusive)
+- `engine/sector_intelligence/consumer_cyclical_projection.py`
+- `tests/test_consumer_cyclical_projection.py`
+
+### Forbidden for both packets
+No writes to: `app/theme_research.py`, `app/paywall.py`, `app/earnings.py`, `templates/**`, `site/**`,
+`config/theme_sources.yml`, `engine/company_intelligence/**`, `engine/earnings_narrative/**`,
+`engine/sector_intelligence/finance_*`, or anything on PR #7804. No new route, publisher, pointer, queue,
+identity, rights, retry or evaluation plane. No profile/discriminator registration. No float arithmetic.
+No network calls.
+
+## 9. Return / stop condition
+
+V1-CORE merged + green is **not** `V1 PROVEN_LIVE`. It is the maximal lawful V1 subset under current
+custody. Legs 6–9 return to Sol as the exact external blocker with the receipts in §1.
