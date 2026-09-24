@@ -1,0 +1,167 @@
+{
+  "scope": "research/source verification only; no implementation, calendar override, collection or deployment",
+  "code_head": "f76dc27ef1b681d7e2940a91bebfae70b0314c9b",
+  "primary_source": {
+    "url": "https://www.stats.gov.cn/english/PressRelease/ReleaseCalendar/202512/t20251226_1962154.html",
+    "published": "2025-12-26",
+    "observed": "2026-09-24",
+    "scope": "preliminary annual NBS publication schedule; not actual release outcome or data-availability time"
+  },
+  "corroborating_government_republication": "https://www.jh.gov.cn/jhtjj/0200/202601/43cd5223eef946809030e3f4a71a0a87.shtml",
+  "published_event_count": 51,
+  "legacy_event_count": 50,
+  "published_missing_or_misdated": [
+    {
+      "type": "ACTIVITY",
+      "date": "2026-01-19"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-02-11"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-02-11"
+    },
+    {
+      "type": "PMI",
+      "date": "2026-03-04"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-08-09"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-08-09"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-09-09"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-09-09"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-10-14"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-10-14"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-11-09"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-11-09"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-12-09"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-12-09"
+    }
+  ],
+  "legacy_dates_not_in_published_schedule": [
+    {
+      "type": "CPI",
+      "date": "2026-02-10"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-02-10"
+    },
+    {
+      "type": "PMI",
+      "date": "2026-02-28"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-08-10"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-08-10"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-09-10"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-09-10"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-10-16"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-10-16"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-11-10"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-11-10"
+    },
+    {
+      "type": "CPI",
+      "date": "2026-12-10"
+    },
+    {
+      "type": "PPI",
+      "date": "2026-12-10"
+    }
+  ],
+  "wrong_year_static_event_count": 38,
+  "pending_tests": {
+    "weight_refresh": {
+      "cases": 16,
+      "failed": 16,
+      "implementation": "not written; platform-refused"
+    },
+    "nbs_source": {
+      "new_cases": 29,
+      "failed": 17,
+      "passed_controls": 12,
+      "implementation": "not applied; platform-refused"
+    }
+  },
+  "preserved_sha256": {
+    "engine/china_event_calendar.py": "2e1b65e99cf5774a46fab447753d8aef867ae1cfa2125ec6c6f54b3a0d6a2aa8",
+    "collectors/china_universe.py": "78b28a12c6ba7740e2cb2375b1c103bab9fc81645f7317d3c28f83c1716fc5d4",
+    "tests/test_china_event_calendar.py": "f05b1781e776cfe601e5bdcc1812f5ca21a8d2fbfdb0ec76ac6d189adfbc33dd",
+    "tests/test_china_universe_index_constituents.py": "638368e75e012033e5bb096e30a3160c6f97e3acc2e05d61cd2ba61832360205",
+    "site/china.html": "e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618"
+  },
+  "non_nbs_schedule_verified": false,
+  "forecast_validated": false,
+  "production": false,
+  "combined_pending_verification": {
+    "passed": 12,
+    "failed": 33,
+    "total": 45,
+    "exit_code": 1,
+    "scope": "expected RED acceptance gaps, not product qualification"
+  },
+  "pending_source_sha256": {
+    "research/grey_deer/china_weight_refresh_pending_tests.py": "9f68e1b5d924a9aa485b3f90a9642b4f1ef779961998e4a86fc56f549719bb81",
+    "research/grey_deer/china_calendar_source_pending_tests.py": "1aad0b8f70a4a24a6769a5c1e426c600b0c683f57efaeef5eeb8d3b54e598ab4"
+  },
+  "effect_state": {
+    "weight_method_file": "absent after explicit refusal",
+    "calendar_code": "unchanged after explicit refusal",
+    "production_writes": false,
+    "unknown_effect": false,
+    "retry_or_alternate_carrier": false
+  }
+}

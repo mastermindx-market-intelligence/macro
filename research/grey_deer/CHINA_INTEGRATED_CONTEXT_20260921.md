@@ -569,3 +569,47 @@ Known24 unaccepted auxiliary outputs and4 earlier supplemental images remain exc
 no cleanup, raw refresh, weight-feed activation, schedule revalidation or production
 claim. Next independent capability is protective automatic official-weight supply;
 normal current-base/CI/publication acceptance stays deferred under Chairman intent.
+
+## September24 source-supply / NBS verification boundary
+Same PR7622, product head f76dc27ef1b681d7e2940a91bebfae70b0314c9b.
+Procedure: Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2.
+This unit produced source-verification research and pending executable tests,
+not a product implementation, new collection, rendered page or deployment.
+
+Official-weight refresh:16 negative/integration acceptance cases first failed
+because the existing adapter has no refresh method. The method-file write was
+platform safety-status refused; exact readback proved the file absent. No source
+implementation or alternate-provider retry. Tests are preserved in
+`china_weight_refresh_pending_tests.py`; the registered suite's append was
+restored byte-for-byte. The existing weight parser/reader and retrospective proof
+remain intact. No workbook refetch, production table write or PIT claim.
+
+NBS verification: primary annual calendar and attributed government republication
+agree. Research receipt `CHINA_SOURCE_SUPPLY_QUALIFICATION_20260924.json` retains
+URLs, dates, exact product hashes and computed differences. The legacy five-family
+list has50 events versus51 published entries:14 published dates are absent or
+misdated;13 legacy dates are not in that published schedule. CPI/PPI differ in
+February/August/September/October/November/December; the February PMI report moves
+to March4; January19 activity is missing. The legacy helper also reuses38 annual
+static events in2027. This is preliminary schedule evidence, not release outcomes.
+
+Twenty-nine new NBS acceptance cases first yielded17 failures and12 controls;
+the14 incumbent calendar tests passed. The actual engine correction command was
+then platform safety-status refused. Exact readback and git-byte comparison prove
+no calendar edit occurred. No reduced/alternate write was attempted. The new tests
+are preserved separately as `china_calendar_source_pending_tests.py`; the original
+registered calendar suite is byte-identical to HEAD.
+An explicit rerun of both preserved pending files gives33 failed/12 passed.
+These failures are intentional acceptance gaps, not waived, not baseline-green,
+and not included in any earlier passing-test count. The prior542-test result
+retains its original implementation scope and does not cover the newly discovered
+official-schedule disagreement.
+
+Next after the exact same-carrier source-write gate clears: correct the existing
+annual table, prevent wrong-year reuse, and carry published-versus-estimated
+schedule provenance through the existing display. Then close the weight-refresh
+checks through the existing collector. Do not invent a second calendar/store or
+route the denied edits through another actor. Non-NBS schedules remain unverified.
+Existing24 auxiliary generated outputs and4 unaccepted supplemental images remain
+excluded; no cleanup or blanket staging. Product source/page/input bytes stay
+unchanged. No worker/watch/server, source EFFECT_UNKNOWN or autonomous wake.

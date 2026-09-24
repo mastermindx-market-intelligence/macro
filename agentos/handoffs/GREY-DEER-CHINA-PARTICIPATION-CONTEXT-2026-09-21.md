@@ -106,17 +106,23 @@ verified:
   result: 542 passed,0 failed,0 warnings;16 added contracts.8 browser event journeys
     and8 rest captures.0 analytical calls,6592 saved values and8 persisted hashes
     unchanged. Source5e2e11de07c1.
+- claim: Source-supply and official-calendar gaps reproduced; implementation remains absent.
+  command: Explicit pytest of research/grey_deer/china_weight_refresh_pending_tests.py and
+    research/grey_deer/china_calendar_source_pending_tests.py; frozen engine output versus NBS2026 calendar.
+  result: 33 failed and12 passed across45 pending cases; not a passing product qualification.
+    Product source/page bytes unchanged.14 official dates absent or misdated;38 wrongly reused static2027 entries.
 unverified:
 - claim: Production release and current live data.
   what_would_verify: Current-base integration, required CI, accepted publication and
     real production input/browser proof when release resumes.
 - claim: Automatic official-weight source supply.
-  what_would_verify: Qualify the existing collector refresh and protective negative
-    tests; do not create another weight store or infer PIT history.
+  what_would_verify: Resolve the exact refused method-file write on the original carrier,
+    implement the existing-collector refresh and pass its16 preserved pending cases.
+    No other store, refetch of accepted retrospective evidence or PIT claim.
 - claim: Official event schedule, publication-time and result confirmation.
-  what_would_verify: Verify existing cadence tables and holiday exceptions against
-    dated official releases through the existing event/source owner. Reference-clock
-    correction alone does not validate schedules.
+  what_would_verify: NBS2026 source discrepancy is verified in the research receipt.
+    Correct the existing engine once its source-write gate clears; pass29 pending source cases.
+    Non-NBS schedules, actual release outcomes and data-publication times remain unverified.
 - claim: Risk probability/calibration and official historical index attribution.
   what_would_verify: Accepted calibrated validation and point-in-time constituent/weight
     evidence. Current context is not scored forecast authority.
@@ -126,12 +132,10 @@ unresolved:
 - One source-structure/metadata diagnostic was platform-refused; no result inferred
   or retry performed.
 next_actions:
-- Qualify the incumbent official-weight refresh path and protective tests, preserving
-  accepted retrospective evidence.
-- Verify remaining event-cadence and raw publication-time gaps without adding a second
-  calendar owner.
-- Resume current-main/CI/publication/live acceptance only through existing release
-  gates; preserve other PR carriers.
+- Resolve the original NBS source-write gate; correct the existing annual table and
+  published-versus-estimated provenance against29 pending source cases.
+- Resolve the separate existing-collector weight-refresh gate and pass16 pending cases.
+- Keep CI/release deferred; preserve prior product proof and other PR carriers.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
 - Do not lower94 by judgment or infer whole-market collapse, index contributions,
@@ -156,47 +160,54 @@ prs:
 ---
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001; same PR7622/locked Studio carrier.
+Operation:china-participation-context-20260921-sol-001; original PR7622/locked Studio carrier.
 Procedure:Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2;1.0.1/bootstrap1.
-Chairman continues accuracy delivery; reviewer exception retained; CI/release deferred.
-Semantic source:5e2e11de07c1ebf9ca57ef61a6336ede6193602f. No other PR/controller changed.
+Chairman continues accuracy delivery; review exception retained; CI/release deferred.
+Product head remains f76dc27ef1b681d7e2940a91bebfae70b0314c9b; this checkpoint carries research/tests only.
+Direct rationale: PRINCIPAL_JUDGMENT/LOWER_TOTAL_OVERHEAD for existing source boundaries.
 
-Event-date gap is implemented and locally qualified. The builder uses one aware
-instant and the existing Beijing timezone, explicitly passing the same date to
-all3 incumbent calendar functions. The old saved-regime default remains unchanged
-for other callers. Card/dialog/narration use absolute dates and a visible reference;
-offsets are relative to that date, not a live countdown. Invalid clocks or failed
-calendar production remain unavailable, not quiet. No schedule/result validation.
+Last product proof is unchanged: Beijing event reference separated from saved Sep21
+assessment;542 historical-scope tests and8 event journeys;6592 saved values and8
+persisted hashes preserved. Page e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618.
+No new page build or current-source collection in this unit. Risk94 remains unvalidated.
 
-542 tests passed without warnings across7 suites;16 new event contracts. Actual
-builder preserves6592 saved values and8 persisted hashes;0 analytical calls.
-Saved assessment2026-09-21 coexists explicitly with event reference2026-09-24 Beijing.
-Page SHA256e4633f03b027ed8c9219d44cb0b76dfbb6c81013e6a761c505f48051932b4618;
-20 asset stamps match; no new assets.8 static captures and8 event-dialog journeys
-passed across desktop/mobile x EN/ZH x dark/light. Numerical risk94 unchanged.
-Evidence:mockups/evidence/china-event-date-20260923/qualification.json and its
-interactions/manifest. Existing observer touch-ordering safeguards remain intact.
+New verified research: official NBS2026 schedule, corroborated by government republication,
+contains51 entries in the five implemented NBS families. Compared with existing output,
+14 official dates are missing/misdated;13 legacy dates are unsupported. CPI/PPI dates
+are wrong in6 months, February PMI moves to March4, January19 activity is missing.
+The existing helper also blindly applies38 static entries in2027. This is preliminary
+schedule evidence, not confirmation of any released result or vendor update time.
+Research receipt:research/grey_deer/CHINA_SOURCE_SUPPLY_QUALIFICATION_20260924.json.
 
-DO_NOT_REDO:accepted integrity/cohort/optional weights, independent participation
-clock, saved/display6592-value qualification, four-input ablation and prior gesture
-proofs unless relevant source changes. The former event-test gate accepted this
-same-carrier current implementation; a separate AST/AgentOS-metadata diagnostic was
-refused and not retried. Its comparison result is not claimed.24 auxiliary generated
-outputs and4 prior supplemental images remain dirty/excluded; no cleanup retry.
+Pending acceptance files (not included in passing-test totals):
+research/grey_deer/china_weight_refresh_pending_tests.py —16 cases, all RED/missing method.
+research/grey_deer/china_calendar_source_pending_tests.py —29 cases,17 RED/12 controls pass.
+Explicit combined preservation run:33 failed/12 passed. Registered suites restored exactly
+by undoing only this turn's appends. Calendar/collector/registered tests/page are byte-identical
+at pickup. Do not call the existing542-test result official-calendar validation.
 
-Automatic official-weight supply remains unconnected; use the existing collector
-and its protective refresh tests, not another store. Cadence-source accuracy,
-holiday schedule exceptions, publication timestamps, calibration and production
-acceptance remain unqualified. The event repair does not validate those things.
-No active worker/watcher/browser server, unknown source effect or custody transfer.
+Exact held effects: weight-refresh method-file write was safety-status refused;
+readback proved weight-refresh-method.py absent. Calendar source/test compound was
+also refused; readback and git comparison prove engine bytes unchanged. Neither
+operation was retried or sent to another actor/tool. A separate compound procedure/
+guidance read was refused; native canonical reads and independent research succeeded.
+No source EFFECT_UNKNOWN, new worker/watcher, browser server or deployment exists.
+
+DO_NOT_REDO:accepted participation/cohort/optional-weight arithmetic, clock/display
+proofs and four-input ablation. Do not refetch the official weight workbook to repeat
+its accepted retrospective result.24 auxiliary generated outputs and4 prior screenshots
+remain dirty/excluded; no cleanup retry, blanket stage, clean-tree claim or foreign PR edit.
+The current research table is not another product calendar or an installed override.
 
 FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE:false
-Boundary:the event-date source/UI unit has code, real stored-input build and browser
-acceptance after the substantive diagnostic/build phase. The next separate unit is
-source refresh. Current code/evidence and all unaccepted generated effects remain
-recoverable on this same PR. No automated wake or parent completion is implied.
-Next:qualify the incumbent official-weight refresh path and negative tests, then
-source-schedule verification and normal current-main/CI/publication/live proof when
-release resumes. Resume from this checkpoint and minimal fresh canonical source,
-not replay of this chat. Preserve existing single-carrier effect and source custody.
+Boundary:verified source discrepancies and executable acceptance gaps are now exact;
+the two implementation lanes hit distinct explicit platform refusals after substantial
+source/diagnostic work. This checkpoint preserves that research boundary, not a repair.
+Next:once the original source-write gate is resolved, correct the existing NBS annual
+calendar/provenance and pass its29 source cases; then complete the16 existing-collector
+weight-refresh cases after its separate gate clears. No alternative-carrier bypass.
+Non-NBS schedules/publication timing, model calibration and production acceptance remain
+open. Current-main/CI/publication continue only when release resumes. Resume from this
+same-PR checkpoint and minimal fresh canonical source, not the tool transcript.
+No automatic wake, custody transfer or mission completion is implied.
