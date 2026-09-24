@@ -1,0 +1,10 @@
+{
+  "case_key": "jv_physical_vs_economics",
+  "expected_regression": "One factory physically; parent/NCI and captive/external economics remain separate",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "case_key": "page2_new_generation",
+  "expected_regression": "Expected-generation mismatch returns private 409/reset",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T08",
+    "T09"
+  ]
+}

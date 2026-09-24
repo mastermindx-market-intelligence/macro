@@ -1,0 +1,9 @@
+{
+  "case_key": "abf_substrate",
+  "expected_regression": "Material and fabricated substrate roles differ; no guessed named procurement",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ]
+}

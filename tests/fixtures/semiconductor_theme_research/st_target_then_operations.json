@@ -1,0 +1,10 @@
+{
+  "case_key": "st_target_then_operations",
+  "expected_regression": "Later operation source advances the milestone while retaining older plan vintage",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08"
+  ]
+}

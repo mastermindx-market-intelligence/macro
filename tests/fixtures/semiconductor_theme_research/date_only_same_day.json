@@ -1,0 +1,10 @@
+{
+  "case_key": "date_only_same_day",
+  "expected_regression": "Intraday eligibility unknown, never synthesized midnight",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T04",
+    "T08"
+  ]
+}

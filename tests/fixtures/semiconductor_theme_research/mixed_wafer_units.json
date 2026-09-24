@@ -1,0 +1,9 @@
+{
+  "case_key": "mixed_wafer_units",
+  "expected_regression": "Area conversion remains separate from output/shipments/yield; no new formula engine",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T07"
+  ]
+}

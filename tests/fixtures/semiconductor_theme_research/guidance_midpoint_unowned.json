@@ -1,0 +1,9 @@
+{
+  "case_key": "guidance_midpoint_unowned",
+  "expected_regression": "No displayed derived midpoint without exact-input financial-owner receipt",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T06"
+  ]
+}

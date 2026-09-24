@@ -1,0 +1,112 @@
+{
+  "anchor_theme_id": "ai_semiconductors",
+  "bundle": {
+    "assertions": [],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "identity_results": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "assertions_pending_T02",
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ],
+    "revision_tuple": [],
+    "rights_revision": "synthetic-rights-0"
+  },
+  "case_key": "witness_hbm_packaging",
+  "comparability": {
+    "actual_vs_new_outlook": "different_period_not_comparable",
+    "prior_vs_actual": "same_period_same_basis"
+  },
+  "expected_regression": "Positive source role, bound company, prior/actual/new outlook; optional consensus unavailable",
+  "issuer": {
+    "cik": null,
+    "company_node_id": null,
+    "identity_note": "real issuer identity is resolved only through the Data OS/Earnings owners at admission (T05); fixtures never carry real company identities",
+    "synthetic_label": "Synthetic Foundry Alpha"
+  },
+  "management_roles": [
+    "prior_outlook",
+    "actual",
+    "new_outlook"
+  ],
+  "management_sequence": {
+    "actual": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q2",
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q2 results release",
+      "statement_mode": "REPORTED_FACT",
+      "value": 16.5
+    },
+    "new_outlook": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q3",
+      "high": 19.0,
+      "low": 17.0,
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q2 results release",
+      "statement_mode": "FORWARD_TARGET"
+    },
+    "prior_outlook": {
+      "basis": "reported_gaap",
+      "fiscal_period": "2026Q2",
+      "high": 17.0,
+      "low": 15.0,
+      "metric": "revenue_usd_bn",
+      "stated_in": "2026Q1 results release",
+      "statement_mode": "FORWARD_TARGET"
+    }
+  },
+  "optional_external_consensus": "unavailable",
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "expected_generation": null,
+    "limit": 50,
+    "offset": 0,
+    "recorded_cutoff": null,
+    "slice_key": "hbm_packaging",
+    "source_cutoff": null,
+    "time_mode": "latest",
+    "view": "economics"
+  },
+  "required_company_link": true,
+  "slice_key": "hbm_packaging",
+  "source_roles": [
+    {
+      "relation_kind": "contains",
+      "role": "manufacturing",
+      "stage": "reported_operation",
+      "synthetic_label": "Synthetic Foundry Alpha"
+    },
+    {
+      "relation_kind": "documented_supply",
+      "role": "packaging",
+      "stage": "reported_shipment",
+      "synthetic_label": "Synthetic Packaging Partner Gamma"
+    },
+    {
+      "relation_kind": "documented_supply",
+      "role": "material",
+      "stage": "qualified",
+      "synthetic_label": "Synthetic Substrate Vendor Delta"
+    },
+    {
+      "relation_kind": "announced_agreement",
+      "role": "customer",
+      "stage": "announced",
+      "synthetic_label": "Synthetic Compute Customer Epsilon"
+    }
+  ],
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T01",
+    "T05",
+    "T08",
+    "T11"
+  ],
+  "witness": "W-A"
+}

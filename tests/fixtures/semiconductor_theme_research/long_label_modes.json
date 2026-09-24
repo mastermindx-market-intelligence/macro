@@ -1,0 +1,9 @@
+{
+  "case_key": "long_label_modes",
+  "expected_regression": "Four widths, EN/ZH, dark/light, focus return and no page-wide overflow",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T10"
+  ]
+}
