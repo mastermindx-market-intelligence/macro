@@ -67,7 +67,10 @@ def _generation(value):
     try:
         return date.fromisoformat(text).isoformat()
     except ValueError:
-        return None
+        try:
+            return datetime.fromisoformat(text).date().isoformat()
+        except ValueError:
+            return None
 
 
 def _finished_at(value):
@@ -136,6 +139,9 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows, cap
     elif generation:
         english_parts.append(f"source generation {generation}")
         chinese_parts.append(f"来源生成日期{generation}")
+    elif capture_qualified is True:
+        english_parts.append("source generation unknown")
+        chinese_parts.append("来源生成日期未知")
     if capture_age_s is not None:
         english_age, chinese_age = _duration_text(capture_age_s)
         english_parts.insert(1, f"captured {english_age}")
