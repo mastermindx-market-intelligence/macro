@@ -475,7 +475,7 @@ def test_all_81_integration_rows_pin_disposition_and_capability():
         assert r["capability_state_c2"] == cap, (row_id, r["capability_state_c2"], cap)
 
 
-def test_other_50_rows_are_byte_identical_to_integration_baseline():
+def test_other_49_rows_are_byte_identical_to_integration_baseline():
     assert _outside_digest() == OUTSIDE_UNION_SHA256
 
 
