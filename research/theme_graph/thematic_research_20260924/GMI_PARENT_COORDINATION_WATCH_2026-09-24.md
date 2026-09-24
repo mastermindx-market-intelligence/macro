@@ -4,7 +4,7 @@ Parent operation: `gmi-thematic-research-meta-ceo-20260924-001`.
 Parent carrier: Macro #7886, branch `sol/gmi-theme-research-leadership-20260924`.
 Existing continuity owner: `agentos/handoffs/GMI-THEMATIC-RESEARCH-META-CEO-2026-09-24.md`.
 Date: 2026-09-24. MISSION_COMPLETE: false.
-Current baseline identity: `gmi-parent-baseline-20260924-v2`.
+Current baseline identity: `gmi-parent-baseline-20260924-v3`.
 
 The original detailed lane recovery remains immutable at32f4612c6a614ee0cc9292ede601e07d75083f1b, blob3a0a272ac9be8ae4d5f8ab098c9995fb94d1ce01. Do not replay that recovery each hour. This same record updates the bounded member set and handled state, not runtime lifecycle or source custody.
 
@@ -37,12 +37,25 @@ A/B/C research (#7890/#7892/#7893) remains accepted immutable reuse, not active 
 - Other lane baselines/uncertainties from the original map are preserved, not newly reverified. Old research metadata may lag actual pickup/product receipts; no duplicate dispatch from a stale body.
 - All current outgoing rulings and the prior option-A/source-rights rulings are known edges, not fresh results on the next wake. A later receipt must establish actual consumption/implementation independently.
 
+## Handled transition v3
+
+Current procedure for this material wake was re-pinned to protected Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, compatible Skillpack1.0.1/bootstrap1. The parent role stayed PARENT_ORCHESTRATOR; no dedicated child return was consumed or answered.
+
+- #7780/comment5815006923 at2026-09-24T13:25:44Z returns the item-5 proposed `theme_graph.curation_assertion.v1.1` review input. Exact implementation carrier #7870 moved to head `382c0b399d5c8ca30899de9b1bbe790922163491`; proposal blob `ca7223db241b82e13a15ce981716e0c3498f31b2`. Three independent READ_ONLY rounds ended ACCEPT_WITH_NITS after two rejects and folded repairs. This is `V1_1: PROPOSED_NOT_BUILT`, not schema enrollment or live admission.
+- The child return leaves three explicit reserved decisions for the current action-authoritative Sol: whether the typed null interval endpoint deviation is accepted; whether the K1 owner-store `native_schemas` change is part of the same reviewed schema lane; and whether company/theme registrations share one closed registry with two key roles or require a second map. This parent watcher records the action-required attention fact only.
+- #7870/comment5815007232 publishes the proposed company-first signature to Technology: `entry_kind: company_profile`, profile `technology_economic_change.v1`, no anchor, empty slice set, existing identity grammars, existing H1 compose/evidence call shapes. It remains dependent on H1, H2 empty-slice emission, Sol adjudication and Technology-owned adapter/evidence selector. No theme/basket/crosswalk row is created.
+- #7793/comment5815052093 at2026-09-24T13:28:32Z consumes publication ruling5814536951 and corrects the old16KiB premise. Technology retains its full bounded dossier, T6 remains held on the incumbent shared/store primitive/representation/budget mapping and native replay/supersession proof, and path-disjoint content/adapter work may continue. No new question, publisher or private pointer is created.
+- Capacity remains the immediate shared-execution blocker. #7780/5815006923 reports that all three B chains failed pre-admission at13:07Z with `SUPPORT_STALE_ACTIVE_REFUSED` rc=75 after another session changed `mm_codex_exec.sh` at12:33Z; `pool remote` will not refresh a host with active lanes and mb is rapidly refilled by a local queue launcher. No B lane launched since11:04Z. This is receiver-attributed evidence, not a fleet census. The existing Capacity Fabric carrier #7882 has no new comment after the escalation5814545904, so no host/eligibility recovery is yet proved.
+- Parent-only coordination comment #7886/5815134310 records this transition and exact next attention boundary without ruling on the child. No child CONTINUE/RULING/repair/STOP was written by the parent watcher.
+
+Parent implication: shared schema/profile design advanced to independently reviewed proposal status and Technology consumed the publication boundary, but H1/H2, rights qualification, private adapter and real served source-to-user proof remain unbuilt/unproven. Cross-domain critical path remains H1 -> compatible reader/profile binding -> served witness proof. Capacity/refresh state is the present execution bottleneck.
+
 ## Native task state and continuation
 
-Native task `6ab51a6aea9c8191820406439f835d57`, title GMI Meta-CEO Watch, remains the one hourly condition_watch. Independent native list read showed enabled=true and last_run_time2026-09-24T12:43:58.458834Z. Scheduled invocation is observed; successful carrier access, parent action and notification delivery are not proved by that field. Push/email flags were false. Do not change unrelated task or dedicated child resources.
+Native task `6ab51a6aea9c8191820406439f835d57`, title GMI Meta-CEO Watch, remains the one hourly condition_watch. Independent native list previously showed enabled=true and last_run_time2026-09-24T12:43:58.458834Z. Scheduled invocation is observed; that old field alone did not prove successful carrier access or action.
 
-The source-extracted canonical renderer at protected Mastermind f1c070d733c4683b20bbbd9af8fae6c30dc38d84, contract blobaa75b6af4fe9ed1a87eeb4dda00bb67fc7f33eeb, reproduces the original2809-byte prompt hash13eea300c74b21159d96e0b1b5284e9c974d91af37e1c09a8b16f72bc60938f7. Rendering v2 changes only the handled marker; intended prompt hash9e33846d2aff0ffac5c4e08a3fe54c9a1bb9fd5934eca952fb58ce38aa531bf9. Native update success/readback belongs in the cumulative handoff; this source write alone does not prove that update occurred.
+For this material wake, the current protected renderer law was loaded at Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`. The same native task was updated successfully at2026-09-24T13:33:53.176001Z by replacing the complete canonical prompt and changing only `LATEST_HANDLED_EDGE` to `gmi-parent-baseline-20260924-v3`; returned saved prompt preserves `PARENT_ORCHESTRATOR`, the same operation, aggregate carrier, schedule and role-derived body. This is native update returned-object readback, not a full account audit or proof of the next scheduled carrier access.
 
 On a material parent event, fresh-pin current protected procedure, resolve current exact authority/effect/custody, and act only within the parent role. Advance the handled baseline and keep the same watcher. Inaccessible carrier or write returns an exact typed boundary; do not switch accounts, race a child or claim automatic wake. Terminal parent STOP must be verified before removing only this watcher.
 
-Next useful events: accepted source/representation qualification, exact shared reader/control/data mapping and tests, real source-to-user proof, or a concrete Capacity-owner result. Pending and unchanged are not progress. The broad theme/learning mission remains incomplete.
+Next useful events: action-authoritative adjudication of the v1.1 reserved decisions; accepted source/representation qualification; exact shared reader/control/data mapping and native replay/supersession tests; a concrete Capacity-owner result or recovered foundation execution; and real source-to-user proof. Pending and unchanged are not progress. The broad theme/learning mission remains incomplete.
