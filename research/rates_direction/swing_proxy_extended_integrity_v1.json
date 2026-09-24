@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scope": "same-author saved-row arithmetic, not independent review",
+  "origins": 1870,
+  "model_forecasts": 16830,
+  "new_trial_suffix": 9,
+  "family_total": 18,
+  "new_fits": 0,
+  "frozen_bytes_unchanged": true,
+  "prediction_sha256": "f97e2771ece94241c5d1f6f4e46a1519414034cc29ffbe077c0a0a592f32790c",
+  "summary_sha256": "9d3339455075f28e1954a38f284a74c07df2dcdb23c14d989bce442d5b80ba1b"
+}
