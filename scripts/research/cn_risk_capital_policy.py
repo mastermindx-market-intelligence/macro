@@ -1692,6 +1692,22 @@ def _fmt_ci(interval: list[float | None] | None, *, percent: bool = True) -> str
     return "[" + ", ".join(_fmt_num(value) for value in interval) + "]"
 
 
+def _forward_evidence_sentence(forward: dict[str, Any]) -> str:
+    completed = int(forward["independent_loud_episode_n"])
+    open_count = int(forward.get("open_loud_episode_n", 0))
+    completed_noun = "episode" if completed == 1 else "episodes"
+    open_noun = "episode" if open_count == 1 else "episodes"
+    open_verb = "remains" if open_count == 1 else "remain"
+    return (
+        f"The issued ledger has {forward['rows']} rows, {forward['matured_rows']} matured rows, "
+        f"and {forward['matured_loud_rows']} matured loud rows. Its matured state counts are "
+        f"`{forward['matured_state_counts']}`. Those matured loud rows form only "
+        f"**{completed}** completed independent {completed_noun}; {open_count} open loud "
+        f"{open_noun} {open_verb} ungraded. Therefore neither five coefficients nor a "
+        "simpler promoted policy can be estimated honestly."
+    )
+
+
 def render_report(result: dict[str, Any]) -> str:
     summary = result["summary"]
     policies = {
@@ -1872,7 +1888,7 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         "## Forward evidence limit",
         "",
-        f"The issued ledger has {forward['rows']} rows, {forward['matured_rows']} matured rows, and {forward['matured_loud_rows']} matured loud rows. Its matured state counts are `{forward['matured_state_counts']}`. Those loud rows form only **{forward['independent_loud_episode_n']}** independent episode, so neither five coefficients nor a simpler promoted policy can be estimated honestly.",
+        _forward_evidence_sentence(forward),
         "",
         "## Shadow candidate",
         "",

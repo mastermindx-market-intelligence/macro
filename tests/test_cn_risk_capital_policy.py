@@ -296,6 +296,22 @@ def test_crisis_recovery_loco_and_concentration_are_explicit():
     assert concentration == pytest.approx(0.5)
 
 
+def test_forward_evidence_sentence_discloses_open_episode():
+    forward = {
+        "rows": 34,
+        "matured_rows": 16,
+        "matured_loud_rows": 5,
+        "matured_state_counts": {"caution": 9, "elevated": 1, "risk-off": 4, "watch": 2},
+        "independent_loud_episode_n": 1,
+        "open_loud_episode_n": 1,
+    }
+
+    sentence = cp._forward_evidence_sentence(forward)
+
+    assert "1 open loud episode remains ungraded" in sentence
+    assert "only **1** completed independent episode" in sentence
+
+
 def test_run_study_artifact_flag_cannot_shadow_writer():
     parameters = inspect.signature(cp.run_study).parameters
     assert "emit_artifacts" in parameters

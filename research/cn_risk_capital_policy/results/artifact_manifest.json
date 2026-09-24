@@ -1,8 +1,8 @@
 {
   "files": {
     "REPORT.md": {
-      "bytes": 7688,
-      "sha256": "3bd6ee48b4f2b90f3f10e29801f9db3a830aa7bd93c13616118a2096f63f2138"
+      "bytes": 8988,
+      "sha256": "8e807db1b615b978a986000a4c18127495d6f74195aa960847cad35d03c6b5b4"
     },
     "bootstrap.json": {
       "bytes": 1834,
@@ -13,16 +13,16 @@
       "sha256": "354f4dba73cd335f184ed58ed8ae79e42cfd5c64032e0bce362d1b12d363ae24"
     },
     "episode_results.csv": {
-      "bytes": 49555,
-      "sha256": "214014fe87044fff33bd2615f0ad2aa6d0f095ca692ce30906ee60f65b57b80a"
+      "bytes": 52513,
+      "sha256": "ba103c0b4aade0e60fcdf944accf622568b39ed00b50653ea6665cfd2a926fc1"
     },
     "era_results.csv": {
       "bytes": 4508,
       "sha256": "facd80ef71c8b6432dcc82f455db6f41e775ed11c3c06d622f1e2bf297c1e1c3"
     },
     "input_manifest.json": {
-      "bytes": 1976,
-      "sha256": "e6cb25abaa98834cec883dfa56ab5027a164c7161f3a369b950045bd96f0d9f3"
+      "bytes": 2194,
+      "sha256": "dd3550cf58d76d84ef90281ce5a813c849f56ed9eb264a0f3227a2691bab8b89"
     },
     "loco_results.csv": {
       "bytes": 19246,
@@ -32,9 +32,13 @@
       "bytes": 16623,
       "sha256": "c8fbeff8f5da871e5ab6435502a6fe790aef824f089249a8a652f6fc0a6030b7"
     },
+    "source_qualification.json": {
+      "bytes": 2183,
+      "sha256": "0ed6cc87b7b7b851ade47614e166c4735bb0021f0d1c0eb282cf518b9c16ffda"
+    },
     "summary.json": {
-      "bytes": 25910,
-      "sha256": "d81ff90a9dfee48f0a7cb9bb77d20bb35c93ad6ce295a5370222fee8509e22d5"
+      "bytes": 34238,
+      "sha256": "be0e55f9a69ecdaba1d3becf82524b254aba29f6bcf0a07c1300c3930efef3c4"
     }
   },
   "operation_key": "cn-risk-p4-capital-policy-20260923-solpro-001",

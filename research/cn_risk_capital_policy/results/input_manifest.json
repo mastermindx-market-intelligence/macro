@@ -1,8 +1,10 @@
 {
   "file_sha256": {
+    "collectors/china_breadth.py": "1d3eca1cba1f68e7f95a0ab7ecd0d4a6abad542975408f9db5767bd25aec8699",
     "data/china/000001.SS.parquet": "fde7953ffe4db529895db48ace0bb182412f041a163988a8e009c1ca90614e67",
     "data/china/510300.SS.parquet": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
     "data/china_breadth/breadth.parquet": "270504c850f3586849fbeb4cf595d2406fc4bf45d32212a6383a1ba8c1d3f04e",
+    "data/china_breadth/constituents.parquet": "80061c0793e4e71693b8849a5f4bb3214c8fce080977e22f0c9e4c04acf750f3",
     "data/china_property/cgb.parquet": "32b42dbde1937ede0582a1303ef1dfc9635502a3c7d225134d749e91f3680b3e",
     "data/fred/DFII10.parquet": "82194cc322bd53a4107e9bf04ee02fa5855a37468241579aafb0628a4e920158",
     "data/fred/DGS10.parquet": "34b9744f940966ea982b9445e7583e21fc41232d531b8a46c11969a181b6c4a8",
@@ -12,7 +14,7 @@
     "data/yahoo/DX-Y.NYB.parquet": "dee55311cc22f15384ede15a63a05c9097766aebfc7c80650335d534471b4b30",
     "engine/risk_radar_intl.py": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
     "research/cn_risk_capital_policy/preregistration.json": "ce8183c8fe225ddae5faf01b3148d87fd9497a599f636749eb5e7b044e26fe26",
-    "scripts/research/cn_risk_capital_policy.py": "b350fde2bb664202cf4f2ed5b560ce2f9bd714fb5f5ebb7f497141fa784e76a7"
+    "scripts/research/cn_risk_capital_policy.py": "f001fce0b92fc129c1e4c45bccd4549c9b2dd7add63e6de36c7869e7733b83dc"
   },
   "prereg_commit": "6caaf30b68b6b327dd7255f8610f8ea613a363ed",
   "schema": "cn_risk_capital_policy_inputs.v1",

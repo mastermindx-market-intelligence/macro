@@ -10,11 +10,12 @@
       "elevated_only_episode_floor": false,
       "episode_floor": false,
       "era_stability": true,
+      "historical_authority_eligible": false,
       "mdd_protection": true,
       "riskoff_062_cagr_cost": true,
       "riskoff_062_calmar": true,
       "riskoff_062_mdd_increment": true,
-      "riskoff_episode_floor": true,
+      "riskoff_episode_floor": false,
       "sensitivity": true
     },
     "exact_current_pass": false,
@@ -25,12 +26,13 @@
       "certainty_equivalent_ci": false,
       "crisis_concentration": true,
       "cvar_protection": true,
-      "episode_floor": true,
+      "episode_floor": false,
       "era_stability": false,
+      "historical_authority_eligible": false,
       "loco": false,
       "mdd_protection": false,
       "positive_episode_fraction": false,
-      "riskoff_episode_floor": true,
+      "riskoff_episode_floor": false,
       "sensitivity": true
     }
   },
@@ -199,9 +201,14 @@
       "through": "2026-09-23"
     },
     "primary": {
+      "aligned_return_sessions": 5721,
       "from": "2003-03-04",
       "label": "Shanghai Composite",
+      "policy_sessions": 5720,
+      "return_exposure_from": "2003-03-04",
       "sessions": 5721,
+      "state_history_from": "2003-03-03",
+      "state_history_sessions": 5722,
       "store": [
         "china",
         "000001.SS"
@@ -277,9 +284,13 @@
     "exact_062_cagr_mdd_calmar_bootstrap_all_exclude_zero": false,
     "exact_062_precision_requires_incremental_evidence_over_075": true,
     "forward_sample_can_optimize_five_coefficients": false,
+    "historical_reconstruction_authority_eligible": false,
+    "historical_reconstruction_is_definition_current": true,
     "investable_proxy_062_beats_075_on_cagr_mdd_and_calmar": false,
+    "issued_forward_independent_loud_episode_n": 1,
     "plain_english_half_normal_is_semantically_faithful_to_062": false,
-    "primary_timing_edge_survives_exposure_matched_constant": true
+    "primary_timing_edge_survives_exposure_matched_constant": true,
+    "reconstructed_overlapping_episode_windows_excluded": 6
   },
   "economic_comparisons": {
     "binary_loud_075_vs_exposure_matched_constant": {
@@ -331,59 +342,213 @@
     "matched_constant_gross": 0.9387062937062934
   },
   "episodes": {
+    "authority_effective_n": 1,
+    "authority_elevated_only_n": 0,
+    "authority_risk_off_containing_n": 1,
+    "authority_source": "issued_forward_ledger",
     "censored_open": [
       {
+        "authority_independent": false,
         "contains_risk_off": true,
         "elevated_observations": 17,
         "end": "2026-09-23T00:00:00",
         "end_pos": 5720,
         "episode_id": 27,
         "loud_observations": 47,
+        "next_episode_start_pos": null,
         "outcome_complete": false,
         "outcome_end": "2026-09-23T00:00:00",
         "outcome_end_pos": 5720,
+        "overlaps_next_episode": false,
         "risk_off_observations": 30,
         "start": "2026-07-07T00:00:00",
         "start_pos": 5664
       }
     ],
     "censored_open_n": 1,
-    "downside_event_n": 21,
-    "downside_policy_excess_sum_current": 0.2517218203798018,
-    "downside_positive_timing_n_current": 11,
-    "elevated_only_n": 2,
-    "eligible_complete_n": 26,
-    "false_positive_n": 5,
-    "false_positive_policy_excess_sum_current": -0.0483672588573884,
-    "false_positive_positive_timing_n_current": 0,
-    "false_positive_recovery_missed_upside_sum_current": 0.030246632751876203,
-    "positive_timing_fraction": {
-      "binary_loud_075": 0.34615384615384615,
-      "constant_075": 0.6923076923076923,
+    "diagnostic_downside_event_n": 16,
+    "diagnostic_false_positive_n": 4,
+    "diagnostic_positive_timing_fraction": {
+      "binary_loud_075": 0.35,
+      "constant_075": 0.75,
       "constant_100": 0.0,
-      "current_ladder": 0.4230769230769231,
-      "current_riskoff_075": 0.5384615384615384,
-      "matched_constant": 0.6923076923076923,
-      "vol_target_15": 0.3076923076923077
+      "current_ladder": 0.45,
+      "current_riskoff_075": 0.5,
+      "matched_constant": 0.75,
+      "vol_target_15": 0.4
     },
-    "risk_off_containing_n": 24,
-    "severity": {
+    "diagnostic_severity": {
       "elevated_only": {
         "downside_rate": 0.0,
         "median_path_loss": -0.0077960840128484254,
         "n": 2
       },
       "risk_off_containing": {
-        "downside_rate": 0.875,
+        "downside_rate": 0.8888888888888888,
         "median_path_loss": -0.07871157170593551,
-        "n": 24
+        "n": 18
       }
-    }
+    },
+    "downside_policy_excess_sum_current": 0.24556483594333695,
+    "downside_positive_timing_n_current": 9,
+    "false_positive_policy_excess_sum_current": -0.03422653496802683,
+    "false_positive_positive_timing_n_current": 0,
+    "false_positive_recovery_missed_upside_sum_current": 0.02513831106038756,
+    "overlap_excluded": [
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 6,
+        "end": "2005-01-31T00:00:00",
+        "end_pos": 466,
+        "episode_id": 2,
+        "loud_observations": 15,
+        "next_episode_start_pos": 481,
+        "outcome_complete": true,
+        "outcome_end": "2005-03-10T00:00:00",
+        "outcome_end_pos": 487,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 9,
+        "start": "2004-12-29T00:00:00",
+        "start_pos": 444
+      },
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 9,
+        "end": "2014-05-16T00:00:00",
+        "end_pos": 2716,
+        "episode_id": 13,
+        "loud_observations": 30,
+        "next_episode_start_pos": 2728,
+        "outcome_complete": true,
+        "outcome_end": "2014-06-17T00:00:00",
+        "outcome_end_pos": 2737,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 21,
+        "start": "2014-03-06T00:00:00",
+        "start_pos": 2668
+      },
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 1,
+        "end": "2015-09-25T00:00:00",
+        "end_pos": 3051,
+        "episode_id": 15,
+        "loud_observations": 21,
+        "next_episode_start_pos": 3067,
+        "outcome_complete": true,
+        "outcome_end": "2015-11-02T00:00:00",
+        "outcome_end_pos": 3072,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 20,
+        "start": "2015-08-25T00:00:00",
+        "start_pos": 3030
+      },
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 3,
+        "end": "2018-03-21T00:00:00",
+        "end_pos": 3655,
+        "episode_id": 18,
+        "loud_observations": 16,
+        "next_episode_start_pos": 3671,
+        "outcome_complete": true,
+        "outcome_end": "2018-04-23T00:00:00",
+        "outcome_end_pos": 3676,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 13,
+        "start": "2018-02-08T00:00:00",
+        "start_pos": 3631
+      },
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 3,
+        "end": "2022-02-22T00:00:00",
+        "end_pos": 4605,
+        "episode_id": 23,
+        "loud_observations": 20,
+        "next_episode_start_pos": 4619,
+        "outcome_complete": true,
+        "outcome_end": "2022-03-23T00:00:00",
+        "outcome_end_pos": 4626,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 17,
+        "start": "2022-01-14T00:00:00",
+        "start_pos": 4583
+      },
+      {
+        "authority_independent": false,
+        "contains_risk_off": true,
+        "elevated_observations": 7,
+        "end": "2022-05-17T00:00:00",
+        "end_pos": 4660,
+        "episode_id": 24,
+        "loud_observations": 40,
+        "next_episode_start_pos": 4679,
+        "outcome_complete": true,
+        "outcome_end": "2022-06-16T00:00:00",
+        "outcome_end_pos": 4681,
+        "overlaps_next_episode": true,
+        "risk_off_observations": 33,
+        "start": "2022-03-14T00:00:00",
+        "start_pos": 4619
+      }
+    ],
+    "overlap_excluded_n": 6,
+    "reconstructed_complete_n": 26,
+    "reconstructed_elevated_only_n": 2,
+    "reconstructed_independent_nonoverlap_n": 20,
+    "reconstructed_risk_off_containing_n": 18
   },
   "forward_ledger": {
+    "all_episodes": [
+      {
+        "contains_risk_off": true,
+        "elevated_observations": 1,
+        "end": "2026-07-16",
+        "episode_id": 1,
+        "loud_observations": 5,
+        "outcome_complete": true,
+        "risk_off_observations": 4,
+        "session_gap_basis": "benchmark_trading_sessions",
+        "start": "2026-07-10"
+      },
+      {
+        "contains_risk_off": true,
+        "elevated_observations": 4,
+        "end": "2026-09-23",
+        "episode_id": 2,
+        "loud_observations": 13,
+        "outcome_complete": false,
+        "risk_off_observations": 9,
+        "session_gap_basis": "benchmark_trading_sessions",
+        "start": "2026-09-03"
+      }
+    ],
     "asof_from": "2026-06-26",
     "asof_through": "2026-09-23",
+    "elevated_only_episode_n": 0,
+    "episodes": [
+      {
+        "contains_risk_off": true,
+        "elevated_observations": 1,
+        "end": "2026-07-16",
+        "episode_id": 1,
+        "loud_observations": 5,
+        "outcome_complete": true,
+        "risk_off_observations": 4,
+        "session_gap_basis": "benchmark_trading_sessions",
+        "start": "2026-07-10"
+      }
+    ],
+    "historical_coefficients_estimable": false,
+    "independent_loud_episode_n": 1,
     "label": "issued_forward_monitoring_only_not_policy_optimization",
+    "matured_loud_rows": 5,
     "matured_rows": 16,
     "matured_state_counts": {
       "caution": 9,
@@ -391,8 +556,24 @@
       "risk-off": 4,
       "watch": 2
     },
+    "open_episodes": [
+      {
+        "contains_risk_off": true,
+        "elevated_observations": 4,
+        "end": "2026-09-23",
+        "episode_id": 2,
+        "loud_observations": 13,
+        "outcome_complete": false,
+        "risk_off_observations": 9,
+        "session_gap_basis": "benchmark_trading_sessions",
+        "start": "2026-09-03"
+      }
+    ],
+    "open_loud_episode_n": 1,
     "policy_coefficients_estimable": false,
+    "riskoff_containing_episode_n": 1,
     "rows": 34,
+    "session_calendar": "china/000001.SS",
     "state_counts": {
       "caution": 12,
       "elevated": 5,
@@ -401,7 +582,8 @@
     },
     "unmatured_rows": 18
   },
-  "historical_evidence_label": "PIT-honest reconstructed history; not issued-forward policy performance",
+  "historical_authority_eligible": false,
+  "historical_evidence_label": "causal/date-aligned definition-current reconstruction; not membership-PIT or source-vintage verified; diagnostic only",
   "investable_proxy_primary_results": {
     "binary_loud_075": {
       "annualized_mean_return": 0.07764116041757863,
@@ -586,12 +768,104 @@
     "current_transaction_cost_annualized_contribution": 0.004114825174825175,
     "current_transaction_cost_sum": 0.09340000000000001
   },
-  "policy_verdict": "HAZARD_VALID_BUT_EXACT_GROSS_UNVALIDATED",
+  "policy_verdict": "INSUFFICIENT_INDEPENDENT_EPISODES",
   "prereg_sha": "6caaf30b68b6b327dd7255f8610f8ea613a363ed",
   "schema": "cn_risk_capital_policy_result.v1",
   "shadow_candidate_if_earned": null,
   "skillpack_sha": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
   "source_base": "49ceebf8d1a14c044684abdbeeb5779875cf20fc",
+  "source_qualification": {
+    "authority_effect": "diagnostic_reconstruction_only",
+    "breadth_current_membership_backfill": true,
+    "classification": "CAUSAL_DEFINITION_CURRENT_NOT_AUTHORITY_GRADE_PIT",
+    "construction_is_causal": true,
+    "date_effective_membership_present": false,
+    "evidence_paths": {
+      "breadth_collector": "collectors/china_breadth.py",
+      "breadth_membership": "data/china_breadth/constituents.parquet",
+      "radar_engine": "engine/risk_radar_intl.py"
+    },
+    "exact_state_uses_cn_breadth": true,
+    "historical_authority_eligible": false,
+    "membership_columns": [
+      "name",
+      "sector"
+    ],
+    "source_vintage_evidence": {
+      "data/china_breadth/breadth.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "n_members",
+          "pct_above_50",
+          "pct_above_200",
+          "nh",
+          "nl",
+          "adv",
+          "dec",
+          "ad_line"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/china_property/cgb.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "cgb_2y",
+          "cgb_5y",
+          "cgb_10y",
+          "cgb_30y",
+          "cgb_10y2y"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/fred/DFII10.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "us10y_real"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/fred/DGS10.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "us10y"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/fred/DGS2.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "us2y"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/yahoo/CNH_F.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      },
+      "data/yahoo/DX-Y.NYB.parquet": {
+        "attribute_keys": [],
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "exists": true,
+        "has_vintage_metadata": false
+      }
+    },
+    "source_vintage_metadata_present": false
+  },
   "stability": {
     "bootstrap": {
       "binary_vs_matched": {

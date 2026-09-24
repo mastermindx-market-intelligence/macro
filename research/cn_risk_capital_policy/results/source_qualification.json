@@ -1,0 +1,92 @@
+{
+  "authority_effect": "diagnostic_reconstruction_only",
+  "breadth_current_membership_backfill": true,
+  "classification": "CAUSAL_DEFINITION_CURRENT_NOT_AUTHORITY_GRADE_PIT",
+  "construction_is_causal": true,
+  "date_effective_membership_present": false,
+  "evidence_paths": {
+    "breadth_collector": "collectors/china_breadth.py",
+    "breadth_membership": "data/china_breadth/constituents.parquet",
+    "radar_engine": "engine/risk_radar_intl.py"
+  },
+  "exact_state_uses_cn_breadth": true,
+  "historical_authority_eligible": false,
+  "membership_columns": [
+    "name",
+    "sector"
+  ],
+  "source_vintage_evidence": {
+    "data/china_breadth/breadth.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "n_members",
+        "pct_above_50",
+        "pct_above_200",
+        "nh",
+        "nl",
+        "adv",
+        "dec",
+        "ad_line"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/china_property/cgb.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "cgb_2y",
+        "cgb_5y",
+        "cgb_10y",
+        "cgb_30y",
+        "cgb_10y2y"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/fred/DFII10.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "us10y_real"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/fred/DGS10.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "us10y"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/fred/DGS2.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "us2y"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/yahoo/CNH_F.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    },
+    "data/yahoo/DX-Y.NYB.parquet": {
+      "attribute_keys": [],
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "exists": true,
+      "has_vintage_metadata": false
+    }
+  },
+  "source_vintage_metadata_present": false
+}
