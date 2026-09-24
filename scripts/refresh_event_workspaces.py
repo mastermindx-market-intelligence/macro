@@ -898,6 +898,47 @@ def _stated_period_end(exhibit_body: str) -> date | None:
     return None
 
 
+_DATE_TOKEN_RE = re.compile(r"\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4})")
+
+
+def _parse_stated_date(raw: str) -> date | None:
+    raw = raw.replace(",", "")
+    for fmt in ("%B %d %Y", "%b %d %Y"):
+        try:
+            return datetime.strptime(raw, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _stated_period_end_candidates(exhibit_body: str) -> list[date]:
+    """Every date a period-end phrase names, in document order, de-duplicated.
+
+    A flattened multi-column table header names SEVERAL dates after one
+    phrase — onsemi's free-cash-flow table reads "Quarters Ended October 3,
+    2025 December 31, 2025 April 3, 2026 July 3, 2026", oldest first — so the
+    consecutive dates trailing each phrase are all candidates. Used ONLY by
+    the 52/53-week tolerance path; a calendar-quarter issuer keeps the exact
+    first-match rule of :func:`_stated_period_end` unchanged.
+    """
+    visible = html_unescape(re.sub(r"<[^>]+>", " ", exhibit_body))
+    visible = re.sub(r"\s+", " ", visible)
+    seen: list[date] = []
+    for match in _STATED_PERIOD_END_RE.finditer(visible):
+        position = match.start(1)
+        while True:
+            token = _DATE_TOKEN_RE.match(visible, position)
+            if token is None:
+                break
+            parsed = _parse_stated_date(token.group(1))
+            if parsed is None:
+                break
+            if parsed not in seen:
+                seen.append(parsed)
+            position = token.end()
+    return seen
+
+
 # NIT-21/MINOR-17 (Opus red-team verification round 2, 2026-08-23): the
 # pre-A5C single-newest acquisition function (acquire_and_build_homebuilder_
 # workspace) is DELETED. It had no production caller once discover_new_
@@ -1319,6 +1360,20 @@ def discover_new_homebuilder_revisions(
             None if stated_end is None
             else abs((stated_end - fiscal_period.calendar_end).days)
         )
+        if tolerance_days and (stated_drift is None or stated_drift > tolerance_days):
+            # 52/53-week issuers only: the first period-end phrase may head a
+            # multi-quarter table whose columns run oldest-first (onsemi's
+            # Q2-2026 free-cash-flow table names October 3, 2025 first). The
+            # exhibit still states THIS quarter's end among those dates; take
+            # it only when exactly one named date lies within the tolerance
+            # — two would be ambiguous and the row is refused as before.
+            within = [
+                candidate for candidate in _stated_period_end_candidates(str(resolved_row["exhibit_body"]))
+                if abs((candidate - fiscal_period.calendar_end).days) <= tolerance_days
+            ]
+            if len(within) == 1:
+                stated_end = within[0]
+                stated_drift = abs((stated_end - fiscal_period.calendar_end).days)
         if stated_drift is None or stated_drift > tolerance_days:
             print(
                 "::warning title=event-workspaces-discovery-skip::"

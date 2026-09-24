@@ -120,6 +120,27 @@ ON_MANIFESTS = {
 # onsemi's Q2-2026 results 8-K names its exhibit with the BARE type (real manifest row)
 ON_Q2_BARE_EX99_MANIFEST = [("8-K", "ef20079200_8k.htm", "8-K"), ("EX-99", "ef20079200_ex99-1.htm", "EXHIBIT 99.1")]
 
+ON_Q2_RESULTS_ACCESSION = "0001140361-26-030989"  # Q2-2026 results 8-K (Items 2.02, 9.01), filed 2026-08-03
+ON_Q2_ROWS = [  # every 8-K onsemi filed 2026-08-01 .. 2026-08-31
+    {"form": "8-K", "accessionNumber": "0001140361-26-032594", "filingDate": "2026-08-13", "reportDate": "2026-08-12",
+     "acceptanceDateTime": "2026-08-13T10:01:02.000Z", "primaryDocument": "ef20080111_8k.htm", "items": "8.01"},
+    {"form": "8-K", "accessionNumber": ON_Q2_RESULTS_ACCESSION, "filingDate": "2026-08-03", "reportDate": "2026-08-03",
+     "acceptanceDateTime": "2026-08-03T20:54:23.000Z", "primaryDocument": "ef20079200_8k.htm", "items": "2.02,9.01"},
+]
+ON_Q2_MANIFESTS = {ON_Q2_RESULTS_ACCESSION: ON_Q2_BARE_EX99_MANIFEST}
+
+# Q2-shaped look-alike of the synthetic exhibit: labels/dates rolled one quarter, and — as in the real
+# Q2-2026 release — a free-cash-flow table whose "Quarters Ended" header runs five quarters oldest-first
+# BEFORE the summary table, so first-match dating would read October 3, 2025.
+ON_Q2_SYNTHETIC_EXHIBIT = (
+    "<table><tr><td>FREE CASH FLOW</td></tr>"
+    "<tr><td>Quarters Ended October 3, 2025 December 31, 2025 April 3, 2026 July 3, 2026</td></tr></table>"
+    + ON_SYNTHETIC_EXHIBIT
+    .replace("Q1 2026", "Q2 2026").replace("Q4 2025", "Q1 2026")
+    .replace("April 3, 2026", "July 3, 2026").replace("January 2, 2026", "April 3, 2026").replace("March 28, 2025", "June 27, 2025")
+    .replace("projected second quarter of 2026", "projected third quarter of 2026")
+)
+
 CONFOUNDER_BODY = "<html><body><p>Synthetic non-results document; every figure here is invented.</p></body></html>"
 
 _MANIFEST_URL_RE = re.compile(r"/(\d{10}-\d{2}-\d{6})-index-headers\.html$")
@@ -291,3 +312,25 @@ def test_on_item_202_eight_k_filed_before_the_attested_listing_is_skipped_never_
     out = capsys.readouterr().out
     assert f"accession {ON_PRE_IDENTITY_ACCESSION} filed 2026-02-09 precedes the issuer identity's attested listing" in out
     assert _resolved_accessions(fetched) == {ON_RESULTS_ACCESSION}
+
+
+def test_on_real_q2_eight_k_is_admitted_on_the_unique_in_tolerance_stated_date(monkeypatch, capsys) -> None:
+    """Live-EDGAR proof finding: onsemi's Q2-2026 exhibit names October 3, 2025 first under a
+    "Quarters Ended" header (five trailing quarters, oldest first), so the first-match rule
+    refused the real filing with drift=270d. The 52/53-week path now adopts the unique named
+    date within tolerance (July 3, 2026) and the closed grammar binds against it."""
+    revisions, fetched = _discover(
+        monkeypatch, ticker="ON", cik=ON_CIK, rows=ON_Q2_ROWS, manifests=ON_Q2_MANIFESTS,
+        bodies={ON_Q2_RESULTS_ACCESSION: ON_Q2_SYNTHETIC_EXHIBIT},
+    )
+    assert [payload["sources"][0]["filing_key"]["accession"] for _eid, payload in revisions] == [ON_Q2_RESULTS_ACCESSION]
+    event_id, payload = revisions[0]
+    assert "2026q2" in event_id
+    assert payload["fiscal_period"] == {"year": 2026, "quarter": 2, "calendar_end": "2026-07-03"}
+    assert payload["sources"][0]["url"].endswith("/ef20079200_ex99-1.htm")
+    (rev,) = [f for f in payload["facts"] if f["fact_id"] == "fact_revenue"]
+    assert (rev["value"], rev["unit"], rev["period"]) == (1234.5, "usd_millions", "2026-07-03")
+    (item,) = payload["guidance"]
+    assert (item["low"], item["high"], item["horizon"]) == (1400.0, 1500.0, "2026Q3")
+    assert _resolved_accessions(fetched) == {ON_Q2_RESULTS_ACCESSION}
+    assert "stated period end 2026-07-03 in place of the derived calendar quarter end 2026-06-30" in capsys.readouterr().out

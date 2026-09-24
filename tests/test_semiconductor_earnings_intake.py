@@ -680,3 +680,69 @@ def test_numbered_ex99_1_keeps_precedence_over_a_bare_ex99() -> None:
     select = refresh_mod._select_exhibit_99_1
     assert select([("8-K", "form8k.htm"), ("EX-99", "bare.htm"), ("EX-99.1", "release.htm")]) == "release.htm"
     assert select([("8-K", "form8k.htm"), ("EX-99", "ex99.htm")]) == "ex99.htm"
+
+
+# ── 52/53-week: multi-quarter headers name the period among several dates (real onsemi Q2-2026 shape) ──
+
+ON_Q2_FCF_HEADER = "Quarters Ended October 3, 2025 December 31, 2025 April 3, 2026 July 3, 2026"
+
+
+def _q2_exhibit(header: str) -> str:
+    return (
+        "<html><body><p>Synthetic Semiconductor Co. reports results.</p>"
+        f"<table><tr><td>FREE CASH FLOW</td></tr><tr><td>{header}</td></tr></table>"
+        "<p>Every figure here is invented.</p></body></html>"
+    )
+
+
+_ON_LIKE_Q2_ROW = {
+    "form": "8-K", "accessionNumber": "0009990002-26-000777", "filingDate": "2026-08-03",
+    "acceptanceDateTime": "2026-08-03T20:54:23.000Z", "reportDate": "2026-08-03", "items": "2.02,9.01",
+    "primaryDocument": "dom-8k.htm",
+}
+
+
+def _run_52_53_q2(monkeypatch, *, external_ids, body):
+    issuer = _synthetic_issuer(cik="0009990002", ticker="DOM", external_ids=external_ids)
+    return _run_discovery(
+        monkeypatch, ticker="DOM", issuer=issuer, profile=_null_profile("DOM"),
+        rows=[_ON_LIKE_Q2_ROW], headers={_ON_LIKE_Q2_ROW["accessionNumber"]: _ON_LIKE_SGML},
+        exhibits={_ON_LIKE_Q2_ROW["accessionNumber"]: {"ef20072220_ex99-1.htm": body}},
+    )
+
+
+def test_stated_period_end_candidates_collects_every_date_under_one_header() -> None:
+    body = _q2_exhibit(ON_Q2_FCF_HEADER)
+    assert refresh_mod._stated_period_end(body) == date(2025, 10, 3)              # first-match rule, unchanged
+    assert refresh_mod._stated_period_end_candidates(body) == [
+        date(2025, 10, 3), date(2025, 12, 31), date(2026, 4, 3), date(2026, 7, 3)]
+    assert refresh_mod._stated_period_end_candidates("<p>no period phrase</p>") == []
+
+
+def test_end_to_end_52_53_week_issuer_is_admitted_on_the_unique_in_tolerance_date(monkeypatch, capsys) -> None:
+    # derived quarter end for a 2026-08-03 release, FYE Dec: 2026-06-30; the header's first date is 270 days off
+    admitted = _run_52_53_q2(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                             body=_q2_exhibit(ON_Q2_FCF_HEADER))
+    assert len(admitted) == 1 and "2026q2" in admitted[0][0]
+    assert admitted[0][1]["fiscal_period"] == {"year": 2026, "quarter": 2, "calendar_end": "2026-07-03"}
+    assert "stated period end 2026-07-03 in place of the derived calendar quarter end 2026-06-30" in capsys.readouterr().out
+
+
+def test_end_to_end_calendar_issuer_keeps_first_match_semantics_on_the_same_header(monkeypatch, capsys) -> None:
+    refused = _run_52_53_q2(monkeypatch, external_ids={"results_form": "8-K"}, body=_q2_exhibit(ON_Q2_FCF_HEADER))
+    assert refused == []
+    assert "drift=270d, tolerance=0d" in capsys.readouterr().out
+
+
+def test_end_to_end_52_53_week_issuer_refuses_two_in_tolerance_dates_as_ambiguous(monkeypatch, capsys) -> None:
+    ambiguous = _run_52_53_q2(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                              body=_q2_exhibit("Quarters Ended October 3, 2025 June 30, 2026 July 3, 2026"))
+    assert ambiguous == []
+    assert "drift=270d, tolerance=6d" in capsys.readouterr().out
+
+
+def test_end_to_end_52_53_week_issuer_still_refuses_when_no_named_date_is_in_tolerance(monkeypatch, capsys) -> None:
+    refused = _run_52_53_q2(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                            body=_q2_exhibit("Quarters Ended October 3, 2025 December 31, 2025 April 3, 2026"))
+    assert refused == []
+    assert "drift=270d, tolerance=6d" in capsys.readouterr().out
