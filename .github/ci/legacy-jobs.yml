@@ -1241,6 +1241,9 @@ jobs:
       - "config/theme_graph_identity_breaks.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/earnings_story_promotion.yml"
+      # Shared llm_auth workload-policy dependencies (contract-delta 2026-09-24).
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       # B1A wiring 2026-08-24: this gate:code job owns the dossier contract and now runs the security_state.v1 suite (contract-delta named it unrun).
       - "contracts/market_os/security_state.v1.schema.json"
       - "engine/security_state.py"
@@ -2214,6 +2217,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -3728,6 +3733,8 @@ jobs:
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
+      # Shared llm_auth workload-policy config (contract-delta 2026-09-24).
+      - "config/provider_workloads.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "data/capital_structure/**"
@@ -3757,6 +3764,8 @@ jobs:
       - "engine/neuralweb/key_pool.py"
       - "engine/ollama_provider.py"
       - "engine/provider_health.py"
+      # Shared llm_auth workload-policy module (contract-delta 2026-09-24).
+      - "engine/provider_workload_policy.py"
       - "engine/short_volume.py"
       - "engine/stock_fundamentals.py"
       - "engine/thesis_funnel.py"
@@ -5303,6 +5312,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
+      - name: provider workload guard (no developer subscriptions in product inference)
+        run: python -m pytest tests/test_provider_workload_policy.py -q
       - name: build check (committed outputs match YAML regeneration byte-for-byte)
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
@@ -6691,7 +6702,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_provider_workload_policy.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -8072,6 +8083,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8702,6 +8715,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11249,6 +11264,8 @@ jobs:
       - "engine/portfolio_vocab.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
+      # Shared llm_auth workload-policy module (contract-delta 2026-09-24).
+      - "engine/provider_workload_policy.py"
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
@@ -12411,6 +12428,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
@@ -14621,6 +14640,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
