@@ -2237,6 +2237,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -5222,6 +5223,38 @@ jobs:
         run: python -m pytest tests/test_transmission_calibration.py -q
       - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
         run: python -m pytest tests/test_transmission_proposals.py -q
+
+  ontology-explorer:
+    if: ${{ false }}
+    gate: code
+    # F04-X1 WTI Live Trace: the request-time composer
+    # (engine/ontology_explorer.py), its authenticated router
+    # (app/ontology_explorer.py) and the public-safe shell builder. Placed
+    # beside the transmission-chains owner because the trace it composes reads
+    # that chain library; scope is INFERRED, not curated, and that is
+    # deliberate — see the note below.
+    #
+    # NOT `scope: exclusive`. app/ontology_explorer.py resolves shared auth via
+    # `from app.main import require_user` (function-scoped, but scope inference
+    # walks the AST scope-insensitively), so this job's honest import closure is
+    # most of app/, engine/ and lib/ — measured at roughly 500 files. A curated
+    # exclusive scope would therefore have to enumerate ~500 paths and would
+    # re-select the job on nearly every change in the repository, which is the
+    # opposite of what exclusive scoping is for. `gate: code` keeps these four
+    # suites ON the merge gate: they are this feature's entire proof.
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx
+      - name: ontology explorer — composer contract, owner episode, receipts
+        run: python -m pytest tests/test_ontology_explorer_contract.py -q
+      - name: ontology explorer — identity, private transport, public shell
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -8222,6 +8255,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8853,6 +8887,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11300,6 +11335,10 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # F04-X1 closure widening 2026-09-24 (contract-delta): app/main.py mounts the
+      # ontology explorer router, so this curated job's app import closure now
+      # reaches the F04 engine module.
+      - "engine/ontology_explorer.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
@@ -14780,6 +14819,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
