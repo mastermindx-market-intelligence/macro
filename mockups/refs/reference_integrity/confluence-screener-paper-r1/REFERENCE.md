@@ -32,14 +32,15 @@ The reference preserves the existing route's deterministic public/paid split:
 - rank 2/3 public treatment may expose matching counts but not ticker identities;
 - paid ticker identities arrive only from the separately protected payload after entitlement;
 - no fake blurred paid content;
-- recent-vs-older-era validation remains visible;
-- the signal-leg stack remains visible;
+- recent-vs-older-era validation remains part of the required public evidence contract;
+- the builder-owned variable-length D/W signal-leg stack remains part of the required public evidence contract on every rank;
+- occurrence/frequency/last-seen context, validation sample basis, wins-per-10, random-entry edge and cross-era consistency remain public evidence; only rank-2/3 ticker identities are gated;
 - EN/ZH, Dark/Light and 390px behavior are first-class;
 - evidence is framed as research/discovery context, not automatic trade authority.
 
 ## Designed interaction and degraded states
 
-The matrix explicitly represents focus/focus-visible treatment, hover treatment, an expanded/open mobile filter treatment, disabled action treatment, paid/locked state, loading, empty, stale and error. Browser/runtime proof remains a separate migration gate.
+The frozen matrix is **not yet complete enough for RIG verdict**. Desktop cells include loading, empty, stale and error treatments, while the current 390px cells show only stale + error. Mobile loading + empty parity must be repaired and refrozen. The refreshed evidence must also include a representative entitled/unlocked DEMO transformation, a dedicated post-ledger paid continuation CTA, a separate global-zero state (distinct from filter-empty), and a reachable `How to read this honestly` disclosure/open specimen. Focus/focus-visible, hover, expanded/open and disabled treatments remain required. Browser/runtime proof remains a separate migration gate.
 
 ## Production-before evidence
 
@@ -47,4 +48,4 @@ The `production/` directory contains a live capture of the current public route 
 
 ## Proposal evidence
 
-The `proposal/` directory contains Paper screenshot readback for all eight reference cells. These files freeze the visual proposal for RIG critique; they do not make the Paper file or this reference canonical.
+The `proposal/` directory contains the first Paper screenshot freeze for all eight reference cells. Author-side preflight found material parity defects in that freeze: rank-2/3 rows over-compress public evidence, mobile lacks loading + empty states, entitled/unlocked transformation is not visually proven, and the dedicated paid continuation, global-zero, and detailed honesty-disclosure treatments are missing. These files are retained as provisional evidence only; a repaired Paper composition must be re-screenshot and refrozen before quarantined RIG critics start. Neither these files nor the Paper document are canonical.
