@@ -81,6 +81,7 @@ def bind_notices(notices: Sequence[Mapping[str, Any]], *, decision_at: str,
     visible: list[dict[str, Any]] = []
     seen: dict[str, dict] = {}
     conflicting_ids: set[str] = set()
+    conflicting_events: set[str] = set()
     duplicates = 0
 
     def reject(row: Any, reason: str) -> None:
@@ -108,6 +109,9 @@ def bind_notices(notices: Sequence[Mapping[str, Any]], *, decision_at: str,
                 duplicates += 1
             else:
                 conflicting_ids.add(identity)
+                # A conflicting identity contaminates every event it references.
+                # Dropping just that notice could resurrect an older plan.
+                conflicting_events.update((seen[identity]["event_ref"], row["event_ref"]))
             continue
         seen[identity] = dict(row)
 
@@ -121,7 +125,7 @@ def bind_notices(notices: Sequence[Mapping[str, Any]], *, decision_at: str,
         by_event[row["event_ref"]].append(row)
     projected: list[dict[str, Any]] = []
     for event_ref, versions in by_event.items():
-        if len(versions) != 1:
+        if event_ref in conflicting_events or len(versions) != 1:
             for row in versions: reject(row, "unresolved_notice_versions")
             continue
         row = versions[0]
