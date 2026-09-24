@@ -1,0 +1,33 @@
+schema: mastermind.rig_manifest.v1
+reference_id: intl-vnext-20260924
+scope: full
+status: in_review
+
+surface:
+  route: intl.html
+  registry_row: macro:intl
+  archetype: regime_dashboard
+
+author:
+  identity: "Sol Pro — intl-vnext-implementation-20260924-sol-001"
+  role: designer
+
+reference_files:
+  - path: mockups/refs/institutionalize/intl/desktop-reference-dark-en.png
+    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  - path: mockups/refs/institutionalize/intl/country-inspector-reference-dark-en.png
+    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  - path: mockups/refs/institutionalize/intl/rotation-reference-dark-en.png
+    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  - path: mockups/refs/institutionalize/intl/transmission-reference-dark-en.png
+    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  - path: mockups/refs/institutionalize/intl/hero-reference-dark-en.png
+    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml

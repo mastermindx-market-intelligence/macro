@@ -1,0 +1,165 @@
+schema: mastermind.rig_proposal.v1
+reference_id: intl-vnext-20260924
+
+proposed_artifact:
+  frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  paths:
+    - mockups/refs/institutionalize/intl/desktop-reference-dark-en.png
+    - mockups/refs/institutionalize/intl/hero-reference-dark-en.png
+    - mockups/refs/institutionalize/intl/rotation-reference-dark-en.png
+    - mockups/refs/institutionalize/intl/transmission-reference-dark-en.png
+    - mockups/refs/institutionalize/intl/country-inspector-reference-dark-en.png
+  screenshots:
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-desktop-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-hero-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-rotation-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-transmission-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-country-inspector-dark-en.png, viewport: desktop, theme: dark, locale: en}
+
+dispositions:
+  - id: global.regime-verdict
+    disposition: IMPROVE
+    target: "Global Call hero with engine verdict, plain clause, receipts, flip condition, and current posture"
+    rationale: "Answers the primary question before exposing supporting organs."
+  - id: global.us-world-rotation
+    disposition: IMPROVE
+    target: "Global Pulse and Rotation & turns"
+    rationale: "Makes leadership migration visible as ranked movement instead of a separate abstract scatter."
+  - id: market.turn-state
+    disposition: IMPROVE
+    target: "Global Pulse cards, Risk Radar, and Turn candidates"
+    rationale: "Puts state, change, stance, trigger, and invalidation on the same operating path."
+  - id: market.performance-usd
+    disposition: IMPROVE
+    target: "Global Pulse cards with USD headline and local/FX decomposition in the detail line"
+    rationale: "Preserves currency-aware comparison while lowering scan cost."
+  - id: market.macro-comparison
+    disposition: RELOCATE
+    destination: "Country inspector tabs on intl.html plus existing country routes"
+    reachability: "A market card opens the in-page inspector; Open full page reaches the country route."
+  - id: rates.curve-desk
+    disposition: RELOCATE
+    destination: "Transmission & fragility summary, Country inspector Rates & Credit tab, and bonds.html"
+    reachability: "The country inspector keeps a Rates & Credit task tab and the deep-link band names Bonds."
+  - id: risk.contagion
+    disposition: IMPROVE
+    target: "Transmission & fragility with origin-versus-US separation and a named transmission chain"
+    rationale: "Preserves connectedness while preventing correlation or receiving share from reading as causal certainty."
+  - id: policy.central-banks
+    disposition: RELOCATE
+    destination: "Country inspector Catalysts tab, Watch Next queue, and policy_watch.html"
+    reachability: "The inspector exposes the next policy event; the deep-link band names Policy Watch."
+  - id: risk.credit-bonds
+    disposition: IMPROVE
+    target: "International risk map and Country inspector Rates & Credit tab"
+    rationale: "Keeps credit and sovereign stress visible at the decision point without a separate L1 museum panel."
+  - id: fx.dollar-drivers
+    disposition: IMPROVE
+    target: "Global Call signal stack and Transmission & fragility chain"
+    rationale: "Connects the dollar fact to affected markets, conditions, and reversal risk."
+  - id: risk.fragility-map
+    disposition: IMPROVE
+    target: "International risk map with separate FX, credit, external, policy, and market columns"
+    rationale: "Retains slow vulnerability as a separate reading from fast market stress."
+  - id: risk.pressure-flow
+    disposition: IMPROVE
+    target: "Transmission chain, sensitivity strip, and Country inspector Evidence tab"
+    rationale: "Preserves directed links but demotes mechanics from first-level reading."
+  - id: reference.regime-correlation-ranks
+    disposition: RELOCATE
+    destination: "Country inspector Evidence tab and named deep-research disclosures"
+    reachability: "Evidence remains one task tab away and carries links to full reference views."
+  - id: action.sector-rotation
+    disposition: RELOCATE
+    destination: "International playbook summary and sector_central.html"
+    reachability: "The playbook quotes the accepted regional stance; the deep-link band names Sector Intelligence."
+  - id: action.prophet-stocks
+    disposition: RELOCATE
+    destination: "International playbook summary and intl_stocks.html"
+    reachability: "Stock Dashboard remains in global navigation and the page-level deep-link band."
+  - id: shell.theme-language-responsive
+    disposition: IMPROVE
+    target: "Intentional dark command-center and light research-workspace treatments, EN/ZH parity, 390w recomposition"
+    rationale: "Makes all supported states deliberate while preserving the canonical site shell."
+
+additions:
+  - "Material Risk Radar: only changes that alter the playbook, each with trigger and invalidation."
+  - "Country inspector: same-page task tabs and explicit full-page escape."
+  - "International playbook: Favor, Reduce, Hedge, and Watch Next as display projections only."
+  - "One continuous operating flow from verdict to evidence to action to invalidation."
+
+user_tasks:
+  - id: task.read-global-call
+    task: Decide whether the international tape is constructive, mixed, or risk-off and what changes the call.
+    critical: true
+    production: "A dial, thesis, tug, and vitals answer the question, but compete with many equal-weight panels."
+    proposal: "Global Call states the engine verdict, supporting facts, posture, and flip condition in one bounded hero."
+    verdict: BETTER
+    notes: "Less search and no loss of the engine-owned verdict or receipts."
+  - id: task.find-leadership
+    task: Identify the leading, weakening, and breaking markets without losing USD and FX context.
+    critical: true
+    production: "Turn tiles, performance leaderboard, and rotation scatter answer separately."
+    proposal: "Global Pulse cards and Rotation & turns combine USD return, state, rank migration, and stance."
+    verdict: BETTER
+    notes: "The proposal preserves decomposition in detail rather than repeating it across three L1 modules."
+  - id: task-diagnose-risk
+    task: Distinguish a local country problem from a cross-market transmission threat.
+    critical: true
+    production: "Contagion, dollar, fragility, and pressure-flow panels require synthesis by the user."
+    proposal: "Transmission & fragility separates origin stress, US transmission, mechanism, and structural risk."
+    verdict: BETTER
+    notes: "The causal boundary becomes more explicit, not more certain."
+  - id: task-investigate-country
+    task: Open the evidence behind one country's state and know what confirms or invalidates it.
+    critical: true
+    production: "The comparison table and market tiles link outward; supporting organs are page-wide."
+    proposal: "Country inspector keeps state evidence, thresholds, catalyst, task tabs, and full-page escape together."
+    verdict: BETTER
+    notes: "The proposal reduces route switching while keeping the dedicated route reachable."
+  - id: task-act-with-bounds
+    task: Translate international evidence into a bounded portfolio posture without mistaking display context for sizing authority.
+    critical: true
+    production: "Stances exist across turn, sector, and stock surfaces but the page ends in additional reference panels."
+    proposal: "The playbook groups existing stances and risk channels, discloses its basis, and never sizes positions."
+    verdict: BETTER
+    notes: "Acceptance is conditional on using only existing engine outputs and stance vocabulary."
+authority_delta:
+  - id: auth.global-verdict
+    production_claim: "Engine-owned world risk-appetite label, score, drags, and descriptive thesis."
+    proposal_claim: "The same verdict and receipts, with a clearer page-level hierarchy."
+    direction: equal
+    warranted: true
+    evidence: "scripts/build_intl.py:181-386; templates/intl.html.j2:475-676"
+  - id: auth.playbook
+    production_claim: "Market-state, sector, and stock surfaces publish plain-language stances without portfolio sizing."
+    proposal_claim: "Those stances are grouped into Favor, Reduce, Hedge, and Watch Next; no new score, probability, size, or trade origin."
+    direction: stronger
+    warranted: true
+    evidence: "Conditional: implementation may project only accepted stance fields and named risk channels, with display-only disclosure."
+  - id: auth.transmission
+    production_claim: "Connectedness and US receiving share are transmission reads, not causal shares."
+    proposal_claim: "The mechanism chain is explicitly conditional and origin stress remains separate from US transmission."
+    direction: weaker
+    warranted: true
+    evidence: "research/INTL_RISK_DESK_MASTERPLAN_BY_FABLE.md; templates/intl.html.j2:1400-1879"
+  - id: auth.country-thresholds
+    production_claim: "Market states carry engine thresholds, recovery quality, events, and radar context."
+    proposal_claim: "The inspector exposes only thresholds already present in the selected market state/radar payload."
+    direction: equal
+    warranted: true
+    evidence: "scripts/build_intl.py:692-849"
+
+information_economics:
+  words_per_card:
+    production: "Baseline harness measured 1,923 visible English words across 27 panels and 20 sections."
+    proposal: "Reference targets short card labels plus one meaning and one stance; full detail moves to task tabs or named deep links."
+  findings:
+    - "The proposal removes equal visual weight from raw reference organs but does not remove their user jobs."
+    - "Charts remain where shape matters: market sparklines, rank migration, transmission sequence, and threshold movement."
+    - "Dense receipts move to hover, inspector tabs, disclosures, or dedicated routes rather than becoming explanatory paragraphs."
+    - "The playbook is the main authority-risk surface and must name its display-only basis."
+  preserved:
+    - "Currency-aware returns, market state, rotation, contagion, slow fragility, and falsifiable thresholds remain visible."
+    - "Bilingual labels, both themes, mobile access, stock dashboard, and dedicated country pages remain reachable."
+    - "The proposal reduces the L1 hierarchy from roughly twenty sections to six operating acts."

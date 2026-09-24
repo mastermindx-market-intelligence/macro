@@ -1,0 +1,131 @@
+schema: mastermind.rig_baseline.v1
+reference_id: intl-vnext-20260924
+captured_at: "2026-09-24"
+
+production:
+  route: intl.html
+  live_url: "https://www.mastermind-x.com/intl.html"
+  source_commit: 48dc431c2d0ece76e6e1b5510ff1f57f7dad1d8b
+  source_paths:
+    - templates/intl.html.j2
+    - scripts/build_intl.py
+    - site/intl.html
+  shared_surfaces:
+    - intl_stocks.html shares templates/intl.html.j2 behind mode == stocks
+
+evidence:
+  screenshots:
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-desktop-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-desktop-light-en.png, viewport: desktop, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-desktop-dark-zh.png, viewport: desktop, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-desktop-light-zh.png, viewport: desktop, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-mobile-dark-en.png, viewport: mobile, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-mobile-light-en.png, viewport: mobile, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-mobile-dark-zh.png, viewport: mobile, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/baseline-r2-mobile-light-zh.png, viewport: mobile, theme: light, locale: zh}
+  gaps:
+    - {axis: access, value: authenticated, reason: "RIG baseline is anonymous; no credentials or premium payload are introduced."}
+
+user_job: >
+  Understand the current global market regime, identify where leadership and risk are changing,
+  and translate that evidence into a bounded cross-border portfolio posture.
+
+core_interactions:
+  - Read the world risk-appetite verdict and its engine-owned receipts.
+  - Compare international markets in USD, local return, FX effect, and market state.
+  - Inspect rotation ranks, recent state changes, rates, policy, contagion, and fragility.
+  - Open country and stock-detail destinations for deeper investigation.
+
+information_hierarchy:
+  - Global risk-appetite dial, thesis, US-versus-world tug, and four vitals.
+  - Turn-state board, recent changes, USD performance, and rotation scatter.
+  - Macro comparison, rates, contagion, central banks, credit, dollar, and fragility.
+  - Regime/correlation/rank reference panels, sector rotation, and Prophet signals.
+design_lineage:
+  rulings:
+    - ref: "DNR:HOLD-UD-B1-PRIMARY-MACRO-MIGRATION"
+      evidence: "research/DO_NOT_REBUILD.md"
+      implication: "Do not wholesale-move the unified US macro dashboard or relabel US state as global."
+    - ref: "International Risk Desk masterplan"
+      evidence: "research/INTL_RISK_DESK_MASTERPLAN_BY_FABLE.md"
+      implication: "Preserve origin stress versus US transmission, typed nulls, and display-only risk context."
+    - ref: "International Turns and Rotation revamp"
+      evidence: "research/INTL_TURN_ROTATION_REVAMP.md"
+      implication: "Reuse accepted market states, rotation ranks, turn events, and stance vocabulary."
+    - ref: "Master Product Design System archetype D"
+      evidence: "research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md:393-455"
+      implication: "Regime Dashboard has six L1 sections and answers the primary question above the fold."
+  rejected_variants:
+    - "A second lifecycle, scoring, or publication system for international intelligence."
+    - "A flat museum of every engine output at equal visual priority."
+  comments:
+    - path: "scripts/build_intl.py:181-386"
+      note: "World-risk states are computed once and reused; extra markets must not leak into unrelated ranks."
+    - path: "scripts/build_intl.py:387-646"
+      note: "Risk organs fail open independently and remain descriptive rather than trading authority."
+
+capabilities:
+  - id: global.regime-verdict
+    user_job: Read the engine-owned global risk-appetite state and its plain-language meaning.
+    evidence: "templates/intl.html.j2:475-676"
+    importance: core
+  - id: global.us-world-rotation
+    user_job: See whether leadership is rotating toward or away from non-US markets.
+    evidence: "templates/intl.html.j2:879-922"
+    importance: core
+  - id: market.turn-state
+    user_job: Identify markets whose trend state changed and the stance attached to that state.
+    evidence: "templates/intl.html.j2:678-856"
+    importance: core
+  - id: market.performance-usd
+    user_job: Compare local equity return, currency effect, and total USD return.
+    evidence: "templates/intl.html.j2:857-878"
+    importance: core
+  - id: market.macro-comparison
+    user_job: Compare regime, recession pressure, rates, inflation, FX, and equity stretch by economy.
+    evidence: "templates/intl.html.j2:923-980"
+    importance: supporting
+  - id: rates.curve-desk
+    user_job: Compare curve shape, real yields, long-yield drift, and carry versus the US.
+    evidence: "templates/intl.html.j2:981-1068"
+    importance: supporting
+  - id: risk.contagion
+    user_job: Understand connectedness, shock transmitters, and whether stress is reaching US assets.
+    evidence: "templates/intl.html.j2:1400-1489"
+    importance: core
+  - id: policy.central-banks
+    user_job: Compare realized central-bank stance, balance-sheet context, and meeting dates.
+    evidence: "templates/intl.html.j2:1490-1557"
+    importance: supporting
+  - id: risk.credit-bonds
+    user_job: Detect international credit-spread and bond-market stress.
+    evidence: "templates/intl.html.j2:1558-1645"
+    importance: supporting
+  - id: fx.dollar-drivers
+    user_job: See which channels are driving the dollar and where pressure transmits.
+    evidence: "templates/intl.html.j2:1646-1713"
+    importance: core
+  - id: risk.fragility-map
+    user_job: Separate fast market stress from slow structural vulnerability.
+    evidence: "templates/intl.html.j2:1714-1812"
+    importance: core
+  - id: risk.pressure-flow
+    user_job: See directed international pressure links without treating correlation as causation.
+    evidence: "templates/intl.html.j2:1813-1879"
+    importance: supporting
+  - id: reference.regime-correlation-ranks
+    user_job: Inspect growth-inflation placement, correlation, and ranked reference views.
+    evidence: "templates/intl.html.j2:1880-1966"
+    importance: supporting
+  - id: action.sector-rotation
+    user_job: Translate regional sector relative strength into a display-only action shortlist.
+    evidence: "templates/intl.html.j2:1967-1990"
+    importance: supporting
+  - id: action.prophet-stocks
+    user_job: Open international stock candidates that are strong relative to their own peers.
+    evidence: "templates/intl.html.j2:1991-2061"
+    importance: supporting
+  - id: shell.theme-language-responsive
+    user_job: Use the same page in dark or light, English or Chinese, desktop or mobile.
+    evidence: "templates/intl.html.j2:1-474,2062-2214"
+    importance: core
