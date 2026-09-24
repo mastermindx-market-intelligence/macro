@@ -197,6 +197,25 @@ def _join_zh_sentences(*parts: str | None) -> str | None:
             clean.append(s + "。")
     return "".join(clean) or None
 
+
+def _load_reference_registry(repo_root: Path) -> dict | None:
+    """Read config/market_reference.yml directly; None when missing/invalid.
+
+    The producer deliberately does NOT depend on the market-reference builder module (scripts/build_market_reference.py):
+    that module's collector import closure (500+ files) would become part of
+    the `am-edition-producer` CI job's contract (scripts/check_contract_delta.py).
+    Only the mapping is needed, and yaml is already a runtime dependency of
+    lib.config inside this job's declared closure. Tests patch this seam to
+    simulate an unavailable registry."""
+    try:
+        import yaml  # noqa: WPS433 — local import keeps the producer's runtime footprint tight.
+
+        raw = yaml.safe_load((repo_root / "config" / "market_reference.yml").read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else None
+    except Exception as exc:  # noqa: BLE001
+        log.debug("am_edition: reference registry load failed (%s)", exc)
+        return None
+
 _OWNER_PAGE_BY_PLANE = {
     "rates": "macro.html",
     "dollar": "bonds.html",
@@ -1964,13 +1983,7 @@ def _owner_links_block() -> dict:
     # reference row is dropped (never silently truncated to bare hrefs). The
     # registry's own label_en/label_zh are surfaced (the raw `id` is a slug
     # §0 gate 8 — "no raw slugs in a new block").
-    registry_raw: dict | None = None
-    try:
-        from scripts.build_market_reference import load_registry  # noqa: WPS433 — local import keeps the producer's runtime footprint tight.
-        registry_raw = load_registry(repo_root / "config" / "market_reference.yml")
-    except Exception as exc:  # noqa: BLE001
-        log.debug("am_edition: reference registry load failed (%s)", exc)
-        registry_raw = None
+    registry_raw = _load_reference_registry(repo_root)
     # Build id -> (label_en, label_zh) for the whitelisted anchors only.
     label_by_id: dict[str, tuple[str, str]] = {}
     if isinstance(registry_raw, dict):

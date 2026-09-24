@@ -324,7 +324,6 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
-      - "scripts/build_market_reference.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"

@@ -2071,21 +2071,22 @@ def test_five_typed_states_for_new_blocks(tmp_path):
             session_date="2026-09-08",
             transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
         )
-        # Also drop the registry so reference rows fail too.
-        import scripts.build_market_reference as bmr
-        orig_load = bmr.load_registry
+        # Also drop the registry so reference rows fail too — through the
+        # producer's own seam (never through the market-reference builder module,
+        # whose collector closure is not this job's CI contract).
+        orig_load = mod._load_reference_registry
 
-        def _empty(_path):
+        def _empty(_root):
             return {}
 
-        bmr.load_registry = _empty
+        mod._load_reference_registry = _empty
         try:
             p = build_payload(site, data, now=now)
             ol = _new_block(p, "owner_links")
             assert ol["state"] == "NOT_COVERED", ol
             assert ol.get("state_reason_en"), "missing owner_pages disclosure"
         finally:
-            bmr.load_registry = orig_load
+            mod._load_reference_registry = orig_load
     finally:
         mod._resolve_owner_page = orig
     # Pin the reachability documentation.
