@@ -16,9 +16,9 @@ implementation_handoff_state: NOT_ISSUED
 
 Chairman continues extensive principal-led Energy research and planning before a mature Fable CEO implementation/orchestration handoff. Sol retains hard domain research for PRINCIPAL_JUDGMENT. Center economic value capture, attributable cash per share, required investment/financing, expectations and valuation/re-rating; supply constraints are supporting evidence rather than a Robotics BOM imposed on Energy.
 
-Sole carrier: Macro PR #7791, branch `sol/energy-sector-research-20260923`, open/draft/unmerged/HOLD. R5 pickup `c6bf3c207a069b6a029df3318a07163a06065f64`; in-turn checkpoint `4bb4fe91926aba514eb2ebb52a82cfc877ea17df`; exact pre-closeout head `c31c8b6559c0cd2a1ab8d2b08a86a84d28354843`. Research-only authority covers authored public-source research, research-side verification and continuity, not production code/schema/data/identity/baskets/rank/entry/size/trade/auth/publisher/deployment effects. Fable handoff remains NOT_ISSUED.
+Sole carrier: Macro PR #7791, branch `sol/energy-sector-research-20260923`, open/draft/unmerged/HOLD. R5 pickup `c6bf3c207a069b6a029df3318a07163a06065f64`; in-turn checkpoint `4bb4fe91926aba514eb2ebb52a82cfc877ea17df`; canonical R5A core advanced through `4c3a3f3352a22f2980426e3c6ed25f3e2d45996d`; additive-reconciliation head before this checkpoint update `2583bccb73798d35bfcbcba63f308d00cd9e7bda`. Research-only authority covers authored public-source research, research-side verification and continuity, not production code/schema/data/identity/baskets/rank/entry/size/trade/auth/publisher/deployment effects. Fable handoff remains NOT_ISSUED.
 
-Protected Mastermind pin remains `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1. INDEX freshly read; applicable cold/active/delegation/reconciliation/closeout remain the same immutable source already consumed. Native GitHub research read/write and repository push preflight worked in this generation. A mode label is not proof of tool access.
+Protected Mastermind pin refreshed to `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1/bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and CLOSEOUT were loaded from that same revision for this continuation. ACTIVE_EXECUTION changed relative to the earlier pin; current procedure, not memory, governs this boundary. Native GitHub research read/write and repository push preflight worked in this generation. A mode label is not proof of tool access.
 
 Existing parent remains `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; preserve STSI/Theme Tracker/GMI/ThemeState/F04 identity, evidence, clocks/corrections, rights and private-publication owners. Robotics #7773 is a reference only, with untouched custody. No duplicate graph, identity, evidence warehouse, state, scheduler or publisher.
 
@@ -72,6 +72,27 @@ Primary URLs and selected scopes are retained in the R5 model. Do not republish 
 Exact Orsted source remains `https://orsted.com/en/investors/shares/consensus` and its Euroland links. Read-only Firecrawl attempt failed for insufficient credits before execution. Sandbox direct reads failed DNS; one bounded MacStudio URL read returned HTTP599. No credentials, bypass, billing upgrade, worker or watcher. Web primary-source reads and native GitHub publication remained usable. Do not re-probe identical failed requests without a material connection/credit change.
 
 Equinor `https://www.equinor.com/investors/consensus` exposes a Historical consensus (2010-) area, but the exact downloadable historical file was not recovered. Bounded archive/XLSX search found the issuer's January14 invitation and publication-process description, not a usable independent historical panel. Do not repeat that same search as though it acquired data. The next tactic is the actual issuer archive/download control or an independently licensed historical source, with rights and vintage checks.
+
+## Same-carrier R5A collision reconciliation and additive supplement
+
+Before publishing the portable 90-check R5A candidate, GitHub had advanced five commits beyond the generating turn's latest readback and already contained a canonical R5A core. That newer core is retained. The complete overlapping candidate was **not** promoted as a rival package.
+
+Only the genuinely additive research was published:
+- `research/energy/ENERGY_R5A_ADDITIVE_EXPECTATIONS_CCUS_2026-09-23.md`
+- research commit `2583bccb73798d35bfcbcba63f308d00cd9e7bda`
+- exact blob `39b87a1fdbdbb4540743955a612031d906e83fa2`
+- local SHA256 `ff67ada93ce7185d79d3cd3168204a88465ab6686e5cc257ca5eaf693b9c26f2`
+
+The supplement adds:
+- **Fortum:** returned July15/Aug24 source-labelled consensus views, changing sample sizes, Q2 comparable-actual comparison and metric-definition sign reversal; aggregate differences are not promoted to within-analyst revisions or validated surprises.
+- **Neste:** FY2026/FY2028 volume, renewable-product margin and group EBITDA curve; a cross-horizon expectation curve is not a fixed-year estimate revision.
+- **Northern Lights:** CCUS transport/storage versus capture/credit-rights decomposition; capacity/customer maxima are not delivered tonnes, revenue or partner profit.
+- **Vestas:** FY2028 revenue/EPS detail and the post-Q2 profitability hurdle already visible in the forecast.
+- **VERBUND:** bounded price/cash-dividend, paired market-cap/net-debt and retrospective P/E decomposition; none is relabelled a fixed-horizon forward re-rating study.
+
+Fresh subset verification before publication: **29 passed / 0 failed**, including 18 unique HTTPS source locators, 18 arithmetic checks, 14 acceptance requirements and no Fable/current-valuation authority. This subset verifier was local qualification only and was not added as a competing canonical verifier. The underlying portable candidate's 90-pass receipt remains recovery evidence, not the canonical R5 core.
+
+The orphan Git object created during an aborted partial transfer was never attached to the branch and grants no state/effect authority. The final published additive blob was independently matched before ref update.
 
 ## Exact next action — R5B, then R6
 
