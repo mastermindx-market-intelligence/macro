@@ -3,7 +3,7 @@
 display-only, never a score, never a rank, never a recommendation
 
 This module projects a frozen case into the
-``consumer_cyclical_economic_change.v1`` document. The composer is
+``consumer_cyclical_intelligence_read_model.v1`` document. The composer is
 deliberately pure: no I/O, no network, no store, no env, no clock reads
 (``generated_at`` is passed in by the caller as ``case.generated_at``;
 the module never reads the wall clock and never imports ``datetime.now``).
@@ -46,7 +46,7 @@ from typing import Any, Mapping, Sequence
 # ---------------------------------------------------------------------------
 
 
-CONTRACT_ID = "consumer_cyclical_economic_change.v1"
+CONTRACT_ID = "consumer_cyclical_intelligence_read_model.v1"
 SCHEMA_VERSION = "1.0.0"
 
 FACT_KEY_TOTAL_REVENUE = "total_revenue"
@@ -897,7 +897,7 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     Returns
     -------
     dict
-        The ``consumer_cyclical_economic_change.v1`` document with keys
+        The ``consumer_cyclical_intelligence_read_model.v1`` document with keys
         ``contract_id``, ``schema_version``, ``generated_at``,
         ``subject``, ``comparison_basis``, ``facts``, ``results``,
         ``explanation``, ``degraded_dependencies``, ``source_records``

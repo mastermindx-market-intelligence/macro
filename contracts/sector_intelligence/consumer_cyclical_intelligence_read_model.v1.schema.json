@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mastermind-x.com/contracts/sector_intelligence/consumer_cyclical_economic_change.v1.schema.json",
+  "$id": "https://mastermind-x.com/contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json",
   "title": "Consumer Cyclical Economic Change v1",
   "contract_id": {
-    "const": "consumer_cyclical_economic_change.v1"
+    "const": "consumer_cyclical_intelligence_read_model.v1"
   },
   "schema_version": {
     "const": "1.0.0"
@@ -38,7 +38,7 @@
       ]
     },
     "contract_id": {
-      "const": "consumer_cyclical_economic_change.v1"
+      "const": "consumer_cyclical_intelligence_read_model.v1"
     },
     "degraded_dependencies": {
       "type": "array",
@@ -140,16 +140,12 @@
   ],
   "$defs": {
     "clock": {
-      "anyOf": [
-        {
-          "type": "string",
-          "format": "date-time",
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
     },
     "date": {
       "type": "string",
@@ -170,15 +166,11 @@
           "pattern": "^[a-z][a-z0-9_]*$"
         },
         "reason": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
         },
         "state": {
           "type": "string",
@@ -320,15 +312,11 @@
           "type": "boolean"
         },
         "native_ref": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
         },
         "perimeter": {
           "type": "string",
@@ -371,15 +359,11 @@
           "$ref": "#/$defs/sign_convention"
         },
         "target": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
         },
         "unit": {
           "type": "string",
@@ -511,15 +495,11 @@
           "$ref": "#/$defs/sign_convention"
         },
         "unit": {
-          "anyOf": [
-            {
-              "type": "string",
-              "pattern": "^[A-Za-z][A-Za-z0-9_%]{0,15}$"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z][A-Za-z0-9_%]{0,15}$"
         },
         "value_text": {
           "anyOf": [
@@ -532,15 +512,11 @@
           ]
         },
         "withheld_reason": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
         }
       },
       "allOf": [

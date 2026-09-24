@@ -75,7 +75,7 @@ def _plnt_fact(
         "display_quantum": "USD thousands",
         "native_admitted": native_admitted,
         "native_ref": native_ref,
-        "perimeter": "consumer_cyclical_economic_change.v1",
+        "perimeter": "consumer_cyclical_intelligence_read_model.v1",
         "role": role,
         "target": "issuer:0001637207",
         "evidence": evidence

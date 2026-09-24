@@ -8,11 +8,43 @@
 This file is the frozen boundary for V1. Workers implement against THIS file.
 It creates no authority; it records what was re-pinned and what was adjudicated.
 
+## 0. Admission edge (R15 §Routing / placement receipt)
+
+R15 froze this operation at `PLACEMENT_STATE: WAITING_CAPACITY`, `RECEIVER_ASSIGNMENT: NONE`,
+`EXECUTION_STATE: PRE_START`, `FABLE_DISPATCH: NOT_SENT`, and forbids self-selection: "Do not convert
+this into `OPEN_PICKUP`, select a numbered account by convenience, arm a receiver watcher, or claim
+ACK/START."
+
+That state was lifted by the mechanism R15 itself names in the same paragraph: "When a lawful
+Capacity/placement owner **or deliberate live direct handoff** assigns an eligible Fable session,
+that delivery becomes the receiver assignment under current law; the worker then performs
+pickup/read/watch/START as a separate sequence."
+
+**The admission edge is a deliberate live direct handoff from the Chairman on 2026-09-24**, whose
+delivery stated verbatim: "THIS LIVE DELIVERY IS YOUR RECEIVER ASSIGNMENT for operation
+`gmi-consumer-cyclical-v1-integration-20260924-fable-001`", instructed this seat to "Read and follow
+the R15 packet completely", to "Re-pin current protected Mastermind procedure, Macro main, #7804, and
+every affected shared-owner/custody head before any native effect", and named V1 PLNT as the first
+executable outcome. No numbered account was self-selected and no receiver watcher was armed.
+
+This receipt is what R15 line 73 requires when it says a future source-modifying wave "must enter
+through current lawful custody/workspace/admission". Custody is evidenced in §1; **admission is this
+section**. An independent review correctly refused the packet while this receipt was absent — it was
+performed but not recorded.
+
 ## 1. Re-pin receipt (R15 step 1 — executed 2026-09-24)
 
-Macro `main` at re-pin: `b076a4004599215ef21765c437aaade48f40388d` (R15 froze at `c99fdde7302d`).
+Macro `main` at first re-pin: `b076a4004599` (R15 froze at `c99fdde7302d`). **Main moves fast on this
+repo** — it was already at `cdcfbb27681e`, then `69c52bbe8df5`, within the same session. Per R15
+"Re-pin every affected native group immediately before write", the four blob claims below are
+re-verified immediately before each commit, not merely at this timestamp.
 
-Owner heads re-pinned — **all six byte-identical to the R15 freeze pins, all OPEN/DRAFT, none merged**:
+Owner heads re-pinned — **five external owner PRs, all byte-identical to the R15 freeze pins, all
+OPEN/DRAFT, none merged.** R15 also names **#7331**, but #7331 is a GitHub **issue**
+("[K4-G][HOLD-FOR-SOL] Repair event-workspace clocks…", OPEN), not a pull request, and R15 never
+pinned a SHA for it — so "byte-identical to the R15 freeze pin" is unsatisfiable for #7331 and it is
+listed below as such. #7804 is this program's own research carrier, **not** an external gate, and is
+listed separately for that reason.
 
 | Owner | R15 pin | Re-pinned now | State |
 |---|---|---|---|
@@ -21,6 +53,10 @@ Owner heads re-pinned — **all six byte-identical to the R15 freeze pins, all O
 | #7669 template owner | `6942b2b62bad...` | `6942b2b62bad` | OPEN draft |
 | #7462 theme graph/store | `31706d7322af...` | `31706d7322af` | OPEN draft |
 | #7426 company history | `7bc04876747d...` | `7bc04876747d` | OPEN draft |
+| #7331 history semantics | *(named by R15; never pinned — it is an issue, not a PR)* | n/a | OPEN issue |
+
+This program's own research carrier, listed separately because it is not an external gate:
+
 | #7804 consumer evidence | `3d286719686d` | `3d286719686d` | OPEN draft |
 
 Affected blob re-pins against current `origin/main`:
@@ -97,6 +133,33 @@ Leg 6 is therefore blocked on the **accepted-family** ground, which is stronger 
 and does not depend on #7870 file layout. Recorded so a later session does not "discover" `app/earnings.py`
 and mistake it for an opening.
 
+## 2b. Contract NAMING also preserves the #7780 gate (independent review finding)
+
+An independent review found that "carries no transport mount identity" covered *registration* but not
+*naming*. The first draft named the contract `consumer_cyclical_intelligence_read_model.v1`, which fuses both
+values R15 H2 reserves to the open #7780 ruling — `profile = consumer_cyclical` and
+`content_discriminator = consumer_economic_change.v1` — into a durable, versioned, CI-gated,
+merge-bound filename. Registering nothing while shipping a `.v1` filename that implies the grammar is
+a distinction the successor session would not have honoured, and if #7780 ruled differently the repair
+would be a contract migration on `main`.
+
+**Resolved by renaming, not by disclosure:** the contract is
+`consumer_cyclical_intelligence_read_model.v1`, mirroring the merged sibling
+`finance_intelligence_read_model.v1` exactly. That axis — `<sector>_intelligence_read_model` — belongs
+to the `contracts/sector_intelligence/` family, is already established on `main`, and is one #7780
+cannot contradict, because it is not a transport grammar at all. The reserved discriminator stem
+`economic_change` does not appear in any shipped identifier.
+
+## 2c. Why incumbent-extension licenses V1-CORE but not `app/earnings.py`
+
+The same review noted §2a never distinguishes its own licensing argument from the one it refuses.
+The distinction is that R15 H1 made an **affirmative family selection** for this dossier's transport —
+it chose `/api/themes/v1/research/query` and explicitly superseded direct Earnings delivery. Extending
+`app/earnings.py` would therefore contradict a positive, accepted authority choice about *this*
+artifact. `contracts/sector_intelligence/` is not a transport at all, so no accepted choice speaks
+against it; it carries no route, no entitlement, no publication, and no pointer. Incumbent extension
+is lawful exactly where no accepted decision already assigned the seam elsewhere.
+
 ## 3. Collision census (R15 step 3)
 
 - **CDV-1 Consumer *Defensive* (#7792, `WS-CONSUMER-DEFENSIVE-CDV1`)** owns `engine/company_intelligence/*`,
@@ -143,6 +206,13 @@ Consequences, all binding on the build:
   owner under R15 step 4. This gap returns to Sol; it is not worked around.
 - `engine/fundamental_forensics/sec_companyfacts.py` ingests XBRL Company Facts, not 8-K press-release
   exhibits, so it is not a shortcut to admission for the advertising lines either.
+
+**Stated plainly, because it is load-bearing:** R15 step 3 allows a carrier "only after current source
+custody and collision census". What §1 and §3 establish is a custody **census** — who owns what, and
+what is retained — not **possession** of the PLNT exhibit, which nobody here has. V1-CORE is lawful
+under that reading only because it never presents a non-possessed value as a receipt: `native_admitted`
+is false, `native_ref` is null, and the projection refuses to describe either as a retained source. A
+wave that needed possession would be blocked here; V1-CORE does not.
 
 ## 5. FROZEN GOLDEN ORACLE — R6 §7.1 (acceptance, not a formula service)
 
@@ -203,9 +273,9 @@ substitute receipts** — a fact whose `native_admitted` is false may not be pre
 ## 8. Build packets
 
 ### T1 — contract (owned paths, exclusive)
-- `contracts/sector_intelligence/consumer_cyclical_economic_change.v1.schema.json`
-- `data/sector_intelligence/fixtures/consumer_cyclical_economic_change.v1.valid.json`
-- `tests/test_consumer_cyclical_economic_change_contract.py`
+- `contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json`
+- `data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json`
+- `tests/test_consumer_cyclical_intelligence_read_model_contract.py`
 - `.github/ci/legacy-jobs.yml` — new `consumer-cyclical-economic-change` job, mirroring `finance-intelligence`
 
 ### T2 — projection (owned paths, exclusive)
