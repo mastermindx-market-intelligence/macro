@@ -189,6 +189,7 @@ class Proxy(BaseHTTPRequestHandler):
             if not state["ok"]:
                 self._json(503, {"error": "local_inference_not_admitted", **state}, {"Retry-After": "60"})
                 return
+            conn = None
             try:
                 conn = http.client.HTTPConnection(
                     self.server.upstream_host,
@@ -215,10 +216,11 @@ class Proxy(BaseHTTPRequestHandler):
             except Exception as exc:  # bounded local proxy; caller owns fallback
                 self._json(502, {"error": "ollama_upstream_failure", "detail": type(exc).__name__})
             finally:
-                try:
-                    conn.close()
-                except Exception:
-                    pass
+                if conn is not None:
+                    try:
+                        conn.close()
+                    except Exception:
+                        pass
                 if self.command == "POST":
                     _unload(self.server.model, self.server.ollama_bin)
 
