@@ -102,6 +102,9 @@ def _append_forward_log(outdir: Path, artifact: dict) -> None:
         },
         "implied_bp_12m": (artifact.get("board") or {}).get("rate_path_row", {}).get("implied_bp_12m"),
         "gap_bp": (artifact.get("board") or {}).get("rate_path_row", {}).get("gap", {}).get("gap_bp"),
+        # Freeze the exact already-qualified RIC measurement block. Do not recompute,
+        # score, or reinterpret it here; keep-FIRST turns this into prospective evidence.
+        "policy_path_repricing": artifact.get("policy_path_repricing"),
         "logged_at": datetime.now(timezone.utc).isoformat(),
     }
 
