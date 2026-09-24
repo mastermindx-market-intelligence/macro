@@ -44,16 +44,18 @@ def test_frozen_policy_mappings_are_exact():
     assert constant.tolist() == [0.75] * 5
 
 
-def test_exposure_matched_constant_uses_states_not_returns():
+def test_exposure_matched_constant_has_one_post_lag_definition():
     prereg = cp.load_preregistration()
     states = _states()
-    returns_a = pd.Series([0.5, -0.4, 0.3, -0.2, 0.1], index=states.index)
-    returns_b = -returns_a
-    a = cp.target_gross("matched_constant", states, returns_a, prereg)
-    b = cp.target_gross("matched_constant", states, returns_b, prereg)
-    expected = np.mean([1.0, 0.97, 0.90, 0.78, 0.62])
-    assert np.allclose(a, expected)
-    assert np.allclose(b, expected)
+    returns = pd.Series([0.5, -0.4, 0.3, -0.2, 0.1], index=states.index)
+    current_target = cp.target_gross("current_ladder", states, returns, prereg)
+    current_frame = cp.execute_policy(returns, current_target, lag=1, cost_bps=10)
+
+    matched = cp.matched_constant_target(current_frame, states.index)
+    expected = float(current_frame["executed_gross"].mean())
+    assert matched.tolist() == pytest.approx([expected] * len(states))
+    with pytest.raises(KeyError, match="constructed from executed current-ladder gross"):
+        cp.target_gross("matched_constant", states, returns, prereg)
 
 
 def test_lag_and_turnover_cost_semantics():
@@ -172,9 +174,10 @@ def _base_adjudication_summary() -> dict:
         "calmar": 0.32, "certainty_equivalent": 0.075,
     }
     return {
-        "effective_episode_n": 45,
-        "riskoff_episode_n": 20,
-        "elevated_only_episode_n": 25,
+        "historical_authority_eligible": True,
+        "authority_effective_episode_n": 45,
+        "authority_riskoff_episode_n": 20,
+        "authority_elevated_only_episode_n": 25,
         "primary": {
             "current_ladder": strong_current,
             "constant_100": full,
@@ -205,8 +208,8 @@ def test_adjudication_exact_current_ladder_pass():
 def test_adjudication_prefers_supported_simple_policy_when_exact_n_fails():
     prereg = cp.load_preregistration()
     summary = _base_adjudication_summary()
-    summary["effective_episode_n"] = 30
-    summary["elevated_only_episode_n"] = 8
+    summary["authority_effective_episode_n"] = 30
+    summary["authority_elevated_only_episode_n"] = 8
     verdict, reasons = cp.adjudicate(summary, prereg)
     assert verdict == "SIMPLER_POLICY_SUPPORTED"
     assert reasons["exact_current_pass"] is False
@@ -216,8 +219,8 @@ def test_adjudication_prefers_supported_simple_policy_when_exact_n_fails():
 def test_adjudication_insufficient_independent_episodes():
     prereg = cp.load_preregistration()
     summary = _base_adjudication_summary()
-    summary["effective_episode_n"] = 12
-    summary["riskoff_episode_n"] = 5
+    summary["authority_effective_episode_n"] = 12
+    summary["authority_riskoff_episode_n"] = 5
     verdict, _ = cp.adjudicate(summary, prereg)
     assert verdict == "INSUFFICIENT_INDEPENDENT_EPISODES"
 
@@ -225,8 +228,8 @@ def test_adjudication_insufficient_independent_episodes():
 def test_adjudication_no_sizing_edge_when_matched_constant_dominates():
     prereg = cp.load_preregistration()
     summary = _base_adjudication_summary()
-    summary["effective_episode_n"] = 25
-    summary["elevated_only_episode_n"] = 5
+    summary["authority_effective_episode_n"] = 25
+    summary["authority_elevated_only_episode_n"] = 5
     summary["primary"]["matched_constant"]["calmar"] = 0.50
     summary["primary"]["matched_constant"]["cvar_95"] = -0.010
     summary["bootstrap"]["binary_vs_matched"]["certainty_equivalent_diff"] = [-0.05, -0.03, -0.01]
@@ -298,3 +301,124 @@ def test_run_study_artifact_flag_cannot_shadow_writer():
     assert "emit_artifacts" in parameters
     assert "write_artifacts" not in parameters
     assert callable(cp.write_artifacts)
+
+
+def test_overlapping_outcome_windows_are_not_independent_authority_n():
+    idx = _idx(70)
+    states = pd.Series("calm", index=idx, dtype="object")
+    states.iloc[1:4] = "risk-off"
+    states.iloc[20:23] = "elevated"
+
+    episodes = cp.find_loud_episodes(
+        states,
+        max_non_loud_gap=10,
+        min_loud_observations=3,
+        post_window_sessions=21,
+    )
+    assert len(episodes) == 2
+    assert episodes[0]["outcome_complete"] is True
+    assert episodes[0]["overlaps_next_episode"] is True
+    assert episodes[0]["authority_independent"] is False
+    assert episodes[1]["outcome_complete"] is True
+    assert episodes[1]["overlaps_next_episode"] is False
+    assert episodes[1]["authority_independent"] is True
+    assert [episode["episode_id"] for episode in cp.authority_independent_episodes(episodes)] == [2]
+
+
+def test_adjudication_fails_closed_when_history_is_not_authority_grade_pit():
+    prereg = cp.load_preregistration()
+    summary = _base_adjudication_summary()
+    summary["historical_authority_eligible"] = False
+    summary["authority_effective_episode_n"] = 1
+    summary["authority_riskoff_episode_n"] = 1
+    summary["authority_elevated_only_episode_n"] = 0
+
+    verdict, reasons = cp.adjudicate(summary, prereg)
+    assert verdict == "INSUFFICIENT_INDEPENDENT_EPISODES"
+    assert reasons["exact_checks"]["historical_authority_eligible"] is False
+    assert reasons["simple_checks"]["historical_authority_eligible"] is False
+
+
+def test_historical_source_qualification_rejects_current_membership_backfill():
+    qualification = cp.historical_source_qualification()
+    assert qualification["construction_is_causal"] is True
+    assert qualification["exact_state_uses_cn_breadth"] is True
+    assert qualification["breadth_current_membership_backfill"] is True
+    assert qualification["date_effective_membership_present"] is False
+    assert qualification["source_vintage_metadata_present"] is False
+    assert qualification["historical_authority_eligible"] is False
+    assert qualification["classification"] == "CAUSAL_DEFINITION_CURRENT_NOT_AUTHORITY_GRADE_PIT"
+
+
+def test_forward_episode_spacing_uses_market_sessions_not_graded_row_adjacency():
+    sessions = pd.bdate_range("2026-01-02", "2026-02-06")
+    rows = [
+        {"asof": "2026-01-05", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.06}}},
+        {"asof": "2026-01-06", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.05}}},
+        {"asof": "2026-01-07", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.04}}},
+        {"asof": "2026-02-02", "state": "elevated", "graded": {"fwd_dd": {"h21": -0.03}}},
+        {"asof": "2026-02-03", "state": "elevated", "graded": {"fwd_dd": {"h21": -0.02}}},
+        {"asof": "2026-02-04", "state": "elevated", "graded": {"fwd_dd": {"h21": -0.01}}},
+    ]
+
+    episodes = cp._forward_loud_episodes(
+        rows,
+        session_index=sessions,
+        max_non_loud_gap=10,
+        min_loud_observations=3,
+    )
+
+    assert len(episodes) == 2
+    assert episodes[0]["start"] == "2026-01-05"
+    assert episodes[0]["end"] == "2026-01-07"
+    assert episodes[1]["start"] == "2026-02-02"
+    assert episodes[1]["end"] == "2026-02-04"
+
+
+def test_forward_ledger_withholds_open_episode_extended_by_unmatured_loud_row(tmp_path):
+    sessions = pd.bdate_range("2026-01-02", "2026-02-20")
+    rows = [
+        {"asof": "2026-01-05", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.06}}},
+        {"asof": "2026-01-06", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.05}}},
+        {"asof": "2026-01-07", "state": "risk-off", "graded": {"fwd_dd": {"h21": -0.04}}},
+        {"asof": "2026-01-12", "state": "elevated", "graded": None},
+    ]
+    path = tmp_path / "forward.jsonl"
+    path.write_text("\n".join(__import__("json").dumps(row) for row in rows) + "\n")
+
+    inventory = cp.forward_ledger_inventory(path, session_index=sessions)
+
+    assert inventory["independent_loud_episode_n"] == 0
+    assert inventory["open_loud_episode_n"] == 1
+    assert inventory["all_episodes"][0]["outcome_complete"] is False
+
+
+def test_forward_ledger_counts_independent_matured_loud_episode(tmp_path):
+    sessions = pd.bdate_range("2026-01-02", "2026-02-20")
+    rows = [
+        {"asof": "2026-01-02", "state": "caution", "graded": {"outcome": "watch", "fwd_dd": {"h21": -0.01}}},
+        {"asof": "2026-01-05", "state": "elevated", "graded": {"outcome": "hit", "fwd_dd": {"h21": -0.06}}},
+        {"asof": "2026-01-06", "state": "risk-off", "graded": {"outcome": "hit", "fwd_dd": {"h21": -0.05}}},
+        {"asof": "2026-01-07", "state": "risk-off", "graded": {"outcome": "miss", "fwd_dd": {"h21": -0.04}}},
+        {"asof": "2026-01-08", "state": "watch", "graded": {"outcome": "watch", "fwd_dd": {"h21": -0.01}}},
+        {"asof": "2026-02-02", "state": "risk-off", "graded": None},
+    ]
+    path = tmp_path / "forward.jsonl"
+    path.write_text("\n".join(__import__("json").dumps(row) for row in rows) + "\n")
+
+    inventory = cp.forward_ledger_inventory(path, session_index=sessions)
+    assert inventory["matured_rows"] == 5
+    assert inventory["matured_loud_rows"] == 3
+    assert inventory["independent_loud_episode_n"] == 1
+    assert inventory["riskoff_containing_episode_n"] == 1
+    assert inventory["elevated_only_episode_n"] == 0
+    assert inventory["historical_coefficients_estimable"] is False
+
+
+def test_live_mapping_mismatch_fails_closed(monkeypatch):
+    from engine import risk_radar_intl as radar
+
+    prereg = cp.load_preregistration()
+    monkeypatch.setitem(radar._GROSS, "risk-off", 0.61)
+    with pytest.raises(RuntimeError, match="differs from frozen preregistration"):
+        cp.assert_live_mapping_matches_prereg(prereg)

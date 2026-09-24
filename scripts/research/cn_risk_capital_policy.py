@@ -99,10 +99,10 @@ def target_gross(
     fixed = prereg["fixed_policies"]
 
     if policy == "matched_constant":
-        current_map = {key: float(value) for key, value in fixed["current_ladder"].items()}
-        current = states.map(current_map).astype(float)
-        mean_gross = float(current.dropna().mean())
-        return pd.Series(mean_gross, index=idx, name=policy)
+        raise KeyError(
+            "matched_constant is constructed from executed current-ladder gross "
+            "after applying the frozen scenario lag"
+        )
     if policy == "vol_target_15":
         spec = fixed[policy]
         lookback = int(spec["lookback"])
@@ -161,6 +161,19 @@ def execute_policy(
     )
     frame["excess_vs_full"] = frame["policy_return"] - frame["full_gross_return"]
     return frame
+
+
+def matched_constant_target(
+    current_frame: pd.DataFrame,
+    target_index: pd.DatetimeIndex,
+) -> pd.Series:
+    """Construct the sole exposure-matched baseline from executed current gross."""
+    if "executed_gross" not in current_frame.columns:
+        raise ValueError("current policy frame has no executed_gross column")
+    mean_gross = float(pd.to_numeric(current_frame["executed_gross"], errors="coerce").mean())
+    if not np.isfinite(mean_gross):
+        raise ValueError("current policy frame has no finite executed gross")
+    return pd.Series(mean_gross, index=target_index, name="matched_constant")
 
 
 def _return_metrics(values: np.ndarray) -> dict[str, float | None]:
@@ -291,7 +304,30 @@ def find_loud_episodes(
             "elevated_observations": int(episode_states.eq("elevated").sum()),
             "risk_off_observations": int(episode_states.eq("risk-off").sum()),
         })
+    for index, episode in enumerate(episodes):
+        next_start_pos = (
+            int(episodes[index + 1]["start_pos"])
+            if index + 1 < len(episodes)
+            else None
+        )
+        overlaps_next = bool(
+            episode["outcome_complete"]
+            and next_start_pos is not None
+            and int(episode["outcome_end_pos"]) >= next_start_pos
+        )
+        episode["next_episode_start_pos"] = next_start_pos
+        episode["overlaps_next_episode"] = overlaps_next
+        episode["authority_independent"] = bool(
+            episode["outcome_complete"] and not overlaps_next
+        )
     return episodes
+
+
+def authority_independent_episodes(
+    episodes: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return complete episode windows that do not bleed into the next alert."""
+    return [episode for episode in episodes if bool(episode.get("authority_independent"))]
 
 
 def analyze_episodes(
@@ -432,9 +468,10 @@ def adjudicate(
 ) -> tuple[str, dict[str, Any]]:
     """Apply the frozen decision tree without optimizing thresholds after results."""
     p = prereg["promotion"]
-    n = int(summary["effective_episode_n"])
-    n_riskoff = int(summary["riskoff_episode_n"])
-    n_elevated = int(summary["elevated_only_episode_n"])
+    historical_authority_eligible = bool(summary["historical_authority_eligible"])
+    n = int(summary["authority_effective_episode_n"])
+    n_riskoff = int(summary["authority_riskoff_episode_n"])
+    n_elevated = int(summary["authority_elevated_only_episode_n"])
     crisis_count = len(prereg["crises"])
 
     cur_mdd = _metric(summary, "current_ladder", "max_drawdown")
@@ -452,6 +489,7 @@ def adjudicate(
     floor_cagr = _metric(summary, "current_riskoff_075", "cagr")
 
     exact_checks = {
+        "historical_authority_eligible": historical_authority_eligible,
         "episode_floor": n >= int(p["exact_min_episodes"]),
         "riskoff_episode_floor": n_riskoff >= int(p["exact_min_riskoff_episodes"]),
         "elevated_only_episode_floor": n_elevated >= int(p["exact_min_elevated_only_episodes"]),
@@ -485,6 +523,7 @@ def adjudicate(
     binary_calmar = _metric(summary, "binary_loud_075", "calmar")
     binary_cagr = _metric(summary, "binary_loud_075", "cagr")
     simple_checks = {
+        "historical_authority_eligible": historical_authority_eligible,
         "episode_floor": n >= int(p["simple_min_episodes"]),
         "riskoff_episode_floor": n_riskoff >= int(p["simple_min_riskoff_episodes"]),
         "mdd_protection": _relative_protection(binary_mdd, full_mdd) >= float(p["mdd_relative_improvement"]),
@@ -699,7 +738,199 @@ def load_vehicle_frame(
     return frame.dropna(subset=["state", "benchmark_return", "vehicle_close"])
 
 
-def forward_ledger_inventory(path: Path | str = FORWARD_LOG) -> dict[str, Any]:
+def historical_source_qualification() -> dict[str, Any]:
+    """Qualify whether reconstructed history may carry policy authority.
+
+    The replay can be causal in calculation while still failing point-in-time source
+    law. In particular, a breadth history rebuilt from today's membership universe
+    is definition-current rather than membership-PIT.
+    """
+    from engine import risk_radar_intl as radar
+
+    collector_path = ROOT / "collectors/china_breadth.py"
+    constituents_path = ROOT / "data/china_breadth/constituents.parquet"
+    engine_path = ROOT / "engine/risk_radar_intl.py"
+    collector_text = collector_path.read_text() if collector_path.exists() else ""
+    engine_text = engine_path.read_text() if engine_path.exists() else ""
+
+    exact_state_uses_cn_breadth = any(
+        "cn_breadth" in variable
+        for _, variables, _ in radar.CN_PROFILE.comp_legs
+        for variable in variables
+    )
+    breadth_current_membership_backfill = (
+        'config.load()["china"]["constituents"]' in collector_text
+        and '_download_closes(tickers, "max")' in collector_text
+    )
+
+    membership_columns: list[str] = []
+    if constituents_path.exists():
+        membership_columns = [
+            str(column) for column in pd.read_parquet(constituents_path).columns
+        ]
+    normalized_membership_columns = {column.lower() for column in membership_columns}
+    effective_date_fields = {
+        "effective_from", "effective_to", "valid_from", "valid_to",
+        "start_date", "end_date", "asof", "as_of",
+    }
+    date_effective_membership_present = bool(
+        normalized_membership_columns.intersection(effective_date_fields)
+    )
+
+    vintage_fields = {
+        "vintage", "vintage_date", "realtime_start", "realtime_end",
+        "first_observed", "published_at", "release_date", "asof", "as_of",
+    }
+    source_paths = [
+        "data/fred/DGS2.parquet",
+        "data/fred/DFII10.parquet",
+        "data/fred/DGS10.parquet",
+        "data/yahoo/CNH_F.parquet",
+        "data/yahoo/DX-Y.NYB.parquet",
+        "data/china_property/cgb.parquet",
+        "data/china_breadth/breadth.parquet",
+    ]
+    source_vintage_evidence: dict[str, dict[str, Any]] = {}
+    for relative in source_paths:
+        path = ROOT / relative
+        columns: list[str] = []
+        attrs: list[str] = []
+        if path.exists():
+            data = pd.read_parquet(path)
+            columns = [str(column) for column in data.columns]
+            attrs = [str(key) for key in getattr(data, "attrs", {}).keys()]
+        normalized = {value.lower() for value in columns + attrs}
+        source_vintage_evidence[relative] = {
+            "exists": path.exists(),
+            "columns": columns,
+            "attribute_keys": attrs,
+            "has_vintage_metadata": bool(normalized.intersection(vintage_fields)),
+        }
+    source_vintage_metadata_present = all(
+        evidence["has_vintage_metadata"]
+        for evidence in source_vintage_evidence.values()
+    )
+
+    construction_is_causal = (
+        "def composite_series" in engine_text
+        and ".rolling(" in engine_text
+        and ".shift(-" not in engine_text
+    )
+    historical_authority_eligible = bool(
+        construction_is_causal
+        and exact_state_uses_cn_breadth
+        and not breadth_current_membership_backfill
+        and date_effective_membership_present
+        and source_vintage_metadata_present
+    )
+    return {
+        "classification": (
+            "AUTHORITY_GRADE_PIT"
+            if historical_authority_eligible
+            else "CAUSAL_DEFINITION_CURRENT_NOT_AUTHORITY_GRADE_PIT"
+        ),
+        "construction_is_causal": construction_is_causal,
+        "exact_state_uses_cn_breadth": exact_state_uses_cn_breadth,
+        "breadth_current_membership_backfill": breadth_current_membership_backfill,
+        "date_effective_membership_present": date_effective_membership_present,
+        "membership_columns": membership_columns,
+        "source_vintage_metadata_present": source_vintage_metadata_present,
+        "source_vintage_evidence": source_vintage_evidence,
+        "historical_authority_eligible": historical_authority_eligible,
+        "authority_effect": (
+            "diagnostic_reconstruction_only"
+            if not historical_authority_eligible
+            else "eligible_for_frozen_policy_gates"
+        ),
+        "evidence_paths": {
+            "breadth_collector": str(collector_path.relative_to(ROOT)),
+            "breadth_membership": str(constituents_path.relative_to(ROOT)),
+            "radar_engine": str(engine_path.relative_to(ROOT)),
+        },
+    }
+
+
+def _has_h21_grade(row: dict[str, Any]) -> bool:
+    """Return whether an issued row has a complete 21-session outcome grade."""
+    graded = row.get("graded")
+    if not isinstance(graded, dict):
+        return False
+    fwd_dd = graded.get("fwd_dd")
+    if isinstance(fwd_dd, dict) and fwd_dd.get("h21") is not None:
+        return True
+    hit = graded.get("hit")
+    return isinstance(hit, dict) and isinstance(hit.get("h21"), dict)
+
+
+def _forward_loud_episodes(
+    rows: list[dict[str, Any]],
+    *,
+    session_index: pd.DatetimeIndex | None = None,
+    max_non_loud_gap: int = 10,
+    min_loud_observations: int = 3,
+) -> list[dict[str, Any]]:
+    """Group issued loud rows by elapsed market sessions, not graded-row adjacency."""
+    loud_rows = [
+        row
+        for row in sorted(rows, key=lambda item: str(item.get("asof") or ""))
+        if row.get("state") in {"elevated", "risk-off"} and row.get("asof")
+    ]
+    if not loud_rows:
+        return []
+
+    if session_index is not None:
+        sessions = pd.DatetimeIndex(pd.to_datetime(session_index)).normalize().unique().sort_values()
+        positions = [
+            int(sessions.searchsorted(pd.Timestamp(row["asof"]).normalize(), side="left"))
+            for row in loud_rows
+        ]
+        gap_basis = "benchmark_trading_sessions"
+    else:
+        epoch = np.datetime64("1970-01-01", "D")
+        positions = [
+            int(np.busday_count(epoch, np.datetime64(str(row["asof"]), "D")))
+            for row in loud_rows
+        ]
+        gap_basis = "weekday_fallback"
+
+    groups: list[list[tuple[dict[str, Any], int]]] = [[(loud_rows[0], positions[0])]]
+    for row, position in zip(loud_rows[1:], positions[1:]):
+        non_loud_gap = position - groups[-1][-1][1] - 1
+        if non_loud_gap <= max_non_loud_gap:
+            groups[-1].append((row, position))
+        else:
+            groups.append([(row, position)])
+
+    episodes: list[dict[str, Any]] = []
+    for group in groups:
+        if len(group) < min_loud_observations:
+            continue
+        episode_rows = [row for row, _ in group]
+        episodes.append({
+            "episode_id": len(episodes) + 1,
+            "start": episode_rows[0].get("asof"),
+            "end": episode_rows[-1].get("asof"),
+            "loud_observations": len(group),
+            "contains_risk_off": any(
+                row.get("state") == "risk-off" for row in episode_rows
+            ),
+            "elevated_observations": sum(
+                row.get("state") == "elevated" for row in episode_rows
+            ),
+            "risk_off_observations": sum(
+                row.get("state") == "risk-off" for row in episode_rows
+            ),
+            "outcome_complete": all(_has_h21_grade(row) for row in episode_rows),
+            "session_gap_basis": gap_basis,
+        })
+    return episodes
+
+
+def forward_ledger_inventory(
+    path: Path | str = FORWARD_LOG,
+    *,
+    session_index: pd.DatetimeIndex | None = None,
+) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     file_path = Path(path)
     if file_path.exists():
@@ -708,23 +939,65 @@ def forward_ledger_inventory(path: Path | str = FORWARD_LOG) -> dict[str, Any]:
                 rows.append(json.loads(line))
             except json.JSONDecodeError:
                 continue
-    matured = [row for row in rows if row.get("graded")]
+    rows = sorted(rows, key=lambda row: str(row.get("asof") or ""))
+
+    session_calendar = "weekday_fallback"
+    if session_index is None:
+        try:
+            from lib import store
+
+            benchmark = store.read("china", "000001.SS")
+            if benchmark is not None and not getattr(benchmark, "empty", True):
+                session_index = pd.DatetimeIndex(pd.to_datetime(benchmark.index))
+                session_calendar = "china/000001.SS"
+        except Exception:  # pragma: no cover - fail-closed fallback is deterministic
+            session_index = None
+    else:
+        session_calendar = "provided_session_index"
+
+    matured = [row for row in rows if _has_h21_grade(row)]
+    matured_loud = [
+        row for row in matured
+        if row.get("state") in {"elevated", "risk-off"}
+    ]
+    all_episodes = _forward_loud_episodes(rows, session_index=session_index)
+    episodes = [
+        episode for episode in all_episodes if bool(episode["outcome_complete"])
+    ]
+    open_episodes = [
+        episode for episode in all_episodes if not bool(episode["outcome_complete"])
+    ]
+    riskoff_episode_n = sum(
+        bool(episode["contains_risk_off"]) for episode in episodes
+    )
     return {
         "label": "issued_forward_monitoring_only_not_policy_optimization",
         "rows": len(rows),
         "matured_rows": len(matured),
         "unmatured_rows": len(rows) - len(matured),
+        "matured_loud_rows": len(matured_loud),
         "asof_from": rows[0].get("asof") if rows else None,
         "asof_through": rows[-1].get("asof") if rows else None,
         "state_counts": dict(Counter(row.get("state") for row in rows)),
         "matured_state_counts": dict(Counter(row.get("state") for row in matured)),
+        "session_calendar": session_calendar,
+        "independent_loud_episode_n": len(episodes),
+        "riskoff_containing_episode_n": riskoff_episode_n,
+        "elevated_only_episode_n": len(episodes) - riskoff_episode_n,
+        "open_loud_episode_n": len(open_episodes),
+        "episodes": episodes,
+        "open_episodes": open_episodes,
+        "all_episodes": all_episodes,
         "policy_coefficients_estimable": False,
+        "historical_coefficients_estimable": False,
     }
 
 
 def build_input_manifest(prereg: dict[str, Any], state_frame: pd.DataFrame) -> dict[str, Any]:
     relative_inputs = [
         "engine/risk_radar_intl.py",
+        "collectors/china_breadth.py",
+        "data/china_breadth/constituents.parquet",
         "data/china/000001.SS.parquet",
         "data/china/510300.SS.parquet",
         "data/fred/DGS2.parquet",
@@ -782,10 +1055,9 @@ def build_policy_frames(
     frames["current_ladder"] = execute_policy(
         returns, current_target, lag=lag, cost_bps=cost_bps
     )
-    matched_gross = float(frames["current_ladder"]["executed_gross"].mean())
     for policy in order[1:]:
         if policy == "matched_constant":
-            target = pd.Series(matched_gross, index=states.index, name=policy)
+            target = matched_constant_target(frames["current_ladder"], states.index)
         else:
             target = target_gross(policy, states, returns, prereg)
         frames[policy] = execute_policy(
@@ -856,6 +1128,8 @@ def run_study(
     emit_artifacts: bool = True,
 ) -> dict[str, Any]:
     prereg = load_preregistration()
+    source_qualification = historical_source_qualification()
+    forward_ledger = forward_ledger_inventory()
     state_frame = reconstruct_cn_state_frame(prereg)
     manifest = build_input_manifest(prereg, state_frame)
     vehicles = {
@@ -904,8 +1178,18 @@ def run_study(
         min_loud_observations=int(episode_spec["min_loud_observations"]),
         post_window_sessions=int(episode_spec["post_window_sessions"]),
     )
-    episodes = [episode for episode in all_episodes if episode["outcome_complete"]]
-    censored_episodes = [episode for episode in all_episodes if not episode["outcome_complete"]]
+    complete_episodes = [
+        episode for episode in all_episodes if episode["outcome_complete"]
+    ]
+    diagnostic_independent_episodes = authority_independent_episodes(all_episodes)
+    overlap_excluded_episodes = [
+        episode
+        for episode in complete_episodes
+        if not episode["authority_independent"]
+    ]
+    censored_episodes = [
+        episode for episode in all_episodes if not episode["outcome_complete"]
+    ]
 
     episode_rows: list[dict[str, Any]] = []
     crisis_rows: list[dict[str, Any]] = []
@@ -916,7 +1200,7 @@ def run_study(
             analyze_episodes(
                 primary_frames[policy],
                 vehicle_frames[primary_vehicle]["state"],
-                episodes,
+                complete_episodes,
                 downside_threshold=float(episode_spec["downside_threshold"]),
             ),
             vehicle=primary_vehicle,
@@ -975,12 +1259,18 @@ def run_study(
         policy: [row for row in episode_rows if row["policy"] == policy]
         for policy in prereg["policy_order"]
     }
+    diagnostic_episode_by_policy = {
+        policy: [
+            row for row in rows if bool(row.get("authority_independent"))
+        ]
+        for policy, rows in episode_by_policy.items()
+    }
     positive_episode_fraction = {
         policy: (
             float(np.mean([bool(row["positive_timing_benefit"]) for row in rows]))
             if rows else 0.0
         )
-        for policy, rows in episode_by_policy.items()
+        for policy, rows in diagnostic_episode_by_policy.items()
     }
     crisis_by_policy = {
         policy: [
@@ -1042,13 +1332,30 @@ def run_study(
                 count += 1
         loco_positive_count[candidate] = count
 
-    effective_episode_n = len(episodes)
-    riskoff_episode_n = sum(bool(episode["contains_risk_off"]) for episode in episodes)
-    elevated_only_episode_n = effective_episode_n - riskoff_episode_n
+    diagnostic_effective_episode_n = len(diagnostic_independent_episodes)
+    diagnostic_riskoff_episode_n = sum(
+        bool(episode["contains_risk_off"])
+        for episode in diagnostic_independent_episodes
+    )
+    diagnostic_elevated_only_episode_n = (
+        diagnostic_effective_episode_n - diagnostic_riskoff_episode_n
+    )
+    authority_effective_episode_n = int(
+        forward_ledger["independent_loud_episode_n"]
+    )
+    authority_riskoff_episode_n = int(
+        forward_ledger["riskoff_containing_episode_n"]
+    )
+    authority_elevated_only_episode_n = int(
+        forward_ledger["elevated_only_episode_n"]
+    )
     adjudication_input = {
-        "effective_episode_n": effective_episode_n,
-        "riskoff_episode_n": riskoff_episode_n,
-        "elevated_only_episode_n": elevated_only_episode_n,
+        "historical_authority_eligible": bool(
+            source_qualification["historical_authority_eligible"]
+        ),
+        "authority_effective_episode_n": authority_effective_episode_n,
+        "authority_riskoff_episode_n": authority_riskoff_episode_n,
+        "authority_elevated_only_episode_n": authority_elevated_only_episode_n,
         "primary": primary_metrics,
         "bootstrap": bootstrap,
         "positive_episode_fraction": positive_episode_fraction,
@@ -1083,9 +1390,9 @@ def run_study(
             for key in keys
         }
 
-    full_episode_rows = episode_by_policy["constant_100"]
+    full_episode_rows = diagnostic_episode_by_policy["constant_100"]
     false_positive_rows = [row for row in full_episode_rows if not row["downside_event"]]
-    current_episode_rows = episode_by_policy["current_ladder"]
+    current_episode_rows = diagnostic_episode_by_policy["current_ladder"]
     current_false_positive_rows = [
         row for row in current_episode_rows if not row["downside_event"]
     ]
@@ -1107,7 +1414,6 @@ def run_study(
         sum(positive_crisis_protection[:2]) / positive_total
         if positive_total > 0 else 1.0
     )
-    forward_ledger = forward_ledger_inventory()
     contribution_annualization = 252.0 / float(current["n_sessions"])
     shadow_candidate = None
     if verdict == "SIMPLER_POLICY_SUPPORTED":
@@ -1129,13 +1435,27 @@ def run_study(
         "source_base": prereg["source_base"],
         "skillpack_sha": prereg["skillpack_sha"],
         "prereg_sha": manifest["prereg_commit"],
-        "historical_evidence_label": "PIT-honest reconstructed history; not issued-forward policy performance",
+        "historical_evidence_label": (
+            "causal/date-aligned definition-current reconstruction; not "
+            "membership-PIT or source-vintage verified; diagnostic only"
+        ),
+        "source_qualification": source_qualification,
+        "historical_authority_eligible": bool(
+            source_qualification["historical_authority_eligible"]
+        ),
         "benchmark_and_timing": {
             "primary": {
                 "store": list(prereg["benchmarks"]["primary"]),
                 "label": "Shanghai Composite",
+                "state_history_from": manifest["state_coverage"]["from"],
+                "return_exposure_from": (
+                    vehicle_frames[primary_vehicle].index.min().date().isoformat()
+                ),
                 "from": vehicle_frames[primary_vehicle].index.min().date().isoformat(),
                 "through": vehicle_frames[primary_vehicle].index.max().date().isoformat(),
+                "state_history_sessions": manifest["state_coverage"]["rows"],
+                "aligned_return_sessions": len(vehicle_frames[primary_vehicle]),
+                "policy_sessions": int(current["n_sessions"]),
                 "sessions": len(vehicle_frames[primary_vehicle]),
             },
             "investable_proxy": {
@@ -1206,13 +1526,22 @@ def run_study(
             for policy in prereg["policy_order"]
         },
         "episodes": {
-            "eligible_complete_n": effective_episode_n,
-            "risk_off_containing_n": riskoff_episode_n,
-            "elevated_only_n": elevated_only_episode_n,
+            "authority_source": "issued_forward_ledger",
+            "authority_effective_n": authority_effective_episode_n,
+            "authority_risk_off_containing_n": authority_riskoff_episode_n,
+            "authority_elevated_only_n": authority_elevated_only_episode_n,
+            "reconstructed_complete_n": len(complete_episodes),
+            "reconstructed_independent_nonoverlap_n": diagnostic_effective_episode_n,
+            "reconstructed_risk_off_containing_n": diagnostic_riskoff_episode_n,
+            "reconstructed_elevated_only_n": diagnostic_elevated_only_episode_n,
+            "overlap_excluded_n": len(overlap_excluded_episodes),
+            "overlap_excluded": overlap_excluded_episodes,
             "censored_open_n": len(censored_episodes),
             "censored_open": censored_episodes,
-            "false_positive_n": len(false_positive_rows),
-            "downside_event_n": effective_episode_n - len(false_positive_rows),
+            "diagnostic_false_positive_n": len(false_positive_rows),
+            "diagnostic_downside_event_n": (
+                diagnostic_effective_episode_n - len(false_positive_rows)
+            ),
             "false_positive_policy_excess_sum_current": sum(
                 float(row["policy_excess"]) for row in current_false_positive_rows
             ),
@@ -1231,8 +1560,8 @@ def run_study(
                 bool(row["positive_timing_benefit"])
                 for row in current_downside_rows
             ),
-            "severity": episode_severity,
-            "positive_timing_fraction": positive_episode_fraction,
+            "diagnostic_severity": episode_severity,
+            "diagnostic_positive_timing_fraction": positive_episode_fraction,
         },
         "crisis_and_loco": {
             "current_crisis_concentration_top_one": crisis_concentrations["current_ladder"],
@@ -1250,6 +1579,16 @@ def run_study(
         "ui_language_verdict": ui_verdict,
         "shadow_candidate_if_earned": shadow_candidate,
         "discoveries": {
+            "historical_reconstruction_authority_eligible": bool(
+                source_qualification["historical_authority_eligible"]
+            ),
+            "historical_reconstruction_is_definition_current": True,
+            "issued_forward_independent_loud_episode_n": (
+                authority_effective_episode_n
+            ),
+            "reconstructed_overlapping_episode_windows_excluded": (
+                len(overlap_excluded_episodes)
+            ),
             "forward_sample_can_optimize_five_coefficients": False,
             "detector_validity_implies_sizing_validity": False,
             "primary_timing_edge_survives_exposure_matched_constant": (
@@ -1289,6 +1628,7 @@ def run_study(
     result = {
         "summary": summary,
         "input_manifest": manifest,
+        "source_qualification": source_qualification,
         "metrics_rows": metrics_rows,
         "crisis_rows": crisis_rows,
         "episode_rows": episode_rows,
@@ -1370,6 +1710,14 @@ def render_report(result: dict[str, Any]) -> str:
         name for name, passed in summary["adjudication"]["simple_checks"].items()
         if not passed
     ]
+    source = summary["source_qualification"]
+    forward = summary["forward_ledger"]
+    episodes = summary["episodes"]
+    comparison = summary["economic_comparisons"]
+    opportunity = summary["opportunity_cost"]
+    turnover = summary["turnover"]
+    severity = episodes["diagnostic_severity"]
+
     lines = [
         "# China Risk Radar Capital-Policy Validation",
         "",
@@ -1379,9 +1727,13 @@ def render_report(result: dict[str, Any]) -> str:
         f"**Source base:** `{summary['source_base']}`<br>",
         f"**Preregistration commit:** `{summary['prereg_sha']}`",
         "",
-        "> Historical results below are PIT-honest reconstructed history, not issued-forward policy performance. The detector question and the capital-policy question are adjudicated separately.",
+        "> Historical policy results are a causal/date-aligned, definition-current reconstruction. They are not membership-PIT, are not source-vintage verified, and are diagnostic only. Authority is adjudicated from the issued-forward ledger.",
         "",
         "## Executive ruling",
+        "",
+        f"Authority-bearing effective episode N is **{episodes['authority_effective_n']}**: "
+        f"{episodes['authority_risk_off_containing_n']} risk-off-containing and "
+        f"{episodes['authority_elevated_only_n']} elevated-only. This is insufficient to estimate either a five-step ladder or the exact ×0.62 risk-off coefficient.",
         "",
         f"The exact current ladder passed the frozen exact-policy gate: **{summary['adjudication']['exact_current_pass']}**. "
         f"The preregistered binary loud-state policy passed its separate gate: **{summary['adjudication']['simple_binary_pass']}**.",
@@ -1389,20 +1741,25 @@ def render_report(result: dict[str, Any]) -> str:
         f"Exact-gate failures: `{', '.join(exact_failures) if exact_failures else 'none'}`.<br>",
         f"Simple-policy gate failures: `{', '.join(simple_failures) if simple_failures else 'none'}`.",
         "",
-        "No source mapping, UI, `can_force`, Market State, ranking, execution, or live allocation consumer changed in this wave.",
+        "No source mapping, UI, `can_force`, Market State, ranking, execution, Prophet, or live allocation consumer changed in this wave.",
+        "",
+        "## Historical source qualification",
+        "",
+        f"Classification: **{source['classification']}**. Construction is causal: **{source['construction_is_causal']}**. Historical authority eligible: **{source['historical_authority_eligible']}**.",
+        "",
+        f"The exact CN state uses the breadth leg: **{source['exact_state_uses_cn_breadth']}**. The breadth history is rebuilt from the current hand-curated membership over maximum available history: **{source['breadth_current_membership_backfill']}**. Date-effective membership fields are present: **{source['date_effective_membership_present']}**; observed membership columns are `{source['membership_columns']}`.",
+        "",
+        f"Source-vintage metadata is present across the reconstructed macro inputs: **{source['source_vintage_metadata_present']}**. Therefore the long history is retained for diagnostic counterfactuals but is barred from promotion gates.",
         "",
         "## Frozen benchmark and execution contract",
         "",
-        f"Primary benchmark: Shanghai Composite `{summary['benchmark_and_timing']['primary']['store']}` from "
-        f"{summary['benchmark_and_timing']['primary']['from']} through {summary['benchmark_and_timing']['primary']['through']} "
-        f"({summary['benchmark_and_timing']['primary']['sessions']} sessions).",
+        f"The state reconstruction begins {summary['benchmark_and_timing']['primary']['state_history_from']}; the first aligned benchmark return is {summary['benchmark_and_timing']['primary']['return_exposure_from']} because close-to-close returns consume one prior close. The lane runs through {summary['benchmark_and_timing']['primary']['through']} with {summary['benchmark_and_timing']['primary']['aligned_return_sessions']} aligned returns and {summary['benchmark_and_timing']['primary']['policy_sessions']} executed primary-policy observations after the one-session lag.",
         "",
-        "Primary timing: observe state at close *t*, apply gross to the next close-to-close return, charge 10 bps per unit of gross change, earn zero on unused gross, and do not charge the initial allocation. Lag-two and 25-bps scenarios are frozen sensitivities.",
+        "State is observed at close *t* and gross is applied to the next close-to-close return. The primary scenario charges 10 bps per unit of gross change, earns zero on unused gross, and does not charge the initial allocation. Lag-two and 25-bps variants are frozen sensitivities.",
         "",
-        f"Investable robustness lane: CSI 300 ETF `510300.SS` from {summary['benchmark_and_timing']['investable_proxy']['from']} "
-        f"through {summary['benchmark_and_timing']['investable_proxy']['through']}.",
+        f"The investable robustness lane uses CSI 300 ETF `510300.SS` from {summary['benchmark_and_timing']['investable_proxy']['from']} through {summary['benchmark_and_timing']['investable_proxy']['through']}.",
         "",
-        "## Primary reconstructed results",
+        "## Diagnostic reconstructed results — not authority-bearing",
         "",
         "| Policy | CAGR | Max DD | CVaR 95 | Vol | Sharpe | Sortino | Calmar | Avg gross | Reduced time | Turnover |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
@@ -1416,30 +1773,20 @@ def render_report(result: dict[str, Any]) -> str:
             f"{_fmt_num(metric['average_gross'])} | {_fmt_pct(metric['time_reduced'])} | "
             f"{_fmt_num(metric['turnover'])} |"
         )
-    comparison = summary["economic_comparisons"]
+
     lines += [
         "",
-        "## Protection versus merely holding less",
+        "## Diagnostic protection versus merely holding less",
         "",
-        f"The current ladder's mean executed gross was **{_fmt_num(comparison['current_average_gross'])}**; the exposure-matched constant held exactly **{_fmt_num(comparison['matched_constant_gross'])}** without timing.",
+        f"The current ladder's mean executed gross is **{_fmt_num(comparison['current_average_gross'])}**; the one canonical exposure-matched constant holds exactly **{_fmt_num(comparison['matched_constant_gross'])}**, derived from executed post-lag current-ladder gross without return optimization.",
         "",
-        f"Current minus matched constant: CAGR {_fmt_pct(comparison['current_vs_exposure_matched_constant']['cagr'])}, "
-        f"max-drawdown difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['max_drawdown'])}, "
-        f"CVaR difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['cvar_95'])}, "
-        f"Calmar difference {_fmt_num(comparison['current_vs_exposure_matched_constant']['calmar'])}, and "
-        f"certainty-equivalent difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['certainty_equivalent'])}.",
+        f"Current minus matched constant: CAGR {_fmt_pct(comparison['current_vs_exposure_matched_constant']['cagr'])}, max-drawdown difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['max_drawdown'])}, CVaR difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['cvar_95'])}, Calmar difference {_fmt_num(comparison['current_vs_exposure_matched_constant']['calmar'])}, and certainty-equivalent difference {_fmt_pct(comparison['current_vs_exposure_matched_constant']['certainty_equivalent'])}.",
         "",
-        f"Exact risk-off ×0.62 versus the same ladder with ×0.75: CAGR difference {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['cagr'])}, "
-        f"max-drawdown difference {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['max_drawdown'])}, "
-        f"CVaR difference {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['cvar_95'])}, and "
-        f"Calmar difference {_fmt_num(comparison['current_062_vs_same_ladder_riskoff_075']['calmar'])}.",
+        f"Exact risk-off ×0.62 minus the same ladder with ×0.75: CAGR {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['cagr'])}, max drawdown {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['max_drawdown'])}, CVaR {_fmt_pct(comparison['current_062_vs_same_ladder_riskoff_075']['cvar_95'])}, and Calmar {_fmt_num(comparison['current_062_vs_same_ladder_riskoff_075']['calmar'])}.",
         "",
-        f"On the investable CSI-300 proxy, the same ×0.62-minus-×0.75 comparison is: CAGR {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['cagr'])}, "
-        f"max drawdown {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['max_drawdown'])}, "
-        f"CVaR {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['cvar_95'])}, and "
-        f"Calmar {_fmt_num(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['calmar'])}; negative values favor ×0.75.",
+        f"On the investable CSI-300 proxy, ×0.62 minus ×0.75 is: CAGR {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['cagr'])}, max drawdown {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['max_drawdown'])}, CVaR {_fmt_pct(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['cvar_95'])}, and Calmar {_fmt_num(comparison['investable_proxy_current_062_vs_same_ladder_riskoff_075']['calmar'])}; negative values favor ×0.75.",
         "",
-        "Bootstrap 90% intervals (current minus matched):",
+        "Diagnostic bootstrap 90% intervals (current minus matched):",
         "",
         f"- CAGR: {_fmt_ci(summary['stability']['bootstrap']['current_vs_matched']['cagr_diff'])}",
         f"- Max drawdown: {_fmt_ci(summary['stability']['bootstrap']['current_vs_matched']['max_drawdown_diff'])}",
@@ -1447,69 +1794,41 @@ def render_report(result: dict[str, Any]) -> str:
         f"- Calmar: {_fmt_ci(summary['stability']['bootstrap']['current_vs_matched']['calmar_diff'], percent=False)}",
         f"- Certainty equivalent: {_fmt_ci(summary['stability']['bootstrap']['current_vs_matched']['certainty_equivalent_diff'])}",
         "",
-        "Bootstrap 90% intervals (×0.62 minus ×0.75):",
+        "Diagnostic bootstrap 90% intervals (×0.62 minus ×0.75):",
         "",
         f"- CAGR: {_fmt_ci(summary['stability']['bootstrap']['current_vs_riskoff_075']['cagr_diff'])}",
         f"- Max drawdown: {_fmt_ci(summary['stability']['bootstrap']['current_vs_riskoff_075']['max_drawdown_diff'])}",
         f"- CVaR 95: {_fmt_ci(summary['stability']['bootstrap']['current_vs_riskoff_075']['cvar_95_diff'])}",
         f"- Calmar: {_fmt_ci(summary['stability']['bootstrap']['current_vs_riskoff_075']['calmar_diff'], percent=False)}",
         f"- Certainty equivalent: {_fmt_ci(summary['stability']['bootstrap']['current_vs_riskoff_075']['certainty_equivalent_diff'])}",
-    ]
-
-    opportunity = summary["opportunity_cost"]
-    turnover = summary["turnover"]
-    episodes = summary["episodes"]
-    severity = episodes["severity"]
-    lines += [
         "",
-        "## Opportunity cost and churn",
+        "## Diagnostic opportunity cost and churn",
         "",
-        f"Across the full sample, the arithmetic contribution sums were: missed positive returns **{_fmt_pct(opportunity['current_missed_upside_sum'])}**, "
-        f"avoided negative returns **{_fmt_pct(opportunity['current_avoided_downside_sum'])}**, "
-        f"transaction-cost drag **{_fmt_pct(opportunity['current_transaction_cost_sum'])}**, and "
-        f"net excess versus full gross **{_fmt_pct(opportunity['current_policy_excess_vs_full_sum'])}**.",
+        f"Annualized arithmetic contribution equivalents are: missed upside **{_fmt_pct(opportunity['current_missed_upside_annualized_contribution'])}**, avoided downside **{_fmt_pct(opportunity['current_avoided_downside_annualized_contribution'])}**, cost drag **{_fmt_pct(opportunity['current_transaction_cost_annualized_contribution'])}**, and net timing contribution **{_fmt_pct(opportunity['current_policy_excess_vs_full_annualized_contribution'])}**.",
         "",
-        f"Annualized contribution equivalents were: missed upside **{_fmt_pct(opportunity['current_missed_upside_annualized_contribution'])}**, "
-        f"avoided downside **{_fmt_pct(opportunity['current_avoided_downside_annualized_contribution'])}**, "
-        f"cost drag **{_fmt_pct(opportunity['current_transaction_cost_annualized_contribution'])}**, and "
-        f"net arithmetic timing contribution **{_fmt_pct(opportunity['current_policy_excess_vs_full_annualized_contribution'])}**.",
+        f"The current ladder makes **{turnover['current_ladder']['exposure_change_count']}** executed gross changes, with total turnover **{_fmt_num(turnover['current_ladder']['total'])}** and annualized turnover **{_fmt_num(turnover['current_ladder']['annualized'])}**.",
         "",
-        f"It made **{turnover['current_ladder']['exposure_change_count']}** executed gross changes, with total turnover "
-        f"**{_fmt_num(turnover['current_ladder']['total'])}** and annualized turnover **{_fmt_num(turnover['current_ladder']['annualized'])}**.",
+        "## Episode accounting",
         "",
-        f"Binary loud-state policy: missed upside **{_fmt_pct(opportunity['binary_missed_upside_sum'])}**, "
-        f"avoided downside **{_fmt_pct(opportunity['binary_avoided_downside_sum'])}**, "
-        f"and {turnover['binary_loud_075']['exposure_change_count']} exposure changes.",
+        f"Issued-forward authority N is **{episodes['authority_effective_n']}**. The diagnostic reconstruction contains {episodes['reconstructed_complete_n']} complete clusters, of which {episodes['overlap_excluded_n']} have 21-session outcome windows that reach the next alert and are excluded from independent N. That leaves **{episodes['reconstructed_independent_nonoverlap_n']}** non-overlapping diagnostic episodes; {episodes['censored_open_n']} open cluster is censored.",
         "",
-        "## Independent episodes",
+        f"Within the non-overlapping diagnostic set, downside episodes are **{episodes['diagnostic_downside_event_n']}** and non-5%-drawdown/false-positive episodes are **{episodes['diagnostic_false_positive_n']}**.",
         "",
-        f"Eligible complete episode N: **{episodes['eligible_complete_n']}**; risk-off-containing: **{episodes['risk_off_containing_n']}**; "
-        f"elevated-only: **{episodes['elevated_only_n']}**. Open/censored clusters excluded from authority N: **{episodes['censored_open_n']}**.",
+        f"False-positive aggregate arithmetic policy excess is **{_fmt_pct(episodes['false_positive_policy_excess_sum_current'])}**, positive in **{episodes['false_positive_positive_timing_n_current']} / {episodes['diagnostic_false_positive_n']}** cases, with **{_fmt_pct(episodes['false_positive_recovery_missed_upside_sum_current'])}** of recovery upside missed.",
         "",
-        f"Downside episodes: **{episodes['downside_event_n']}**; false-positive/non-5%-drawdown episodes: **{episodes['false_positive_n']}**.",
+        f"True-downside aggregate arithmetic policy excess is **{_fmt_pct(episodes['downside_policy_excess_sum_current'])}**, positive in **{episodes['downside_positive_timing_n_current']} / {episodes['diagnostic_downside_event_n']}** cases.",
         "",
-        f"All false-positive episodes produced positive timing value in **{episodes['false_positive_positive_timing_n_current']} / {episodes['false_positive_n']}** cases; "
-        f"their aggregate arithmetic policy excess was **{_fmt_pct(episodes['false_positive_policy_excess_sum_current'])}**, with "
-        f"**{_fmt_pct(episodes['false_positive_recovery_missed_upside_sum_current'])}** of recovery upside missed.",
+        f"Diagnostic risk-off-containing downside rate: **{_fmt_pct(severity['risk_off_containing']['downside_rate'])}**, median path loss **{_fmt_pct(severity['risk_off_containing']['median_path_loss'])}**. Elevated-only downside rate: **{_fmt_pct(severity['elevated_only']['downside_rate'])}**, median path loss **{_fmt_pct(severity['elevated_only']['median_path_loss'])}**.",
         "",
-        f"Across true downside episodes, aggregate arithmetic policy excess was **{_fmt_pct(episodes['downside_policy_excess_sum_current'])}**, positive in "
-        f"**{episodes['downside_positive_timing_n_current']} / {episodes['downside_event_n']}** episodes.",
+        f"Diagnostic positive-timing fraction: current **{_fmt_pct(episodes['diagnostic_positive_timing_fraction']['current_ladder'])}**; binary **{_fmt_pct(episodes['diagnostic_positive_timing_fraction']['binary_loud_075'])}**.",
         "",
-        f"Risk-off-containing episode downside rate: **{_fmt_pct(severity['risk_off_containing']['downside_rate'])}**, "
-        f"median path loss **{_fmt_pct(severity['risk_off_containing']['median_path_loss'])}**. "
-        f"Elevated-only downside rate: **{_fmt_pct(severity['elevated_only']['downside_rate'])}**, "
-        f"median path loss **{_fmt_pct(severity['elevated_only']['median_path_loss'])}**.",
+        "## Diagnostic crisis, recovery, and leave-one-crisis-out",
         "",
-        f"Current policy positive-timing fraction: **{_fmt_pct(episodes['positive_timing_fraction']['current_ladder'])}**; "
-        f"binary policy: **{_fmt_pct(episodes['positive_timing_fraction']['binary_loud_075'])}**.",
+        f"Current-ladder protection concentration: top crisis **{_fmt_pct(summary['crisis_and_loco']['current_crisis_concentration_top_one'])}**; top two **{_fmt_pct(summary['crisis_and_loco']['current_crisis_concentration_top_two'])}** of all positive crisis protection.",
         "",
-        "## Crisis concentration, recovery, and leave-one-crisis-out",
+        f"LOCO runs beating the matched constant on both Calmar and CVaR: current **{summary['crisis_and_loco']['loco_positive_count']['current_ladder']} / {summary['crisis_and_loco']['number_of_frozen_crises']}**; binary **{summary['crisis_and_loco']['loco_positive_count']['binary_loud_075']} / {summary['crisis_and_loco']['number_of_frozen_crises']}**.",
         "",
-        f"Current-ladder protection concentration: top crisis **{_fmt_pct(summary['crisis_and_loco']['current_crisis_concentration_top_one'])}**; "
-        f"top two crises **{_fmt_pct(summary['crisis_and_loco']['current_crisis_concentration_top_two'])}** of all positive crisis protection.",
-        "",
-        f"LOCO runs beating the matched constant on both Calmar and CVaR: current **{summary['crisis_and_loco']['loco_positive_count']['current_ladder']} / {summary['crisis_and_loco']['number_of_frozen_crises']}**; "
-        f"binary **{summary['crisis_and_loco']['loco_positive_count']['binary_loud_075']} / {summary['crisis_and_loco']['number_of_frozen_crises']}**.",
+        "Recovery capture is undefined when benchmark recovery is non-positive.",
         "",
         "| Crisis | Policy return | Full return | Protection | Policy max DD | Full max DD | Recovery capture | Recovery avg gross |",
         "|---|---:|---:|---:|---:|---:|---:|---:|",
@@ -1529,17 +1848,16 @@ def render_report(result: dict[str, Any]) -> str:
             f"{_fmt_pct(row['full_max_drawdown'])} | {_fmt_pct(row['recovery_capture'])} | "
             f"{_fmt_num(row['recovery_average_gross'])} |"
         )
+
     ui = summary["ui_language_verdict"]
     lines += [
         "",
-        "## Stability",
+        "## Diagnostic stability",
         "",
-        f"Lag/cost sensitivity pass — current: **{summary['stability']['sensitivity_pass']['current_ladder']}**; "
-        f"binary: **{summary['stability']['sensitivity_pass']['binary_loud_075']}**.<br>",
-        f"Split-era pass — current: **{summary['stability']['era_pass']['current_ladder']}**; "
-        f"binary: **{summary['stability']['era_pass']['binary_loud_075']}**.",
+        f"Lag/cost direction — current: **{summary['stability']['sensitivity_pass']['current_ladder']}**; binary: **{summary['stability']['sensitivity_pass']['binary_loud_075']}**.<br>",
+        f"Split-era direction — current: **{summary['stability']['era_pass']['current_ladder']}**; binary: **{summary['stability']['era_pass']['binary_loud_075']}**.",
         "",
-        "The full scenario, era, episode, crisis, recovery, and LOCO rows are in the compact CSV artifacts; no post-outcome mapping or threshold search was performed.",
+        "These diagnostic checks cannot override the non-PIT source qualification or the issued-forward episode floor.",
         "",
         "## Product-language adjudication",
         "",
@@ -1547,15 +1865,14 @@ def render_report(result: dict[str, Any]) -> str:
         f"- May say **risk-budget reference**: **{ui['may_say_risk_budget_reference']}**.",
         f"- May show **×0.62 as advice**: **{ui['may_show_x062_as_advice']}**.",
         f"- May show **×0.62 in research/debug disclosure**: **{ui['may_show_x062_in_research_disclosure']}**.",
-        f"- Should round to a plain-English fraction such as “half of normal”: **{ui['should_round_plain_english_fraction']}**.",
+        f"- Should round to “half of normal”: **{ui['should_round_plain_english_fraction']}**.",
         f"- Supported authority today: **{ui['authority_level']}**.",
         "",
         "No ruling in this wave authorizes automatic sizing, trade origination, exits, name vetoes, `can_force`, or a live control-plane consumer.",
         "",
         "## Forward evidence limit",
         "",
-        f"The issued ledger has {summary['forward_ledger']['rows']} rows and only {summary['forward_ledger']['matured_rows']} matured rows. "
-        f"Its matured state counts are `{summary['forward_ledger']['matured_state_counts']}`. It is monitoring evidence, not enough information to optimize five gross coefficients.",
+        f"The issued ledger has {forward['rows']} rows, {forward['matured_rows']} matured rows, and {forward['matured_loud_rows']} matured loud rows. Its matured state counts are `{forward['matured_state_counts']}`. Those loud rows form only **{forward['independent_loud_episode_n']}** independent episode, so neither five coefficients nor a simpler promoted policy can be estimated honestly.",
         "",
         "## Shadow candidate",
         "",
@@ -1567,16 +1884,19 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         "## Hold boundary",
         "",
-        "This evidence carrier is intentionally Draft/HOLD. The Astra integrator must make any later source or product-language decision in a separate wave. Do not merge this PR and do not re-run a ladder search around these outcomes.",
+        "This evidence carrier is intentionally Draft/HOLD. The Astra integrator may consume the fail-closed ruling, but any PIT-data repair or later source/UI policy change requires a separately authorized wave. Do not merge this PR and do not search alternative ladders around these outcomes.",
         "",
     ]
     return "\n".join(lines)
-
 
 def write_artifacts(output_dir: Path, result: dict[str, Any]) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(output_dir / "summary.json", result["summary"])
     _write_json(output_dir / "input_manifest.json", result["input_manifest"])
+    _write_json(
+        output_dir / "source_qualification.json",
+        result["source_qualification"],
+    )
     _write_json(output_dir / "bootstrap.json", result["bootstrap"])
     _write_csv(
         output_dir / "metrics.csv",
@@ -1641,9 +1961,9 @@ def main(argv: list[str] | None = None) -> int:
     print(json.dumps({
         "operation_key": summary["operation_key"],
         "policy_verdict": summary["policy_verdict"],
-        "effective_episode_n": summary["episodes"]["eligible_complete_n"],
-        "riskoff_episode_n": summary["episodes"]["risk_off_containing_n"],
-        "elevated_only_episode_n": summary["episodes"]["elevated_only_n"],
+        "effective_episode_n": summary["episodes"]["authority_effective_n"],
+        "riskoff_episode_n": summary["episodes"]["authority_risk_off_containing_n"],
+        "elevated_only_episode_n": summary["episodes"]["authority_elevated_only_n"],
         "current_ladder_results": summary["current_ladder_results"],
         "ui_language_verdict": summary["ui_language_verdict"],
         "output_dir": str(args.output_dir) if not args.no_write else None,
