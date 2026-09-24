@@ -1,0 +1,111 @@
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_conversion_exact_source_receipt_is_retained_not_a_trade _________
+tests/test_us_candidate_lanes.py:1527: in test_conversion_exact_source_receipt_is_retained_not_a_trade
+    result = _trace_case([flag], [record])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+__________ test_conversion_explicit_suppression_is_not_silent_absence __________
+tests/test_us_candidate_lanes.py:1536: in test_conversion_explicit_suppression_is_not_silent_absence
+    result = _trace_case([flag], suppressions=[record])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+________________ test_conversion_absence_keeps_generation_scope ________________
+tests/test_us_candidate_lanes.py:1543: in test_conversion_absence_keeps_generation_scope
+    assert _trace_case([flag])['rows'][0]['status'] == 'no_record_in_selected_generation'
+           ^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+_________________ test_conversion_future_sighting_is_excluded __________________
+tests/test_us_candidate_lanes.py:1549: in test_conversion_future_sighting_is_excluded
+    assert _trace_case([flag])['rows'] == []
+           ^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+____________ test_conversion_old_generation_is_not_a_detected_drop _____________
+tests/test_us_candidate_lanes.py:1554: in test_conversion_old_generation_is_not_a_detected_drop
+    assert _trace_case([flag], generation_recorded_at='2026-09-09T09:00:00Z')['rows'][0]['status'] == 'generation_predates_sighting'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+________ test_conversion_same_day_before_close_is_not_known_publication ________
+tests/test_us_candidate_lanes.py:1559: in test_conversion_same_day_before_close_is_not_known_publication
+    result = _trace_case([flag], generation_recorded_at='2026-09-10T09:00:00Z')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+________ test_conversion_changed_payload_never_inherits_an_old_receipt _________
+tests/test_us_candidate_lanes.py:1567: in test_conversion_changed_payload_never_inherits_an_old_receipt
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'source_receipt_mismatch'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+__________ test_conversion_future_record_is_not_historical_knowledge ___________
+tests/test_us_candidate_lanes.py:1573: in test_conversion_future_record_is_not_historical_knowledge
+    assert _trace_case([flag], [record])['rows'][0]['status'] == 'record_after_cutoff'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+______ test_conversion_rejects_future_generation_and_duplicate_ownership _______
+tests/test_us_candidate_lanes.py:1579: in test_conversion_rejects_future_generation_and_duplicate_ownership
+    _trace_case([flag], generation_recorded_at='2026-09-22T01:00:00Z')
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+_______ test_conversion_preserves_inputs_and_rejects_bad_sighting_schema _______
+tests/test_us_candidate_lanes.py:1587: in test_conversion_preserves_inputs_and_rejects_bad_sighting_schema
+    _trace_case([flag], [record])
+tests/test_us_candidate_lanes.py:1517: in _trace_case
+    from research.prophet.cpu_leadership.conversion_trace import trace_sightings
+E   ModuleNotFoundError: No module named 'research.prophet.cpu_leadership.conversion_trace'
+=============================== warnings summary ===============================
+../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-f2c9ba8e-2309-43ff-89eb-de526d912464/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-f2c9ba8e-2309-43ff-89eb-de526d912464/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-58eaf45a-8e6e-4924-a1a4-ae98006de0e8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-58eaf45a-8e6e-4924-a1a4-ae98006de0e8/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-5565d9c5-8cf1-4be9-b450-d4384e2fb31b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-5565d9c5-8cf1-4be9-b450-d4384e2fb31b/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-eb68e81d-2981-41ef-a12f-1b3df6b91813/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-eb68e81d-2981-41ef-a12f-1b3df6b91813/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-2152f70f-e9af-4408-8d63-36bebd4f0a17/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-2152f70f-e9af-4408-8d63-36bebd4f0a17/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_lanes.py::test_conversion_exact_source_receipt_is_retained_not_a_trade
+FAILED tests/test_us_candidate_lanes.py::test_conversion_explicit_suppression_is_not_silent_absence
+FAILED tests/test_us_candidate_lanes.py::test_conversion_absence_keeps_generation_scope
+FAILED tests/test_us_candidate_lanes.py::test_conversion_future_sighting_is_excluded
+FAILED tests/test_us_candidate_lanes.py::test_conversion_old_generation_is_not_a_detected_drop
+FAILED tests/test_us_candidate_lanes.py::test_conversion_same_day_before_close_is_not_known_publication
+FAILED tests/test_us_candidate_lanes.py::test_conversion_changed_payload_never_inherits_an_old_receipt
+FAILED tests/test_us_candidate_lanes.py::test_conversion_future_record_is_not_historical_knowledge
+FAILED tests/test_us_candidate_lanes.py::test_conversion_rejects_future_generation_and_duplicate_ownership
+FAILED tests/test_us_candidate_lanes.py::test_conversion_preserves_inputs_and_rejects_bad_sighting_schema
+10 failed, 154 deselected, 5 warnings in 6.25s

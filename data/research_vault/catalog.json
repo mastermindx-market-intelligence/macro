@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T22:40:50.268877+00:00",
-  "count": 2738,
+  "generated_at": "2026-09-23T23:41:05.397381+00:00",
+  "count": 2741,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -302,6 +302,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-sffefpdaliy-92f7f2",
+      "title": "Global Markets Daily Brazilian Real (BRL) — Navigating the Election",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:20Z",
+      "summary_points": [
+        "Election Volatility Pattern: Oct 4 election (potential Oct 25 runoff) drives historical USD/BRL volatility; second-round anticipation typically triggers reversals (2014, 2022) and peak levels pre-second round (2018), with post-first-round moves consistently lower.",
+        "Fiscal Premium & BRL Range: USD/BRL fair value hinges on fiscal policy: 4.50–4.80 for market-friendly outcomes (fiscal tightening), 5.80 for persistent fiscal premium (negative outcome), driven by 9% fiscal deficit and high real rates (>2018 levels).",
+        "Fiscal Policy Sensitivity: Positive fiscal adjustment implies 5.3% BRL appreciation (to 4.80); fiscal deterioration implies 14% depreciation (to 5.80), with geopolitical risks (e.g., Iran conflict) amplifying residual premium.",
+        "Election-Driven FX Catalyst: First-round results trigger immediate volatility (e.g., 4.5% BRL strength post-2022 closer-than-expected result), shifting market focus to cabinet/reform delivery post-first round."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-m04zrgkxyce-22a813",
       "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
       "institution": "Goldman Sachs",
@@ -338,6 +358,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 43,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xjgeoxpxuhz-4b836b",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:34:57Z",
+      "summary_points": [
+        "Valuation Disparity: MXAPJ (P/B 2.4) trades at higher valuation than MXCN (P/B 1.3), while Korea (P/E 5.1) and Indonesia (P/E 8.7) show lower valuations, signaling potential relative outperformance opportunities.",
+        "FII/DII Flow Divergence: Persistent FII outflows in EM Asia ex-China (Taiwan/Korea: -160/-210 US$bn) offset by strong DII inflows (Asia-wide: 108 US$bn WTD), indicating domestic support mitigating foreign capital flight risk.",
+        "Japan Overvaluation Risk: TOPIX 12M forward P/E at 15.6x (above average) and narrow equity/bond yield gap (150bp) signal expensive valuations, contrasting with MXAPJ’s broader undervaluation vs.",
+        "US/Europe (0.74x/0.55x forward P/E).",
+        "Earnings Revision Asymmetry: MXAPJ shows accelerating upward earnings revisions (2025-2027), but China’s Info Tech/Financials face negative revisions vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -519,6 +560,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-po5gpsfzoio-d65dde",
+      "title": "GS Utilities Daily Iberdrola reportedly planning sale of a stake in UK offshore project Global renewable additions need to accelerate to meet 2030",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:18Z",
+      "summary_points": [
+        "Iberdrola UK Offshore Stake Sale: Monetization of 49% stake in €5bn East Anglia Two project (960MW) signals strategic asset shift; impacts renewable project valuations and capital flows amid UK net zero policy scrutiny.",
+        "Renewable Capacity Gap: Current global additions (693GW/y) insufficient to meet 2030 target (11.2TW), requiring accelerated build-out to avoid structural shortfall; critical for sector growth assessment.",
+        "EU Diesel Cost Surge: Drivers pay ~40% more on diesel since year start, adding €203mn/day toll due to Middle East conflict; imported fossil fuel costs up €90bn since Feb, straining energy-intensive sectors.",
+        "Europe Electrification Acceleration: Power demand growth +5% pa, PowerGen investments tripling to €2T by 2035; Agentic AI driving +25% datacenter power needs, boosting utility infrastructure demand and valuations.",
+        "Global Renewable Policy Support: Critical for sector growth; requires tracking subsidies, carbon pricing, and capacity addition data to gauge market dynamics and investment opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
