@@ -517,3 +517,37 @@ def test_every_qualified_capture_disclaims_snapshot_proof():
         assert result["qualified"] is True
         assert type(result["capture"]["atomic_snapshot_proven"]) is bool
         assert result["capture"]["atomic_snapshot_proven"] is False
+
+
+def test_first_generationless_capture_never_promotes_or_stamps_absence(tmp_path):
+    from collectors.fda_shortages import (
+        read_shortage_observation, save_shortage_observation,
+    )
+
+    path = tmp_path / "shortages.parquet"
+    result = _sweep(None, [_record(), _record(ndc="TEST-B", name="Synthetic B")])
+
+    outcome = save_shortage_observation(
+        result, path=path, expected_predecessor=None,
+    )
+
+    assert result["qualified"] is True
+    assert outcome["promoted"] is False
+    assert outcome["reason"] == "NO_SOURCE_GENERATION"
+    sidecar_path = path.with_suffix(".observation.json")
+    assert outcome["predecessor"] == hashlib.sha256(sidecar_path.read_bytes()).hexdigest()
+    sidecar = json.loads(sidecar_path.read_text())
+    assert sidecar["selected_capture"] is None
+    assert sidecar["history_coverage"]["legacy_rows_capture_unknown"] is True
+    state = read_shortage_observation(path=path)
+    assert state["capture"] is None
+    assert state["inconsistent"] is False
+    assert state["rows"]["package_ndc"].tolist() == ["TEST-A", "TEST-B"]
+    assert state["rows"]["absent_since_generation"].isna().all()
+    assert state["rows"]["capture_known"].eq(False).all()
+    assert sidecar["last_refresh"] == {
+        "attempted_at": "2026-09-23T12:00:06+00:00",
+        "qualified": False,
+        "failure_code": "NO_SOURCE_GENERATION",
+        "partial_rows_observed": 0,
+    }

@@ -112,6 +112,28 @@ def _empty_history_frame():
     return pd.DataFrame(columns=["package_ndc", "initial_posting_date", *HISTORY_COLUMNS])
 
 
+def _staged_parquet_bytes(frame):
+    staged_path = f".fda-shortages-staged-{os.getpid()}.parquet"
+    try:
+        frame.to_parquet(staged_path, engine="pyarrow")
+        with open(staged_path, "rb") as staged_file:
+            return staged_file.read()
+    finally:
+        try:
+            os.unlink(staged_path)
+        except FileNotFoundError:
+            pass
+
+
+def _write_unselected_rows(path, rows):
+    staged_bytes = _staged_parquet_bytes(_normalise_legacy(pd.DataFrame(rows)))
+
+    def write(staged):
+        staged.write_bytes(staged_bytes)
+
+    _write_staged(path, write)
+
+
 def _observation_result(capture, rows, *, qualified, failure_code):
     return {
         "qualified": qualified,
@@ -348,7 +370,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
     capture = result.get("capture") or {}
     state = _selected_state(path)
     selected = state.get("capture") or {}
-    if result.get("qualified") and selected and (
+    unselected_rows = result.get("rows")
+    if result.get("qualified") and (
         not isinstance(capture.get("source_generation"), str)
         or not capture.get("source_generation")
     ):
@@ -505,6 +528,17 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         existing = json.loads(sidecar.read_text()) if sidecar.exists() else {}
     except Exception:
         existing = {}
+    if existing.get("parquet_sha256") is None and unselected_rows:
+        _write_unselected_rows(path, unselected_rows)
+        existing = {
+            **existing,
+            "parquet_sha256": _digest(path),
+            "history_coverage": {
+                "earliest_qualified_generation": None,
+                "legacy_rows_capture_unknown": True,
+                "forward_retention_started_at": None,
+            },
+        }
     receipt = {
         "schema": SCHEMA,
         "selected_capture": existing.get("selected_capture"),
@@ -543,6 +577,8 @@ def _frame_attrs(frame, state, failed_refresh=False):
         "failed_refresh": failed_refresh,
     }
     return frame
+
+
 def fetch_shortages(full_refresh: bool = False) -> pd.DataFrame | None:
     """Refresh the feed, keeping the last qualified observation on failure."""
     path = _shortages_path()
