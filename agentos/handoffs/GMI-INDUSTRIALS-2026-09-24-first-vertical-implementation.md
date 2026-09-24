@@ -1,3 +1,56 @@
+---
+workstream: "WS:GMI-INDUSTRIALS-FIRST-VERTICAL"
+session: claude/gmi-industrials-seat-program
+model: fable
+ended_because: blocked
+mission: >
+  Live seat checkpoint for gmi-industrials-fable-ceo-e2e-20260924-chairman-001: deliver the
+  first Industrials vertical (two signed-in Exponent/Pentair result-to-cash dossiers) on the
+  Semiconductor-led shared foundation by shipping plan tasks T01-T09 as fabric-built PRs in
+  dependency order. Dependent effects behind held gates G1(T07+)/G2/G3/G4/G5 stay frozen while
+  independent synthetic and incumbent-owner lanes continue; the seat session is still running.
+state_before: >
+  Research/plan/packet prepared on #7789 (PREPARED_FOR_PLACEMENT, NOT_DISPATCHED); no
+  implementation carrier, no receiver, no START. Semiconductor B (#7870 @ 70fde3c7) unmerged
+  and without the shared route family or aggregator. CDV-1 T1 (#7905) open on the same
+  issuer_profiles seam.
+changed:
+  - path: agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
+    what: "Seat pickup checkpoint: state table, gates, fabric/hosts, wave plan, DO_NOT_REDO, danger areas."
+  - path: research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
+    what: "R-IND-00..07 wave-1 rulings (base ownership, carrier model, CI job, fixture law, ordering, A14 consumption)."
+verified:
+  - claim: "Package member hashes and both research verifiers pass."
+    command: "python3 verify_wave14.py; python3 verify_wave13.py"
+    result: "14 tests OK; 16 tests OK."
+  - claim: "Plan and addendum blobs match the research branch."
+    command: "git rev-parse origin/sol/industrials-sector-research-20260923:docs/superpowers/plans/<plan|addendum>"
+    result: "a5462dc7f36aea08c57ce43a8a230ef00ebae802 / a2416836ad973a9224c4823ae0b6ae4d1272a011."
+  - claim: "Semiconductor B has no shared route/aggregator/client yet."
+    command: "git ls-tree origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9 app/theme_research.py templates/_basket_intelligence_mounts.html.j2"
+    result: "empty."
+unverified:
+  - claim: "Real EXPO/PNR identities, source receipts and private access are bindable today."
+    what_would_verify: "T02/T03 real admission through the incumbent owners (G2) and the private owner's known-existing-object test (G3)."
+unresolved:
+  - "T07-T09 wait for Semiconductor B's route family and aggregator on main."
+  - "sec_edgar source/use qualification for verbatim filing text (A14-06) is owed by the rights owner."
+next_actions:
+  - "Consume the Opus READ_ONLY seam audit into R-IND-10+ and finalize the T01 packet."
+  - "Dispatch ind_t01_binding on m1 (admission-wait), post START on #7789, red-team the PR, merge on concluded green."
+  - "Then T02 || T04, T03 || T05, T06; hold T07-T09 for B."
+do_not_redo:
+  - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen."
+  - "R14-01..R14-05, the R4 private-mechanism choice and the #7669 aggregator choice are decided; never reopen the GET route or a direct mount."
+  - "Never put product code on #7789; never edit #7870's branch."
+danger_areas:
+  - "Sparse worktrees truncate data/ and site/ on write."
+  - "issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py are shared with #7870 and #7905 - serialize."
+  - "A test wired into a gate:code run line without its paths: entry reds contract-delta fleet-wide; a copied recipe carries the donor's pip deps."
+prs: [7789, 7912]
+decisions: []
+discoveries: []
+---
 # GMI Industrials — first-vertical implementation checkpoint (Fable Meta-CEO seat)
 
 Operation: `gmi-industrials-fable-ceo-e2e-20260924-chairman-001` (research operation `gmi-industrials-sector-research-20260923-sol-001`, research carrier #7789 — HOLD, never product code).
