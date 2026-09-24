@@ -106,4 +106,18 @@ MMX_BROWSER_BASE=http://127.0.0.1:18873 \
   python research/evidence/cybersecurity-basket-integrity-20260923/browser_verify.py
 ```
 
-Canonical Skillpack pin: `mastermindx-market-intelligence/Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`.
+Original build Skillpack pin: `mastermindx-market-intelligence/Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`.
+
+## Sol continuation — 2026-09-24
+
+The current-base integration and CI-contract repair were performed under the freshly pinned protected Skillpack
+`mastermindx-market-intelligence/Mastermind@819abc8c23609cdded2b33f6e1bfc7854bd5c847`
+(Skillpack 1.0.1, bootstrap major 1). Required procedures were loaded from that same immutable pin.
+
+The branch was merged normally with protected Macro main `13c8ad3ca12b685bc639ddcb339efa8763eab42c`.
+The sole content conflict was `site/basket/cybersecurity.html`: main's later nightly projection still carried the
+incomplete 10-configured / 8-observed panel for the same 2026-09-23 session, while this carrier repairs the
+underlying canonical membership and close coverage and projects 14 configured / 14 observed names. The
+14-name feature projection was therefore retained; no recommendation, scoring, entry, or sizing source was
+changed. The new regression suite was also wired into the incumbent `engine-render-guards` data/render lane,
+closing the exact `contract-delta` failure without creating another CI job or waiver.
