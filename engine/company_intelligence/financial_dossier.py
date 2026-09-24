@@ -10,6 +10,17 @@ from engine.company_intelligence.documents import ABSENCE_REASONS
 
 
 DELIVERY_INPUT_VALIDATOR_VERSION = "v1"
+# Closed set of top-level refusal reasons. The pattern ``unknown_field:<name>``
+# stays open-ended so unknown delivery-input keys can name themselves.
+DELIVERY_REFUSAL_REASONS = frozenset(
+    {
+        "accepted_binding_missing",
+        "identity_unresolved",
+        "unsupported_cross_subject_join",
+        "rights_unqualified",
+        "route_unbound",
+    }
+)
 _ALLOWED_INPUT_KEYS = frozenset(
     {
         "synthetic",
@@ -58,7 +69,9 @@ def validate_delivery_inputs(
     identity = inputs.get("identity")
     identity_status, identity_reason = _check_identity(identity, registry)
     if identity_status != "resolved":
-        reasons.append(identity_reason)
+        # Top-level reasons stay in the closed set; the finer
+        # ``identity_not_registered`` lives only in ``bindings["identity"]["reason"]``.
+        reasons.append("identity_unresolved")
 
     join = inputs.get("cross_subject_join")
     if join is not None:

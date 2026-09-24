@@ -113,6 +113,36 @@ def test_run_refresh_binds_acquire_results_filing_with_ordinary_refresh_outage()
     assert result["source"] == "ordinary_refresh_outage"
 
 
+def test_top_level_refusal_reasons_are_closed_set_or_unknown_field() -> None:
+    from engine.company_intelligence.financial_dossier import (
+        DELIVERY_REFUSAL_REASONS,
+        validate_delivery_inputs,
+    )
+    from tests.industrials_result_cash_helpers import issuer_registry
+
+    registry = issuer_registry()
+    # Walk every fixture plus a few hand-rolled payloads to exercise every code path.
+    fixtures = [
+        case(name) for name in sorted(__import__("tests.industrials_result_cash_helpers", fromlist=["FIXTURE_NAMES"]).FIXTURE_NAMES)
+    ]
+    payloads: list[dict] = list(fixtures)
+    # malformed identity (missing fields)
+    payloads.append({"synthetic": True, "identity": {}, "release_binding": None, "private_binding": None})
+    # identity_not_registered (well-formed but pair not in registry)
+    not_registered = case("source_only")
+    not_registered["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000320193"},
+    }
+    payloads.append(not_registered)
+    for payload in payloads:
+        result = validate_delivery_inputs(payload, registry=registry)
+        for reason in result["reasons"]:
+            assert reason in DELIVERY_REFUSAL_REASONS or reason.startswith("unknown_field:"), (
+                f"unrecognized top-level reason: {reason!r}"
+            )
+
+
 def test_unknown_delivery_input_key_refused() -> None:
     from engine.company_intelligence.financial_dossier import validate_delivery_inputs
 
