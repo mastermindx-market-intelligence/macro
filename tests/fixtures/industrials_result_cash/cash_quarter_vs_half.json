@@ -1,0 +1,91 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:halcyon",
+    "display_name": "Halcyon Flow Systems",
+    "external_ids": {
+      "cik": "0000987655"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "halcyon-half",
+      "url": "https://example.invalid/flow-half.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:cash-quarter",
+      "revision": "r1",
+      "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "semantic_selector": {
+        "statement": "cash-flow",
+        "row": "operating-cash",
+        "column": "three-months"
+      },
+      "value": "9",
+      "metric": "operating_cash_flow",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-03",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "industrial-flow"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "cash_generated_by_operations"
+      }
+    },
+    {
+      "owner_ref": "synthetic:cell:cash-half",
+      "revision": "r1",
+      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "semantic_selector": {
+        "statement": "cash-flow",
+        "row": "operating-cash",
+        "column": "six-months"
+      },
+      "value": "17",
+      "metric": "operating_cash_flow",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-01-03",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 H1",
+        "duration": "half_year"
+      },
+      "business_dimensions": {
+        "segment": "industrial-flow"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "cash_generated_by_operations"
+      }
+    }
+  ]
+}
