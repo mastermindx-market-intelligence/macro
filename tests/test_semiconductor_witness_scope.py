@@ -21,6 +21,7 @@ import pytest
 from engine.company_intelligence.issuer_profiles import ON_CIK, TSM_CIK
 from engine.market_ontology import semiconductor_witness_scope as scope_module
 from engine.market_ontology.semiconductor_witness_scope import (
+    IDENTITY_SOURCE_UNAVAILABLE,
     SLICE_SCOPE_UNOWNED,
     WITNESS_ROSTER,
     WitnessIdentity,
@@ -34,7 +35,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "engine" / "market_ontology" / "semiconductor_witness_scope.py"
 MASTER_PATH = ROOT / "data" / "reference" / "security_master.parquet"
 
-pytestmark = pytest.mark.skipif(
+# Only the tests that join through the COMMITTED artifacts skip on a sparse
+# checkout; closure, grammar and refusal tests run everywhere.
+needs_artifacts = pytest.mark.skipif(
     not MASTER_PATH.is_file() or not (ROOT / "data" / "theme_graph" / "nodes.parquet").is_file(),
     reason="committed Data OS / Theme Graph artifacts absent (sparse checkout)",
 )
@@ -45,6 +48,7 @@ pytestmark = pytest.mark.skipif(
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+@needs_artifacts
 def test_hbm_packaging_resolves_to_tsmc_through_the_owners() -> None:
     scope = resolve_witness_scope("hbm_packaging")
     assert isinstance(scope, WitnessScope)
@@ -57,6 +61,7 @@ def test_hbm_packaging_resolves_to_tsmc_through_the_owners() -> None:
     assert scope.omissions == (SLICE_SCOPE_UNOWNED,)
 
 
+@needs_artifacts
 def test_sic_gan_specialty_resolves_to_onsemi_through_the_owners() -> None:
     scope = resolve_witness_scope("sic_gan_specialty")
     assert scope.identities == (
@@ -67,6 +72,7 @@ def test_sic_gan_specialty_resolves_to_onsemi_through_the_owners() -> None:
     assert scope.omissions == (SLICE_SCOPE_UNOWNED,)
 
 
+@needs_artifacts
 def test_resolved_ciks_cross_check_against_the_committed_security_master() -> None:
     master = pd.read_parquet(MASTER_PATH)
     by_issuer = {row["issuer_id"]: row["issuer_cik"] for row in master.to_dict("records")
@@ -101,6 +107,7 @@ def test_non_string_slice_never_raises(probe) -> None:
     assert scope.omissions[0].startswith("slice_unknown:")
 
 
+@needs_artifacts
 @pytest.mark.parametrize("slice_key", [*WITNESS_ROSTER, "unknown_slice"])
 def test_every_result_carries_slice_scope_unowned_exactly_once(slice_key) -> None:
     scope = resolve_witness_scope(slice_key)
@@ -128,6 +135,23 @@ _TSM = WitnessIdentity(ticker="TSM", company_node_id="co:us:TSM",
 ])
 def test_verify_workspace_cik_is_exact_string_equality(workspace_cik, expected) -> None:
     assert verify_workspace_cik(_TSM, workspace_cik) is expected
+
+
+def test_verify_workspace_cik_always_returns_a_real_bool() -> None:
+    class TruthyEq(str):
+        def __eq__(self, other):  # a hostile str subclass: truthy non-bool
+            return ["truthy-non-bool"]
+
+        __hash__ = str.__hash__
+
+    class RaisingEq:
+        def __eq__(self, other):
+            raise RuntimeError("never compared: type check comes first")
+
+    assert verify_workspace_cik(_TSM, TruthyEq("zzz")) is True or \
+        verify_workspace_cik(_TSM, TruthyEq("zzz")) is False
+    assert isinstance(verify_workspace_cik(_TSM, TruthyEq("zzz")), bool)
+    assert verify_workspace_cik(_TSM, RaisingEq()) is False
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -162,10 +186,25 @@ def test_owner_exception_yields_identity_unverified_not_a_raise(monkeypatch) -> 
     assert scope.identities == () and scope.omissions == ("identity_unverified:TSM", SLICE_SCOPE_UNOWNED)
 
 
-def test_missing_security_master_yields_identity_unverified(monkeypatch) -> None:
+def test_missing_security_master_yields_source_unavailable_and_identity_unverified(monkeypatch) -> None:
     monkeypatch.setattr(scope_module, "_load_issuer_master", lambda root=None: None)
     scope = resolve_witness_scope("hbm_packaging")
-    assert scope.identities == () and scope.omissions == ("identity_unverified:TSM", SLICE_SCOPE_UNOWNED)
+    assert scope.identities == ()
+    assert scope.omissions == (IDENTITY_SOURCE_UNAVAILABLE, "identity_unverified:TSM", SLICE_SCOPE_UNOWNED)
+
+
+def test_unlocatable_data_dir_never_raises_out_of_resolve(monkeypatch) -> None:
+    """Review nit 1: locating the master (config.data_dir reads config.yml) sits
+    inside the fail-closed guard — a sparse checkout without config.yml, or a
+    raising config loader, is a typed refusal, not an exception."""
+    def boom():
+        raise FileNotFoundError("config.yml")
+
+    monkeypatch.setattr(scope_module.config, "data_dir", boom)
+    scope = resolve_witness_scope("hbm_packaging")
+    assert scope.identities == ()
+    assert scope.omissions == (IDENTITY_SOURCE_UNAVAILABLE, "identity_unverified:TSM", SLICE_SCOPE_UNOWNED)
+    assert scope_module._load_issuer_master() is None
 
 
 def test_unreadable_security_master_returns_none_not_a_raise(tmp_path) -> None:
@@ -210,6 +249,7 @@ def test_no_ticker_equality_fallback_when_the_graph_node_is_unknown(monkeypatch)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+@needs_artifacts
 def test_no_result_exposes_mapping_learned_at() -> None:
     for cls in (WitnessIdentity, WitnessScope):
         assert "mapping_learned_at" not in {f.name for f in dataclasses.fields(cls)}
@@ -230,6 +270,7 @@ def test_no_result_exposes_mapping_learned_at() -> None:
     assert "mapping_learned_at" in code_only  # the docstring states the law
 
 
+@needs_artifacts
 def test_roster_is_closed_read_only_and_frozen() -> None:
     assert isinstance(WITNESS_ROSTER, MappingProxyType)
     assert dict(WITNESS_ROSTER) == {"hbm_packaging": ("TSM",), "sic_gan_specialty": ("ON",)}
@@ -242,6 +283,7 @@ def test_roster_is_closed_read_only_and_frozen() -> None:
         scope.identities[0].cik = "0000000000"  # type: ignore[misc]
 
 
+@needs_artifacts
 def test_identities_follow_roster_order_and_are_tuples() -> None:
     for slice_key, tickers in WITNESS_ROSTER.items():
         scope = resolve_witness_scope(slice_key)
@@ -273,3 +315,19 @@ def test_module_imports_only_the_named_owners_and_writes_nothing() -> None:
     assert "config.data_dir()" in source
     for forbidden in ("can_rank", "can_gate", "can_size", "can_originate", "can_open_entry"):
         assert forbidden not in source
+    # The ONE parquet read lives in _load_issuer_master and reads the Data OS
+    # master only — no direct theme_graph / other data/ read anywhere else.
+    read_sites = [node for node in ast.walk(tree)
+                  if isinstance(node, ast.Call) and getattr(node.func, "attr", "") == "read_parquet"]
+    assert len(read_sites) == 1
+    loader = next(node for node in ast.walk(tree)
+                  if isinstance(node, ast.FunctionDef) and node.name == "_load_issuer_master")
+    assert read_sites[0] in list(ast.walk(loader))
+    # The loader's path is built from the owner's constants, never a literal
+    # parquet filename: no string constant in CODE names a .parquet file
+    # (docstrings are excluded — they cite the artifacts by name).
+    docstrings = {node.value for node in ast.walk(tree)
+                  if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant)}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and node not in docstrings:
+            assert ".parquet" not in node.value, node.value

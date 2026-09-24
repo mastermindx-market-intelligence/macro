@@ -42,8 +42,15 @@ For each roster ticker:
    Data OS artifact is read here; nothing is written.
 
 On ANY refusal, exception or missing value along that chain the ticker yields
-NO identity and ``"identity_unverified:<ticker>"`` is recorded. There is no
-guess, no ticker-equality fallback and no invented ``co:*`` node.
+NO identity and ``"identity_unverified:<ticker>"`` is recorded; when the Data
+OS master itself cannot be located or read, ``"identity_source_unavailable"``
+is recorded once in addition, so the two failure classes stay
+distinguishable without disclosing paths or exception text. There is no
+guess, no ticker-equality fallback and no invented ``co:*`` node. The two
+identity clocks (the sidecar's ``master_generated_at`` / ``resolution_asof``
+and the live master read) are NOT compared here — a build id is not a
+learning date; a stale sidecar fails closed only when its ``issuer_id`` no
+longer exists in the master (recorded as a known limitation, review nit 4).
 
 NO ``mapping_learned_at``. The identity sidecar is re-derived nightly
 (``resolution_asof`` / ``computed_at`` are rebuild stamps), so no honest
@@ -71,6 +78,7 @@ from engine.theme_graph import identity as graph_identity
 from engine.theme_graph import identity_resolution
 
 __all__ = [
+    "IDENTITY_SOURCE_UNAVAILABLE",
     "SLICE_SCOPE_UNOWNED",
     "WITNESS_ROSTER",
     "WitnessIdentity",
@@ -82,6 +90,11 @@ __all__ = [
 #: Every result carries this token: durable slice ownership is escalated, not
 #: owned (see the module docstring).
 SLICE_SCOPE_UNOWNED = "slice_scope_unowned"
+
+#: Recorded (once) when the Data OS issuer master could not be loaded at all —
+#: a distinct diagnostic from a graph-side refusal, so an operator chases the
+#: master, not the graph. Every roster ticker is then ``identity_unverified``.
+IDENTITY_SOURCE_UNAVAILABLE = "identity_source_unavailable"
 
 #: The graph suite the witnesses' company nodes are minted in.
 GRAPH_SUITE = "baskets"
@@ -133,18 +146,20 @@ def _load_issuer_master(root: Path | None = None) -> IssuerMaster | None:
     """Build the canonical Data OS issuer reader from ONE immutable byte read
     of the committed security master (the Theme Graph's own locator constants
     name the artifact). ``None`` when the artifact is absent or unreadable —
-    every witness then resolves as ``identity_unverified``."""
-    base = Path(root) if root is not None else config.data_dir()
-    path = base / identity_resolution.REFERENCE_SUBDIR / identity_resolution.MASTER_FILE
-    if not path.is_file():
-        return None
+    every witness then resolves as ``identity_unverified``. Nothing here can
+    raise: locating the artifact (``config.data_dir()`` reads the repo's
+    ``config.yml``) is inside the same fail-closed guard as reading it."""
     try:
+        base = Path(root) if root is not None else config.data_dir()
+        path = base / identity_resolution.REFERENCE_SUBDIR / identity_resolution.MASTER_FILE
+        if not path.is_file():
+            return None
         import pandas as pd  # noqa: PLC0415 — the reader's caller reads the parquet
 
         raw = path.read_bytes()
         records = pd.read_parquet(BytesIO(raw)).to_dict("records")
         return IssuerMaster.from_records(records)
-    except Exception:  # noqa: BLE001 — an unreadable master is a refusal, never a raise
+    except Exception:  # noqa: BLE001 — an unlocatable/unreadable master is a refusal, never a raise
         return None
 
 
@@ -187,6 +202,8 @@ def resolve_witness_scope(slice_key: str) -> WitnessScope:
         return WitnessScope(slice_key=slice_key, identities=(), omissions=tuple(omissions))
 
     issuer_master = _load_issuer_master()
+    if issuer_master is None:
+        omissions.append(IDENTITY_SOURCE_UNAVAILABLE)
     identities: list[WitnessIdentity] = []
     for ticker in tickers:
         identity = _resolve_one(ticker, issuer_master)
@@ -201,5 +218,6 @@ def resolve_witness_scope(slice_key: str) -> WitnessScope:
 def verify_workspace_cik(identity: WitnessIdentity, workspace_cik: object) -> bool:
     """Exact string equality on the ten-digit form — the binder refuses a
     workspace whose CIK disagrees with the identity plane. No padding, no
-    stripping, no int coercion."""
-    return isinstance(workspace_cik, str) and workspace_cik == identity.cik
+    stripping, no int coercion; always a real ``bool`` (a ``str`` subclass with
+    a truthy non-bool ``__eq__`` cannot pass as a match)."""
+    return bool(isinstance(workspace_cik, str) and workspace_cik == identity.cik)
