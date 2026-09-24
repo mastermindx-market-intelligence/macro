@@ -326,7 +326,6 @@ def test_interpretation_with_an_input_absent_from_the_bundle_is_withheld():
         query, rebuilt, ref)["limitations"]
 
 
-
 # ---------------------------------------------------------------------------
 # R2b S1 — system_replay needs a supported as-known identity vintage
 # (Sol #7780 5813801605; shared token #7870 5813976021)
