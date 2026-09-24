@@ -102,6 +102,18 @@ spellings coincide today, so a later rename would have retargeted silently), and
 named for a grouping that had already moved to `metric`. Neither was live; both are now impossible,
 pinned by two invariant tests. 61 -> 65 tests.
 
+The new tests were then checked for vacuity by mutation, because a regression test that passes both
+before and after the fix is worse than none — it certifies nothing while looking like proof:
+
+| mutation applied | caught by |
+|---|---|
+| `RESULT_KEY_*` -> `FACT_KEY_*` in `_build_explanation` (the original defect) | `test_full_case_emits_the_r6_economic_lead_not_the_neutral_fallback` |
+| a fact key renamed to collide with a result key | `test_result_keys_and_fact_keys_are_never_interchangeable` (plus the whole golden oracle) |
+| facts grouped on `key` instead of `metric` | `test_facts_are_grouped_by_metric_not_by_key` |
+
+Each mutation was applied to the real module, the suite run, and the module restored; all three were
+caught by the intended test. 65 passed on the restored tree.
+
 **This is the honest cost of the ruler:** `MERGED` was reached before the lead was correct, and only
 production verification distinguished them. It is reported rather than quietly folded into §4.
 
