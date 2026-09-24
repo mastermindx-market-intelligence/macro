@@ -63,6 +63,8 @@ unresolved:
   - "DECISION_REQUEST R4 open on #7780 (issuecomment-5807772681): adopt candidate (ii) — full-fidelity assertion bodies through the existing private Research Vault owner under one registered prefix, reference-only rows in the public parquet — pending Sol/Chairman; live admission (T11) blocked until ruled; preconditions R2_RESEARCH_BUCKET has no public r2.dev domain and PAYWALL_GRACE_SECONDS acceptability unverified."
   - "Fabric incident 2026-09-24: executor lanes running under the Claude Code SDK harness (MiniMax mode) obey the Macro repository ship loop (push, PR, merge-on-green label, gh run watch) despite the lane contract; T01 opened #7874 and armed merge-on-green (disarmed: draft, label removed, custody comment 5807689936, stray watcher killed); T06 pushed claude/semi-b-t06-guidance before its lane was terminated (no PR). Every later packet carries a binding LANE LAW preamble forbidding push/PR/labels/watchers; stray origin branches claude/semi-b-t01-inputs and claude/semi-b-t06-guidance are to be deleted after integration."
   - "Executor return blocks were missing or replaced by ship-loop status for T01 and T03 (stdout 1.5 KB / 2 lines); acceptance therefore rests on the commits, second-environment gates and independent review, not on executor self-report."
+  - "Candidate DSC (not yet recorded): GMI evidence parquet is an unregistered artifact on the public raw plane (config/r2_delivery_plane_classification.v1.json:166 DEFAULT_DENY:MACRO_GIT_RAW data/**) while config/theme_sources.yml:34 calls data/theme_graph an internal plane; nothing enforces the internal-plane language."
+  - "Candidate DSC (not yet recorded): the Macro executor harness (claude -p under MiniMax/GLM keys) inherits the repository CLAUDE.md ship loop; a lane contract alone does not stop push/PR/merge-on-green."
   - "Dependency PR #7669 is actively executing ('manifest-read fix executing', 2026-09-24T02:04Z); custody questions on #7462/#7669 unanswered."
 next_actions:
   - "Consume the three Opus reviews; integrate accepted T01/T03/T06 commits into #7870 by cherry-pick (T06 fixture files supersede T01 stubs), rerun the combined gates, push, record pool ledger outcomes."
@@ -81,9 +83,6 @@ danger_areas:
   - "A synthetic-fixture green is not native admission; an industrial-only pane does not satisfy either witness."
   - "Current issuer identity is not historical lineage; source-only businesses get no fabricated CIK/security/company node."
   - "Fabric executor first-pass acceptance is low (glm-5.3 0.29, MiniMax-M2.7 0.14 over last 20): every child needs an executable deterministic gate and independent review before integration."
-discoveries:
-  - "GMI evidence parquet is an unregistered artifact on the public raw plane (config/r2_delivery_plane_classification.v1.json:166 DEFAULT_DENY:MACRO_GIT_RAW data/**) while config/theme_sources.yml:34 calls data/theme_graph an internal plane; nothing enforces the internal-plane language."
-  - "Macro executor harness (claude -p under MiniMax/GLM keys) inherits the repository CLAUDE.md ship loop; a lane contract alone does not stop push/PR/merge-on-green."
 prs: [7780, 7870, 7874]
 ---
 
