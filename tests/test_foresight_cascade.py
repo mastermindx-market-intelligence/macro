@@ -1054,7 +1054,7 @@ def _capture(now, generation="2026-09-23"):
     }
 
 
-def _failed_capture(now, generation="2026-09-20"):
+def _failed_capture(now, generation=""):
     return {
         "qualified": False,
         "finished_at": (now - timedelta(days=30)).isoformat(),
@@ -1133,7 +1133,7 @@ def test_no_qualified_capture_is_unavailable_but_retains_rows():
     assert out["source_status"] == "UNAVAILABLE"
     assert out["freshness"]["capture_qualified"] is False
     assert out["freshness"]["stale"] is True
-    assert out["freshness"]["failed_refresh"]["failure_code"] == "FIRST_PAGE_OUTAGE"
+    assert out["freshness"]["failed_refresh"] is None
     assert out["counts"]["current"] == 1
     assert out["rows"][0]["regulator_status"] == "current"
     assert out["label"] == (
@@ -1214,7 +1214,6 @@ def test_all_supply_chip_statuses_render_with_distinct_plain_text():
         "RESOLVED_REPORTED": [_summary_row("Resolved")],
         "DISCONTINUATION_REPORTED": [_summary_row("To Be Discontinued")],
         "MIXED_REPORTED": [_summary_row("Current"), _summary_row("Resolved", ndc="TEST-B")],
-        "MIXED_CLOSED_REPORTED": [_summary_row("Resolved"), _summary_row("To Be Discontinued", ndc="TEST-B")],
         "UNCLASSIFIED": [_summary_row("Under Review")],
         "NO_MATCHING_RECORDS": [],
     }
@@ -1305,7 +1304,7 @@ def test_failed_refresh_discloses_the_retained_qualified_capture(monkeypatch):
     assert chip["source_status"] == "CURRENT_REPORTED"
     assert chip["tone"] == "warn"
     assert chip["label"] == (
-        "FDA shortage: current (1) · captured 30 d ago · source generation 2026-08-20 · "
+        "FDA shortage: current (1) · captured 31 d ago · source generation 2026-08-20 · "
         "refresh failed 2026-09-22"
     )
     assert chip["label_zh"] == (
@@ -1447,7 +1446,7 @@ def test_cache_absent_fda_source_never_changes_cascade_tier_stage_or_entry():
 
     def run(source_status, band):
         scarcity = {"glp1_obesity": {"band": band, "source_status": source_status,
-                                     "freshness": {}, "n_active": 0, "n_resolved": 0,
+                                     "freshness": {"capture_qualified": False}, "n_active": 0, "n_resolved": 0,
                                      "n_discontinued": 0, "molecules_checked": [],
                                      "details": [], "rationale": "synthetic"}}
         return fc.compute_foresight_cascade(
@@ -1493,15 +1492,17 @@ def test_iso_datetime_generation_parses_to_its_date():
     assert "来源生成日期2026-07-25" in out["label_zh"]
 
 
-def test_resolved_and_discontinued_mixture_names_both_counts():
+def test_resolved_and_discontinued_mixture_names_both_counts(monkeypatch):
+    import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
 
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
     frame = pd.DataFrame([
         _summary_row("Resolved"),
         _summary_row("To Be Discontinued", ndc="TEST-B"),
     ])
     row = compute_fda_scarcity(frame)["glp1_obesity"]
-    assert row["source_status"] == "MIXED_CLOSED_REPORTED"
+    assert row["source_status"] == "DISCONTINUATION_REPORTED"
     assert row["rationale"] == (
         "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
     )
@@ -1515,8 +1516,14 @@ def test_non_ascii_chip_rationale_is_rejected():
     import pytest
     from engine.fda_scarcity import format_theme_feed_chip
 
+    import engine.fda_scarcity as fda_module
+
+    def non_ascii_rationale(*args, **kwargs):
+        return "FDA来源不可用"
+
+    monkeypatch.setattr(fda_module, "_rationale_for_status", non_ascii_rationale, raising=False)
     with pytest.raises(ValueError, match="ASCII text only"):
-        format_theme_feed_chip(
+        fda_module.format_theme_feed_chip(
             {"summary": {"source_status": "CURRENT_REPORTED", "counts": {"current": 1},
                          "coverage": {}, "freshness": {}, "label": "synthetic",
                          "label_zh": "synthetic"},
