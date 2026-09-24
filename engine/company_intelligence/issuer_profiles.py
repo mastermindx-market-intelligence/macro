@@ -1399,7 +1399,9 @@ def tol_profile() -> IssuerProfile:
 # ─────────────────────────────────────────────────────────────────────────────
 
 _TSM_NT_REVENUE_RE = re.compile(r"NT\$[\d,]+(?:\.\d+)?\s*million")
-_TSM_USD_REVENUE_RE = re.compile(r"US\$([\d.,]+)\s*billion")
+# TSMC writes both "US$12.34 billion" and (house style) "$12.34 billion"; the
+# lookbehind refuses the "$" inside "NT$…".
+_TSM_USD_REVENUE_RE = re.compile(r"(?<![A-Za-z])(?:US)?\$([\d.,]+)\s*billion")
 _TSM_GUIDANCE_RANGE_RE = re.compile(
     r"between\s+US\$([\d.]+)\s+billion\s+and\s+US\$([\d.]+)\s+billion"
 )
@@ -1435,17 +1437,39 @@ _ABBREVIATION_TAIL_RE = re.compile(
 # clause boundary.  Parentheses and dashes open/close an aside ("revenue (US$8.00
 # billion a year ago) reached US$12.34 billion") and are clause boundaries too.
 _CLAUSE_SPLIT_RE = re.compile(
-    r",(?!\d)|;|[()]|[—–]|\s-\s|\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?\b|\bfrom\b|\bup\s+from\b|\bdown\s+from\b", re.I)
+    r",(?!\d)|;|[()]|[—–]|\s-\s|\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?\b|\bagainst\b|\bthan\b|"
+    r"\bup\s+from\b|\bdown\s+from\b|\bfrom\b|\bto\b|\band\b|\bwhile\b|\bwhereas\b", re.I)
+# "to" is a boundary but never a connective: "grew from US$8.00 billion TO
+# US$12.34 billion" / "rose TO US$12.34 billion" introduce the CURRENT figure.
+# Openers that make the clause they introduce a COMPARISON: the figure inside it
+# is the thing compared against, never the reported actual.  A bare "from" is a
+# connective only after a growth word ("rose 17.8% from …"); "revenue from
+# wafer sales" is not a comparison.
+_CONNECTIVE_OPENER_RE = re.compile(r"^(?:compared|versus|vs|against|than|up\s+from|down\s+from)", re.I)
+_GROWTH_TAIL_RE = re.compile(
+    r"(?:\b(?:grew|rose|increased?|declined?|fell|decreased?|improved|expanded|contracted|jumped|dropped|climbed|slipped|"
+    r"up|down|higher|lower|growth|increase|decrease|change[ds]?)\b|%|\bpercent\b)[^,;]{0,40}$", re.I)
+# Periods that are not a quarter at all: a figure dated to them is never the
+# reported quarter's.
+_NON_QUARTER_PERIOD_RE = re.compile(
+    r"\b(?:(?:six|nine|twelve|three)[-\s]+months?|(?:first|second)[-\s]+half|half[-\s]+year|full[-\s]+year|"
+    r"year[-\s]+to[-\s]+date|calendar[-\s]+year|annual(?:ized|ly)?|trailing[-\s]+twelve)\b", re.I)
+# Metric positivity: a revenue fact binds only a figure whose own clause says
+# revenue, or whose sentence says revenue and names no OTHER metric.
+_REVENUE_WORD_RE = re.compile(r"\b(?:net\s+|consolidated\s+|total\s+)?revenues?\b", re.I)
+_OTHER_METRIC_RE = re.compile(
+    r"\b(?:gross\s+(?:profit|margin)|operating\s+(?:income|expenses?|margin|profit)|net\s+(?:income|profit|loss)|"
+    r"earnings\s+per\s+share|EPS|capital\s+expenditures?|capex|free\s+cash\s+flow|EBITDA|dividends?|"
+    r"cash\s+and\s+cash\s+equivalents|wafer\s+shipments?)\b", re.I)
 # Period-REDIRECTING markers only: they say the figure belongs to another period.
 # Every multi-word marker accepts a hyphen OR whitespace between its words
 # ("year-earlier quarter" == "year earlier quarter").  Growth qualifiers ("rose
-# year-over-year to US$X") describe the current figure and are deliberately
-# absent — excluding them suppressed the true figure and let a comparative stand
-# alone as the single candidate.
+# year-over-year / quarter-on-quarter to US$X") describe the current figure and
+# are deliberately absent — including them suppressed the true figure.
 _COMPARATIVE_MARKER_RE = re.compile(
     r"\b(?:a\s+year\s+(?:ago|earlier)|year[-\s]+(?:ago|earlier)|"
-    r"(?:in\s+the\s+)?(?:prior|previous|preceding|last|corresponding|comparable|same)[-\s]+(?:year|quarter|period)|"
-    r"sequentially|quarter[-\s]+on[-\s]+quarter|on\s+a\s+sequential\s+basis)\b", re.I)
+    r"(?:in\s+the\s+)?(?:prior|previous|preceding|last|corresponding|comparable|same|like)[-\s]+(?:year|quarter|period)|"
+    r"sequentially|on\s+a\s+sequential\s+basis)\b", re.I)
 _RECAP_MARKER_RE = re.compile(
     r"\b(guided|previously|prior\s+guidance|earlier\s+guidance|last[-\s]+quarter|prior[-\s]+quarter|"
     r"earlier\s+this\s+year|had\s+expected|originally)\b", re.I)
@@ -1455,6 +1479,15 @@ _ORDINAL_QUARTERS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3
 _QUARTER_WORDS = {1: "first", 2: "second", 3: "third", 4: "fourth"}
 _QUARTER_PHRASE_RE = re.compile(
     r"\b(first|second|third|fourth|1st|2nd|3rd|4th)[\s-]+quarter(?:\s+of)?(?:\s+fiscal(?:\s+year)?)?\s+(20\d{2})\b", re.I)
+# Year-first: "fiscal 2025 second quarter", "2025 second quarter".
+_YEAR_FIRST_QUARTER_RE = re.compile(
+    r"\b(?:fiscal\s+(?:year\s+)?)?(20\d{2}),?\s+(first|second|third|fourth|1st|2nd|3rd|4th)[\s-]+quarter\b", re.I)
+# Ordinal-only / deictic quarter mentions ("second quarter revenue", "Q2",
+# "for the quarter"): resolve to the reported quarter only because the BLOCK
+# already names the reported quarter+year.
+_ORDINAL_ONLY_QUARTER_RE = re.compile(r"\b(first|second|third|fourth|1st|2nd|3rd|4th)[\s-]+quarter\b", re.I)
+_BARE_QCODE_RE = re.compile(r"\b(?:Q([1-4])|([1-4])Q)\b")
+_DEICTIC_QUARTER_RE = re.compile(r"\b(?:the|this|current)\s+quarter\b", re.I)
 _QUARTER_CODE_RE = re.compile(r"\b(?:Q([1-4])\s*(20\d{2})|([1-4])Q(\d{2}|20\d{2})|(20\d{2})\s*Q([1-4]))\b")
 _MONTH_DATE_RE = re.compile(
     r"\b(January|February|March|April|May|June|July|August|September|October|November|December)"
@@ -1495,47 +1528,124 @@ def _both_windows(text: str, index: int) -> tuple[tuple[int, str], tuple[int, st
     return _sentence_at(text, index), _sentence_at(text, index, strict=True)
 
 
-def _clauses(sentence: str) -> list[tuple[int, int]]:
-    """(start, end) of every comma/comparative-delimited clause of ``sentence``."""
-    out: list[tuple[int, int]] = []
-    start = 0
+def _clauses(sentence: str) -> list[tuple[int, int, str]]:
+    """(start, end, opener) of every clause of ``sentence``; ``opener`` is the
+    delimiter text that introduced the clause ("" for the first, "," for a
+    comma, "compared with" / "from" / … for a connective)."""
+    out: list[tuple[int, int, str]] = []
+    start, opener = 0, ""
     for m in _CLAUSE_SPLIT_RE.finditer(sentence):
-        out.append((start, m.start()))
-        start = m.end()
-    out.append((start, len(sentence)))
+        out.append((start, m.start(), opener))
+        start, opener = m.end(), " ".join(m.group(0).split()).lower()
+    out.append((start, len(sentence), opener))
     return out
 
 
-def _clause_redirects(clause: str, reported: tuple[int, int] | None) -> bool:
-    """A clause redirects the figures it qualifies to another period when it
-    carries a comparative marker OR names quarter+year(s) none of which is the
-    reported one ("in the second quarter of 2025" against a 2026Q2 event)."""
+def _is_connective(opener: str, previous_clause: str) -> bool:
+    """Does ``opener`` introduce a comparison clause?  "compared with", "versus",
+    "against", "up/down from" always; a bare "from" only after a growth word in
+    the tail of the previous clause ("rose 17.8% from …", "an increase from …")."""
+    if _CONNECTIVE_OPENER_RE.match(opener):
+        return True
+    return opener == "from" and _GROWTH_TAIL_RE.search(previous_clause) is not None
+
+
+def _clause_dated_elsewhere(clause: str, reported: tuple[int, int] | None) -> bool:
+    """The clause carries a comparative marker, names quarter+year(s) none of
+    which is the reported one, or names a non-quarter period (six months,
+    first half, full year, year-to-date, …)."""
     if _COMPARATIVE_MARKER_RE.search(clause):
         return True
-    if reported is not None:
-        named = _quarters_named(clause)
-        if named and reported not in named:
-            return True
-    return False
+    if reported is None:
+        return False
+    named = _quarters_named(clause)
+    if named:
+        return reported not in named
+    return _NON_QUARTER_PERIOD_RE.search(clause) is not None
 
 
 def _figure_redirected(
     sentence: str, index: int, pattern: re.Pattern[str], reported: tuple[int, int] | None = None,
 ) -> bool:
-    """True when the figure at ``index`` is redirected to another period: its own
-    clause redirects (comparative marker, or dated to a non-reported quarter), OR
-    a clause of the same sentence that carries NO figure of this kind does (a
-    leading/trailing adverbial such as "A year ago, …", "In the second quarter of
-    2025, …" or "…, up from last year" qualifies the whole sentence)."""
-    for start, end in _clauses(sentence):
+    """True when the figure at ``index`` is redirected away from the reported
+    period.  Per clause of the sentence:
+      * the figure's OWN clause is dated elsewhere (marker / other quarter /
+        non-quarter period) or is opened by a comparison connective
+        ("compared with US$8.00 billion", "grew from US$8.00 billion") → redirected;
+      * a FIGURE-LESS clause dated elsewhere that is NOT a connective clause is
+        an adverbial qualifying the whole sentence ("A year ago, …", "In the
+        second quarter of 2025, …") → redirected;
+      * a figure-less connective clause ("…, up from last year", "…17.8% from the
+        previous quarter") describes growth of the current figure → no effect."""
+    clauses = _clauses(sentence)
+    for position, (start, end, opener) in enumerate(clauses):
         clause = sentence[start:end]
-        if not _clause_redirects(clause, reported):
-            continue
+        previous = sentence[clauses[position - 1][0]:clauses[position - 1][1]] if position else ""
+        connective = _is_connective(opener, previous)
         if start <= index < end:
-            return True
-        if pattern.search(clause) is None:
+            if _COMPARATIVE_MARKER_RE.search(clause):
+                return True
+            named = _quarters_named(clause)
+            if named:
+                # Explicit dating decides, even inside a connective clause:
+                # "…a year ago, compared with US$12.34 billion in the second
+                # quarter of 2026" dates the compared figure TO the reported quarter.
+                return reported is None or reported not in named
+            if reported is not None and _NON_QUARTER_PERIOD_RE.search(clause):
+                return True
+            if connective:
+                return True
+            continue
+        if _clause_dated_elsewhere(clause, reported) and not connective and pattern.search(clause) is None:
             return True
     return False
+
+
+def _names_reported_quarter(sentence: str, reported: tuple[int, int]) -> bool:
+    """Positive period binding: the sentence itself names the reported quarter —
+    with its year, or as an ordinal / Q-code / "the quarter" mention that the
+    enclosing block (which names the reported quarter+year) resolves.  A sentence
+    that names no quarter at all binds nothing."""
+    named = _quarters_named(sentence)
+    if named:
+        return reported in named
+    ordinals = {_ORDINAL_QUARTERS[m.group(1).lower()] for m in _ORDINAL_ONLY_QUARTER_RE.finditer(sentence)}
+    ordinals |= {int(m.group(1) or m.group(2)) for m in _BARE_QCODE_RE.finditer(sentence)}
+    if ordinals:
+        return reported[1] in ordinals
+    return _DEICTIC_QUARTER_RE.search(sentence) is not None
+
+
+def _metric_mentions(text: str, metric_re: re.Pattern[str]) -> list[tuple[int, bool]]:
+    """(position, is_the_metric) for every metric word in ``text``."""
+    mentions = [(m.start(), True) for m in metric_re.finditer(text)]
+    mentions += [(m.start(), False) for m in _OTHER_METRIC_RE.finditer(text)
+                 if not any(a <= m.start() < a + 1 for a, _ in mentions)]
+    return sorted(mentions)
+
+
+def _names_metric(sentence: str, index: int, metric_re: re.Pattern[str]) -> bool:
+    """Positive metric binding by NEAREST attribution: within the figure's own
+    clause the closest metric word before the figure decides ("revenue was
+    US$12.34 billion" binds; "gross profit was US$7.00 billion" never does);
+    a clause whose only metric word follows the figure uses that ("US$7.00
+    billion in gross profit"); a clause with no metric word at all ("…, or
+    US$12.34 billion") falls back to the nearest metric word before the figure
+    in the sentence.  No metric word anywhere → not bound."""
+    for start, end, _ in _clauses(sentence):
+        if start <= index < end:
+            clause = sentence[start:end]
+            mentions = _metric_mentions(clause, metric_re)
+            rel = index - start
+            before = [flag for pos, flag in mentions if pos < rel]
+            if before:
+                return before[-1]
+            after = [flag for pos, flag in mentions if pos > rel]
+            if after:
+                return after[0]
+            break
+    before = [flag for pos, flag in _metric_mentions(sentence, metric_re) if pos < index]
+    return bool(before) and before[-1]
 
 
 def _quarters_named(text: str) -> set[tuple[int, int]]:
@@ -1543,6 +1653,8 @@ def _quarters_named(text: str) -> set[tuple[int, int]]:
     found: set[tuple[int, int]] = set()
     for m in _QUARTER_PHRASE_RE.finditer(text):
         found.add((int(m.group(2)), _ORDINAL_QUARTERS[m.group(1).lower()]))
+    for m in _YEAR_FIRST_QUARTER_RE.finditer(text):
+        found.add((int(m.group(1)), _ORDINAL_QUARTERS[m.group(2).lower()]))
     for m in _QUARTER_CODE_RE.finditer(text):
         if m.group(1):
             found.add((int(m.group(2)), int(m.group(1))))
@@ -1576,12 +1688,17 @@ def _parse_month_date(text: str) -> date | None:
 
 def _period_bound_literals(
     blocks: Sequence[DisclosureBlock], pattern: re.Pattern[str], fiscal_period: Any,
+    metric_re: re.Pattern[str] = _REVENUE_WORD_RE,
 ) -> list[tuple[DisclosureBlock, re.Match[str]]]:
-    """Matches of ``pattern`` that are bound to the reported period: the block
-    names the reported (year, quarter) and the match is not redirected — by a
-    comparative marker or by a clause dated to another quarter — in EITHER the
-    abbreviation-aware or the strict sentence window around it.  Order
-    preserved; the caller decides what >1 means."""
+    """Matches of ``pattern`` bound to the reported period by POSITIVE evidence:
+    the block names the reported (year, quarter); the match's own strict
+    sentence names the reported quarter (``_names_reported_quarter``) and the
+    metric (``_names_metric``); and the match is not redirected — comparative
+    marker, comparison connective, other quarter, non-quarter period — in
+    EITHER the abbreviation-aware or the strict window around it.  Absence of a
+    redirect is never enough on its own: the caller asserts when exactly one
+    distinct candidate survives, so a figure that merely fails to say where it
+    belongs must not become the sole survivor.  Order preserved."""
     year = getattr(fiscal_period, "year", None)
     quarter = getattr(fiscal_period, "quarter", None)
     if year is None or quarter is None:
@@ -1592,6 +1709,11 @@ def _period_bound_literals(
         if reported not in _quarters_named(block.text):
             continue
         for m in pattern.finditer(block.text):
+            strict_start, strict = _sentence_at(block.text, m.start(), strict=True)
+            if not _names_reported_quarter(strict, reported):
+                continue
+            if not _names_metric(strict, m.start() - strict_start, metric_re):
+                continue
             if any(
                 _figure_redirected(sentence, m.start() - sentence_start, pattern, reported)
                 for sentence_start, sentence in _both_windows(block.text, m.start())

@@ -614,6 +614,109 @@ def test_tsm_parenthetical_and_dashed_comparatives_do_not_suppress_the_fact() ->
         assert _tsm_facts(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, form))["fact_revenue_usd"]["value"] == 12.34, form
 
 
+def _usd(body: str):
+    return _tsm_facts(body)["fact_revenue_usd"]
+
+
+def _is_absent(fact) -> bool:
+    return "typed_absence" in fact and fact["typed_absence"]["reason"] == "no_span_addressable_evidence"
+
+
+def test_tsm_over_suppression_never_promotes_a_wrong_survivor() -> None:
+    """Re-verify #3 blocker 1: a merge across "Corp." wrongly redirected the true
+    Q2 figure and the six-month figure became the sole survivor. Binding is now
+    POSITIVE — a candidate must itself name the reported quarter and the metric —
+    so an over-suppressed true figure yields an absence, never a wrong value."""
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE,
+        "Revenue for the six months ended June 30, 2026 was US$23.00 billion. "
+        "Advanced technologies accounted for 74% of wafer revenue in the first quarter of 2026 at TSMC Corp. "
+        "In U.S. dollars, second quarter revenue was US$12.34 billion.")
+    usd = _usd(body)
+    assert "value" not in usd or usd["value"] == 12.34
+    assert _is_absent(usd) or usd["value"] == 12.34
+    minimal = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE,
+        "In 2024, revenue was US$8.00 billion. Gross margin improved in the first quarter of 2026 at TSMC Corp. "
+        "Revenue was US$12.34 billion.")
+    assert _is_absent(_usd(minimal))                       # neither figure names the reported quarter → absence
+
+
+def test_tsm_figure_in_a_comparison_connective_clause_is_never_the_fact() -> None:
+    """Re-verify #3 blocker 2: "compared with", "versus", "against", "up/down from"
+    and a growth-verb "from" introduce the figure compared AGAINST."""
+    for solo in ("Compared with the like period, revenue was US$8.00 billion.",
+                 "Second quarter revenue grew from US$8.00 billion.",
+                 "Second quarter revenue rose sharply from US$8.00 billion.",
+                 "Second quarter revenue was up 54% versus US$8.00 billion.",
+                 "Second quarter revenue increased against US$8.00 billion.",
+                 "Second quarter revenue was up from US$8.00 billion."):
+        assert _is_absent(_usd(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, solo))), solo
+    paired = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Second quarter revenue grew from US$8.00 billion to US$12.34 billion.")
+    assert _usd(paired)["value"] == 12.34
+    not_a_comparison = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Second quarter revenue from advanced nodes was US$12.34 billion.")
+    assert _usd(not_a_comparison)["value"] == 12.34      # "revenue from X" is not a growth comparison
+    inverted = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE, "Revenue was US$8.00 billion a year ago, compared with US$12.34 billion in the second quarter of 2026.")
+    assert _usd(inverted)["value"] == 12.34               # explicit reported-quarter dating beats the connective
+
+
+def test_tsm_year_first_and_non_quarter_period_datings_are_recognised() -> None:
+    """Re-verify #3 blocker 3: "fiscal 2025 second quarter" and non-quarter
+    periods (year, full-year, half, year-to-date, six months) never bind."""
+    for solo in ("In the fiscal 2025 second quarter, revenue was US$8.00 billion.",
+                 "Fiscal 2025 second quarter revenue was US$8.00 billion.",
+                 "In the 2025 second quarter, revenue was US$8.00 billion.",
+                 "In 2025 revenue was US$8.00 billion.",
+                 "Full-year 2025 revenue was US$8.00 billion.",
+                 "In the first half of 2026, second quarter and first quarter revenue together was US$8.00 billion.",
+                 "Year-to-date revenue was US$8.00 billion.",
+                 "Revenue for the six months ended June 30, 2026 was US$8.00 billion."):
+        assert _is_absent(_usd(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, solo))), solo
+    assert _usd(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Fiscal 2026 second quarter revenue was US$12.34 billion."))["value"] == 12.34
+
+
+def test_tsm_binding_requires_the_sentence_to_name_the_quarter_and_the_metric() -> None:
+    """Positive binding: a USD figure whose own sentence names neither the
+    reported quarter nor revenue is not a candidate — so another metric's
+    figure can never become the sole survivor, and a sentence that merely says
+    "Revenue was …" without its period is a (documented, fail-closed) absence."""
+    gross_only = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Second quarter 2026 gross profit was US$7.00 billion.")
+    assert _is_absent(_usd(gross_only))
+    both = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE, "Second quarter 2026 gross profit was US$7.00 billion. In U.S. dollars, second quarter revenue was US$12.34 billion.")
+    assert _usd(both)["value"] == 12.34
+    for same_sentence in ("In U.S. dollars, second quarter revenue was US$12.34 billion and gross profit was US$7.00 billion.",
+                          "In U.S. dollars, second quarter results were US$12.34 billion in revenue and US$7.00 billion in gross profit.",
+                          "Second quarter gross profit was US$7.00 billion and revenue was US$12.34 billion."):
+        assert _usd(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, same_sentence))["value"] == 12.34, same_sentence
+    leading_comparison = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Compared with a year ago, second quarter revenue was US$12.34 billion.")
+    assert _usd(leading_comparison)["value"] == 12.34     # a figure-less connective clause is a growth comparison, not a redirect
+    higher_than = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Second quarter revenue was US$12.34 billion and was higher than last year.")
+    assert _usd(higher_than)["value"] == 12.34
+    no_period = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Revenue was US$12.34 billion.")
+    assert _is_absent(_usd(no_period))
+    for deictic in ("Revenue for the quarter was US$12.34 billion.", "Q2 revenue was US$12.34 billion.",
+                    "Second quarter net revenue was NT$1,000 million, or US$12.34 billion."):
+        assert _usd(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, deictic))["value"] == 12.34, deictic
+
+
+def test_tsm_house_style_dollar_sign_and_growth_qualifiers_bind_the_current_figure() -> None:
+    """TSMC's real release style: "$12.34 billion, which increased 44.4%
+    year-over-year and 17.8% from the previous quarter" — bare "$", growth
+    qualifiers and a figure-less connective clause; the NT$ guard keeps
+    "NT$…" out of the USD pattern."""
+    real = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE,
+        "In U.S. dollars, second quarter revenue was $12.34 billion, which increased 44.4% year-over-year "
+        "and 17.8% from the previous quarter.")
+    assert _usd(real)["value"] == 12.34
+    qoq = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "In U.S. dollars, second quarter revenue rose quarter-on-quarter to US$12.34 billion.")
+    assert _usd(qoq)["value"] == 12.34
+    nt_only = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, "Second quarter revenue was NT$12.34 billion.")
+    assert _is_absent(_usd(nt_only))
+
+
 def test_a_horizon_not_after_the_reported_period_is_not_guidance() -> None:
     same_quarter = TSM_SYNTHETIC_EXHIBIT.replace("Looking ahead to the third quarter of 2026", "Looking ahead to the second quarter of 2026")
     assert _tsm_guidance(same_quarter) == []
