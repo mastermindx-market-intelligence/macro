@@ -223,8 +223,9 @@ def test_every_continuation_link_carries_path_step_source_context():
     loses the focused step the reader arrived from; the transmission surface
     would then have to recover that context from somewhere it does not have.
     Pin that every transmission.html href in the rendered DOM carries the
-    `from=<path first leg>` / `focus=<first_blocking_leg.node_id>` / `rev=
-    <source.rev>` query string the snapshot supplies."""
+    `from=<chain identifier>` / `focus=<next_action.target, else
+    first_blocking_leg.node_id>` / `rev=<source.rev>` query string the
+    snapshot supplies."""
     # Pin shape: there must be NO bare `transmission.html` href assignment
     # anywhere in the client (no `a.href = "transmission.html"`, no
     # `link.href = "transmission.html"`).
@@ -236,15 +237,46 @@ def test_every_continuation_link_carries_path_step_source_context():
         f"found bare assignments {bare_literal!r}")
     # And the continuation helper must read every context field the snapshot
     # exposes (so a future rebuild of the snapshot keeps the link honest).
-    helper = re.search(
-        r"function\s+continuationHref\([^)]*\)\s*\{(.*?)^\s*\}",
-        client, re.S | re.M)
-    assert helper, "continuationHref(snapshot) helper must exist"
-    body = helper.group(1)
-    for field in ("sequence", "first_blocking_leg", "node_id", "source", "rev"):
+    # Bound the body by the helper's own opening/closing braces: the function
+    # sits at indent 2, and the matching closing brace is the FIRST `^  }`
+    # AFTER its opening `{`.
+    helper_open = re.search(
+        r"function\s+continuationHref\([^)]*\)\s*\{", client)
+    assert helper_open, "continuationHref(snapshot) helper must exist"
+    body = client[helper_open.end():]
+    body = re.match(r"(.*?)^\s\s\}", body, re.S | re.M).group(1)
+    for field in ("source", "chain", "next_action", "target", "rev"):
         assert field in body, (
             f"continuationHref must read snapshot.{field!r} to carry context "
             "(M1 acceptance item 5)")
+    # `from` is the chain identifier (`source.chain`), NOT the chain's first
+    # node slug (`path.sequence[0]`); the body documents it as `<chain>`.
+    assert "sequence" not in body, (
+        "continuationHref uses path.sequence[0] (a node slug) as `from`; "
+        "use source.chain (the chain identifier) instead")
+
+
+def test_continuation_focus_follows_next_action_target_not_blocking_leg():
+    """A chain can have a first_blocking_leg AND a different next_action.target
+    (e.g. an unobserved downstream leg the page just opened, or the confirmed
+    leg after a contradiction). `focus=` must follow the step the page LAST
+    focused — the next_action target — not the first blocking leg whenever one
+    exists, which can be a different step than the control just opened."""
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    helper_open = re.search(
+        r"function\s+continuationHref\([^)]*\)\s*\{", client)
+    assert helper_open, "continuationHref(snapshot) helper must exist"
+    body = client[helper_open.end():]
+    body = re.match(r"(.*?)^\s\s\}", body, re.S | re.M).group(1)
+    # The focus assignment must read `next_action.target` FIRST, then fall back
+    # to first_blocking_leg.node_id. The order is the source-of-truth here.
+    action_pos = body.find("next_action")
+    blocking_pos = body.find("first_blocking_leg")
+    assert action_pos != -1 and blocking_pos != -1, (
+        "continuationHref must consult both next_action and first_blocking_leg")
+    assert action_pos < blocking_pos, (
+        "next_action.target must be the primary focus source; "
+        "first_blocking_leg is the fallback only")
 
 
 def test_every_blocking_reason_the_composer_emits_has_its_own_sentence():
@@ -274,3 +306,82 @@ def test_blocking_reason_sentences_are_factories_not_shared_fragments():
     block = client.split("var BLOCKING_REASON = {", 1)[1].split("};", 1)[0]
     assert "function ()" in block
     assert re.search(r"^\s{4}\w+: say\(", block, re.M) is None
+
+
+def test_every_engine_gap_kind_has_a_reader_facing_sentence():
+    """M1 acceptance item 4 + plain-language law. The composer is the source
+    of truth for gap kinds (engine/ontology_explorer.py); this client ships a
+    GAP_TEXT map that names each one. A kind the composer emits without a
+    GAP_TEXT entry falls through to a raw-slug rendering (e.g. 'clock absent'),
+    which is the failure this test pins shut.
+
+    Discovered by `grep -n 'gaps.append({"kind":' engine/ontology_explorer.py`
+    — every value that appears as a kind literal there must have an entry in
+    GAP_TEXT; nothing in GAP_TEXT may be a kind the composer never emits
+    (those are dead keys, kept out of the artifact)."""
+    import inspect
+    from engine import ontology_explorer
+
+    engine_src = inspect.getsource(ontology_explorer)
+    # Some kinds are passed via a local `kind` variable in a loop:
+    #   for count, kind in ((foreign, "transitions_from_another_revision"), ...):
+    #       if count: gaps.append({"kind": kind, "count": count})
+    # Capture those literal strings too, so the parity test pins EVERY kind
+    # the composer can emit (literal or via a loop variable).
+    emitted_literal = set(re.findall(r'\{"kind":\s*"([^"]+)"', engine_src))
+    emitted_loop = set(re.findall(
+        r'\(\s*\w+\s*,\s*"(transitions_\w+)"\s*\)', engine_src))
+    emitted = sorted(emitted_literal | emitted_loop)
+    assert emitted, "the composer's gap kind vocabulary must be discoverable"
+
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    block = client.split("var GAP_TEXT = {", 1)[1].split("};", 1)[0]
+    listed = sorted(set(re.findall(r"^\s{4}(\w+):\s*\{", block, re.M)))
+
+    missing = sorted(set(emitted) - set(listed))
+    dead = sorted(set(listed) - set(emitted))
+    assert not missing, (
+        "engine emits these gap kinds without a GAP_TEXT sentence: "
+        f"{missing}; the page would render them as raw slugs")
+    assert not dead, (
+        f"GAP_TEXT entries the engine never emits (dead keys): {dead}; "
+        "remove them or the test that pins parity will silently miss a kind")
+
+
+def test_receipts_and_watched_render_as_bilingual_sentences_without_undefined():
+    """M1 acceptance item 4 (plain-language law): the client must not concatenate
+    raw owner receipt fields into a single textContent string, where a missing
+    field printed as `undefined`, a study slug like `ret_bp` reached the reader,
+    and EN/ZH fell back to the same concatenated raw string. Pin shape: there
+    must be NO `receipt.series + ` style concatenation inside `renderLegDetail`,
+    and there must be bilingual helper functions `receiptLabel`, `receiptValue`
+    and `watchedSentence` that the loop calls instead."""
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    # Pin: the old concatenation shape must not be present
+    assert "receipt.series +" not in client, (
+        "the client still concatenates raw receipt fields; receiptLabel/"
+        "receiptValue must render the reading as a bilingual sentence")
+    assert "receipt.metric +" not in client
+    assert "receipt.value +" not in client
+    assert "w.series +" not in client, (
+        "the invalidator watched branch still concatenates raw fields; "
+        "watchedSentence must render the condition as a bilingual sentence")
+    assert "w.metric +" not in client
+    # Pin: the bilingual helpers exist and are wired in
+    for helper in ("function receiptLabel(", "function receiptValue(",
+                   "function watchedSentence("):
+        assert helper in client, f"missing helper {helper!r}"
+    # Pin: the renderLegDetail loop calls receiptLabel/receiptValue, not el with
+    # concatenated textContent
+    assert "receiptLabel(receipt)" in client
+    assert "receiptValue(receipt)" in client
+    assert "watchedSentence(item.watched)" in client
+    # Pin: the helper functions handle the empty-receipt branch by disclosing
+    # the absence, not by emitting raw concatenated fields
+    assert "reading published without a value" in client
+    assert "Watching this step's condition" in client
+    # Pin: the receiptValue helper guards every owner field through _present()
+    # so a missing field never renders as the JavaScript `undefined` string
+    assert "function _present(field)" in client
+    assert "_present(receipt.value)" in client
+    assert "_present(receipt.threshold)" in client

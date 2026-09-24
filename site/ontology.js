@@ -473,19 +473,30 @@
      indication of which path / step / revision they came from). The
      transmission surface may or may not consume these today; that is the
      surface's job, not this page's — the link carries the context regardless.
-     `focus` names the step the page last focused; `from` is the path's first
-     leg, which uniquely identifies the chain on the overview; `rev` is the
-     source revision the snapshot was read at. */
+     `focus` names the step the page last focused — the one its next_action
+     pointed at (unobserved leg, downstream-of-contradiction leg, or
+     first-blocking leg), NOT the first blocking leg whenever there is one
+     (which can be a different step than what the next-action control just
+     opened). `from` is the chain identifier (`source.chain`), which uniquely
+     names this chain on the overview — `path.sequence[0]` is the chain's
+     first node slug, NOT a chain identifier. `rev` is the source revision the
+     snapshot was read at. */
   function continuationHref(snapshot) {
-    var seq = (snapshot && snapshot.path && snapshot.path.sequence) || [];
-    var from = seq.length ? seq[0] : "";
-    var blocking = snapshot && snapshot.first_blocking_leg
-      && snapshot.first_blocking_leg.node_id;
-    var focus = blocking || "";
-    var rev = snapshot && snapshot.source && snapshot.source.rev;
+    var src = snapshot && snapshot.source;
+    var chain = src && src.chain;
+    var from = (chain != null && chain !== "") ? String(chain) : "";
+    var focus = "";
+    var action = snapshot && snapshot.next_action;
+    if (action && action.target) {
+      focus = String(action.target);
+    } else if (snapshot && snapshot.first_blocking_leg
+               && snapshot.first_blocking_leg.node_id) {
+      focus = String(snapshot.first_blocking_leg.node_id);
+    }
+    var rev = src && src.rev;
     rev = (rev == null) ? "" : String(rev);
     var q = [];
-    if (from) q.push("from=" + encodeURIComponent(from));
+    if (from)  q.push("from="  + encodeURIComponent(from));
     if (focus) q.push("focus=" + encodeURIComponent(focus));
     if (rev)   q.push("rev="   + encodeURIComponent(rev));
     return "transmission.html" + (q.length ? "?" + q.join("&") : "");
@@ -564,11 +575,21 @@
       box.appendChild(h);
       var kv = el("dl", "ox-kv");
       (leg.receipts || []).forEach(function (receipt) {
-        var dt = el("dt", null, receipt.series + " · " + receipt.metric
-          + (receipt.window ? " " + receipt.window + "d" : ""));
-        var dd = el("dd", null, receipt.value + "  ("
-          + (OPS[receipt.op] || receipt.op) + " " + receipt.threshold + ")");
+        /* Receipts are facts about a single reading. Their fields are ALL
+           optional: an owner artifact may publish only some of them, and the
+           earlier implementation concatenated `undefined` strings when any
+           one was absent. Here every field that exists is named in a
+           bilingual sentence, and missing fields contribute nothing. The
+           series identifier (e.g. "T10YIE", "CL=F") is the owner's public
+           name for the series, the way a ticker is — what would otherwise be
+           a study slug is the metric name (e.g. "ret_bp"), which the page
+           never reaches the reader with: a sentence that names a window
+           and a value is enough to describe what the reading says. */
+        var dt = el("dt");
+        dt.appendChild(receiptLabel(receipt));
         kv.appendChild(dt);
+        var dd = el("dd");
+        dd.appendChild(receiptValue(receipt));
         kv.appendChild(dd);
       });
       if (!(leg.receipts || []).length) {
@@ -597,10 +618,13 @@
         if (item.note) {
           row.appendChild(bi(item.note));
         } else if (item.watched && item.watched.series) {
-          var w = item.watched;
-          row.textContent = w.series + (w.vs ? " vs " + w.vs : "")
-            + " \u00b7 " + w.metric + (w.window ? " " + w.window + "d" : "")
-            + " " + (OPS[w.op] || w.op) + " " + w.value;
+          /* The watched condition without a note: a reading on a series, with
+             whatever window / operator / value the owner published. Built
+             bilingually and never as raw concatenated fields \u2014 `T10YIE \u00b7 ret_bp
+             22d < 5` is the previous shape, and it let a study slug ("ret_bp")
+             reach the reader. Here every field that exists becomes part of a
+             sentence, and missing fields contribute nothing. */
+          row.appendChild(watchedSentence(item.watched));
         } else {
           return;
         }
@@ -611,6 +635,114 @@
     return d;
   }
 
+  /* Receipts and watched conditions are rendered as bilingual sentences. Each
+     helper takes the partial field set an owner can publish and only names the
+     fields that actually exist — `undefined` is never written to the page.
+     `series` is treated as the owner's public identifier (a ticker-style name
+     like "T10YIE" or "CL=F" is part of what the reader is told); `metric` is
+     treated as a study slug and is dropped on the glance tier — the value,
+     operator, threshold and window together already say what the reading is. */
+  function _present(field) {
+    return field != null && field !== "";
+  }
+  function _opGlyph(op) {
+    return OPS[op] || (op == null ? "" : String(op));
+  }
+  function _num(n) {
+    if (n == null || n === "") return "";
+    if (typeof n === "number" && isFinite(n)) {
+      /* Strip trailing zeros so a threshold of 5.0 reads as 5 and a value of
+         0.50 reads as 0.5 — both carry no information in the trailing digit. */
+      var s = String(n);
+      return s;
+    }
+    return String(n);
+  }
+  function receiptLabel(receipt) {
+    /* The dt: names the reading — series identifier and window if present.
+       The metric name is intentionally omitted; the value/op/threshold line
+       below already says what the reading says. */
+    var series = _present(receipt.series) ? String(receipt.series) : "";
+    var window = _present(receipt.window) ? String(receipt.window) : "";
+    if (series && window) {
+      return say(series + " · " + window + "-day reading",
+        series + " · " + window + " 日读数");
+    }
+    if (series) {
+      return say(series + " · reading", series + " · 读数");
+    }
+    if (window) {
+      return say(window + "-day reading", window + " 日读数");
+    }
+    return say("Reading", "读数");
+  }
+  function receiptValue(receipt) {
+    /* The dd: says the reading — value, operator, threshold, in plain English
+       and plain Chinese. Missing fields are skipped; an entirely empty
+       receipt is still disclosed as such rather than printed as "undefined". */
+    var value = _present(receipt.value) ? _num(receipt.value) : "";
+    var op = _opGlyph(receipt.op);
+    var threshold = _present(receipt.threshold) ? _num(receipt.threshold) : "";
+    var window = _present(receipt.window) ? String(receipt.window) : "";
+
+    var en, zh;
+    if (value && op && threshold && window) {
+      en = value + " " + op + " " + threshold + " on the " + window + "-day reading";
+      zh = "在 " + window + " 日读数中 " + value + " " + op + " " + threshold;
+    } else if (value && op && threshold) {
+      en = value + " " + op + " " + threshold;
+      zh = value + " " + op + " " + threshold;
+    } else if (value) {
+      en = "value " + value;
+      zh = "数值 " + value;
+    } else if (threshold) {
+      en = "threshold " + threshold;
+      zh = "阈值 " + threshold;
+    } else {
+      return say("reading published without a value",
+        "已发布读数，但未给出数值");
+    }
+    return say(en, zh);
+  }
+  function watchedSentence(w) {
+    /* An invalidator without an owner note: render the watched condition as a
+       plain bilingual sentence. `metric` is a study slug and is dropped; the
+       series, window, operator and value together say what we are watching. */
+    var series = _present(w.series) ? String(w.series) : "";
+    var vs = _present(w.vs) ? String(w.vs) : "";
+    var window = _present(w.window) ? String(w.window) : "";
+    var op = _opGlyph(w.op);
+    var value = _present(w.value) ? _num(w.value) : "";
+
+    var en, zh;
+    if (series && vs && window && op && value) {
+      en = "Watching " + series + " against " + vs + ": " + window
+        + "-day value " + op + " " + value;
+      zh = "观察 " + series + " 与 " + vs + " 的对照：" + window
+        + " 日数值 " + op + " " + value;
+    } else if (series && window && op && value) {
+      en = "Watching " + series + ": " + window + "-day value " + op + " " + value;
+      zh = "观察 " + series + "：" + window + " 日数值 " + op + " " + value;
+    } else if (series && op && value) {
+      en = "Watching " + series + ": value " + op + " " + value;
+      zh = "观察 " + series + "：数值 " + op + " " + value;
+    } else if (series) {
+      en = "Watching " + series;
+      zh = "观察 " + series;
+    } else {
+      return say("Watching this step's condition",
+        "观察该环节的条件");
+    }
+    return say(en, zh);
+  }
+
+  /* Every gap kind the composer can emit has a plain-language sentence here.
+     The composer is the source of truth (engine/ontology_explorer.py); this
+     table is the reader-facing layer. A missing entry falls through to the
+     raw-slug branch at the bottom of `gapLabel`, and the test pinning parity
+     refuses to ship a kind the composer can emit without a sentence of its
+     own — see tests/test_ontology_explorer_shell.py::test_every_engine_gap_
+     kind_has_a_reader_facing_sentence. */
   var GAP_TEXT = {
     node_incomplete: { en: "a step the owners have not finished recording",
       zh: "所有者尚未记录完整的环节" },
@@ -620,12 +752,12 @@
       zh: "已记录但未给出判定的环节" },
     node_unreadable: { en: "a step whose verdict could not be read",
       zh: "判定无法读取的环节" },
-    node_undeclared: { en: "a step referenced by the path but never declared",
-      zh: "路径引用但从未声明的环节" },
+    node_unobserved: { en: "a step that has no current reading",
+      zh: "暂无当前读数的环节" },
+    clock_absent: { en: "a step whose clock the owners did not publish",
+      zh: "所有者未发布时间的环节" },
     path_incomplete: { en: "part of the path the walk never reached",
       zh: "遍历未触及的路径片段" },
-    build_stamp_unparseable: { en: "a build stamp this page could not read",
-      zh: "本页面无法解析的构建时间戳" },
     build_stamp_in_future: { en: "a build stamp dated ahead of now",
       zh: "时间戳晚于当前时刻的构建记录" },
     text_withheld: { en: "an owner note held back from this page",
@@ -634,6 +766,12 @@
       zh: "仅以单一语言发布的所有者备注" },
     episode_ledger_truncated: { en: "a change history longer than this page reads",
       zh: "长度超出本页面读取上限的变更历史" },
+    invalidators_absent: { en: "the watch list the owners did not publish",
+      zh: "所有者未发布的观察清单" },
+    exposure_screens_absent: { en: "the exposure screens the owners did not publish",
+      zh: "所有者未发布的敞口展示" },
+    unparseable_observation_date: { en: "a reading date this page could not read",
+      zh: "本页面无法解析的读数日期" },
     owner_state_absent: { en: "the owners' recorded state for this path",
       zh: "所有者为该路径记录的状态" },
     owner_state_unrecognised: { en: "an owner state this page does not recognise",
@@ -645,7 +783,19 @@
     receipt_value_not_finite: { en: "a reading that is not a usable number",
       zh: "并非可用数值的读数" },
     receipt_field_not_scalar: { en: "a reading that was not a single value",
-      zh: "并非单一数值的读数" }
+      zh: "并非单一数值的读数" },
+    transitions_from_another_revision: {
+      en: "a transition recorded against a different revision of this path",
+      zh: "针对该路径另一版本记录的状态转换" },
+    transitions_unreadable: {
+      en: "a transition whose record this page could not read",
+      zh: "本页面无法读取的状态转换记录" },
+    transitions_malformed: {
+      en: "a transition record this page could not parse",
+      zh: "本页面无法解析的状态转换记录" },
+    transitions_after_cutoff: {
+      en: "a transition dated after the artifact's effective date",
+      zh: "晚于产物生效日期的状态转换" }
   };
 
   function gapLabel(gap) {
