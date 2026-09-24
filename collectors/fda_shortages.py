@@ -436,18 +436,20 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
         try:
             payload = _json_dumps(receipt)
+            staged_sidecar = sidecar.with_name(f".{sidecar.name}.{os.getpid()}.tmp")
+            staged_sidecar.write_bytes(payload.encode("utf-8"))
         except Exception:
             return {
                 "promoted": False, "reason": "METADATA_WRITE_FAILED",
                 "predecessor": on_disk_predecessor,
             }
+
         try:
-            _write_staged(sidecar, lambda staged: staged.write_text(payload, encoding="utf-8"))
-        except Exception:
-            return {
-                "promoted": False, "reason": "METADATA_WRITE_FAILED",
-                "predecessor": on_disk_predecessor,
-            }
+            _write_staged(path, write_parquet)
+            os.replace(staged_sidecar, sidecar)
+        finally:
+            if staged_sidecar.exists():
+                staged_sidecar.unlink()
         return {"promoted": True, "reason": None, "predecessor": _digest(sidecar)}
 
     refresh = {

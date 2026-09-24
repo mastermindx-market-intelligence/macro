@@ -324,6 +324,8 @@ def test_failed_metadata_write_is_not_advertised_as_current(tmp_path, monkeypatc
     first = _sweep("2026-09-20", [_record()])
     save_shortage_observation(first, path=path, expected_predecessor=None)
     old_digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    sidecar = path.with_suffix(".observation.json")
+    old_sidecar = sidecar.read_bytes()
     second = _sweep("2026-09-23", [_record(status="Resolved")])
 
     def fail_json_dump(*args, **kwargs):
@@ -336,11 +338,13 @@ def test_failed_metadata_write_is_not_advertised_as_current(tmp_path, monkeypatc
     assert outcome["promoted"] is False
     assert outcome["reason"] == "METADATA_WRITE_FAILED"
     state = read_shortage_observation(path=path)
-    assert state["inconsistent"] is True
-    assert state["rows"] is None
-    assert state["capture"] is None
-    sidecar = json.loads(path.with_suffix(".observation.json").read_text())
-    assert sidecar["parquet_sha256"] == old_digest
+    assert state["inconsistent"] is False
+    assert state["rows"] is not None and len(state["rows"]) == 1
+    assert state["capture"]["source_generation"] == "2026-09-20"
+    assert path.read_bytes() == path.read_bytes()
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == old_digest
+    assert sidecar.read_bytes() == old_sidecar
+    assert json.loads(sidecar.read_text())["parquet_sha256"] == old_digest
 
 
 def test_interleaved_older_writer_is_refused(tmp_path):
