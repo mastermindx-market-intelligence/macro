@@ -346,3 +346,59 @@ def test_no_distribution_or_band_is_inferred_from_endpoints():
     for banned in ("distribution", "probability", "band", "confidence",
                    "consensus", "upper_bound", "lower_bound"):
         assert banned not in blob
+
+
+# ---------------------------------------------------------------- review pins (T2/T3 independent review, 2026-09-24)
+
+
+def test_precision_pin_at_input_ceiling_matches_100_digit_oracle():
+    """Near-ceiling inputs (12 integer + 6 fractional digits) must come out exact.
+
+    A kernel context below ~19 significant digits would round these; equality
+    with a 100-digit oracle pins the Decimal precision law by execution.
+    """
+    fy_a = ("999999999999.999998", "999999999999.999999")
+    fy_b = ("999999999999.999997", "999999999999.999999")
+    pa, pb = "123456789012.123456", "123456789012.123457"
+    ga = ("111111111111.111111", "111111111111.111113")
+    xb = "222222222222.222222"
+    values = result_of(compare(fy_a=fy_a, fy_b=fy_b, pa=pa, pb=pb, ga=ga, xb=xb))
+    with localcontext() as oracle:
+        oracle.prec = 100
+        fa = (Decimal(fy_a[0]) + Decimal(fy_a[1])) / 2
+        fb = (Decimal(fy_b[0]) + Decimal(fy_b[1])) / 2
+        g = (Decimal(ga[0]) + Decimal(ga[1])) / 2
+        p_a, p_b, x = Decimal(pa), Decimal(pb), Decimal(xb)
+        expected = {
+            "annual_midpoint_change": fb - fa,
+            "new_period_deviation": x - g,
+            "prior_actual_revision": p_b - p_a,
+            "earlier_remaining": fa - p_a - g,
+            "later_remaining": fb - p_b - x,
+            "remaining_change": (fb - fa) - (x - g) - (p_b - p_a),
+        }
+    for key, oracle_value in expected.items():
+        assert Decimal(values[key]) == oracle_value, key
+    assert len(values["earlier_remaining"].replace("-", "").replace(".", "")) >= 18
+
+
+def test_input_vector_digest_is_by_value_not_spelling():
+    canonical = seal(base_payload())
+    respelled = seal(base_payload(pa="1006.4260", pb="1006.4260", xb="1121.45400"))
+    assert respelled.input_vector_sha256 == canonical.input_vector_sha256
+    assert compare()["comparison_id"] == compare(pa="1006.4260", pb="1006.4260", xb="1121.45400")["comparison_id"]
+
+
+def test_role_generations_echo_is_deduplicated_and_bounded():
+    envelope = compare()
+    pairs = [(g["role"], g["generation"]) for g in envelope["input_vector"]["role_generations"]]
+    assert len(pairs) == len(set(pairs))
+    assert len(pairs) <= 16
+
+
+def test_self_referential_correction_link_is_refused():
+    envelope = compare()
+    looped = copy.deepcopy(envelope)
+    looped["correction"] = {"corrected": True, "predecessor_id": envelope["comparison_id"], "reason": "re-issue"}
+    with pytest.raises(ValueError, match="correction_shape_invalid"):
+        moc.validate_comparison_result(looped)

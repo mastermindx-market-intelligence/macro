@@ -346,13 +346,25 @@ def _format_decimal(value: Decimal, pattern: re.Pattern, ceiling: Decimal, code:
 
 # ---------------------------------------------------------------- digest
 
+def _canonical_amount_text(raw):
+    """Digest amounts by value, not spelling: "1006.4260" and "1006.426" are one quantity.
+
+    Only strings inside the accepted decimal envelope are canonicalized; anything
+    else is digested verbatim and refused later by the validator.
+    """
+    if isinstance(raw, str) and INPUT_DECIMAL_RE.fullmatch(raw):
+        return _format_decimal(Decimal(raw), INPUT_DECIMAL_RE, INPUT_CEILING, "invalid_amount", "digest")
+    return raw
+
+
 def _canonical_role_row(row: Mapping) -> dict:
     refs = sorted(
         ([r["owner"], r["object_id"], r["schema"], r["generation"], r["sha256"], r["selector"]]
          for r in row["refs"]),
     )
     return {
-        "role": row["role"], "low": row["low"], "high": row["high"],
+        "role": row["role"],
+        "low": _canonical_amount_text(row["low"]), "high": _canonical_amount_text(row["high"]),
         "period_keys": list(row["period_keys"]),
         "refs": refs,
         "definition_ref": sorted(
@@ -641,6 +653,7 @@ def serialize_input_echo(inputs: ComparableRevenueInput) -> dict:
     order = {role: index for index, role in enumerate(ROLE_FAMILIES)}
     rows = []
     generations = []
+    seen_generations: set[tuple[str, str]] = set()
     for row in sorted(inputs.role_amounts, key=lambda r: (order[r.role], r.amount.period_keys)):
         amount = row.amount
         rows.append({
@@ -653,6 +666,10 @@ def serialize_input_echo(inputs: ComparableRevenueInput) -> dict:
             "definition_sha256": amount.definition_ref.sha256,
         })
         for ref in sorted(amount.refs, key=lambda r: (r.owner, r.object_id, r.selector, r.generation)):
+            pair = (row.role, ref.generation)
+            if pair in seen_generations:
+                continue  # one echo per (role, generation); the request-layer bound counts the same set
+            seen_generations.add(pair)
             generations.append({"role": row.role, "generation": ref.generation})
     return {
         "subject": {
@@ -736,6 +753,9 @@ def serialize_comparison(result: Mapping) -> dict:
     if corrected:
         if not isinstance(predecessor_id, str) or not predecessor_id.startswith(COMPARISON_ID_PREFIX):
             _fail("correction_shape_invalid", "a corrected result names its predecessor comparison id")
+        if predecessor_id == result.get("comparison_id"):
+            _fail("correction_shape_invalid",
+                  "a corrected result cannot name itself as predecessor; a re-issue with identical content is not a correction")
         if not isinstance(correction_reason, str) or not correction_reason:
             _fail("correction_shape_invalid", "a corrected result carries a correction reason")
     elif predecessor_id is not None or correction_reason is not None:
@@ -808,6 +828,12 @@ def validate_comparison_result(payload) -> None:
         # design; every other section is scanned for promotion fields.
         if section != "authority":
             _scan_forbidden_keys(content, f"$.{section}")
+
+    correction = payload["correction"]
+    if isinstance(correction, Mapping) and correction.get("corrected") is True \
+            and correction.get("predecessor_id") == payload.get("comparison_id"):
+        _fail("correction_shape_invalid",
+              "a corrected result cannot name itself as predecessor; a re-issue with identical content is not a correction")
 
     eligibility = payload["eligibility"]
     if not isinstance(eligibility, Mapping):
