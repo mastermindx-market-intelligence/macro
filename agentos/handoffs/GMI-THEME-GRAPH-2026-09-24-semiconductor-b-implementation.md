@@ -16,7 +16,7 @@ state_before: >
   no START, no product code. Macro main at packet preparation was dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b.
 changed:
   - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-semiconductor-b-implementation.md
-    what: "Created the implementation-operation working checkpoint: pickup receipt, procedure pin, current-main/custody reconciliation, Fable custody rulings R1-R4, wave plan and exact next action; updated with wave-1 dispatch, the R4/T05 read-only qualifications, the fabric ship-loop incident and the R4 DECISION_REQUEST."
+    what: "Created the implementation-operation working checkpoint: pickup receipt, procedure pin, current-main/custody reconciliation, Fable custody rulings R1-R4, wave plan and exact next action; updated with wave-1 dispatch, the R4/T05 read-only qualifications, the fabric ship-loop incident and the R4 DECISION_REQUEST; updated again after wave-1 integration (38d950bdabb3), the T02 REJECT review and its fix commit (2deb758859d7), the T05 GLM content-filter failure and the wave-2 dispatch queue."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "git rev-parse origin/master in Mastermind; read docs/sol_skills/INDEX.md, ACTIVE_EXECUTION.md, WEB_CEO_DELEGATION.md, WATCHER_ACTION_LOOP.md, RECONCILE_STATE.md, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that commit"
@@ -48,7 +48,17 @@ verified:
   - claim: "The Earnings owner is form-agnostic and only its intake filter blocks a 6-K; onsemi is silently skipped today by the fiscal cross-check."
     command: "read-only Opus qualification over engine/company_intelligence/*, scripts/refresh_event_workspaces.py:210-233,632-634,663-716,1021-1029, engine/fundamental_forensics/metric_registry.py:50-53, data/edgar/ticker_cik_ledger.json; SEC submissions/exhibits for CIK 0001046179 and 0001097864 fetched read-only"
     result: "build_event_workspace + validate_event_workspace accept a real TSMC 6-K unchanged; _select_newest_results_rows admits only 8-K with Item 2.02 and every TSMC 6-K row has items==''; onsemi 52/53-week period ends (2026-04-03, 2026-07-03) fail the calendar cross-check and the 'quarter ended' regex; ticker ledger has ON=1097864 and no TSM; FIF registry excludes IFRS/TWD/20-F (typed gap for W-A financial packet); guidance_item.v1 has no validator and no currency field; tests/test_issuer_profiles_a5a.py:114 pins len(registry)==5."
+  - claim: "Wave 1 (T01 fixtures, T03 rights/admission, T06 guidance history) is integrated on the carrier with review nits applied and CI wiring."
+    command: "git cherry-pick -x fe9238b9 53c5bd37 d30457d5; edit .github/ci/legacy-jobs.yml (two new run: steps + one suite appended to the company-intelligence core step); python3 scripts/audit_unrun_tests.py; combined pytest"
+    result: "Carrier 38d950bdabb3 pushed to #7870; #7874 closed with a pointer; stray claude/semi-b-* origin branches deleted; unrun-suite audit clean except base-inherited tests/test_render_dead_ref_targets.py; ledger outcomes recorded for T01 (MiniMax-M2.7-highspeed, reviewer-accepted) and T03 (glm-5.3-flash, reviewer-accepted)."
+  - claim: "T02 (shared curation_assertion v1 contract) is integrated after an independent REJECT review whose three blockers are fixed without re-hashing any fixture."
+    command: "git cherry-pick -x d559511f2f2b (=7fcbadb7da43); fix commit 2deb758859d7; COLLECT_LANE=nightly pytest over the seven B suites; scripts/check_theme_graph_contracts.py"
+    result: "Review blockers: review.review_due_at and source.native_digest were non-nullable (frozen Robotics reference payload carries null for both); encode_assertion refused unstamped payloads instead of minting. Fix: both fields nullable (anyOf null); encode_assertion is the mint path; curation_revision content-validates before hashing via a shared _validated_content (no recursion); decode_assertion(NaN) -> None; authority tests pin the code rule; frozen Robotics payload pinned verbatim as a test; 28-fixture roster pin; T01 identity-leak test admits only https://example.invalid/ URLs. Gate 194 passed, 1 xfailed; contracts script output unchanged; store.py and basket_detail.html.j2 untouched. Independent Opus READ_ONLY re-verification of 2deb758859d7 in flight."
 unverified:
+  - claim: "The T02 fix commit 2deb758859d7 closes all three review blockers to an independent reviewer's satisfaction."
+    what_would_verify: "The READ_ONLY re-verification returning ACCEPT/ACCEPT_WITH_NITS with the Robotics reference payload proof, gate counts and fixtures-unchanged evidence."
+  - claim: "T10 part 1 (generic paid theme-research client, styles, hidden Theme Tracker mount; m1 lane commit f53c7c3845b3, 4 files) is acceptable for a public static site."
+    what_would_verify: "The READ_ONLY review returning no token/payload leak, no XSS surface, no rank/gate/size/entry surface, bilingual toggle honored, mount hidden, suite green offline; then seat integration with a run: step."
   - claim: "GMI has an approved private storage/publication binding for full-fidelity assertions."
     what_would_verify: "T01/T03 evidence from the existing GMI storage and private-publication owners that the incumbent reader/writer can be bound to a non-public runtime root or to the existing private Research Vault store, with current-rights enforcement; no second store."
   - claim: "Earnings owner can enroll TSMC (foreign private issuer, 6-K) and onsemi (8-K) witness sequences with real native objects."
@@ -65,13 +75,18 @@ unresolved:
   - "Executor return blocks were missing or replaced by ship-loop status for T01 and T03 (stdout 1.5 KB / 2 lines); acceptance therefore rests on the commits, second-environment gates and independent review, not on executor self-report."
   - "Candidate DSC (not yet recorded): GMI evidence parquet is an unregistered artifact on the public raw plane (config/r2_delivery_plane_classification.v1.json:166 DEFAULT_DENY:MACRO_GIT_RAW data/**) while config/theme_sources.yml:34 calls data/theme_graph an internal plane; nothing enforces the internal-plane language."
   - "Candidate DSC (not yet recorded): the Macro executor harness (claude -p under MiniMax/GLM keys) inherits the repository CLAUDE.md ship loop; a lane contract alone does not stop push/PR/merge-on-green."
-  - "Dependency PR #7669 is actively executing ('manifest-read fix executing', 2026-09-24T02:04Z); custody questions on #7462/#7669 unanswered."
+  - "Dependency PR #7669 is actively executing (latest 2026-09-24T05:09Z 'same-carrier integration executing', head 2c28d950aa94); #7462 unchanged since 03:53Z (head 31706d7322af); custody questions on both unanswered; R4 unruled on #7780 as of the 05:16Z fresh-read."
+  - "T05 (operator commission, glm-5.3, mb lane rs_20260924T045106Z_54606) FAILED without a commit: after 39 turns / 552 s every call returned GLM `400 [1301] unsafe or sensitive content` (terminal_reason api_error) — a provider content filter on the TSMC/Taiwan material, not quota or admission. Ledger outcome recorded accepted_by=none, escalated. Re-routed as two MiniMax executor contracts: T05a identity+profiles (issuer_profiles/event_workspace/event_workspace_build + tests/test_semiconductor_earnings_witnesses.py; mb worktree ~/lanes/semi-b-t05-witness-mm) and T05b intake (scripts/refresh_event_workspaces.py DISCOVERY_TICKERS, identity-declared results-6-K discriminator, 52/53-week tolerance + tests/test_semiconductor_earnings_intake.py; m1 worktree ~/lanes/semi-b-t05b-intake). MiniMax may share the same content policy — unverified until a lane returns."
+  - "Remote lane capacity: both hosts (m1, mb) sit at the 2-lane ceiling most of the time because other orchestrators' lanes (mo_a3_*, cdv1_*, pu_w3_*) hold slots; wave-2 placement runs through a per-host dispatcher that waits for `pool hosts` ELIGIBLE before calling `pool remote` (no ledger noise, no new queue): mb queue = T07/T08 (glm-5.3 operator) then T05a (MiniMax); m1 queue = T04 (glm-5.3-flash executor), then T05b (MiniMax) once its worktree is minted."
+  - "Native `mastermind-opus-auditor` agents stop at a 12-turn cap before producing a verdict on gate-running reviews (two runs lost); independent reviews now run as general-purpose Opus with ROUTE: AUDIT / MODE: READ_ONLY. Candidate feedback record for the fabric owner."
+  - "Shared-contract addition: `published_at_grain_mismatch` (grain/date consistency) is enforced beyond the frozen Robotics rule list; documented in contracts/theme_graph/README.md; the Robotics owner (#7773) has not acknowledged it — candidate DEC if Robotics objects."
 next_actions:
-  - "Consume the three Opus reviews; integrate accepted T01/T03/T06 commits into #7870 by cherry-pick (T06 fixture files supersede T01 stubs), rerun the combined gates, push, record pool ledger outcomes."
-  - "When T02 (glm-5.3, m1 lane rs_20260924T041531Z_74227) returns: second-environment gate, Opus READ_ONLY review of the shared contract, integrate; then dispatch T04 (K1 subtype) and T07/T08 (F04 composition) with the LANE LAW preamble."
-  - "Dispatch T05 (operator, packet ready) and T10 part 1 (operator, packet ready) as soon as a remote lane frees (both hosts at their 2-lane ceiling at 04:35Z)."
-  - "Fresh-read #7780 for the R4 ruling and #7462/#7669 for custody answers before every substantive write; keep store.py and basket_detail.html.j2 frozen until released."
-  - "Close #7874 with a pointer to the carrier commit after T01 lands; delete the two stray claude/semi-b-* origin branches."
+  - "Consume the T02 re-verification: on ACCEPT record the T02 ledger outcome; on REJECT fix on the carrier and re-verify (never merge a shared contract over an open blocker)."
+  - "Consume the T10 review: on ACCEPT cherry-pick f53c7c3845b3 (refs/lanes/t10), apply blocking nits, add a legacy-jobs run: step for tests/test_semiconductor_theme_research_ui.py, rerun audit_unrun_tests, push; T10 part 2 (basket_detail mount) stays frozen pending #7669."
+  - "As wave-2 lanes return (T07/T08, T04, T05a, T05b): disarm check (origin semi-b branches, gh pr list, gh run watch on the host), pull by git bundle, second-environment gate, general-purpose Opus READ_ONLY review, integrate, ledger outcome. If a MiniMax lane also dies on a content filter, decompose further so packets never require reading filing bodies, or escalate the provider question to Sol."
+  - "After T07/T08 land: dispatch T09 (API transport; needs fastapi -> mb) with the LANE LAW preamble; after T05a+T05b land: the witness event-workspace mapper work in T08 can bind currency/basis for TSMC (USD guidance vs NT$ actual)."
+  - "Fresh-read #7780 for the R4 ruling and #7462/#7669 for custody answers before every substantive write (>=15 min cadence); keep store.py and basket_detail.html.j2 frozen until released; T11 live admission stays blocked until R4 is ruled."
+  - "Post the T02/T10 integration checkpoint on #7870 and update this handoff with each integration."
 do_not_redo:
   - "Do not repeat the R01-R09 research, A/B/C selection, written design, plan or 48-requirement mapping."
   - "Do not implement on #7780, #7773, #7462 or #7669; do not transplant their hunks."
@@ -83,7 +98,7 @@ danger_areas:
   - "A synthetic-fixture green is not native admission; an industrial-only pane does not satisfy either witness."
   - "Current issuer identity is not historical lineage; source-only businesses get no fabricated CIK/security/company node."
   - "Fabric executor first-pass acceptance is low (glm-5.3 0.29, MiniMax-M2.7 0.14 over last 20): every child needs an executable deterministic gate and independent review before integration."
-prs: [7780, 7870, 7874]
+prs: [7780, 7870, 7874, 7773, 7462, 7669]
 ---
 
 # Semiconductor B — implementation operation working checkpoint
@@ -93,7 +108,7 @@ PARENT RESEARCH OPERATION: `gmi-semiconductors-research-20260923-sol-001` (carri
 RECEIVER: Claude Fable 5.1, Claude Desktop Code session `f6dd4b82-d319-4daf-99a4-ef4fe7dfd9ec`, host `Mac-Studio.local`
 PROCEDURE PIN: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1 / bootstrap 1
 CARRIER BASE: Macro `main` `9438880952d3375b00a042381705c2e6c85305e3`
-STATE AT THIS COMMIT: `PICKED_UP`; START not yet emitted; `SEMICONDUCTOR_B: NOT_BUILT`; `C1: DEFERRED`; `MISSION_COMPLETE: false`; `EFFECT_UNKNOWN: none`.
+STATE AT THIS COMMIT: `STARTED` (START issuecomment-5807391383); carrier #7870 holds wave 1 (T01/T03/T06) and T02 with review fixes (head 2deb758859d7 before this commit); T10 under independent review; wave 2 (T04, T07/T08, T05a, T05b) queued on the fabric; `SEMICONDUCTOR_B: NOT_BUILT` (contract/fixture/rights/guidance layers only — no composition, no transport, no live admission, no witness proof); `C1: DEFERRED`; `MISSION_COMPLETE: false`; `EFFECT_UNKNOWN: none`.
 
 ## Fable custody rulings inside the accepted B architecture
 
@@ -126,4 +141,4 @@ Canonical Subagent Fabric on this host is the installed `pool` CLI (lease broker
 
 ## Exact next action
 
-Push this carrier, open the Draft/HOLD PR, emit `START` on #7780, dispatch wave 1 (T01, T02-contract, T03, T05-qualification) to the fabric with per-child worktrees, and continue principal work on the R4 binding qualification and the T05 witness source census while children run.
+Consume the two in-flight READ_ONLY reviews (T02 re-verification of 2deb758859d7; T10 client f53c7c3845b3), integrate what is accepted with CI wiring, keep the per-host dispatchers placing T07/T08, T04, T05a, T05b as slots open, and hold store.py / basket_detail.html.j2 / live admission frozen until #7462, #7669 and the R4 ruling release them.
