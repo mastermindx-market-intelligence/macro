@@ -185,6 +185,8 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 .fi-kicker { font-size: var(--fs-label); letter-spacing: .09em; text-transform: uppercase; color: var(--fi-muted); margin: 0 0 8px; font-weight: 700; }
 .fi-hero h1 { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; margin: 0; }
 .fi-deck { font-size: var(--fs-md); line-height: 1.55; margin: 8px 0 0; max-width: 70ch; color: var(--fi-text); }
+/* Not connected (no endpoint bound): the hero meta chips carry no payload — hide the empty row. */
+.fi-shell[data-state="not-connected"] .fi-meta { display: none; }
 .fi-meta { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .fi-toc { margin: 18px 0 8px; padding: 12px 16px; }
 .fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
