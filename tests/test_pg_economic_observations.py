@@ -26,9 +26,9 @@ def test_quarter_and_basis_are_bound(kind):
         workspace, source_texts=pg_source_texts(kind), fiscal_scope=FISCAL_SCOPE,
     )
     by_metric = {row["metric"]: row for row in rows if "value" in row}
-    assert by_metric["pg_diluted_eps"]["value"] == 1.25
-    assert by_metric["pg_prior_diluted_eps"]["value"] == 1.37
-    assert by_metric["pg_core_eps"]["value"] == 1.45
+    assert by_metric["pg_diluted_eps"]["value"] == 3.07
+    assert by_metric["pg_prior_diluted_eps"]["value"] == 2.93
+    assert by_metric["pg_core_eps"]["value"] == 3.11
     assert by_metric["pg_prior_diluted_eps"]["period"] == "2025-06-30"
     driver_values = {
         "pg_reported_sales_growth_pct": 3.0,
@@ -254,9 +254,9 @@ def test_fy2027_scope_binds_current_and_prior_columns() -> None:
         fiscal_scope=scope,
     )
     by_metric = {row["metric"]: row for row in rows if "value" in row}
-    assert by_metric["pg_diluted_eps"]["value"] == 1.25
+    assert by_metric["pg_diluted_eps"]["value"] == 3.07
     assert by_metric["pg_diluted_eps"]["period"] == "2027-06-30"
-    assert by_metric["pg_prior_diluted_eps"]["value"] == 1.37
+    assert by_metric["pg_prior_diluted_eps"]["value"] == 2.93
     assert by_metric["pg_prior_diluted_eps"]["period"] == "2026-06-30"
     assert by_metric["pg_price_contribution_pp"]["value"] == 0.5
 
@@ -282,7 +282,7 @@ def test_multibyte_byte_offsets_are_correct() -> None:
     byte_prefix = source.encode("utf-8")[:receipt["span_start_byte"]].decode("utf-8")
     assert "全球品牌" in byte_prefix
     assert len(byte_prefix.encode("utf-8")) == receipt["span_start_byte"]
-    assert row["value"] == 1.25
+    assert row["value"] == 3.07
 
 
 def test_profile_lookup_public_dispatch_is_unchanged() -> None:

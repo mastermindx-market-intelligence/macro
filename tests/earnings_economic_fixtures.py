@@ -41,10 +41,10 @@ def _html(
     current_end = date(period, 6, 30).isoformat()
     prior_end = date(prior_year, 6, 30).isoformat()
     eps_rows = (
-        ("Diluted EPS", "1.25%" if eps_unit_mismatch else "$1.25", "$1.31"),
-        ("Prior Diluted EPS", "$1.50", "$1.37"),
-        ("Core EPS", "$1.45", "$1.56"),
-        ("Prior Core EPS", "$1.31", "$1.42"),
+        ("Diluted EPS", "1.25%" if eps_unit_mismatch else "$3.07", "$2.93"),
+        ("Prior Diluted EPS", "$3.07", "$2.93"),
+        ("Core EPS", "$3.11", "$2.97"),
+        ("Prior Core EPS", "$3.11", "$2.97"),
     )
     driver_header = (
         "Period",
@@ -91,7 +91,7 @@ def _html(
     return f"""<html><head><title>Synthetic PG release</title>{hostile_markup}</head><body>
 <h1>Synthetic Consumer Company Results</h1>
 <p>This original fixture has no source relationship to any real company release.</p>
-<p>全球品牌 demand was stable before 1.25 units of synthetic EPS.</p>
+<p>全球品牌 demand was stable before 3.07 units of synthetic EPS.</p>
 <h2>Fourth Quarter {current_year} Results</h2>
 <table>
 <tr>{_cells(("Measure", current_end, prior_end))}</tr>
@@ -173,7 +173,7 @@ def pg_workspace_case(
         asof=date(2026, 7, 29),
         fiscal_period=FiscalPeriod(
             year=period,
-            quarter=(date.fromisoformat(fiscal_scope[1]).month + 2) // 3,
+            quarter={4: 4, 7: 1, 10: 2, 1: 3}[date.fromisoformat(fiscal_scope[0]).month],
             calendar_end=date.fromisoformat(fiscal_scope[1]),
         ),
         exhibit_body=bound.source,

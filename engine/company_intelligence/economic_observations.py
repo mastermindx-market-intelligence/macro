@@ -61,6 +61,9 @@ def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
     return current_start, current_end, prior_start, prior_end
 
 
+_PG_FISCAL_QUARTERS = {4: 4, 5: 4, 6: 4, 7: 1, 8: 1, 9: 1, 10: 2, 11: 2, 12: 2, 1: 3, 2: 3, 3: 3}
+
+
 def validate_selected_facts(
     workspace: Mapping[str, Any],
     *,
@@ -77,7 +80,7 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace fiscal period is missing")
     if fiscal_period.get("calendar_end") != current_end.isoformat():
         raise EconomicObservationError("workspace fiscal period does not match fiscal_scope")
-    expected_quarter = (current_end.month + 2) // 3
+    expected_quarter = _PG_FISCAL_QUARTERS[current_start.month]
     if str(fiscal_period.get("quarter")) != str(expected_quarter):
         raise EconomicObservationError("workspace quarter does not match fiscal_scope")
 
