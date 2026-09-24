@@ -24,7 +24,6 @@ import json
 import logging
 import os
 import time
-import uuid
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -435,14 +434,12 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             "predecessor": expected_predecessor,
             "parquet_sha256": parquet_digest,
         }
+        previous_parquet = path.read_bytes() if path.exists() else None
+        staged_backup = sidecar.with_name(f".{path.name}.{os.getpid()}.backup")
         try:
             payload = _json_dumps(receipt)
-            staged_sidecar = (
-                sidecar.parent / f".{sidecar.name}.{os.getpid()}.{uuid.uuid4().hex}"
-                / sidecar.name
-            )
-            staged_sidecar.parent.mkdir(parents=True, exist_ok=True)
-            staged_sidecar.write_bytes(payload.encode("utf-8"))
+            if previous_parquet is not None:
+                staged_backup.write_bytes(previous_parquet)
         except Exception:
             return {
                 "promoted": False, "reason": "METADATA_WRITE_FAILED",
@@ -451,16 +448,21 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
 
         try:
             _write_staged(path, write_parquet)
-            os.replace(staged_sidecar, sidecar)
+            _write_staged(
+                sidecar,
+                lambda staged: staged.write_bytes(payload.encode("utf-8")),
+            )
         except Exception:
+            if previous_parquet is None:
+                path.unlink(missing_ok=True)
+            else:
+                os.replace(staged_backup, path)
             return {
                 "promoted": False, "reason": "METADATA_WRITE_FAILED",
                 "predecessor": on_disk_predecessor,
             }
         finally:
-            if staged_sidecar.exists():
-                staged_sidecar.unlink()
-            staged_sidecar.parent.rmdir()
+            staged_backup.unlink(missing_ok=True)
         return {"promoted": True, "reason": None, "predecessor": _digest(sidecar)}
 
     refresh = {
