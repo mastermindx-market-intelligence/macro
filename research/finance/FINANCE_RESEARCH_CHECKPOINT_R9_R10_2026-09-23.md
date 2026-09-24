@@ -1,141 +1,63 @@
-# Finance research checkpoint — R9 global/regional completion and R10 preregistration — 23 September 2026
+# Finance research — cumulative R9/R10 continuation checkpoint
 
-`FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION`  
-`MISSION_COMPLETE: false`  
-`R9_RESEARCH_SCOPE_COMPLETE: true`  
-`R10_PREREGISTRATION_COMPLETE: true`  
-`PRODUCT_IMPLEMENTED: false`  
-`GITHUB_EFFECT_THIS_TURN: R9_R10_RESEARCH_PERSISTED`
+Research batch: 2026-09-23.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+PRODUCT_IMPLEMENTED: false
+FABLE_HANDOFF_CONSUMED: false
 
-## 0. Mission and authority
+## Mission and authority
 
-Chairman mission: perform the difficult Finance-sector research, ontology, company mapping, rerating analysis and implementation planning in the principal Pro session before handing a mature package to Fable CEO.
+Chairman directed principal-owned Finance research and planning before a mature Fable CEO implementation handoff. Finance remains rerating/economic-transmission-first, not robotics-style bottleneck-first. Operating economics, expectations, valuation and price recognition remain separate. No new score, source admission, identity, basket or trading authority.
 
-Operation: `gmi-finance-sector-research-20260923-sol-001`.  
-Canonical intended carrier: `mastermindx-market-intelligence/macro` PR #7786, branch `sol/finance-sector-research-20260923`.  
-R9/R10 payload parent head: `0b4f93ff27c74fa735744439ab741e7887db8ad8`.  
-Atomic research payload commit: `3229056778415dcc6265830382e5734ccfeab88e`, with exact seven-file GitHub readback matching the conversation-source bytes.  
-Protected procedure: `mastermindx-market-intelligence/Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap major 1.  
-Principal-duty reason: `PRINCIPAL_JUDGMENT`. No worker, Fable receiver, Executive Attempt or watcher was started.
+Operation: `gmi-finance-sector-research-20260923-sol-001`.
+Carrier: `mastermindx-market-intelligence/macro` PR #7786, branch `sol/finance-sector-research-20260923`.
+Protected procedure: `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1.
+Direct principal reason: PRINCIPAL_JUDGMENT.
+No active worker, Fable receiver, Executive Attempt or watcher was started by this turn. EFFECT_UNKNOWN: none.
 
-## 1. State before
+## Prior durable research — do not redo
 
-- R8 research was durably present on PR #7786.
-- The live branch had advanced beyond the prior chat checkpoint to `0b4f93...`; that movement was reconciled rather than overwritten.
-- The global/regional Finance extension was still `PARTIAL`.
-- Regional accounting, prudential, currency, listing, source and bilingual semantics were not frozen.
-- The point-in-time international casebook was not preregistered.
+R1–R8 research is retained on the same branch. R9/R10 payload: `3229056778415dcc6265830382e5734ccfeab88e`. Previous checkpoint: `c12baad3606e76178eea26f2a42e9066403a670b`. Original base: `668237947e016f679782e41e61c91c9133a5ea99`.
 
-## 2. Capability delta
+The original twelve-case R10 JSON is unchanged: Git blob `7be3952bb63c9287cc23d1e9beb29cf6001a0b6c`, SHA-256 `6707873c6c4fdbdf7c7b65840dbb0b96fcd417f2921d7cdcd7b021efd669775d`. All original market outcomes remain UNMEASURED.
 
-**Before:** Mastermind’s Finance research was mature for U.S.-anchored domains but could still misread Europe/UK, Japan, China/Hong Kong, India and developed Asia through U.S. definitions or broad international price baskets.
+Prior R9 text-extraction readback must not be described as byte equality to every original package file: three R9 files differ by one newline. No semantic loss was identified; the two R10 input files are unaffected. Retain separate package and Git-object receipts rather than rewriting the research.
 
-**After:** the same research package is durably present on PR #7786 at payload commit `3229056778415dcc6265830382e5734ccfeab88e`, defining a federated regional Finance ontology, 28-company/business census, global accounting/regulatory metric dictionary, source/basket/bilingual map, structured 28-record assertion packet, and a 12-case R10 point-in-time preregistration with zero measured outcomes.
+## Verified effect this turn
 
-The durable company/product capability is still `SPEC_ONLY`. No production source, schema, UI or browser path changed.
+Created and read back `research/finance/FINANCE_R10_EVENT_CLOCK_AND_RETROSPECTIVE_DESIGN_AMENDMENT_2026-09-23.md` at commit `3d7fa86f6e20c898aa6927f98c4d2e0e7975e57d`, blob `8f3ee6be3e75939a601c3ed75602c1d96c5fbefa`.
 
-## 3. Material rulings
+This amendment controls interpretation of the original fixture. It corrects the retrospective/preregistration distinction, event-versus-implementation clocks, BOJ operative date, Paytm deadline revision, CRR3/CRD6 timing, multi-component China measures, and control-selection limitations. It preserves all twelve case identities and frozen windows. It does not establish causal market outcomes.
 
-1. Global Finance is a federation of local financial operating systems, not a translated U.S. taxonomy.
-2. Every cross-market comparison preserves a source-native observation plus an explicit comparability state.
-3. Legal issuer, listing, share class, currency and ADR/A/H conversion are first-class identities.
-4. State ownership and policy role are contextual mechanisms, never automatic quality or support scores.
-5. CET1, NPL, insurer solvency, VONB, structural hedge, policy shares, GNPA and other local measures cannot be flattened into universal numbers.
-6. Existing `intl_banks` and `intl_insurers` remain incumbent descriptive price surfaces; R9 proposes overlays, not replacement stores or silent membership edits.
-7. Current/hindsight-curated international basket membership cannot be backfilled as PIT history.
-8. R10 cases are event-anchored and direction-neutral; no winner/loser outcomes were encoded.
+## Research progress and evidence limits
 
-## 4. Regional coverage completed
+Four purposively selected forensic witnesses were investigated: ING, MUFG, HKEX, and One97/Paytm. Baseline, event and subsequent disclosures were separated. Nineteen local arithmetic, chronology and original-input-preservation checks passed. These are research checks, not product tests, CI, independent review, calibration, source admission or browser proof.
 
-- Europe/UK: euro banks, UK structural-hedge banks, Swiss wealth integration, composite insurers/reinsurance, market infrastructure, CRR3/CRD6, MREL/TLAC, Solvency II/Solvency UK.
-- Japan: BOJ normalization, yen repricing, JGB duration, policy-shareholdings, governance/capital return, ESR/ICS, securities and exchange activity.
-- Mainland China/Hong Kong: policy credit, LPR/NIM, property/LGFV, A/H identity, C-ROSS/HK RBC, VONB/EV/free surplus, currency-board rates, Stock Connect.
-- India: bank versus NBFC, deposit competition/CASA, GNPA/NNPA/slippages, RBI capital/liquidity, consumer-credit risk weights and UPI rails.
-- Developed Asia: Singapore wealth/transaction banking, Australian mortgage/APRA/franking, Korean holding-company/K-ICS/value-up, Asian exchanges.
+User-facing analytical attachment: `FINANCE_R10A_CALCULATIONS_AND_SOURCE_RECEIPT_2026-09-23.json`, 12,726 bytes, SHA-256 `1542a4d160ab9f9fb3f2459575d76c8b29dffa645fa24e3cf84d972ade0290c5`. This is a conversation research deliverable, NOT a GitHub-published or production-admitted packet. Its source URLs and limitations are explicit.
 
-## 5. Research artifact receipts and GitHub readback
+Required primary recovery references:
+- ING Q3 2022 release: https://ing.com/news/2022/11/ing-posts-3q2022-net-result-of-979-million-and-announces-additional-distribution-to-shareholders.html
+- MUFG first post-event quarter, August 1, 2024, pages 2–3: https://www.mufg.jp/dam/ir/fs/2024/pdf/highlights2406_en.pdf
+- HKEX-authored Q3 2023 release: https://www.prnewswire.co.uk/news-releases/hkex-quarterly-results-for-the-nine-months-ended-30-september-2023--q3-revenues-up-18-q3-profits-up-30-301962898.html
+- One97 pre-event filed release: https://paytm.com/document/ir/press-release/fy2023-24/jan/Q3FY24.pdf
+- One97 May guidance: https://paytm.com/blog/investor-relations/paytm-fy24-revenue-increases/
+- One97 later result, updated-page limitation: https://paytm.com/blog/investor-relations/paytm-q1fy2025-reports-operating-revenue-of-rs1502cr/
 
-| Artifact | SHA-256 | Bytes | Lines |
-|---|---|---:|---:|
-| `FINANCE_GLOBAL_REGIONAL_COMPANY_BUSINESS_CENSUS_2026-09-23.md` | `39c4e38652ed8a3382a33890815a2f325b1021c5792794ae2e384bb98e42ef8b` | 63,874 | 1,085 |
-| `FINANCE_GLOBAL_REGIONAL_METRIC_ACCOUNTING_AND_REGULATORY_DICTIONARY_2026-09-23.md` | `b91d1de4b6e5bef06182fb65a6281bff539ceec06228c2b5e067be3bd7a8c136` | 19,708 | 382 |
-| `FINANCE_GLOBAL_REGIONAL_RESEARCH_ASSERTION_PACKET_V0_1_2026-09-23.json` | `dfadcec90a62a81a5f44bf242063b3b2b30a5ee215a30363264b00f4afeec811` | 86,548 | 1,587 |
-| `FINANCE_GLOBAL_REGIONAL_SOURCE_BASKET_AND_BILINGUAL_MAP_2026-09-23.md` | `b27f58b27954f0ca206b699adab640160f2e84dcac7b9c7c48e0093f2312aa58` | 18,254 | 294 |
-| `FINANCE_GLOBAL_REGIONAL_SYSTEM_AND_RERATING_2026-09-23.md` | `bba9d723fc75c8239e534cc3bf0e883d90ff0310070a2f4e2a11cfd7307dc396` | 37,912 | 916 |
-| `FINANCE_R10_GLOBAL_REGIONAL_CASEBOOK_FIXTURE_V0_1_2026-09-23.json` | `6707873c6c4fdbdf7c7b65840dbb0b96fcd417f2921d7cdcd7b021efd669775d` | 14,296 | 242 |
-| `FINANCE_R10_GLOBAL_REGIONAL_POINT_IN_TIME_CASEBOOK_PREREGISTRATION_2026-09-23.md` | `37cbaa798e3092cf9d40e6a370a3a53687b41cb6797f4fbee424769d25b7c262` | 23,882 | 375 |
+## Exact publication hold
 
-These artifact hashes remain the source-package receipts. The seven research/preregistration files were then persisted atomically at Git commit `3229056778415dcc6265830382e5734ccfeab88e`; exact GitHub fetches at that commit matched all seven conversation-source text payloads. They remain research-only and do not become company-canonical truth by being committed.
+One native `GitHub.create_file` request for `research/finance/FINANCE_R10_FOUR_CASE_ECONOMIC_TRANSMISSION_FINDINGS_2026-09-23.md` was blocked by the tool's safety checks. No commit was returned for that request. Do not claim that report exists in GitHub. It was not retried, split or transferred to another publication route. The reason is not established; this is not proof that Pro or GitHub writes are generally unavailable. The earlier amendment write succeeded.
 
-## 6. GitHub persistence verification
+This checkpoint records the effect boundary; it is not a substitute publication of the refused report. Keep that exact report-publication operation held pending a permitted resolution. Do not route it through a worker, another branch, alternate write tool or a mode switch merely to evade the refusal.
 
-- Protected Skillpack used for the modifying step: `Mastermind@4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap major 1.
-- PR #7786 was open, Draft and unmerged at preflight.
-- The seven R9/R10 target paths were absent on branch `sol/finance-sector-research-20260923` before publication.
-- Parent branch head stayed `0b4f93ff27c74fa735744439ab741e7887db8ad8` through the atomic tree/commit preflight.
-- Atomic research payload commit: `3229056778415dcc6265830382e5734ccfeab88e`.
-- Branch-ref update returned success with `force=false`; no alternate carrier, rebase, reset or force push was used.
-- Exact commit-pinned GitHub readback matched the source text for all seven published files; both JSON artifacts parsed successfully.
-- No merge, schema enrollment, production-data write, canonical identity binding, basket admission, ranking, trade, deployment or worker/Fable commission occurred.
-- `EFFECT_UNKNOWN: none`.
+## Outstanding work
 
-## 7. R10 preregistration opened
+Historical prices, dividends, per-share denominators, valuation and point-in-time analyst consensus have not been materialised for these witnesses. Source-version, rights, immutable-retention and issuer/security admission remain open. Some large-PDF screenshots, ING table images and original BSE attachments were inaccessible; successful screenshots for BOJ, MUFG's August quarterly highlights and One97's January release do not cure those separate gaps. No platform-wide data-access denial is established.
 
-R10 now has twelve direction-neutral event cases covering:
+Do not promote qualitative mechanism support into a causal price, multiple or investment outcome. Do not call missing observations NULL or an issuer guidance range analyst consensus. No production, merge, deployment, basket, rank, gate, size or trade effects occurred.
 
-- ECB exit from negative rates;
-- CRR3/CRD6 application;
-- UBS/Credit Suisse acquisition completion;
-- TSE cost-of-capital request;
-- BOJ exit from NIRP/YCC;
-- China housing-policy easing;
-- Hong Kong RBC implementation;
-- ETF inclusion in Stock Connect;
-- RBI consumer-credit/NBFC risk-weight changes;
-- Paytm Payments Bank restrictions;
-- APRA mortgage serviceability buffer;
-- Korea Corporate Value-up Program.
+## Exact continuation
 
-All cases remain `UNMEASURED`. The fixture freezes event dates, mechanism, treated population, controls, falsifiers and observation windows before outcome materialization.
+At this forensic-research/context boundary, resume from this checkpoint and the amendment, not the full tool history. Continue R10B by resolving exact historical market/expectation-owner coverage for the first four witnesses, then materialise permitted dated observations and controls. Keep publication of the refused report separate and held. Advance the other eight cases from their corrected clocks without outcome-based selection. R10 remains incomplete; R11 basket/visualisation freeze and the final Fable handoff remain held.
 
-## 8. DO NOT REDO
-
-Unless materially invalidated:
-
-- do not restart R1–R8 research;
-- do not rebuild the asset/wealth/insurance tranche already present on PR #7786;
-- do not treat broad international baskets as comparable business-model cohorts;
-- do not create another global identity, source, basket, valuation or evaluation owner;
-- do not normalize away local accounting, prudential or currency differences;
-- do not treat state backing or policy easing as a direct positive investment conclusion;
-- do not fill held company values without exact primary evidence;
-- do not label R10 cases by their known historical outcomes;
-- do not create a replacement branch/PR because the present surface lacks write verbs;
-- do not ask Fable or downstream workers to rediscover this regional research.
-
-## 9. Unresolveds
-
-- The R9/R10 research payload is persisted at `3229056778415dcc6265830382e5734ccfeab88e`; accepted source admission, identity binding, product implementation and production proof remain intentionally unresolved.
-- Exact source/table locators remain held for 16 of 28 structured company records.
-- Canonical legal-issuer/security bindings remain zero.
-- Current consensus, current valuation and price-recognition observations remain zero.
-- Source rights, immutable retention and admission are not proven.
-- R10 PIT fixtures and outcome computations are not materialized.
-- No product code, tests, CI, deployment or browser proof exists.
-
-## 10. Exact next action
-
-Return to **Pro mode** and continue R10 on this same operation/carrier. Materialize the preregistered point-in-time casebook without outcome picking:
-
-1. keep the 12 frozen case identities, anchor dates, mechanisms, treated populations, controls and falsifiers unchanged unless a documented source defect requires an append-only correction;
-2. retrieve contemporaneous source, expectation, valuation and price state that was knowable at each case anchor;
-3. preserve regional accounting, regulatory, currency and listing identities;
-4. assign only the preregistered evaluation outcomes `SUPPORTS | CONTRADICTS | NULL | CONFOUNDED | UNAVAILABLE` after the evidence is assembled;
-5. resolve held source locators opportunistically when directly supported, without inventing values;
-6. keep R11 basket/visualization freeze and the final Fable CEO handoff held until a bounded R10 casebook can be reviewed.
-
-Do not merge PR #7786 automatically.
-
-## 11. Intended resume surface
-
-`Pro` for R10 point-in-time casebook research and synthesis on the same operation and PR #7786. No autonomous wake or custody transfer is implied.
+Intended surface: fresh principal Pro research turn, same operation/carrier, minimum fresh canonical read. No automatic wake, source-custody transfer or completion is implied.
