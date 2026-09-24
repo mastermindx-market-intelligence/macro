@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-23",
+ "asof": "2026-09-24",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -1021,8 +1021,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-09-21",
-     "days_past_death": 1221,
+     "store_tip": "2026-09-23",
+     "days_past_death": 1223,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
