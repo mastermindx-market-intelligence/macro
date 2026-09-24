@@ -1,0 +1,144 @@
+{
+  "scope": "R14 research preparation checks only. No native source/admission, model, API, browser, or independent semantic acceptance tests.",
+  "date": "2026-09-24",
+  "checks": [
+    {
+      "id": "r13_exact_blob",
+      "passed": true
+    },
+    {
+      "id": "two_cases",
+      "passed": true
+    },
+    {
+      "id": "Nutrien_identity_copied_not_allocated",
+      "passed": true
+    },
+    {
+      "id": "Nutrien_no_native_receipts",
+      "passed": true
+    },
+    {
+      "id": "Nutrien_authority_false",
+      "passed": true
+    },
+    {
+      "id": "Nutrien_scope_preserved",
+      "passed": true
+    },
+    {
+      "id": "Nutrien_dates_not_retrieval",
+      "passed": true
+    },
+    {
+      "id": "NC1",
+      "passed": true
+    },
+    {
+      "id": "NC2",
+      "passed": true
+    },
+    {
+      "id": "NC3",
+      "passed": true
+    },
+    {
+      "id": "NC4",
+      "passed": true
+    },
+    {
+      "id": "NC5",
+      "passed": true
+    },
+    {
+      "id": "Weyerhaeuser_identity_copied_not_allocated",
+      "passed": true
+    },
+    {
+      "id": "Weyerhaeuser_no_native_receipts",
+      "passed": true
+    },
+    {
+      "id": "Weyerhaeuser_authority_false",
+      "passed": true
+    },
+    {
+      "id": "Weyerhaeuser_scope_preserved",
+      "passed": true
+    },
+    {
+      "id": "Weyerhaeuser_dates_not_retrieval",
+      "passed": true
+    },
+    {
+      "id": "WC1",
+      "passed": true
+    },
+    {
+      "id": "WC2",
+      "passed": true
+    },
+    {
+      "id": "ten_reported_atoms",
+      "passed": true
+    },
+    {
+      "id": "seven_reconciliations",
+      "passed": true
+    },
+    {
+      "id": "eighteen_unique_review_obligations",
+      "passed": true
+    },
+    {
+      "id": "source_families_not_inherited",
+      "passed": true
+    },
+    {
+      "id": "no_native_or_model_completion",
+      "passed": true
+    },
+    {
+      "id": "json_roundtrip",
+      "passed": true
+    }
+  ],
+  "passed": 25,
+  "failed": 0,
+  "arithmetic_reconciliations": 7,
+  "review_obligations_executed_as_product_tests": 0,
+  "native_tests": 0,
+  "browser_actions": 0,
+  "denied_r13_actions_retried": false,
+  "independent_review": false,
+  "source_inspection": "Two existing HTML originals re-opened for selected table headings, values, identity declarations and source dates; no intraday timestamp, native retention digest or full-body capture claimed.",
+  "prior_identity_reuse": "Exact R13 observation blob matched before reuse; no repeated identity discovery.",
+  "review_packet": {
+    "filename": "R14_SELECTED_SOURCE_BINDING_REVIEW_2026-09-24.json",
+    "bytes": 17709,
+    "git_blob": "4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221",
+    "sha256": "c84c33745699b593ce114024c370720421511d44105e6757cf48064c267aacf9"
+  },
+  "files_prepared": [
+    {
+      "name": "BASIC_MATERIALS_R14_SELECTED_SOURCE_REVIEW_AND_DOSSIER_READINESS_2026-09-24.md",
+      "bytes": 18702,
+      "git_blob": "7abd0ef39e281f15d5214714f4d4469e6c2dc65b",
+      "sha256": "f48980498800aba46ba271be314869a90fc04d1393e623dde1b72e2096147b52"
+    },
+    {
+      "name": "R14_SELECTED_SOURCE_BINDING_REVIEW_2026-09-24.json",
+      "bytes": 17709,
+      "git_blob": "4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221",
+      "sha256": "c84c33745699b593ce114024c370720421511d44105e6757cf48064c267aacf9"
+    },
+    {
+      "name": "GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md",
+      "bytes": 11760,
+      "git_blob": "9285c2ea0510134848da3db99250f0ae6341bd09",
+      "sha256": "2aa96d05412c1150b45a1ce3ed9dc5b4bc9ce5ab22113f744da9ebbb2edd5feb"
+    }
+  ],
+  "packet_consolidation": "Existing packet replaced with a current reading order; R9/R11 exact requirement/task matrices retained as controlling references. No scope or acceptance removed.",
+  "prior_packet_blob": "76e510fe6e7c4afa398d2a42e2ab7df4952daf20"
+}
