@@ -58,3 +58,23 @@ The observed China market-state score is40, radar stress94, binding=false. This 
 in-memory producer-to-template evidence, not a new rendered artifact or live market assessment.
 Fifteen protected source/data/page fingerprints remain unchanged, including the prior accepted page.
 The inherited render-write calls were intercepted, not fixed; no unsupported write was executed.
+
+## Packaging and remaining acceptance
+
+Semantic integration was committed/pushed as453dd4da78a803b2d0059c49a6f2043589b2dfcd.
+The exact parent test/fixture/source fingerprints match the executed qualification.
+The existing canonical head-only ownership checker completed (process97234): no missing
+ownership entry for the new integration dependencies. It reports18 uncovered paths in the
+parent's conviction-profile job. No base comparison was run, so that residue is not waived
+or labelled inherited solely because the named paths were unchanged. Full integration/CI
+qualification remains owed; this local check is not green hosted CI or release permission.
+
+One function-body inspection call was safety-status refused and was not retried. The
+separate known canonical checker API ran to completion without extracting that source.
+Original NBS/weight/render-write/browser denials were not retried or delegated. P0 sizing
+presentation remains on its original writer and HOLD. P1/P4 research is not newly validated.
+The former3-case dependence acceptance gap is now closed locally; its original RED remains
+preserved. Remaining pending suites:29 NBS,16 weight-refresh,54 render-write cases.
+No new screenshot or production page is claimed. Prior e8d0a5b7 page and24+4 excluded
+artifacts remain unchanged. No new worker/watcher/server, unresolved source effect or
+automatic wake exists at this completed integration boundary.

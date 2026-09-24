@@ -135,8 +135,8 @@ unresolved:
 - CI/release remain deferred; PR7592 and6860 controllers untouched.
 - 24 auxiliary generated outputs and4 prior supplemental images remain unaccepted/excluded.
 - One source-structure/metadata diagnostic was platform-refused; no result inferred or retry performed.
-- Head-only canonical CI ownership check is running as process97234; consume before final integration qualification.
-  No hosted/release approval.
+- Head-only ownership checker reports18 uncovered conviction-profile paths; no base comparison/waiver or hosted
+  CI acceptance. New P2 dependency paths have no missing ownership entries.
 next_actions:
 - Consume the original P0 sizing correction against P4 without duplicating its source custody.
 - Qualify the existing built page and integrate current source after the original browser/publication action
@@ -151,6 +151,8 @@ do_not_redo:
 - Do not create a new collector, participation tape, queue, scheduler or risk engine.
 - Do not re-fetch or redistribute the official workbook to repeat this accepted retrospective result; do not
   call the basket official index attribution or treat its later observation as PIT evidence.
+- Do not recreate the completed P2 evidence algorithm or rewrite ledgers to match its fixture. Product modules
+  are exact reviewed5d6ae511; original P2 HOLD remains.
 danger_areas:
 - Missing quotes cannot be filled from earlier observations; every return window needs its own sufficient history.
 - Trend changes must use the same eligible names at both endpoints.
@@ -161,37 +163,46 @@ prs:
 - 6860
 - 7592
 - 7622
+- 7872
 ---
 
 # Current cumulative continuation
-Operation:china-participation-context-20260921-sol-001; same locked Studio carrier and PR7622.
+Operation:china-participation-context-20260921-sol-001; same locked Studio worktree/PR7622.
 Procedure:Mastermind@ed678f27466392bc53cc03f584f91e4f3adf3aa3;1.0.1/bootstrap1.
-Current Chairman continuation retains accuracy delivery, review exception and deferred release.
-P2 final PASS/HOLD consumed from PR7872@5d6ae511c7b82b05e175ba7ea36e2fc5003b6502,
-comment5809904393. Its original source, review operation and HOLD remain unchanged.
-Both product modules and three documents copied exactly; parent manifest adds original4 rows.
-P2's frozen16-grade replay test now uses its own immutable test-only fixture, not the parent's
-14-grade operational log. All original expected count/anchor assertions remain unchanged.
-The parent density counterexample is now enrolled in the existing CI suite and passes.
-843 parent tests and51 unchanged-constitution tests pass. Actual read-only main/template path
-forwards the new evidence contract with CN14 grades/5alerts/1matured loud episode/1open;
-can_force=false, binding=false, measured state40, stress94. HK13 andCA24 grades stay distinct
-from P2's newer snapshots. Legacy diagnostic results and15 protected path hashes are unchanged.
-This is backend/consumer qualification, not a new served page or forecast/sizing validation.
+Authority:current Chairman continuation; exceptional review waiver retained; CI/release deferred.
+Last semantic effect:453dd4da78a803b2d0059c49a6f2043589b2dfcd committed and pushed.
+Exact P2@5d6ae511c7b82b05e175ba7ea36e2fc5003b6502 reviewed result consumed from7872
+comment5809904393. Its original source, completed review operation and HOLD remain untouched.
+Two product modules and3 origin documents are byte-exact. Parent manifest adds original4 rows.
+The old raw gate AND the episode gate is now installed in this candidate's existing scorecard.
+Forty daily successful alerts from one synthetic decline yield one loud episode,not40 independent
+trials; can_force=false. Original parent RED is preserved and the case is enrolled in owning CI.
+P2's exact16-grade replay assertions now use its immutable test-only source fixture. Parent
+operational ledgers are not overwritten or pooled: actual CN14/HK13/CA24 grades are replayed
+separately against pre-import diagnostics,which match exactly. CN has1matured loud/1open episode.
+843 parent tests plus51 constitutional tests pass without warnings. Actual builder-main through
+real template with effect sinks intercepted forwards v2 episode fields to the radar consumer;
+state40,stress94,binding=false.15 protected paths unchanged. This is not fresh market data,
+new served HTML,forecast/sizing validation,or permission to run the uncorrected write paths.
 Evidence:research/grey_deer/CHINA_P2_INTEGRATION_20260924.md and sibling.json;
-probe:probe_china_episode_integration.py. Original P2 and this combined parent have separate CI.
-Ownership check97234 remains running on the same device; next consume its canonical findings,
-repair only integration-owned manifest gaps if any, then persist and publish the final return.
-No new worker or automatic wake. Inspection of two checker function bodies was safety-refused;
-that source-disclosure action was not retried. The known public checker API is a distinct
-functional validation action, not extraction of the refused source text.
-Prior page e8d0a5b7 remains unchanged. Backdrop93399cea is builder-qualified but not browser-
-accepted. Prior participation/clock/recovery proofs remain valid at their own exact hashes.
-DO_NOT_REDO:accepted numerical/recovery/window/source-vintage work and retrospective weights;
-do not lower94, merge/arm siblings, copy newer operational ledgers, or borrow historical odds.
-NBS29, weight16 and render-risk-write54 pending cases remain separate/unfixed. The former
-3-case dependence gap is closed by this integration; preserve its original RED evidence.
-P0 sizing correction still unconsumed on original PR7875; P4 remains research-only. Earlier
-calendar/weight/risk-write/browser denials remain held.24 auxiliary outputs/4images excluded.
-SOURCE_EFFECT_UNKNOWN:none. MISSION_COMPLETE:false. Active same-carrier integration; no final
-stop or source transfer while the local qualification result is still pending.
+probe:probe_china_episode_integration.py. Original P2 hosted CI is not combined-parent CI.
+Known canonical ownership checker97234 completed; new integration dependencies are covered.
+It also reports18 conviction-profile path gaps; no base comparison was run,so no inherited
+classification/waiver is asserted. Full current-main/CI/release qualification remains owed.
+One checker-source-body inspection was safety-refused and not retried. Its known checker API
+was independently executed for functional findings,not to disclose the refused source.
+DO_NOT_REDO:accepted participation/window/cohort/weight arithmetic,6592-value qualification,
+four-input ablation,clock/event-reference/recovery proofs and exact reviewed P2 algorithm.
+Former3dependence acceptance cases are now closed locally; preserve original synthetic RED.
+NBS29,weight16,render-risk-write54 remain pending/unfixed under their original action holds.
+Prior browser/normalization refusal remains; pagee8d0a5b7 and24auxiliary/4image exclusions intact.
+Backdrop93399cea is source/builder-qualified,not browser-accepted. No denied action retried.
+P0 sizing repair still belongs to7875 and is not consumed; P4 is research-only. No sibling
+source/controller is modified. No active worker/server/checker,automatic wake,or EFFECT_UNKNOWN.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION. MISSION_COMPLETE:false.
+Boundary:completed reviewed-dependency integration,independent falsifier and real-consumer
+qualification after substantial cross-source inspection; source and findings are durable.
+Next:consume P0's actual sizing-language correction when returned,then qualify the combined
+page only after its original browser/publication gates permit. Keep separate source-supply
+and render-write recovery obligations; current-main/CI/live acceptance are deferred,not waived.
+Resume from this checkpoint plus minimum fresh canonical state; preserve original source custody.

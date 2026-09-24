@@ -254,11 +254,41 @@
     "p2-integration-consumer.log": "2f5eba144a26a6b240af31c71664134430346b2aaa255399d33763123391994a"
   },
   "ownership_check": {
-    "state": "running",
+    "state": "completed",
     "pid": 97234,
-    "scope": "head-only canonical checker, not hosted CI"
+    "exit_code": 0,
+    "scope": "head-only existing canonical ownership checker; not hosted CI or base comparison",
+    "all_findings": {
+      "conviction-profile": [
+        "collectors/china_universe.py",
+        "engine/china_participation.py",
+        "engine/live_overlay.py",
+        "engine/live_quotes.py",
+        "engine/market_drivers.py",
+        "engine/shock_deescalation.py",
+        "research/grey_deer/china_render_projection_check.py",
+        "scripts/build_risk_state.py",
+        "scripts/render_china_fast.py",
+        "site/china_risk_state_live.js",
+        "site/risk_envelope_live.js",
+        "site/risk_state_live.js",
+        "templates/_risk_radar_dlg.css.j2",
+        "templates/china_risk_state_live.js",
+        "templates/risk_envelope_live.js",
+        "templates/risk_state_live.js",
+        "tests/test_risk_radar_dlg_partial.py",
+        "tests/test_risk_state_live_session_floor.py"
+      ]
+    },
+    "integration_paths": {},
+    "scope_sha256": "ae7e735592ff0c3b5a8964bdd90d10f15e5fee647dbb8e1d8f2077bf6534d7fb",
+    "hosted_ci": false,
+    "base_comparison": false
   },
   "production": false,
   "generated_page_changed": false,
-  "source_denials_retried": false
+  "source_denials_retried": false,
+  "semantic_head": "453dd4da78a803b2d0059c49a6f2043589b2dfcd",
+  "finalization": "CHECKPOINTED_CONTINUATION",
+  "mission_complete": false
 }
