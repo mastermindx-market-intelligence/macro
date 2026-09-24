@@ -330,7 +330,12 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
         rationale = {
             _CURRENT_REPORTED: f"regulator status: current ({_record_count(counts['current'])}) — supply status only",
             _RESOLVED_REPORTED: f"regulator status: resolved ({_record_count(counts['resolved'])}) — supply status only",
-            _DISCONTINUATION_REPORTED: f"regulator status: discontinuation reported ({_record_count(counts['discontinued'])})",
+            _DISCONTINUATION_REPORTED: (
+                f"regulator status: resolved ({_record_count(counts['resolved'])}) and "
+                f"discontinued ({_record_count(counts['discontinued'])}) — supply status only"
+                if counts["resolved"] and counts["discontinued"]
+                else f"regulator status: discontinuation reported ({_record_count(counts['discontinued'])})"
+            ),
             _MIXED_REPORTED: "regulator status: mixed — supply status only",
             _UNCLASSIFIED: "regulator status: observed but unclassified",
             _NO_MATCHING_RECORDS: "source status: no matching records",
@@ -354,6 +359,24 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             "rationale": rationale,
         }
     return result
+
+
+def _chip_rationale(status, counts):
+    if status == _DISCONTINUATION_REPORTED and counts["resolved"] and counts["discontinued"]:
+        return (
+            f"The FDA reports {counts['resolved']} resolved and "
+            f"{counts['discontinued']} discontinued formulations."
+        )
+    rationales = {
+        _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
+        _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
+        _DISCONTINUATION_REPORTED: "The FDA reports a formulation discontinuation.",
+        _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
+        _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
+        _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
+        _UNAVAILABLE: "The FDA source is unavailable after a failed refresh.",
+    }
+    return rationales[status]
 
 
 def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | None:
@@ -414,16 +437,7 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
     tone = "warn" if status in {_CURRENT_REPORTED, _MIXED_REPORTED} else (
         "cool" if status == _RESOLVED_REPORTED else "mute"
     )
-    rationales = {
-        _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
-        _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
-        _DISCONTINUATION_REPORTED: "The FDA reports a formulation discontinuation.",
-        _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
-        _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
-        _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
-        _UNAVAILABLE: "The FDA source is unavailable after a failed refresh.",
-    }
-    rationale = rationales[status]
+    rationale = _chip_rationale(status, summary["counts"])
     if not rationale.isascii():
         raise ValueError("FDA chip rationale must contain ASCII text only because it is rendered in the title attribute.")
     return {
@@ -433,7 +447,7 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         "label": summary["label"],
         "label_zh": summary["label_zh"],
         "tone": tone,
-        "rationale": rationales[status],
+        "rationale": rationale,
         "n_active": summary["counts"]["current"],
         "n_resolved": summary["counts"]["resolved"],
         "source_status": status,
