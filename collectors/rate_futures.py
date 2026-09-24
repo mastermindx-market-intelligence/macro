@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 import time
 from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -182,7 +183,10 @@ class RateFuturesAdapter(Adapter):
         horizons = list(self.cfg.get("horizons_m", [1, 3, 6, 12]))
         max_months = int(self.cfg.get("max_months", 18))
         period = "5y" if full_history else "3mo"
-        asof = datetime.now(timezone.utc).date()
+        # Contract-month identity follows the U.S. market calendar, not UTC.
+        # Between 00:00 UTC and New York midnight, UTC is already the next date;
+        # using it can roll the requested strip a month early at month-end.
+        asof = datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York")).date()
         out: dict[str, pd.DataFrame] = {}
         for key, spec in (self.cfg.get("roots", {}) or {}).items():
             contracts = gen_contracts(spec["symbol_root"], list(spec["exchanges"]),

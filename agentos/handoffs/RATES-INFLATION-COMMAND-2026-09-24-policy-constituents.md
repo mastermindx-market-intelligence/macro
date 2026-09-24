@@ -25,7 +25,7 @@ changed:
 verified:
   - claim: Selected rates/RIC/yield tests pass.
     command: python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short
-    result: 146 passed, 301 warnings after the six-case finite-arithmetic and empty-family repair; no forecast model or empirical trial was run.
+    result: 147 passed, 301 warnings after finite-arithmetic, empty-family and New York contract-calendar repairs; no forecast model or empirical trial was run.
   - claim: Held7521's policy normalizer and RIC compose without changing any legacy field.
     command: Private held_composition.py against exact held source 8da98209ad4a34450745780666c48b6999f2bfb2.
     result: PASS; all legacy RIC fields equal; same-author synthetic proof, no held-branch mutation.
@@ -118,12 +118,12 @@ path has exhausted its unchanged budget; valid other families remain usable.
 Nonempty unidentified batches and unrelated transport exceptions still fail.
 Six new native-path regression cases retain their RED evidence; the real vendor
 boundary refinement also has a distinct two-case RED receipt. Final selected
-suite: 146 passed, 301 warnings. Stored real-quote outputs are exactly unchanged
+suite: 147 passed, 301 warnings after the later New York contract-calendar repair. Stored real-quote outputs are exactly unchanged
 against 100cf1ed at the retained capture's evaluation cut, with strict JSON and
 four unchanged Parquet hashes. No fresh vendor fetch or model trial ran.
 
 Latest evidence is appended as post_review_repair in the existing proof JSON;
-its current SHA256 is d60620a9cd7517f3fec0f28a730f63b1f7b719c51cb02a0f9cdc2464671b699b.
+its current SHA256 is 53efbd255363d15b6545afaf7e5e451ffecd3a09dc171364099444197edfeb69.
 The former proof digest above remains historical evidence, not the repaired file.
 Cross-check/replay source and logs:
 /Volumes/Mastermind/evidence/rates-direction-rd2-adversarial-20260924-sol-003/.
@@ -147,3 +147,14 @@ local tests. Independent source work may qualify complete GDPNow vintages and
 release-time/consensus inputs through existing owners without reopening RD1.
 The program remains incomplete. No reviewer START, automatic wake, background
 execution or prospective forecasting advantage is asserted by this checkpoint.
+
+## New York month-boundary source repair
+
+A same-carrier counterexample after `d74c1561820a34e1268db609e0759bef76984f2c`
+proved that `datetime.now(UTC).date()` could roll the requested ZQ/SR3 contract strip
+before New York midnight. At 2026-10-01 01:00 UTC the observed collector as-of was
+2026-10-01 although New York was still 2026-09-30. The test was RED before source
+change and passes after deriving contract identity from `America/New_York`; UTC capture
+clocks remain unchanged. Current selected suite: 147 passed, 301 warnings. This is
+same-author repair, not independent review or production proof. Any reviewer must bind
+to the later exact head containing this repair rather than `d74c156...`.

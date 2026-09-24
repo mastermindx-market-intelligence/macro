@@ -1042,3 +1042,45 @@ def test_rd2_empty_family_repair_does_not_swallow_other_download_errors(monkeypa
     monkeypatch.setattr(adapter, '_download', fail)
     with pytest.raises(ConnectionError, match='synthetic transport failure'):
         adapter.fetch()
+
+
+def test_rd2_contract_strip_uses_new_york_calendar_date(monkeypatch):
+    """UTC midnight must not roll a US rate-futures strip before New York midnight."""
+    from datetime import date, datetime, timezone
+    from types import SimpleNamespace
+    from collectors import rate_futures as rf
+
+    # 2026-10-01 01:00 UTC is still 2026-09-30 21:00 in New York.
+    moment = datetime(2026, 10, 1, 1, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(rf, 'datetime', SimpleNamespace(now=lambda tz: moment))
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace())
+
+    adapter = rf.RateFuturesAdapter()
+    adapter.cfg = {
+        'horizons_m': [1, 3, 6, 12],
+        'max_months': 18,
+        'roots': {
+            'zq': {
+                'symbol_root': 'ZQ',
+                'exchanges': ['CBT'],
+                'cadence': 'monthly',
+                'months': 14,
+            }
+        },
+    }
+
+    observed_asof = []
+    real_gen = rf.gen_contracts
+
+    def capture_gen(symbol_root, exchanges, cadence, n, asof):
+        observed_asof.append(asof)
+        return real_gen(symbol_root, exchanges, cadence, n, asof)
+
+    monkeypatch.setattr(rf, 'gen_contracts', capture_gen)
+    monkeypatch.setattr(adapter, '_download',
+                        lambda symbols, period, yf: pd.DataFrame())
+
+    with pytest.raises(RuntimeError, match='no implied path'):
+        adapter.fetch()
+
+    assert observed_asof == [date(2026, 9, 30)]

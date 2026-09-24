@@ -151,7 +151,7 @@ exception, not merely an unreachable post-download guard. Only the typed empty
 outcome is isolated; other download exceptions and unidentified nonempty batches
 still fail. The existing retry budget and backoff owner are unchanged.
 
-Current local qualification: 146 passed, 301 warnings across test_rates_command,
+Current local qualification: 147 passed, 301 warnings across test_rates_command,
 test_fed_path and test_yield_momentum. The old and repaired consumers returned
 identical objects on the same retained real-quote capture at its recorded
 2026-09-24 evaluation cut, with strict JSON serialization and unchanged four
@@ -195,3 +195,15 @@ The next scientific slice must bind complete same-quarter vintage updates and
 conservative knowledge cuts before registering a new rates hypothesis. No new
 model fit, forecast, trial, scoring authority or retrospective holdout reset
 occurred during this repair and metadata audit.
+
+## New York contract-calendar repair
+
+A later same-author adversarial check found one additional source-clock defect before
+independent acceptance: the collector generated its live contract strip from the UTC
+calendar date. At `2026-10-01 01:00 UTC`, New York was still `2026-09-30 21:00`, so a
+month-end manual run could request the October-forward strip several hours before the
+U.S. market calendar actually rolled. The new regression first reproduced the wrong
+`2026-10-01` as-of date, then passed after contract generation was bound to
+`America/New_York`. Capture timestamps remain UTC; only contract-calendar identity is
+localized. The selected suite is now 147 passed, 301 warnings. No vendor request,
+model trial, production-store write or forecast promotion occurred in this repair.
