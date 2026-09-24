@@ -1071,3 +1071,40 @@ def test_owner_links_drops_unresolvable_templates(tmp_path):
         assert owner_rows == []
     finally:
         mod._resolve_owner_page = orig
+
+
+def test_mor2b_lane_a_classification_tuple_documents_extensions():
+    """Pin the MOR-2b Lane A producer contract: the producer's CLASSIFICATIONS
+    tuple carries the three new owner-side classification strings exactly,
+    so the JSON contract emitted by build_payload stays self-describing for
+    downstream renderers. Pure module introspection; no fixtures required.
+    """
+    from scripts import build_am_edition as mod
+    assert "owner_context_summary" in mod.CLASSIFICATIONS
+    assert "owner_research_watch" in mod.CLASSIFICATIONS
+    assert "owner_link_registry" in mod.CLASSIFICATIONS
+    assert hasattr(mod, "_A7_FORBIDDEN_SUBSTRINGS")
+    for word in ("buy", "sell", "long", "short", "target", "size",
+                 "做多", "做空", "买入", "卖出"):
+        assert word in mod._A7_FORBIDDEN_SUBSTRINGS
+
+
+def test_mor2b_main_module_surface_exposes_render_html_and_cli():
+    """Pin the A1 module surface: render_html(payload) -> str exists at module
+    level so renderers can call it; main() accepts --out-dir/--live-dir.
+    Locks the extension that future PRs would otherwise silently regress."""
+    import argparse
+    from scripts import build_am_edition as mod
+
+    assert callable(mod.render_html)
+    # main() returns an int exit code (0 on success) and processes argv.
+    assert callable(mod.main)
+    # Driving main() with --help surfaces the two MOR-2b flags. We don't
+    # SystemExit-catch in tests; capture stdout via capsys in a follow-up if
+    # that ever needs to be expanded. Here we just assert the parser is
+    # importable and exposes the requested flags via the module's _parse_args.
+    assert hasattr(mod, "_parse_args")
+    args = mod._parse_args(["--out-dir", "/tmp/x", "--live-dir", "/tmp/l"])
+    assert isinstance(args, argparse.Namespace)
+    assert str(args.out_dir) == "/tmp/x"
+    assert str(args.live_dir) == "/tmp/l"
