@@ -1,6 +1,6 @@
 # Harness adapters — the same doctrine on different machinery
 
-The doctrine names six primitives. Every harness has some binding for each; the bindings rot, the doctrine does not. This file maps the primitives to the surfaces this fleet actually uses as of 2026-09-24, so a seat that is not running inside Claude Code — Sol or Astra on a GPT-class harness, Grok, GLM, MiniMax, a Codex or Cursor lane — can apply the same rules. **Where a binding here disagrees with the repository's `CLAUDE.md` / `AGENTS.md`, the live kit brief, or the fabric's own documentation, those win; update this file rather than the doctrine.**
+The doctrine names six primitives. Every harness has some binding for each; the bindings rot, the doctrine does not. This file maps the primitives to the surfaces this fleet actually uses as of 2026-09-24. **Every seat reads it once per session, Claude Code seats included** — section 2 carries the binding lane, labor, quota, and Stop-hook mechanics of this fleet, and a seat that skips it fans out native children for census and build in exactly the way the standing law forbids. A seat that is not running inside Claude Code — Sol or Astra on a GPT-class harness, Grok, GLM, MiniMax, a Codex or Cursor lane — finds its bindings in sections 3–6. **Where a binding here disagrees with the repository's `CLAUDE.md` / `AGENTS.md`, the live kit brief, or the fabric's own documentation, those win; update this file rather than the doctrine.**
 
 Contents: 1 The six primitives · 2 Claude Code (this fleet) · 3 External labor lanes (`ext/sub.sh`) · 4 The Mastermind Executive / Subagent Fabric · 5 Codex, Cursor, Grok, Warp sessions · 6 GPT-class seats (Sol, Astra) and any harness without a Skill tool · 7 The loader line for packets
 
@@ -49,7 +49,7 @@ The live paths, pool names, model tiers, and hard laws are in the kit's `orch/fa
 
 ## 5. Codex, Cursor, Grok, Warp sessions
 
-These harnesses read the repository's `AGENTS.md` and may discover skills under `.agents/skills/` — this skill is mirrored there. They have no `Agent` tool with a routing registry; a Codex or Cursor session acting as a seat delegates through sections 3 or 4 of this file and applies the same packet shapes. Their worktree hygiene is handled by the repository's sparse-worktree hooks (`scripts/worktree_sparse.py auto`); their carrier and identity rules are unchanged. A Grok session launched by an external secretary must treat its launch prompt as a stale relay (L.10) exactly as a Claude session does.
+These harnesses read the repository's `AGENTS.md` and may discover skills under `.agents/skills/` — a stub `SKILL.md` there points at this directory by path (a real directory, not a symlink, so loaders that do not traverse symlinks and checkouts without symlink support still find it). They have no `Agent` tool with a routing registry; a Codex or Cursor session acting as a seat delegates through sections 3 or 4 of this file and applies the same packet shapes. Their worktree hygiene is handled by the repository's sparse-worktree hooks (`scripts/worktree_sparse.py auto`); their carrier and identity rules are unchanged. A Grok session launched by an external secretary must treat its launch prompt as a stale relay (L.10) exactly as a Claude session does.
 
 ## 6. GPT-class seats (Sol, Astra) and any harness without a Skill tool
 
@@ -62,13 +62,20 @@ These harnesses read the repository's `AGENTS.md` and may discover skills under 
 
 ## 7. The loader line for packets
 
-When a commissioned worker or an orchestration lane should hold itself to this doctrine, put this in the packet (adjust the path to the repository root the lane runs in):
+Scope the doctrine to the tier — resident doctrine is context every lane pays for on every turn. Put the matching line in the packet (adjust the path to the repository root the lane runs in):
 
 ```
+# build / debug / analysis / review lanes:
+DOCTRINE: before acting, read .claude/skills/fable-mode/references/engineering.md in full.
+Your final message must be the return packet in .claude/skills/fable-mode/references/packets.md section 3.
+
+# orchestration lanes:
 DOCTRINE: before acting, read .claude/skills/fable-mode/SKILL.md, then
-.claude/skills/fable-mode/references/engineering.md (you are doing bounded work) — or
-.claude/skills/fable-mode/references/orchestration.md and long-horizon.md (you are orchestrating).
+.claude/skills/fable-mode/references/orchestration.md, long-horizon.md, and harness-adapters.md.
 Your final message must be the return packet in packets.md section 3.
+
+# extract / draft / census lanes: no doctrine read — paste the return packet shape and the
+# turn-ending clause (packets.md sections 2–3) into the packet instead.
 ```
 
-A lane that cannot read the repository (a hosted model with no file access) gets the six commitments and the return packet pasted into the prompt instead — `config/fable_mode_core.md` is the maintained distillation for exactly that case.
+A lane that cannot read the repository (a hosted model with no file access) gets the ten commitments and the return packet pasted into the prompt instead — `config/fable_mode_core.md` is the maintained distillation for exactly that case.

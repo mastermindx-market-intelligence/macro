@@ -32,7 +32,7 @@ Contents: 1 The program file (L.1) · 2 The delivery ladder (L.2) · 3 EFFECT_UN
 | PRODUCTION_PROOF | The change is observable where users are | the live artifact, fetched and read |
 | ACCEPTANCE | The commissioning authority accepted the outcome | their acceptance, on the carrier |
 
-None implies the next. The most common inflations: DELIVERED reported as done; CI reported when checks are pending ("not red" is not green); MERGED reported as live before any deploy or render pulled it; PRODUCTION_PROOF reported as acceptance. A status note, a checkpoint, or a continuation record is a *description* of work, never the outcome it describes.
+None implies the next. The most common inflations: DELIVERED reported as done; CI reported when checks are pending ("not red" is not green); MERGED reported as live before any deploy or render pulled it; PRODUCTION_PROOF reported as acceptance. A status note, a checkpoint, or a continuation record is a *description* of work, never the outcome it describes. One state sits beside the ladder rather than on it: **PARKED** — a change whose checks concluded green but which a recorded hold by another authority bars from merging. PARKED is terminal for the ship attempt only; it is never reported as merged, shipped, or live, and the dialogue with the holding authority stays open.
 
 ## 3. EFFECT_UNKNOWN — L.3
 
@@ -60,7 +60,9 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 
 **Hand the wait off.** A watcher (a bounded shell loop keyed on the sentinel, a cron, a merge sweeper, a harness monitor) owns the wait. Register it in the lane matrix with its cadence. One watcher per endpoint; a second buys nothing and doubles the cost.
 
-**Harness pressure is not a demand for a poll.** A stop-hook block, a "still waiting?" nudge, a scheduled wake-up: these are the harness asking for a *state*, not for fresh evidence. Answer with one line — what is being waited on, which watcher owns it, what re-invokes you — and then stay quiet. The tell that you have crossed into waste: three identical status readings in a row. If the harness keeps blocking through a lawful wait, use its escape ladder once, with the literal evidence report it asks for, and then stop answering per-block; real events re-invoke you.
+**Harness pressure is not a demand for a poll.** A stop-hook block, a "still waiting?" nudge, a scheduled wake-up: these are the harness asking for a *state*, not for fresh evidence. Answer with one line — what is being waited on, which watcher owns it, what re-invokes you — never with a re-read. The tell that you have crossed into waste: three identical status readings in a row.
+
+**A hold note does not end the pressure — the ladder does.** In a harness with a Stop hook, a hold note satisfies the quota rule but the hook blocks again seconds later, and a seat that answers every block with another note types near-identical notes in a billed loop for hours. The lawful sequence in this fleet: hold notes while the block count climbs; at the counted threshold (any code: 10 consecutive or 15 total blocks) end the turn ONCE with the literal `SHIP LOOP BLOCKED:` evidence report — the PR, the exact head, the check state, the watcher and its cadence, and the continuation path — and then stay quiet: no per-block notes, no tailing your own watcher between its ticks. Real events (a watcher exit, a task notification, a counterpart post, an operator message) re-invoke you; nothing else should. Waiting on CI never qualifies as a blocker for the ladder in its own right — the report is about the *wait being lawfully owned*, not about CI being slow.
 
 **Parallel work during a wait.** A wait is the moment to work an independent lane, write the program file, or run the pre-mortem for the next wave — anything except reading the same status again.
 
@@ -72,7 +74,7 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 | `EXACT_HUMAN_GATE` | the next act needs a specific human decision, named, with your default | you would like confirmation you were not asked to seek |
 | `EFFECT_UNKNOWN` | an act's effect could not be reconciled on its carrier | you did not try the carrier |
 | `ALL_SCOPED_LANES_BLOCKED` | every authorized lane is listed with its blocker | one lane is blocked and others were not checked |
-| `DURABLE_EXECUTION_RUNNING` | watchers own the wait; the program file is current; real events re-invoke you | you are about to poll |
+| `DURABLE_EXECUTION_RUNNING` | watchers own the wait; the program file is current; real events re-invoke you | you are about to poll — or a change you opened is unmerged or not yet proven live: that wait is yours to the end (O.14), and the state does not excuse it |
 | `MORE_WORK_EXISTS` | never a valid stopping state | — |
 
 A session that reaches the outcome or the exact human gate in ten minutes is complete; a session that stops with authorized work remaining is not, however long it ran.
@@ -92,6 +94,8 @@ After a restart, compaction, handoff, or takeover, in this order:
 ## 10. Authority scope — L.11
 
 Defaults exist (a seat is a worker; a principal decides). An explicit delegation overrides those defaults *inside its stated scope*, and no default overrides it back. Two failures, symmetric: a seat that holds a delegated program and still posts "requesting authorization" to the principal for an in-scope decision — waiting for permission it already holds, which is the most expensive stall available; and a seat that lets a delegation leak — using authority granted for one PR on another, or treating a coordination-only actor's note as a substantive ruling. Read the delegation's scope sentence; act fully inside it; act not at all outside it.
+
+**Holds.** A hold recorded on an artifact — in a PR body, a comment, a carrier post — binds every merge path (sweeper, blanket-arming sessions, manual merges) regardless of label state. It is released only by the authority that placed it, or under a delegation consumed into the carrier verbatim (A.6) whose stated scope names that hold or that program. Verifying that the release condition is met produces *evidence to post to the holding authority*, not a release; a seat that releases on its own reading has exercised authority it was never given. While the hold stands, the correct report is PARKED (section 2), never merged.
 
 ## 11. Records — L.12, L.13
 

@@ -8,11 +8,11 @@ Contents: 1 Commission packet · 2 The turn-ending clause · 3 Return packet · 
 
 ## 1. Commission packet
 
-Generic skeleton. Keep every label; delete nothing; write "none" rather than omit.
+Generic skeleton of the labels most routes share. Then **add every label the per-route table below lists for your route** — in this fleet the routing hook denies a commission that is missing any of them (a `review` needs `ARTIFACT TO ATTACK` and `REVIEW STANDARD`; a `census` needs `QUESTIONS`; a `design` needs `USER JOB`, `FROZEN CONSTRAINTS`, `REFERENCES`, `VISUAL VERIFICATION`). Keep every label you include; write "none" rather than omit.
 
 ```
 ROUTE: <extract|census|research|draft|analysis|debug|build|review|design|orchestration>
-MODEL/TIER: <explicit — never inherited>
+MODEL/TIER: <explicit — never inherited; a prompt label for the record — the harness's own model parameter is what a guard checks, so set both>
 OPERATION KEY: <program / wave / lane id>
 
 MISSION: <one sentence: the deliverable, as a noun>
@@ -30,7 +30,8 @@ NOT DONE UNLESS:
 EVIDENCE REQUIRED: <the receipts the return must carry: commands, shas, run ids, paths, counts>
 BUDGET: <turns / time / tokens; what to do when exhausted: return a partial packet>
 ANSWER FIRST: <the one question whose answer decides the seat's next act>
-RETURN: STATUS / RESULT / EVIDENCE / GAPS / DEVIATIONS  (+ NEXT SEAT ACT for orchestration lanes)
+ROUTE-SPECIFIC LABELS: <every label the table below lists for this route, each with content>
+RETURN: STATUS / RESULT / EVIDENCE / GAPS / DEVIATIONS  (+ NEXT SEAT ACT for orchestration lanes — recommended, not guard-enforced)
 <the turn-ending clause, section 2, verbatim>
 ```
 
@@ -50,6 +51,8 @@ Per-route required labels in this fleet (the hook checks these exact words):
 | orchestration | MISSION · WHY · SCOPE · OUT OF SCOPE · NOT DONE UNLESS · RETURN |
 
 A review commission's `REVIEW STANDARD` names the stance: for make-or-break calls, *"Your stance is REFUTE. Find every reason this should not be approved. Do not play devil's advocate — actually look for disqualifying defects."*
+
+**Design packets carry the two-theme law.** For any user-facing surface, `VISUAL VERIFICATION` and `FROZEN CONSTRAINTS` must name: DARK TREATMENT and LIGHT TREATMENT as two art directions (shared information architecture, semantics, spacing and type scales; material treatment may differ — depth and restrained glow in dark, white material and hairline discipline with shadow in light), which mechanisms intentionally differ, the reference or baseline, theme-specific degraded states, and the evidence matrix (dark/light × EN/ZH × desktop 1440 / mobile 390) posted as committed image paths. Token substitution alone is never proof of a light design. A design return missing the light art direction or its evidence is `PARTIAL` or `BLOCKED`, never `PASS`, and a builder stops and escalates rather than inventing a translation. Read the repository's design doctrine (`docs/DESIGN_DOCTRINE.md` in this fleet) before writing the packet; design *choices* stay with the design tier, and a builder implements only a fully specified spec.
 
 ## 2. The turn-ending clause (append verbatim to every commission)
 
@@ -71,7 +74,7 @@ DEVIATIONS: <where the work departed from the packet and why; "none" only if tru
 NEXT SEAT ACT: <orchestration lanes only — the exact seat-only act recommended, with its gates already verified>
 ```
 
-`EVIDENCE: none` is not a packet. A `PASS` with a non-empty `GAPS` is a `PARTIAL`.
+`EVIDENCE: none` is not a packet. `GAPS` has two kinds of entry, and the packet should say which: a **criterion gap** (a `NOT DONE UNLESS` item not met or not verified) and a **disclosure** (something adjacent that was noticed but was outside scope, or a bound on what was searched). A `PASS` may carry disclosures — honest scope statements are wanted, never punished — but a `PASS` may not carry a criterion gap; that is a `PARTIAL`. The seat issues repairs only against criterion gaps.
 
 ## 4. Adjudication scorecard (the seat fills this for every DELIVERED return)
 

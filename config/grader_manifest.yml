@@ -57,14 +57,14 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: 60b74cd3627adab2086738de62bf760f8fc8f1af9322474aa1219d2b268ec373
+  sha256: d43bae902a58b1eb881e15cecc0488a1a65a4fba54d11d1cf9c2aace4393e0fb
   role: doctrine
-  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + seat loop + pre-send
-    gate. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
+  notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
+    near the R-V2-2 byte budget. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
     — loop PRs may not modify. Runner never reads ~/. 2026-09-24 hash update ratifies
     Revision 3 of the fable-mode doctrine (Fable 5.1, seat edition): four seat
     commitments (the seat judges / one owner per artifact / the nine-rung delivery
-    ladder / state lives on disk), the eight-step seat loop, and gate items 8–12
+    ladder / state lives on disk), and gate items 8–12
     (ladder, ownership, durable state, quiet, session end). Synced with
     .claude/skills/fable-mode/SKILL.md Revision 3; injection semantics unchanged.
 
