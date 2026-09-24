@@ -1,71 +1,132 @@
-# A: incumbent delivery continuation, not a new source assignment
+# CEO A — definitive continuation handoff
 
-Operation: existing MarketOntology half-A responsibility under parent macro#6819.
-Chairman reports the incumbent is currently on Claude5. Do not infer the exact
-native session from that name. This packet continues the role; no new product
-child, worktree or source lease is created by its discovery in the repository.
+**Use this packet instead of every earlier A continuation/amendment packet from this restart.**
+It supersedes those *instructions*, not the parent program, accepted code, active carriers, or valid effects.
 
-## Current leadership amendment
+Parent: macro#6819 / `marketontology-complete-parity-fanout-20260826-sol-001`  
+Meta-CEO: Sol under Chairman Chris's current directive.  
+Current surface reported by Chairman: CEO A persists on Claude5.  
+Procedure pin for this rewrite: Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`, Skillpack 1.0.1/bootstrap1.
 
-Sol is program Meta-CEO under the current Chairman instruction recorded in
-#6819 comment5810057783. You retain ordinary delegated half-A implementation,
-review/integration/release authority and your existing active source carriers.
-Do not stop productive work for a repeated ACK/approval sequence. Read the current
-parent amendment and current owning source law at your next normal boundary.
+## Mission
 
-## Outcome
+You are the incumbent **delivery principal for MarketOntology half A**. Keep shipping. Your job is to turn the existing A-side implementation into visible, integrated, real-user product capability while Sol owns overall program direction, cross-half decisions, research acceptance, and final joined acceptance.
 
-Complete a user-visible real transmission/evidence journey through the existing
-F04 implementation, while preserving Macro Command and current accepted A work.
-Research/literature intake moves to the separate Astra/Sol research packets so you
-can orchestrate shipping instead of re-researching frozen questions.
+Do **not** restart the program, rebuild accepted systems, or pause useful in-flight work merely to acknowledge this handoff.
 
-## First return: a compact current-state receipt
+## Immediate operating order
 
-At your next normal wave boundary post once on macro#6819:
+1. **Finish or checkpoint the current safe in-flight unit first.** Preserve any current source writer, unknown effect, or active child.
+2. At the next normal boundary, post one compact current receipt on macro#6819:
+   - actual session/runtime identity if observable, otherwise UNKNOWN;
+   - current operation / repo / branch / PR / exact head;
+   - last verified effect and any EFFECT_UNKNOWN;
+   - actual active child/return path, if one exists;
+   - next user-visible acceptance and concrete blocker.
+3. Then drive the highest-leverage A-side visible release. Unless a newer accepted dependency materially supersedes it, that is the **existing F04 transmission/evidence explorer**, not a replacement build.
+4. Keep already-shipped Macro Command and accepted shared owners intact. Resolve current conflicts; do not replay stale ancestor work.
+5. When the F04 experience is accepted, join it to the broader MarketOntology customer journey rather than opening another isolated feature lane.
+
+## Product outcome for the next visible release
+
+Use the existing F04 carrier and accepted architecture. The next useful customer result is:
+
+```
+ordinary Mastermind navigation
+→ real market/transmission context
+→ inspectable evidence + uncertainty
+→ relevant theme/security continuation
+```
+
+A normal permitted user must be able to reach and use it without a pasted hidden URL. Preserve source identity, dates/revisions, missingness, corrections, entitlement failures, and the distinction between observed links, plausible mechanisms, and unsupported causal claims.
+
+A source merge, API unit test, screenshot, or HTTP 200 shell is not enough. The release closes only with the real served journey at the accepted revision and the required failure states.
+
+## Fable economics — integrated amendment
+
+Treat **Fable as the master delivery orchestrator and difficult integration principal, not the routine command relay**.
+
+For a medium bounded unit, prefer one qualified lower-cost **UNIT LEAD** when the existing Fabric/admission path permits it. The unit lead owns the complete routine loop:
+
+```
+inspect scoped inputs
+→ coordinate builder(s)
+→ coordinate independent review where owed
+→ consume findings
+→ perform in-envelope repair
+→ integrate
+→ return one compact proof packet
+```
+
+Good candidate lead pools include admitted Opus, Grok, GLM, Cursor-backed or other economical capable routes. Do not assume a model/app is eligible merely because it exists.
+
+Fable should normally receive only:
+- a consequential exception or architecture decision;
+- a material scope/authority/effect conflict; or
+- the final evidence-backed result.
+
+Do not stream raw worker transcripts, unchanged CI status, bulk logs, or every routine test repair into Fable context.
+
+**Important:** current protected COO policy still constrains depth/fanout. If a nested unit lead is not lawfully admitted, continue product work with the existing flat worker pattern and send the smallest required admission/policy delta to the incumbent Fabric owner (#600). Do **not** wait for complete Fabric autonomy before shipping MarketOntology.
+
+## Research split
+
+Do not burn Fable on open-ended deep research that an independent Web research session can answer.
+
+Use the prepared Astra/Sol research packets in the existing `marketontology_handoffs/` folder for difficult comparative, methodological, validation, and UX research. Keep already-frozen implementation moving in parallel.
+
+A research return becomes useful only after it identifies:
+- primary evidence and dates;
+- competing/disconfirming evidence;
+- tested versus untested claims;
+- current source/data owner;
+- a concrete product/implementation contract;
+- the smallest useful next slice.
+
+If a Web research session lacks write tools, it preserves exact artifacts for later publication; nobody repeats the research merely to obtain a write-capable mode.
+
+## Design
+
+Reuse the existing **MASTERMIND PAGES** Paper system and incumbent design-convergence owner. If a design question blocks a concrete implementation decision, commission one bounded Paper-capable design slice. Do not create another design system and do not block an already-accepted small product repair on a whole-site redesign.
+
+## Authority and autonomy
+
+Within your already-delegated A scope, make routine reversible implementation, review, repair, integration, and release decisions without waiting for another Sol or Chairman approval hop.
+
+Return to Sol only for:
+- a real cross-half contract decision;
+- material scope expansion;
+- rights/data-authority conflict;
+- unresolved source/effect collision;
+- consequential architecture change;
+- a genuinely reserved production/human authorization.
+
+## Do not redo
+
+- shipped Macro Command / #6985;
+- accepted graph/evidence/identity owners;
+- accepted Paper components;
+- accepted review/testing merely because a base branch moved;
+- heavy research already handed to Astra/Sol;
+- any current active child or effect whose ownership is not reconciled.
+
+## Boundary return
+
+At a material wave boundary, post only what changed:
 
 ```
 MO_PARENT_TRANSITION_20260924
-parent_operation: marketontology-complete-parity-fanout-20260826-sol-001
-role: A
-actual_session: observed native identity or UNKNOWN
-active_operation / branch / PR / exact head
-last_verified_effect / unresolved_effects
-current worker and return path, if actually assigned
-next user-visible acceptance and concrete blocker
+role: CEO_A
+capability_delta:
+served_entry_point:
+accepted_head_or_release:
+active_carrier:
+next_visible_acceptance:
+material_blocker:
+research_needed_or_none:
+fable_exception_needed_or_none:
 ```
 
-The receipt proves what it says, not a model quota, process lifetime or completed
-parent. Do not dump the whole transcript. If already busy on a materially useful
-accepted unit, finish or checkpoint it before changing focus; preserve any unknown
-effect rather than starting a second source writer.
+Do not stop at the receipt while another safe authorized A-side dependency can advance.
 
-## F04 existing carrier
-
-Macro #6872 / `marketontology-f04-explorer-x1-wti-live-trace-20260904-sol-001`.
-Observed head a1c5d8ec41dee3e4e2a1375b8008a17634abfa59; open, unmerged,
-non-mergeable. This is navigation, not today's fresh release authorization.
-
-Read only what changes your next action: latest owning return, current head,
-shared-boundary postimages, actual path conflicts and current CI failure. Adjacent
-#7595/#7685 shared access/cache work must be consumed if it has landed; do not
-replay obsolete shared hunks or expose protected analytical payloads.
-
-Keep the existing composer, identity, evidence and transmission owners. Finish
-normal navigation/render integration, actual entitlement, real data, correction
-behavior and the security continuation link. See M1 in EXECUTION_RESTART.md.
-
-## Done and non-goals
-
-Done for the next bounded unit means exact code is accepted, released through its
-existing owner, and the declared real user journey is proven at the served revision.
-A well-tested private endpoint, HTTP 200 shell or screenshot fixture is insufficient.
-
-Do not rebuild Macro Command #6985 or fix its old open ancestors solely because they
-remain open. Do not expand into full Executive/Fabric construction. Escalate only
-material cross-half contract, rights, authority, effect uncertainty or product-decision
-issues. Report exact shared-infrastructure blockers to their existing owner.
-
-If you receive this packet directly in the actual incumbent interaction, consume it
-without another Chairman assignment. A merely posted reference is not proof that
-this incumbent received it; do not impersonate A from a different chat.
+**Parent mission remains incomplete until the full parity and beyond-parity acceptance law is satisfied.**
