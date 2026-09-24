@@ -1,14 +1,16 @@
 # Healthcare principal research and implementation-review packet
 
-**Canonical carrier:** Macro PR #7788, branch `claude/healthcare-theme-research-20260923`. **Status:** research/design/plan for review; no implementation, source admission, deployment or Fable dispatch. The cumulative continuity owner is `../../agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md`.
+**Canonical carrier:** Macro PR #7788, branch `claude/healthcare-theme-research-20260923`. **Status:** Healthcare research/design/plan for review; no Healthcare implementation, source admission, deployment or Fable dispatch. The cumulative continuity owner is `../../agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md`.
 
 ## Start here
 
-1. [R9 review decisions](HEALTHCARE_R9_REVIEW_DECISIONS_2026-09-23.md): six exact proposed shared-owner decisions and the principal self-review. Independent acceptance is not claimed.
-2. [R9 implementation plan](HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md): eight tasks, forty explicit steps and four useful release boundaries, with proposed native interfaces, test examples and real-path acceptance.
-3. [R9 traceability](HEALTHCARE_R9_TRACEABILITY_2026-09-23.json): every R8 acceptance case mapped to a task, seven additional specifications, twelve coverage families and remaining reviews. All 48 application cases are NOT_EXECUTED.
+1. [R10 shared compatibility amendment](HEALTHCARE_R10_SHARED_COMPATIBILITY_REVIEW_2026-09-24.md): read before R9. The shared implementation now exists on #7870; Healthcare consumes it instead of duplicating it. This amendment corrects only the identified R9 hash/mint/fixture/interface and publication/proof assumptions. Shared acceptance and independent Healthcare review remain pending.
+2. [R9 implementation plan](HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md): eight tasks, forty explicit steps and four useful release boundaries. Its original bytes are preserved; apply the explicit R10 amendments before execution.
+3. [R9 review decisions](HEALTHCARE_R9_REVIEW_DECISIONS_2026-09-23.md) and [R9 traceability](HEALTHCARE_R9_TRACEABILITY_2026-09-23.json): retain all 48 intended cases. R10 adds 12, making 60 unexecuted application specifications; no independent acceptance is claimed.
 
-The current proposal reuses the Robotics/shared Themes architecture. It does not replace the neighboring owner's plan or create a Healthcare graph, auth system, publisher, source registry or global drug master. Fable remains the intended later implementation orchestrator; no reviewer or worker has been started by this packet.
+Shared dependency request: [#7870 comment 5808534349](https://github.com/mastermindx-market-intelligence/macro/pull/7870#issuecomment-5808534349), referencing the existing R4 private-binding decision on #7780. A posted comment is not receiver assignment, review consumption or acceptance. The inspected #7870 head is `45eb37bbf832e007e67ce2594674d6bfeeb3b880`, not a deployed Healthcare release.
+
+The current proposal reuses the Robotics/shared Themes architecture. It does not replace the neighboring owner's plan or create a Healthcare graph, auth system, publisher, source registry or global drug master. Fable remains the intended later Healthcare implementation orchestrator; no Healthcare reviewer or worker has been started by this packet.
 
 ## Research corpus
 
@@ -27,6 +29,8 @@ Corresponding JSON examples and offline probes remain alongside their dossiers. 
 
 ## Completion and evidence boundaries
 
-R9 local checks validate plan/traceability consistency and syntax of proposed Python examples. They execute no product test and establish no financial, clinical or investment-performance validity. The downloadable R9 convenience package includes a local checker and its receipt; GitHub remains the canonical research owner.
+R9 checks validate plan/traceability consistency and syntax of proposed examples. [R10's audit](audit_r10_plan.py) compares the hash-matched R9 synthetic fixture with selected transcribed shared constraints; it does not execute the complete native schema or code. It records six selected fixture mismatches plus hash, mint-stage and signed-value conflicts, not nine shared-code defects. Both waves execute zero application tests and establish no financial, clinical or investment-performance validity.
 
-Review the shared native private-tier/policy/route decisions and then the exact Healthcare plan. A posted packet is not review consumption. Live sources require actual rights, retention, identity where needed, writer admission and protected publication proof. Deployment requires authorized real source-to-browser and negative-mirror acceptance. The broad Healthcare and later valuation/point-in-time evaluation obligations remain incomplete.
+The downloadable R10 package carries the amendment, selected-constraint audit, local structured review brief/results and exact R9 prerequisites; it is a convenience copy, not the entire earlier corpus or another native source store. GitHub remains the canonical research owner.
+
+Review the shared native private-binding/domain/measurement decisions and then the exact Healthcare plan. A posted packet is not review consumption. Live sources require actual rights, retention, identity where needed, writer admission and protected publication proof. Deployment requires authorized real source-to-browser and negative-mirror acceptance. The broad Healthcare and later valuation/point-in-time evaluation obligations remain incomplete.
