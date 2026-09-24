@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T03:56:33.814993+00:00",
-  "count": 2753,
+  "generated_at": "2026-09-24T04:11:36.923491+00:00",
+  "count": 2754,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -985,6 +985,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3bhwj6ebg0t-fa3dbd",
+      "title": "GS Fishman Cross Border M&A Flow Update 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:46Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
