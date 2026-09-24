@@ -69,12 +69,20 @@ class Applicability(str, Enum):
 
 
 def _span_attribute(value: str | None) -> int:
-    """A ``colspan``/``rowspan`` attribute as an integer span: 1 when absent, non-numeric, zero, negative or absurd."""
-    try:
-        span = int(str(value or "").strip())
-    except ValueError:
+    """A ``colspan``/``rowspan`` attribute as an integer span: 1 when absent, not plain ASCII digits, zero or absurd."""
+    text = str(value or "").strip()
+    if re.fullmatch(r"[0-9]{1,3}", text) is None:
         return 1
+    span = int(text)
     return span if 1 <= span <= 64 else 1
+
+
+def _attribute_map(attrs: list[tuple[str, str | None]]) -> dict[str, str]:
+    """Attributes as HTML reads them: the FIRST occurrence of a name wins, later duplicates are ignored."""
+    mapping: dict[str, str] = {}
+    for name, value in attrs:
+        mapping.setdefault(str(name).casefold(), value or "")
+    return mapping
 
 
 def _compact_text(value: str) -> str:
@@ -251,10 +259,13 @@ class TableCell:
     column_index: int
     text: str
     source_span: SourceSpan
-    # Span attributes as the markup declared them (``colspan`` / ``rowspan``, 1 when absent or invalid).
-    # They are layout facts consumers need to align columns; they do not enter ``to_dict`` or any id.
+    # Span attributes as the markup declared them (``colspan`` / ``rowspan``, 1 when absent or invalid) and the
+    # ordinal of the HTML row the cell sits in, counting rows that emit no cell (an empty ``tr`` covered by a
+    # rowspan still occupies a row).  They are layout facts consumers need to align columns; none of them enters
+    # ``to_dict`` or any id.  ``row_ordinal`` equals ``row_index`` when every row emitted a cell.
     colspan: int = 1
     rowspan: int = 1
+    row_ordinal: int = -1
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -569,6 +580,8 @@ class _RawCell:
     text_parts: list[str]
     colspan: int = 1
     rowspan: int = 1
+    # Ordinal of the HTML row (``tr``) the cell belongs to, counting rows that emit no cell; -1 when unknown.
+    row_ordinal: int = -1
 
 
 @dataclass
@@ -580,6 +593,7 @@ class _RawTable:
     current_cell: _RawCell | None = None
     caption_parts: list[str] = field(default_factory=list)
     in_caption: bool = False
+    row_ordinal: int = -1
 
 
 @dataclass
@@ -650,7 +664,7 @@ class _HtmlBlockExtractor(HTMLParser):
     def _is_nonvisible(cls, tag: str, attrs: list[tuple[str, str | None]]) -> bool:
         if tag in cls._NONVISIBLE_TAGS:
             return True
-        attr_map = {str(name).casefold(): (value or "") for name, value in attrs}
+        attr_map = _attribute_map(attrs)
         if "hidden" in attr_map:
             return True
         if attr_map.get("aria-hidden", "").casefold() == "true":
@@ -698,18 +712,21 @@ class _HtmlBlockExtractor(HTMLParser):
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
                 table.current_row = []
+                table.row_ordinal += 1
             elif tag == "caption":
                 table.in_caption = True
             elif tag in {"td", "th"}:
                 if table.current_row is None:
                     table.current_row = []
-                attr_map = {str(key).casefold(): (value or "") for key, value in attrs}
+                    table.row_ordinal += 1
+                attr_map = _attribute_map(attrs)
                 cell = _RawCell(
                     start=start,
                     end=start,
                     text_parts=[],
                     colspan=_span_attribute(attr_map.get("colspan")),
                     rowspan=_span_attribute(attr_map.get("rowspan")),
+                    row_ordinal=table.row_ordinal,
                 )
                 table.current_row.append(cell)
                 table.current_cell = cell
@@ -862,7 +879,7 @@ def _plain_table_block(lines: Sequence[tuple[int, str]], source: str) -> _RawBlo
                 local = cursor
             start = line_start + local
             end = start + len(piece)
-            cells.append(_RawCell(start=start, end=end, text_parts=[piece]))
+            cells.append(_RawCell(start=start, end=end, text_parts=[piece], row_ordinal=len(rows)))
             cursor = local + len(piece) + 1
         if cells:
             rows.append(tuple(cells))
@@ -1071,6 +1088,7 @@ def normalize_filing(
                             source_span=cell_span,
                             colspan=raw_cell.colspan,
                             rowspan=raw_cell.rowspan,
+                            row_ordinal=raw_cell.row_ordinal if raw_cell.row_ordinal >= 0 else row_index,
                         )
                     )
                 if cells:
