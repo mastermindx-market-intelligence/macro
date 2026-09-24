@@ -123,6 +123,44 @@ def _interp(x: float, xs: list[float], ys: list[float]) -> float:
     return ys[-1]
 
 
+def implied_path_with_components(contracts, horizons_m, max_months, cadence):
+    """Preserve the incumbent curve, plus its exact interpolation constituents.
+
+    The original numeric helper remains authoritative. The downstream reader
+    checks that these weights reproduce it; a mismatch withholds attribution.
+    """
+    import math
+    path = implied_path(contracts, horizons_m, max_months, cadence)
+    components = {}
+    centre = _CENTRE_OFFSET.get(cadence, 0.5)
+    for d in path.index:
+        points = []
+        for (year, month), series in contracts.items():
+            if d not in series.index:
+                continue
+            rate = 100.0 - float(series.loc[d])
+            coordinate = _months_diff(year, month, d.year, d.month) + centre
+            if math.isfinite(rate) and 0 <= coordinate <= max_months:
+                points.append((coordinate, f'{year:04d}-{month:02d}'))
+        points.sort()
+        row = {}
+        for h in horizons_m:
+            weights, state = {}, 'uncovered'
+            if len(points) >= 2 and points[0][0] <= h <= points[-1][0]:
+                for left, right in zip(points, points[1:]):
+                    if h <= right[0]:
+                        fraction = (h - left[0]) / (right[0] - left[0])
+                        weights = {left[1]: 1.0 - fraction, right[1]: fraction}
+                        weights = {key: value for key, value in weights.items() if value > 0}
+                        state = 'exact' if len(weights) == 1 else 'interpolated'
+                        break
+            elif len(points) == 1 and abs(points[0][0] - h) <= 1:
+                weights, state = {points[0][1]: 1.0}, 'single_contract_proximity'
+            row[f'm{h}'] = {'weights': weights, 'status': state}
+        components[d] = row
+    return path, components
+
+
 class RateFuturesAdapter(Adapter):
     name = "rate_futures"
     group = "rate_futures"
@@ -149,17 +187,29 @@ class RateFuturesAdapter(Adapter):
             # one batch download of every candidate symbol; pick the variant that prints
             symbols = [s for c in contracts for s in c["symbols"]]
             raw = self._download(symbols, period, yf)
+            if len(symbols) > 1 and not isinstance(raw.columns, pd.MultiIndex):
+                # A flat batch response cannot identify which contract was quoted.
+                raise ValueError('batch_quotes_lack_contract_identity')
+            captured_at = datetime.now(timezone.utc).isoformat()
             series: dict[tuple[int, int], pd.Series] = {}
+            chosen_symbols = {}
             for c in contracts:
                 for sym in c["symbols"]:
                     s = self._close(raw, sym)
                     if s is not None and not s.dropna().empty:
-                        series[(c["year"], c["month"])] = s
+                        identity = (c["year"], c["month"])
+                        series[identity] = s
+                        chosen_symbols[identity] = sym
                         break
-            path = implied_path(series, horizons, max_months,
-                                spec.get("cadence", "monthly"))
+            cadence = spec.get("cadence", "monthly")
+            path, components = implied_path_with_components(series, horizons, max_months, cadence)
             if not path.empty:
+                from engine.rate_futures_repricing import attach_constituents
+                path, evidence = attach_constituents(path, components, series, chosen_symbols,
+                    root=spec['symbol_root'], cadence=cadence, max_months=max_months,
+                    captured_at=captured_at)
                 out[f"{key}_path"] = path
+                out[f"{key}_constituents"] = evidence
                 log.info("rate_futures: %s — %d live contracts, %d path days",
                          key, len(series), len(path))
             else:
