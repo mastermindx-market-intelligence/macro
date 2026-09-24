@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 import hashlib
+import html
 import math
 import re
 from typing import Any, Sequence
@@ -25,9 +26,10 @@ from ..earnings_release.receipts import ReceiptError, SpanReceipt, receipt_for_l
 
 
 PG_CIK = "0000080424"
-PG_PRIVATE_RIGHTS_PROFILE = min(
-    profile for profile in RIGHTS_PROFILES if profile != RIGHTS_PROFILE
-)
+_PRIVATE_RIGHTS_PROFILES = tuple(sorted(RIGHTS_PROFILES - {RIGHTS_PROFILE}))
+if len(_PRIVATE_RIGHTS_PROFILES) != 1:
+    raise ImportError("the rights registry must carry exactly one non-public profile for PG private facts")
+PG_PRIVATE_RIGHTS_PROFILE = _PRIVATE_RIGHTS_PROFILES[0]
 
 
 @dataclass(frozen=True)
@@ -126,17 +128,29 @@ _TABLE_CELLS = re.compile(rb"<t[dh][^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTA
 
 def _cell_text(fragment: bytes) -> str:
     text = re.sub(rb"<[^>]+>", b"", fragment)
-    return text.decode("utf-8", errors="strict").strip().replace("&amp;", "&")
+    return html.unescape(text.decode("utf-8", errors="strict")).strip()
 
 
 def replay_table_layout(
-    source: str, *, start: int, end: int, header_forms: Sequence[str] = ()
+    source: str, *, start: int, end: int, header_forms: Sequence[str] = (), identity: tuple[int, int, date] | None = None
 ) -> tuple[str, str, int]:
+    """The ONE cell locator: the extractor confirms every located cell through it and the validator replays through it (R28).
+
+    With ``identity`` it also refuses a table whose governing headings place it outside the admitted quarter (R27).
+    """
     source_bytes = source.encode("utf-8")
     table_start = source_bytes.rfind(b"<table", 0, start)
     table_end = source_bytes.find(b"</table>", end)
     if table_start < 0 or table_end < 0:
         raise ValueError("cell has no enclosing table")
+    if identity is not None:
+        context = None
+        for heading_match in re.finditer(rb"<h[1-6][^>]*>(.*?)</h[1-6]>", source_bytes[:table_start], re.IGNORECASE | re.DOTALL):
+            verdict = period_context(_cell_text(heading_match.group(1)), identity)
+            if verdict is not None:
+                context = verdict
+        if context in _OUT_OF_SCOPE:
+            raise ValueError("table is governed by a heading outside the admitted fiscal period")
     rows: list[tuple[int, list[tuple[int, int, bytes]]]] = []
     for row_match in re.finditer(rb"<tr[^>]*>", source_bytes[table_start:table_end], re.IGNORECASE):
         rows.append((row_match.start() + table_start, []))
@@ -168,6 +182,8 @@ def replay_table_layout(
         ]
     except UnicodeDecodeError as exc:
         raise ValueError("table bytes are not UTF-8 aligned") from exc
+    if identity is not None and _ANNUAL_QUALIFIER.search(_normal(" ".join(cell for row in prior_rows[:3] for cell in row))):
+        raise ValueError("table header names a twelve-month period")
     target_index = next(
         index for index, (cell_start, cell_end, _text) in enumerate(row_cells)
         if cell_start <= start and end <= cell_end
@@ -210,7 +226,7 @@ def parse_pg_literal(value: str, *, unit: str) -> float | None:
 
 
 def _normal(value: str) -> str:
-    return " ".join(value.casefold().split())
+    return " ".join(value.replace("\xa0", " ").replace("&nbsp;", " ").casefold().split())
 
 
 def _fiscal_identity(current_start: date, current_end: date) -> tuple[int, int]:
@@ -227,6 +243,103 @@ def _fiscal_identity(current_start: date, current_end: date) -> tuple[int, int]:
 
 def _long_date(value: date) -> str:
     return f"{value:%B} {value.day}, {value.year}"
+
+
+_INVISIBLE_MARKUP = re.compile(
+    r"<!--.*?-->|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>"
+    r"|<(\w+)[^>]*(?:\bhidden\b|display\s*:\s*none)[^>]*>.*?</\1>",
+    re.IGNORECASE | re.DOTALL,
+)
+_ANNUAL_QUALIFIER = re.compile(r"\btwelve[\s-]+months?\b|\byear ended\b|\bfull[\s-]+year\b|\bannual\b", re.IGNORECASE)
+_QUARTER_WORD = re.compile(r"\b(first|second|third|fourth)\s+quarter\b", re.IGNORECASE)
+_Q_FY = re.compile(r"\bq([1-4])\s*fy\s*(\d{4})\b", re.IGNORECASE)
+_THREE_MONTHS = re.compile(r"\bthree months ended\s+([a-z]+\s+\d{1,2},\s*\d{4})", re.IGNORECASE)
+_DRIVERS_YEARS = re.compile(r"\bnet sales change drivers\s+(\d{4})\s+vs\.?\s+(\d{4})\b", re.IGNORECASE)
+_YEAR = re.compile(r"\b(20\d{2})\b")
+_ORDINAL_INDEX = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+_OUT_OF_SCOPE = frozenset({"annual", "foreign"})
+
+
+def visible_text(source: str) -> str:
+    """Rendered body text only: comments, scripts, styles and hidden elements are not document statements (R29)."""
+    stripped = _INVISIBLE_MARKUP.sub(" ", source)
+    stripped = re.sub(r"<[^>]+>", " ", stripped)
+    return html.unescape(stripped)
+
+
+def neutral_zero_convention(source: str) -> bool:
+    return _NEUTRAL_ZERO.search(visible_text(source)) is not None
+
+
+def period_context(text: str, identity: tuple[int, int, date]) -> str | None:
+    """Classify a heading against the admitted fiscal scope (R27).
+
+    Returns ``"annual"`` for twelve-month / full-year forms, ``"scope"`` when the heading
+    names the admitted quarter, ``"foreign"`` when it names another quarter or year, and
+    ``None`` when it carries no period information at all.
+    """
+    fiscal_year, quarter, current_end = identity
+    normal = _normal(text)
+    if _ANNUAL_QUALIFIER.search(normal):
+        return "annual"
+    verdict: str | None = None
+    quarter_words = [_ORDINAL_INDEX[m.group(1)] for m in _QUARTER_WORD.finditer(normal)]
+    if quarter_words:
+        years = [int(item) for item in _YEAR.findall(normal)]
+        verdict = "scope" if all(q == quarter for q in quarter_words) and all(y == fiscal_year for y in years) else "foreign"
+    for m in _Q_FY.finditer(normal):
+        ok = int(m.group(1)) == quarter and int(m.group(2)) == fiscal_year
+        verdict = "foreign" if (not ok or verdict == "foreign") else "scope"
+    for m in _THREE_MONTHS.finditer(normal):
+        ok = _normal(m.group(1)) == _normal(_long_date(current_end))
+        verdict = "foreign" if (not ok or verdict == "foreign") else "scope"
+    m = _DRIVERS_YEARS.search(normal)
+    if m and int(m.group(1)) != fiscal_year:
+        verdict = "foreign"
+    return verdict
+
+
+def _is_heading(block: Any) -> bool:
+    return getattr(block, "kind", None) is not None and block.kind.value == "heading"
+
+
+def _table_header_text(table_block: Any) -> str:
+    rows = table_block.table.rows
+    return " ".join(cell.text for row in rows[:3] for cell in row)
+
+
+_PURE_PERIOD_HEADING = re.compile(
+    r"^(?:q[1-4]\s*fy\s*\d{4}|(?:first|second|third|fourth) quarter(?: fiscal(?: year)?)? \d{4}"
+    r"|fiscal year \d{4} (?:first|second|third|fourth) quarter|(?:three|twelve) months ended [a-z]+ \d{1,2}, \d{4}"
+    r"|(?:fiscal )?year ended [a-z]+ \d{1,2}, \d{4})$"
+)
+
+
+def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date]) -> list[tuple[Any, tuple[str, ...], str | None]]:
+    """Every table with its governing headings (the immediate heading and the enclosing topic heading) and its period context.
+
+    A pure period label such as "Three Months Ended June 30, 2026" refines the context of the topic heading above it
+    without replacing that topic; both are consumed by the table they govern (R27).
+    """
+    context: str | None = None
+    immediate: str | None = None
+    topic: str | None = None
+    scanned: list[tuple[Any, tuple[str, ...], str | None]] = []
+    for block in blocks:
+        if _is_heading(block):
+            immediate = getattr(block, "text", "")
+            if not _PURE_PERIOD_HEADING.match(_normal(immediate)):
+                topic = immediate
+            verdict = period_context(immediate, identity)
+            if verdict is not None:
+                context = verdict
+        elif getattr(block, "table", None) is not None:
+            table_context = "annual" if _ANNUAL_QUALIFIER.search(_normal(_table_header_text(block))) else context
+            governing = tuple(dict.fromkeys(item for item in (immediate, topic) if item))
+            scanned.append((block, governing, table_context))
+            immediate = None
+            topic = None
+    return scanned
 
 
 def _scope_period_forms(
@@ -273,60 +386,35 @@ def _heading_matches(value: str, forms: Sequence[str]) -> bool:
     )
 
 
-def _keyword_tables(blocks: Sequence[Any], *, keywords: Sequence[str]) -> list[Any]:
-    active = False
-    tables: list[Any] = []
-    for block in blocks:
-        is_heading = getattr(block, "kind", None) is not None and block.kind.value == "heading"
-        if is_heading:
-            normal = _normal(getattr(block, "text", ""))
-            active = all(_normal(keyword) in normal for keyword in keywords)
-        elif active and getattr(block, "table", None) is not None:
-            tables.append(block)
-            active = False
-    return tables
-
-
-def _drivers_table(blocks: Sequence[Any], heading: str) -> Any | None:
-    tables = _keyword_tables(blocks, keywords=(_normal(heading),))
-    if tables:
-        return tables[0]
-    period_tables = [
+def _keyword_tables(blocks: Sequence[Any], *, keywords: Sequence[str], identity: tuple[int, int, date]) -> list[Any]:
+    return [
         block
-        for block in blocks
-        if getattr(block, "table", None) is not None
-        and any(
-            _column(block, "Total P&G", definition.column_label or "") is not None
-            for definition in PG_DEFINITIONS
-            if definition.row_label == "Total P&G" and definition.column_label
-        )
+        for block, governing, context in _table_scan(blocks, identity)
+        if context not in _OUT_OF_SCOPE
+        and any(all(_normal(keyword) in _normal(heading) for keyword in keywords) for heading in governing)
     ]
-    return period_tables[0] if len(period_tables) == 1 else None
 
 
-def _table(blocks: Sequence[Any], headings: Sequence[str], *, exclusive: bool = True) -> Any | None:
-    saw_heading = False
-    saw_table = False
-    matches = []
-    for block in blocks:
-        is_heading = getattr(block, "kind", None) is not None and block.kind.value == "heading"
-        if is_heading:
-            saw_heading = False
-            saw_table = False
-        if not saw_table and is_heading and _heading_matches(getattr(block, "text", ""), headings):
-            saw_heading = True
-        elif not saw_table and saw_heading and getattr(block, "table", None) is not None:
-            matches.append(block)
-            saw_table = True
+def _drivers_table(blocks: Sequence[Any], heading: str, *, identity: tuple[int, int, date]) -> Any | None:
+    tables = _keyword_tables(blocks, keywords=(_normal(heading),), identity=identity)
+    return tables[0] if len(tables) == 1 else None
+
+
+def _table(blocks: Sequence[Any], headings: Sequence[str], *, exclusive: bool = True, identity: tuple[int, int, date]) -> Any | None:
+    matches = [
+        block
+        for block, governing, context in _table_scan(blocks, identity)
+        if context not in _OUT_OF_SCOPE and any(_heading_matches(heading, headings) for heading in governing)
+    ]
     if not exclusive and matches:
         return matches[0]
     return matches[0] if len(matches) == 1 else None
 
 
-def _quarterly_table(blocks: Sequence[Any], headings: Sequence[str]) -> Any | None:
+def _quarterly_table(blocks: Sequence[Any], headings: Sequence[str], *, identity: tuple[int, int, date]) -> Any | None:
     matches = [
         table for heading in headings
-        if (table := _table(blocks, (heading,), exclusive=False)) is not None
+        if (table := _table(blocks, (heading,), exclusive=False, identity=identity)) is not None
     ]
     distinct = [table for index, table in enumerate(matches) if table is not None and table not in matches[:index]]
     return distinct[0] if len(distinct) == 1 else None
@@ -420,14 +508,14 @@ def _absent(
     }
 
 
-def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequence[str], header_forms: Sequence[str], document_id: str, bound: BoundRelease, event_id: str, periods: dict[str, str], preferred_period: str) -> dict[str, Any]:
+def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequence[str], header_forms: Sequence[str], document_id: str, bound: BoundRelease, event_id: str, periods: dict[str, str], preferred_period: str, identity: tuple[int, int, date]) -> dict[str, Any]:
     if len(headings) == 1 and len(_normal(headings[0]).split()) == 1:
-        tables = _keyword_tables(blocks, keywords=(_normal(headings[0]),))
+        tables = _keyword_tables(blocks, keywords=(_normal(headings[0]),), identity=identity)
         table = tables[0] if len(tables) == 1 else None
     elif _normal(headings[0]).startswith("net sales change drivers"):
-        table = _drivers_table(blocks, headings[0])
+        table = _drivers_table(blocks, headings[0], identity=identity)
     else:
-        table = _quarterly_table(blocks, headings)
+        table = _quarterly_table(blocks, headings, identity=identity)
     located = None
     matched_header = None
     row_label = definition.row_label or header_forms[0]
@@ -454,29 +542,32 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
     period = periods.get(matched_header, preferred_period)
     cell = row[column]
     literal = cell.text.strip()
-    value: float | None = None
-    receipt: SpanReceipt | None = None
-    if literal in {"-", "—", "–"}:
-        if not _NEUTRAL_ZERO.search(bound.source):
-            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
-        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
-        if receipt is None:
-            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The dash is not uniquely addressable.")
-        return _present(definition=definition, value=0.0, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
-    elif literal:
-        value = parse_pg_literal(literal, unit=definition.unit)
-        if value is None:
-            return _absent(
-                definition=definition,
-                document_id=document_id,
-                event_id=event_id,
-                detail="The cell literal does not match the definition unit.",
-                reason="unit_mismatch",
-            )
-        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
-    if value is None or not math.isfinite(value) or receipt is None:
+    is_dash = literal in {"-", "—", "–"}
+    if is_dash and not neutral_zero_convention(bound.source):
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
+    if not literal:
         return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
-    if definition.metric == "pg_total_volume_growth_pct" and not _volume_cross_check(blocks, value=value):
+    value: float | None = 0.0 if is_dash else parse_pg_literal(literal, unit=definition.unit)
+    if value is None:
+        return _absent(
+            definition=definition,
+            document_id=document_id,
+            event_id=event_id,
+            detail="The cell literal does not match the definition unit.",
+            reason="unit_mismatch",
+        )
+    receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
+    if receipt is None or not math.isfinite(value):
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
+    try:
+        replayed_row, replayed_header, _column_index = replay_table_layout(
+            bound.source, start=receipt.byte_start, end=receipt.byte_end, header_forms=headers, identity=identity
+        )
+    except ValueError:
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
+    if _normal(replayed_row) != _normal(row_label) or _normal(replayed_header) != _normal(matched_header):
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
+    if definition.metric == "pg_total_volume_growth_pct" and not _volume_cross_check(blocks, value=value, identity=identity, skip=table):
         return _absent(
             definition=definition,
             document_id=document_id,
@@ -487,22 +578,57 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
     return _present(definition=definition, value=value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
 
 
-def _volume_cross_check(blocks: Sequence[Any], *, value: float) -> bool:
-    statements = [
-        parse_pg_literal(row[index].text, unit="percent")
-        for table in (getattr(block, "table", None) for block in blocks)
-        if table is not None
-        for row in table.rows
-        if row and _normal(row[0].text) == "total p&g"
-        for index, cell in enumerate(row[1:], start=1)
-        if table.rows
-        and any(
-            _normal(header[index].text) in {"volume", "volume with acquisitions & divestitures"}
-            for header in table.rows[:2]
-            if index < len(header)
-        )
-    ]
-    return len(statements) <= 1 or all(statement == value for statement in statements)
+_VOLUME_SENTENCE = re.compile(
+    r"\btotal p&g\b[^.]{0,80}?\bvolume\b[^.]{0,40}?"
+    r"\b(increased|grew|rose|was up|up|decreased|declined|fell|was down|down)\b[^.%]{0,24}?(\d+(?:\.\d+)?)\s*%",
+    re.IGNORECASE,
+)
+_VOLUME_DECREASE = {"decreased", "declined", "fell", "was down", "down"}
+
+
+def _volume_statements(blocks: Sequence[Any], *, identity: tuple[int, int, date], skip: Any) -> list[float]:
+    """Every same-period statement of Total P&G volume growth other than the bound drivers cell (R32)."""
+    statements: list[float] = []
+    context: str | None = None
+    for block in blocks:
+        if _is_heading(block):
+            verdict = period_context(getattr(block, "text", ""), identity)
+            if verdict is not None:
+                context = verdict
+            continue
+        if context in _OUT_OF_SCOPE:
+            continue
+        table = getattr(block, "table", None)
+        if table is not None:
+            if block is skip or _ANNUAL_QUALIFIER.search(_normal(_table_header_text(block))):
+                continue
+            rows = table.rows
+            for row_index, row in enumerate(rows):
+                if not row or _normal(row[0].text) != "total p&g":
+                    continue
+                for column in range(1, len(row)):
+                    header = next(
+                        (
+                            _normal(rows[above][column].text)
+                            for above in range(row_index - 1, -1, -1)
+                            if column < len(rows[above]) and _normal(rows[above][column].text)
+                        ),
+                        "",
+                    )
+                    if "volume" not in header or any(word in header for word in ("excluding", "organic", "mix")):
+                        continue
+                    statement = parse_pg_literal(row[column].text, unit="percent")
+                    if statement is not None:
+                        statements.append(statement)
+        elif getattr(block, "kind", None) is not None and block.kind.value == BlockKind.PARAGRAPH.value:
+            for match in _VOLUME_SENTENCE.finditer(_normal(getattr(block, "text", ""))):
+                magnitude = float(match.group(2))
+                statements.append(-magnitude if match.group(1) in _VOLUME_DECREASE else magnitude)
+    return statements
+
+
+def _volume_cross_check(blocks: Sequence[Any], *, value: float, identity: tuple[int, int, date], skip: Any) -> bool:
+    return all(statement == value for statement in _volume_statements(blocks, identity=identity, skip=skip))
 
 
 def _text_fact(
@@ -564,6 +690,10 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     blocks = bound.document.blocks
+    fiscal_year, quarter = _fiscal_identity(_current_start, current_end)
+    identity = (fiscal_year, quarter, current_end)
+    if (str(getattr(fiscal_period, "year", None)), str(getattr(fiscal_period, "quarter", None))) != (str(fiscal_year), str(quarter)):
+        return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The workspace fiscal identity does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     quarterly_headings, driver_headings, current_forms, prior_forms = _scope_period_forms(
         _current_start, current_end, prior_end
     )
@@ -576,11 +706,11 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
             forms = current_forms if definition.metric.startswith("pg_diluted") or definition.metric.startswith("pg_core") and "prior" not in definition.metric else prior_forms
             if definition.metric in {"pg_prior_diluted_eps", "pg_prior_core_eps"}:
                 forms = prior_forms
-            facts.append(_row_fact(definition=definition, blocks=blocks, headings=quarterly_headings, header_forms=forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=periods[forms[0]]))
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=quarterly_headings, header_forms=forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=periods[forms[0]], identity=identity))
         elif definition.row_label is not None and definition.column_label is not None:
-            facts.append(_row_fact(definition=definition, blocks=blocks, headings=(driver_headings[0],), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=(driver_headings[0],), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat(), identity=identity))
         elif definition.metric.endswith("_organic_sales_growth_pct") and definition.row_label is not None:
-            facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat(), identity=identity))
         elif definition.metric == "pg_core_reconciliation_context":
             facts.append(_text_fact(definition=definition, blocks=blocks, document_id=document_id, bound=bound, event_id=event_id, period=current_end.isoformat()))
         else:
@@ -588,4 +718,4 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     return facts
 
 
-__all__ = ["PG_DEFINITIONS", "PG_METRIC_KEYS", "extract_pg_release_facts", "pg_issuer", "pg_private_registry", "pg_profile"]
+__all__ = ["PG_DEFINITIONS", "PG_METRIC_KEYS", "extract_pg_release_facts", "neutral_zero_convention", "period_context", "pg_issuer", "pg_private_registry", "pg_profile", "replay_table_layout", "visible_text"]

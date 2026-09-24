@@ -12,11 +12,13 @@ from .pg_profile import (
     PG_DEFINITIONS,
     PG_METRIC_KEYS,
     PG_PRIVATE_RIGHTS_PROFILE,
-    _NEUTRAL_ZERO,
     _fiscal_identity,
+    _normal,
     _scope_period_forms,
+    neutral_zero_convention,
     parse_pg_literal,
     replay_table_layout,
+    visible_text,
 )
 
 
@@ -87,6 +89,8 @@ def _verify_pg_replay(
     prior_end: date,
 ) -> None:
     _, _, current_forms, prior_forms = _scope_period_forms(current_start, current_end, prior_end)
+    fiscal_year, quarter = _fiscal_identity(current_start, current_end)
+    identity = (fiscal_year, quarter, current_end)
     source_bytes = source.encode("utf-8")
     if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end <= len(source_bytes):
         raise EconomicObservationError("replay_mismatch: replay location is invalid")
@@ -105,17 +109,18 @@ def _verify_pg_replay(
                 if definition.column_label
                 else (*current_forms, *prior_forms)
             ),
+            identity=identity,
         )
     except ValueError as exc:
         raise EconomicObservationError(f"replay_mismatch: {exc}") from exc
-    if definition.row_label and row_label.casefold() != definition.row_label.casefold():
+    if definition.row_label and _normal(row_label) != _normal(definition.row_label):
         raise EconomicObservationError("replay_mismatch: replayed row differs from the metric definition")
-    period_forms = set(prior_forms if row.get("metric", "").startswith("pg_prior_") else current_forms)
+    period_forms = {_normal(form) for form in (prior_forms if row.get("metric", "").startswith("pg_prior_") else current_forms)}
     if definition.column_label:
-        if column < 1 or header != definition.column_label:
+        if column < 1 or _normal(header) != _normal(definition.column_label):
             raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
         return
-    if column < 1 or header not in period_forms:
+    if column < 1 or _normal(header) not in period_forms:
         raise EconomicObservationError("replay_mismatch: replayed period differs from the stored observation")
 
 
@@ -225,13 +230,13 @@ def validate_selected_facts(
                 raise EconomicObservationError("typed_absence authority is not display context")
             if not str(absence_payload.get("subject") or "").startswith(metric):
                 raise EconomicObservationError("typed_absence subject does not match its metric")
-            combined_text = (
-                str(absence_payload.get("subject") or "")
-                + " "
-                + str(absence_payload.get("detail") or "")
-            ).casefold()
-            if "combined" in combined_text and not ("volume" in combined_text and "mix" in combined_text):
-                raise EconomicObservationError("combined typed_absence subject names only one component")
+            subject = str(absence_payload.get("subject") or "")
+            if "combined" in subject.casefold():
+                if subject != f"{metric} combined volume/mix":
+                    raise EconomicObservationError("combined typed_absence subject is not the combined volume/mix form")
+                release_source = source_texts.get(workspace_document_id)
+                if not isinstance(release_source, str) or "volume/mix" not in visible_text(release_source).casefold():
+                    raise EconomicObservationError("combined typed_absence has no combined volume/mix presentation in the source")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
             if absence_payload.get("document_id") != workspace_document_id:
@@ -301,7 +306,7 @@ def validate_selected_facts(
         if definition.value_kind == "bounded_text":
             replayed_value: Any = replayed_text
         elif replayed_text in {"-", "—", "–"}:
-            if not _NEUTRAL_ZERO.search(source):
+            if not neutral_zero_convention(source):
                 raise EconomicObservationError("replay_mismatch: dash has no neutral-zero convention")
             replayed_value = 0.0
         else:
