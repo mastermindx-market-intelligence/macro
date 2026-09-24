@@ -52,3 +52,58 @@ Consume final independent result from original review directory/process, verify 
 Known effects: preparation checkpointdbffd370, isolated immutable review inputs/prompt, one actual native review process72954, shared consumption comment5810264725 and this working checkpoint. EFFECT_UNKNOWN:none; process outcome PENDING, not failed or transferable. No product code, admitted data/identity/schema, live graph/basket, rank/entry/size/trade, auth, publisher, merge/deployment or Fable build dispatch. No terminal classification yet; work is active.
 
 HOLD:no Ready/merge/auto-merge/deploy/shared implementation/Fable build dispatch from research carrier. DO_NOT_REDO:R1–R11, Healthcare correction, shared foundation, existing consultations, blocked native staging, current review launch. Broader international/cohort/capital/expectations/valuation and empirical obligations survive. Source custody and sticky effects remain unchanged.
+
+
+## HARD ROTATION — independent review reconciled after observed Thinking failed
+
+Observed chat instability: the immediately preceding tool-heavy turn ended with **Thinking failed**. Under the protected continuity law this is a mandatory HARD_ROTATION boundary. This chat is sealed after this checkpoint; no substantive/tool-heavy execution resumes here. The Chairman's switch to Extra High supplies the intended capability surface for the fresh continuation, but does not itself alter source custody, admission, effect state, or completion.
+
+Current procedure re-pinned before this write to protected Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`; INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`; Skillpack 1.0.1/bootstrap1 compatible.
+
+### Independent review result — consume, do not redispatch
+
+Review operation `cc-r12-independent-review-20260924-sol-001` on m2studio is COMPLETE. Original PID72954 no longer has a live Desktop Commander session. Same-carrier return files show:
+- `reviewer.exit.txt = 0`.
+- stderr: lease `3a0ad987c9b5`, requested/selected qwen3.8-max wrapper, rc=0. This is wrapper evidence, not an independent served-model attestation.
+- Reviewer read all seven frozen target files at R11 target `8bb5301e6bc5d661c75fc1b720048a21e0f9809f`; its manifest records exact source blobs/hashes. It disclosed one `python3 -c json.load` pretty-print despite the text-only request; no file was created/modified, no supplied oracle/verifier executed, no network/native staging/credentials/tests.
+- Final verdict: **REQUEST_CHANGES for bounded implementation-handoff readiness**. Native/live gates were NOT assessed and are unaffected. No material arithmetic defect in the named PLNT/LTH/LULU calculations; defects are binding/semantic carriage and oracle/reference behavior.
+
+Severity summary from the review:
+- **H1 transport supersession:** R6 names Earnings private transport while R11 names shared Themes POST transport; declare exact supersession and descope duplicate R7 Task4 implementation files.
+- **H2 serving surface:** bind one Consumer company-subject/profile path and registered discriminator/version; current shared schema is Semiconductor-specific.
+- **H3 derived result envelope:** every derived result must carry value_text + unit + scale_power10 + input refs (and sign/period/precision as applicable); never render PLNT -4 as dollars instead of USD thousands.
+- **M1 interpretation not verified:** research oracle/verifier currently ignore explanation/forbidden conclusions.
+- **M2 failure granularity mismatch:** oracle whole-case refusal conflicts with R7/R11 per-result suppression/omission semantics.
+- **M3 period-grain missing:** prevent YTD/H1 versus quarter comparisons through explicit period kind or equivalent validated interval semantics.
+- **M4 event ordering missing:** prior/new outlooks need event/as-of ordering, not only distinct event IDs.
+- **M5 tiny denominator guard missing:** ratio can become persuasive nonsense; withhold and explain.
+- **M6 case-ID/requirement companions absent from frozen review packet:** attach/reconcile R6/R7/R10 machine-readable maps for implementation review.
+- **M7 source-rights representation classes unresolved:** the existing sec_edgar rationale is challenged for issuer-authored exhibits; qualify factual inputs, excerpts, full expressive docs, attachments, redistribution and branding separately.
+- **M8 native pins fragmented:** refresh affected file-group pins immediately before implementation.
+- **M9 entitlement outage/grace behavior for paid Consumer closure requires an explicit accepted test.
+- Low-severity findings include the R10 stationary valuation-multiplier normalization, suppression-shape duplication, non-discriminating research checks, precision normalization, missing oracle context fields, and minor research-code/text nits.
+
+Reviewer integration judgment: shared-integration discipline is sound (no duplicate evidence/identity/financial/history/auth/publisher plane, no Consumer-to-Semiconductor coercion, native refs/clocks preserved, per-action rather than blanket dependency gates). Resolve H1-H3 and M1-M2 before a clean V1 PLNT implementation handoff; M6-M9 before native execution.
+
+**STOP_REVIEW** was explicit. No watcher/wait loop or follow-on review assignment remains. Final acceptance stays with Sol. DO_NOT REDISPATCH this exact review absent a material candidate change.
+
+### Exact next action in the fresh Extra High continuation
+
+1. Recover only this checkpoint + R11/R10/R7/R6 and the exact review return files if a cited detail is needed; do not replay old tool history.
+2. Repair the Consumer research/design package for H1-H3 and M1-M5 with discriminating local research checks. These are research/design edits on #7804 only; do not edit #7870/#7462/#7669-owned product paths.
+3. Reconcile current shared-owner decisions/profile route and source-rights representation classes; consume existing answers before opening any new question.
+4. Attach/reconcile the machine-readable requirement companions (M6), refresh exact affected native pins (M8), and bind accepted paid-outage/grace behavior (M9).
+5. Obtain targeted independent READ_ONLY re-review of the changed package only after the immutable repaired head exists. Do not rerun the full foundational research.
+6. Only after review acceptance and current owner bindings prepare the final Consumer Fable integration handoff. Fable does not rediscover the economics or construct another GMI foundation.
+
+### Effect and preservation boundary
+
+Known effects through this boundary: research/design commits and checkpoint writes on #7804; shared-consumption/right-basis comments already recorded in the predecessor checkpoint; one completed read-only fabric review. EFFECT_UNKNOWN: none. No Consumer product code, shared-schema enrollment, admitted data, production identity, live graph/basket, ranking/gating/entry/sizing/trading, auth/publisher deployment, merge, Fable build dispatch or autonomous wake.
+
+Sticky hold: R8 native application-code staging remains platform-blocked and must not be retried/rephrased/re-homed through another tool/device/account/model or delegated as a workaround. Preserve #7870 shared foundation; #7462/#7669 source fences; #7331/#7426 ownership; the completed review; and R1-R11 unless a material invalidator specifically changes them.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+ROTATION_REASON: HARD_ROTATION_AFTER_THINKING_FAILED
+INTENDED_RESUME_SURFACE: fresh Extra High conversation
+WHAT_MUST_NOT_BE_REDONE: R1-R11 research; shared-foundation archaeology; completed review launch; existing consultations/comments; blocked native staging; branch/PR creation.
