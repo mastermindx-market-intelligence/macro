@@ -21,10 +21,11 @@ Boundary notes (Task 2 of the saved plan):
   This module checks shape, consistency (one generation per native object)
   and grounding (the perimeter receipt must be one of the cited objects).
 * Authority is materially all-false (rank / gate / size / veto / originate /
-  open_entry).  No probability, confidence, consensus, beat or miss field
-  exists in the contract; the forbidden-key scan below rejects any attempt
-  to add one.  The E1 ``basis_match`` behavior elsewhere in Company/Earnings
-  is untouched and no consensus property was added here.
+  open_entry).  No promotion or surprise field of any kind exists in the
+  contract; the forbidden-key scan below rejects any attempt to add one.
+  The E1 ``basis_match`` behavior elsewhere in Company/Earnings is
+  untouched, and no scoring of the new period against its guide was added
+  here.
 * First-unit bounds: one issuer, one additive metric (revenue), at most four
   atomic fiscal periods, six role families, sixteen role rows, sixty-four
   native refs, sixteen role-generation pairs.  Complex fiscal calendars

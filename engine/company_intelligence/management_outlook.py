@@ -30,9 +30,9 @@ There is no optional default of zero for an absent period — a nonempty
 partition cell with no row is an error, and a genuine empty C partition is
 an empty sum only because the chronological partition proves no earlier
 period exists.  Midpoints are conventions, not expectations: nothing here
-infers a distribution, band or any forward-looking statement from the
-endpoints, and a fiscal year with no remaining period refuses this
-comparison kind rather than inventing a future outlook.
+derives any distributional or band-like statement from the endpoints, and
+a fiscal year with no remaining period refuses this comparison kind rather
+than inventing a future outlook.
 """
 from __future__ import annotations
 
