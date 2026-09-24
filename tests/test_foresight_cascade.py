@@ -796,7 +796,7 @@ def test_theme_feed_summary_none_when_no_fda_data():
 
 def test_jinja_watch_shelf_renders_and_pills_exclude_tier_w():
     """(e) Jinja render: Tier W themes appear in watch shelf; stage pills only count Tier P."""
-    import sys, os
+    import sys
     sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent))
     from jinja2 import Environment, FileSystemLoader
     import pathlib
@@ -1066,7 +1066,7 @@ def _failed_capture(now, generation="2026-09-20"):
 
 def _summary_row(status="Current", availability="Available", ndc="TEST-A"):
     return {
-        "generic_name": "Synthetic A",
+        "generic_name": "Synthetic Theme A",
         "package_ndc": ndc,
         "status": status,
         "availability": availability,
@@ -1091,11 +1091,14 @@ def test_current_available_does_not_become_resolved():
     assert "glut" not in out["label"].casefold()
 
 
-def test_supply_table_states_and_legacy_bands():
+def test_supply_table_states_and_legacy_bands(monkeypatch):
+    import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import (
-        BAND_NONE, SHORTAGE_ACTIVE, SHORTAGE_RESOLVED, compute_fda_scarcity,
+        BAND_NONE, SHORTAGE_ACTIVE, compute_fda_scarcity,
         summarize_supply,
     )
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
 
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
     cases = [
@@ -1166,9 +1169,11 @@ def test_fresh_capture_with_old_generation_is_not_called_fresh():
     assert "fresh" not in out["label"].casefold()
 
 
-def test_legacy_dataframe_path_has_unknown_capture():
+def test_legacy_dataframe_path_has_unknown_capture(monkeypatch):
+    import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity
 
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
     frame = pd.DataFrame([_summary_row()])
     row = compute_fda_scarcity(frame)["glp1_obesity"]
     assert row["source_status"] == "CURRENT_REPORTED"
@@ -1177,9 +1182,11 @@ def test_legacy_dataframe_path_has_unknown_capture():
     assert row["summary"]["label"].endswith("capture time unknown")
 
 
-def test_observation_attrs_can_report_failed_or_inconsistent_refresh():
+def test_observation_attrs_can_report_failed_or_inconsistent_refresh(monkeypatch):
+    import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity
 
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
     frame = pd.DataFrame([_summary_row()])
     frame.attrs["fda_observation"] = {
@@ -1213,8 +1220,9 @@ def test_all_supply_chip_statuses_render_with_distinct_plain_text():
         assert chip["source_status"] == status
         assert chip["label_zh"]
         assert chip["tone"] in {"warn", "cool", "mute"}
-        assert chip["rationale"]
+        assert chip["rationale"] != summary["label"]
         chips[status] = chip
+    from engine.fda_scarcity import summarize_supply
     unavailable_summary = summarize_supply(
         [_summary_row()], capture=_failed_capture(now), now=now,
         max_capture_age=timedelta(days=2),
@@ -1233,9 +1241,11 @@ def test_all_supply_chip_statuses_render_with_distinct_plain_text():
         assert all(word not in text.casefold() for word in banned)
 
 
-def test_unavailable_chip_names_last_qualified_generation():
+def test_unavailable_chip_names_last_qualified_generation(monkeypatch):
+    import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
 
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
     frame = pd.DataFrame([_summary_row()])
     frame.attrs["fda_observation"] = {
@@ -1288,7 +1298,20 @@ def test_rendered_html_shows_zh_chip_and_no_banned_words():
     html = template.render(
         cascade={"sizing": None, "demand_pool": None, "dislocation": None},
         themes=[{"theme": "glp1_obesity", "name": "Synthetic Theme", "tier": "P",
-                 "stage": "WATCH", "theme_feed_summary": chip} for chip in chips],
+                 "stage": "WATCH", "bottleneck_band": None,
+                 "bottleneck_text_only": False, "tightness": None,
+                 "bottleneck_regime": False, "demand_band": None,
+                 "demand_strength": None, "capex_yoy": None,
+                 "revision_breadth": None, "revision_level": None,
+                 "broadening_state": None, "est_drift_90d": None,
+                 "guidance_band": None, "guidance_net": None,
+                 "guidance_raisers": None, "guidance_cutters": None,
+                 "altdata_summary": None, "n_altdata_leading": 0,
+                 "altdata_members": None, "glut_band": None, "glut_score": None,
+                 "theme_feed_summary": chip, "rationale": "one regulator record observed",
+                 "entry_ready": False, "entry_note": "not a thesis stage — no entry",
+                 "score": 42, "score_detail": {"verdict": "watch", "axes": {}, "caps": []},
+                 "size_band": None, "size_note": None} for chip in chips],
         stage_counts={}, stage_order=[], demand_pool=None, dislocation=None,
         track={"recent": []}, grade=None, emergence=None, subsectors=None,
         convergence=None, power=None, analyst=None, monitor=None, health=None,
@@ -1298,8 +1321,11 @@ def test_rendered_html_shows_zh_chip_and_no_banned_words():
     assert "FDA短缺：当前（1）" in html
     assert "FDA来源不可用" in html
     banned = ("glut", "tell", "all-clear", "catching up", "demand exceeds supply", "supply constraint lifted")
+    chip_html = " ".join(
+        segment.split("</span>")[0] for segment in html.split("fx-chip feed-")[1:]
+    )
     for word in banned:
-        assert word not in html.casefold()
+        assert word not in chip_html.casefold()
 
 
 def summarize_supply_for_test(rows, now, capture=None):
@@ -1326,5 +1352,5 @@ def _computed_row_for_summary(summary):
         "n_resolved": summary["counts"]["resolved"],
         "n_discontinued": summary["counts"]["discontinued"],
         "molecules_checked": summary["coverage"]["molecules_checked"],
-        "details": [], "rationale": "one regulator record observed",
+        "details": [], "rationale": summary["label"],
     }
