@@ -35,7 +35,7 @@
     "release": "Requires accepted design/reference, real integration and concluded current-base CI; Draft/Hold remains.",
     "current_base": "Observed origin/main 2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a moved dashboard/theme since the integrated base. Open #7859 touches dashboard risk-detail region, not the LOOK UP block in the consumed patch; current-base composition proof still owed."
   },
-  "effects": "R8 source commit da3c09d30e212fa0a82179cd31528b1ef8164a15 exists locally and is unit/browser verified. No production mutation. Push/evidence publication remains the next same-carrier effect.",
+  "effects": "R8 implementation da3c09d30e212fa0a82179cd31528b1ef8164a15 and evidence head d6ff03d8e105c5832ff13eb07602abe998b75dd6 were pushed once on the original carrier and remote readback matched. No production mutation or unresolved source/push/worker effect.",
   "active_children": [],
   "autonomous_return_path": null,
   "principal_judgment": "CRITICAL_PATH_SHORTCUT: directly remove the concrete host-mutation defect while the real-Macro safety lane and independent-review/source-custody lanes remain blocked.",
@@ -67,14 +67,14 @@
   "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending",
   "recovery": {
     "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
-    "local_head": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
-    "last_remote_head": "31d4679253147f31d6855c719b92199fe88022cb",
+    "local_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6",
+    "last_remote_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6",
     "prior_handoff_sha": "c3b2a849f929e15043f84da2ddd89eb5efb5e4d2",
     "sha_disagreement": "Prior PR text named an incorrect local SHA; original-carrier git log and exact two-file patch establish d18ddc1e9623 as the actual fix.",
     "download_destination_exists": false,
     "matching_download_processes": 0,
     "download_reconciliation": "The exact prior hosted-plan destination is absent and no matching download runs. No source or push effect was ambiguous.",
-    "push_verified": false
+    "push_verified": true
   },
   "targeted_browser_proof": {
     "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
@@ -121,5 +121,7 @@
     },
     "errors": [],
     "guide_view_sha256": "151da3992101f7b7c0b12cd01f69b8a0116027ce76ba2f4f077bcf5226048a28"
-  }
+  },
+  "published_implementation": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+  "published_evidence_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6"
 }
