@@ -458,18 +458,24 @@ def compose_mining_research(
     raw_blocks: list[dict[str, Any]] = []
     if not _suppress_native_blocks:
         for packet in bundle.financial_packets:
+            # MINOR-I / R-MIN-31: a packet that carries ``kind: management_estimate_vs_actual``
+            # belongs to the expectations channel, not native blocks — its values land on the
+            # expectation rows, never as a measurement block.
+            if packet.get("kind") == "management_estimate_vs_actual":
+                continue
             value = packet.get("value")
-            # MINOR-11 / Step 8: a None / non-numeric value degrades to a typed
-            # limitation rather than a silently-coerced zero (None -> 0 -> '+') or
-            # a TypeError on `>=` for string values. The packet does not enter the
-            # native-blocks list; schema validation stays clean.
+            # MINOR-11 / Step 8: a None / non-numeric value degrades silently — the
+            # packet is suppressed rather than coerced to zero (None -> 0 -> '+') or
+            # raising TypeError on `>=` for string values. The limitation vocabulary
+            # (``definition_unqualified:value``) is reserved for *definition* fields
+            # whose presence is required by the domain (unit / perimeter / basis /
+            # management_estimate_vs_actual), not for a missing measurement datum
+            # which is the omission->limitation mapping's contract (R-MIN-31 §I).
             if (
                 value is None
                 or isinstance(value, bool)
                 or not isinstance(value, (int, float))
             ):
-                if "definition_unqualified:value" not in limitations:
-                    limitations.append("definition_unqualified:value")
                 continue
             packet_sid = str(packet.get("stable_subject_id") or "")
             if not packet_sid or packet_sid == "subject:unknown":
