@@ -150,3 +150,14 @@ Then perform corpus/taxonomy reconciliation and written-design preparation rathe
 adding disconnected cases. Intended resume surface: the principal research-capable conversation in
 the user-selected mode, preserving this carrier and custody. Refresh only needed procedure and
 material source/dependency invalidators; do not replay previous tool history.
+
+
+## Pass 05 parallel-preparation reconciliation
+
+A second locally prepared Pass 05 package was recovered after Extra High exposed write-class GitHub actions. It is **not** a missing publication and must not overwrite the canonical Pass 05 already committed on this same operation/carrier. Canonical branch movement from `f1f78f48e40e51494f992643df49205ae560cf3f` to `40f96323a5607ddb574f0b2627490317af7d7a3f` was reconciled as five forward commits that added the current bulk/fertilizer report, checker, executed receipt and cumulative-record update.
+
+The parallel local package is preserved as noncanonical research evidence only: 6,730 words, 20 source records, 11 dossiers and 57/57 local checks. Its report Git blob calculation was `587ee020adec174233c42ad987f531d767b7c0ea`; the canonical committed Pass 05 report is blob `42c90b4634b4b408c014b7ccb335744adb79bf48` with 63/63 checks. These are different research syntheses, not byte-identical versions. Do **not** publish the local report/checker/receipt under alternate filenames or replace the canonical files merely to preserve both.
+
+Material local-only source leads may be reused selectively in later principal research when they answer a new question: Rio Q2 production/sales and December 2025 guidance-basis material; K+S May 2026 forecast update; ICL Q2 2026 specialty-product/reorganization evidence; Vale Conceição 2 model-plant evidence; and selected producer/customer-supporting sources. Reuse must be source-specific and question-driven, not a bulk merge of the duplicate package. Same source-rights and evidence limits remain.
+
+Ruling: `DO_NOT_PUBLISH_DUPLICATE`. No prior accepted Pass 05 work is invalidated, no effect is unknown, and no carrier changes. The next research frontier remains the canonical checkpoint's specialty/by-product and mining-enabler comparisons, followed by corpus-level coverage/taxonomy reconciliation before written design/implementation planning. The locally prepared ZIP remains a recovery artifact, not Agent OS truth, source custody, acceptance or a second research plane.
