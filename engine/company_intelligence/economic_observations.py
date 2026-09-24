@@ -8,7 +8,7 @@ from numbers import Real
 from typing import Any, Mapping
 
 from .documents import ABSENCE_SCHEMA, TypedAbsence
-from .pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS
+from .pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS, PG_PRIVATE_RIGHTS_PROFILE, parse_pg_literal
 
 
 PRESENT_KEYS = frozenset({
@@ -203,6 +203,14 @@ def validate_selected_facts(
             raise EconomicObservationError("span digest does not replay")
         if replayed_text != span.get("display_excerpt"):
             raise EconomicObservationError("display excerpt does not replay")
+        if definition.value_kind == "bounded_text":
+            replayed_value: Any = replayed_text
+        elif replayed_text == "dash means zero":
+            replayed_value = 0.0
+        else:
+            replayed_value = parse_pg_literal(replayed_text, unit=definition.unit)
+        if replayed_value is None or replayed_value != value:
+            raise EconomicObservationError("replay_mismatch: replayed value differs from stored value")
 
         checked.append(dict(row))
     return checked

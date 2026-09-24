@@ -109,6 +109,50 @@ def test_wrong_event_body_period_basis_or_unit_refused() -> None:
     _invalid(lambda rows: rows, texts={})
 
 
+def _replay_mismatch(mutate) -> None:
+    workspace, rows = _selected()
+    workspace = copy.deepcopy(workspace)
+    workspace["facts"] = mutate(copy.deepcopy(rows))
+    with pytest.raises(EconomicObservationError, match="replay_mismatch"):
+        validate_selected_facts(
+            workspace,
+            source_texts=pg_source_texts("annual_first"),
+            fiscal_scope=FISCAL_SCOPE,
+        )
+
+
+def test_replayed_value_must_match_stored_value() -> None:
+    def mutate(rows):
+        row = next(row for row in rows if "value" in row and "source_span" in row)
+        row["value"] = 9.99
+        return rows
+
+    _replay_mismatch(mutate)
+
+
+def test_replayed_period_must_match_span_pair() -> None:
+    def mutate(rows):
+        present_rows = [row for row in rows if "value" in row and "source_span" in row]
+        current, prior = present_rows[:2]
+        current["source_span"], prior["source_span"] = (
+            prior["source_span"], current["source_span"],
+        )
+        return rows
+
+    _replay_mismatch(mutate)
+
+
+def test_replayed_reconciliation_text_must_match_stored_text() -> None:
+    row_metric = "pg_core_reconciliation_context"
+
+    def mutate(rows):
+        row = next(row for row in rows if row["metric"] == row_metric)
+        row["value"] = "The edited sentence does not match its kept receipt."
+        return rows
+
+    _replay_mismatch(mutate)
+
+
 def test_value_and_typed_absence_mutually_exclusive() -> None:
     def mutate(rows):
         row = next(row for row in rows if "value" in row)

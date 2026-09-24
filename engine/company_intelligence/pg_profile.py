@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 import math
+import re
 from typing import Any, Sequence
 
 from engine.fundamental_forensics.disclosure_diff import BlockKind
@@ -105,6 +106,30 @@ def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
         extract_transcript_claims=lambda **_kwargs: [],
         extract_guidance=_no_guidance,
     )
+
+
+_NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
+_PERCENT_PATTERN = rf"^(?:\(?({_NUMBER})\)?%|\+?({_NUMBER})%?)$"
+_CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
+
+
+def parse_pg_literal(value: str, *, unit: str) -> float | None:
+    literal = value.strip()
+    if unit in {"percent", "percentage_points"}:
+        match = re.fullmatch(_PERCENT_PATTERN, literal)
+        negative = literal.startswith("(")
+        groups = match.groups() if match else ()
+    elif unit == "usd_per_share":
+        match = re.fullmatch(_CURRENCY_PATTERN, literal)
+        negative = literal.startswith("(")
+        groups = match.groups() if match else ()
+    else:
+        return None
+    if not match or not any(groups):
+        return None
+    number = float(next(item.replace(",", "") for item in groups if item is not None))
+    value_number = -number if negative else number
+    return value_number if math.isfinite(value_number) else None
 
 
 def _normal(value: str) -> str:
@@ -215,11 +240,8 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, 
         value = 0.0
         receipt = _receipt(bound, neutral[0][neutral[1]].source_span.char_start, neutral[0][neutral[1]].source_span.char_end, "dash means zero")
     elif literal:
-        try:
-            value = float(literal.rstrip("%"))
-        except ValueError:
-            value = None
-        if value is not None and math.isfinite(value):
+        value = parse_pg_literal(literal, unit=definition.unit)
+        if value is not None:
             receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
     if value is None or not math.isfinite(value) or receipt is None:
         return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
