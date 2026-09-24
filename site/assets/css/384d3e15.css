@@ -2993,3 +2993,118 @@ html[data-theme="light"] :is(
   body.page-macro.mx4-grid.ms-yellow-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-yellow .mx5-big-score,
   body.page-macro.mx4-grid.ms-red-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-red .mx5-big-score
 ) { text-shadow:none; }
+
+/* ══════════════════════════════════════════════════════════
+   Macro Risk Detail — volatility & correlation diagnostics
+   The eight display-only vol-weather reads live behind Risk Detail rather
+   than lengthening the primary scorecard. Same engine bands and chip keys;
+   presentation only. Desktop groups the evidence into a compact 2-column
+   grid; mobile stacks to one column. */
+
+body.page-macro .riskdlg-vw{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+body.page-macro .riskdlg-vw-note{
+  margin:-3px 0 10px;
+  color:var(--ink-2,var(--muted));
+  font-size:11px;
+  line-height:1.5;
+}
+body.page-macro .riskdlg-vw .sx-vw-strip{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin:0;
+  padding:0;
+  background:transparent;
+}
+body.page-macro .riskdlg-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 64px;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--r-ctl);
+  background:var(--panel2);
+}
+html[data-theme="light"] body.page-macro .riskdlg-vw .sx-vw-row{
+  background:var(--panel);
+  box-shadow:var(--card-shadow);
+}
+body.page-macro .riskdlg-vw .sg-wx{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .riskdlg-vw .sg-wx svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sg-wx{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sg-wx{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sg-wx{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sg-wx{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sg-wx{color:var(--muted);opacity:.6;}
+
+body.page-macro .riskdlg-vw .sx-vw-mid{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+body.page-macro .riskdlg-vw .sx-vw-name{
+  color:var(--ink-1,var(--text));
+  font-size:11.5px;
+  font-weight:700;
+  line-height:1.3;
+  white-space:normal;
+}
+body.page-macro .riskdlg-vw .sx-vw-read{
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+body.page-macro .riskdlg-vw .sx-vw-tier{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:1px;
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-align:right;
+  white-space:nowrap;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sx-vw-tier{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sx-vw-tier{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sx-vw-tier{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sx-vw-tier{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(--muted));}
+
+@media(max-width:640px){
+  body.page-macro .riskdlg-vw .sx-vw-strip{
+    grid-template-columns:minmax(0,1fr);
+  }
+  body.page-macro .riskdlg-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 58px;
+    gap:8px;
+    padding:7px 9px;
+  }
+  body.page-macro .riskdlg-vw .sg-wx{width:22px;height:22px;}
+  body.page-macro .riskdlg-vw .sg-wx svg{width:16px;height:16px;}
+}
