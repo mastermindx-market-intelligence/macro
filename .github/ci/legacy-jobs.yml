@@ -13523,7 +13523,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps for the FDA supply suites
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
       - name: FDA supply acceptance probes
