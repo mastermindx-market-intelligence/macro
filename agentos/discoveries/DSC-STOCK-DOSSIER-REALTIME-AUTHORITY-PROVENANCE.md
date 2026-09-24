@@ -21,15 +21,16 @@ claim: >
   edge. Runtime success therefore proves EFFECT, not the historical authority
   chain that produced it.
 falsifier: >
-  Recover an independent pre-mutation authority receipt that post-dates the P0
-  DO-NOT-SET ruling and clearly authorizes the shared Terminal runtime change as
-  a new modifying operation — for example the original Chairman outer directive
-  with recoverable timestamp/session context plus the resulting stable
-  operation/carrier, or a canonical Executive/Slack/GitHub admission/receipt
-  proving that authorization before the env write. A later handoff restating
-  the same sentence, a successful quote-hub restart, a realtime health verdict,
-  or a merged records PR does NOT falsify this discovery because those prove
-  effect/state rather than authorization provenance.
+  On Macro #6670, recover and cite an independent pre-mutation authority receipt
+  that post-dates the P0 DO-NOT-SET ruling and clearly authorizes the shared
+  Terminal runtime change as a new modifying operation — for example the
+  original Chairman outer directive with recoverable timestamp/session context
+  plus the resulting stable operation/carrier, or a canonical
+  Executive/Slack/GitHub admission/receipt proving that authorization before the
+  env write. A later handoff restating the same sentence, a successful quote-hub
+  restart, a realtime health verdict, or a merged records PR does NOT falsify
+  this discovery because those prove effect/state rather than authorization
+  provenance.
 so_what: >
   Preserve two facts separately. Product/runtime truth: the realtime snapshot
   leg was enabled, quote-hub restarted, the hub self-graded realtime during open
