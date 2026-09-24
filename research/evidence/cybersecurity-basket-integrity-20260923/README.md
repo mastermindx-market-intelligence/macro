@@ -34,6 +34,8 @@ These ETF holdings are corroboration, not the admission rule. Admission also req
 
 `verify.py` cuts all price series at 2026-09-23 and compares the old 10, the selected 14, and a 15-name variant containing `RPD`. The committed `results.json` is the exact output.
 
+**Authority / time-control boundary:** this is a descriptive *current-universe backcast* used to test composition coherence and reference fit. It applies each candidate from its canonical `added` date (with honest post-IPO starts for `SAIL` and `NTSK`) but the 2026-09-23 curation decision was made with information available on that date. Therefore the historical correlations and tracking errors are in-sample composition diagnostics, not an out-of-sample return edge, not a realized historical portfolio, and not permission to rewrite prior published signals.
+
 ### Breadth on the questioned session
 
 | Set | Equal-weight return | Advance / decline / flat | Top-three absolute contribution share |
@@ -57,7 +59,7 @@ Annualized tracking error fell when the four missing sleeves were added:
 | BUG, full | 16.5% | 13.4% | 13.1% |
 | WCBR, full | 13.0% | 11.2% | 10.9% |
 
-The four-name expansion improves near-term tracking error against all three references and improves full-history correlation/tracking error. Adding `RPD` worsens every one-year tracking-error comparison versus the selected 14. Because an equal-weight monitor would give the smaller, lower-liquidity name the same weight as the platform leaders, `RPD` remains a coherent watch candidate rather than a core constituent.
+Within that current-universe, in-sample comparison, the four-name expansion improves near-term tracking error against all three references and improves full-history correlation/tracking error. Adding `RPD` worsens every one-year tracking-error comparison versus the selected 14. Because an equal-weight monitor would give the smaller, lower-liquidity name the same weight as the platform leaders, `RPD` remains a coherent watch candidate rather than a core constituent. These fit statistics support basket definition only; they do not validate the separate recommendation, entry, or sizing engines.
 
 ## Candidate admission receipt
 

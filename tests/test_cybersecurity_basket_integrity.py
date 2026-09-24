@@ -75,9 +75,31 @@ def test_cybersecurity_2026_expansion_is_point_in_time_honest() -> None:
 
 
 def test_cybersecurity_new_members_have_preferred_deep_ohlcv() -> None:
+    import pandas as pd
+
     deep = ROOT / "data" / "baskets" / "ohlcv"
     missing = [ticker for ticker in NEW_MEMBER_STAMPS if not (deep / f"{ticker}.parquet").exists()]
     assert not missing, f"new cybersecurity members are absent from the preferred OHLCV store: {missing}"
+
+    acceptance_session = pd.Timestamp("2026-09-23")
+    required_columns = {"open", "high", "low", "close", "volume"}
+    for ticker, added in NEW_MEMBER_STAMPS.items():
+        frame = pd.read_parquet(deep / f"{ticker}.parquet")
+        index = pd.DatetimeIndex(pd.to_datetime(frame.index))
+
+        assert required_columns.issubset(frame.columns), (ticker, sorted(frame.columns))
+        assert index.is_unique, f"{ticker} deep OHLCV has duplicate sessions"
+        assert index.is_monotonic_increasing, f"{ticker} deep OHLCV is not session-sorted"
+        assert index.min() <= pd.Timestamp(added), f"{ticker} starts after its PIT added date"
+        assert index.max() == acceptance_session, f"{ticker} is stale or future-dated"
+        assert not frame[list(required_columns)].isna().any().any(), f"{ticker} has null OHLCV"
+
+        numeric = frame[list(required_columns)].apply(pd.to_numeric, errors="coerce")
+        assert not numeric.isna().any().any(), f"{ticker} has non-numeric OHLCV"
+        assert (numeric[["open", "high", "low", "close"]] > 0).all().all()
+        assert (numeric["volume"] >= 0).all()
+        assert (numeric["high"] >= numeric[["open", "close", "low"]].max(axis=1)).all()
+        assert (numeric["low"] <= numeric[["open", "close", "high"]].min(axis=1)).all()
 
 
 def test_cybersecurity_core_is_current_on_the_canonical_close_panel() -> None:
