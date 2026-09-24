@@ -1,6 +1,6 @@
 # CDV-1 Task 7 — Demand and Earnings Dossier Content + Contract Specification
 
-STATUS: CONTENT+CONTRACT — awaiting foundation integration (repaired per R1/R1A; Opus re-review pending)
+STATUS: CONTENT+CONTRACT — awaiting foundation integration (repaired per R1/R1A/R2; §6 field map PROPOSED until Task 6 merges)
 
 Operation: `gmi-consumer-defensive-research-20260923-sol-001`
 
@@ -21,7 +21,7 @@ The host must provide:
 - An authenticated read callback that uses the existing site session client and requests with `cache:'no-store'`.
 - An auth-change subscription that follows `mdx-auth`, ignores `PREFS_SAVED`, and reports a change only when signed-in user identity changes.
 - Focus and return handling for the host panel and evidence dialog: initial focus moves to the dialog close control, Escape and the non-content scrim close the dialog, Tab and Shift+Tab remain inside an open dialog, and focus returns to the invoking evidence control.
-- A lifecycle owner that mounts on first disclosure expansion, destroys on collapse when the host uses a collapsible slot, and destroys on logout or host teardown. `destroy()` is idempotent.
+- A lifecycle owner that mounts on first disclosure expansion. Before that expansion there is no prefetch of private data. After the first expansion, the adapter keeps its DOM and the host merely hides it on collapse; re-expansion within the same signed-in session causes no teardown or refetch. The adapter destroys on logout or host teardown, and `destroy()` is idempotent.
 - The expanded material area constrained to a maximum height of 390 px, with vertical scrolling inside the dossier content rather than the host page.
 
 ### 1.2 Adapter contract
@@ -34,8 +34,8 @@ mountEarningsEconomicDossier(root, {issuer, fetchAuthenticated, onAuthChange}) �
 - `issuer`: `{ticker}`. The ticker is a display and route symbol, not native issuer identity. The adapter never resolves ticker identity, never supplies a native issuer ID, and never calls a GMI graph API.
 - `fetchAuthenticated`: `(url, init={}) => Promise<Response>`. It must obtain the current session through `sb.auth.getSession()`, send the access token as `Authorization: Bearer <token>`, preserve `cache:'no-store'`, and return the browser `Response`. The adapter adds no second auth client and never stores a token.
 - `onAuthChange`: `(listener) => unsubscribe`. The host subscribes to `mdx-auth`, ignores `PREFS_SAVED`, and invokes the listener only for a user-identity change.
-- The adapter selects the source symbol from the host's `data-economic-issuer` attribute, not from a dossier label, heading, URL fragment, or issuer-name lookup.
-- On mount it renders the fixed loading state and requests `/api/earnings/v1/economic/{ticker}`. It performs no polling or automatic refresh.
+- For source selection, the host's adapter call argument `issuer.ticker` is the only input. The adapter never selects a source from a dossier label, heading, URL fragment, issuer-name lookup, or any host attribute.
+- On the first user expansion it renders the fixed loading state and requests `/api/earnings/v1/economic/{issuer.ticker}`. It performs no polling or automatic refresh.
 
 ### 1.3 Open integration items for the foundation owner — DEFERRED
 
@@ -49,7 +49,7 @@ No Task 7 implementation, browser proof, or visible-journey claim is complete un
 
 ### 2.1 Glance tier
 
-The collapsed row shows the plain-language state chip, one stance sentence, the issuer selected by the host, and the disclosure action. It contains no rule ID, study name, internal schema, score, rank, timing label, or call to act.
+The collapsed row shows the section title, the issuer display name, and the expand toggle only. No status chip, stance line, or other data-derived text appears before the user first expands the section. After the first expansion, the state chip and stance sentence remain at the top of the expanded body and never migrate into the collapsed row.
 
 ### 2.2 Read tier: facts tables
 
@@ -80,7 +80,8 @@ The evidence dialog is a bounded dialog, not a page. It identifies the source he
 The foundation may compose its canonical markup, but these data attributes and semantics are binding:
 
 - Root: `data-economic-root`, `data-economic-state`, and `data-economic-mounted="1"` only after a successful adapter mount.
-- Host symbol source: `data-economic-issuer`.
+- Mounted issuer receipt: the adapter writes `issuer.ticker` to `data-economic-issuer` on the mount root; it never reads that attribute.
+- State values: `data-economic-state` takes exactly `idle`, `loading`, `ready`, `sign_in`, `no_access`, `not_found`, `unavailable`, `unsupported`, or `error`.
 - State chip: `data-economic-state-chip`.
 - Stance sentence: `data-economic-stance`.
 - Loading area: `data-economic-loading`.
@@ -169,7 +170,10 @@ All source-derived labels and date strings are server-owned bilingual strings. F
 | title | Demand and earnings evidence | 需求与盈利证据 |
 | compact toggle | Open P&G demand and earnings evidence | 打开宝洁需求与盈利证据 |
 | compact expanded suffix | Close P&G demand and earnings evidence | 关闭宝洁需求与盈利证据 |
-| default stance | Watch the evidence — do not chase it. | 看证据，勿追。 |
+| action: watch | watch — don't chase | 先观察，不追入 |
+| action: source | check the source before acting | 先核对来源再行动 |
+| action: none | nothing to act on yet | 暂无可执行事项 |
+| action: receipt | read the receipt first | 先阅读凭证 |
 | loading | Loading the latest accepted evidence. | 正在加载最新已采纳证据。 |
 | demand | Demand | 需求 |
 | earnings | Earnings | 盈利 |
@@ -253,13 +257,13 @@ Evaluate the ordered set of `interpretation.findings[].rule_id` from first to la
 
 | Ordered rule-ID set | EN sentence | ZH sentence |
 |---|---|---|
-| contains `reported_vs_organic_difference` | Reported and organic sales growth differ; see the bridge. | 报告销售额与有机销售额增长不同，请查看衔接说明。 |
-| otherwise contains `positive_organic_nonpositive_pure_volume` | Organic revenue rose while pure volume did not; price or mix contributed. | 有机收入增长而纯销量未增长，价格或结构做出贡献。 |
-| otherwise contains `reported_vs_core_earnings_disagreement` | Reported and core EPS moved differently because they use different definitions. | 报告每股收益与核心每股收益走势不同，因为二者定义不同。 |
-| otherwise contains `incomplete_margin_to_cash_bridge` | Margin information is not enough to show operating profit or cash improvement. | 利润率信息不足以说明经营利润或现金改善。 |
-| otherwise contains `segment_scope_limitation` | Segment detail describes those segments, not the whole sector. | 分部明细只描述这些分部，不代表整个行业。 |
-| otherwise contains `missing_consensus` | Consensus is unavailable, so this cannot be read as a beat or a miss. | 缺少一致预期数据，无法判断是否超出或低于预期。 |
-| default | Watch the evidence — do not chase it. | 看证据，勿追。 |
+| contains `reported_vs_organic_difference` | Reported and organic growth differ — check the source before acting. | 报告与有机增长不同——先核对来源再行动。 |
+| otherwise contains `positive_organic_nonpositive_pure_volume` | Organic rose but pure volume did not — watch — don't chase. | 有机增长而纯销量未增——先观察，不追入。 |
+| otherwise contains `reported_vs_core_earnings_disagreement` | Reported and core EPS differed — read the receipt first. | 报告与核心每股收益不同——先阅读凭证。 |
+| otherwise contains `incomplete_margin_to_cash_bridge` | Margin does not show profit or cash improvement — nothing to act on yet. | 利润率未显示利润或现金改善——暂无可执行事项。 |
+| otherwise contains `segment_scope_limitation` | Segments cover only those segments — check the source before acting. | 分部仅覆盖这些分部——先核对来源再行动。 |
+| otherwise contains `missing_consensus` | Consensus is unavailable — nothing to act on yet. | 缺少一致预期——暂无可执行事项。 |
+| default | Fresh evidence is ready — read the receipt first. | 新证据已就绪——先阅读凭证。 |
 
 ### 5.6 Findings by rule ID
 
@@ -267,12 +271,12 @@ The machine rule ID is never shown.
 
 | Rule ID | EN | ZH |
 |---|---|---|
-| reported_vs_organic_difference | Reported and organic sales growth differ; see the bridge. | 报告销售额与有机销售额增长不同，请查看衔接说明。 |
-| positive_organic_nonpositive_pure_volume | Organic revenue rose while pure volume did not; price or mix contributed. | 有机收入增长而纯销量未增长，价格或结构做出贡献。 |
-| reported_vs_core_earnings_disagreement | Reported and core EPS moved differently because they use different definitions. | 报告每股收益与核心每股收益走势不同，因为二者定义不同。 |
-| incomplete_margin_to_cash_bridge | Margin information is not enough to show operating profit or cash improvement. | 利润率信息不足以说明经营利润或现金改善。 |
-| segment_scope_limitation | Segment detail describes those segments, not the whole sector. | 分部明细只描述这些分部，不代表整个行业。 |
-| missing_consensus | Consensus is unavailable, so this cannot be read as a beat or a miss. | 缺少一致预期数据，无法判断是否超出或低于预期。 |
+| reported_vs_organic_difference | Reported and organic growth differ — check the source before acting. | 报告与有机增长不同——先核对来源再行动。 |
+| positive_organic_nonpositive_pure_volume | Organic rose but pure volume did not — watch — don't chase. | 有机增长而纯销量未增——先观察，不追入。 |
+| reported_vs_core_earnings_disagreement | Reported and core EPS differed — read the receipt first. | 报告与核心每股收益不同——先阅读凭证。 |
+| incomplete_margin_to_cash_bridge | Margin does not show profit or cash improvement — nothing to act on yet. | 利润率未显示利润或现金改善——暂无可执行事项。 |
+| segment_scope_limitation | Segments cover only those segments — check the source before acting. | 分部仅覆盖这些分部——先核对来源再行动。 |
+| missing_consensus | Consensus is unavailable — nothing to act on yet. | 缺少一致预期——暂无可执行事项。 |
 
 ### 5.7 Missing context
 
@@ -324,13 +328,17 @@ Reject an unsupported `interpretation.schema`, any missing or extra interpretati
 
 ### 6.2 JSON-to-DOM field map
 
+#### Binding contract on Tasks 3, 4 and 6 (contract-first; `PROPOSED` until Task 6 merges)
+
+Task 3's interpretation output, Task 4's v2 private publication, and Task 6's API responses MUST expose the exact paths below, or the task that cannot must amend this spec in its own PR before it merges. The map is `PROPOSED` until Task 6 merges. `source_text` carries original-language source text only and is shaped `source_text: {text, lang}`, where `lang` is an ISO 639-1 code (P&G filings are `en`); no ZH translation of private SEC text is produced or displayed. ZH applies only to labels, chips, stance rows, and definitions owned by this spec's copy tables. `header`, `period`, and `precision_note` remain EN/ZH pairs because they are spec-owned copy composed from typed fields, never quoted source text.
+
 Every source-derived placeholder maps exactly as follows:
 
 | DOM placeholder | Payload path |
 |---|---|
-| `data-economic-issuer` | Host-selected symbol, initialized before mount |
-| Current-view URL `{ticker}` | `data-economic-issuer` |
-| `data-economic-state` | Adapter state derived only from mount, fetch, validation, auth, entitlement, and response status |
+| `data-economic-issuer` | Adapter-written receipt of `issuer.ticker`; never read |
+| Current-view URL `{ticker}` | Host-supplied `issuer.ticker`, the sole source input |
+| `data-economic-state` | `idle`; `loading`; `ready`; 401 → `sign_in`; 403 → `no_access`; 404 → `not_found`; 5xx, timeout, or network failure → `unavailable`; unknown response schema version → `unsupported`; any other failure → `error` |
 | `[data-economic-state-chip]` | `interpretation.selection.currentness` through §5.4 |
 | `[data-economic-stance]` | Ordered `interpretation.findings[].rule_id` through §5.5 |
 | `[data-economic-demand]` rows | `interpretation.observations` with a demand owner metric family |
@@ -360,7 +368,7 @@ Every source-derived placeholder maps exactly as follows:
 | `[data-economic-evidence-generation]` | displayed wrapper `generation_id` |
 | `[data-economic-evidence-manifest]` | displayed wrapper `manifest_sha256` |
 | `[data-economic-evidence-record]` | displayed wrapper `record_sha256` |
-| `[data-economic-evidence-text]` | evidence response `source_text.{en,zh}` |
+| `[data-economic-evidence-text]` | evidence response `source_text.text`; `source_text.lang` identifies the original language |
 | `[data-economic-evidence-digest]` | evidence response `source_sha256` |
 | `[data-economic-evidence-precision]` | evidence response `precision_note.{en,zh}` |
 | Company and GMI links | `interpretation.next_evidence.company_link` and `.gmi_link` when valid owner bindings exist |
@@ -375,7 +383,9 @@ fetchAuthenticated('/api/earnings/v1/economic/' + issuer.ticker, {
 })
 ```
 
-Capture an internal request epoch before the call. Keep exactly one current-view controller in `pending`; a new mount load aborts the prior request. Discard a late response whenever its captured epoch differs from the current epoch. On auth change or destroy, increment the epoch, abort, close the dialog, clear private DOM text, remove `data-economic-mounted`, and render the appropriate fixed state. Never retry, poll, refresh, or reload automatically.
+Capture an internal request epoch before the call. Keep exactly one current-view controller in `pending`; a new mount load aborts the prior request. Discard a late response whenever its captured epoch differs from the current epoch.
+
+On an `mdx-auth` identity transition to signed-in while the adapter is in `sign_in`, re-run the load in place: no page reload, no re-mount, and no change to `data-economic-mounted`. On a transition to signed-out, increment the epoch, abort the current and evidence requests, close the dialog, clear private DOM text and private-bearing `data-economic-*` attributes and rows, render the fixed `sign_in` state, and keep `data-economic-mounted`. The attribute is never removed while the adapter is alive; only `destroy()` removes it. `destroy()` performs the same private-data clearing and final teardown. A load under a newly signed-in identity is the new identity's one load, not a retry.
 
 ### 6.4 Evidence fetch and dialog lifetime
 
