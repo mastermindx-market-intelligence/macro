@@ -31,6 +31,7 @@ def _html(
     *,
     reordered: bool = False,
     hostile: bool = False,
+    blank_volume: str | None = None,
     dash_volume: str | None = None,
     dash_convention: bool = False,
     volume_only: str = "split",
@@ -59,6 +60,8 @@ def _html(
     prior_drivers = ["1.5%", "0.5%", "0.5%", "0.5%", "(0.5)%", "0.4%", "0.4%", "0.5%"]
     if dash_volume is not None:
         current_drivers[driver_headers.index(dash_volume)] = "—"
+    if blank_volume is not None:
+        current_drivers[driver_headers.index(blank_volume)] = ""
     if volume_only == "combined":
         driver_headers.remove("Volume with Acquisitions & Divestitures")
         driver_headers.remove("Volume Excluding Acquisitions & Divestitures")
@@ -121,7 +124,8 @@ def pg_bound_case(kind: str, *, period: int = 2026):
         body = _html(hostile=True, **kwargs)
     elif kind == "blank_dash":
         body = _html(
-            dash_volume="Volume with Acquisitions & Divestitures",
+            blank_volume="Volume with Acquisitions & Divestitures",
+            dash_volume="Volume Excluding Acquisitions & Divestitures",
             dash_convention=True,
             **kwargs,
         )
@@ -159,21 +163,19 @@ def _filing() -> dict:
 
 
 def pg_workspace_case(
-    kind: str, *, fiscal_scope: tuple[str, str, str, str] = FISCAL_SCOPE
+    kind: str,
+    *,
+    fiscal_period: FiscalPeriod = FISCAL_PERIOD,
+    fiscal_scope: tuple[str, str, str, str] = FISCAL_SCOPE,
 ) -> dict:
-    period = int(fiscal_scope[1][:4])
-    bound = pg_bound_case(kind, period=period)
+    bound = pg_bound_case(kind, period=fiscal_period.year)
     filing = _filing()
     filing["exhibit_url"] = f"https://synthetic.invalid/{kind}.htm"
     return build_event_workspace(
         registry=pg_private_registry(),
         ticker="PG",
         asof=date(2026, 7, 29),
-        fiscal_period=FiscalPeriod(
-            year=period,
-            quarter={4: 4, 7: 1, 10: 2, 1: 3}[date.fromisoformat(fiscal_scope[0]).month],
-            calendar_end=date.fromisoformat(fiscal_scope[1]),
-        ),
+        fiscal_period=fiscal_period,
         exhibit_body=bound.source,
         filing=filing,
         transcript=None,
@@ -184,7 +186,9 @@ def pg_workspace_case(
 
 
 def pg_source_texts(
-    kind: str, *, fiscal_scope: tuple[str, str, str, str] = FISCAL_SCOPE
+    kind: str,
+    *,
+    fiscal_period: FiscalPeriod = FISCAL_PERIOD,
 ) -> dict[str, str]:
-    bound = pg_bound_case(kind, period=int(fiscal_scope[1][:4]))
+    bound = pg_bound_case(kind, period=fiscal_period.year)
     return {bound.revision.document_id: bound.source}
