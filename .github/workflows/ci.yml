@@ -1855,6 +1855,9 @@ on:
       - "site/assets/css/theme-research.css"
       - "site/assets/js/theme-research.js"
       - "tests/test_semiconductor_theme_research_ui.py"
+      - "templates/_basket_intelligence_mounts.html.j2"
+      - "templates/_theme_research_mount.html.j2"
+      - "tests/test_basket_intelligence_mounts.py"
       - "engine/portfolio_brief.py"
       - "tests/test_portfolio_brief.py"
       # unrun-subsector-themes — subsector rotation/turn engines + the Theme

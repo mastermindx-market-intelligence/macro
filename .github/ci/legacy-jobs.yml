@@ -14554,6 +14554,10 @@ jobs:
       - "site/assets/css/theme-research.css"
       - "site/assets/js/theme-research.js"
       - "tests/test_semiconductor_theme_research_ui.py"
+      - "templates/_basket_intelligence_mounts.html.j2"
+      - "templates/_theme_research_mount.html.j2"
+      - "templates/basket_detail.html.j2"
+      - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"
       - "tests/test_subsector_rotation.py"
       - "tests/test_subsector_rotation_alerts.py"
@@ -14583,6 +14587,12 @@ jobs:
         run: node --version
       - name: theme research paid client — node-shelled contract + Theme Tracker mount (Semiconductor B T10)
         run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
+      # Semiconductor B T10b (2026-09-24, #7669 custody ruling): the ONE guarded
+      # include seam in basket_detail + the aggregator and the theme-research
+      # mount partial; pins include position, missing-partial harmlessness,
+      # anchor validation and base byte-identity.
+      - name: basket-detail intelligence include seam + theme-research mount partial (Semiconductor B T10b)
+        run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
