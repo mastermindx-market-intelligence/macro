@@ -1403,7 +1403,10 @@ def tol_profile() -> IssuerProfile:
 #   a unit or converting (C4: zero arithmetic).
 #
 # * ``fact_revenue_usd`` — the USD-restated revenue, present with unit
-#   ``usd_billions`` receipted against the literal ``US$12.34 billion``.
+#   ``usd_billions`` receipted against the literal ``US$12.34 billion``; its
+#   closed tokens equal the guidance items' (metric ``revenue``, basis
+#   ``reported_ifrs``, currency ``USD``) and the reading location lives in a
+#   non-compared ``provenance`` note.
 #
 # extract_guidance reads the NEXT-quarter revenue range out of ``bound``
 # (the release body), emitting guidance_item.v1 dicts with explicit
