@@ -536,3 +536,78 @@ Runtime completion`.
 5. Then implement the Web-Sol OHF adapter and prove the actionless disposable canary.
 
 Parent mission remains incomplete; no install/browser/provider/production proof is claimed.
+
+
+## Continuation update — green capsule sources and corrected #836 repair head
+
+This section supersedes earlier live-head/CI statements where they conflict.
+
+Protected Mastermind procedure/source is pinned at
+`e03eacbf98655d6a560f16784b8b62d531d8076f`; Skillpack remains
+`mastermind.sol_skillpack.v1` 1.0.1 / bootstrap 1. The only protected movement beyond
+`a7d2b304...` is #657's placement-preference module + test, with zero overlap across current
+#651/#933/#936/#836 paths.
+
+### Capsule/result source gates
+- #651 current head `afc4e21ece14243494030392328ea234a04f9f1b`:
+  exact-head hosted CI `35957636843` = SUCCESS. Snapshot-consistency blocker is repaired.
+  Genuine non-author exact-head re-review remains the sole source-acceptance gate.
+- #933 current head `073646dbd4ae6f7d00fa6e543cdd9cd029f01d05`:
+  exact-head hosted CI `35957647875` = SUCCESS. Genuine non-author exact-head review remains owed.
+- #936 current head `86fa8b52e45d4e5676b51585d6f00777b62eeba3`:
+  dependency-integrated hosted CI `35957868527` = SUCCESS. It remains dependent on #651 acceptance
+  and its own independent review.
+
+### #836 repair current head
+The initial repair head `f1b60401...` was followed by two same-carrier correctness fixes:
+- `dfa173d382b2cfeb97c2c13ebd1a1b6635ebbb9b`: adjusts the SOURCE_RESOLVED discriminator to model
+  legacy/tampered rehydration, because canonical Wake causal law already forbids SOURCE_RESOLVED before
+  TARGET_ACKNOWLEDGED at write time.
+- `88afd68ece2d037bf2959ccefc21bf031fd3225f`: maps that exact causal violation to
+  `SEMANTIC_ACK_SOURCE_RESOLVED_WITHOUT_ACK` before provider contact and removes the unreachable
+  post-causal branch.
+- focused self-audit then found the new `WakeLedgerError` exception path lacked its import; current
+  exact head `e8d54e6423b3d8a8f450740a9db0c7eff92828ae` adds only that missing existing-owner import.
+
+Current GitHub merge ref:
+`56f4a7846ec20a4dc25d16caf6b1e95b6889a374 = merge(e8d54e64..., e03eacbf...)`.
+PR remains mergeable. Fresh exact-head hosted CI `35959500341` is pending/running depending on current
+queue state; every older #836 CI is historical after source movement.
+
+The held independent ChatGPT3 review operation remains the same child/carrier:
+`D0BREV7RDCN/1790226208.084549`.
+Its current subject is `e8d54e64...` / merge ref `56f4a784...`; it remains PRE_START until this
+exact head's CI is terminal green, after which the **same** carrier must be released for
+PICKUP_ACK -> START -> formal GitHub verdict.
+
+### Independent review carriers
+- #651 / ChatGPT2: `D0BRLGE0BBN/1790155189.800099`, gates-clear continuation posted after exact-head
+  green; latest observed state remains PRE_START until PICKUP_ACK.
+- #933 / ChatGPT1: `D0BSB763FRN/1790226451.766309`, gates-clear continuation posted after exact-head
+  green; latest observed state remains PRE_START until PICKUP_ACK.
+- #936 / ChatGPT3: `D0BREV7RDCN/1790155191.702439`, PRE_START HOLD behind #836.
+
+### Downstream R1 contract frozen without source expansion
+After #836 exact-head/current-base acceptance, extend the incumbent Web-Sol transport with two closed
+sibling actions only:
+1. `SUBMIT_COGNITION_ASSIGNMENT`: carry a closed accepted #936 assignment **object** + exact
+   assignment/Job/Attempt/Worker/root/role/RuntimeBinding identity. Never carry arbitrary prompt/message/
+   text. Content script renders a fixed cognition directive plus canonical assignment JSON with digest parity.
+2. `OBSERVE_COGNITION_RESULT`: read-only exact-current-conversation provider-snapshot reduction using
+   accepted #933 browser reducer; return only canonical result JSON/digest/byte length plus exact provider
+   terminal-turn/artifact identity and assignment/RuntimeBinding correlation.
+
+Reuse current native 64 KiB frame, exact-target probes, runtime-binding revalidation, one-shot submit
+effect fencing, provider snapshot fetch and receipt correlation. Do not widen SUBMIT_CONTINUATION,
+export provider snapshots/transcripts, or create another transport/result/lifecycle plane.
+
+### Exact next action
+1. Consume #836 exact-head CI `35959500341`; repair only the same carrier on failure.
+2. On terminal green, release the existing held ChatGPT3 #836 review carrier on `e8d54e64...` /
+   `56f4a784...` and require formal independent verdict.
+3. Consume #651/#933 independent review returns; #936 review follows #836 on the already-created
+   ChatGPT3 carrier.
+4. Only after #836 acceptance implement R1; then implement the existing-OHF Web-Sol adapter and prove
+   the actionless disposable canary.
+
+Parent mission remains incomplete; no install/browser/provider/production acceptance exists.
