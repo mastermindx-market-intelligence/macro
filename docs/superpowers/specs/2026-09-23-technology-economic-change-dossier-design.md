@@ -65,7 +65,7 @@ A company may participate in several facets, and the same revenue may be viewed 
 
 ### 3.2 Mixed businesses and Semiconductor ownership
 
-Exclude chip design, device economics, dedicated EDA/IP, fabrication, semiconductor materials and dedicated manufacturing/package/test equipment from this program's research ownership. Semiconductor #7780 retains those questions. Keep an upstream dependency reference when needed to explain an in-scope system or application.
+Exclude chip design, semiconductor-device economics, dedicated EDA/IP, fabrication, semiconductor materials and dedicated manufacturing/package/test equipment from this program's research ownership. Semiconductor #7780 retains those questions. Keep an upstream dependency reference when needed to explain an in-scope system or application.
 
 Do not exclude or include a whole issuer by ticker when its businesses cross the boundary. A semiconductor die, finished sensing module, assembled optical module and complete network system are different purchase/containment objects. The native source-scoped business description must identify what is included, what is excluded and what cannot be allocated.
 
@@ -126,7 +126,7 @@ The reader enters the incumbent company/stock detail view and selects Economic C
 
 ### 5.3 First-release content contract
 
-The first complete page must include a short product/workload description, source-backed role, paid-unit explanation, one valid numerical comparison, its interpretation and limitations, one counterexample/refusal, visible source dates, and a return link to the existing company workflow. A blank widget, a source list, a schema or a standalone formula does not satisfy this job.
+The first complete page must include a short product/workload description, source-backed role, paid-unit explanation, one valid numerical comparison, its interpretation and limitations, visible source dates, and a return link to the existing company workflow. Release validation must additionally prove a separately labeled incompatible-source or definition case. Do not fabricate a negative observation in the positive issuer's live dossier merely to satisfy the test. A blank widget, a source list, a schema or a standalone formula does not satisfy this job.
 
 The first release may show honest gaps for company materiality, consensus, historical event population or entry context. It must not imply that those gaps were filled by the research narrative. If the essential source, binding or numerical comparison is unavailable, call the first vertical incomplete even if other editorial material displays correctly.
 
@@ -139,7 +139,7 @@ The first release may show honest gaps for company materiality, consensus, histo
 | Source-scoped product/business role | GMI evidence/curation, coordinated with Robotics/Semiconductor needs | One shared optional typed assertion extension under native evidence ownership | Free-form payload in a closed schema, duplicate graph or global product master |
 | Numeric financial/operating observation | Existing financial/Earnings metric and fact ownership | Versioned definition and compatible dimensions; selected issuer extraction/profile admitted in place | Numbers smuggled into highlights or independent Technology financial ledger |
 | Management expectation | Existing company event/source/guidance ownership | Keep issued statement, target fiscal period, range/point and revisions distinct | Another guidance event/calendar/forecast store |
-| Deterministic comparison | Existing financial/Earnings calculation ownership | Pure bounded transform with an exact input-role set and derivation receipt | Browser arithmetic or model-generated result represented as an observed fact |
+| Deterministic comparison | Earnings Intelligence for the first management-outlook comparison; existing financial owner for its native calculations | Pure bounded transform with an exact input-role set and derivation receipt | Browser arithmetic or model-generated result represented as an observed fact |
 | Mechanism interpretation | Existing reviewed GMI/company research and F04 composition | Attributed hypothesis with evidence, conditions and falsifiers | Automatic causal edge or forecast from theme membership |
 | Dossier response | F04/shared sector-theme composition and existing authenticated transport | Thin, bounded read model over accepted owners | New canonical database, latest-state directory or independent publication plane |
 | Leadership, entry and selection | Existing Theme/sector/Radar/Prophet owners | Read their accepted outputs unchanged | Implicit rank/gate/size/origination or duplicate episode |
@@ -154,6 +154,8 @@ A curation record's publication is not the upstream company's publication or bus
 ### 6.2 Numerical owner extension
 
 The selected issuer's release/profile must emit numerical observations with exact metric definition and period scope through the appropriate existing fact/guidance owner. The implementation plan will freeze the owner-reviewed schema extension and pure calculation module under that existing domain. It must not mutate the closed Company teaser contract into universal KPI storage or rely on permissive list internals to evade semantic review.
+
+For the first vertical, Earnings Intelligence is the single comparison owner in the existing Company/Earnings domain. It consumes its admitted release actuals/guidance and, where already supported, referenced financial-owner facts. Financial definitions and accounting truth retain their current owner; this does not authorize a second raw ledger. F04 renders the accepted comparison and does not recalculate it. This removes an ambiguous joint-owner assignment for the first formula without transferring broader financial or forecast authority.
 
 Only the selected metrics needed for the first question are required initially: prior annual revenue guidance, prior guidance for the newly completed period, actual revenue for completed periods and current annual guidance, with the compatible basis and source versions. ARR, margins and broader operating KPIs are later typed additions, not generic arbitrary-name values.
 
@@ -435,7 +437,7 @@ Acceptance of an explanatory product does not require proven predictive alpha. C
 
 ## 19. Design self-review and effect boundary
 
-The author checked this specification against the original user job, R1–R6 domain distinctions, the selected native-owner approach, the current E1 consensus guard, the shared template boundary and all 48 document-local acceptance requirements. The review identified and explicitly addressed four risks: narrowing the mission to earnings comparisons; overloading consensus basis_match; treating a deterministic transformation as independent new evidence; and declaring a missing planned schema path a platform-wide absence.
+The author checked this specification against the original user job, R1–R6 domain distinctions, the selected native-owner approach, the current E1 consensus guard, the shared template boundary and all 48 document-local acceptance requirements. The review identified and explicitly addressed four risks: narrowing the mission to earnings comparisons; overloading consensus basis_match; treating a deterministic transformation as independent new evidence; and declaring a missing planned schema path a platform-wide absence. The final wording also distinguishes semiconductor-device economics from in-scope finished devices, and keeps negative validation witnesses separate from genuine live issuer observations.
 
 Editorial validation can verify section/requirement counts, source-reference presence and file identity. It cannot prove the implementation obeys the design, source rights are admitted, the browser workflow works, an independent reviewer accepted it or predictive value exists. No product code, schema, live data, current baskets, rank, entry, size, trade, runtime, merge or deployment was changed by this document.
 
