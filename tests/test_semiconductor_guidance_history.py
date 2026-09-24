@@ -8,6 +8,7 @@ itself.  These tests pin the frozen API from carrier PR #7870.
 """
 from __future__ import annotations
 
+import copy
 import json
 import math
 from pathlib import Path
@@ -160,7 +161,12 @@ def test_midpoint_owned_only_uses_receipt_value_verbatim():
     assert out["derived"]["prior_midpoint"]["status"] == "ready"
     # The module must not recompute or round — the value equals the receipt's
     # value verbatim.
-    assert out["derived"]["prior_midpoint"]["value"] == 4250
+    receipt_value = variant["native_derivations"]["prior_midpoint"]["value"]
+    assert out["derived"]["prior_midpoint"]["value"] == receipt_value == 4243.5
+    prior = variant["prior"]
+    # Discriminating: the receipt value is deliberately NOT (low+high)/2, so a
+    # module that recomputed the midpoint could not pass this assertion.
+    assert out["derived"]["prior_midpoint"]["value"] != (prior["low"] + prior["high"]) / 2
     assert out["derived"]["next_outlook_midpoint"]["status"] == "unavailable"
     assert out["derived"]["next_outlook_midpoint"]["reason"] == "derivation_unowned"
 
@@ -493,3 +499,12 @@ def test_module_dict_has_no_open_or_pandas_attribute():
     exposed = set(dir(guidance_history))
     required = {"assess_management_sequence", "GuidanceHistoryError", "SCHEMA"}
     assert required.issubset(exposed)
+
+def test_non_finite_derivation_value_is_refused_not_displayed():
+    import math
+    import pytest
+    case = _load_case("guidance_midpoint_unowned")
+    variant = copy.deepcopy(case["inputs_variants"]["prior_midpoint_owned_only"])
+    variant["native_derivations"]["prior_midpoint"]["value"] = math.nan
+    with pytest.raises(GuidanceHistoryError, match="non_finite"):
+        assess_management_sequence(**variant)

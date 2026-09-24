@@ -46,7 +46,7 @@
     },
     "native_derivations": {
       "prior_midpoint": {
-        "value": 4250,
+        "value": 4243.5,
         "inputs": [
           {"role": "prior_outlook", "field": "low", "value": 4150},
           {"role": "prior_outlook", "field": "high", "value": 4350}
@@ -55,7 +55,7 @@
         "owner": "guidance_narrative_synthesizer"
       },
       "next_outlook_midpoint": {
-        "value": 4600,
+        "value": 4598.25,
         "inputs": [
           {"role": "new_outlook", "field": "low", "value": 4500},
           {"role": "new_outlook", "field": "high", "value": 4700}
@@ -80,8 +80,8 @@
       }
     },
     "derived": {
-      "prior_midpoint": {"status": "ready", "value": 4250, "owner": "guidance_narrative_synthesizer"},
-      "next_outlook_midpoint": {"status": "ready", "value": 4600, "owner": "guidance_narrative_synthesizer"}
+      "prior_midpoint": {"status": "ready", "value": 4243.5, "owner": "guidance_narrative_synthesizer"},
+      "next_outlook_midpoint": {"status": "ready", "value": 4598.25, "owner": "guidance_narrative_synthesizer"}
     },
     "display": {
       "all_values_visible": true,

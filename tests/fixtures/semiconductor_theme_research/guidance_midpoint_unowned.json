@@ -89,12 +89,12 @@
       },
       "native_derivations": {
         "prior_midpoint": {
-          "value": 4250,
+          "value": 4243.5,
           "inputs": [
             {"role": "prior_outlook", "field": "low", "value": 4150},
             {"role": "prior_outlook", "field": "high", "value": 4350}
           ],
-          "receipt": {"receipt_id": "syn-rcpt-1", "byte_start": 120, "byte_end": 132, "literal": "midpoint: 4250"},
+          "receipt": {"receipt_id": "syn-rcpt-1", "byte_start": 120, "byte_end": 132, "literal": "midpoint: 4243.5"},
           "owner": "guidance_narrative_synthesizer"
         }
       }
@@ -109,7 +109,7 @@
     },
     "prior_midpoint_owned_only": {
       "derived": {
-        "prior_midpoint": {"status": "ready", "value": 4250, "owner": "guidance_narrative_synthesizer"},
+        "prior_midpoint": {"status": "ready", "value": 4243.5, "owner": "guidance_narrative_synthesizer"},
         "next_outlook_midpoint": {"status": "unavailable", "reason": "derivation_unowned"}
       }
     }

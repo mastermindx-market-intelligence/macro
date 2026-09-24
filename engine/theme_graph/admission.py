@@ -10,8 +10,16 @@ assert are public and the columns their evidence contract requires; everything e
 follows from the filesystem.
 
 Statuses, evaluated in order, first match wins:
-``missing`` → ``public_root`` → ``symlink_to_public`` → ``unreadable`` →
-``missing_column`` → ``empty_private`` → ``no_parquet`` → ``private_ok``.
+``missing`` → ``public_root`` → ``symlink_to_public`` → ``no_parquet`` →
+``unreadable`` → ``missing_column`` → ``empty_private`` → ``private_ok``
+(``no_parquet`` and ``unreadable`` are mutually exclusive — an absent file is never
+attempted as a read — so the file-presence check precedes the read).
+
+Known classification edge (review nit, carrier #7870): a root that IS a declared
+public root but is passed through a platform symlink (macOS ``/var`` →
+``/private/var``) while the public root was passed already resolved is reported as
+``symlink_to_public`` rather than ``public_root``. Both are refusals; there is no
+permissive escape when the resolved root lies inside a resolved public root.
 
 The two public refusals are deliberately separate: a root that sits inside a public
 tree by PATH is a different mistake from a root that only ARRIVES there through a

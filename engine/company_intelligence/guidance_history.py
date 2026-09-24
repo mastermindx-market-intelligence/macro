@@ -200,6 +200,9 @@ def _derivation_status(
     value = payload.get("value")
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         return {"status": "unavailable", "reason": "derivation_unowned"}
+    # A receipt-backed value is still a number the page would display: NaN/inf is
+    # refused exactly like every other numeric input (review nit, carrier #7870).
+    _reject_non_finite(value, "native_derivations", key)
     receipt = payload.get("receipt")
     if not isinstance(receipt, Mapping) or len(receipt) == 0:
         return {"status": "unavailable", "reason": "derivation_unowned"}

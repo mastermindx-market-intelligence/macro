@@ -144,3 +144,11 @@ def test_caller_cannot_supply_a_trust_flag(tmp_path):
         classify_private_evidence_root(
             root, public_roots=[tmp_path / "public"],
             required_columns=list(EVIDENCE_COLUMNS), private=True)
+
+
+def test_evidence_filename_is_pinned_to_the_store_owner(tmp_path, monkeypatch):
+    """admission.py restates the evidence file name instead of importing the store;
+    this pin turns a silent rename in ``store.evidence_path()`` into a red."""
+    from engine.theme_graph import admission, store
+    monkeypatch.setattr(store.config, "data_dir", lambda: tmp_path)
+    assert admission.EVIDENCE_FILENAME == store.evidence_path().name
