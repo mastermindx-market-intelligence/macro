@@ -177,7 +177,7 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
             if not isinstance(raw_row, dict):
                 failure_code = "MALFORMED_ROW"
                 break
-            if not isinstance(raw_row.get("openfda"), dict):
+            if "openfda" in raw_row and not isinstance(raw_row.get("openfda"), dict):
                 failure_code = "MALFORMED_ROW"
                 break
             try:
