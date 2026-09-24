@@ -37,6 +37,7 @@ from datetime import date
 import pytest
 
 import scripts.refresh_event_workspaces as refresh_mod
+from engine.company_intelligence.guidance_history import assess_management_sequence
 from engine.company_intelligence.issuer_profiles import ON_CIK, TSM_CIK, on_profile, tsm_profile
 from tests.test_semiconductor_earnings_witnesses import ON_SYNTHETIC_EXHIBIT, TSM_SYNTHETIC_EXHIBIT
 
@@ -341,3 +342,63 @@ def test_on_real_q2_eight_k_is_admitted_on_the_unique_in_tolerance_stated_date(m
     assert (item["low"], item["high"], item["horizon"]) == (1400.0, 1500.0, "2026Q3")
     assert _resolved_accessions(fetched) == {ON_Q2_RESULTS_ACCESSION}
     assert "stated period end 2026-07-03 in place of the derived calendar quarter end 2026-06-30" in capsys.readouterr().out
+
+
+# ── cross-release management sequences: prior outlook from one real filing, actual + new outlook from the next ──
+
+TSM_Q1_RESULTS_ACCESSION = "0001046179-26-000199"  # Q1-2026 results 6-K, filed 2026-04-16 (the identity's valid_from day)
+TSM_Q1_ROW = {"form": "6-K", "accessionNumber": TSM_Q1_RESULTS_ACCESSION, "filingDate": "2026-04-16", "reportDate": "2026-03-31",
+              "acceptanceDateTime": "2026-04-16T12:00:18.000Z", "primaryDocument": "tsm-20260416x6k.htm", "items": ""}
+TSM_Q1_MANIFEST = {TSM_Q1_RESULTS_ACCESSION: [("6-K", "tsm-20260416x6k.htm", "6-K"),
+                                              ("EX-99.1", "a1q26e_withguidancexfinal.htm", "EX-99.1"),
+                                              ("EX-99.2", "a1q26presentatione.htm", "EX-99.2")]}
+TSM_Q1_SYNTHETIC_EXHIBIT = (
+    TSM_SYNTHETIC_EXHIBIT
+    .replace("second quarter ended June 30, 2026", "first quarter ended March 31, 2026")
+    .replace("In US dollars, second quarter revenue", "In US dollars, first quarter revenue")
+    .replace("for third quarter 2026 to be as follows", "for second quarter 2026 to be as follows")
+)
+
+
+def _composer_sequence(revisions, fact_id: str):
+    """Mirror _build_economics: prior = the earlier release's outlook for the reported quarter; actual = the
+    later release's present fact (fiscal_period from the workspace block); new outlook = its later-horizon item."""
+    ordered = sorted(revisions, key=lambda r: (r[1]["fiscal_period"]["year"], r[1]["fiscal_period"]["quarter"]))
+    (_e1, q_prior), (_e2, q_actual) = ordered
+    label = f"{q_actual['fiscal_period']['year']}Q{q_actual['fiscal_period']['quarter']}"
+    prior = next(i for i in q_prior["guidance"] if i["horizon"] == label)
+    fact = next(f for f in q_actual["facts"] if f["fact_id"] == fact_id and "typed_absence" not in f)
+    actual = {"metric": fact["metric"], "value": fact["value"], "unit": fact["unit"], "fiscal_period": label,
+              "source_span": {"event_id": q_actual["event_id"]}}
+    for optional in ("basis", "currency", "perimeter", "definition"):
+        if optional in fact:
+            actual[optional] = fact[optional]
+    new_outlook = next(i for i in q_actual["guidance"] if i["horizon"] > label)
+    return assess_management_sequence(prior, actual, new_outlook)
+
+
+def test_tsm_two_real_filings_yield_a_comparable_sequence_with_the_fx_limitation(monkeypatch) -> None:
+    revisions, _ = _discover(
+        monkeypatch, ticker="TSM", cik=TSM_CIK, rows=TSM_ROWS + [TSM_Q1_ROW], manifests={**TSM_MANIFESTS, **TSM_Q1_MANIFEST},
+        bodies={TSM_RESULTS_ACCESSION: TSM_SYNTHETIC_EXHIBIT, TSM_Q1_RESULTS_ACCESSION: TSM_Q1_SYNTHETIC_EXHIBIT},
+    )
+    assert sorted(e for e, _p in revisions) == ["evt_cik0001046179_2026q1_results", "evt_cik0001046179_2026q2_results"]
+    result = _composer_sequence(revisions, "fact_revenue_usd")
+    assert result["comparisons"]["prior_vs_actual"] == {"status": "comparable", "reason": None, "position": "below_range"}
+    assert "fx_assumption_unreconciled" in result["limitations"]          # TSMC guides at a stated NT$ rate
+    assert not any(t.startswith("comparison_refused") for t in result["limitations"])
+
+
+def test_on_two_real_filings_yield_a_comparable_sequence_across_caption_and_cell_units(monkeypatch) -> None:
+    """The actual's unit comes from the Q2 summary caption ('in millions'); the prior's from the Q1 outlook
+    cell word ('million') — two filings, two derivations, one closed token."""
+    revisions, _ = _discover(
+        monkeypatch, ticker="ON", cik=ON_CIK, rows=ON_ROWS + ON_Q2_ROWS, manifests={**ON_MANIFESTS, **ON_Q2_MANIFESTS},
+        bodies={ON_RESULTS_ACCESSION: ON_SYNTHETIC_EXHIBIT, ON_Q2_RESULTS_ACCESSION: ON_Q2_SYNTHETIC_EXHIBIT},
+    )
+    assert sorted(e for e, _p in revisions) == ["evt_cik0001097864_2026q1_results", "evt_cik0001097864_2026q2_results"]
+    result = _composer_sequence(revisions, "fact_revenue")
+    assert result["comparisons"]["prior_vs_actual"] == {"status": "comparable", "reason": None, "position": "below_range"}
+    assert "fx_assumption_unreconciled" not in result["limitations"]      # onsemi states no FX assumption
+    assert not any(t.startswith("comparison_refused") for t in result["limitations"])
+

@@ -812,8 +812,10 @@ def test_tsm_and_on_cik_constants_are_sec_attested() -> None:
 # ── T06 alignment: release facts and guidance items state the SAME closed definition tokens ──
 
 def _composer_actual(fact: dict, fiscal_period: str) -> dict:
-    """The exact shape engine.market_ontology.semiconductor_theme_research._build_economics hands to
-    assess_management_sequence for the actual."""
+    """The shape engine.market_ontology.semiconductor_theme_research._build_economics hands to
+    assess_management_sequence for the actual — except that the composer reads fiscal_period from
+    its projected `reported` row (YYYYQn), which a raw fact does not carry (its `period` is the ISO
+    calendar end); the projector owns that translation, so the caller supplies it here."""
     actual = {"metric": fact["metric"], "value": fact["value"], "unit": fact["unit"], "fiscal_period": fiscal_period,
               "source_span": {"event_id": fact["event_id"]}}
     for optional in ("basis", "currency", "perimeter", "definition"):
