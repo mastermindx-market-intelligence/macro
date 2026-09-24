@@ -264,3 +264,31 @@ Return every result including no-signal/censored/ambiguous cases and require50
 nonoverlapping active episodes per candidate before ranking. Raw capture stays
 private. Independent review, native parity, longer coverage, live consumers and
 separate equity value remain owed. No workers, watchers or effect uncertainty.
+
+### First pilot executed and all outcomes retained
+
+Freeze18841b8f37af5a0257b1c08df78e5ab3eb53a8bb was pushed before outcome access.
+Process35332 registered all9 configs, then returned123 origins (110 scored,
+13 censored);9 distributions per origin,1107 model/date forecasts, not independent
+samples. Full comparison in SWING_PROXY_RESULTS_2026-09-24.md and aggregate JSON.
+Primary MPR adds0% versus trend/vol Brier0.685173. Best-looking secondary P+R is
++1.71%, but only6 resolved nonoverlapping active episodes; MPR has2. Every
+candidate fails the frozen50-episode adequacy gate. No winner or promotion.
+Saved-row arithmetic audit on process37761 reproduced all9 scores and strict
+training cutoffs, verified frozen bytes and9-row append-only TrialLedger suffix.
+No new fits/trials from the audit. Original raw capture and RD1 remain unchanged.
+
+A justified longer-source preflight then requested the SAME incumbent Yahoo
+endpoint at60m/range2y once. HTTP200,3509 timestamped rows,2024-09-24T13:20Z to
+2026-09-24T14:02:54Z; capture2026-09-24T14:17:57Z. Source SHA256
+1dc7e9121fd6aa36c5019beba303b629257eb1cab752ae937e4cef1aa8161b76.
+Private receipt: swing-proxy-v1/longer-source-preflight/receipt.json under the
+original evidence root. Metadata/coverage only; no extended strategy outcomes
+opened. Original3mo source was not replaced. No new collector or purchase.
+
+Next executable unit: freeze an unchanged-rule larger-sample replication using
+this new immutable capture, account for both studies in the SAME TrialLedger
+family, separate pre-June24 dates from the seen overlap, then evaluate all9.
+Do not select P+R as the primary or tune the barrier/trigger to rescue the pilot.
+Native Pine/TVC parity and retrospective availability stay unqualified; no live
+forecast, equity result, independent review or production proof is implied.

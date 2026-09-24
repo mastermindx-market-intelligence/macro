@@ -1,0 +1,8 @@
+{
+  "family": "ric_swing_proxy_v1",
+  "registered": 9,
+  "literal_n": 9,
+  "ledger_before_sha256": "a9fc70ac22fcbca53b1d496b4262631095a4322886b49291a216c3f03a2de179",
+  "ledger_after_sha256": "0c6b93d02cf357a4d5af30df414d324f99552f17cf65c428305c1114ca77a39e",
+  "freeze_sha256": "d091689c51cd2b59f0545c116329d41f8564eed990f84035829dafb2c6bd18d0"
+}
