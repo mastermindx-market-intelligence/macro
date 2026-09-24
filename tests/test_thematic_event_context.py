@@ -30,6 +30,42 @@ def _membership():
     }
 
 
+
+
+def _rights():
+    return {
+        "family": "sec_edgar",
+        "status": "admitted",
+        "rights_class": "direct_display_ok",
+        "internal_ok": True,
+        "display_ok": True,
+        "model_use_ok": True,
+        "redistribution_ok": False,
+        "rights_ref": tec.RIGHTS_REF,
+        "model_use_rights_ref": tec.MODEL_USE_RIGHTS_REF,
+        "representation_scope": "fixture factual metadata only",
+    }
+
+
+def _write_rights(root):
+    cfg = root / "config"
+    cfg.mkdir(parents=True, exist_ok=True)
+    (cfg / "theme_sources.yml").write_text(
+        "families:\n"
+        "  sec_edgar:\n"
+        "    rights_class: direct_display_ok\n"
+        "    auth_class: keyless_public\n"
+    )
+    reg = root / "research" / "licenses"
+    reg.mkdir(parents=True, exist_ok=True)
+    (reg / "PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md").write_text(
+        "## SEC EDGAR\n\n"
+        "| Dimension | Determination and posture |\n"
+        "|---|---|\n"
+        "| Model use | **RECORDED** — fixture. Posture: **user-facing**. |\n"
+        "\n## Next family\n"
+    )
+
 def _events():
     return pd.DataFrame([
         {
@@ -84,6 +120,7 @@ def test_sec_context_uses_first_seen_cutoff_and_declares_current_membership():
         theme_ids=["cpu_compute", "memory_storage"],
         knowledge_cutoff=CUTOFF, window_days=14, max_events=10,
         source_snapshot_ref="sec#fixture", membership_snapshot_ref="membership#fixture",
+        rights_posture=_rights(),
     )
 
     assert got["status"] == "ready"
@@ -120,6 +157,7 @@ def test_extracted_amount_and_counterparty_survive_only_on_success():
         theme_ids=["cpu_compute", "memory_storage"],
         knowledge_cutoff=CUTOFF, max_events=10,
         source_snapshot_ref="sec#fixture", membership_snapshot_ref="membership#fixture",
+        rights_posture=_rights(),
     )
     by_acc = {e["reports"][0]["accession"]: e["reports"][0] for e in got["events"]}
 
@@ -152,6 +190,7 @@ def test_selection_is_theme_coverage_first_not_global_newest_only():
         theme_ids=["cpu_compute", "memory_storage"],
         knowledge_cutoff=CUTOFF, max_events=2,
         source_snapshot_ref="sec#fixture", membership_snapshot_ref="membership#fixture",
+        rights_posture=_rights(),
     )
 
     assert got["coverage"]["eligible_events"] == 5
@@ -172,6 +211,7 @@ def test_same_event_maps_to_overlapping_themes_once():
         theme_ids=["cpu_compute", "memory_storage"],
         knowledge_cutoff=CUTOFF, max_events=10,
         source_snapshot_ref="sec#fixture", membership_snapshot_ref="membership#fixture",
+        rights_posture=_rights(),
     )
 
     assert len(got["events"]) == 1
@@ -184,6 +224,7 @@ def test_loader_binds_real_file_bytes_and_never_hides_source_absence(tmp_path):
     (data / "baskets").mkdir(parents=True)
     (data / "baskets" / "membership.json").write_text(json.dumps(_membership()))
     _events().to_parquet(data / "edgar" / "material_8k_events.parquet")
+    _write_rights(tmp_path)
 
     got = tec.build_sec_event_context(
         root=tmp_path,
@@ -194,6 +235,10 @@ def test_loader_binds_real_file_bytes_and_never_hides_source_absence(tmp_path):
     assert got["status"] == "ready"
     assert got["source_snapshot_ref"].startswith("data/edgar/material_8k_events.parquet#sha256:")
     assert got["membership_snapshot_ref"].startswith("data/baskets/membership.json#sha256:")
+    assert got["rights_posture"]["status"] == "admitted"
+    assert got["rights_posture"]["rights_class"] == "direct_display_ok"
+    assert got["rights_posture"]["model_use_ok"] is True
+    assert got["rights_posture"]["redistribution_ok"] is False
 
     missing = tec.build_sec_event_context(
         root=tmp_path / "missing",
@@ -204,6 +249,65 @@ def test_loader_binds_real_file_bytes_and_never_hides_source_absence(tmp_path):
     assert missing["reason"] == "source_files_unavailable"
     assert missing["events"] == []
 
+
+
+def test_projector_fails_closed_without_owner_rights():
+    got = tec.project_sec_event_context(
+        _events(), _membership(),
+        theme_ids=["cpu_compute", "memory_storage"],
+        knowledge_cutoff=CUTOFF, max_events=10,
+        source_snapshot_ref="sec#fixture", membership_snapshot_ref="membership#fixture",
+    )
+    assert got["status"] == "unavailable"
+    assert got["reason"] == "source_rights_not_admitted"
+    assert got["events"] == []
+
+
+def test_loader_refuses_existing_sources_until_both_rights_owners_admit(tmp_path):
+    data = tmp_path / "data"
+    (data / "edgar").mkdir(parents=True)
+    (data / "baskets").mkdir(parents=True)
+    (data / "baskets" / "membership.json").write_text(json.dumps(_membership()))
+    _events().to_parquet(data / "edgar" / "material_8k_events.parquet")
+
+    got = tec.build_sec_event_context(
+        root=tmp_path,
+        theme_ids=["cpu_compute", "memory_storage"],
+        knowledge_cutoff=CUTOFF,
+        max_events=10,
+    )
+    assert got["status"] == "unavailable"
+    assert got["reason"] == "source_rights_not_admitted"
+    assert got["rights_posture"]["display_ok"] is False
+    assert got["rights_posture"]["model_use_ok"] is False
+    assert got["events"] == []
+
+
+def test_loader_refuses_model_use_when_theme_source_only_is_admitted(tmp_path):
+    data = tmp_path / "data"
+    (data / "edgar").mkdir(parents=True)
+    (data / "baskets").mkdir(parents=True)
+    (data / "baskets" / "membership.json").write_text(json.dumps(_membership()))
+    _events().to_parquet(data / "edgar" / "material_8k_events.parquet")
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True)
+    (cfg / "theme_sources.yml").write_text(
+        "families:\n"
+        "  sec_edgar:\n"
+        "    rights_class: direct_display_ok\n"
+        "    auth_class: keyless_public\n"
+    )
+
+    got = tec.build_sec_event_context(
+        root=tmp_path,
+        theme_ids=["cpu_compute"],
+        knowledge_cutoff=CUTOFF,
+    )
+    assert got["status"] == "unavailable"
+    assert got["reason"] == "source_rights_not_admitted"
+    assert got["rights_posture"]["display_ok"] is True
+    assert got["rights_posture"]["model_use_ok"] is False
+    assert got["events"] == []
 
 def test_us_gather_wires_existing_event_adapter_without_changing_rank_state(monkeypatch, tmp_path):
     from engine import thematic_desk as td
