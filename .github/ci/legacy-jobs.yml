@@ -346,7 +346,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jinja2
       - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
