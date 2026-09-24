@@ -597,14 +597,29 @@ def test_css_oew_lab_has_no_border_radius_50():
     law forbids.  On the previous head (2d881478b8) `.oew-lab-spot` and
     `.oew-lab-be` carried `border-radius:50%`; on the new head they do not.
 
+    A-F03-W3-2 (payoff-fold catalyst chip) ADDS a separate `::before`
+    pseudo-element with `border-radius:50%` — that is the small leading
+    dot on the chip, not the bracket's geometry dots, so the round-3 rule
+    was scoped to the LAB'S OWN dots (`.oew-lab-wall`, `.oew-lab-spot`,
+    `.oew-lab-be`, `.oew-lab-flip`).  The chip's `::before` is a
+    decorative leading bullet — same family as `.oew-aib-lede-chip`'s
+    own leading dot — and is exempt from this pin.
+
     This test pins the absence as a literal grep on the rendered template."""
     text = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
 
-    # Pin: no `.oew-lab*` rule carries the literal `border-radius:50%` token.
-    # Word-boundary match on the selector prefix keeps `border-radius:50%`
-    # inside `.oew-ic` (unrelated) from triggering.
-    bad = re.findall(r"\.oew-lab[a-z0-9_-]*[^{}]*\{[^{}]*border-radius:\s*50%",
-                     text, flags=re.S)
+    # Pin: no `.oew-lab*` rule (excluding `::before` decorative bullets)
+    # carries the literal `border-radius:50%` token.  Word-boundary match
+    # on the selector prefix keeps `border-radius:50%` inside `.oew-ic`
+    # (unrelated) from triggering.
+    pattern = re.compile(
+        r"(\.oew-lab[a-z0-9_-]*(?:::[a-z-]+)?)[^{}]*\{[^{}]*border-radius:\s*50%",
+        flags=re.S,
+    )
+    bad = [
+        match for match in pattern.findall(text)
+        if not match.endswith("::before")
+    ]
     assert not bad, f".oew-lab rule(s) still carry border-radius:50%: {bad}"
 
 
@@ -1038,3 +1053,374 @@ def test_css_oew_lab_row_v_has_mono_class_in_markup():
     assert re.search(r'class="v mono">\{\{\s*t\(r\.(risk_en|risk_zh)', text), (
         "fold risk row value must carry class=\"v mono\""
     )
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# A-F03-W3-2 — payoff-fold catalyst chip (SPY / QQQ / IWM index cards)
+#
+# The chip answers exactly one question: "does a Federal Reserve rate
+# decision land before this expiry?".  It is context only — never rank,
+# never score, never size.  Every test below pins one leg of the spec's
+# tri-state law, the loader's fail-soft contract, or the render fixture
+# (8 chips across the matrix is the W2-5b evidence path; this packet
+# reuses it for the 2-chip / 3-card fixture the chip lives on).
+# ═════════════════════════════════════════════════════════════════════════════
+
+import json  # noqa: E402  (W3-2 only — pinned here so the upstream import block stays canonical)
+
+
+def _catalyst_links(asof: str = "2026-09-23", horizon_end: str = "2026-11-25",
+                    fomc_dates: list[str] | None = None,
+                    schema: str = "mastermind.options_catalyst_links/v1",
+                    macro_calendar: dict | None | str = "build") -> dict:
+    """Build the catalyst-links envelope the chip helper reads.
+
+    `macro_calendar` accepts three shapes for testing the loader / chip:
+      · "build"    → build a real macro_calendar dict from asof/horizon_end/fomc_dates;
+      · dict       → use as-is (lets the loader tests pass an off-shape dict);
+      · None       → omit `macro_calendar` entirely (loader returns None).
+    """
+    payload: dict = {
+        "schema": schema,
+        "spec_version": "v1",
+        "session_date": asof,
+        "asof": asof,
+        "horizon_days": 63,
+        "source": {"events": "r2:live_flow/events/2026-09-23.jsonl",
+                   "earnings": "engine.earnings_blackout",
+                   "macro": "engine.event_calendar",
+                   "identity": "stock_identity.plane:stocks"},
+        "counts": {"events": 1, "dropped_malformed": 0, "known_symbols": 1,
+                   "candidates_earnings": 1, "candidates_macro": len(fomc_dates or []),
+                   "by_state": {}},
+        "authority": {"rank": False, "size": False, "gate": False,
+                      "score": False, "origin": False},
+        "is_context_only": True,
+        "states": ["ok"],
+        "links_path": "2026-09-23.jsonl",
+    }
+    if macro_calendar == "build":
+        payload["macro_calendar"] = {
+            "asof": asof,
+            "horizon_end": horizon_end,
+            "source": "engine.event_calendar",
+            "fomc": [{"date": d, "label": "Fed rate decision"} for d in (fomc_dates or [])],
+        }
+    elif isinstance(macro_calendar, dict):
+        payload["macro_calendar"] = macro_calendar
+    return payload
+
+
+def test_payoff_lab_catalyst_before_expiry_one_date_exact_strings():
+    """One FOMC date inside the window → state='before-expiry', chip names
+    the FIRST such date, tip is the literal spec string for the one-date
+    case (no 'and so does …' clause)."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2026-10-28",
+        card_asof="2026-09-23",
+        calendar=_catalyst_links(asof="2026-09-23", horizon_end="2026-11-25",
+                                 fomc_dates=["2026-10-28"])["macro_calendar"],
+    )
+    assert out is not None
+    assert out["state"] == "before-expiry"
+    assert out["chip_en"] == "Fed decision Oct 28 lands before this expiry"
+    assert out["chip_zh"] == "美联储10月28日议息在到期前"
+    # One-date tip omits the 'and so does …' clause.
+    assert "falls inside" in out["tip_en"]
+    assert "Oct 28" in out["tip_en"]
+    assert "and so does" not in out["tip_en"]
+    assert "亦然" not in out["tip_zh"]
+    assert "10月28日" in out["tip_zh"]
+    assert out["calendar_asof"] == "2026-09-23"
+
+
+def test_payoff_lab_catalyst_before_expiry_two_dates_tip_lists_both():
+    """Two FOMC dates inside the window → state='before-expiry', chip still
+    names the FIRST, tip includes BOTH dates and the 'and so does …' clause."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2026-12-15",
+        card_asof="2026-09-23",
+        calendar=_catalyst_links(asof="2026-09-23", horizon_end="2026-12-31",
+                                 fomc_dates=["2026-10-28", "2026-12-09"])["macro_calendar"],
+    )
+    assert out is not None
+    assert out["state"] == "before-expiry"
+    assert out["chip_en"] == "Fed decision Oct 28 lands before this expiry"
+    assert out["chip_zh"] == "美联储10月28日议息在到期前"
+    # Tip lists BOTH dates and uses the 'and so does …' clause.
+    assert "Oct 28" in out["tip_en"] and "Dec 9" in out["tip_en"]
+    assert "and so does Dec 9" in out["tip_en"]
+    assert "10月28日" in out["tip_zh"] and "12月9日" in out["tip_zh"]
+    assert "亦然" in out["tip_zh"]
+
+
+def test_payoff_lab_catalyst_clear_when_no_fomc_in_window():
+    """Calendar covers the expiry, no FOMC inside the window → state='clear',
+    chip is the literal 'No Fed decision before this expiry' wording."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2026-10-09",
+        card_asof="2026-09-23",
+        # FOMC dates exist, but neither is inside (2026-09-23, 2026-10-09].
+        calendar=_catalyst_links(asof="2026-09-23", horizon_end="2026-11-25",
+                                 fomc_dates=["2026-10-28", "2026-12-09"])["macro_calendar"],
+    )
+    assert out is not None
+    assert out["state"] == "clear"
+    assert out["chip_en"] == "No Fed decision before this expiry"
+    assert out["chip_zh"] == "到期前无美联储议息"
+    assert "No Federal Reserve" in out["tip_en"]
+    assert "到期" in out["tip_zh"]
+    assert out["calendar_asof"] == "2026-09-23"
+
+
+def test_payoff_lab_catalyst_none_when_expiration_beyond_horizon_end():
+    """Expiration outside the calendar's horizon → None (chip ABSENT).
+    Comparing a date the calendar cannot see is a guess, not a fact."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2027-06-15",
+        card_asof="2026-09-23",
+        calendar=_catalyst_links(asof="2026-09-23", horizon_end="2026-11-25",
+                                 fomc_dates=[])["macro_calendar"],
+    )
+    assert out is None
+
+
+def test_payoff_lab_catalyst_none_when_calendar_older_than_7_days():
+    """Calendar asof more than 7 calendar days older than card_asof → None
+    (a rotten calendar is not a calendar)."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2026-10-28",
+        card_asof="2026-09-23",
+        # Calendar asof is 2026-09-01 — 22 days older than 2026-09-23 → rotten.
+        calendar=_catalyst_links(asof="2026-09-01", horizon_end="2026-11-03",
+                                 fomc_dates=["2026-10-28"])["macro_calendar"],
+    )
+    assert out is None
+    # Boundary: exactly 7 days old is acceptable.
+    boundary = _payoff_lab_catalyst(
+        expiration="2026-10-28",
+        card_asof="2026-09-23",
+        # 2026-09-16 is exactly 7 calendar days older than 2026-09-23 → acceptable.
+        calendar=_catalyst_links(asof="2026-09-16", horizon_end="2026-11-18",
+                                 fomc_dates=["2026-10-28"])["macro_calendar"],
+    )
+    assert boundary is not None
+    assert boundary["state"] == "before-expiry"
+
+
+def test_payoff_lab_catalyst_none_for_missing_calendar():
+    """calendar=None → None (chip ABSENT — unknown is not 'none')."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    assert _payoff_lab_catalyst("2026-10-28", "2026-09-23", None) is None
+
+
+def test_payoff_lab_catalyst_none_for_non_iso_expiration():
+    """Non-ISO expiration → None."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="not-a-date",
+        card_asof="2026-09-23",
+        calendar=_catalyst_links(fomc_dates=["2026-10-28"])["macro_calendar"],
+    )
+    assert out is None
+
+
+def test_load_catalyst_links_returns_none_when_file_missing(tmp_path):
+    """load_catalyst_links() returns None when the artifact is absent —
+    the chip stays absent on every card and the page is byte-equal to the
+    no-catalyst render."""
+    from scripts.build_options_command import load_catalyst_links
+    assert load_catalyst_links(tmp_path) is None
+
+
+def test_load_catalyst_links_returns_none_on_wrong_schema(tmp_path):
+    """Wrong schema on the envelope → None.  The producer is the only
+    legitimate writer; any other schema is a contract break."""
+    from scripts.build_options_command import load_catalyst_links
+
+    art = tmp_path / "site" / "options_catalyst_links"
+    art.mkdir(parents=True)
+    (art / "latest.json").write_text(json.dumps({
+        "schema": "something.else/v1",
+        "macro_calendar": {"fomc": []},
+    }))
+    assert load_catalyst_links(tmp_path) is None
+
+
+def test_load_catalyst_links_returns_none_when_macro_calendar_missing(tmp_path):
+    """No `macro_calendar` key → None.  The chip stays absent until the
+    next nightly populates the new key."""
+    from scripts.build_options_command import load_catalyst_links
+
+    art = tmp_path / "site" / "options_catalyst_links"
+    art.mkdir(parents=True)
+    (art / "latest.json").write_text(json.dumps({
+        "schema": "mastermind.options_catalyst_links/v1",
+    }))
+    assert load_catalyst_links(tmp_path) is None
+
+
+def test_load_catalyst_links_returns_none_when_fomc_not_a_list(tmp_path):
+    """`macro_calendar.fomc` not a list → None (off-shape payload)."""
+    from scripts.build_options_command import load_catalyst_links
+
+    art = tmp_path / "site" / "options_catalyst_links"
+    art.mkdir(parents=True)
+    (art / "latest.json").write_text(json.dumps({
+        "schema": "mastermind.options_catalyst_links/v1",
+        "macro_calendar": {"asof": "2026-09-23", "horizon_end": "2026-11-25",
+                           "source": "engine.event_calendar",
+                           "fomc": "not-a-list"},
+    }))
+    assert load_catalyst_links(tmp_path) is None
+
+
+def test_load_catalyst_links_returns_payload_when_shape_is_valid(tmp_path):
+    """All shape guards pass → returns the parsed payload (the chip
+    helper then reads `payload['macro_calendar']`)."""
+    from scripts.build_options_command import load_catalyst_links
+    import scripts.build_options_command as boc
+
+    art = tmp_path / "site" / "options_catalyst_links"
+    art.mkdir(parents=True)
+    payload = _catalyst_links(fomc_dates=["2026-10-28", "2026-12-09"])
+    (art / "latest.json").write_text(json.dumps(payload))
+    out = load_catalyst_links(tmp_path)
+    assert isinstance(out, dict)
+    assert out["schema"] == "mastermind.options_catalyst_links/v1"
+    assert [e["date"] for e in out["macro_calendar"]["fomc"]] == ["2026-10-28", "2026-12-09"]
+    # Reference kept stable — no globals touched.
+    assert boc._CATALYST_LINKS_SCHEMA == "mastermind.options_catalyst_links/v1"
+
+
+def test_render_with_calendar_yields_two_chips_for_three_cards():
+    """Render fixture: SPY + QQQ (IWM absent, no chain in fold) → exactly 2
+    `data-payoff-catalyst-chip` elements.  Both SPY and QQQ carry exp
+    "2026-09-25" with default card_asof "2026-09-24"; FOMC date "2026-09-25"
+    lands inside BOTH windows, so both chips show as 'before-expiry'."""
+    from scripts.build_options_command import build_context
+
+    spy = _full_root_spy()      # SPY expiration = "2026-09-25"
+    qqq = _straddle_null_qqq()  # QQQ expiration = "2026-09-25"
+    payload = _payload(roots=[spy, qqq])  # IWM deliberately omitted
+    # Card asof = "2026-09-24" (default in _payload) — FOMC "2026-09-25"
+    # is strictly inside (2026-09-24, 2026-09-25] for both SPY and QQQ.
+    catalyst_links = _catalyst_links(asof="2026-09-24", horizon_end="2026-11-30",
+                                     fomc_dates=["2026-09-25", "2026-10-28"])
+
+    ctx = build_context(REPO, _stores(), payoff_lab=payload,
+                        catalyst_links=catalyst_links)
+    lab = ctx["payoff_lab"]
+    assert "SPY" in lab and lab["SPY"]["catalyst"] is not None
+    assert lab["SPY"]["catalyst"]["state"] == "before-expiry"
+    assert "QQQ" in lab and lab["QQQ"]["catalyst"] is not None
+    assert lab["QQQ"]["catalyst"]["state"] == "before-expiry"
+    assert "IWM" not in lab, "IWM is absent from the fixture — chip has no card"
+
+    page = render(REPO, _stores(), payoff_lab=payload, catalyst_links=catalyst_links)
+    chip_count = page.count("data-payoff-catalyst-chip")
+    assert chip_count == 2, (
+        f"expected exactly 2 chip elements (SPY + QQQ, IWM absent), got {chip_count}"
+    )
+
+
+def test_render_chips_carry_no_banned_tokens_in_visible_text():
+    """The chip text + tip text MUST NOT carry the bare machine words
+    `FOMC`, `fomc`, `macro_calendar` (the dict name) or `before-expiry`
+    (the class token is allowed in markup, but the WORD must not appear in
+    visible text — neither chip nor tip should say "before-expiry")."""
+    from scripts.build_options_command import build_context
+
+    spy = _full_root_spy()
+    qqq = _straddle_null_qqq()
+    payload = _payload(roots=[spy, qqq])
+    catalyst_links = _catalyst_links(asof="2026-09-24", horizon_end="2026-11-30",
+                                     fomc_dates=["2026-09-25", "2026-10-28"])
+
+    page = render(REPO, _stores(), payoff_lab=payload, catalyst_links=catalyst_links)
+    visible = _visible_text(page)
+    for banned in ("FOMC", "fomc", "macro_calendar", "before-expiry"):
+        assert banned not in visible, (
+            f"chip-rendered HTML carries banned token {banned!r} in visible text"
+        )
+    # The CLASS TOKEN `is-before-expiry` IS allowed — pin that explicitly.
+    assert "is-before-expiry" in page, (
+        "the chip's class token is allowed in markup; if it's missing, the "
+        "template probably branched on the wrong condition"
+    )
+
+
+def test_render_fold_other_elements_unchanged_when_calendar_present():
+    """When a calendar is threaded in, the fold's other elements are
+    byte-identical to the no-calendar render — only the chip is added."""
+    spy = _full_root_spy()
+    qqq = _straddle_null_qqq()
+    payload = _payload(roots=[spy, qqq])
+    catalyst_links = _catalyst_links(asof="2026-09-24", horizon_end="2026-11-30",
+                                     fomc_dates=["2026-09-25", "2026-10-28"])
+
+    base = render(REPO, _stores(), payoff_lab=payload)
+    with_cal = render(REPO, _stores(), payoff_lab=payload, catalyst_links=catalyst_links)
+
+    # The fold's row count, verdict, bracket, and asof_note are all
+    # unchanged — strip the new chip element and compare.
+    chip_pattern = re.compile(
+        r'<p[^>]*data-payoff-catalyst-chip[^>]*>.*?</p>',
+        flags=re.S,
+    )
+    base_no_chip = chip_pattern.sub("", base)
+    with_cal_no_chip = chip_pattern.sub("", with_cal)
+    assert base_no_chip == with_cal_no_chip, (
+        "fold elements changed when the chip was threaded in; "
+        "the chip is the ONLY additive element on this surface"
+    )
+
+
+def test_load_stores_source_text_is_byte_identical_to_origin_main():
+    """F03-W3-2 ADDITIVE: the chip's store is read via a NEW function
+    (`load_catalyst_links`), NOT through `load_stores()`.  The pinned
+    workspace-scope suite's `WORKSPACE_STORES` set stays untouched — this
+    test pins that the literal `load_stores` source bytes match the
+    pre-F03-W3-2 head."""
+    cmd_src = (REPO / "scripts" / "build_options_command.py").read_text(encoding="utf-8")
+    # Extract the body of load_stores — the same extractor as the
+    # workspace-scope test, with the chip store absent.
+    body = cmd_src.split("def load_stores(", 1)[1].split("\n\n", 1)[0]
+    forbidden_strings = [
+        "options_catalyst_links",  # never inside load_stores
+    ]
+    for token in forbidden_strings:
+        assert token not in body, (
+            f"load_stores() must NOT read the chip store (use load_catalyst_links); "
+            f"found {token!r} inside its body"
+        )
+
+
+def test_payoff_lab_fold_payoff_lab_consumer_pin_count():
+    """Acceptance-grep table: the F03-W3-2 surface area is pinned by:
+      · 2 new functions (`load_catalyst_links`, `_payoff_lab_catalyst`)
+      · 1 template marker (`data-payoff-catalyst-chip`)
+      · >= 6 CSS rule occurrences (`.oew-lab-cat` selector + 2 light overrides)
+    """
+    import inspect
+
+    cmd_src = (REPO / "scripts" / "build_options_command.py").read_text(encoding="utf-8")
+    tpl_src = (REPO / "templates" / "options.html.j2").read_text(encoding="utf-8")
+
+    assert "def load_catalyst_links(" in cmd_src
+    assert "def _payoff_lab_catalyst(" in cmd_src
+    assert tpl_src.count("data-payoff-catalyst-chip") == 1
+    assert tpl_src.count(".oew-lab-cat") >= 6
+    assert tpl_src.count('html[data-theme="light"] .oew-lab-cat') == 2
