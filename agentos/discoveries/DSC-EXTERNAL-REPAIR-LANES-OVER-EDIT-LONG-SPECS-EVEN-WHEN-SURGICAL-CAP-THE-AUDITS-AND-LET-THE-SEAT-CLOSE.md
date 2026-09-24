@@ -23,7 +23,7 @@ so_what: >
   itself before any lane that copies the spec verbatim (the mockup), and the rest rides the
   build packet's residual appendix — never a sixth repair round.
 kind: landmine
-confidence: high
+confidence: verified
 verified_at: 2026-09-24T13:05:00Z
 verified_by: >
   gh pr view 7903 --json commits --jq '[.commits[]|.oid[0:8]]'; gh api repos/mastermindx-market-intelligence/macro/issues/7903/comments --jq '[.[]|select(.body|test("AUDIT|audit"))|.id]'
