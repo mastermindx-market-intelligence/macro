@@ -286,9 +286,9 @@ def test_t02r2_capture_without_a_source_generation_cannot_hide_an_absence(tmp_pa
     marks = {row["package_ndc"]: row["absent_since_generation"]
              for _, row in rows.iterrows()}
     assert "T02R2-B" in marks
-    assert marks["T02R2-B"] is None or marks["T02R2-B"] != marks["T02R2-A"], (
-        "a generation-less capture marked the disappeared row exactly like the "
-        f"present one: {marks}"
+    assert marks["T02R2-B"] is None, (
+        "an unqualified, generation-less sweep stamped the disappeared row as "
+        f"absent: {marks}"
     )
     assert json.loads(sidecar.read_text())["last_refresh"]["failure_code"] \
         == "NO_SOURCE_GENERATION"
