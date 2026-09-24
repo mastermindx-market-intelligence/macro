@@ -293,7 +293,147 @@ Accessibility requirements are fixed: real table semantics; heading order is pag
 
 ## 4. Exact CSS
 
-TODO
+**Owning file:** append to `templates/earnings_wire/earnings-wire.css`; import/link it only on the two accepted hosts. No token definition, page style block, third stylesheet, or runtime style text may be created.
+
+### 4.1 Token status and allowed references
+
+`theme.css` is the only token source (`research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md:93–109`). It directly defines the complete type scale and all color/surface/ink/font/shadow/glass/button tokens used here. DS-PR-0 proposes spacing, radius, motion, and gap tokens, but those are not yet in `theme.css :root`; therefore the CSS uses the exact shipped fallback idiom already established by `.mx-empty`, `.skel`, `.mx-error`, and canonical `theme.css` rules (`templates/theme.css:2014–2064`). A fallback is not a new token family and becomes inert when DS-PR-0 lands.
+
+The allowed value vocabulary is exactly:
+
+- Type: `var(--fs-h2)`, `var(--fs-h3)`, `var(--fs-md)`, `var(--fs-sm)`, `var(--fs-label)`, `var(--fs-micro)`.
+- Surfaces/lines/text: `var(--bg)`, `var(--panel)`, `var(--panel2)`, `var(--line)`, `var(--text)`, `var(--muted)`.
+- Semantic text: `var(--ink-ok)`, `var(--ink-warn)`, `var(--ink-act)`, `var(--ink-link, var(--link))`, `var(--ink-info)`.
+- Font/numerals: `var(--font-ui)`, `var(--font-mono)`, `var(--num, var(--font-mono))`.
+- Elevation: `var(--card-shadow)`, `var(--popover-shadow)`, `var(--glass-bg)`, `var(--glass-brd)`, `var(--glass-blur)`, `var(--glass-shadow)`.
+- Buttons: `var(--gbtn-bg)`, `var(--gbtn-bg-hover)`, `var(--gbtn-brd)`, `var(--gbtn-brd-hover)`, `var(--gbtn-sheen)`.
+- Spacing fallback values, copied verbatim from the specimen: `var(--sp-1,4px)` … `var(--sp-8,44px)` only.
+- Radius fallback values: `var(--r-ctl,8px)`, `var(--r-btn,10px)`, `var(--r-card,12px)`, `var(--r-panel,14px)`, `var(--r-pill,999px)`.
+- Motion fallback values: `var(--t-fast,.16s)`, `var(--t-med,.2s)`, `var(--t-slow,.55s)`, `var(--ease-std,ease)`, `var(--ease-lift,cubic-bezier(.2,.7,.3,1))`; grid gap may use `var(--gap-grid,18px)`.
+- Fixed geometry: `0`, `1px`, `2px`, `3px`, `40px`, `44px`, `48px`, `50%`, `1fr`, `minmax(0,1fr)`, `100%`, `60dvh`, `72px`, `96px`, `120px`, `144px`, `168px`, `176px`, `420px`, `520px`, `640px`, `760px`, `820px`, `900px`, `1200px`, and `calc(100% - var(--sp-4,16px))`. Numeric lexical values and layout ratios are not colors or design tokens.
+- Theme-specific selectors may change only which existing tokens/fallback values are selected; they may not introduce another value.
+
+### 4.2 Exact declarations
+
+```css
+.econ-dossier{position:relative;display:grid;gap:var(--sp-4,16px);margin:var(--gap-grid,18px) 0;padding:var(--sp-4,16px);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);box-shadow:var(--card-shadow)}
+.econ-dossier[hidden]{display:none}
+.econ-dossier-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4,16px)}
+.econ-dossier-eyebrow{margin:0;color:var(--muted);font:600 var(--fs-label)/1.2 var(--font-ui);letter-spacing:.08em;text-transform:uppercase}
+.econ-dossier h2{margin:var(--sp-1,4px) 0 0;color:var(--text);font:700 var(--fs-h2)/1.25 var(--font-ui)}
+.econ-dossier-stance{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2,8px);margin:0}
+.econ-state-chip{display:inline-flex;align-items:center;min-height:24px;padding:var(--sp-1,4px) var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);background:var(--panel2);color:var(--muted);font:600 var(--fs-label)/1.2 var(--font-ui)}
+.econ-dossier[data-economic-state="up_to_date"] .econ-state-chip{color:var(--ink-ok)}
+.econ-dossier[data-economic-state="newer_source_pending"] .econ-state-chip,.econ-dossier[data-economic-state="currentness_unverified"] .econ-state-chip,.econ-dossier[data-economic-state="unsupported_schema"] .econ-state-chip,.econ-dossier[data-economic-state="error"] .econ-state-chip{color:var(--ink-warn)}
+.econ-dossier[data-economic-state="unentitled"] .econ-state-chip,.econ-dossier[data-economic-state="unavailable"] .econ-state-chip,.econ-dossier[data-economic-state="loading"] .econ-state-chip{color:var(--muted)}
+.econ-stance-text{margin:0;color:var(--text);font:500 var(--fs-md)/1.4 var(--font-ui)}
+.econ-loading{display:grid;gap:var(--sp-2,8px)}
+.econ-skel-title{display:block;height:var(--fs-h2);width:72%}
+.econ-skel-row{display:block;height:var(--fs-md);width:100%}
+.econ-content{display:grid;gap:var(--sp-5,20px)}
+.econ-table-group{display:grid;gap:var(--sp-2,8px)}
+.econ-group-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3,12px)}
+.econ-group-head h3{margin:0;color:var(--text);font:700 var(--fs-h3)/1.25 var(--font-ui)}
+.econ-group-note{max-width:72ch;margin:0;color:var(--muted);font:400 var(--fs-sm)/1.4 var(--font-ui)}
+.econ-table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.econ-table{width:100%;min-width:120px;border-collapse:collapse;font:400 var(--fs-sm)/1.4 var(--font-ui)}
+.econ-table th[scope="col"]{padding:var(--sp-2,8px) var(--sp-3,12px);border-bottom:1px solid var(--line);color:var(--muted);font:700 var(--fs-micro)/1.2 var(--font-ui);letter-spacing:.08em;text-align:left;text-transform:uppercase}
+.econ-table td,.econ-table th[scope="row"]{padding:var(--sp-2,8px) var(--sp-3,12px);border-bottom:1px solid var(--line);color:var(--text);text-align:left;vertical-align:middle}
+.econ-table tbody tr:last-child td,.econ-table tbody tr:last-child th[scope="row"]{border-bottom:0}
+.econ-table tbody tr:hover td,.econ-table tbody tr:hover th[scope="row"]{background:var(--panel2)}
+.econ-cell-label{font-weight:600}
+.econ-basis{display:inline-flex;align-items:center;min-height:24px;padding:var(--sp-1,4px) var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-pill,999px);background:var(--panel2);color:var(--muted);font:600 var(--fs-label)/1.2 var(--font-ui)}
+tr[data-economic-basis="reported"] .econ-basis{color:var(--ink-info)}
+tr[data-economic-basis="organic"] .econ-basis{color:var(--ink-link,var(--link))}
+tr[data-economic-basis="core"] .econ-basis{color:var(--ink-warn)}
+.econ-value{font-family:var(--num,var(--font-mono));font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.econ-evidence-button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;border:1px solid var(--gbtn-brd);border-radius:var(--r-btn,10px);background:var(--gbtn-bg);color:var(--text);font:600 var(--fs-label)/1.2 var(--font-ui);cursor:pointer;transition:background var(--t-fast,.16s) var(--ease-std,ease),border-color var(--t-fast,.16s) var(--ease-std,ease),color var(--t-fast,.16s) var(--ease-std,ease)}
+.econ-evidence-button:hover{border-color:var(--gbtn-brd-hover);background:var(--gbtn-bg-hover)}
+.econ-evidence-button:focus-visible,.econ-dossier-toggle:focus-visible,.econ-drawer-close:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.econ-segments{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.econ-segments summary{display:flex;align-items:center;min-height:44px;padding:var(--sp-2,8px) var(--sp-3,12px);border-radius:var(--r-card,12px);color:var(--text);font:600 var(--fs-sm)/1.3 var(--font-ui);cursor:pointer}
+.econ-segments[open] summary{border-bottom:1px solid var(--line)}
+.econ-segments .econ-table-scroll{border:0;border-radius:0 0 var(--r-card,12px) var(--r-card,12px)}
+.econ-findings,.econ-missing{display:grid;gap:var(--sp-2,8px)}
+.econ-findings h3,.econ-missing h3{margin:0;color:var(--text);font:700 var(--fs-h3)/1.25 var(--font-ui)}
+.econ-finding-list,.econ-missing-list{display:grid;gap:var(--sp-2,8px);margin:0;padding:0;list-style:none}
+.econ-finding-list li{padding:var(--sp-2,8px) var(--sp-3,12px);border-left:3px solid var(--line);border-radius:0 var(--r-ctl,8px) var(--r-ctl,8px) 0;background:var(--panel2);color:var(--text);font:400 var(--fs-sm)/1.45 var(--font-ui)}
+.econ-finding-list li[data-economic-rule="missing_consensus"]{border-left-color:var(--muted)}
+.econ-missing-list li{color:var(--muted);font:400 var(--fs-sm)/1.4 var(--font-ui)}
+.econ-clock{display:flex;flex-wrap:wrap;gap:var(--sp-1,4px) var(--sp-3,12px);padding-top:var(--sp-3,12px);border-top:1px solid var(--line);color:var(--muted);font:400 var(--fs-micro)/1.4 var(--font-ui)}
+.econ-links{display:flex;flex-wrap:wrap;gap:var(--sp-2,8px)}
+.econ-links a{display:inline-flex;align-items:center;min-height:40px;padding:var(--sp-1,4px) var(--sp-3,12px);border:1px solid var(--gbtn-brd);border-radius:var(--r-btn,10px);background:var(--gbtn-bg);color:var(--ink-link,var(--link));font:600 var(--fs-label)/1.2 var(--font-ui);text-decoration:none}
+.econ-state{display:grid;gap:var(--sp-1,4px);padding:var(--sp-4,16px);border:1px dashed var(--line);border-radius:var(--r-card,12px)}
+.econ-state-line{margin:0;color:var(--text);font:600 var(--fs-md)/1.35 var(--font-ui)}
+.econ-state-why{margin:0;color:var(--muted);font:400 var(--fs-sm)/1.45 var(--font-ui)}
+.econ-drawer-scrim{position:fixed;inset:0;z-index:80;background:color-mix(in srgb,var(--bg) 55%,transparent)}
+.econ-drawer{position:fixed;inset:auto var(--sp-3,12px) var(--sp-3,12px);z-index:81;display:grid;gap:var(--sp-3,12px);max-height:72%;max-height:60dvh;overflow:auto;padding:var(--sp-4,16px);border:1px solid var(--glass-brd);border-radius:var(--r-card,12px);background:var(--glass-bg);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.econ-drawer[hidden]{display:none}
+.econ-drawer-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px)}
+.econ-drawer h2{margin:0;color:var(--text);font:700 var(--fs-h3)/1.25 var(--font-ui)}
+.econ-drawer-close{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;border:1px solid var(--gbtn-brd);border-radius:var(--r-btn,10px);background:var(--gbtn-bg);color:var(--text);font:600 var(--fs-label)/1.2 var(--font-ui);cursor:pointer}
+.econ-drawer-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px);margin:0}
+.econ-drawer-meta div{min-width:0;padding:var(--sp-2,8px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel)}
+.econ-drawer-meta dt{color:var(--muted);font:600 var(--fs-micro)/1.2 var(--font-ui);text-transform:uppercase}
+.econ-drawer-meta dd{margin:var(--sp-1,4px) 0 0;color:var(--text);font:500 var(--fs-sm)/1.35 var(--font-ui);overflow-wrap:anywhere}
+.econ-drawer-meta code,.econ-receipt code{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--muted);overflow-wrap:anywhere}
+.econ-source-text{margin:0;padding:var(--sp-3,12px);border-left:3px solid var(--line);border-radius:0 var(--r-ctl,8px) var(--r-ctl,8px) 0;background:var(--panel2);color:var(--text);font:400 var(--fs-sm)/1.55 var(--font-ui);overflow-wrap:anywhere}
+.econ-receipt{margin:0}
+.econ-precision{margin:0;color:var(--muted);font:400 var(--fs-sm)/1.45 var(--font-ui)}
+.econ-dossier-toggle{display:inline-flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px);width:100%;min-height:40px;padding:var(--sp-2,8px) 0;border:0;background:transparent;color:var(--text);font:600 var(--fs-sm)/1.3 var(--font-ui);cursor:pointer;text-align:left}
+.econ-dossier-cell{display:grid;gap:var(--sp-2,8px)}
+@media (min-width:900px){
+.econ-dossier-head{align-items:center}
+.econ-table-group,.econ-findings,.econ-missing{grid-template-columns:minmax(176px,1fr) minmax(0,3fr);align-items:start}
+.econ-table-group .econ-table-scroll,.econ-findings .econ-finding-list,.econ-missing .econ-missing-list{grid-column:2}
+.econ-drawer{inset:auto var(--gap-grid,18px) var(--gap-grid,18px) auto;width:min(520px,calc(100% - var(--sp-4,16px)))}
+}
+@media (max-width:899px){
+.econ-dossier-head,.econ-group-head,.econ-drawer-bar{display:grid;grid-template-columns:1fr;gap:var(--sp-2,8px)}
+.econ-drawer{left:var(--sp-3,12px);right:var(--sp-3,12px)}
+}
+@media (max-width:640px){
+.econ-dossier{padding:var(--sp-3,12px);border-radius:var(--r-card,12px)}
+.econ-table-scroll{overflow-x:auto}
+.econ-table{min-width:420px}
+.econ-table th[scope="col"],.econ-table td,.econ-table th[scope="row"]{padding:var(--sp-2,8px)}
+.econ-drawer-meta{grid-template-columns:1fr}
+.econ-dossier-toggle{padding:var(--sp-2,8px)}
+}
+@media (prefers-reduced-motion:reduce){.econ-evidence-button,.econ-dossier-toggle,.econ-drawer{transition:none;animation:none}}
+```
+
+The first `<section data-economic-root>` must also receive `class="panel econ-dossier"`; the sector template’s existing `.panel` supplies the page’s normal panel background/border/padding. The declarations above intentionally use the same token values so Theme Tracker gets identical geometry without relying on a different panel definition.
+
+### 4.3 DARK TREATMENT — command center
+
+- Panel depth is luminance-first: `--panel` resting on `--bg`, a quiet `--line` hairline, and only `--card-shadow` at rest. The XLP `<section class="panel">` uses the page’s existing panel treatment; the dossier itself adds no second enclosing box.
+- Basis chips are quiet instruments: `--panel2` fills, hairline borders, and text only through existing ink rungs (`--ink-info`, `--ink-link`, `--ink-warn`). Hue carries definition, not valuation.
+- Tables use hairline rows and a `--panel2` hover tint. No zebra striping in dark; zebra would make this dense dossier feel like a terminal rather than a read surface.
+- The dialog uses the existing dark glass family (`--glass-bg`, `--glass-brd`, `--glass-blur`, `--glass-shadow`) with the scrim composed from `--bg`. The evidence source remains an inert luminance block (`--panel2`, 3px rail), never a glowing raw document.
+- State chips use calm ink: `--ink-ok` only for accepted/current, `--ink-warn` for pending/unverified/error, `--muted` for unavailable/loading/unentitled. No animated pulse or glow.
+
+### 4.4 LIGHT TREATMENT — research workspace
+
+- The same geometry becomes a printed-note material: white `--panel` on cool `--bg`, disciplined `--line` hairlines, and the existing light `--card-shadow`; no glow, colored wash, or added translucency.
+- Basis chips remain compact hairline pills, but the light theme’s deeper ink rungs do the work. The labels remain readable after grayscale, so definition never depends on hue alone.
+- Table rows remain hairline-first; light’s `--panel2` hover tint is present but quieter. No zebra.
+- The dialog intentionally differs from dark: `--glass-bg` resolves to the existing light glass block, with airy `--glass-shadow`, crisp `--glass-brd`, and no dark scrim. The evidence quote remains a paper-like `--panel2` block with a 3px rail and deep text.
+- State semantics are identical, but their paints deliberately use the measured light ink twins already defined by `theme.css`; the component does not derive new percentages.
+- The light design is not judged as “renders after token swap”: hierarchy, chip restraint, hairline tables, evidence depth, and dialog material must be visually reviewed as a workspace note (TP-0; `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md:587–612`).
+
+### 4.5 Degraded states
+
+- **Loading:** show the true three-row skeleton plus accessible fixed sentence; keep panel height stable and do not expose stale private values.
+- **Unavailable:** show the fixed heading/state line and reason; retain the compact heading but no tables, findings, links, or clock.
+- **Newer source pending / currentness unverified:** retain the accepted tables and findings, use `--ink-warn` only on the state chip, and put the dated explanation once in the clock footer. Do not tint data rows or imply a failed thesis.
+- **Unentitled:** show only the fixed line/why and the owner-provided sign-in action; never render a teaser or blur private data. On XLP use the existing authenticated action route; on Theme Tracker return focus to the dossier toggle.
+- **Error / unsupported schema:** show the fixed warning line and reason, retain “what still works” (none of the private dossier is shown), and do not retry automatically or reveal object paths.
+- **Empty optional segment detail:** omit the `<details>` entirely; the missing-context list carries the fixed segment sentence when admitted context says it is absent.
+
+### 4.6 Density budget and responsive reduction
+
+At **390 px**, the dossier displays without horizontal page scroll. The inner table container may scroll horizontally; mobile does **not** squeeze the table into unreadable columns. Before that inner scroll becomes necessary, the visible content budget is exactly: heading + stance row; Demand header; three Demand rows; Earnings header; one Earnings row; one finding; one missing-context line; clock; then inner rows scroll. Segment detail is collapsed. The desktop two-column section grid reduces to one column at ≤899 px, and dialog/meta reduce at ≤640 px per the declarations above. This is a deliberate demotion-with-landing reduction, not a squeezed desktop table (`research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md:652–664`).
 
 ## 5. Copy
 
