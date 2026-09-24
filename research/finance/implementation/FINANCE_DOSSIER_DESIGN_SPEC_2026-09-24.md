@@ -115,7 +115,7 @@ Materiality colour law (per §C, tokens only): all four values paint with `var(-
 
 ### A.6 `macro-matrix` (Tier 6)
 
-Flat `macro_matrix[]` (NEVER a pivoted `rows/cells` shape). Rows = slice ids present in payload order; columns = the 13-driver enum; absent (slice, driver) pair → "Not mapped / 未映射" cell.
+Flat `macro_matrix[]` (NEVER a pivoted `rows/cells` shape). Rows = `coverage.first_vertical.slice_ids`; columns = the 13-driver enum; if more than 8, the first 8 plus a `.fi-disc` "See all N"; absent (slice, driver) pair → "Not mapped / 未映射" cell.
 
 | Visible surface | Schema path | Schema enums |
 |---|---|---|
@@ -168,9 +168,11 @@ A per-conflict lookup map (`conflict_text` indexed by `conflict_id`) and a per-s
 
 ## B. DOM skeletons per section
 
-All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data-zh` idiom (`<span class="l-en">…</span><span class="l-zh">…</span>` swapped on `html[data-lang]` flip per existing `theme.js`). Internal enum tokens appear ONLY in `data-state`/`data-*` attributes; visible text uses plain words per §D. **Every section is a data-free shell with one mount point** (`data-fi-mount="<section>"`); no payload-bound Jinja appears in §B or §F — hydration is owned by §E.
+All class names use the `fi-` prefix. All copy uses the repo's bilingual idiom (`<span class="l-en">…</span><span class="l-zh">…</span>`); `.l-en` / `.l-zh` visibility is toggled by `html[data-lang]`; the page-local swapper handles `aria-label` (per §E.1). Internal enum tokens appear ONLY in `data-state`/`data-*` attributes; visible text uses plain words per §D. **Every section is a data-free shell with one mount point** (`data-fi-mount="<section>"`); no payload-bound Jinja appears in §B or §F — hydration is owned by §E.
 
 ### B.0 Page shell + evidence-drawer aside (one instance each)
+
+The seven L1 sections sit in frozen order (what-changed, rerating-map, system-map, subtheme-atlas, company-exposure, macro-matrix, constraint-map); each is a tier-1 surface: `<section class="fi-section fi-panel">`. Hydration populates the `.fi-evidence-fields` `<dl>` with `<dt>`/`<dd>` children; the suppression rule (A.8) hides value/excerpt/native_digest when `rights_state` is SOURCE_RIGHTS_HELD or INTERNAL_ONLY; the identity field is bound via `<dd class="fi-evidence-identity" data-identity="…">` and the rights field via the B.8 `<dd>` markup below.
 
 ```html
 <main id="fi-main" class="fi-shell" data-fi-mount="shell">
@@ -201,16 +203,14 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
     </ol>
   </nav>
 
-  <!-- B.1–B.7 sections in frozen order: what-changed, rerating-map, system-map,
-       subtheme-atlas, company-exposure, macro-matrix, constraint-map.
-       Each is a tier-1 surface: <section class="fi-section fi-panel">. -->
+  <!-- sections -->
 
   <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据">
     [Hydration (§E) renders one .fi-receipt-line per input_receipts entry whose state ≠ READ.]
   </footer>
 </main>
 
-<nav class="site-nav" data-fi-mount="site-nav">…global site nav (from _site_nav.html.j2) sits here as a sibling of <main>; while the drawer is open §E.5 sets inert on both this element and #fi-main.</nav>
+<nav class="site-nav" data-fi-mount="site-nav"><!-- site nav (shared family) --></nav>
 
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
        aria-labelledby="fi-evidence-title" hidden tabindex="-1">
@@ -227,21 +227,19 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
       <span class="l-en">Choose an evidence action in any section</span>
       <span class="l-zh">请在任一板块选择证据操作</span>
     </p>
-    <!-- Hydration populates the .fi-evidence-fields <dl> with <dt>/<dd> children.
-         The suppression rule (A.8) hides value/excerpt/native_digest when rights_state
-         is SOURCE_RIGHTS_HELD or INTERNAL_ONLY. The identity field is bound via
-         <dd class="fi-evidence-identity" data-identity="…"> and the rights field via
-         <dd class="fi-evidence-rights" data-rights="…">. -->
+    <dl class="fi-evidence-fields" data-fi-mount="evidence-fields"></dl>
+    <p class="fi-evidence-private-notice" hidden><span class="l-en">Value and excerpt withheld — source rights held.</span><span class="l-zh">数值与摘录已隐去 — 来源权利受限。</span></p>
+    <dd class="fi-evidence-rights fi-chip" data-state-rights="{source_records[].rights_state}" data-state-marker="SOURCE_RIGHTS_HELD"></dd>
   </div>
 </aside>
 <div class="fi-scrim" id="fi-scrim" hidden></div>
 ```
 
-The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate drawer markup that lived in B.0/B.8 is removed; the §B.0 aside is the single instance. The TOC carries `class="fi-toc"` only (no `fi-panel`); §C.5 paints it as a tier-1 elevation surface — not a tier-2 nested card. `<main>` itself carries no `fi-panel` — its background is the `var(--fi-canvas)` token (the site canvas), and the seven L1 sections are the tier-1 elevation surfaces. The evidence-fields DOM mount in this B.0 aside is bound per E.6: `<dd class="fi-evidence-identity" data-identity="{§D.21 label of source_records[].identity_state}">` carries the data-identity attribute (the literal enum token, never the label word in the attribute), and the visible text inside the `<dd>` is the plain-word row from §D.21.
+The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate drawer markup that lived in B.0/B.8 is removed; the §B.0 aside is the single instance. The TOC carries `class="fi-toc"` only (no `fi-panel`); §C.5 paints it as a tier-1 elevation surface — not a tier-2 nested card. `<main>` itself carries no `fi-panel` — its background is the `var(--fi-canvas)` token (the site canvas), and the seven L1 sections are the tier-1 elevation surfaces. The evidence-fields DOM mount in this B.0 aside is bound per E.6: `<dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}">` carries the data-identity attribute (the literal enum token, never the label word in the attribute), and the visible text inside the `<dd>` is the plain-word row from §D.21.
 
 ### B.1 `what-changed` — material changes
 
-What-changed is the **support tier** (its title uses `var(--fs-h2)`); rerating-map (§B.2) is the **answer tier** and uses `var(--fs-h1)` directly below it (R3 / MPDS §5 item 3). The what-changed section head carries `data-state-freshness=""` on the `<header class="fi-section-head">` element itself; hydration mirrors top-level `freshness.state` onto that attribute (per §E.4 freshness rule), and §C.5 paints the rail/pip keyed on the attribute value (no unconditional rail). Each row uses the `.mx-chg-row` anatomy: name · change clause (≤14 words EN+ZH) · stance verb · chevron — so the row reads as a sentence, not a labelled form. The freshness chip on the row carries `data-state-marker="FRESH|AGING|SOURCE_STALE|NO_EVIDENCE"` (attribute form, per E2), with the visible plain-word label from §D.12 inside the chip.
+What-changed is the **support tier** (its title uses `var(--fs-h2)`); rerating-map (§B.2) is the **answer tier** and uses `var(--fs-h1)` directly below it (R3 / MPDS §5 item 3). The what-changed section head carries `data-state-freshness=""` on the `<header class="fi-section-head">` element itself; hydration mirrors top-level `freshness.state` onto that attribute (per §E.4 freshness rule), and §C.5 paints the rail/pip keyed on the attribute value (no unconditional rail). Each row uses the `.mx-chg-row` anatomy: name (`slices[].name_en` / `name_zh` of `slice_ids[0]`, fallback: domain name of `domain_ids[0]`) · change clause (verbatim `operating_implication`, ≤14 words EN+ZH) · freshness chip (the §D.12 label of `freshness_state`) · chevron (opens the evidence drawer with `evidence_refs`) — so the row reads as a sentence, not a labelled form. The freshness chip on the row carries `data-state-marker="FRESH|AGING|SOURCE_STALE|NO_EVIDENCE"` (attribute form, per E2), with the visible plain-word label from §D.12 inside the chip.
 
 ```html
 <section id="what-changed" class="fi-section fi-panel fi-changes" aria-labelledby="fi-changes-title"
@@ -257,7 +255,7 @@ What-changed is the **support tier** (its title uses `var(--fs-h2)`); rerating-m
     </span>
   </header>
   <ul class="fi-change-list" role="list" data-fi-mount="what-changed-list">
-    [Hydration appends one <li class="fi-change-row mx-chg-row" data-state-freshness data-change-id data-state-marker="<TOKEN>"> per material_changes entry; each row renders name · change clause (≤14 words EN+ZH) · stance verb · chevron.]
+    [Hydration appends one <li class="fi-change-row mx-chg-row" data-state-freshness data-change-id data-state-marker="<TOKEN>"> per material_changes entry; each row renders name (`slices[].name_en` / `name_zh` of `slice_ids[0]`, fallback: domain name of `domain_ids[0]`) · change clause (verbatim `operating_implication`, ≤14 words EN+ZH) · freshness chip (the §D.12 label of `freshness_state`) · chevron (opens the evidence drawer with `evidence_refs`).]
   </ul>
   <p class="fi-section-foot">
     <span class="l-en">Read the underlying receipts before acting on any line.</span>
@@ -306,7 +304,7 @@ State-marker attributes (per E2): each chip carries `data-state-marker="<TOKEN>"
   </p>
 
   <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察">
-    [Hydration appends one <li class="fi-falsifier" data-state-falsifier="{§D.18 label of falsifier.state}"> per falsifiers[] entry.]
+    [Hydration appends one <li class="fi-falsifier" data-state-falsifier="{falsifier.state}"> per falsifiers[] entry.]
   </ul>
 
   <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
@@ -319,7 +317,7 @@ State-marker attributes (per E2): each chip carries `data-state-marker="<TOKEN>"
       </span>
     </h3>
     <ul class="fi-conflict-list" role="list" data-fi-mount="conflict-list">
-      [Hydration appends one <li class="fi-conflict-card fi-panel2" data-conflict-label="…" data-state-marker="<TOKEN>"> per conflicts[] entry whose slice_ids contains the selected slice. Each card carries a visible <footer class="fi-conflict-foot"> element rendering the §D.38 footer copy in EN+ZH (the schema carries the literal `UNRESOLVED_BY_DESIGN` enum; the footer copy is "Left unresolved by design — both statements stand." / "有意不作裁决 — 两种陈述同时成立。" — the visible text is always this copy regardless of `conflicts[].resolution`). Conflicts matching no first-vertical slice are counted in one line: "N more conflicts on other slices" / "其他切片另有 N 项冲突" (the conflict scope is consistent across E.5 and B.2 — see E12).]
+      [Hydration appends one <li class="fi-conflict-card fi-panel2" data-conflict-label="…" data-state-marker="<TOKEN>"> per conflicts[] entry whose slice_ids contains the selected slice. Each card carries a visible <p class="fi-conflict-label">{§D.37 label of conflicts[].label}</p> then <div class="fi-conflict-pair"><div class="fi-conflict-side fi-panel2" data-side="left"><span class="l-en">{§D.32 plane word of left.plane}</span><span class="l-zh">{§D.32 plane word of left.plane}</span><p>{left.statement}</p><button class="fi-evidence-trigger" type="button" data-evidence-ids="{left.evidence_refs join}">↗</button></div><div class="fi-conflict-side fi-panel2" data-side="right"><span class="l-en">{§D.32 plane word of right.plane}</span><span class="l-zh">{§D.32 plane word of right.plane}</span><p>{right.statement}</p><button class="fi-evidence-trigger" type="button" data-evidence-ids="{right.evidence_refs join}">↗</button></div></div> and <p class="fi-conflict-foot">"Left unresolved by design — both statements stand." / "有意不作裁决 — 两项陈述并存。"</p> (the schema carries the literal `UNRESOLVED_BY_DESIGN` enum; the footer copy is always this copy regardless of `conflicts[].resolution`). Conflicts matching no first-vertical slice are counted in one line: "N more conflicts on other slices" / "其他切片另有 N 项冲突" (the conflict scope is consistent across E.5 and B.2 — see E12).]
     </ul>
   </div>
 
@@ -351,20 +349,20 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
   </header>
 
   <div class="fi-view-tabs" role="tablist" data-aria-en="Choose a system view" data-aria-zh="选择系统视图">
-    [Hydration renders one <button role="tab" id="tab-{view_id}" aria-controls="panel-{view_id}" aria-selected="true|false" class="fi-view-tab" data-view="{view_id}" tabindex="0|-1"><span class="l-en">{name_en}</span><span class="l-zh">{name_zh}</span></button> per system_views[] in payload order. Per-view label id: fi-view-label-{view_id}.]
+    [Hydration renders one <button role="tab" id="tab-{view_id}" aria-controls="panel-{view_id}" aria-selected="true|false" class="fi-view-tab" data-view="{view_id}" tabindex="0|-1"><span class="l-en">{name_en}</span><span class="l-zh">{name_zh}</span></button> per system_views[] in payload order.]
   </div>
 
   [Hydration renders one <div role="tabpanel" id="panel-{view_id}" class="fi-view-panel" data-view="{view_id}" aria-labelledby="tab-{view_id}" hidden> per system_views[] in payload order. First-shown nodes per view: the view's nodes with expandable:false first, then expandable nodes, up to 8; remainder behind the <button class="fi-system-expand" aria-expanded="false" aria-controls="nodes-{view_id}"> expand control.]
 
   <template class="fi-view-panel-template">
-    <svg class="fi-system-svg" role="img" data-aria-en="{name_en}" data-aria-zh="{name_zh}" aria-labelledby="fi-view-label-{view_id}">
-      <title id="fi-view-label-{view_id}">{name_en} (plain EN only; the bilingual aria-label rides on the <svg> via data-aria-en / data-aria-zh; no <span> children inside <title> — §E.3 ARIA rule.)</title>
+    <svg class="fi-system-svg" role="img" data-aria-en="{name_en}" data-aria-zh="{name_zh}">
+      <title>{name_en}</title>
       [5–8 <g class="fi-svg-node"> nodes first paint; children render on click.]
     </svg>
     <details class="fi-system-edges" open>
       <summary><span class="l-en">Edge list (step view)</span><span class="l-zh">边的步骤视图</span></summary>
       <ol class="fi-system-edge-list" role="list">
-        [Hydration appends one <li class="fi-system-edge" data-state-evidence="{§D.1 label of evidence_state}"> per edges[] entry, format: "<from label> — {§D.33 relationship word} → <to label> · <evidence_state chip>".]
+        [Hydration appends one <li class="fi-system-edge" data-state-evidence="{evidence_state}"> per edges[] entry, format: "<from label> — {§D.33 relationship word} → <to label> · <evidence_state chip>".]
       </ol>
     </details>
   </template>
@@ -409,7 +407,7 @@ The atlas renders only the slices the payload carries (R-F). The atlas header re
 
 ### B.5 `company-exposure` — sticky matrix / mobile cards
 
-The exposure surface is the L1 table for the company-coverage leg of the dossier (R4 / MPDS §5 item 10). The table renders the **first 8 rows** of `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive); the remaining rows live behind a `<details class="mx-disc">` disclosure whose summary reads "See all N / 查看全部 N 家" (the `N` is the total row count). Each `<li class="fi-exposure-card">` mobile card carries `fi-panel2` (tier-2 nested surface). Per E8, the per-row identity chip is `.fi-evidence-trigger` (opens the evidence drawer) — that class is referenced in §E.4 and must exist in §B (it does, on the row identity chip and on the constraint evidence button).
+The exposure surface is the L1 table for the company-coverage leg of the dossier (R4 / MPDS §5 item 10). The first 8 rows of `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive) live in `.fi-exposure-table-wrap`; the remaining rows live behind a sibling `<details class="fi-disc fi-exposure-more">` disclosure whose summary reads "See all N / 查看全部 N 家" (the `N` is the total row count; hidden when `N ≤ 8`). The mobile cards are a sibling `<ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden>` holding one `<li class="fi-exposure-card fi-panel2">` per row (first 8) plus its own `<details class="fi-disc">` for the rest. Each mobile card carries `fi-panel2` (tier-2 nested surface). Per E8, the per-row identity chip is `.fi-evidence-trigger` (opens the evidence drawer) — that class is referenced in §E.4 and must exist in §B (it does, on the row identity chip and on the constraint evidence button). `.fi-disc` gets its own scoped CSS in §C.7 (summary styled as a quiet `.gbtn-quiet`-like button at `--fs-sm`, chevron rotates when open, `--fs-*` only) — `theme.css` has no `.mx-disc`, so the rule is scoped to `.fi-disc` here.
 
 ```html
 <section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title"
@@ -426,7 +424,7 @@ The exposure surface is the L1 table for the company-coverage leg of the dossier
   </header>
 
   <div class="fi-exposure-table-wrap">
-    <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
+    <table class="fi-exposure-table mx-tbl" aria-describedby="fi-exposure-desc">
       <caption id="fi-exposure-desc" class="visually-hidden">
         <span class="l-en">Company exposure matrix. Rows are companies. Columns are slices.</span>
         <span class="l-zh">公司敞口矩阵。行为公司，列为切片。</span>
@@ -439,29 +437,33 @@ The exposure surface is the L1 table for the company-coverage leg of the dossier
       </thead>
       <tbody data-fi-mount="exposure-rows">
         [Hydration renders one <tr data-row-id data-state-identity="…" data-state-marker="<TOKEN>"> per the first 8 company_exposures[] entries sorted by issuer_label (EN, case-insensitive). Inside each row, <td class="fi-cell"> cells carry:
-          data-state-exposure="{§D.8 label of cells[].exposure.state}" (state-marker token: EXPOSURE_NOT_SEPARATELY_DISCLOSED),
-          data-state-materiality="{§D.5 label of cells[].materiality}" (MATERIAL uses font-weight:700 + word only — see §C.5 cell colour rule).
-          <span class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="{§D.21 label of company_exposures[].identity.state}" data-state-marker="<TOKEN>"> bound to identity.state (state-marker token: IDENTITY_UNRESOLVED).]
+          data-state-exposure="{cells[].exposure.state}" (state-marker token: EXPOSURE_NOT_SEPARATELY_DISCLOSED),
+          data-state-materiality="{cells[].materiality}" (MATERIAL uses font-weight:700 + word only — see §C.5 cell colour rule).
+          <span class="fi-chip fi-exposure-chip" data-state-exposure="{cells[].exposure.state}" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED"></span>
+          <span class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="{company_exposures[].identity.state}" data-state-marker="<TOKEN>"> from identity.state (state-marker token: IDENTITY_UNRESOLVED).]
       </tbody>
     </table>
-    <details class="mx-disc" data-fi-mount="exposure-disc" hidden>
-      <summary>
-        <span class="l-en" data-aria-en="See all {N} companies">See all {N} companies</span>
-        <span class="l-zh" data-aria-zh="查看全部 {N} 家">查看全部 {N} 家</span>
-      </summary>
-      <ul class="fi-exposure-cards" role="list" data-fi-mount="exposure-cards" data-aria-en="Mobile exposure cards" data-aria-zh="移动端敞口卡片" hidden>
-        [Hydration renders one <li class="fi-exposure-card fi-panel2"> per company_exposures[] entry listing only the cells the row carries. The mobile card list is the disclosure body; the disclosure is hidden when N ≤ 8.]
-      </ul>
-    </details>
   </div>
+  <details class="fi-disc fi-exposure-more" data-fi-mount="exposure-more" hidden>
+    <summary>
+      <span class="l-en">See all {N}</span>
+      <span class="l-zh">查看全部 {N} 家</span>
+    </summary>
+    <table class="fi-exposure-table mx-tbl" aria-describedby="fi-exposure-desc">
+      [Hydration renders one <tr> per company_exposures[] entry rows 9..N sorted by issuer_label (EN, case-insensitive).]
+    </table>
+  </details>
+  <ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden>
+    [Hydration renders one <li class="fi-exposure-card fi-panel2"> per the first 8 company_exposures[] entries (the table's first 8 rows). For rows 9..N a sibling <details class="fi-disc"> wraps the remaining cards.]
+  </ul>
 </section>
 ```
 
-`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F). Materiality colour rule: ALL four values paint with `var(--fi-text)`; MATERIAL differs by `font-weight: 700` and its word only — never any directional-ink on the exposure surface (see §C.5). The `<details class="mx-disc">` disclosure is the canonical "see all" affordance for sortable tables in this repo — it is the same component the what-changed section uses for the broader change list (R3).
+`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F). Materiality colour rule: ALL four values paint with `var(--fi-text)`; MATERIAL differs by `font-weight: 700` and its word only — never any directional-ink on the exposure surface (see §C.5). At ≥768 the table wrapper + the sibling `<details class="fi-disc fi-exposure-more">` render and the mobile cards are hidden; at ≤767 the table wrapper and the `<details class="fi-disc fi-exposure-more">` are hidden and the mobile cards are visible (cards are NOT inside any wrapper or details). The `.fi-disc` disclosure is the canonical "see all" affordance for sortable tables in this dossier.
 
 ### B.6 `macro-matrix` — flat mechanism + lag grid
 
-The macro-matrix surface is the L1 table for the macro leg of the dossier (R4 / MPDS §5 item 10). The table renders **exactly the rows for the 8 slices in `coverage.first_vertical.slice_ids`** — no more, no less. Because the row count is bound to the schema-defined first-vertical slice count (always 8), no `<details class="mx-disc">` disclosure is needed: every row fits on a single screen at 1440 desktop, and the mobile card list shows the same 8 slices one per card. The mobile card carries `fi-panel2` (tier-2 nested surface). The macro cell state chip uses `.fi-macro-cell-state[data-state]` from §D.11b; the visible state-marker token is `CAUSAL_EFFECT_UNMEASURED`.
+The macro-matrix surface is the L1 table for the macro leg of the dossier (R4 / MPDS §5 item 10). The rows come from `coverage.first_vertical.slice_ids`; if more than 8, the first 8 plus a `.fi-disc` "See all N" disclosure — every row fits on a single screen at 1440 desktop. The mobile card carries `fi-panel2` (tier-2 nested surface). The macro cell state chip uses `.fi-macro-cell-state[data-state]` from §D.11b; the visible state-marker token is `CAUSAL_EFFECT_UNMEASURED`.
 
 ```html
 <section id="macro-matrix" class="fi-section fi-panel fi-macro" aria-labelledby="fi-macro-title"
@@ -489,7 +491,7 @@ The macro-matrix surface is the L1 table for the macro leg of the dossier (R4 / 
         </tr>
       </thead>
       <tbody data-fi-mount="macro-rows">
-        [Hydration renders one <tr data-slice-id> per the 8 slices in coverage.first_vertical.slice_ids (the same 8 as the atlas slice grid), grouped. Cells by (slice, driver) pair; absent → "Not mapped / 未映射". Each cell carries <span class="fi-macro-cell-state" data-state="{§D.11b label of macro_matrix[].state}" data-state-marker="<TOKEN>"> alongside the plain-word mechanism + lag chip. The state-marker token is CAUSAL_EFFECT_UNMEASURED.]
+        [Hydration renders one <tr data-slice-id> per the first 8 slices in coverage.first_vertical.slice_ids; if more than 8, the remaining rows live behind a sibling <details class="fi-disc"> with summary "See all {N} / 查看全部 {N} 个" — every row fits on a single screen at 1440 desktop, and the mobile card list shows the same rows one per card. Cells by (slice, driver) pair; absent → "Not mapped / 未映射". Each cell carries <span class="fi-macro-cell-state" data-state="{macro_matrix[].state}" data-state-marker="<TOKEN>"> alongside the plain-word mechanism + lag chip. The state-marker token is CAUSAL_EFFECT_UNMEASURED.]
       </tbody>
     </table>
   </div>
@@ -516,8 +518,8 @@ The constraint-map section is a tier-1 surface (`fi-section fi-panel`). The cons
     </span>
   </header>
   <ul class="fi-constraint-list" role="list" data-fi-mount="constraint-list">
-    [Hydration appends one <li class="fi-constraint-row fi-panel2" data-constraint="{§D.9 label of constraints[].constraint}" data-slice-id> per constraints[] entry. Each row carries:
-      <span class="fi-chip fi-constraint-chip" data-constraint="…" data-state-marker="<TOKEN>"> bound to §D.9 plain-word label;
+    [Hydration appends one <li class="fi-constraint-row fi-panel2" data-constraint="{constraints[].constraint}" data-slice-id> per constraints[] entry. Each row carries:
+      <span class="fi-chip fi-constraint-chip" data-constraint="…" data-state-marker="<TOKEN>"> from §D.9 plain-word label;
       <span class="fi-constraint-effect">{§A.7 economic_effect}</span>;
       <button class="fi-constraint-evidence" type="button" data-evidence-ids="{evidence_refs join}" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>.]
   </ul>
@@ -534,11 +536,11 @@ The CSS is scoped to `templates/finance_intelligence.css`. It declares a `:root`
 
 ### C.0 Material rationale — dark (command center)
 
-The dark dossier rides a near-black depth; elevation is a ~3% luminance step (`--panel` over `--bg`, `--panel2` over `--panel`), never a glow. Hairlines are 1px solid `--line`. State meaning rides on chip contrast (light-tinted fill + high-contrast ink) and on icon/text companions — colour is never the only channel (doctrine §5 + WCAG 1.4.1). Restrained glow appears only on the focused stepper dot and the focused "what changed" freshness pip (1px outer ring at `--link`). The rerating stepper is a thin horizontal spine at 2px with circular dots; the spine carries the rhythm, the dots are anchors.
+The dark dossier rides a near-black depth; elevation is a ~3% luminance step (`--panel` over `--bg`, `--panel2` over `--panel`), never a glow. Hairlines are 1px solid `--line`. State meaning rides on chip contrast (light-tinted fill + high-contrast ink) and on icon/text companions — colour is never the only channel (doctrine §5 + WCAG 1.4.1). The freshness state rides a real pip (an 8×8 round marker in `--fi-fresh-colour`) on the section head with a soft 3px glow ring; the focus ring is a separate mechanism (dark 1px `--link` outline + 4px glow, light 2px solid). The rerating stepper is a thin horizontal spine at 2px with circular dots; the spine carries the rhythm, the dots are anchors.
 
 ### C.1 Material rationale — light (research workspace)
 
-The light dossier sits on a perceptibly deeper canvas (doctrine §5: the light-canvas token is shipped in `theme.css` light block, lines 199–223, naming the baseline explicitly there) so panels read as paper laid on a desk. White panels (the light panel token, from theme.css light) carry 1px hairlines (`--line`); elevation comes from a 2-stop hairline-tight shadow stack, never from saturation. Glow becomes shadow: the focused stepper dot drops a 2px ring at `--ink-link`; the "what changed" freshness pip replaces glow with a 3px left rail. Chips use a quiet tint + darkened ink pair; no chip saturates the surface.
+The light dossier sits on a perceptibly deeper canvas (doctrine §5: the light-canvas token is shipped in `theme.css` light block, lines 199–223, naming the baseline explicitly there) so panels read as paper laid on a desk. White panels (the light panel token, from theme.css light) carry 1px hairlines (`--line`); elevation comes from a 2-stop hairline-tight shadow stack, never from saturation. Glow becomes shadow: the focused stepper dot drops a 2px ring at `--ink-link`; the freshness pip is hidden in light (the existing 3px left rail carries the state). Chips use a quiet tint + darkened ink pair; no chip saturates the surface.
 
 ### C.2 Common tokens (always inherited from `theme.css`)
 
@@ -564,7 +566,7 @@ html[data-theme="dark"] {
   --fi-link:          var(--link);
   --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
   --fi-step-fill:     color-mix(in srgb, var(--link) 14%, var(--panel));
-  --fi-step-ring:     color-mix(in srgb, var(--link) 38%, transparent);
+  --fi-step-ring:     color-mix(in srgb, var(--link) 30%, transparent);
   --fi-chip-observed: color-mix(in srgb, var(--ok)   18%, var(--panel));
   --fi-chip-watch:    color-mix(in srgb, var(--warn) 18%, var(--panel));
   --fi-chip-caution:  color-mix(in srgb, var(--info) 14%, var(--panel));
@@ -590,7 +592,7 @@ html[data-theme="light"] {
   --fi-link:          var(--link);
   --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
   --fi-step-fill:     color-mix(in srgb, var(--link) 12%, var(--panel));
-  --fi-step-ring:     color-mix(in srgb, var(--ink-link) 26%, transparent);
+  --fi-step-ring:     var(--link);
   --fi-chip-observed: color-mix(in srgb, var(--ok)   10%, var(--panel));
   --fi-chip-watch:    color-mix(in srgb, var(--warn) 10%, var(--panel));
   --fi-chip-caution:  color-mix(in srgb, var(--info)  8%, var(--panel));
@@ -626,6 +628,7 @@ The five mechanisms below are the load-bearing art-direction differences; each i
 .fi-exposure-card,
 .fi-falsifier,
 .fi-constraint-row,
+.fi-rerating-step,
 .fi-conflict-side {
   background: var(--fi-panel2);
   border: 1px solid var(--fi-line);
@@ -649,6 +652,7 @@ html[data-theme="light"] .fi-macro-card,
 html[data-theme="light"] .fi-exposure-card,
 html[data-theme="light"] .fi-falsifier,
 html[data-theme="light"] .fi-constraint-row,
+html[data-theme="light"] .fi-rerating-step,
 html[data-theme="light"] .fi-conflict-side {
   background: color-mix(in srgb, var(--panel) 92%, var(--bg));
   border: 1px solid var(--fi-line);
@@ -656,38 +660,51 @@ html[data-theme="light"] .fi-conflict-side {
 }
 ```
 
-**(2) Freshness rail/pip (R2).** One colour map used by both themes, keyed on the `data-state-freshness` attribute that hydration mirrors onto `#what-changed .fi-section-head` (per §E.4). The map: FRESH → `var(--fresh-ok)`, AGING → `var(--warn)`, SOURCE_STALE → `var(--act)`, NO_EVIDENCE → `var(--line)`. **Dark = pip glow** on the section head itself: `box-shadow: 0 0 0 3px color-mix(in srgb, <colour> 25%, transparent)`. **Light = 3px left rail** on the section head in that colour (no glow). There is NO unconditional rail — the rule only fires when the attribute is set; default state (no attribute) is no rail, no pip. NO_EVIDENCE in light uses `--line` (the hairline) so the rail reads as "no signal", not as a coloured signal. The same colour map drives both `.fi-chip[data-state-freshness]` chips and the `[data-state-freshness]` on `.fi-section-head`.
+**(2) Freshness rail/pip (R2).** One colour map used by both themes, keyed on the `data-state-freshness` attribute that hydration mirrors onto `#what-changed .fi-section-head` (per §E.4). The map: FRESH → `var(--fresh-ok)`, AGING → `var(--warn)`, SOURCE_STALE → `var(--act)`, NO_EVIDENCE → `var(--line)`. **Dark = real pip** rendered via a `::before` pseudo-element on the section head: an 8×8 round marker in `--fi-fresh-colour` with a soft 3px glow ring. **Light = 3px left rail** on the section head in that colour (no glow, no pip). There is NO unconditional rail — the rule only fires when the attribute is set; default state (no attribute) is no rail, no pip. NO_EVIDENCE in light uses `--line` (the hairline) so the rail reads as "no signal", not as a coloured signal. The same colour map drives both `.fi-chip[data-state-freshness]` chips (the hero freshness chip `.fi-chip[data-fi-mount="hero-freshness"]` and the B.1 row chip) and the `[data-state-freshness]` on `.fi-section-head`.
 
 ```css
-/* Common colour map — dark = pip glow */
-.fi-section-head[data-state-freshness="FRESH"] {
+/* Common colour map — dark = real pip (::before) */
+.fi-section-head[data-state-freshness]::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 8px; background: var(--fi-fresh-colour);
+}
+.fi-section-head[data-state-freshness="FRESH"] { --fi-fresh-colour: var(--fresh-ok); }
+.fi-section-head[data-state-freshness="FRESH"]::before {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--fresh-ok) 25%, transparent);
 }
-.fi-section-head[data-state-freshness="AGING"] {
+.fi-section-head[data-state-freshness="AGING"] { --fi-fresh-colour: var(--warn); }
+.fi-section-head[data-state-freshness="AGING"]::before {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 25%, transparent);
 }
-.fi-section-head[data-state-freshness="SOURCE_STALE"] {
+.fi-section-head[data-state-freshness="SOURCE_STALE"] { --fi-fresh-colour: var(--act); }
+.fi-section-head[data-state-freshness="SOURCE_STALE"]::before {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--act) 25%, transparent);
 }
-.fi-section-head[data-state-freshness="NO_EVIDENCE"] {
+.fi-section-head[data-state-freshness="NO_EVIDENCE"] { --fi-fresh-colour: var(--line); }
+.fi-section-head[data-state-freshness="NO_EVIDENCE"]::before {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 25%, transparent);
 }
-/* Light = 3px left rail, NO glow */
+/* Light = 3px left rail, NO pip, NO glow */
+html[data-theme="light"] .fi-section-head::before { display: none; }
 html[data-theme="light"] .fi-section-head[data-state-freshness="FRESH"] {
   border-left: 3px solid var(--fresh-ok);
   padding-left: 12px;
+  box-shadow: none;
 }
 html[data-theme="light"] .fi-section-head[data-state-freshness="AGING"] {
   border-left: 3px solid var(--warn);
   padding-left: 12px;
+  box-shadow: none;
 }
 html[data-theme="light"] .fi-section-head[data-state-freshness="SOURCE_STALE"] {
   border-left: 3px solid var(--act);
   padding-left: 12px;
+  box-shadow: none;
 }
 html[data-theme="light"] .fi-section-head[data-state-freshness="NO_EVIDENCE"] {
   border-left: 3px solid var(--line);
   padding-left: 12px;
+  box-shadow: none;
 }
 ```
 
@@ -735,15 +752,16 @@ html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 
 
 ```css
 .fi-rerating-step[data-active="true"] .fi-step-dot {
-  box-shadow: 0 0 0 4px var(--fi-panel);
+  box-shadow: 0 0 0 4px var(--fi-step-ring);
+  border-color: var(--fi-link);
 }
 .fi-rerating-steps::before {
-  content: ""; position: absolute; left: 5%; right: 5%; top: 23px; height: 2px;
+  content: ""; position: absolute; left: 5%; right: 5%; top: 7px; height: 2px;
   background: color-mix(in srgb, var(--text) 14%, transparent);
   border-radius: 2px; z-index: 0;
 }
 html[data-theme="light"] .fi-rerating-step[data-active="true"] .fi-step-dot {
-  box-shadow: 0 0 0 4px var(--panel);
+  box-shadow: 0 0 0 4px var(--link);
   background: var(--fi-step-fill);
   border-color: var(--fi-link);
 }
@@ -752,7 +770,7 @@ html[data-theme="light"] .fi-rerating-steps::before {
 }
 ```
 
-**(6) `.fi-chip` base rule (E8).** A single shared base for every chip element so per-state rules (`.fi-slice-chip`, `.fi-membership-chip`, `.fi-posture-chip`, `.fi-constraint-chip`, `.fi-step-chip`, `.fi-comparability-chip`, `.fi-anchor-chip`, `.fi-history-chip`, `.fi-valuation-chip`, `.fi-price-chip`, `.fi-identity-chip`, `.fi-macro-cell-state`, `.fi-outer-dossier`) layer cleanly. The base carries padding, radius, font-size, and the hairline — NEVER a colour. Each per-state rule paints the colour; the visible label text always carries the plain-word row from §D. The prior `.fi-freshness`, `.fi-chip-fresh`, and `.fi-slice-fresh` rules are REMOVED (all unused — freshness state is read via `.fi-section-head[data-state-freshness]` in (2) above; no chip element carries the freshness state).
+**(6) `.fi-chip` base rule (E8).** A single shared base for every chip element so per-state rules (`.fi-slice-chip`, `.fi-membership-chip`, `.fi-posture-chip`, `.fi-constraint-chip`, `.fi-step-chip`, `.fi-comparability-chip`, `.fi-anchor-chip`, `.fi-history-chip`, `.fi-valuation-chip`, `.fi-price-chip`, `.fi-identity-chip`, `.fi-macro-cell-state`, `.fi-outer-dossier`) layer cleanly. The base carries padding, radius, font-size, and the hairline — NEVER a colour. Each per-state rule paints the colour; the visible label text always carries the plain-word row from §D. The prior `.fi-freshness`, `.fi-chip-fresh`, and `.fi-slice-fresh` rules are REMOVED (all unused — freshness state is read via `.fi-section-head[data-state-freshness]` in (2) above).
 
 ```css
 .fi-chip {
@@ -788,7 +806,7 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 .fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
 .fi-toc a, .fi-toc-evidence { color: var(--fi-text); text-decoration: none; padding: 4px 8px; border-radius: 7px; background: transparent; border: 0; cursor: pointer; font: inherit; }
 .fi-toc a:hover, .fi-toc-evidence:hover { background: var(--fi-panel2); }
-.fi-section { margin-top: 40px; }
+.fi-section { margin-top: 40px; padding: 20px 24px; }
 .fi-section-title { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em; margin: 0 0 4px; }
 /* R3 — answer tier (rerating-map). The five support sections keep --fs-h2. */
 .fi-section-title-answer { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; }
@@ -810,10 +828,6 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
   padding: 0;
   list-style: none;
   position: relative;
-}
-.fi-rerating-steps::before {
-  content: ""; position: absolute; left: 5%; right: 5%; top: 23px; height: 2px;
-  background: var(--fi-spine); border-radius: 2px; z-index: 0;
 }
 .fi-rerating-step {
   position: relative; z-index: 1;
@@ -851,7 +865,7 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 
 /* falsifiers list */
 .fi-falsifiers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
-.fi-falsifier { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel); font-size: var(--fs-sm); }
+.fi-falsifier { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; font-size: var(--fs-sm); }
 .fi-falsifier-chip { font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
 .fi-falsifier-statement { color: var(--fi-text); }
 .fi-falsifier-window { color: var(--fi-muted); font-variant-numeric: tabular-nums; }
@@ -860,13 +874,13 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 .fi-conflicts { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--fi-line); }
 .fi-conflicts-title { font-size: var(--fs-h3); font-weight: 700; margin: 0 0 8px; }
 .fi-conflict-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
-.fi-conflict-card { background: var(--fi-panel); border: 1px solid var(--fi-line); border-radius: 12px; padding: 12px 16px; }
+.fi-conflict-card { padding: 12px 16px; }
 .fi-conflict-label { font-size: var(--fs-sm); font-weight: 700; display: block; margin-bottom: 6px; }
 .fi-conflict-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .fi-conflict-side { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); font-size: var(--fs-sm); }
 .fi-conflict-side-statement { display: block; }
 .fi-conflict-side-evidence { margin-top: 4px; font-size: var(--fs-sm); }
-.fi-conflict-resolution { font-size: var(--fs-sm); color: var(--fi-muted); margin: 8px 0 0; }
+.fi-conflict-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 8px 0 0; }
 
 /* chip state colours — each maps to one plane-state token and includes a plain-word
    companion so colour is never the only channel (doctrine §5 + WCAG 1.4.1). */
@@ -898,16 +912,16 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
   font-size: var(--fs-sm); font-weight: 600; padding: 1px 7px; border-radius: 999px;
   border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text);
 }
-.fi-slice[data-state-slice="SEMANTIC_ONLY"] .fi-chip-slice { background: var(--fi-chip-missing); }
-.fi-slice[data-state-slice="MEASURABLE"]   .fi-chip-slice { background: var(--fi-chip-observed); }
-.fi-slice[data-state-slice="STALE"]        .fi-chip-slice { background: var(--fi-chip-stale); }
-.fi-slice[data-state-slice="HELD_FOR_REVIEW"] .fi-chip-slice { background: var(--fi-chip-watch); }
-.fi-slice[data-state-membership="CURRENT_MEMBERSHIP_ONLY"] .fi-chip-membership,
-.fi-slice[data-state-membership="PIT_MEMBERSHIP_INCOMPLETE"] .fi-chip-membership { background: var(--fi-chip-regime); }
-.fi-slice[data-state-posture="SEMANTIC_ONLY"] .fi-chip-posture { background: var(--fi-chip-missing); }
-.fi-slice[data-state-posture="RESEARCH_CANDIDATE"] .fi-chip-posture { background: var(--fi-chip-caution); }
-.fi-slice[data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"] .fi-chip-posture { background: var(--fi-chip-watch); }
-.fi-slice[data-state-posture="ADMITTED"] .fi-chip-posture { background: var(--fi-chip-observed); }
+.fi-slice-chip[data-state-slice="SEMANTIC_ONLY"] { background: var(--fi-chip-missing); }
+.fi-slice-chip[data-state-slice="MEASURABLE"]   { background: var(--fi-chip-observed); }
+.fi-slice-chip[data-state-slice="STALE"]        { background: var(--fi-chip-stale); }
+.fi-slice-chip[data-state-slice="HELD_FOR_REVIEW"] { background: var(--fi-chip-watch); }
+.fi-membership-chip[data-state-membership="CURRENT_MEMBERSHIP_ONLY"],
+.fi-membership-chip[data-state-membership="PIT_MEMBERSHIP_INCOMPLETE"] { background: var(--fi-chip-regime); }
+.fi-posture-chip[data-state-posture="SEMANTIC_ONLY"] { background: var(--fi-chip-missing); }
+.fi-posture-chip[data-state-posture="RESEARCH_CANDIDATE"] { background: var(--fi-chip-caution); }
+.fi-posture-chip[data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"] { background: var(--fi-chip-watch); }
+.fi-posture-chip[data-state-posture="ADMITTED"] { background: var(--fi-chip-observed); }
 .fi-slice-open { background: transparent; border: 1px solid var(--fi-line); border-radius: 6px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
 .fi-atlas-gap { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; }
 
@@ -948,7 +962,7 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 .fi-macro-cell-state[data-state="DESCRIBED"] { background: var(--fi-chip-observed); }
 
 .fi-constraint-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
-.fi-constraint-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel); font-size: var(--fs-sm); }
+.fi-constraint-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; font-size: var(--fs-sm); }
 
 .fi-view-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 16px; }
 .fi-view-tab[aria-selected="true"] { background: var(--fi-step-fill); border-color: var(--fi-link); }
@@ -994,17 +1008,18 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
 @media (min-width: 768px) and (max-width: 1199px) {
   .fi-rerating-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .fi-rerating-steps::before { display: none; }
-  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); flex-wrap: wrap; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel2); border: 1px solid var(--fi-line); flex-wrap: wrap; }
   .fi-step-dot { margin: 0 6px 0 0; }
 }
 @media (max-width: 767px) {
   .fi-rerating-steps { grid-template-columns: 1fr; gap: 6px; }
   .fi-rerating-steps::before { display: none; }
-  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel); border: 1px solid var(--fi-line); flex-wrap: wrap; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel2); border: 1px solid var(--fi-line); flex-wrap: wrap; }
   .fi-step-dot { margin: 0 6px 0 0; }
   .fi-domain-grid { grid-template-columns: 1fr; }
   .fi-exposure-table-wrap { display: none; }
   .fi-exposure-cards { display: grid; }
+  .fi-section { padding: 16px; }
   /* Macro: ≤767 hides the table and shows the cards; 768–1199 keeps overflow-x:auto on the table wrapper. */
   .fi-macro-table-wrap { display: none; }
   .fi-macro-cards { display: grid; gap: 10px; list-style: none; margin: 16px 0 0; padding: 0; }
@@ -1601,7 +1616,7 @@ fetch(FI_READ_URL, {
 
 The document lives in one in-memory closure variable only. Deep-link hashes `#evidence=<record_id>` and `#slice=<slice_id>` resolve against the in-memory document.
 
-**Page-local ARIA swapper (E3).** `aria-label` is an HTML attribute, so `.l-en`/`.l-zh` cannot swap it. The page owns a swapper that reads `data-aria-en` + `data-aria-zh` on `langchange` (the `commodities.html.j2` pattern, copied verbatim). Selects only `[data-aria-en]`; EN branch reads `el.getAttribute('data-aria-en')`; ZH branch reads `data-aria-zh || data-aria-en`. The `data-aria-zh` attribute is OPTIONAL on every element — the EN value is the fallback when ZH is missing. `theme.js` does NOT swap `data-en` / `data-zh`; it does NOT swap `data-aria-*` either — `theme.js` only flips the `.l-en` / `.l-zh` visibility on `html[data-lang]` and writes the language toggle to local storage. The page-local swapper below is the SOLE mechanism that swaps `aria-label` on language flip.
+**Page-local ARIA swapper (E3).** `aria-label` is an HTML attribute, so `.l-en`/`.l-zh` cannot swap it. The page owns a swapper that reads `data-aria-en` + `data-aria-zh` on `langchange` (the `commodities.html.j2` pattern, copied verbatim). Selects only `[data-aria-en]`; EN branch reads `el.getAttribute('data-aria-en')`; ZH branch reads `data-aria-zh || data-aria-en`. The `data-aria-zh` attribute is OPTIONAL on every element — the EN value is the fallback when ZH is missing. The page-local swapper below is the SOLE mechanism that swaps `aria-label` on language flip; `.l-en`/`.l-zh` visibility is toggled by `html[data-lang]`; the page-local swapper handles `aria-label`.
 
 ```js
 (function(){
@@ -1665,7 +1680,7 @@ Every state uses the `.mx-empty` (the block) + `.mx-empty-why` (the one-line rea
 | `.fi-slice-select` (native) | `change` | re-render `.fi-rerating-steps`, `.fi-falsifiers`, `.fi-conflicts` for the new slice | URL hash updates to `#slice=<slice_id>` | Focus stays on the select |
 | `hashchange` / `popstate` | listener | re-render slice selector + drawer open if `#evidence=<id>` | drawer `aria-hidden=false` for `#evidence` | Focus moves to drawer's first focusable for `#evidence`; no focus shift for `#slice` (select retains focus) |
 | Theme toggle (`.theme-toggle` global) | `click` | `html[data-theme]` flips between `dark` and `light` | none | Persist via existing `theme.js` |
-| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps (via the existing `theme.js` language toggle on `html[data-lang]`); the page-local ARIA swapper in §E.1 swaps `aria-label` from the active `data-aria-*` pair on `langchange` (NOT `theme.js` — `theme.js` does NOT swap `data-en` / `data-zh` or `data-aria-*`) | `aria-label` swapped | Persist via existing `theme.js` |
+| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility is toggled by `html[data-lang]`; the page-local ARIA swapper in §E.1 swaps `aria-label` from the active `data-aria-*` pair on `langchange` | `aria-label` swapped | Persist via existing `theme.js` |
 | `prefers-reduced-motion: reduce` | media-query change | drawer's CSS transition collapses to `none` | none | none |
 | Conflict card | `mouseenter` / `focus` | none | visible line + button (no hover-only meaning) | none |
 
@@ -1686,8 +1701,9 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 | `domain-grid` | B.4 | one `<section class="fi-domain">` per `domains[]` in payload order; inside, one `<li class="fi-slice">` per `slices[]` entry whose `domain_id` matches |
 | `coverage eyebrow` | B.4 | text node from `coverage.{domains_populated, domains_total, slices_populated, slices_total}` |
 | `atlas-gap` | B.4 | text node from `coverage.slices_total − sum(rendered)` |
-| `exposure-rows` | B.5 | one `<tr>` per `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive); `<td>` per `cells[]` cell (absent slice column → "No role recorded / 未记录角色") |
-| `exposure-cards` | B.5 | one `<li class="fi-exposure-card">` per `company_exposures[]` entry (phone only; hidden ≥768) |
+| `exposure-rows` | B.5 | one `<tr>` per the first 8 `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive); `<td>` per `cells[]` cell (absent slice column → "No role recorded / 未记录角色") |
+| `exposure-more` | B.5 | sibling `<details>` over rows 9..N; hidden when N ≤ 8 |
+| `exposure-cards` | B.5 | one `<li class="fi-exposure-card">` per the first 8 `company_exposures[]` entries (phone only; hidden ≥768) |
 | `macro-rows` | B.6 | one `<tr data-slice-id>` per unique `slice_id` in `macro_matrix[]` in payload order; cell for each (slice, driver) pair; absent → "Not mapped / 未映射" |
 | `constraint-list` | B.7 | one `<li class="fi-constraint-row">` per `constraints[]` |
 | `view-tabs` / `view-panels` | B.3 | one `<button role="tab">` and one `<div role="tabpanel">` per `system_views[]` in payload order |
@@ -1697,7 +1713,7 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 
 ## F. Two entry modules — static markup, no payload bindings
 
-Both entry modules become **static markup** with NO payload-bound Jinja — no document-data loops, no `{{ fin.… }}` bindings. Static bilingual copy uses the repo's `data-en`/`data-zh` idiom and is swapped by existing `theme.js` on `html[data-lang]` flip. The CTA href is a route variable `{{ fi_dossier_href }}` (placeholder; bound at integration into the shared foundation route — the spec names no path).
+Both entry modules become **static markup** with NO payload-bound Jinja — no document-data loops, no `{{ fin.… }}` bindings. Static bilingual copy uses the repo's `<span class="l-en">` / `<span class="l-zh">` idiom; `.l-en` / `.l-zh` visibility is toggled by `html[data-lang]`; the page-local swapper handles `aria-label`. The CTA href is a route variable `{{ fi_dossier_href }}` (placeholder; bound at integration into the shared foundation route — the spec names no path).
 
 ### F.1 `_finance_sector_deep_dive.html.j2` — Theme Tracker card (navigation-only)
 
@@ -1709,22 +1725,22 @@ A navigation-only card placed AFTER the existing `rp` "What to look at first" mo
 {# STATIC markup — no payload bindings. Hydration is owned by §E.         #}
 <section class="sot-sector-deep-dive fi-panel" aria-labelledby="sot-finance-deep-dive-title">
   <p class="sot-kicker">
-    <span class="l-en" data-en="Sector deep dive">Sector deep dive</span>
-    <span class="l-zh" data-zh="子行业深读">子行业深读</span>
+    <span class="l-en">Sector deep dive</span>
+    <span class="l-zh">子行业深读</span>
   </p>
   <h3 id="sot-finance-deep-dive-title">
-    <span class="l-en" data-en="Financials · Finance Intelligence">Financials · Finance Intelligence</span>
-    <span class="l-zh" data-zh="金融 · 金融情报">金融 · 金融情报</span>
+    <span class="l-en">Financials · Finance Intelligence</span>
+    <span class="l-zh">金融 · 金融情报</span>
   </h3>
   <p class="sot-deep-dive-deck">
-    <span class="l-en" data-en="Research context across the financial system — not a canonical theme stage or trade call.">Research context across the financial system — not a canonical theme stage or trade call.</span>
-    <span class="l-zh" data-zh="对金融体系的研究背景 — 非主题生命周期阶段或交易指令。">对金融体系的研究背景 — 非主题生命周期阶段或交易指令。</span>
+    <span class="l-en">Research context across the financial system — not a canonical theme stage or trade call.</span>
+    <span class="l-zh">对金融体系的研究背景 — 非主题生命周期阶段或交易指令。</span>
   </p>
   <a class="sot-deep-dive-action"
      href="{{ fi_dossier_href }}"
      aria-label="Open Finance Intelligence" data-aria-en="Open Finance Intelligence" data-aria-zh="打开金融情报">
-    <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
-    <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
+    <span class="l-en">Open Finance Intelligence ↗</span>
+    <span class="l-zh">打开金融情报 ↗</span>
   </a>
 </section>
 ```
@@ -1740,22 +1756,22 @@ A compact launch module placed near the existing back-link on `basket/us_sector_
    STATIC markup — no payload bindings, no domains listing. Hydration is owned by §E. #}
 <section class="fi-launch fi-panel" aria-labelledby="fi-launch-title">
   <p class="fi-kicker">
-    <span class="l-en" data-en="Finance Intelligence">Finance Intelligence</span>
-    <span class="l-zh" data-zh="金融情报">金融情报</span>
+    <span class="l-en">Finance Intelligence</span>
+    <span class="l-zh">金融情报</span>
   </p>
   <h3 id="fi-launch-title">
-    <span class="l-en" data-en="Research context for the financial system">Research context for the financial system</span>
-    <span class="l-zh" data-zh="金融体系的研究背景">金融体系的研究背景</span>
+    <span class="l-en">Research context for the financial system</span>
+    <span class="l-zh">金融体系的研究背景</span>
   </h3>
   <p class="fi-launch-deck">
-    <span class="l-en" data-en="Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.">Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.</span>
-    <span class="l-zh" data-zh="下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。">下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。</span>
+    <span class="l-en">Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.</span>
+    <span class="l-zh">下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。</span>
   </p>
   <a class="fi-launch-action"
      href="{{ fi_dossier_href }}"
      aria-label="Open Finance Intelligence" data-aria-en="Open Finance Intelligence" data-aria-zh="打开金融情报">
-    <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
-    <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
+    <span class="l-en">Open Finance Intelligence ↗</span>
+    <span class="l-zh">打开金融情报 ↗</span>
   </a>
 </section>
 ```
@@ -1770,8 +1786,8 @@ The dossier must never expose a private payload. Every degraded state shows a ty
 
 | Condition | Trigger source | EN foot / banner | ZH foot / banner | Hidden | Still rendered |
 |---|---|---|---|---|---|
-| `503 PRIVATE_STORE_UNAVAILABLE` | composer fetch fails with `error="PRIVATE_STORE_UNAVAILABLE"` | `Private evidence store unavailable` | `私有证据库暂不可用` | all seven sections render as shells; no evidence refs resolve; no company rows | theme; TOC; chips show N/A |
-| `503 NO_GENERATION` | composer has no committed generation this cycle | `No evidence generation published yet — re-drawn after the next nightly` | `尚未发布证据版本，夜间更新后重绘` | all quantitative fields; rerating nodes show "Not applicable here" chips | slice grid renders with `slice_state` chips |
+| `503 PRIVATE_STORE_UNAVAILABLE` | composer fetch fails with `error="PRIVATE_STORE_UNAVAILABLE"` | `Private evidence store unavailable` | `私有证据库暂不可用` | section shells + notice only | theme; TOC |
+| `503 NO_GENERATION` | composer has no committed generation this cycle | `No evidence generation published yet — re-drawn after the next nightly` | `尚未发布证据版本，夜间更新后重绘` | section shells + notice only | theme; TOC |
 | `503 GENERATION_TORN` | composer aborted mid-write; partial cache | `Generation interrupted — partial context only` | `生成中断 — 仅展示部分背景` | partial numeric data within torn sections | header + TOC + per-section `data-state-partial="true"` indicator |
 | `503 CONTRACT_INVALID` | response fails `finance_intelligence_read_model.v1.schema.json` validation | `Contract mismatch — showing public shell only` | `契约不一致 — 仅展示公开外壳` | all seven sections | title + deck + TOC only |
 | `outer_dossier_ref.state = OUTER_CONTRACT_NOT_ACCEPTED` | composer surface contract not yet wired | `Outer dossier not accepted — research context only` | `外部报告尚未接入 — 仅作研究背景` | (foot banner only) | dossier body still renders against the local contract |
@@ -1844,10 +1860,10 @@ The audit's strongest finding was that light was a token swap, not a light desig
 Acceptance requires every one of the 14 cells to hold in BOTH themes AND in BOTH EN/ZH AND at BOTH viewports. The matrix below is the cross-product the seat's harness must walk.
 
 ```
-dark / 1440 / EN   ✅  dark / 1440 / ZH   ✅
-dark /  390 / EN   ✅  dark /  390 / ZH   ✅
-light / 1440 / EN  ✅  light / 1440 / ZH  ✅
-light /  390 / EN  ✅  light /  390 / ZH  ✅
+dark / 1440 / EN   ☐  dark / 1440 / ZH   ☐
+dark /  390 / EN   ☐  dark /  390 / ZH   ☐
+light / 1440 / EN  ☐  light / 1440 / ZH  ☐
+light /  390 / EN  ☐  light /  390 / ZH  ☐
 ```
 
 A failing cell in any of the four dimensions (theme × lang × viewport × cell) returns the build lane to the §B/§C owner; the dossier does NOT claim acceptance on partial coverage.
@@ -1873,7 +1889,7 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 - §B renders seven L1 sections + one evidence-drawer aside inside `<main id="fi-main" class="fi-shell">` (main carries NO `.fi-panel` — R1); B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; each conflict card carries a visible `<footer class="fi-conflict-foot">` rendering the §D.38 footer copy; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero document-data loops, zero payload-bound Jinja bindings, zero HTML-comment markers** anywhere in §B or §F; `.fi-system-expand` (B.3), `.fi-evidence-trigger` (B.5), `.fi-constraint-evidence` (B.7), `.fi-domain` + `.fi-slice` (B.4), `.fi-constraint-chip` + `.fi-constraint-row` (B.7) all exist in §B markup.
 - §C declares two art directions as full rules; two-tier elevation (`.fi-panel` tier 1 vs `.fi-panel2` tier 2); `data-state-freshness` attribute on `<header class="fi-section-head">` is the only freshness binding (no `.fi-chip-fresh` / `.fi-slice-fresh` rules); zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
 - §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH (every row's DOM location uses the `data-state-marker="<TOKEN>"` attribute on the chip element per E2 — no HTML-comment markers); closes the label map across every enum the live schema can deliver; one label per token (VALUATION_ANCHOR_UNAVAILABLE → "No valuation anchor on file / 暂无估值锚"; CAUSAL_EFFECT_UNMEASURED → "Causal effect not measured / 因果影响未测量" — unified across D.1 / D.11b / D.17 / D.36); conflict footer "Left unresolved by design — both statements stand. / 有意不作裁决 — 两种陈述同时成立。" everywhere in §D.38 (the orphan "Falsifier list heading" + "Atlas footer chip" rows moved from D.39 into D.38); D.40 deleted (its five tokens were not in schema); bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
-- §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; ARIA swapper pattern matches house verbatim; every conflict's footer copy comes from §D.38; the section-head `data-state-freshness` attribute is hydrated from the top-level `freshness.state` (B.1) and from `slices[].freshness.state` for the selected slice (B.2) — no chip element carries the freshness state; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
+- §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; ARIA swapper pattern matches house verbatim; every conflict's footer copy comes from §D.38; the section-head `data-state-freshness` attribute is hydrated from the top-level `freshness.state` (B.1) and from `slices[].freshness.state` for the selected slice (B.2); the hero freshness chip `.fi-chip[data-fi-mount="hero-freshness"]` and the B.1 row chip both carry the freshness state via `data-state-freshness` attribute; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
 - §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts, top-domains facet, evidence-horizon label, coverage-state readout, and populated-slices count bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; no top-domains facet is rendered.
 - §G degraded-state copy fixed per R-K; "Outer dossier not accepted" rebinds to `outer_dossier_ref.state` (not 503); "refresh in a moment" copy removed; new degraded_sections per-section rows added.
 - §H evidence matrix is 8 base shots + 14 per-cell close-ups + 5 mechanism-by-mechanism proof shots + the theme × lang × viewport cross-product; the prior single-parity PNG and 390-only cell are removed; H.1 cell 2 references the F.2 eyebrow+title+plain-sentence+CTA structure (no "Domains mapped" copy); H.1 cell 4 references `.fi-slice[data-state-slice="SEMANTIC_ONLY"]` (no `.fi-slice-no-basket` class).
@@ -1890,6 +1906,8 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 - No node-level evidence_state — the edge-level `evidence_state` is what renders in the step-list equivalent (per §A.3).
 - `freshness.state` lives on `slices[].freshness.state` AND on the top-level `freshness.state`, both consumed per their paths; the dossier does not introduce a third location.
 - No live-test environment was available — no screenshots produced; the PNG paths in §H are the seat's responsibility against the build lane's output.
+- A `stance` word on `material_changes` is a proposed contract amendment, not bound — `material_changes.items.properties` carries no stance field per the live schema (`change_id`, `event_clock`, `domain_ids`, `slice_ids`, `operating_implication`, `evidence_refs`, `conflict_ids`, `freshness_state`); a stance row cell would require a new contract field.
+- Items absorbed by the T8 build packet (deferred): dead inner-markup CSS (`.fi-cell-*`, `.fi-falsifier-*`, `.fi-slice-list`, `.fi-domain-title`, `.fi-slice-open`, `.fi-company-*`, `.fi-outer-dossier`, `.fi-system-edge-statement`, `.fi-col-company`), `aria-controls="nodes-{view_id}"` target + `aria-live` region, `aria-label` on generic elements, `.fi-slice-name` split, stale cross-references (§D.10→D.25, §D.12→D.37).
 
 **DEVIATIONS:**
 
