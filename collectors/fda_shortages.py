@@ -366,6 +366,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
                 return {"promoted": False, "reason": "GENERATION_REGRESSION", "predecessor": on_disk_predecessor}
 
         previous = state["rows"]
+        if previous is None and state["inconsistent"]:
+            return {"promoted": False, "reason": "METADATA_WRITE_FAILED", "predecessor": on_disk_predecessor}
         if previous is None:
             previous = _empty_history_frame()
         previous = _normalise_legacy(previous)
