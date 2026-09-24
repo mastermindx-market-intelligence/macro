@@ -15,6 +15,90 @@ finalization_classification: CHECKPOINTED_CONTINUATION
 
 # GMI Robotics — Master Fable CEO End-to-End Handoff
 
+
+## 2026-09-24 SUPERSEDING COORDINATION AMENDMENT — Semiconductor shared foundation
+
+**READ THIS SECTION BEFORE THE ORIGINAL EXECUTION WAVES BELOW.** It is a material dependency invalidator, not a new Robotics thesis.
+
+Robotics itself still has **no concrete Fable receiver, PICKUP_ACK or START evidence**. Its operation remains `gmi-robotics-fable-ceo-e2e-20260923-chairman-001` in `WAITING_CAPACITY / needs_placement=true` until deliberate live delivery/placement to one eligible Fable session.
+
+Meanwhile, Semiconductor B **has** been concretely assigned and STARTed under operation `gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001` on implementation PR #7870. At this amendment's current read:
+
+- #7870 exact head: `45eb37bbf832e007e67ce2594674d6bfeeb3b880`, Draft/HOLD, not merged.
+- Receiver: Claude Fable 5.1 CEO/orchestrator, Claude Desktop Code session `f6dd4b82-d319-4daf-99a4-ef4fe7dfd9ec`.
+- The ONE shared `theme_graph.curation_assertion.v1` contract/module is implemented on #7870 and was independently reviewed twice after a rejecting first review.
+- Current shared contract blobs:
+  - `contracts/theme_graph/curation_assertion.v1.schema.json` → `ff3928f0c54aa164ef8283d9da45af67e6a0d971`
+  - `engine/theme_graph/curation_assertion.py` → `23a25614782b8b1cb76ce7e3f292b64d35bfb4f6`
+  - `contracts/theme_graph/evidence.v1.schema.json` → `8f909df8ee4c5858512035d2dfef21eac982a34d`
+- The shared contract pins the frozen Robotics minimum payload and preserves the Robotics-required null semantics for `review.review_due_at` and `source.native_digest`.
+- It adds one compatible strengthening: `published_at_grain_mismatch`. `published_at_grain=unknown` requires `published_at=null`; date and instant grains require matching values. The frozen Robotics unknown/null case passes. **Robotics accepts this strengthening; do not fork it.**
+- `source_ref_for` is generic over `scope.canonical_theme_id`; Robotics consumes it unchanged.
+- The optional Semiconductor `industrial_context` extension is additive; Robotics need not emit it.
+
+### Shared work that Robotics must now CONSUME, not re-author
+
+The original Robotics implementation plan remains the product/acceptance map, but its shared-infrastructure tasks are superseded as follows:
+
+1. **Original Task 1 — shared curation assertion contract: DO_NOT_REDO.** Consume the accepted #7870 implementation or its merged successor. Robotics must not create `robotics_curation_assertion`, a second schema/module, or a divergent enum.
+2. **Original Task 2 — evidence-store round-trip: SHARED / STILL GATED.** #7870 added the optional `curation_assertion` property to `evidence.v1`, but the `engine/theme_graph/store.py` `EVIDENCE_COLUMNS` append remains frozen under #7462 custody. Robotics does not open a second store patch. Consume the eventual accepted shared store change after #7462 reconciliation.
+3. **Original Task 3 — K1 curation subtype: SHARED / IN FLIGHT on #7870.** Semiconductor T04 is the current shared implementation lane. Robotics consumes the accepted result; no Robotics-specific K1 subtype.
+4. **Original Task 5 transport: coordinate around the ONE generic paid theme-research transport.** #7870's accepted plan uses `/api/themes/v1/research/query` and `/api/themes/v1/research/evidence` under the existing paid/private boundary. T09 is not accepted yet. Do not create a parallel `/api/themes/v1/robotics` route unless the shared owner explicitly rejects the generic route and a new architecture ruling authorizes a distinct surface.
+5. **Original Task 6 client/mount: coordinate around the ONE generic `theme-research.js/css` client and generic hidden mounts.** Semiconductor T10 is the current shared implementation lane. The Theme Tracker part returned but required review/fix; the basket-detail mount was originally frozen under #7669. #7669 subsequently released the shell-only hunk to the shared carrier. Robotics must consume/extend the accepted generic client/mount, not create `robotics-theme-research.js/css` as a competing surface.
+6. **Private publication remains UNRESOLVED.** #7870 has qualified candidate reuse of the incumbent private publication owner, but its R4 decision remains open and real live admission is still blocked. Robotics must follow the same eventual shared ruling. No second private store/bucket/table/publisher.
+
+### Shared work that is NOT yet accepted
+
+Do not convert in-flight Semiconductor work into Robotics truth merely because a lane returned:
+
+- K1 subtype T04: in flight at the current checkpoint.
+- F04 Semiconductor composer T07/T08: returned and under independent review, not yet a generic Robotics dossier.
+- Generic theme-research client T10: returned; initial independent review required fixes; shared fix lane is in flight.
+- Generic paid API T09: queued after composition.
+- Full-fidelity private live admission: blocked on the R4 ruling.
+- `store.py` optional evidence-column persistence: blocked on #7462 custody.
+- Nothing on #7870 is merged or production-proven yet.
+
+### Revised Fable CEO job for Robotics
+
+Once Robotics is actually delivered to a Fable receiver, that Fable principal must **start by reconciling and consuming the latest accepted shared foundations from #7870 (or its merged/successor carrier)** before commissioning any child.
+
+The Robotics-specific implementation focus becomes:
+
+1. confirm the accepted shared assertion/K1/store/private/API/client contracts and exact revisions;
+2. build only the Robotics-specific F04/dossier composition needed for Precision Motion + Perception, preserving the 32 RBV cases and the approved Robotics research semantics;
+3. curate/qualify the Robotics real evidence cases (Orbbec/Twinny, Parker, Schaeffler/Hexagon, Zebra/PTC, Sanhua/HDS as applicable) through the accepted shared admission path;
+4. extend the generic theme-research response/client with Robotics facets rather than forking the infrastructure;
+5. preserve existing Robotics basket/ThemeState/ranking/entry/sizing outputs;
+6. perform the Robotics-specific paid/private/browser/mirror acceptance end to end.
+
+### Revised first-turn sequence
+
+After concrete Robotics Fable delivery/ACK:
+
+1. Re-pin current protected procedure.
+2. Read this amendment + approved Robotics spec/plan + current #7870 checkpoint + current #7462/#7669 state.
+3. Verify the exact Robotics operation still has no competing START/EFFECT_UNKNOWN writer.
+4. **Do not commission original Task 1.**
+5. Consume the accepted shared contract revision and explicitly record any incompatible Robotics requirement as a bounded shared-contract amendment request on the existing shared owner; do not fork.
+6. Determine which of original Tasks 2/3/5/6 are already accepted upstream and mark those portions `DO_NOT_REDO`.
+7. Create the fresh Robotics implementation carrier from then-current main only for the remaining Robotics-specific work.
+8. Commission the first truly Robotics-specific unblocked child, normally the Robotics F04/dossier composition once its shared dependencies are accepted.
+9. Keep real admission held until the one shared private-publication ruling is accepted and proven.
+10. Complete the unchanged Robotics production/browser/non-regression completion law.
+
+### Precedence
+
+This amendment supersedes any older handoff instruction that tells Robotics Fable to independently author:
+- `theme_graph.curation_assertion.v1`;
+- the K1 curation subtype;
+- a Robotics-only paid API route;
+- a Robotics-only theme-research JS/CSS framework;
+- a second private publication mechanism.
+
+It does **not** supersede the approved Robotics domain research, the Precision Motion/Perception first vertical, the RBV acceptance cases, the no-ranking/trading law, or the real-path completion law.
+
+
 ## 0. Chairman directive and receiver semantics
 
 The live Chairman directive is to place **Fable in CEO-level ownership of the remaining Robotics program end to end**, with Fable acting as the coordinating principal/orchestrator and using the existing subagent fabric as aggressively as is useful.
