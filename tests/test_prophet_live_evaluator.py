@@ -1230,6 +1230,60 @@ def test_partial_census_only_resolves_explicit_known_exception():
     assert "basis_receipt" not in art["states"]["CCC"]
 
 
+def test_mixed_basis_census_without_row_exceptions_never_resolves_implicit_rows():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    p = pack({"AAA": buyable(), "BBB": buyable()})
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        raw: 1,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    for ticker in ("AAA", "BBB"):
+        assert "basis_status" not in art["states"][ticker]
+        assert "basis_receipt" not in art["states"][ticker]
+
+
+def test_mixed_basis_census_resolves_when_nondefault_exception_is_explicit():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        raw: 1,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    assert art["states"]["AAA"]["basis_status"] == "RESOLVED"
+    assert art["states"]["BBB"]["basis_status"] == "RESOLVED"
+    assert art["states"]["BBB"]["levels_adjustment"] == raw
+
+
+def test_contradictory_basis_census_does_not_resolve_unrelated_implicit_rows():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 2,
+        raw: 0,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    assert "basis_receipt" not in art["states"]["AAA"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
 def test_unchecked_basis_never_mints_a_positive_relation_receipt():
     art = _run(pack({"BBB": buyable()}), quotes(BBB=100.0))
     assert art["states"]["BBB"]["state"] == "forming"

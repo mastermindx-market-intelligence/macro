@@ -497,6 +497,34 @@ def _basis_provenance_counts(
     return dict(counts)
 
 
+def _implicit_pack_basis_is_reconciled(
+    pack: dict[str, Any], *, names: dict[str, Any], counts: dict[str, int]
+) -> bool:
+    """Prove that every compact/default row is accounted for by the census.
+
+    A mixed census is only useful when every non-default basis is attached to an
+    explicit row.  Otherwise the pack tells us that an exception exists but not
+    which ticker owns it, so no implicit row may inherit the pack default.
+    """
+    pack_adjustment = pack.get("price_adjustment")
+    if pack_adjustment not in _CANONICAL_ADJUSTMENTS:
+        return False
+
+    declared = {basis: 0 for basis in _BASIS_COUNT_KEYS}
+    for row in names.values():
+        if not isinstance(row, dict):
+            return False
+        if "price_adjustment" not in row:
+            declared[pack_adjustment] += 1
+            continue
+        explicit = row.get("price_adjustment")
+        if explicit not in _CANONICAL_ADJUSTMENTS:
+            return False
+        declared[explicit] += 1
+
+    return all(counts.get(key, 0) == declared[key] for key in _BASIS_COUNT_KEYS)
+
+
 def _resolved_levels_adjustment(
     pack: dict[str, Any], *, entry: dict[str, Any], names: dict[str, Any]
 ) -> str | None:
@@ -521,13 +549,11 @@ def _resolved_levels_adjustment(
             return explicit
         return None
 
-    if counts.get("unknown", 0) > 0:
-        return None
     pack_adjustment = pack.get("price_adjustment")
     if (
         isinstance(pack_adjustment, str)
         and pack_adjustment in _CANONICAL_ADJUSTMENTS
-        and counts.get(pack_adjustment, 0) > 0
+        and _implicit_pack_basis_is_reconciled(pack, names=names, counts=counts)
     ):
         return pack_adjustment
     return None
