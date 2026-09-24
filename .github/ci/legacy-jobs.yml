@@ -13470,6 +13470,7 @@ jobs:
       - "tests/earnings_economic_fixtures.py"
       - "tests/test_pg_economic_observations.py"
       - "tests/test_pg_economic_observations_probes.py"
+      - "tests/test_pg_economic_observations_probes_r2.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -13480,7 +13481,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: PG source-scoped economic observations
-        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py -q
+        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
