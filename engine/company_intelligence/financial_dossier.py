@@ -36,7 +36,11 @@ _ALLOWED_INPUT_KEYS = frozenset(
 )
 _TYPED_ABSENCE_REASONS = ABSENCE_REASONS
 _CIK_SHAPE = re.compile(r"\d{10}")
-_NINE_M_OR_LATER = 90_000_000
+# CIK length is 10 digits, with real issuers historically under 90M;
+# any value at or above this threshold is treated as malformed, not as a
+# future-tense registry. The shape is the only well-formedness rule — the
+# registry call decides whether a shape-correct CIK resolves to a real issuer.
+_CIK_UPPER_EXCLUSIVE = 90_000_000
 _DIGEST_HEX = re.compile(r"[0-9a-f]{64}")
 _OWNER_NAMESPACES: frozenset[str] = frozenset({"synthetic"})
 
@@ -45,9 +49,14 @@ def validate_delivery_inputs(
     inputs: Mapping[str, object],
     *,
     registry: Iterable[tuple[str, str]] | None = None,
+    research_hosts: frozenset[str],
 ) -> dict[str, object]:
     """Classify inert research inputs without issuing any delivery permission.
 
+    ``research_hosts`` is the closed set of hostnames a deliverable research
+    payload is allowed to advertise; no source URL outside that set is
+    research-usable. T05/T06 will replace the caller's ``frozenset({"example.invalid"})``
+    placeholder with the real host policy supplied by the ranking/gating programs.
     A well-formed 10-digit CIK is necessary but not sufficient identity proof.
     ``identity`` is resolved only when ``company_id`` carries the corpus
     namespace and ``(company_id, external_ids.cik)`` is a registered pair in
@@ -92,19 +101,19 @@ def validate_delivery_inputs(
     }
     return {
         "live_admission": "admissible" if not reasons else "refused",
-        "research_usable": _research_usable(inputs),
+        "research_usable": _research_usable(inputs, research_hosts),
         "reasons": reasons,
         "bindings": bindings,
     }
 
 
-def _research_usable(inputs: Mapping[str, object]) -> bool:
+def _research_usable(inputs: Mapping[str, object], research_hosts: frozenset[str]) -> bool:
     sources = inputs.get("sources")
     cells = inputs.get("cells")
     valid_sources = isinstance(sources, list) and bool(sources) and all(
         isinstance(source, Mapping)
         and isinstance(source.get("url"), str)
-        and urlparse(source.get("url")).hostname == "example.invalid"
+        and urlparse(source.get("url")).hostname in research_hosts
         and source.get("rights_state") in {"public_primary", "licensed", "internal_only", "unknown"}
         for source in sources
     )
@@ -176,7 +185,7 @@ def _check_identity(
     cik = external_ids.get("cik")
     if not isinstance(cik, str) or not _CIK_SHAPE.fullmatch(cik):
         return ("unresolved", "identity_unresolved")
-    if int(cik) >= _NINE_M_OR_LATER:
+    if int(cik) >= _CIK_UPPER_EXCLUSIVE:
         return ("unresolved", "identity_unresolved")
     if not company_id.startswith("synthetic:"):
         return ("unresolved", "identity_not_registered")

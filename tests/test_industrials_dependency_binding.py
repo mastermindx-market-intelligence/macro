@@ -10,6 +10,7 @@ from tests.industrials_result_cash_helpers import (
     case,
     cell,
     comparison,
+    issuer_registry,
     publication_harness,
 )
 
@@ -35,10 +36,26 @@ REQUIRED_FIXTURES = {
 }
 
 
+def _validate(payload, *, registry=None, research_hosts=None):
+    """Helper that always passes the test-only research-host policy.
+
+    T05/T06 will replace this with the real host policy supplied by the
+    ranking/gating programs.
+    """
+    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+
+    if research_hosts is None:
+        research_hosts = frozenset({"example.invalid"})
+    return validate_delivery_inputs(
+        payload,
+        registry=registry,
+        research_hosts=research_hosts,
+    )
+
+
 def test_ind_sf07():
     from tests.industrials_result_cash_helpers import case
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-    result = validate_delivery_inputs(case('source_only'))
+    result = _validate(case('source_only'))
     assert result['live_admission'] == 'refused'
     assert result['research_usable'] is True
     assert 'accepted_binding_missing' in result['reasons']
@@ -136,54 +153,97 @@ def test_top_level_refusal_reasons_are_closed_set_or_unknown_field() -> None:
     }
     payloads.append(not_registered)
     for payload in payloads:
-        result = validate_delivery_inputs(payload, registry=registry)
+        result = _validate(payload, registry=registry)
         for reason in result["reasons"]:
             assert reason in DELIVERY_REFUSAL_REASONS or reason.startswith("unknown_field:"), (
                 f"unrecognized top-level reason: {reason!r}"
             )
 
 
-def test_unknown_delivery_input_key_refused() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+def test_registered_pair_with_accepted_bindings_is_admissible() -> None:
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:release:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+        "rights_state": "public_primary",
+    }
+    payload["cross_subject_join"] = None
+    result = _validate(payload, registry=issuer_registry())
+    assert result["live_admission"] == "admissible"
+    assert result["reasons"] == []
 
+
+def test_wellformed_cik_outside_synthetic_namespace_is_unresolved() -> None:
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "acme:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    result = _validate(payload, registry=issuer_registry())
+    assert "identity_unresolved" in result["reasons"]
+    identity = result["bindings"]["identity"]
+    assert identity["status"] == "unresolved"
+    assert identity["reason"] == "identity_not_registered"
+
+
+def test_eleven_digit_cik_fails_length_check() -> None:
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "00009876541"},
+    }
+    result = _validate(payload, registry=issuer_registry())
+    assert "identity_unresolved" in result["reasons"]
+    identity = result["bindings"]["identity"]
+    assert identity["reason"] == "identity_unresolved"
+
+
+def test_unknown_delivery_input_key_refused() -> None:
     payload = case("source_only")
     payload["unexpected"] = True
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert DELIVERY_INPUT_VALIDATOR_VERSION == "v1"
     assert result["live_admission"] == "refused"
     assert "unknown_field:unexpected" in result["reasons"]
 
 
 def test_caller_authored_k1_join_refused() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-
     payload = case("source_only")
     payload["cross_subject_join"] = {"claimed_binding": "caller-authored"}
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert result["live_admission"] == "refused"
     assert "unsupported_cross_subject_join" in result["reasons"]
 
 
 def test_unregistered_realistic_cik_is_not_identity() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-
+    # Renamed in step 5: this exercises the CIK length boundary (11 digits fail).
+    # The dedicated length check lives in test_eleven_digit_cik_fails_length_check.
     payload = case("source_only")
     payload["identity"] = {"company_id": "synthetic:northgate", "external_ids": {"cik": "00009876541"}}
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert result["live_admission"] == "refused"
     assert "identity_unresolved" in result["reasons"]
 
 
 def test_realistic_cik_with_unknown_pair_is_identity_not_registered() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-    from tests.industrials_result_cash_helpers import issuer_registry
-
     payload = case("source_only")
     payload["identity"] = {
         "company_id": "synthetic:northgate",
         "external_ids": {"cik": "0000320193"},
     }
-    result = validate_delivery_inputs(payload, registry=issuer_registry())
+    result = _validate(payload, registry=issuer_registry())
     assert result["live_admission"] == "refused"
     identity = result["bindings"]["identity"]
     assert identity["status"] == "unresolved"
@@ -191,21 +251,17 @@ def test_realistic_cik_with_unknown_pair_is_identity_not_registered() -> None:
 
 
 def test_missing_registry_resolves_no_identity() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-
     payload = case("source_only")
     payload["identity"] = {
         "company_id": "synthetic:northgate",
         "external_ids": {"cik": "0000987654"},
     }
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert result["bindings"]["identity"]["status"] == "unresolved"
     assert result["bindings"]["identity"]["reason"] == "identity_not_registered"
 
 
 def test_owner_ref_with_foreign_namespace_is_refused() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-
     payload = case("source_only")
     payload["release_binding"] = {
         "status": "accepted",
@@ -219,7 +275,7 @@ def test_owner_ref_with_foreign_namespace_is_refused() -> None:
         "revision": "r1",
         "digest": "0" * 64,
     }
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert result["live_admission"] == "refused"
     release = result["bindings"]["release_binding"]
     assert release["status"] == "unavailable"
@@ -227,8 +283,6 @@ def test_owner_ref_with_foreign_namespace_is_refused() -> None:
 
 
 def test_uppercase_digest_is_digest_malformed() -> None:
-    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
-
     payload = case("source_only")
     payload["release_binding"] = {
         "status": "accepted",
@@ -242,7 +296,7 @@ def test_uppercase_digest_is_digest_malformed() -> None:
         "revision": "r1",
         "digest": "0" * 64,
     }
-    result = validate_delivery_inputs(payload)
+    result = _validate(payload)
     assert result["live_admission"] == "refused"
     release = result["bindings"]["release_binding"]
     assert release["status"] == "unavailable"
