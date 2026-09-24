@@ -177,9 +177,12 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
             if not isinstance(raw_row, dict):
                 failure_code = "MALFORMED_ROW"
                 break
+            if not isinstance(raw_row.get("openfda"), dict):
+                failure_code = "MALFORMED_ROW"
+                break
             try:
                 parsed = _parse_record(raw_row, started)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError, AttributeError, KeyError, IndexError):
                 failure_code = "MALFORMED_ROW"
                 break
             package_ndc = parsed.get("package_ndc")
