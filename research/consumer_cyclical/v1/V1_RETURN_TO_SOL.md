@@ -2,7 +2,8 @@
 
 **Operation:** `gmi-consumer-cyclical-v1-integration-20260924-fable-001`
 **Principal:** Fable integration owner
-**Carrier:** PR #7942, branch `claude/consumer-cyclical-v1-plnt`
+**Carrier:** PR #7942 (**MERGED** 2026-09-24T13:07:49Z, `6e3e8987c5c6`), branch
+`claude/consumer-cyclical-v1-plnt`; follow-up repair PR #7945, branch `claude/consumer-cyclical-v1-lead`
 **Source packet:** R15 `FABLE_INTEGRATION_READY_R15.md` @ `3d286719` (PR #7804, DRAFT/HOLD, research only)
 **Admission edge:** deliberate live direct Chairman handoff, 2026-09-24 (see boundary spec §0)
 
@@ -15,7 +16,11 @@ That cannot be reached today without violating R15's own prohibitions, so it was
 What is delivered is the deterministic, source-coordinate-bound economic core the blocked legs will
 later publish unchanged.
 
-Ladder position: `DELIVERED` -> `CI` in flight. Not `MERGED`, not `PRODUCTION_PROOF`, not `ACCEPTANCE`.
+Ladder position: **`MERGED` and `PRODUCTION_PROOF` reached; `ACCEPTANCE` is Sol's and is not claimed.**
+PR #7942 squash-merged to `main` at 2026-09-24T13:07:49Z as `6e3e8987c5c6`, and the golden oracle was
+re-run **from `main`**, not from the carrier branch — see §4. `PRODUCTION_PROOF` here means the module
+computes the accepted economics correctly on the canonical tree; it does **not** mean V1's browser
+ruler was met, which §1's first line already denies and §6 keeps blocked.
 
 ## 2. Why legs 6-9 were frozen rather than built
 
@@ -58,7 +63,7 @@ one handoff.
 
 | claim | command | result |
 |---|---|---|
-| Golden oracle exact, document contract-valid | `pytest tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_intelligence_read_model_contract.py -q` | **61 passed** |
+| Golden oracle exact, document contract-valid | `pytest tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_intelligence_read_model_contract.py -q` | **61 passed** at merge; **65 passed** with the §5a repair |
 | Shared contract family still enumerates | `pytest tests/test_sector_intelligence_contracts.py … -q` | **274 passed** |
 | CI curation intact | `pytest tests/test_ci_pack.py -k "exclusive or curated" -q` | **7 passed** |
 | Pack manifest valid | `run_ci_pack.py --validate-only` | **rc=0**, 229 jobs |
@@ -80,6 +85,25 @@ repaired in `3a0a4bb6`: the unrecorded admission edge, a false "all six owner he
 contract-name collision with the reserved H2 grammar. Seat verification then found four defects in the
 fabric-delivered projection that its own green suite could not detect — its fixtures encoded
 `native_admitted: true`, a state that cannot occur for PLNT — repaired in `4f00e7f3`.
+
+### 5a. A defect that only live verification could find (post-merge)
+
+Verifying from `main` after the merge — rather than trusting the green suite — caught a real defect the
+61-test suite could not see. `_build_explanation` tested the `FACT_KEY_*` constants for membership in
+the set of **result** keys. Those two vocabularies are disjoint, so the test could never be true and the
+economic lead was **unreachable on every input**: the document always emitted the neutral fallback
+instead of the R6 advertising-flow sentence. Every asserted number stayed exact, which is why the suite
+stayed green — the numbers were right and the sentence explaining them was missing.
+
+Repaired on PR #7945 with two regression tests. A same-class audit (two defects sharing one root cause —
+comparing the wrong *kind* of identifier) then found two further latent instances and hardened both:
+result keys were being spelled by concatenating `"_change"` onto a `FACT_KEY_*` constant (the two
+spellings coincide today, so a later rename would have retargeted silently), and `by_key` locals were
+named for a grouping that had already moved to `metric`. Neither was live; both are now impossible,
+pinned by two invariant tests. 61 -> 65 tests.
+
+**This is the honest cost of the ruler:** `MERGED` was reached before the lead was correct, and only
+production verification distinguished them. It is reported rather than quietly folded into §4.
 
 ## 6. What Sol is being asked to unblock
 
