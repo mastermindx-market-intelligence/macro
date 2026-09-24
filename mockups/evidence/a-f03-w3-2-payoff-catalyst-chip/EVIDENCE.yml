@@ -3,4 +3,6 @@ changed_paths:
   - templates/options.html.j2
   - scripts/build_options_command.py
   - scripts/build_options_catalyst_links.py
+  - tests/test_build_options_catalyst_links.py
+  - tests/test_options_payoff_lab_consumer.py
 manifest: mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/manifest.json

@@ -294,6 +294,12 @@ def _macro_calendar(asof: date, horizon_days: int,
     if candidates is None:
         candidates = _macro_candidates(asof, horizon_days)
     horizon_end = asof + timedelta(days=horizon_days)
+    # The envelope key is named `fomc` and labels each entry "Fed rate
+    # decision" — the consumer renders both names on the page, so any
+    # non-fomc candidate would print as a non-Fed date to users.  The
+    # current `_macro_candidates` emits fomc-only, but the filter is the
+    # load-bearing guard: a second contributor of kind `cpi`, `nfp`, or
+    # anything else would otherwise leak through with a Fed label.
     return {
         "asof": asof.isoformat(),
         "horizon_end": horizon_end.isoformat(),
@@ -301,6 +307,7 @@ def _macro_calendar(asof: date, horizon_days: int,
         "fomc": [
             {"date": cand.date.isoformat(), "label": "Fed rate decision"}
             for cand in candidates
+            if getattr(cand, "kind", None) == "fomc"
         ],
     }
 

@@ -1170,6 +1170,37 @@ def test_payoff_lab_catalyst_before_expiry_two_dates_tip_lists_both():
     )
 
 
+def test_payoff_lab_catalyst_before_expiry_sorts_unsorted_fomc_input():
+    """A-F03-W3-2 (MINOR 1 RED-first): the helper sorts the filtered FOMC
+    dates itself.  A hand-written unsorted `fomc` list must still pick the
+    SOONEST date for the chip — without the sort the loop would emit the
+    dates in calendar order and `fomc_dates[0]` could name Dec 9 instead
+    of Oct 28.  Without the sort fix, the chip says 'Dec 9' and the test
+    fails."""
+    from scripts.build_options_command import _payoff_lab_catalyst
+
+    out = _payoff_lab_catalyst(
+        expiration="2026-12-15",
+        card_asof="2026-09-23",
+        # Deliberately unsorted: Dec 9 before Oct 28.  Producer output is
+        # always sorted, but the consumer must remain correct on a hand-
+        # written fixture (the calendar is an additive key — overcorrection
+        # would invalidate the helper on any future contributor that does
+        # not sort).
+        calendar=_catalyst_links(asof="2026-09-23", horizon_end="2026-12-31",
+                                 fomc_dates=["2026-12-09", "2026-10-28"])["macro_calendar"],
+    )
+    assert out is not None
+    assert out["state"] == "before-expiry"
+    # Chip names the SOONEST date in the window — Oct 28 — not the first
+    # entry the loop happened to see.
+    assert out["chip_en"] == "Fed decision Oct 28 lands before this expiry"
+    assert out["chip_zh"] == "美联储10月28日议息在到期前"
+    # Tail lists the other date in correct order — Oct 28 first, Dec 9 next.
+    assert "and so does Dec 9" in out["tip_en"]
+    assert "12月9日亦然" in out["tip_zh"]
+
+
 def test_payoff_lab_catalyst_three_dates_verb_agreement_fixes():
     """Three-or-more dates flip the EN verb from singular 'does' to plural
     'do' (MINOR 2 verdict).  At a 63-day window a hand-injected test
@@ -1349,103 +1380,97 @@ def test_load_catalyst_links_returns_payload_when_shape_is_valid(tmp_path):
 
 def test_render_with_calendar_yields_two_chips_for_three_cards():
     """Render fixture (ruling D.2): SPY before-expiry, QQQ clear, IWM absent
-    (no chain in fold) → exactly 2 `data-payoff-catalyst-chip` elements.
-    The two real outcomes both render: the `is-before-expiry` art direction
-    on SPY, the `is-clear` art direction on QQQ."""
+    (no chain in fold) → exactly 2 `data-payoff-catalyst-chip` elements on
+    ONE page.  The two real outcomes both render: `is-before-expiry` on SPY,
+    `is-clear` on QQQ.  Per-root expiration split (SPY 2026-09-25, QQQ
+    2026-09-24, card_asof 2026-09-24, FOMC 2026-09-25).  SPY's window
+    (2026-09-24, 2026-09-25] contains the FOMC date → before-expiry; QQQ's
+    window (2026-09-24, 2026-09-24] is empty → clear."""
     from scripts.build_options_command import build_context
 
-    spy = _full_root_spy()      # SPY expiration = "2026-09-25"
-    qqq = _straddle_null_qqq()  # QQQ expiration = "2026-09-25"
-    payload = _payload(roots=[spy, qqq])  # IWM deliberately omitted
-    # Card asof = "2026-09-24" (default in _payload).  FOMC "2026-09-25"
-    # lands strictly inside (2026-09-24, 2026-09-25] for BOTH SPY and
-    # QQQ — but QQQ's card_asof here is set to "2026-08-30" so the
-    # FOMC date "2026-09-25" falls AFTER both cards' window we want
-    # to exercise `clear` on QQQ.  Use a DIFFERENT card_asof per root.
-    payload_spy_only = _payload(roots=[spy, qqq])
-    # Override card asof via a custom roots copy — QQQ's `clear` state
-    # needs (card_asof, expiration) where no FOMC date d satisfies
-    # card_asof < d <= expiration.
-    # NOTE: build_options_command.py pulls card_asof from `payload.asof`,
-    # not per-root; the rule applies uniformly.  So a single QQQ card
-    # whose (card_asof + 1 d) window is OUTSIDE both FOMC dates yields
-    # a `clear` chip on QQQ, while SPY's window is INSIDE "2026-09-25".
-    # Easiest: SPY uses asof=2026-09-24 (window covers 2026-09-25), QQQ
-    # uses asof=2026-09-29 (window: 9-29..9-30 misses BOTH FOMC dates,
-    # but QQQ's expiry is 2026-09-25 so the window is empty → still
-    # `clear`).  Build two payloads keyed the same way is awkward;
-    # simplest: drive `_payoff_lab_catalyst` directly to assert the chip
-    # maps to its state; then assert the count + class tokens come from
-    # the full render.  Here we MUTATE the payload's asof to exercise
-    # QQQ's `clear` state via a UNIFORM pull — pick asof=2026-09-29
-    # so the SPY window (2026-09-29..2026-09-25) is empty AND the QQQ
-    # window is empty; both cards show `clear` (still 2 chips, wrong
-    # fixture).  To exercise SPY before-expiry + QQQ clear we need
-    # PER-CARD asof — see the next test for that.
-    catalyst_links = _catalyst_links(asof="2026-09-24", horizon_end="2026-11-30",
-                                     fomc_dates=["2026-09-25", "2026-10-28"])
+    spy = _full_root_spy()      # expiration = "2026-09-25"
+    # QQQ's expiration lands on card_asof itself, so the strict-greater
+    # window `(card_asof < d <= expiration)` is empty and the chip is
+    # `clear` regardless of which FOMC date the calendar carries.
+    qqq_same_day = _root(
+        "QQQ", spot=580.0, expiration="2026-09-24", tenor_days=0.0,
+        structures=[
+            _structure("atm_straddle", breakevens=(565.0, 595.0),
+                      cost_per_contract=1850.0, max_gain=10000.0, max_loss=-1850.0),
+            _structure("rr25", breakevens=(560.0, 600.0),
+                      cost_per_contract=-80.0, max_gain=8000.0, max_loss=-4000.0),
+            _structure("put_spread_95_90", breakevens=(580.0,),
+                      cost_per_contract=275.0, max_gain=3000.0, max_loss=-275.0),
+            _structure("call_spread_105_110", breakevens=(585.0,),
+                      cost_per_contract=355.0, max_gain=3500.0, max_loss=-355.0),
+        ],
+    )
+    payload = _payload(roots=[spy, qqq_same_day])  # IWM deliberately omitted
+    catalyst_links = _catalyst_links(
+        asof="2026-09-24", horizon_end="2026-11-30",
+        fomc_dates=["2026-09-25"],
+    )
 
-    ctx = build_context(REPO, _stores(), payoff_lab=payload_spy_only,
+    ctx = build_context(REPO, _stores(), payoff_lab=payload,
                         catalyst_links=catalyst_links)
     lab = ctx["payoff_lab"]
     assert "SPY" in lab and lab["SPY"]["catalyst"] is not None
     assert lab["SPY"]["catalyst"]["state"] == "before-expiry"
     assert "QQQ" in lab and lab["QQQ"]["catalyst"] is not None
-    assert lab["QQQ"]["catalyst"]["state"] == "before-expiry"
+    assert lab["QQQ"]["catalyst"]["state"] == "clear"
     assert "IWM" not in lab, "IWM is absent from the fixture — chip has no card"
 
-    page = render(REPO, _stores(), payoff_lab=payload_spy_only,
+    page = render(REPO, _stores(), payoff_lab=payload,
                   catalyst_links=catalyst_links)
     chip_count = page.count("data-payoff-catalyst-chip")
     assert chip_count == 2, (
-        f"expected exactly 2 chip elements (SPY + QQQ, IWM absent), got {chip_count}"
+        f"expected exactly 2 chip elements on one page (SPY + QQQ, IWM absent), got {chip_count}"
     )
+    assert "is-before-expiry" in page, "SPY chip must carry is-before-expiry class"
+    assert "is-clear" in page, "QQQ chip must carry is-clear class"
 
 
 def test_render_with_calendar_exercises_both_chip_states():
-    """Cross-state render fixture: SPY before-expiry + QQQ clear on the
-    SAME page → 2 chips with both class tokens present in the markup.
-    Per-card state coverage that the `clear` CSS art direction actually
-    renders (MAJOR 1).  Built via two `build_context` calls + a manual
-    merge because the producer's payload pulls a single `asof`."""
+    """Cross-state render fixture on ONE page (MAJOR 2): SPY before-expiry +
+    QQQ clear on the SAME render.  Per-fold class-token coverage that both
+    CSS art directions actually fire (`is-before-expiry` on SPY's fold,
+    `is-clear` on QQQ's fold).  Per-root expiration split: SPY 2026-09-25
+    covers the FOMC date, QQQ 2026-09-24 yields an empty window."""
     from scripts.build_options_command import build_context
 
     spy = _full_root_spy()      # expiration = "2026-09-25"
-    # A second QQQ-shaped root whose (card_asof, expiration) window
-    # contains NO FOMC date — QQQ's chip class is `is-clear`.
-    qqq_clear = _root(
-        "QQQ", spot=580.0, expiration="2026-09-25", tenor_days=0.05,
+    qqq_same_day = _root(
+        "QQQ", spot=580.0, expiration="2026-09-24", tenor_days=0.0,
         structures=[
             _structure("atm_straddle", breakevens=(565.0, 595.0),
-                      cost_per_contract=1850.0, max_gain=None, max_loss=-1850.0),
+                      cost_per_contract=1850.0, max_gain=10000.0, max_loss=-1850.0),
+            _structure("rr25", breakevens=(560.0, 600.0),
+                      cost_per_contract=-80.0, max_gain=8000.0, max_loss=-4000.0),
+            _structure("put_spread_95_90", breakevens=(580.0,),
+                      cost_per_contract=275.0, max_gain=3000.0, max_loss=-275.0),
+            _structure("call_spread_105_110", breakevens=(585.0,),
+                      cost_per_contract=355.0, max_gain=3500.0, max_loss=-355.0),
         ],
     )
-    payload_before = _payload(roots=[spy])
-    payload_clear = _payload(roots=[qqq_clear])
-    catalyst_links_before = _catalyst_links(
+    payload = _payload(roots=[spy, qqq_same_day])
+    catalyst_links = _catalyst_links(
         asof="2026-09-24", horizon_end="2026-11-30",
         fomc_dates=["2026-09-25"],
     )
-    catalyst_links_clear = _catalyst_links(
-        asof="2026-09-24", horizon_end="2026-11-30",
-        fomc_dates=["2026-10-28"],   # outside QQQ's 9-24..9-25 window
-    )
-    ctx_b = build_context(REPO, _stores(), payoff_lab=payload_before,
-                          catalyst_links=catalyst_links_before)
-    ctx_c = build_context(REPO, _stores(), payoff_lab=payload_clear,
-                          catalyst_links=catalyst_links_clear)
-    assert ctx_b["payoff_lab"]["SPY"]["catalyst"]["state"] == "before-expiry"
-    assert ctx_c["payoff_lab"]["QQQ"]["catalyst"]["state"] == "clear"
-    # Merge: SPY from before-expiry payload, QQQ from clear payload.
-    page_b = render(REPO, _stores(), payoff_lab=payload_before,
-                    catalyst_links=catalyst_links_before)
-    page_c = render(REPO, _stores(), payoff_lab=payload_clear,
-                    catalyst_links=catalyst_links_clear)
-    assert "is-before-expiry" in page_b, "SPY fixture must carry is-before-expiry"
-    assert "is-clear" in page_c, "QQQ fixture must carry is-clear"
-    # Both chips on independent renders → 1+1=2 elements across the matrix.
-    assert page_b.count("data-payoff-catalyst-chip") == 1
-    assert page_c.count("data-payoff-catalyst-chip") == 1
+
+    page = render(REPO, _stores(), payoff_lab=payload,
+                  catalyst_links=catalyst_links)
+    fold_spy = _workspace_fold(page, "SPY")
+    fold_qqq = _workspace_fold(page, "QQQ")
+    # SPY's fold carries the before-expiry chip; QQQ's fold carries clear.
+    assert 'data-payoff-catalyst-chip' in fold_spy
+    assert 'is-before-expiry' in fold_spy
+    assert 'data-payoff-catalyst-chip' in fold_qqq
+    assert 'is-clear' in fold_qqq
+    # Cross-state guard: SPY's fold never carries the clear class token,
+    # and QQQ's fold never carries the before-expiry class token.
+    assert 'is-clear' not in fold_spy
+    assert 'is-before-expiry' not in fold_qqq
 
 
 def test_render_chips_carry_no_banned_tokens_in_visible_text():

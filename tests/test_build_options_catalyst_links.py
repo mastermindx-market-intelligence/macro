@@ -18,6 +18,7 @@ from engine.options_catalyst_link import (
     BINDING_STATES,
     REPO_ROOT,
     SPEC_VERSION,
+    CatalystCandidate,
     ContractKeyError,
 )
 from engine.stock_identity.authority import AUTHORITY_KEYS
@@ -399,6 +400,40 @@ def test_j_no_stage_envelope_still_carries_macro_calendar(monkeypatch, tmp_path)
     assert all(entry["label"] == "Fed rate decision" for entry in cal["fomc"])
     # Authority still five-false on the no-stage path.
     _assert_false_authority(env["authority"])
+
+
+def test_k_macro_calendar_filters_non_fomc_kinds():
+    """A-F03-W3-2 (MAJOR 1): `_macro_calendar` only emits entries whose
+    candidate.kind == "fomc" — the envelope key is named `fomc` and labels
+    every entry "Fed rate decision"; a non-fomc candidate must NOT leak
+    through with a Fed label.  RED-first: this test fails on the
+    round-3 head (no filter) — a `cpi` candidate appears in the FOMC list
+    with the wrong date AND the wrong label."""
+    real_fomc_dates = fomc_decision_dates(date(2026, 9, 4), date(2026, 11, 6))
+    base = [CatalystCandidate(
+        kind="fomc", date=d, source="event_calendar", artifact="engine.event_calendar._FOMC",
+        stale=False, known_as_of=date(d.year - 1, 6, 1), as_of_age_td=0,
+        label="FOMC rate decision", locator=f"event_calendar:fomc:{d.isoformat()}",
+    ) for d in real_fomc_dates]
+    cpi = CatalystCandidate(
+        kind="cpi", date=date(2026, 9, 15), source="event_calendar",
+        artifact="engine.event_calendar._CPI", stale=False,
+        known_as_of=date(2026, 6, 1), as_of_age_td=0,
+        label="CPI release", locator="event_calendar:cpi:2026-09-15",
+    )
+    nfp = CatalystCandidate(
+        kind="nfp", date=date(2026, 10, 2), source="event_calendar",
+        artifact="engine.event_calendar._NFP", stale=False,
+        known_as_of=date(2026, 6, 1), as_of_age_td=0,
+        label="Nonfarm payrolls", locator="event_calendar:nfp:2026-10-02",
+    )
+    cal = prod._macro_calendar(date(2026, 9, 4), 63, candidates=base + [cpi, nfp])
+    fomc_entries = cal["fomc"]
+    # Only fomc-kind candidates land in the dict; the cpi/nfp entries are dropped.
+    assert [e["date"] for e in fomc_entries] == [d.isoformat() for d in real_fomc_dates]
+    assert "2026-09-15" not in [e["date"] for e in fomc_entries], "CPI date leaked into fomc"
+    assert "2026-10-02" not in [e["date"] for e in fomc_entries], "NFP date leaked into fomc"
+    assert all(e["label"] == "Fed rate decision" for e in fomc_entries)
 
 
 def test_decision_receipts_unwrap_and_availability_is_not_an_event(monkeypatch, tmp_path):
