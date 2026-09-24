@@ -517,3 +517,87 @@ def test_day3_no_score_leakage():
                 f"{r['name']}: hit must be None for confirmer rows, got {r.get('hit')}"
             assert r["tier"] == "confirmer", \
                 f"{r['name']}: must be confirmer tier, got {r['tier']}"
+
+
+# P1/P4 evidence qualifies the existing CN note; no score or authority promotion.
+import pytest
+
+
+def _china_external_radar_row(rows=None):
+    rows = signal_lab.REGISTRY if rows is None else rows
+    found = [r for r in rows if r['name'].startswith('China external-driver radar')]
+    assert len(found) == 1
+    return found[0]
+
+
+@pytest.mark.parametrize('unsupported', [
+    '2.07×', 'p=0.01', 'CSI300-confirmed', '沪深300确认',
+    'validated China external-driver radar', '已验证的中国外部驱动雷达',
+    'breadth collapse', 'realized lift ≥1.25×',
+])
+def test_china_radar_registry_does_not_repeat_superseded_claims(unsupported):
+    row = _china_external_radar_row()
+    rendered_fields = ' '.join(str(row[key]) for key in
+                              ('why', 'why_zh', 'source', 'wired', 'extra'))
+    assert unsupported not in rendered_fields
+
+
+@pytest.mark.parametrize('field,required', [
+    ('why', ('Directional hazard context', '1.63×', '2.64×', '18',
+             'not independent confirmations', 'not vintage point-in-time',
+             '50%', 'capital sizing', 'cash-index replication is unavailable')),
+    ('why_zh', ('方向性风险背景', '1.63×', '2.64×', '18', '不是独立的多重确认',
+                '不是历史版本的时点证据', '50%', '仓位', '现货指数复核暂不可用')),
+])
+def test_china_radar_registry_scopes_the_frozen_historical_evidence(field, required):
+    text = _china_external_radar_row()[field]
+    for phrase in required:
+        assert phrase in text
+
+
+def test_china_radar_registry_binds_the_exact_research_not_a_new_live_feed():
+    row = _china_external_radar_row()
+    assert '7897' in row['source'] and '4628bd175dfe' in row['source']
+    assert 'ae67d4d43778' in row['source'] and '7884' in row['source']
+    assert 'data/intl_bridge/ledger.json' in row['source']  # retain legacy association
+    assert row['tier'] == 'display' and row['market'] == 'China A'
+    for key in ('ic', 'ic_ir', 't_hac', 'q_fdr', 'dsr', 'sharpe', 'hit', 'n', 'fdr_survivor'):
+        assert row[key] is None, (key, row[key])
+    assert '21' in row['horizon'] and '42' in row['horizon']
+    assert 'registry grants no authority' in row['wired']
+
+
+def test_china_radar_registry_reaches_existing_scorecard_and_expanded_template():
+    import copy
+    import re
+    from html import unescape
+    before = copy.deepcopy(signal_lab.REGISTRY)
+    payload = _payload()
+    rows = [r for tier in payload['tiers'] for r in tier['rows']]
+    row = _china_external_radar_row(rows)
+    assert row['why'] == _china_external_radar_row()['why']
+    env = Environment(loader=FileSystemLoader(config.ROOT / 'templates'))
+    env.filters['min'] = lambda seq: min(seq)
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    html = env.get_template('signal_lab.html.j2').render(**payload)
+    identity = 'sig-' + row['slug']
+    detail = re.search(r'<tr class="row-detail" id="' + re.escape(identity) +
+                       r'-detail">(.*?)</tr>', html, re.S)
+    assert detail is not None
+    content = unescape(detail.group(1))
+    for phrase in ('1.63×', '2.64×', '18', 'not independent confirmations',
+                   '不是独立的多重确认', 'not vintage point-in-time',
+                   'cash-index replication is unavailable', '现货指数复核暂不可用'):
+        assert phrase in content
+    assert '2.07×' not in content and 'CSI300-confirmed' not in content
+    assert signal_lab.REGISTRY == before
+
+
+def test_china_radar_registry_retains_non_authoritative_identity_and_empty_metrics():
+    row = _china_external_radar_row()
+    assert row['name'] == 'China external-driver radar  (C3 — governed by risk_radar_intl)'
+    assert row['tier'] == 'display' and row['market'] == 'China A'
+    assert row['slug'] == signal_lab._name_to_slug(row['name'])
+    assert not {'can_force', 'binding', 'gross', 'risk_score', 'probability'}.intersection(row)
+    assert all(row[key] is None for key in ('ic', 'ic_ir', 't_hac', 'q_fdr', 'dsr',
+                                          'sharpe', 'hit', 'n', 'fdr_survivor'))

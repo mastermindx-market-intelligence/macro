@@ -1260,23 +1260,29 @@ REGISTRY: list[dict] = [
                 ("effective-N (LVMUY 20y)", "4 crises; full-basket overlap: 1 crisis (rate_22)")]),
     _row("China external-driver radar  (C3 — governed by risk_radar_intl)",
          "中国外部驱动雷达（C3 — 由 risk_radar_intl 治理）", "China A", "display",
-         why="Note-only entry for registry completeness. The validated China external-driver radar "
-             "(breadth collapse, US rate shocks, US–CN differential, USD/CNH; composite ≥10%/42d "
-             "drawdown lift 2.07×, p=0.01, CSI300-confirmed) already runs on main with committed "
-             "forward logs and its OWN can_force maturation gate (≥30 graded, ≥8 alerts, realized "
-             "lift ≥1.25×). The intl_bridge does NOT duplicate its machinery — it defers to "
-             "engine/risk_radar_intl_audit.scorecard for the CN/HK/CA governance. Listed CONTEXT "
-             "here so the registry is complete, not because it lacks edge.",
-         why_zh="仅备注条目，用于登记完整性。已验证的中国外部驱动雷达（广度崩塌、美国利率冲击、美中利差、"
-                "美元/离岸人民币；综合 ≥10%/42日回撤提升 2.07×，p=0.01，沪深300确认）已在 main 上运行，"
-                "带提交的前瞻日志与自身的 can_force 成熟门。intl_bridge 不复制其机制——延用 "
-                "risk_radar_intl_audit.scorecard 的中/港/加治理。此处列为 CONTEXT 仅为登记完整。",
-         source="engine/risk_radar_intl.py (#711/#718) + risk_radar_intl_audit.py; "
-                "data/intl_bridge/ledger.json (cn_external_radar)",
-         horizon="42d fwd drawdown",
-         wired="display-only on main until its own can_force gate matures (NOT duplicated by intl_bridge)",
-         extra=[("composite lift", "2.07× (p=0.01), CSI300-confirmed"),
-                ("governance", "risk_radar_intl_audit.can_force (≥30 graded, ≥8 alerts, lift ≥1.25×)")]),
+         why="Directional hazard context, not a calibrated probability or capital sizing guidance. "
+             "Frozen Shanghai Composite reconstruction: risk-off states showed a ≥5% drawdown "
+             "within 21 sessions at 47.3% versus 28.9% overall (1.63×), and ≥10% within 42 "
+             "sessions at 44.4% versus 16.9% (2.64×). These targets reuse 18 historical "
+             "episodes, not independent confirmations. Results are causal on stored snapshots, "
+             "not vintage point-in-time history; historical membership is not established. "
+             "Exact CSI300 cash-index replication is unavailable. The exact 50% estimate and "
+             "capital sizing remain insufficiently evidenced. Issued forecasts and the "
+             "episode-aware audit's force permission remain separate; this registry grants neither.",
+         why_zh="方向性风险背景，不是精确校准的概率或仓位建议。冻结的上证综指历史重建中，"
+                "风险规避状态下，21个交易日内≥5%回撤的发生率为47.3%，全样本为28.9%（1.63×）；"
+                "42个交易日内≥10%回撤为44.4%，全样本为16.9%（2.64×）。这些目标复用18个历史事件，"
+                "不是独立的多重确认。计算基于存储快照并按日期对齐，不是历史版本的时点证据；"
+                "历史成分身份亦未确立。沪深300现货指数复核暂不可用。精确50%概率及仓位建议仍缺乏"
+                "足够证据。真实发布的前瞻记录与事件级审计的强制权限另行判断，本登记不授予任何权限。",
+         source="Macro PR #7897 @4628bd175dfe; results.json SHA256 ae67d4d43778 "
+                "(frozen study); capital policy PR #7884 @67c528c34622; "
+                "data/intl_bridge/ledger.json (legacy registry pointer only)",
+         horizon="≥5%/21 sessions; ≥10%/42 sessions · 历史回撤窗口",
+         wired="display-only context; registry grants no authority / 仅供背景，登记不授予权限",
+         extra=[("Historical sample / 历史样本", "18 reused episodes / 复用18个事件"),
+                ("Evidence / 证据", "reconstructed, not vintage-PIT / 重建，非历史版本时点证据"),
+                ("Capital use / 资本用途", "context only / 仅供背景")]),
     # ---- Day-3 SLF confirmer entries (2026-07-07) ----
     _row("Month-end bond-index extension day  (TLT / IEF last-day lift)",
          "月末债券指数展期日（TLT / IEF 尾日上涨）", "Rates", "confirmer",

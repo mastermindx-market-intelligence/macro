@@ -220,3 +220,32 @@ A new weighted-window diagnostic command was safety-status refused before dispat
 no diagnostic result or product effect is claimed and that action is not retried.
 Prior source/browser/risk-write and optional notification holds remain unchanged.
 No source EFFECT_UNKNOWN. Existing 24 generated outputs/4 images remain excluded.
+
+## Current continuation — Signal Lab claim reconciliation
+Operation china-participation-context-20260921-sol-001; original locked Studio / PR7622.
+Procedure Mastermind@1a7d400294b0d37c460b963b8865b40a23173b58; current Chairman scope,
+review exception and deferred CI/release retained. Pickup6c8786bc9fe29a58448a05a9aebca03e448f9fe3.
+Only six literal fields in the existing CN Signal Lab registry row changed. Identity,
+display tier, numeric validation fields, other rows and executable logic remain unchanged.
+P1@4628bd175dfe frozen results ae67d4d43778 are cited as historical context, not new odds.
+The old unqualified2.07x/p=.01/CSI300-confirmed and simplified grant-floor copy are removed.
+1.63x/2.64x historical ratios reuse18 episodes; precise50%, cash-index replication and
+capital sizing remain insufficiently established. P0 and the unrelated BTC D2 owner are untouched.
+119 tests across4 Signal Lab suites passed without warnings;13 new cases had12RED/1control.
+Missing declared SciPy explained the initial14 Foundry failures; environment-only install,
+no Foundry code/test weakening. Actual existing Signal Lab builder emits HTML+machineJSON to
+owned evidence only. Eight EN/ZH/theme/desktop-mobile search/open/close/reopen journeys and
+8 captures pass;13 protected source/data/public-page hashes stay unchanged. Mobile retains
+its existing wide research table. No production page, score, forecast or authority changed.
+Receipt/report:research/grey_deer/CHINA_SIGNAL_LAB_REVALIDATION_20260924.{json,md}.
+Observer:probe_china_signal_lab_claims.py; committed captures:mockups/evidence/china-signal-lab-claims-20260924.
+A supplemental upstream-value/receipt command was safety-refused; target absent, not retried.
+Prior denied actions remain separate holds. No active observer/server/worker or EFFECT_UNKNOWN.
+DO_NOT_REDO:prior accepted P2, participation/window, timing and risk proofs; this exact
+Signal Lab source/test/browser proof. Preserve24 inherited outputs/4 old images excluded.
+P0 sizing/source recovery, NBS29, weight16, render-write54 and original China browser gate remain.
+FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION. MISSION_COMPLETE:false.
+Boundary:completed one evidence-to-registry-to-browser unit after substantial source/test/context work.
+Next: recover the existing P0 correction/custody through its canonical owner, not duplicate
+its writer; qualify the combined China page only after its original action gates permit.
+Continue from this record plus minimum fresh law; no automatic wake or release is claimed.
