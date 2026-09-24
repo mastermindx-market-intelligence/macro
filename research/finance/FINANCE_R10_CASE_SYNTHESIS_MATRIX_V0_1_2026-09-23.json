@@ -1,0 +1,152 @@
+{
+  "schema": "mastermind.research.finance_r10_case_synthesis.v0_1",
+  "state": "RETROSPECTIVE_RESEARCH_SYNTHESIS_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "991a5f65f044f197de32e93e12ca0f04a815c4c8"
+  },
+  "case_count": 12,
+  "formal_causal_outcomes_measured": 0,
+  "prospective_validation_started": false,
+  "cases": [
+    {
+      "case_id": "R10-EU-ECB-NEGATIVE-RATE-EXIT-20220721",
+      "archetype": "RATE_FUNDING_NORMALIZATION",
+      "witness": "ING",
+      "descriptive_evidence_state": "MARKET_MEASURED_VALUATION_PARTIAL",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "historical_consensus_missing"
+    },
+    {
+      "case_id": "R10-EU-CRR3-APPLICATION-20250101",
+      "archetype": "REGULATORY_CAPITAL_TRANSITION",
+      "witness": "European banks",
+      "descriptive_evidence_state": "MARKET_AND_CAPITAL_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "anticipated_implementation_and_macro"
+    },
+    {
+      "case_id": "R10-CH-UBS-CS-CLOSE-20230612",
+      "archetype": "FORCED_INTEGRATION_RESTRUCTURING",
+      "witness": "UBS",
+      "descriptive_evidence_state": "MARKET_AND_EXECUTION_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "first_information_precedes_close"
+    },
+    {
+      "case_id": "R10-JP-TSE-COST-OF-CAPITAL-REQUEST-20230331",
+      "archetype": "GOVERNANCE_CAPITAL_EFFICIENCY",
+      "witness": "Japan financials / SMFG witness",
+      "descriptive_evidence_state": "MARKET_AND_EXECUTION_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "BOJ_yen_macro_and_endogenous_disclosure"
+    },
+    {
+      "case_id": "R10-JP-BOJ-NIRP-EXIT-20240319",
+      "archetype": "RATE_FUNDING_NORMALIZATION",
+      "witness": "MUFG",
+      "descriptive_evidence_state": "MARKET_AND_VALUATION_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "anticipation_and_later_rate_cycle"
+    },
+    {
+      "case_id": "R10-CN-HOUSING-POLICY-20240517",
+      "archetype": "POLICY_EASING_BALANCE_SHEET_OFFSET",
+      "witness": "China H-share banks/developers",
+      "descriptive_evidence_state": "MARKET_AND_OPERATING_PARTIAL",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "later_policy_packages_and_margin_credit_offsets"
+    },
+    {
+      "case_id": "R10-HK-RBC-IMPLEMENTATION-20240701",
+      "archetype": "INSURER_CAPITAL_REGIME_BREAK",
+      "witness": "AIA / Prudential early adopter",
+      "descriptive_evidence_state": "MARKET_AND_CAPITAL_BASIS_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "regime_noncomparability_and_group_local_mapping"
+    },
+    {
+      "case_id": "R10-HK-STOCK-CONNECT-ETF-20220704",
+      "archetype": "MARKET_ACCESS_INFRASTRUCTURE",
+      "witness": "HKEX",
+      "descriptive_evidence_state": "MARKET_MEASURED_MATERIALITY_INCOMPLETE",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "product_revenue_materiality"
+    },
+    {
+      "case_id": "R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116",
+      "archetype": "CAPITAL_FUNDING_TIGHTENING",
+      "witness": "Bajaj / SBI Cards + cohorts",
+      "descriptive_evidence_state": "MARKET_AND_DIRECT_CAPITAL_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "heterogeneous_exposures_and_other_actions"
+    },
+    {
+      "case_id": "R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131",
+      "archetype": "OPERATING_PERMISSION_TRUST_SHOCK",
+      "witness": "One97/Paytm",
+      "descriptive_evidence_state": "MARKET_AND_OPERATING_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "historical_consensus_and_valuation_missing"
+    },
+    {
+      "case_id": "R10-AU-APRA-SERVICEABILITY-BUFFER-20211006",
+      "archetype": "UNDERWRITING_CAPACITY_TIGHTENING",
+      "witness": "Australian majors",
+      "descriptive_evidence_state": "MARKET_AND_RISK_MIX_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "later_RBA_rate_cycle"
+    },
+    {
+      "case_id": "R10-KR-CORPORATE-VALUE-UP-20240226",
+      "archetype": "GOVERNANCE_CAPITAL_RETURN",
+      "witness": "Korean financial groups",
+      "descriptive_evidence_state": "MARKET_VALUATION_EXECUTION_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "voluntary_participation_and_plan_timing"
+    }
+  ],
+  "archetypes": [
+    "RATE_FUNDING_NORMALIZATION",
+    "REGULATORY_CAPITAL_INTENSITY",
+    "GOVERNANCE_CAPITAL_EFFICIENCY",
+    "FORCED_INTEGRATION_RESTRUCTURING",
+    "MARKET_ACCESS_INFRASTRUCTURE",
+    "OPERATING_PERMISSION_TRUST_SHOCK",
+    "UNDERWRITING_CAPACITY_TIGHTENING",
+    "POLICY_EASING_BALANCE_SHEET_OFFSET"
+  ],
+  "product_laws": [
+    "NO_EVENT_TO_STOCK_SHORTCUT",
+    "OPERATING_EXPECTATION_VALUATION_PRICE_PLANES_SEPARATE",
+    "VALUATION_ANCHOR_REQUIRED",
+    "MULTISTAGE_EVENT_CLOCK_REQUIRED",
+    "REGIME_BREAK_FIRST_CLASS",
+    "PER_SHARE_INVESTOR_BRIDGE_REQUIRED",
+    "RETROSPECTIVE_RESEARCH_CANNOT_SELF_PROMOTE"
+  ],
+  "adversarial_risks": [
+    "event_selection_bias",
+    "first_information_leakage",
+    "outcome_leakage",
+    "current_membership_hindsight",
+    "adjusted_price_misuse",
+    "missing_historical_expectations",
+    "accounting_denominator_drift",
+    "macro_co_treatment",
+    "diversified_issuer_attribution",
+    "narrative_asymmetry"
+  ],
+  "authority": {
+    "may_promote_factor": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "next_action": "R11 candidate basket and visualization freeze; R12 current-main collision/custody review follows before R13 Fable handoff."
+}
