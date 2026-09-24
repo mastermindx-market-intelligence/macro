@@ -1,139 +1,126 @@
-# GMI C - coverage and source qualification, checkpoint 0
+# GMI C — complete 32-leaf coverage assessment
 
-Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`.
-Parent: Macro #7886.
-Child branch: `sol/gmi-theme-research-c-20260924`.
-Status: INITIAL CONTEXT QUALIFICATION. This is not the final 32-leaf assessment or a completed research return.
+Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`  
+Parent: Macro #7886  
+Child: Draft/HOLD #7893 / `sol/gmi-theme-research-c-20260924`  
+Status: BOUNDED RESEARCH COVERAGE COMPLETE FOR THE ASSIGNED 32 KEYS; this is not complete primary certification of every leaf, product acceptance, or whole-sector completion.
 
 ## 1. Evidence boundary
 
-The Chairman delivered lane C and selected Extra High for initial context recovery. Canonical charter: `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Protected Mastermind procedure: `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`.
+This file assesses exactly the 32 source-local keys assigned by the canonical charter. It does not refresh Finviz membership, change taxonomy, enroll native data, or equate source membership with business/economic exposure.
 
-No external primary source has yet been independently validated by this child. Pinned repository studies are reuse inputs and provenance, not automatic independent confirmation of their external claims. No current vendor-membership refresh, admitted live data, product proof, trading conclusion or implementation claim is made.
+Canonical charter: `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`.  
+Protected procedure pin used before effects: Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`.  
+Archived inventory: `finviz_themes/finviz_themes_map.md` at `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`, blob `51de7142f1efe36eceb64cb74a7eeb3f0ef06306`.
 
-## 2. Exact 32-key breadth map
+Inventory spans inspected:
+- EV: lines 541-574;
+- Industrial Automation: lines 582-615;
+- Robotics: lines 741-769;
+- IoT: lines 849-877;
+- Autonomous Systems: lines 885-913.
 
-Every key below has prefix `ltheme:finviz:`. Parent qualifications are starting evidence only; all other rows remain pending source-local assessment.
+No single green/red completeness score is used. `evidence_class` says what kind of evidence was found, not whether the whole leaf is complete:
 
-| Source key | Family | Current qualification | Immediate unresolved question |
-|---|---|---|---|
-| `evsmanufacturers` | EV / Manufacturers | PENDING | Deliveries/pricing/mix/cost/inventory/financing -> per-share economics |
-| `evsbatteries` | EV / Batteries | PENDING | Role separation, qualification and contracted demand |
-| `evscharging` | EV / Charging | PENDING | Availability, paid energy, margin, site capex/maintenance/grid terms |
-| `evschips` | EV / Chips | PENDING | Qualified content/vehicle and architecture-driven durable demand |
-| `evssuppliers` | EV / Suppliers | PENDING | Sourced platforms/content/contracts/customer schedules -> profit |
-| `evsselfdriving` | EV / Self-Driving | PENDING | Operational deployment, safety/approval scope and paid-mile economics |
-| `evsfleets` | EV / Fleets | PENDING | Payer, measured savings and retention of fleet/energy/software services |
-| `automationrobotics` | Automation / Robotics | PENDING | Production task, labor constraint, installation economics and profitability |
-| `automationautomation` | Automation / Automation | PENDING | Process/discrete/integration separation; orders, conversion, service |
-| `automationmachinevision` | Automation / Machine Vision | PARENT FRAMEWORK_MATCH | Factory task effect, qualified inclusion and seller revenue scope |
-| `automationsoftware` | Automation / Software | PENDING | Paid workflow adoption and demonstrable customer value |
-| `automationiot` | Automation / IoT | PENDING | Recurring service/software economics without hardware double count |
-| `automationlogistics` | Automation / Logistics | PENDING | Throughput/labor savings/integration cost -> buyer/vendor economics |
-| `automationdprinting` | Automation / 3D Printing | PENDING | Qualified production apps, utilization and consumable attachment |
-| `roboticsautomation` | Robotics / Automation | PENDING | Application/component role -> order-to-profit with buyer payback |
-| `roboticslogistics` | Robotics / Logistics | PARENT DIRECT_RESEARCH_MATCH | Productive utilization, integration/support cost and paid conversion |
-| `roboticsavmobility` | Robotics / AV & Mobility | PENDING | Perception/vehicle/fleet role separation and paid deployment |
-| `roboticsmachinevision` | Robotics / Machine Vision | PENDING | Qualified inclusion and attributable business exposure |
-| `roboticsmedical` | Robotics / Medical | PARENT DIRECT_RESEARCH_MATCH | Complementary physical deployment gaps; reuse B/Healthcare care economics |
-| `roboticsconsumer` | Robotics / Consumer | PENDING | Recurring task value after subsidy, maintenance and support |
-| `iotedgedevices` | IoT / Edge Devices | PENDING | Qualified content and financially relevant replacement cycle |
-| `iotnetworking` | IoT / Networking | PENDING | Device counts -> paid connectivity net of usage/pricing/network cost |
-| `iothardware` | IoT / Hardware | PENDING | Incremental edge compute vs repurposed installed capacity |
-| `iotsoftware` | IoT / Software | PENDING | Paid asset/event/workflow units, retention and recurring economics |
-| `iotenterprise` | IoT / Enterprise | PENDING | Measured operating value converting pilots to production/renewals |
-| `iotsecurity` | IoT / Security | PENDING | Incremental connected-asset protection vs generic enterprise security |
-| `autonomousavmobility` | Autonomous / AV & Mobility | PENDING | Commercial deployment, utilization, safety scope and unit cost |
-| `autonomousindustrial` | Autonomous / Industrial | PENDING | Constrained task, integration cost, utilization and payback |
-| `autonomousdefense` | Autonomous / Defense | PENDING | Funded programs, accepted systems and sustainment business value |
-| `autonomousmachinevision` | Autonomous / Machine Vision | PENDING | Qualified perception content vs complete autonomy platform |
-| `autonomoussoftware` | Autonomous / Software | PENDING | Licensed/hosted/usage monetization with compute/support cost |
-| `autonomousspecialized` | Autonomous / Specialized | PARENT ADJACENT_RESEARCH_ONLY | Specific paid field-work case with operating limits and full support cost |
+- `PRIMARY_CASE`: new C primary-source case with operating/economic evidence;
+- `DIRECT_WORKED_REUSE`: substantive incumbent worked research directly addresses the mechanism;
+- `DIRECT_FRAMEWORK_REUSE`: incumbent worked research covers exact-member/commercial archetypes but not the complete leaf;
+- `DIRECT_COMPONENT_REUSE`: incumbent component evidence covers exact-member roles but deployment economics remain open;
+- `FRAMEWORK_REUSE`: a reusable economic framework exists, but leaf-specific worked evidence is incomplete;
+- `ADJACENT_REUSE`: related evidence exists but cannot close the source-local leaf;
+- `INVENTORY_ONLY`: no substantive direct/adjacent worked research was located in this bounded pass beyond the archived inventory.
 
-## 3. First bounded unit
+The machine-checkable companion is `COVERAGE.json`. At readback it contains exactly 32 unique keys, zero missing, zero extras and zero duplicates.
 
-Read and qualify the pinned ROBOT1, IND9 and HEALTH4 passages; refresh their live study carrier frontiers once; recover source-local inventory spans; then update the four parent-prequalified rows with exact source-span evidence, explicit missing dimensions and the first case-selection candidates.
+## 2. Reuse anchors actually inspected
 
-No broad audit of Robotics, Industrials or Healthcare is authorized. No new external research begins until the inherited distinctions are understood well enough to avoid duplicating solved questions.
+**ROBOT1 / #7773.** `research/robotics/ROBOTICS_RESEARCH_FOUNDATION_2026-09-23.md` at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, blob `9d8f7df56f56cfc82a4152b3ef1db81f19219aae`. Its current carrier head was refreshed and the reused foundation blob is unchanged. Reused distinctions include application families, company/business roles, specific technical inclusions, deployment evidence requirements and no-double-counting.
 
-## 4. Required final return structure
+**IND9 / #7789.** `research/industrials/INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`, blob `513335044c4032a1053ca31d339aac57360572eb`. Its current carrier head was refreshed and the Wave9 catalog blob is unchanged. Reused tasks include demand versus replenishment, customer replacement/payback, profitable order conversion, recurring service, local-service density and automation productivity capture.
 
-The same carrier will accumulate:
-- `COVERAGE`: all 32 keys exactly once with source-span evidence, reuse and missing dimensions;
-- `SYNTHESIS`: warehouse/industrial, EV charging and autonomous/specialized cases;
-- `OBSERVATIONS_AND_INTEGRATION`: observation profiles, clocks/corrections, workflows and owner seams;
-- `RETURN_AND_CHECKPOINT`: exact revisions/digests, checks, validation scope, gaps, effects and next action.
+**HEALTH4 / #7788.** `research/healthcare/HEALTHCARE_DEVICE_PROCEDURE_ECONOMICS_R4_2026-09-23.md` at `dee08ae9e6edba7da3f4e43cd3ce5a3f59ffb862`, blob `9029a022c9d3ea23814a484843a38893ca40b6b4`. The reused R4 blob remains unchanged at the refreshed Healthcare carrier. Intuitive placement, nested lease, procedure and recurring economics are reused without rebuilding care/payer research.
 
-MISSION_COMPLETE: false
+**GMI B live return.** Lane B returned its bounded tranche at `537e29b42fdeed1658cd6f29c690f43e87fe9fff`; its healthcare-device assessment preserves that use, benefit eligibility, supply billing and manufacturer revenue can concern different populations. C retains physical/commercial deployment and does not repeat B's care/payer interpretation.
 
+**Consumer Cyclical / #7804.** R3 Autos/Durables at current inspected head `4079c81ef8222b2f45276f919485f188eb7bcb2b` separates household need, financing, factory shipment, channel inventory, delivery/use, support and common-equity cash. Its Ford Model e example is reused as a worked automotive mechanism, not a whole EV-sector verdict.
 
-## 5. Reuse sources actually inspected in this child
+**Semiconductors / #7780.** Current inspected head `b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb`. Reused material separates physical composition, manufacturing route, commercial relationship, qualified capacity and economic exposure; automotive/industrial component roles do not prove content share or recognized revenue.
 
-The archived source-local inventory was read from `finviz_themes/finviz_themes_map.md` at `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`, blob `51de7142f1efe36eceb64cb74a7eeb3f0ef06306`. Exact source spans located: EV lines 541-574; Industrial Automation lines 582-615; Robotics lines 741-769; IoT lines 849-877; Autonomous Systems lines 885-913. Those member sets are an inherited vendor snapshot, not current certified membership or economic exposure.
+**Technology ex-Semis / #7793.** Current inspected head `d1f28763b28bab0a0b903600e1556b7a00f5fa8a`. R2 software economics provides paid deployment/go-live/renewal/consumption/security/cloud mechanisms; R3B physical-value-network work provides general hardware/value-network boundaries. These are commercial archetypes, not automatic IoT/autonomy exposure.
 
-Pinned repository studies were then qualified against their live carriers:
+**Communications / #7794.** Current inspected head `3968dff446f6e09bc6ede020e3cb5639a19475a4`. Network economics requires service relationships, realized yield, utilization, operating/maintenance/expansion capital and financing. Availability is explicitly not subscription or profit.
 
-| Ref | Pinned source | Current carrier check | Child inspection |
-|---|---|---|---|
-| ROBOT1 / #7773 | `ROBOTICS_RESEARCH_FOUNDATION_2026-09-23.md` at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, blob `9d8f7df56f56cfc82a4152b3ef1db81f19219aae` | #7773 current head `325be052aa5892f21a399ec0eebc1bd5c65b995a`; foundation blob unchanged | Outcome/boundaries; findings; application/component map; company map; typed examples; deployment rules and source index, including Symbotic, AutoStore, Cognex, Intuitive, Orbbec/Twinny, GXO/Agility and field-application scope |
-| IND9 / #7789 | `INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`, blob `513335044c4032a1053ca31d339aac57360572eb` | #7789 current head `5b78adfd501faf2114751de7098840ebbe763713`; Wave9 catalog blob unchanged | Dimensional/aggregation rules and W9-J03/J07/J12/J15/J16 plus missing-data/falsifier behavior |
-| HEALTH4 / #7788 | `HEALTHCARE_DEVICE_PROCEDURE_ECONOMICS_R4_2026-09-23.md` at `dee08ae9e6edba7da3f4e43cd3ce5a3f59ffb862`, blob `9029a022c9d3ea23814a484843a38893ca40b6b4` | #7788 current head `b2271c506507d348906c22c13518f7a37128c73f`; R4 blob unchanged | Sections 1-3 and measurement dictionary, especially Intuitive placement/lease/procedure economics; broader clinical/payer interpretation remains with Healthcare/B |
+The bounded Energy R2 reconciliation file did not contain a directly reusable EV-charging treatment under the inspected search terms. GMI C therefore uses direct EVgo primary evidence for the charging case and leaves grid/tariff semantics with Energy.
 
-Later carrier work on #7773, #7789 and #7788 does not invalidate these pinned sources because the exact reused file blobs are unchanged. Their newer design/implementation work is not adopted as evidence that any proposed interface is live.
+## 3. Complete breadth matrix
 
-Live sibling boundary check: lane B has an active Draft/HOLD carrier #7892 at head `e4e8510303ba65e2bed6fdf5b08e340ecf443305`, starting with healthcaredevices/wearablesmedical/longevity leaves. GMI C therefore reuses Healthcare R4 for medical-robotics commercial/deployment distinctions and does not duplicate B's care/payer/clinical interpretation. Lane A is active on #7890 and retains grower/customer economics; specialized-autonomy research should prefer a non-agricultural first case unless an A result is explicitly reused.
+| Source key | Evidence class | Exact reuse / source span | What is actually supported | Explicit missing dimensions | Existing owner seam |
+|---|---|---|---|---|---|
+| `evsmanufacturers` | DIRECT_WORKED_REUSE | Consumer Cyclical R3 §2, §3.1 Ford at #7804 head 4079c81ef8222b2f45276f919485f188eb7bcb2b | Vehicle demand, factory/wholesale, channel, financing and retained-contribution stages are separated; Ford Model e is a worked example showing units, revenue and loss can move differently. | broader EV-manufacturer cohort; matched deliveries versus end-customer registrations; price/incentive/mix by product; dealer/direct inventory; manufacturing cost and warranty; financing subsidy and per-share bridge | Consumer Cyclical owns vehicle/customer demand and financing; C owns deployment/adoption interpretation |
+| `evsbatteries` | INVENTORY_ONLY | Finviz baseline 9573cd4... lines 546-549 | Archived source-local member set only in this bounded C pass. | mine/material/cell/precommercial role separation; qualification status; contracted demand; cell/customer production linkage; capex/yield/cost and ownership | Materials/Mining and Semiconductor incumbents retain mineral, material, cell/process specifics; C should consume rather than rebuild |
+| `evscharging` | PRIMARY_CASE | EVgo Q2 2026 release 2026-08-05; EVgo Form 10-Q 2026-06-30 | Operational public stalls, delivered energy, per-stall throughput, charging revenue/cost, capex offsets, DOE financing and contractual availability thresholds are directly observed at portfolio level. | actual matched-cohort availability; site/vintage kWh and sessions; site tariff/net realization; energy/demand charges; host rent/revenue share; site maintenance and attributable capital/debt; site-level return | Energy retains power-contract/grid-price semantics; C retains charging deployment/site economics |
+| `evschips` | DIRECT_WORKED_REUSE | Semiconductor APPLICATIONS_CYCLES_ECONOMIC_CAPTURE at #7780 head b68069b2...; Semiconductor foundation blob 4d11bf... | Automotive processing/networking, power, sensing and source-reported design-win relationships are explicitly separated from catalog capability; semiconductor research requires application/configuration qualification. | qualified content per exact vehicle/platform; units/content value by architecture; customer production schedule; share/dual-source terms; recognized revenue/margin attribution | Semiconductors owns device/process/fab specifics; C consumes qualified content to explain deployed vehicle demand |
+| `evssuppliers` | FRAMEWORK_REUSE | Consumer Cyclical R3 vehicle stages; IND9 W9-J02/J04/J22; Semiconductor commercial-relationship rules | Existing research separates announced demand, orders, delivery, ownership, financing and supplier profit capture. | exact source-local platform relationships; content/vehicle or service unit; contract terms; customer production schedule; supplier revenue/profit/cash attribution | Incumbent Industrials/Semiconductor/Consumer owners keep product and customer facts; C links them only when deployed economics are source-qualified |
+| `evsselfdriving` | ADJACENT_REUSE | ROBOT1 application scope and deployment rules; Consumer Cyclical vehicle-demand framework | AVs are explicitly adjacent to robotics and operational evidence must distinguish deployment, productive work and intervention; vehicle demand/financing stages are separately modeled. | specific paid AV fleet/application; operating-domain/geography; actual availability/utilization; safety/approval scope; paid-mile revenue; remote assistance and full vehicle/fleet cost | C owns commercial deployment economics; legal/safety claims stay source-scoped and no generalized certification is inferred |
+| `evsfleets` | FRAMEWORK_REUSE | Technology R2 workflow/consumption economics blob e743967...; Communications foundation network economics blob f2caaae...; IND9 customer-economics tasks | Paid units, usage, renewals, service relationships and cost-to-serve are explicit framework dimensions. | exact fleet payer; vehicle/asset population; measured fuel/energy/maintenance/labor savings; telematics/software attachment; contract and retention cohort; support/network cost and retained contribution | Technology/Communications own software/connectivity archetypes; C owns fleet deployment and operating-value bridge |
+| `automationrobotics` | DIRECT_WORKED_REUSE | ROBOT1 blob 9d8f7df... company/application map; IND9 customer-economics tasks | Robot OEM, component, integrator and customer roles are source-scoped; deployment must preserve task, uptime, intervention, integration and buyer alternatives. | task-level production cohort; labor constraint and baseline; installed/integration cost; productive utilization; maintenance/support; buyer payback and supplier retained margin | Robotics physical research is DO_NOT_REDO; C deepens only economic deployment gaps |
+| `automationautomation` | FRAMEWORK_REUSE | ROBOT1 company map including Rockwell/Emerson; IND9 W9-J04/J07/J12/J20 | Process/hybrid controls, discrete robotics, project integration and recurring service are distinguishable roles; customer productivity savings and vendor conversion need separate evidence. | source-local process vs discrete cohorts; orders/backlog conversion; project overrun/integration cost; installed base/service attachment; customer productivity and retained supplier contribution | Industrials owns broader order/cycle frameworks; C applies them to deployed automation |
+| `automationmachinevision` | DIRECT_WORKED_REUSE | ROBOT1 perception/company map and typed inclusion examples; COVERAGE.md §6 | Cognex/vision roles and named technical inclusions exist; component presence is not customer ROI or seller economic exposure. | one exact inspection/guidance task; baseline quality/throughput; qualified version and attachment; buyer acceptance; price/software/service scope; integration/support cost; seller revenue/margin denominator | Semiconductors owns sensor silicon; C owns factory-task deployment economics |
+| `automationsoftware` | DIRECT_FRAMEWORK_REUSE | Technology R2 D01-D04 blob e743967...; ROBOT1 PTC ownership correction | Paid deployment, accepted go-live, renewal, usage/seat/runtime units, implementation and customer budget are explicitly modeled; UiPath is a worked automation-economics example. | industrial design/simulation/MES/digital-twin case tied to physical output; exact paid unit; migration/implementation cost; renewal/cohort; customer productivity value; vendor cloud/support cost | Technology owns software/cloud commercial archetypes; C supplies physical workflow/customer-value evidence |
+| `automationiot` | FRAMEWORK_REUSE | Technology R2 workflow/consumption/security economics; Communications network economics; ROBOT1 dated PTC ThingWorx divestiture | Hardware, software/usage, connectivity and ownership perimeter cannot be collapsed; recurring economics require paid units and retention. | specific connected-asset population; hardware vs recurring software/service allocation; data/connectivity volume; paid entitlement and renewal; support/cloud/network cost; customer operating effect | Technology/Communications own software/network mechanisms; C owns industrial deployment/value link |
+| `automationlogistics` | PRIMARY_CASE | Symbotic 2026-06-27 10-Q; Symbotic Q3 FY2026 release; Walmart FY26 Q4 presentation/transcript; SYNTHESIS.md Case 1 | Contracted warehouse automation, deployment cohort, operational systems, software/support and operation-services economics plus buyer-scale automation are directly evidenced. | matched site throughput/uptime; human intervention; site integration/support costs; Walmart site capex/labor savings; site payback; site-specific Symbotic margin/cash | C owns case synthesis; financial values remain under native financial evidence owners |
+| `automationdprinting` | INVENTORY_ONLY | Finviz baseline 9573cd4... lines 611-615 | Archived source-local member set only in this bounded C pass. | qualified production application; machine utilization; prototype vs serial-production split; material/consumable attachment; part qualification and yield; service burden; customer unit economics and vendor retained margin | Industrials/manufacturing incumbents should be checked before any new deep dive |
+| `roboticsautomation` | DIRECT_WORKED_REUSE | ROBOT1 application/company/component maps; IND9 automation/customer economics | Robot applications, components and business roles are worked with explicit no-double-counting and deployment requirements. | one matched robot application from order through accepted production; buyer baseline and payback; supplier order-to-revenue conversion; full integration/support cost | ROBOT1 foundation is DO_NOT_REDO; C adds deployment economics only |
+| `roboticslogistics` | DIRECT_WORKED_REUSE | ROBOT1 warehouse roles and typed examples; COVERAGE.md §6; Symbotic primary Case 1 as adjacent exact-member deepening | Warehouse participants, named inclusions and deployment relationships are sourced; Symbotic supplies a stronger operational/economic case for an overlapping exact member. | site-level utilization/uptime; intervention labor; full installed/support cost; buyer payback and site-specific supplier cash | C owns warehouse deployment-economics case; Robotics owns physical foundation |
+| `roboticsavmobility` | ADJACENT_REUSE | ROBOT1 application scope and AV adjacency; Semiconductor application-scoped relationship rules | Perception/compute/platform roles can be separated and AV is an explicit adjacent family. | role-by-role paid deployment for source-local members; vehicle/fleet operator payer; operating-domain scope; utilization/paid miles; human assistance; revenue/cost attribution | C owns commercial deployment; Semis/Technology retain component/software specifics |
+| `roboticsmachinevision` | DIRECT_WORKED_REUSE | ROBOT1 Cognex/Orbbec/Mujin/company map and typed examples | Specific sensors/perception stacks and named inclusions are demonstrated; source explicitly blocks inference from presence to revenue/share. | qualified customer population; units/attachment and price; seller revenue/materiality; task performance/acceptance; integration/support costs | Robotics physical evidence reused; C qualifies economic exposure |
+| `roboticsmedical` | DIRECT_WORKED_REUSE | HEALTH4 blob 9029a022... §1-3; ROBOT1 Intuitive role; COVERAGE.md §6; GMI B final COVERAGE at 537e29b42fdeed1658cd6f29c690f43e87fe9fff, healthcaredevices assessment | Placement, nested lease categories, procedures, instruments/service and retained-economics questions are explicitly separated. Lane B independently preserves that use, benefit eligibility, supply billing and manufacturer revenue can concern different populations. | comparable active-system cohort; physical readiness/uptime where material; procedure-family utilization; service/training/replacement burden; contract/cash timing; matched care/access/use population must be consumed from B rather than reconstructed by C | Lane B/Healthcare owns clinical, patient, access and payer interpretation; C owns complementary physical/commercial deployment |
+| `roboticsconsumer` | ADJACENT_REUSE | ROBOT1 application scope includes consumer/service | Consumer/service robotics is recognized as a distinct application family with general deployment/accounting rules. | specific recurring customer task; paid adoption cohort; hardware subsidy; maintenance/replacement/support; retention/frequency; customer alternative and full unit economics | Consumer owner supplies household/customer economics if selected; C owns physical deployment |
+| `iotedgedevices` | DIRECT_COMPONENT_REUSE | Semiconductor application/cycle dossier at #7780; Semiconductor foundation SC12-SC15 | Exact source-local semiconductor businesses include analog, MCU, power, sensing and connectivity roles; application/configuration qualification and design-win scope are explicit. | specific connected-asset population; qualified content per asset; shipment/use replacement cycle; installed-life and refresh; price/content share and supplier margin | Semiconductors owns device/process facts; C ties them to connected deployed assets |
+| `iotnetworking` | FRAMEWORK_REUSE | Communications foundation §§G-H blob f2caaae... | Connectivity economics require service relationships, realized service revenue, utilization, network operating/maintenance/expansion capital; availability is explicitly not subscription or profit. | connected-device population by contract; traffic/usage; pricing and churn; incremental network cost; IoT-specific service revenue and contribution | Communications owns network/satellite economics; C supplies device/application demand when relevant |
+| `iothardware` | FRAMEWORK_REUSE | Semiconductor foundation/applications; Technology physical-value-network R3B blob bfd2dcf... | Component/business role, configuration, qualification and physical-value-network boundaries are established; a general issuer cannot be labeled pure edge hardware. | specific edge workload; incremental hardware vs reused installed capacity; unit/configuration and utilization; deployment cadence/replacement; system price/cost and retained margin | Semis/Technology own device/hardware specifics; C owns deployed workload/value bridge |
+| `iotsoftware` | DIRECT_FRAMEWORK_REUSE | Technology R2 D01-D04/D06 blob e743967... | Asset/workload/event/usage units, paid deployment, go-live, renewal, consumption and cost-to-serve are explicitly modeled; several exact source-local issuers have worked software economics. | IoT-specific asset/event population; entitlement/pricing unit; production go-live; retention/renewal; cloud/data/support cost; customer operating value | Technology owns software economics; C ensures physical-asset linkage and non-double-counting |
+| `iotenterprise` | FRAMEWORK_REUSE | Technology R2 D01-D04; IND9 W9-J14/J20 | Pilot/implementation, paid go-live, workflow value, automation savings and vendor cost/risk are distinct framework stages. | one measured pilot-to-production conversion; eligible asset/site population; before/after operating value; contract expansion/renewal; implementation/support burden | Technology/Industrials own software/project archetypes; C owns deployment/customer-value evidence |
+| `iotsecurity` | DIRECT_FRAMEWORK_REUSE | Technology R2 D05 security economics | Several exact source-local members (PANW, MSFT, FTNT, CRWD, OKTA) have worked security monetization/perimeter examples; protected units and budget owner must be explicit. | connected-asset-specific protection population; incremental contract distinct from generic enterprise security; asset/module attachment; renewal and realized price; device/network protection cost-to-serve | Technology/security owners keep cyber product/economic scope; C only links incremental connected-asset deployment demand |
+| `autonomousavmobility` | ADJACENT_REUSE | ROBOT1 AV adjacency and deployment rules; Consumer Cyclical vehicle framework; Semiconductor automotive application rules | Platform/component/customer roles, vehicle adoption stages and operational evidence requirements are available. | specific paid commercial fleet; operating-domain/geography; actual availability/utilization; interventions; paid ride/mile/task economics; vehicle capital/maintenance and operator contribution | C owns commercial deployment; no generalized safety/legal conclusion |
+| `autonomousindustrial` | PRIMARY_CASE | Caterpillar/Luck Stone primary sources in SYNTHESIS.md Case 3; Symbotic Case 1 as separate warehouse comparator | A source-local CAT case has real go-live, >3.5m tons of productive hauling, onsite support and multi-site expansion; warehouse autonomy supplies a second mechanism without being counted as independent proof of the quarry case. | contract price; automation-specific asset/integration capital; supervision FTE; maintenance/fuel delta; cost per accepted ton; supplier project revenue/margin | C owns industrial-autonomy economics; no tactical/defense extension |
+| `autonomousdefense` | INVENTORY_ONLY | Finviz baseline 9573cd4... lines 895-898 | Archived source-local member set only in this bounded C pass. | specific funded program; accepted system/delivery milestone; contract value and recognition; sustainment/support obligation; capital/cost and business materiality | Remain industry/product-economics only; no targeting, tactical or weapons-operation analysis |
+| `autonomousmachinevision` | DIRECT_FRAMEWORK_REUSE | ROBOT1 perception/company/typed-inclusion evidence; Semiconductor SC15/application evidence | Perception sensor/component roles and named inclusions exist; platform versus component and qualification boundaries are explicit. | qualified content on exact autonomous platform; units/price/share; customer acceptance; software/compute/support scope; supplier revenue/materiality | Semiconductors/Robotics own component facts; C owns deployed autonomy linkage |
+| `autonomoussoftware` | FRAMEWORK_REUSE | Technology R2 workflow/consumption/cloud economics | Licensed, subscription, consumption and usage-based monetization plus implementation/cloud cost are well specified as archetypes. | autonomy-specific licensed/hosted/usage function; paid task/unit; compute intensity and support; operating-domain/customer population; renewal/retention and retained contribution | Technology owns software/cloud archetypes; C binds them only to proven autonomous workflows |
+| `autonomousspecialized` | PRIMARY_CASE | Caterpillar/Luck Stone primary sources in SYNTHESIS.md Case 3; ROBOT1 application scope | CAT is in the source-local leaf and has a defined quarry application, go-live, measured tons hauled, embedded support and expansion after extended operation. | buyer project price; autonomy-specific capex; support/supervision hours; maintenance/fuel; cost per accepted ton; supplier revenue/margin | Lane A retains grower/customer economics for agricultural autonomy; quarry case avoids duplicating that lane |
 
-## 6. Four starting leaf qualifications
+## 4. Parent-prequalified leaves — material-gap conclusions
 
-### `roboticslogistics` — DIRECT_RESEARCH_MATCH, economics still open
+### `roboticslogistics`
 
-The source-local leaf contains SYM/AMZN/ZBRA/CGNX/HON/TER/ROK. ROBOT1 has source-scoped warehouse participants and role distinctions: Symbotic is a warehouse automation OEM/integrator; Rockwell owns OTTO AMR capability; Cognex supplies machine vision/robot guidance; Zebra retains RFID/vision after the dated sale of its Robotics Automation business. ROBOT1 also carries concrete deployment-adjacent records outside the leaf membership: Orbbec says Twinny's NarGo order-picking robot uses two Gemini 335 cameras; GXO has a commercial deployment agreement with Agility Robotics; AutoStore is a grid-based storage system.
+The parent DIRECT_RESEARCH_MATCH is preserved and deepened. ROBOT1 supplies warehouse-system roles, specific inclusions and customer/deployment assertions. The C Symbotic/Walmart case adds a contracted deployment program, systems-in-deployment versus operational-system cohorts, recognized systems revenue, software-maintenance/support revenue and operations-services cost. Still missing is a matched site-level customer payback cohort: throughput, uptime, intervention, installed capital, avoided labor/operating cash and site-specific supplier economics.
 
-This is substantive evidence that catalog capability, named inclusion and some customer/deployment relationships exist. It is not yet a complete warehouse-economics case. ROBOT1 explicitly says Orbbec/Twinny price, annual deliveries and customer revenue are unknown, and requires productive autonomous tasks/hours, accuracy, uptime, intervention labor, customer acceptance and repeat orders to be distinguished. Symbotic's cited S38 record is a corporate transaction/conditional agreement source, not by itself evidence of one site's productive utilization or buyer payback.
+### `roboticsmedical`
 
-Unclosed dimensions: exact buyer job and site; commissioned/accepted deployment date; workload denominator; throughput and uptime under defined operating conditions; human/remote intervention; integration and support burden; contract/revenue recognition; buyer labor/capital alternative; supplier retained margin/cash; repeat/expansion evidence. A named logo or installed system cannot close those gaps.
+The parent DIRECT_RESEARCH_MATCH is preserved. HEALTH4 already separates placements, nested operating/usage-based leases, procedures, instruments/service and retained-economics questions. B's final return further preserves that actual use, benefit eligibility, supply billing and manufacturer revenue can describe different populations. C therefore keeps only complementary physical/commercial deployment: comparable active system-days, utilization, service/training/upgrade burden and contract/cash timing. It does not recreate clinical or payer review.
 
-### `roboticsmedical` — DIRECT_RESEARCH_MATCH, cross-lane clinical work held
+### `automationmachinevision`
 
-The source-local leaf contains ISRG/SYK/MDT/PRCT/ZBH/GMED/JNJ/ARAY. HEALTH4 already gives a strong commercial-use distinction. For Intuitive's cited Q2 example it reports 468 da Vinci placements, including 254 operating leases of which 131 were usage-based; it also reports procedure-growth measures and warns that ending installed base is not a same-cohort average-period utilization denominator. Usage-based leases are nested within operating leases, not additive.
+The parent FRAMEWORK_MATCH is preserved. ROBOT1 supplies machine-vision roles and named technical inclusions, which are not customer ROI or seller-profit proof. The remaining minimum case is one exact inspection/guidance task with baseline defect/rework/throughput, qualified hardware/software version, buyer acceptance, integration/support burden and seller revenue scope.
 
-HEALTH4's core modeling chain is exactly reusable here: device/version -> care workflow/site -> activity actually delivered -> payment/contract -> retained economics. It states that placements, authorization, procedures, payment and shareholder economics are separate layers and that customer financing, depreciation, service and training may shift supplier cash timing.
+### `autonomousspecialized`
 
-GMI C's remaining complementary question is physical/commercial deployment only: active comparable system cohort, uptime/readiness where material, actual utilization by procedure family, equipment arrangement, service/training obligations, replacement/upgrade burden and contract/cash timing. Clinical efficacy, patient selection, payer eligibility and hospital-care economics remain with Healthcare/B. No separate C clinical review is warranted.
+The parent ADJACENT_RESEARCH_ONLY qualification is now materially deepened by a source-local CAT case. Caterpillar/Luck Stone has a specific quarry, go-live, millions of tons hauled, embedded implementation/support and expansion to additional sites after extended operation. That proves operating adoption more strongly than a launch target. It still lacks project price, autonomy-specific capital/support hours, matched maintenance/fuel and cost per accepted ton, so customer payback and Caterpillar contract margin remain unclosed.
 
-### `automationmachinevision` — FRAMEWORK_MATCH, paid factory effect unproven
+## 5. New primary case coverage
 
-The source-local leaf contains CGNX/TDY/ON/NOVT/ZBRA/TXN/ST/AMBA/OUST/AME. ROBOT1 distinguishes perception components, source-scoped product inclusion and complete-system economics. It identifies Cognex as machine vision/robot guidance, Novanta/ATI as force/torque sensing, Zebra as retained vision/RFID, and several semiconductor/sensor roles. It also records concrete named technical inclusions such as Orbbec/Twinny and Mujin vision/controller in an AMT/FANUC cell.
+Three contrasting case jobs are developed in `SYNTHESIS.md`:
 
-That evidence supports capability/inclusion research, not a generic machine-vision bottleneck or seller-profit claim. A component in a robot or cell is not automatically an incremental paid factory application; a camera/module price cannot be added again when it is already inside a purchased installation.
+1. **Warehouse automation — Symbotic/Walmart.** Deployment cohort → operational cohort → systems/software/support/operations revenue/cost, with site payback explicitly missing.
+2. **EV charging — EVgo public network.** Operational public stalls → delivered energy/per-stall throughput → charging-network revenue/cost → capex offsets/DOE financing, with actual matched-site uptime and return explicitly missing.
+3. **Specialized autonomy — Caterpillar/Luck Stone.** Go-live → accepted productive tons → implementation/support → multi-site expansion, with cost per accepted ton and contract economics explicitly missing.
 
-Unclosed dimensions: one exact inspection/guidance task and line/cell population; baseline defect/rework/throughput or guidance performance; qualified hardware/software version; buyer acceptance; installed quantity/attachment; price/contract scope; software/service recurrence; integration/support cost; supplier revenue denominator and margin/cash relevance. Cognex technical guidance is not customer ROI evidence.
+These cases are not independent confirmation of every neighboring leaf. Shared issuers/events retain one source lineage.
 
-### `autonomousspecialized` — ADJACENT_RESEARCH_ONLY
+## 6. Breadth conclusion
 
-The source-local leaf contains DE/CAT/TRMB/OII/AGCO/TXT/TDY/KVHI. ROBOT1 recognizes agriculture/construction/mining and inspection/subsea as separate application families and preserves dated AGCO/PTx Trimble ownership research. It does not provide a complete paid field-work case for this leaf.
+All 32 assigned leaves now have an explicit source-qualified assessment. That does **not** mean 32 deep current-primary dossiers. The two clearest untouched breadth gaps in this bounded pass are `automationdprinting` and `autonomousdefense`, which remain inventory-only rather than being filled with guesses. `evsbatteries` also remains inventory-only inside C because mineral/material/cell process work belongs to incumbent owners and no material C-specific deployment gap justified duplicating them.
 
-The required next evidence is one specific operating system in one domain with a buyer/operator, permitted operating envelope, task population, actual paid work, utilization, intervention/remote-assistance load, maintenance/downtime, asset/integration capital, contract/revenue and a buyer alternative. A launch target, autonomous-hours headline or application-category label is insufficient.
+The result is therefore a truthful breadth map: reuse solved mechanisms, deepen only economically material deployment gaps, and preserve missing data visibly.
 
-To avoid duplicating lane A's grower/customer-financing work, the first C deep-dive candidate is preferably a maritime/subsea or other non-agricultural field-work case if primary evidence is strong enough. Oceaneering (`OII`) is a source-local candidate, not yet a selected or validated case. Deere/AGCO/Trimble agriculture remains available only through an explicit A/C evidence split.
-
-## 7. Case-selection frontier after reuse qualification
-
-These are research hypotheses, not findings or final case selections.
-
-- **Warehouse/industrial case:** Symbotic/Walmart is the leading candidate because the existing Robotics source already establishes Symbotic's warehouse-system role and a concrete Walmart-related corporate/contract trail. It still needs site-level productive-utilization, full customer-payback and supplier cash evidence before selection is final. GXO/Agility is a useful autonomy/logistics comparator but should not be counted as independent confirmation of a Symbotic case.
-- **EV charging case:** no case is selected in this ingestion unit. The eventual case must expose ports/nameplate separately from operating availability, paid delivered energy, realized charging margin, site capex/maintenance, power/land/grid terms, funding and retained economics. A network-growth headline alone is disqualifying evidence.
-- **Autonomous/specialized case:** a non-agricultural specialized operator such as OII is a promising route because it could avoid duplicating lane A, but no operating, contract or cost source has yet been acquired. An autonomous-mobility fleet remains an alternative if its paid-work and intervention-cost evidence is stronger.
-
-## 8. Current limitations and next discriminators
-
-No external primary source was independently reacquired in this child yet. The repository studies above are reviewed reuse inputs; their external-source assertions remain attributed until this child validates the specific claims required by its final cases. Source independence is preserved: multiple leaf appearances of one issuer/source/event do not count as multiple confirmations.
-
-The next discriminators are therefore narrow:
-1. identify one warehouse deployment with both buyer productive-use evidence and supplier contract/revenue/cost evidence;
-2. select one charging operator/site or fleet model with paid delivered-energy and site-capital economics rather than installed-port publicity;
-3. validate one specialized/autonomous paid-work case with operating-domain and intervention/asset costs;
-4. keep machine-vision deepening task-specific and revenue-scoped, not category-wide;
-5. consume lane B's care/payer result rather than independently rebuilding it.
-
-MISSION_COMPLETE: false
+MISSION_COMPLETE: false pending Meta-CEO review of the full bounded return.
