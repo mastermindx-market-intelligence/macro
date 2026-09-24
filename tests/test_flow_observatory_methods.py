@@ -350,6 +350,7 @@ def test_themes_adjudicated_tau_beta_is_the_unique_in_band_min_flip_winner():
     assert winner["main"]["flip_rate"] < others[0], "the adjudicated winner is no longer a strict min"
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_southbound_m0_vs_m1_state_disagreement_within_the_hold_bound():
     """R1 HISTORICAL RECORD (superseded — see test_r2_southbound_reverted_to_m0 below for
     the live production method). R1's rationale: M1 (winsorized) was adopted because the
