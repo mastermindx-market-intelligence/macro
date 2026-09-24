@@ -155,7 +155,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["stable_subject_id", "comparison_kind", "earlier_point_estimate", "later_actual"],
+        "required": ["stable_subject_id", "comparison_kind", "earlier_point_estimate", "later_actual", "is_range", "is_consensus", "comparison"],
         "properties": {
           "stable_subject_id": {"type": "string", "minLength": 1},
           "comparison_kind": {"type": "string", "minLength": 1},
@@ -181,13 +181,13 @@
               "source_label": {"type": "string", "minLength": 1}
             }
           },
-          "comparison": {"type": "string"},
+          "comparison": {"type": "string", "minLength": 1},
           "definition_unqualified_fields": {
             "type": "array",
             "items": {"type": "string", "minLength": 1}
           },
-          "is_range": {"type": "boolean"},
-          "is_consensus": {"type": "boolean"}
+          "is_range": {"type": "boolean", "const": false},
+          "is_consensus": {"type": "boolean", "const": false}
         }
       }
     },
