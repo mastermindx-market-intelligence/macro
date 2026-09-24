@@ -2086,6 +2086,12 @@ jobs:
       # with exactly `pytest pyyaml jinja2 fastapi httpx`: 10 passed.
       - name: member Earnings Wire API transport (auth gate + private headers)
         run: python -m pytest tests/test_earnings_api.py -q
+      # Semiconductor B T09: the paid theme-research transport sits behind the SAME
+      # site-full boundary and header contract as the Earnings Wire API; its three
+      # suites need this job's fastapi/httpx line (rights refresh + private binding
+      # included so the fail-closed paths run where the app imports).
+      - name: paid theme research transport (auth gate, rights owner veto, private binding; Semiconductor B T09)
+        run: python -m pytest tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
 
   regwall-boundary:
     if: ${{ false }}

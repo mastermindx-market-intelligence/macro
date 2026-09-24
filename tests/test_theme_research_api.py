@@ -887,3 +887,34 @@ def test_transport_carries_no_local_rights_restatement():
     for forbidden in ("EMISSION_OK", "direct_display_ok", "derived_display_ok"):
         assert forbidden not in source, f"restated rights constant: {forbidden!r}"
     assert "assert_current_emission_allowed(" in source
+
+
+def test_missing_rights_registry_fails_closed_with_private_headers(entitled_client, monkeypatch, tmp_path):
+    """When the rights owner cannot load its registry at all (RightsRefusal
+    registry_missing inside the route's fresh-snapshot filter), the route emits
+    nothing: 503, the four private headers, no path or detail on the wire."""
+    fixture = load_case("revoked_rights_warm")
+    bundle_spec = fixture["bundle"]
+    monkeypatch.setattr(rights_module, "registry_path", lambda: tmp_path / "absent" / "theme_sources.yml")
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    def loader(*_a, **_kw):  # never consults the owner itself; the route's filter does
+        return OwnerBundle(
+            revision_tuple=tuple(tuple(x) for x in bundle_spec["revision_tuple"]),
+            rights_revision="rights_unavailable_probe",
+            assertions=tuple(bundle_spec["assertions"]),
+            identity_results=tuple(bundle_spec["identity_results"]),
+            event_workspaces=tuple(bundle_spec["event_workspaces"]),
+            financial_packets=tuple(bundle_spec["financial_packets"]),
+            interpretation_blocks=tuple(bundle_spec["interpretation_blocks"]),
+            native_refs=tuple(bundle_spec["native_refs"]),
+            omissions=tuple(bundle_spec["omissions"]),
+        )
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body())
+    assert response.status_code == 503, response.text
+    assert response.json()["detail"]["error"]["code"] == "service_unavailable"
+    for name, value in theme_research._PRIVATE_HEADERS.items():
+        assert response.headers.get(name) == value
+    assert "theme_sources" not in response.text and "absent" not in response.text
+

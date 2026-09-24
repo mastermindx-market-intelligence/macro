@@ -201,6 +201,7 @@ def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
     families were refused.
     """
     snapshot = load_registry_snapshot()
+    verdicts: dict[str, bool] = {}  # per-request memo: one owner call per distinct family
     kept: list[Mapping[str, Any]] = []
     dropped = False
     for assertion in bundle.assertions:
@@ -210,12 +211,17 @@ def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
         if family is None:
             kept.append(assertion)
             continue
-        try:
-            assert_current_emission_allowed([family], snapshot=snapshot)
-        except RightsRefusal:
-            dropped = True
-        else:
+        if family not in verdicts:
+            try:
+                assert_current_emission_allowed([family], snapshot=snapshot)
+            except RightsRefusal:
+                verdicts[family] = False
+            else:
+                verdicts[family] = True
+        if verdicts[family]:
             kept.append(assertion)
+        else:
+            dropped = True
     if not dropped:
         return bundle, False
     new_bundle = OwnerBundle(
@@ -372,6 +378,13 @@ async def research_query(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},
         ) from None
+    except RightsRefusal:
+        # The rights registry itself is missing or corrupt: no verdict can be
+        # asked, so nothing is emitted. Fail closed behind the same headers.
+        raise _private_error(
+            503,
+            {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
     except Exception:  # noqa: BLE001 — internal detail must never cross the wire
         raise _private_error(
             503,
@@ -393,6 +406,13 @@ async def research_evidence(
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
     except PrivateStoreUnavailable:
+        raise _private_error(
+            503,
+            {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
+    except RightsRefusal:
+        # The rights registry itself is missing or corrupt: no verdict can be
+        # asked, so nothing is emitted. Fail closed behind the same headers.
         raise _private_error(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},
