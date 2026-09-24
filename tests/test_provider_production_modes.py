@@ -1512,29 +1512,21 @@ def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts, 
     assert "text" not in result
 
 
-def test_minimax_shadow_canary_success_without_price_truth_is_not_accepted(
+def test_minimax_shadow_canary_refuses_before_provider_io_without_price_truth(
     receipts, monkeypatch
 ):
     monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: None)
-    transport = FakeTransport({
-        "content": [{"type": "text", "text": ppm.CANARY_EXPECTED_TEXT}],
-        "usage": {"input_tokens": 3, "output_tokens": 2},
-    })
-    result = ppm.run_minimax_canary(
-        armed_mode=ppm.CANARY_MODE_ID,
-        env={"MINIMAX_API_KEY": SECRET_VALUE},
-        transport=transport,
-        source_path=CONFIG_PATH,
-    )
-    assert result["accepted"] is False
-    assert result["activation_eligible"] is False
-    assert result["acceptance_reason"] == "pricing_unknown"
-    assert result["price_state"] == "unknown"
-    assert result["effect_state"] == "EFFECT_CONFIRMED"
-    assert result["automatic_retry_allowed"] is False
-    assert len(transport.calls) == 1
-    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
-    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
+    transport = FakeTransport("must not run")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="CANARY_PRICING_UNAVAILABLE"):
+        ppm.run_minimax_canary(
+            armed_mode=ppm.CANARY_MODE_ID,
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=transport,
+            source_path=CONFIG_PATH,
+        )
+    assert transport.calls == []
+    assert receipts["health"] == []
+    assert receipts["usage"] == []
 
 
 
