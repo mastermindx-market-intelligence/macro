@@ -208,6 +208,33 @@ class TestSiteInventoryLinkCache:
             {"page": "index.html", "link": "/ghost.html"}
         ]
 
+    def test_template_symlink_destination_disappearance_invalidates_cache(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        content, site = self._bind_site(monkeypatch, tmp_path)
+        templates = tmp_path / "templates"
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        source = site / "index.html"
+        target = outside / "template-target"
+        template = templates / "ghost.html.j2"
+        source.write_text('<a href="/ghost.html">Generated page</a>')
+        target.write_text("<main>rendered by CI</main>")
+        template.symlink_to(target)
+
+        first = content.link_check()
+        assert first["count"] == 0
+        assert first["ci_built_count"] == 1
+
+        target.unlink()
+        second = content.link_check()
+
+        assert second["ci_built_count"] == 0
+        assert second["count"] == 1
+        assert second["broken"] == [
+            {"page": "index.html", "link": "/ghost.html"}
+        ]
+
     def test_directory_symlink_retarget_invalidates_cache(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:

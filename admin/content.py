@@ -85,9 +85,9 @@ def _tree_sig(max_pages: int):
     digest = hashlib.sha256()
     count = 0
 
-    def _add(kind: str, rel: str, stat, target: str = "") -> None:
+    def _add(kind: str, rel: str, stat, target: str = "", state: str = "") -> None:
         fields = (
-            kind, rel, target, str(stat.st_size),
+            kind, rel, target, state, str(stat.st_size),
             str(stat.st_mtime_ns), str(stat.st_ctime_ns),
         )
         digest.update("\0".join(fields).encode("utf-8", errors="surrogateescape"))
@@ -122,7 +122,11 @@ def _tree_sig(max_pages: int):
         for template in sorted(templates, key=lambda item: item.name):
             try:
                 target = template.readlink().as_posix() if template.is_symlink() else ""
-                _add("template", template.name, template.lstat(), target)
+                # _ci_built() uses Path.exists(), so a template symlink whose literal
+                # target is unchanged can still change classification when that
+                # destination appears or disappears.
+                state = "exists" if template.exists() else "missing"
+                _add("template", template.name, template.lstat(), target, state)
             except (OSError, RuntimeError):
                 continue
 
